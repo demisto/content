@@ -29,7 +29,7 @@ from ZeroFox import (
 
 BASE_URL = "https://api.zerofox.com"
 OK_CODES = (200, 201)
-FETCH_LIMIT = 100
+FETCH_LIMIT = 10
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
@@ -48,7 +48,7 @@ def build_zf_client() -> ZFClient:
     )
 
 
-def get_delayed_formatted_date(str_date: str, delay=timedelta(seconds=1)):
+def get_delayed_formatted_date(str_date: str, delay=timedelta(milliseconds=1)):
     formatted_date = parse_date(str_date, date_formats=(DATE_FORMAT,),)
     if formatted_date is None:
         raise ValueError("date must be a valid string date")
@@ -60,12 +60,14 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
     """
     Given
         There is 0 alerts
-        And there is no last_fetched in last_run
+        And last_run is empty
     When
         Calling fetch_incidents
     Then
         It should list alerts with first_fetch_time as min_timestamp
-        And return last_fetch equal to first_fetch_time
+        And page equals 1
+        And return last_fetch equals to first_fetch_time
+        And last last_page equals to 1
         And 0 incidents
     """
     alerts_response = load_json("test_data/alerts/list_no_records.json")
@@ -78,6 +80,7 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
         first_fetch_time,
         date_formats=(DATE_FORMAT,),
     )
+    expected_page = 1
     spy = mocker.spy(client, "list_alerts")
 
     next_run, incidents = fetch_incidents(
@@ -90,20 +93,23 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
     list_alert_params = spy.call_args[0][0]
     assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
     assert list_alert_params.get("sort_direction") == "asc"
+    assert list_alert_params.get("page") == expected_page
     assert next_run["last_fetched"] == first_fetch_time
+    assert next_run["last_page"] == str(expected_page)
     assert len(incidents) == 0
 
 
 def test_fetch_incidents_first_time(requests_mock, mocker):
     """
     Given
-        There are alerts
+        There are alerts (less than the fetch limit)
         And there is no last_fetched in last_run
     When
         Calling fetch_incidents
     Then
         It should list alerts with first_fetch_time as min_timestamp
-        And return last_fetch equal to last alert timestamp + 1 second
+        And page equals to 1
+        And return last_fetch equals to last alert timestamp + 1 millisecond
         And 10 incidents correctly formatted
     """
     alerts_response = load_json("test_data/alerts/list_10_records.json")
@@ -120,6 +126,7 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
     last_alert_timestamp_formatted = get_delayed_formatted_date(
         last_alert_timestamp,
     )
+    expected_page = 1
     spy = mocker.spy(client, "list_alerts")
 
     next_run, incidents = fetch_incidents(
@@ -132,7 +139,9 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
     list_alert_params = spy.call_args[0][0]
     assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
     assert list_alert_params.get("sort_direction") == "asc"
+    assert list_alert_params.get("page") == expected_page
     assert next_run["last_fetched"] == last_alert_timestamp_formatted
+    assert next_run["last_page"] == str(expected_page)
     assert len(incidents) == 10
     for incident in incidents:
         assert "mirror_instance" in incident["rawJSON"]
@@ -143,24 +152,29 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     """
     Given
         There are alerts
+        And there are more in the next page
         And last_fetched is set in last_run
+        And last_page is set in last_run
     When
         Calling fetch_incidents
     Then
         It should list alerts with the last_fetched set in last_run
-        And return last_fetch equal to last alert timestamp + 1 second
+        And with the last_page set in last_run
+        And return last_fetch equals to last_fetched set
+        And last_page equals to the last_page set plus 1
         And 10 incidents correctly formatted
     """
-    alerts_response = load_json("test_data/alerts/list_10_records.json")
-    last_alert_timestamp = alerts_response["alerts"][-1]["timestamp"]
+    alerts_response = load_json("test_data/alerts/list_10_records_and_more.json")
+    alerts_response["alerts"][-1]["timestamp"]
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
-    last_run = {"last_fetched": "2023-07-01T12:34:56"}
+    last_page_saved = 4
+    last_run = {
+        "last_fetched": "2023-07-01T12:34:56",
+        "last_page": str(last_page_saved),
+    }
     first_fetch_time = "2023-06-01T00:00:00"
-    last_alert_timestamp_formatted = get_delayed_formatted_date(
-        last_alert_timestamp,
-    )
     spy = mocker.spy(client, "list_alerts")
 
     next_run, incidents = fetch_incidents(
@@ -176,7 +190,9 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     ).strftime(DATE_FORMAT)
     assert min_timestamp_called == last_run["last_fetched"]
     assert list_alert_params.get("sort_direction") == "asc"
-    assert next_run["last_fetched"] == last_alert_timestamp_formatted
+    assert list_alert_params.get("page") == last_page_saved
+    assert next_run["last_fetched"] == last_run["last_fetched"]
+    assert next_run["last_page"] == str(last_page_saved + 1)
     assert len(incidents) == 10
     for incident in incidents:
         assert "mirror_instance" in incident["rawJSON"]
@@ -302,7 +318,7 @@ def test_get_alert_command(requests_mock, mocker):
         And return the alert as output
         And with the correct output prefix
     """
-    alert_id = "123"
+    alert_id = 123
     alert_response = load_json("test_data/alerts/closed_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
@@ -920,9 +936,12 @@ def test_submit_threat_command(requests_mock, mocker):
     alert_type = "email"
     violation = "phishing"
     entity_id = "123"
+    alert_id = "123"
     submit_response = load_json("test_data/alerts/submit_threat.json")
+    alert_response = load_json("test_data/alerts/opened_alert.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.post("/2.0/threat_submit/", json=submit_response)
+    requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
     client = build_zf_client()
     spy_submit = mocker.spy(client, "submit_threat")
     args = {

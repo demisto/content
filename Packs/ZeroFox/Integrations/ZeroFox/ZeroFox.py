@@ -4,8 +4,10 @@ from CommonServerPython import *
 
 """ IMPORTS  """
 from dateparser import parse as parse_date
-from typing import Dict, List, Callable
+from typing import Any
+from collections.abc import Callable
 from requests import Response
+from copy import deepcopy
 
 """ GLOBALS / PARAMS  """
 FETCH_TIME_DEFAULT = "3 days"
@@ -29,12 +31,12 @@ class ZFClient(BaseClient):
         method: str,
         url_suffix: str,
         headers_builder_type: str | None = 'api',
-        params: Dict | None = None,
-        data: Dict | None = None,
+        params: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
         error_handler: Callable[[Any], Any] | None = None,
-    ):
+    ) -> dict[str, Any]:
         """
         :param method: HTTP request type
         :param url_suffix: The suffix of the URL
@@ -53,17 +55,16 @@ class ZFClient(BaseClient):
         """
         pref_string = f"/{prefix}" if prefix else ""
 
-        if headers_builder_type is None:
-            headers = {}
-        else:
+        headers = {}
+        if headers_builder_type is not None:
             if headers_builder_type not in ("api", "cti"):
                 raise ValueError(
                     "`headers_builder_type` should be 'api' or 'cti'"
                 )
-            header_builder = dict(
-                api=self.get_api_request_header,
-                cti=self.get_cti_request_header
-            ).get(headers_builder_type)
+            header_builder = {
+                "api": self.get_api_request_header,
+                "cti": self.get_cti_request_header
+            }.get(headers_builder_type)
             if header_builder is None:
                 raise ValueError(
                     "`headers_builder_type` should be 'api' or 'cti'"
@@ -85,7 +86,7 @@ class ZFClient(BaseClient):
         response = raw_response.json()
         if "res_content" in response:
             raise Exception("Failure resolving URL.")
-        error_msg_list: List = response.get("non_field_errors", [])
+        error_msg_list: list[str] = response.get("non_field_errors", [])
         if not error_msg_list:
             raise Exception("Unable to log in with provided credentials.")
         else:
@@ -95,12 +96,8 @@ class ZFClient(BaseClient):
         """
         :return: Returns the authorization token
         """
-        integration_context: Dict = demisto.getIntegrationContext()
-        token: str = integration_context.get("token", "")
-        if token:
-            return token
         url_suffix: str = "/1.0/api-token-auth/"
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             data=self.credentials,
@@ -109,28 +106,11 @@ class ZFClient(BaseClient):
             prefix=None,
         )
         token = response_content.get("token", "")
-        demisto.setIntegrationContext({"token": token})
         return token
 
-    def _is_cti_token_valid(self, token: str):
-        """
-        :param token: Token string to verify if it is still valid
-        """
-        url_suffix: str = "/auth/token/verify/"
-        data_for_request: Dict = {"token": token}
-        response: Dict = self.api_request(
-            "POST",
-            url_suffix,
-            data=data_for_request,
-            empty_response=True,
-            headers_builder_type=None,
-            prefix=None,
-        )
-        return bool(response)
-
-    def _get_new_access_token(self):
+    def _get_new_access_token(self) -> str:
         url_suffix: str = "/auth/token/"
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             data=self.credentials,
@@ -143,17 +123,12 @@ class ZFClient(BaseClient):
         """
         :return: returns the authorization token for the CTI feed
         """
-        integration_context: Dict = demisto.getIntegrationContext()
-        token: str = integration_context.get("cti_token", "")
-        if token and self._is_cti_token_valid(token):
-            return token
         token = self._get_new_access_token()
         if not token:
             raise Exception("Unable to retrieve token.")
-        demisto.setIntegrationContext({"cti_token": token})
         return token
 
-    def get_api_request_header(self):
+    def get_api_request_header(self) -> dict[str, str]:
         token: str = self.get_authorization_token()
         return {
             "Authorization": f"Token {token}",
@@ -161,7 +136,7 @@ class ZFClient(BaseClient):
             "Accept": "application/json",
         }
 
-    def get_cti_request_header(self):
+    def get_cti_request_header(self) -> dict[str, str]:
         token: str = self.get_cti_authorization_token()
         return {
             "Authorization": f"Bearer {token}",
@@ -169,15 +144,15 @@ class ZFClient(BaseClient):
             "Accept": "application/json",
         }
 
-    def get_policy_types(self) -> Dict:
+    def get_policy_types(self) -> dict[str, Any]:
         """
         :return: HTTP request content.
         """
         url_suffix: str = "/policies/"
-        response_content: Dict = self.api_request("GET", url_suffix)
+        response_content = self.api_request("GET", url_suffix)
         return response_content
 
-    def list_alerts(self, params: Dict) -> Dict:
+    def list_alerts(self, params: dict[str, Any]) -> dict[str, Any]:
         """
         :param params: The request's body parameters.
         :return: HTTP request content.
@@ -185,23 +160,27 @@ class ZFClient(BaseClient):
         url_suffix: str = "/alerts/"
         if not params.get("limit"):
             params['limit'] = self.fetch_limit
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "GET",
             url_suffix,
             params=params
         )
         return response_content
 
-    def get_alert(self, alert_id: int) -> Dict:
+    def get_alert(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
         url_suffix: str = f"/alerts/{alert_id}/"
-        response_content: Dict = self.api_request("GET", url_suffix)
+        response_content = self.api_request("GET", url_suffix)
         return response_content
 
-    def alert_user_assignment(self, alert_id: int, username: str) -> Dict:
+    def alert_user_assignment(
+        self,
+        alert_id: int,
+        username: str
+    ) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :param username: The username we want to assign to the alert.
@@ -209,7 +188,7 @@ class ZFClient(BaseClient):
         """
         url_suffix: str = f"/alerts/{alert_id}/assign/"
         request_body = {"subject": username}
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             data=request_body,
@@ -217,52 +196,52 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def close_alert(self, alert_id: int) -> Dict:
+    def close_alert(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
         url_suffix: str = f"/alerts/{alert_id}/close/"
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             empty_response=True,
         )
         return response_content
 
-    def open_alert(self, alert_id: int) -> Dict:
+    def open_alert(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
         url_suffix: str = f"/alerts/{alert_id}/open/"
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             empty_response=True,
         )
         return response_content
 
-    def alert_request_takedown(self, alert_id: int) -> Dict:
+    def alert_request_takedown(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
         url_suffix: str = f"/alerts/{alert_id}/request_takedown/"
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             empty_response=True,
         )
         return response_content
 
-    def alert_cancel_takedown(self, alert_id: int) -> Dict:
+    def alert_cancel_takedown(self, alert_id: int) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
         url_suffix: str = f"/alerts/{alert_id}/cancel_takedown/"
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             empty_response=True,
@@ -273,18 +252,18 @@ class ZFClient(BaseClient):
         self,
         alert_id: int,
         action: str,
-        tags_list: List[str]
-    ) -> Dict:
+        tags_list: list[str]
+    ) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :param action: action can be 'added' or 'removed'. It indicates
         what action we want to do i.e add/remove tags/
-        :param tags_list_string: A string representation of the tags,
+        :param tags_list: A string representation of the tags,
         separated by a comma ','
         :return: HTTP request content.
         """
         url_suffix: str = "/alerttagchangeset/"
-        request_body: Dict = {
+        request_body = {
             "changes": [
                 {
                     f"{action}": tags_list,
@@ -292,7 +271,7 @@ class ZFClient(BaseClient):
                 },
             ],
         }
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST", url_suffix, data=request_body,
         )
         return response_content
@@ -304,7 +283,7 @@ class ZFClient(BaseClient):
         tags: list | None = None,
         policy: int | None = None,
         organization: str | None = None,
-    ) -> Dict:
+    ) -> dict[str, Any]:
         """
         :param name: Name of the entity (may be non-unique).
         :param strict_name_matching: Indicating type of string matching for
@@ -316,7 +295,7 @@ class ZFClient(BaseClient):
         :return: HTTP request content.
         """
         url_suffix: str = "/entities/"
-        request_body: Dict = {
+        request_body = {
             "name": name,
             "strict_name_matching": strict_name_matching,
             "labels": tags,
@@ -325,41 +304,41 @@ class ZFClient(BaseClient):
             "organization": organization,
         }
         request_body = remove_none_dict(request_body)
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST", url_suffix, data=request_body,
         )
         return response_content
 
-    def list_entities(self, params: Dict) -> Dict:
+    def list_entities(self, params: dict[str, Any]) -> dict[str, Any]:
         """
         :param params: The request's body parameters.
         :return: HTTP request content.
         """
         url_suffix: str = "/entities/"
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "GET",
             url_suffix,
             params=params,
         )
         return response_content
 
-    def get_entity_types(self) -> Dict:
+    def get_entity_types(self) -> dict[str, Any]:
         """
         :return: HTTP request content.
         """
         url_suffix: str = "/entities/types/"
-        response_content: Dict = self.api_request("GET", url_suffix)
+        response_content = self.api_request("GET", url_suffix)
         return response_content
 
-    def modify_alert_notes(self, alert_id: int, notes: str) -> Dict:
+    def modify_alert_notes(self, alert_id: int, notes: str) -> dict[str, Any]:
         """
         :param alert_id: The ID of the alert.
         :param notes: The notes for the alert.
         :return: HTTP request content.
         """
         url_suffix: str = f"/alerts/{alert_id}/"
-        request_body: Dict = {"notes": notes}
-        response_content: Dict = self.api_request(
+        request_body = {"notes": notes}
+        response_content = self.api_request(
             "POST",
             url_suffix,
             data=request_body,
@@ -373,21 +352,23 @@ class ZFClient(BaseClient):
         alert_type: str,
         violation: str,
         entity_id: str
-    ):
+    ) -> dict[str, Any]:
         """
-        :param alert_id: The ID of the alert.
-        :param notes: The notes for the alert.
+        :param source: The source of the threat.
+        :param alert_type: The type of the alert.
+        :param violation: The violation of the alert.
+        :param entity_id: The ID of the entity.
         :return: HTTP request content.
         """
         url_suffix: str = "/threat_submit/"
-        request_body: Dict = {
+        request_body = {
             "source": source,
             "alert_type": alert_type,
             "violation": violation,
             "entity_id": entity_id,
         }
         request_body = remove_none_dict(request_body)
-        response_content: Dict = self.api_request(
+        response_content = self.api_request(
             "POST",
             url_suffix,
             data=request_body,
@@ -395,7 +376,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_c2_domains(self, domain: str):
+    def get_cti_c2_domains(self, domain: str) -> dict[str, Any]:
         """
         :param domain: The domain to lookup in c2-domains CTI Feed
         :return: HTTP request content.
@@ -411,9 +392,14 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_phishing(self, domain: str | None = None, ip: str | None = None):
+    def get_cti_phishing(
+        self,
+        domain: str | None = None,
+        ip: str | None = None
+    ) -> dict[str, Any]:
         """
         :param domain: The domain to lookup in phishing CTI Feed
+        :param ip: The ip to lookup in phishing CTI Feed
         :return: HTTP request content.
         """
         url_suffix = "/phishing/"
@@ -427,7 +413,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_email_addresses(self, email: str):
+    def get_cti_email_addresses(self, email: str) -> dict[str, Any]:
         """
         :param email: The email to lookup in email-addresses CTI Feed
         :return: HTTP request content.
@@ -443,7 +429,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_compromised_credentials(self, email: str):
+    def get_cti_compromised_credentials(self, email: str) -> dict[str, Any]:
         """
         :param email: The email to lookup in compromised-credentials CTI Feed
         :return: HTTP request content.
@@ -459,7 +445,10 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_botnet_compromised_credentials(self, email: str):
+    def get_cti_botnet_compromised_credentials(
+        self,
+        email: str
+    ) -> dict[str, Any]:
         """
         :param email: The email to lookup in botnet-compromised-credentials
         CTI Feed
@@ -476,7 +465,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_botnet(self, ip: str):
+    def get_cti_botnet(self, ip: str) -> dict[str, Any]:
         """
         :param ip: The ip to lookup in botnet CTI Feed
         :return: HTTP request content.
@@ -492,7 +481,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_malware(self, hash_type: str, hash: str):
+    def get_cti_malware(self, hash_type: str, hash: str) -> dict[str, Any]:
         """
         :param hash_type: The hash type to lookup in malware CTI Feed
         :param hash: The hash to lookup in malware CTI Feed
@@ -509,7 +498,7 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_cti_exploits(self, since: str):
+    def get_cti_exploits(self, since: str) -> dict[str, Any]:
         """
         :param since: since date to query exploits
         :return: HTTP request content.
@@ -529,14 +518,14 @@ class ZFClient(BaseClient):
 """ HELPERS """
 
 
-def alert_to_incident(alert: Dict) -> Dict:
+def alert_to_incident(alert: dict[str, Any]) -> dict[str, str]:
     """
     transforms an alert to incident convention
     :param alert: alert is a dictionary
     :return: Incident - dictionary
     """
-    alert_id: str = str(alert.get("id", ""))
-    incident: Dict = {
+    alert_id = str(alert.get("id", ""))
+    incident = {
         "rawJSON": json.dumps(alert),
         "name": f"ZeroFox Alert {alert_id}",
         "occurred": alert.get("timestamp", ""),
@@ -544,20 +533,19 @@ def alert_to_incident(alert: Dict) -> Dict:
     return incident
 
 
-def dict_value_to_integer(params: Dict, key: str):
-    """
-    :param params: A dictionary which has the key param
-    :param key: The key that we need to convert it's value to integer
-    :return: The integer representation of the key's value in the dict params
-    """
-    try:
-        if params:
-            value: str = params.get(key, "")
-            if value:
-                params[key] = int(value)
-                return params[key]
-    except ValueError:
-        raise Exception(f"This value for {key} must be an integer.")
+def parse_dict_values_to_integer(
+    params: dict[str, Any],
+    keys: list[str]
+) -> dict[str, Any]:
+    params_copy = deepcopy(params)
+    for key in keys:
+        value = params_copy.get(key)
+        if value is not None:
+            try:
+                params_copy[key] = int(value)
+            except ValueError:
+                raise Exception(f"This value for {key} must be an integer.")
+    return params_copy
 
 
 def severity_num_to_string(severity_num: int) -> str:
@@ -579,7 +567,25 @@ def severity_string_to_num(severity_str: str) -> int:
     return severity_map.get(severity_str, -1)
 
 
-def get_nested_key(obj: Dict, path: List[str], default_value: Any | None = None):
+def get_nested_key(
+    obj: dict[str, Any],
+    path: list[str],
+    default_value: Any | None = None
+) -> Any:
+    """
+    It returns the value of a nested key in a dictionary
+    :param obj: The dictionary we want to get the value from
+    :param path: The path to the nested key
+    :param default_value: The default value to return if the key is not found
+    :return: The value of the nested key
+
+    Example:
+    obj = {"a": {"b": {"c": 1}}}
+    default_value = -1
+
+    get_nested_key(obj, ["a", "b", "c"], default_value) -> 1
+    get_nested_key(obj, ["a", "x", "d"], default_value) -> -1
+    """
     for key in path[:-1]:
         obj = obj.get(key, {})
         if not isinstance(obj, dict):
@@ -587,7 +593,7 @@ def get_nested_key(obj: Dict, path: List[str], default_value: Any | None = None)
     return obj.get(path[-1])
 
 
-def get_alert_contents(alert: Dict) -> Dict:
+def get_alert_contents(alert: dict[str, Any]) -> dict[str, Any]:
     """
     :param alert: Alert is a dictionary
     :return: A dict representing the alert contents
@@ -635,19 +641,38 @@ def get_alert_contents(alert: Dict) -> Dict:
 
 
 def transform_alert_human_readable_values(
-    alert: Dict,
-    title_keys: List[str] = []
-):
-    transformed_alert = alert.copy()
+    alert: dict[str, Any],
+    title_keys: list[str] | None = None
+) -> dict[str, Any]:
+    """
+    It takes an alert and convert the keys indicated in `title_keys` to
+    title case
+
+    :param alert: Dictionary representing the alert
+    :param title_keys: List of keys to convert to title case
+    :return: return a copy of the alert with the keys converted to title case
+    """
+    title_keys = title_keys or []
+    transformed_alert = deepcopy(alert)
     for key in title_keys:
         transformed_alert[key] = transformed_alert.get(key, "").title()
     return transformed_alert
 
 
 def transform_alerts_human_readable_values(
-    alerts: Union[Dict, List],
-    title_keys: List[str] = []
-):
+    alerts: dict[str, Any] | list[dict[str, Any]],
+    title_keys: list[str] | None = None
+) -> dict[str, Any] | list[dict[str, Any]]:
+    """
+    It takes an alert or a list of alerts and convert the keys specified in
+    `title_keys` to title case
+
+    :param alerts: Alert or list of alerts to transform
+    :parma title_keys: List of keys to convert to title case
+    :return: a copy of the alert or list of alerts with the corresponding
+    transformations
+    """
+    title_keys = title_keys or []
     if isinstance(alerts, list):
         return [
             transform_alert_human_readable_values(
@@ -661,9 +686,17 @@ def transform_alerts_human_readable_values(
             alerts,
             title_keys=title_keys,
         )
+    else:
+        raise Exception("alerts must be a list or a dict")
 
 
-def transform_alert_human_readable_header(header: str):
+def transform_alert_human_readable_header(header: str) -> str:
+    """
+    It returns the header name of the alert's key to human readable
+
+    :param header: the key to get the human readable header
+    :return: the human readable header name of the key requested
+    """
     transformations = {
         "EntityName": "Protected Entity",
         "AlertType": "Content Type",
@@ -676,8 +709,10 @@ def transform_alert_human_readable_header(header: str):
     return transformations.get(header, header)
 
 
-def get_human_readable_alerts(alerts: Union[Dict, List]):
-    visible_keys: List = [
+def get_human_readable_alerts(
+    alerts: dict[str, Any] | list[dict[str, Any]]
+) -> str:
+    visible_keys = [
         "ID",
         "EntityName",
         "AlertType",
@@ -705,7 +740,7 @@ def get_human_readable_alerts(alerts: Union[Dict, List]):
     return readable_output
 
 
-def remove_none_dict(input_dict: Dict) -> Dict:
+def remove_none_dict(input_dict: dict[Any, Any]) -> dict[Any, Any]:
     """
     removes all none values from a dict
     :param input_dict: any dictionary in the world is OK
@@ -717,7 +752,7 @@ def remove_none_dict(input_dict: Dict) -> Dict:
     }
 
 
-def get_entity_contents(entity: Dict) -> Dict:
+def get_entity_contents(entity: dict[str, Any]) -> dict[str, Any]:
     """
     :param entity: Entity is a dictionary
     :return: A dict representation of the contents of entity
@@ -738,11 +773,14 @@ def get_entity_contents(entity: Dict) -> Dict:
     }
 
 
-def get_entity_human_readable_outputs(contents: Dict) -> Dict:
+def get_entity_human_readable_outputs(
+    contents: dict[str, Any]
+) -> dict[str, Any]:
     """
     returns the convention for the war room
     :param contents: Contents is a dictionary
-    :return: A dict representation of the war room contents displayed to the user
+    :return: A dict representation of the war room contents
+    displayed to the user
     """
     return {
         "Name": contents.get("Name"),
@@ -754,7 +792,7 @@ def get_entity_human_readable_outputs(contents: Dict) -> Dict:
     }
 
 
-def get_c2_domain_content(c2_domain_record: Dict):
+def get_c2_domain_content(c2_domain_record: dict[str, Any]) -> dict[str, Any]:
     return {
         "Domain": c2_domain_record.get("domain", ""),
         "LastModified": c2_domain_record.get("created_at", ""),
@@ -762,7 +800,7 @@ def get_c2_domain_content(c2_domain_record: Dict):
     }
 
 
-def get_phishing_content(phishing_record: Dict):
+def get_phishing_content(phishing_record: dict[str, Any]) -> dict[str, Any]:
     return {
         "Domain": phishing_record.get("domain", ""),
         "LastModified": phishing_record.get("scanned", ""),
@@ -771,9 +809,17 @@ def get_phishing_content(phishing_record: Dict):
 
 
 def get_compromised_domain_content(
-    c2_domain_response: Dict,
-    phishing_response: Dict
-):
+    c2_domain_response: dict[str, Any],
+    phishing_response: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """
+    It merges the content of c2_domain_response and phishing_response and
+    format it to be standardized as compromised domain content
+
+    :param c2_domain_response: The response of the c2-domains CTI Feed
+    :param phishing_response: The response of the phishing CTI Feed
+    :return: A list of dictionaries representing the compromised domain content
+    """
     compromised_domain_content = []
 
     c2_domains_results = c2_domain_response.get("results", [])
@@ -789,7 +835,9 @@ def get_compromised_domain_content(
     return compromised_domain_content
 
 
-def get_email_address_content(email_address_record: Dict):
+def get_email_address_content(
+    email_address_record: dict[str, Any]
+) -> dict[str, Any]:
     return {
         "Domain": email_address_record.get("domain", ""),
         "Email": email_address_record.get("email", ""),
@@ -797,7 +845,9 @@ def get_email_address_content(email_address_record: Dict):
     }
 
 
-def get_credentials_content(credentials_record: Dict):
+def get_credentials_content(
+    credentials_record: dict[str, Any]
+) -> dict[str, Any]:
     return {
         "Domain": credentials_record.get("domain", ""),
         "Email": credentials_record.get("email", ""),
@@ -805,7 +855,9 @@ def get_credentials_content(credentials_record: Dict):
     }
 
 
-def get_botnet_credentials_content(botnet_credentials_record: Dict):
+def get_botnet_credentials_content(
+    botnet_credentials_record: dict[str, Any]
+) -> dict[str, Any]:
     return {
         "Domain": botnet_credentials_record.get("domain", ""),
         "Email": botnet_credentials_record.get("email", ""),
@@ -814,10 +866,21 @@ def get_botnet_credentials_content(botnet_credentials_record: Dict):
 
 
 def get_compromised_email_content(
-    email_addressed_response: Dict,
-    credentials_response: Dict,
-    botnet_credentials_response: Dict,
-):
+    email_addressed_response: dict[str, Any],
+    credentials_response: dict[str, Any],
+    botnet_credentials_response: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """
+    It merges the content of email_addressed_response,
+    credentials_response and botnet_credentials_response and
+    format it to be standardized as compromised email content
+
+    :param email_addressed_response: The response of the email-addresses
+    :param credentials_response: The response of the compromised-credentials
+    :param botnet_credentials_response: The response of the
+    botnet-compromised-credentials
+    :return: A list of dictionaries representing the compromised email content
+    """
     compromised_email_content = []
 
     email_addresses_results = email_addressed_response.get("results", [])
@@ -841,7 +904,7 @@ def get_compromised_email_content(
     return compromised_email_content
 
 
-def get_botnet_ip_content(botnet_result: Dict):
+def get_botnet_ip_content(botnet_result: dict[str, Any]) -> dict[str, Any]:
     return {
         "CreatedAt": botnet_result.get("acquired_at", ""),
         "IPAddress": botnet_result.get("ip_address", ""),
@@ -849,7 +912,7 @@ def get_botnet_ip_content(botnet_result: Dict):
     }
 
 
-def get_phishing_ip_content(botnet_result: Dict):
+def get_phishing_ip_content(botnet_result: dict[str, Any]) -> dict[str, Any]:
     return {
         "CreatedAt": botnet_result.get("scanned", ""),
         "IPAddress": get_nested_key(botnet_result, ["host", "ip"]),
@@ -857,7 +920,18 @@ def get_phishing_ip_content(botnet_result: Dict):
     }
 
 
-def get_malicious_ip_content(botnet_response: Dict, phishing_response: Dict):
+def get_malicious_ip_content(
+    botnet_response: dict[str, Any],
+    phishing_response: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """
+    It merges the content of botnet_response and phishing_response and
+    format it to be standardized as malicious ip content
+
+    :param botnet_response: The response of the botnet CTI Feed
+    :param phishing_response: The response of the phishing CTI Feed
+    :return: A list of dictionaries representing the malicious ip content
+    """
     malicious_ip_content = []
 
     botnet_results = botnet_response.get("results", [])
@@ -876,9 +950,9 @@ def get_malicious_ip_content(botnet_response: Dict, phishing_response: Dict):
 
 
 def get_malicious_hash_type_content(
-    malicious_hash_result: Dict,
+    malicious_hash_result: dict[str, Any],
     hash_type: str
-):
+) -> dict[str, str]:
     family_content = malicious_hash_result.get("family", [])
     if not family_content:
         family_content = []
@@ -893,7 +967,10 @@ def get_malicious_hash_type_content(
     }
 
 
-def get_malicious_hash_content(hash_type: str, malicious_hash_response: Dict):
+def get_malicious_hash_content(
+    hash_type: str,
+    malicious_hash_response: dict[str, Any]
+) -> list[dict[str, Any]]:
     malicious_hash_content = []
 
     malicious_hash_results = malicious_hash_response.get("results", [])
@@ -905,7 +982,7 @@ def get_malicious_hash_content(hash_type: str, malicious_hash_response: Dict):
     return malicious_hash_content
 
 
-def get_exploit_content(exploit_result: Dict):
+def get_exploit_content(exploit_result: dict[str, Any]) -> dict[str, str]:
     return {
         "CreatedAt": exploit_result.get("created_at", ""),
         "CVECode": exploit_result.get("cve", ""),
@@ -913,7 +990,15 @@ def get_exploit_content(exploit_result: Dict):
     }
 
 
-def get_exploits_content(exploits_response: Dict):
+def get_exploits_content(
+    exploits_response: dict[str, Any]
+) -> list[dict[str, Any]]:
+    """
+    It formats the exploits_response to be standardized as exploits content
+
+    :param exploits_response: The response of the exploits CTI Feed
+    :return: A list of dictionaries representing the exploits content
+    """
     exploits_content = []
 
     exploits_results = exploits_response.get("results", [])
@@ -928,7 +1013,7 @@ def get_exploits_content(exploits_response: Dict):
 """ COMMANDS """
 
 
-def test_module(client: ZFClient):
+def test_module(client: ZFClient) -> str:
     """
     Performs basic get request to get item samples
     """
@@ -938,55 +1023,77 @@ def test_module(client: ZFClient):
 
 def fetch_incidents(
     client: ZFClient,
-    last_run: Dict[str, str],
+    last_run: dict[str, str],
     first_fetch_time: str
-):
+) -> tuple[dict[str, str], list[dict[str, Any]]]:
     date_format = "%Y-%m-%dT%H:%M:%S"
     last_fetched = last_run.get("last_fetched")
+    last_page_str: str = last_run.get("last_page", "")
     if last_fetched is None:
         last_fetched = first_fetch_time
     last_fetched = parse_date(last_fetched, date_formats=(date_format,))
+    last_page = int(last_page_str) if last_page_str else 1
     if last_fetched is None:
         raise ValueError("last_fetched param is invalid")
 
     response_content = client.list_alerts(
-        {"sort_direction": "asc", "min_timestamp": last_fetched}
+        {
+            "sort_direction": "asc",
+            "min_timestamp": last_fetched,
+            "page": last_page,
+        }
     )
-    alerts: List = response_content.get("alerts", [])
+    alerts: list[dict[str, Any]] = response_content.get("alerts", [])
 
-    next_run = {"last_fetched": last_fetched.strftime(date_format)}
-    incidents = []
-    if alerts:
-        integration_instance = demisto.integrationInstance()
-        for alert in alerts:
-            # Fields for mirroring alert
-            alert["mirror_direction"] = "In"
-            alert["mirror_instance"] = integration_instance
+    next_run = {
+        "last_fetched": last_fetched.strftime(date_format),
+        "last_page": str(last_page),
+    }
+    incidents: list[dict[str, Any]] = []
 
-            incident = alert_to_incident(alert)
-            incidents.append(incident)
+    if not alerts:
+        return next_run, incidents
 
-        # max_update_time is the timestamp of the last alert in alerts
-        # (alerts is a sorted list)
-        last_alert_timestamp: str = str(alerts[-1].get("timestamp", ""))
-        # add 1 second to last alert timestamp,
-        # in order to prevent duplicated alerts
-        parsed_last_alert_timestamp = parse_date(
-            last_alert_timestamp,
-            date_formats=(date_format,),
-        )
-        if parsed_last_alert_timestamp is None:
-            raise ValueError("Incorrect timestamp in last alert of"
-                             " fetch-incidents")
-        max_update_time = (
-            parsed_last_alert_timestamp + timedelta(seconds=1)
-        ).strftime(date_format)
-        next_run["last_fetched"] = max_update_time
+    integration_instance = demisto.integrationInstance()
+    for alert in alerts:
+        # Fields for mirroring alert
+        alert["mirror_direction"] = "In"
+        alert["mirror_instance"] = integration_instance
+
+        incident = alert_to_incident(alert)
+        incidents.append(incident)
+
+    more_alerts: str = response_content.get("next", "")
+    if more_alerts:
+        next_run["last_page"] = str(last_page + 1)
+        return next_run, incidents
+
+    # max_update_time is the timestamp of the last alert in alerts
+    # (alerts is a sorted list by timestamp)
+    last_alert_timestamp = alerts[-1].get("timestamp", "")
+
+    # add 1 millisecond to last alert timestamp,
+    # in order to prevent duplicated alerts
+    parsed_last_alert_timestamp = parse_date(
+        last_alert_timestamp,
+        date_formats=(date_format,),
+    )
+    if parsed_last_alert_timestamp is None:
+        raise ValueError("Incorrect timestamp in last alert "
+                         "of fetch-incidents")
+    max_update_time = (
+        parsed_last_alert_timestamp + timedelta(milliseconds=1)
+    ).strftime(date_format)
+    next_run["last_fetched"] = max_update_time
+    next_run["last_page"] = "1"
 
     return next_run, incidents
 
 
-def get_modified_remote_data_command(client: ZFClient, args: Dict):
+def get_modified_remote_data_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> GetModifiedRemoteDataResponse:
     args = GetModifiedRemoteDataArgs(args)
     last_update = args.last_update
 
@@ -1003,7 +1110,7 @@ def get_modified_remote_data_command(client: ZFClient, args: Dict):
 
     modified_alerts = response_content.get("alerts", [])
     demisto.debug(f"Fetched {len(modified_alerts)} alerts with "
-                  f"the following params: {str(list_alert_params)}")
+                  f"the following params: {list_alert_params}")
     modified_alert_ids = [str(alert.get("id")) for alert in modified_alerts]
 
     return GetModifiedRemoteDataResponse(
@@ -1011,12 +1118,15 @@ def get_modified_remote_data_command(client: ZFClient, args: Dict):
     )
 
 
-def get_remote_data_command(client: ZFClient, args: Dict):
+def get_remote_data_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> GetRemoteDataResponse:
     args = GetRemoteDataArgs(args)
     alert_id = args.remote_incident_id
 
     response_content = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    alert: dict[str, Any] = response_content.get("alert", {})
     demisto.debug(f"Alert fetched with id {alert.get('id')}")
 
     entries = []
@@ -1034,27 +1144,36 @@ def get_remote_data_command(client: ZFClient, args: Dict):
     return GetRemoteDataResponse(mirrored_object=alert, entries=entries)
 
 
-def get_alert_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
-    response_content: Dict = client.get_alert(alert_id)
-    alert: Dict = response_content.get("alert", {})
-    if not alert or not isinstance(alert, Dict):
+def get_alert_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
+    if not alert or not isinstance(alert, dict):
         raise Exception(f"Alert with ID {alert_id} does not exist")
-    output: Dict = get_alert_contents(alert)
-    readable_output: str = get_human_readable_alerts(output)
+    output = get_alert_contents(alert)
+    readable_output = get_human_readable_alerts(output)
     return CommandResults(
         outputs=output,
         outputs_prefix="ZeroFox.Alert",
         readable_output=readable_output,
+        outputs_key_field="ID",
     )
 
 
-def alert_user_assignment_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
+def alert_user_assignment_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
     username: str = args.get("username", "")
     client.alert_user_assignment(alert_id, username)
-    response_content: Dict = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
     contents = get_alert_contents(alert)
 
     return CommandResults(
@@ -1062,98 +1181,128 @@ def alert_user_assignment_command(client: ZFClient, args: Dict):
                         f"of {username} to alert {alert_id}.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def close_alert_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
+def close_alert_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
     client.close_alert(alert_id)
-    response_content: Dict = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
     contents = get_alert_contents(alert)
 
     return CommandResults(
         readable_output=f"Successfully closed Alert {alert_id}.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def open_alert_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
+def open_alert_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
     client.open_alert(alert_id)
-    response_content: Dict = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
     contents = get_alert_contents(alert)
 
     return CommandResults(
         readable_output=f"Successfully opened Alert {alert_id}.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def alert_request_takedown_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
+def alert_request_takedown_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
     client.alert_request_takedown(alert_id)
-    response_content: Dict = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
     contents = get_alert_contents(alert)
 
     return CommandResults(
         readable_output=f"Request to successfully take down Alert {alert_id}.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def alert_cancel_takedown_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
+def alert_cancel_takedown_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
     client.alert_cancel_takedown(alert_id)
-    response_content: Dict = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
     contents = get_alert_contents(alert)
 
     return CommandResults(
         readable_output=f"Successful cancelled takedown of Alert {alert_id}.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def modify_alert_tags_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
+def modify_alert_tags_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
     action_string: str = args.get("action", "")
     action: str = "added" if action_string == "add" else "removed"
     tags_list_string: str = args.get("tags", "")
-    tags_list: list = argToList(tags_list_string, separator=",")
-    response_content: Dict = client.modify_alert_tags(
+    tags_list: list[str] = argToList(tags_list_string, separator=",")
+    response_content = client.modify_alert_tags(
         alert_id,
         action,
         tags_list,
     )
     if not response_content.get("changes"):
         raise Exception(f"Alert with ID {alert_id} does not exist")
-    response_content: Dict = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
     contents = get_alert_contents(alert)
 
     return CommandResults(
         readable_output="Successful modification of tags.",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def create_entity_command(client: ZFClient, args: Dict):
-    name: str = args.get("name", "")
-    raw_strict_name_matching = args.get("strict_name_matching", "")
-    strict_name_matching: bool = raw_strict_name_matching == "true"
-    tags: str = args.get("tags", "")
-    tags: List = argToList(tags, ",")
-    policy_id: int = dict_value_to_integer(args, "policy_id")
-    organization: str = args.get("organization", "")
-    response_content: Dict = client.create_entity(
+def create_entity_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["policy_id"])
+    name = params.get("name", "")
+    raw_strict_name_matching = params.get("strict_name_matching", "")
+    strict_name_matching = raw_strict_name_matching == "true"
+    tags = params.get("tags", "")
+    tags: list[str] = argToList(tags, ",")
+    policy_id: int = params.get("policy_id", "")
+    organization = params.get("organization", "")
+    response_content = client.create_entity(
         name, strict_name_matching, tags, policy_id, organization,
     )
     entity_id: int = response_content.get("id", "")
@@ -1169,37 +1318,34 @@ def create_entity_command(client: ZFClient, args: Dict):
             "Organization": organization,
         },
         outputs_prefix="ZeroFox.Entity",
+        outputs_key_field="ID",
     )
 
 
-def list_alerts_command(client: ZFClient, args: Dict):
-    params: Dict = remove_none_dict(args)
+def list_alerts_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = remove_none_dict(args)
     # handle all integer query params
-    for key in [
-        "entity",
-        "entity_term",
-        "last_modified",
-        "offset",
-        "page_id",
-        "rule_id",
-    ]:
-        dict_value_to_integer(params, key)
+    params = parse_dict_values_to_integer(params, [
+        "entity", "entity_term", "last_modified", "offset", "page_id",
+        "rule_id", "limit",
+    ])
     # handle severity/risk_rating parameter - special case
-    risk_rating_string: str = params.get("risk_rating", "")
+    risk_rating_string = str(params.get("risk_rating", ""))
     if risk_rating_string:
         del params["risk_rating"]
         params["severity"] = severity_string_to_num(risk_rating_string)
     # handle limit parameter - special case
-    limit_str = params.get("limit")
-    if limit_str:
-        limit: int = dict_value_to_integer(params, "limit")
-        if limit < 0 or limit > 100:
-            raise Exception("Incorrect limit. Limit should be 0 <= x <= 100.")
-    response_content: Dict = client.list_alerts(params)
+    limit: int = params.get("limit", "")
+    if limit and (limit < 0 or limit > 100):
+        raise Exception("Incorrect limit. Limit should be 0 <= x <= 100.")
+    response_content = client.list_alerts(params)
     if not response_content:
         return CommandResults(readable_output="No alerts found.", outputs=[])
-    elif isinstance(response_content, Dict):
-        alerts: List = response_content.get("alerts", [])
+    elif isinstance(response_content, dict):
+        alerts: list[dict[str, Any]] = response_content.get("alerts", [])
         if not alerts:
             return CommandResults(
                 readable_output="No alerts found.",
@@ -1207,8 +1353,10 @@ def list_alerts_command(client: ZFClient, args: Dict):
                 outputs_prefix="ZeroFox.Alert",
             )
         else:
-            output: List = [get_alert_contents(alert) for alert in alerts]
-            readable_output: str = get_human_readable_alerts(output)
+            output: list[dict[str, Any]] = [
+                get_alert_contents(alert) for alert in alerts
+            ]
+            readable_output = get_human_readable_alerts(output)
             return CommandResults(
                 outputs=output,
                 readable_output=readable_output,
@@ -1222,20 +1370,24 @@ def list_alerts_command(client: ZFClient, args: Dict):
         )
 
 
-def list_entities_command(client: ZFClient, args: Dict):
-    params: Dict = remove_none_dict(args)
+def list_entities_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = remove_none_dict(args)
     # handle all integer query params
-    for key in ["group", "label", "network", "page", "policy", "type"]:
-        dict_value_to_integer(params, key)
-    response_content: Dict = client.list_entities(params)
+    params = parse_dict_values_to_integer(params, [
+        "group", "label", "network", "page", "policy", "type",
+    ])
+    response_content = client.list_entities(params)
     if not response_content:
         return CommandResults(
             readable_output="No entities found.",
             outputs=[],
             outputs_prefix="ZeroFox.Entity",
         )
-    elif isinstance(response_content, Dict):
-        entities: List = response_content.get("entities", [])
+    elif isinstance(response_content, dict):
+        entities: list[dict[str, Any]] = response_content.get("entities", [])
         if not entities:
             return CommandResults(
                 readable_output="No entities found.",
@@ -1248,7 +1400,7 @@ def list_entities_command(client: ZFClient, args: Dict):
                 get_entity_human_readable_outputs(content)
                 for content in contents
             ]
-            headers: List = ["Name", "Type", "Policy", "Email", "Tags", "ID"]
+            headers = ["Name", "Type", "Policy", "Email", "Tags", "ID"]
             return CommandResults(
                 readable_output=tableToMarkdown(
                     "ZeroFox Entities",
@@ -1269,9 +1421,12 @@ def list_entities_command(client: ZFClient, args: Dict):
         )
 
 
-def get_entity_types_command(client: ZFClient, args: Dict):
-    response_content: Dict = client.get_entity_types()
-    entity_types: List = response_content.get("results", [])
+def get_entity_types_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    response_content = client.get_entity_types()
+    entity_types: list[dict[str, Any]] = response_content.get("results", [])
     human_readable = []
     for entity_type in entity_types:
         type_name: str = entity_type.get("name", "")
@@ -1290,9 +1445,12 @@ def get_entity_types_command(client: ZFClient, args: Dict):
     )
 
 
-def get_policy_types_command(client: ZFClient, args: Dict):
-    response_content: Dict = client.get_policy_types()
-    policy_types: List = response_content.get("policies", [])
+def get_policy_types_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    response_content = client.get_policy_types()
+    policy_types: list[dict[str, Any]] = response_content.get("policies", [])
     human_readable = []
     for policy_type in policy_types:
         type_name: str = policy_type.get("name", "")
@@ -1313,12 +1471,16 @@ def get_policy_types_command(client: ZFClient, args: Dict):
     )
 
 
-def modify_alert_notes_command(client: ZFClient, args: Dict):
-    alert_id: int = dict_value_to_integer(args, "alert_id")
-    alert_notes: str = args.get("notes", "")
+def modify_alert_notes_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    params = parse_dict_values_to_integer(args, ["alert_id"])
+    alert_id: int = params.get("alert_id", "")
+    alert_notes: str = params.get("notes", "")
     client.modify_alert_notes(alert_id, alert_notes)
-    response_content: Dict = client.get_alert(alert_id)
-    alert = response_content.get("alert", {})
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
     contents = get_alert_contents(alert)
 
     return CommandResults(
@@ -1326,31 +1488,45 @@ def modify_alert_notes_command(client: ZFClient, args: Dict):
                         f"with ID: {alert_id}",
         outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def submit_threat_command(client: ZFClient, args: Dict):
+def submit_threat_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
     source: str = args.get("source", "")
     alert_type: str = args.get("alert_type", "")
     violation: str = args.get("violation", "")
     entity_id: str = args.get("entity_id", "")
-    response_content: Dict = client.submit_threat(
+    response_content = client.submit_threat(
         source,
         alert_type,
         violation,
         entity_id,
     )
     alert_id = response_content.get("alert_id")
+    if alert_id is None:
+        raise Exception("Threat couldn't be created")
     output = f"Successful submission of threat. ID: {alert_id}."
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
+    contents = get_alert_contents(alert)
+
     return CommandResults(
         readable_output=output,
         raw_response=response_content,
-        outputs={"ID": alert_id},
+        outputs=contents,
         outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
     )
 
 
-def compromised_domain_command(client: ZFClient, args: Dict):
+def compromised_domain_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
     domain: str = args.get("domain", "")
 
     c2_domains_response = client.get_cti_c2_domains(domain)
@@ -1373,7 +1549,10 @@ def compromised_domain_command(client: ZFClient, args: Dict):
     )
 
 
-def compromised_email_command(client: ZFClient, args: Dict):
+def compromised_email_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
     email: str = args.get("email", "")
 
     email_addresses_response = client.get_cti_email_addresses(email)
@@ -1403,7 +1582,10 @@ def compromised_email_command(client: ZFClient, args: Dict):
     )
 
 
-def malicious_ip_command(client: ZFClient, args: Dict):
+def malicious_ip_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
     ip: str = args.get("ip", "")
 
     botnet_response = client.get_cti_botnet(ip)
@@ -1427,7 +1609,10 @@ def malicious_ip_command(client: ZFClient, args: Dict):
     )
 
 
-def malicious_hash_command(client: ZFClient, args: Dict):
+def malicious_hash_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
     hash: str = args.get("hash", "")
 
     outputs = []
@@ -1448,7 +1633,10 @@ def malicious_hash_command(client: ZFClient, args: Dict):
     )
 
 
-def search_exploits_command(client: ZFClient, args: Dict):
+def search_exploits_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
     since: str = args.get("since", "")
 
     exploits_response = client.get_cti_exploits(since)
@@ -1472,19 +1660,20 @@ def search_exploits_command(client: ZFClient, args: Dict):
 
 
 def main():
-    USERNAME: str = demisto.params().get("credentials", {}).get("identifier")
-    PASSWORD: str = demisto.params().get("credentials", {}).get("password")
+    params = demisto.params()
+    USERNAME: str = params.get("credentials", {}).get("identifier")
+    PASSWORD: str = params.get("credentials", {}).get("password")
     BASE_URL: str = (
-        demisto.params()["url"][:-1]
-        if demisto.params()["url"].endswith("/")
-        else demisto.params()["url"]
+        params["url"][:-1]
+        if params["url"].endswith("/")
+        else params["url"]
     )
-    FETCH_TIME: str = demisto.params().get(
+    FETCH_TIME: str = params.get(
         "fetch_time", FETCH_TIME_DEFAULT,
     ).strip()
     FETCH_LIMIT: int = int(demisto.params().get("fetch_limit", "100"))
 
-    commands = {
+    commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "get-modified-remote-data": get_modified_remote_data_command,
         "get-remote-data": get_remote_data_command,
         "zerofox-get-alert": get_alert_command,
@@ -1530,21 +1719,17 @@ def main():
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        else:
+        elif command in commands:
             command_handler = commands[command]
             results = command_handler(client, demisto.args())
             return_results(results)
+        else:
+            raise NotImplementedError(f"Command '{command}' not implemented")
 
     # Log exceptions
     except Exception as e:
-        error_msg: str = str(e)
-        if demisto.command() == "fetch-incidents":
-            LOG(error_msg)
-            LOG.print_log()
-            raise
-        else:
-            return_error(error_msg)
+        return_error(e)
 
 
-if __name__ == "builtins":
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()

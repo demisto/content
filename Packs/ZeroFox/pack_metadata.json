@@ -1,11 +1,11 @@
 {
     "name": "ZeroFox",
     "description": "Cloud-based SaaS to detect risks found on social media and digital channels.",
-    "support": "xsoar",
-    "currentVersion": "1.1.0",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.1.1",
+    "author": "ZeroFox",
+    "url": "https://www.zerofox.com/contact-us/",
+    "email": "integration-support@zerofox.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
