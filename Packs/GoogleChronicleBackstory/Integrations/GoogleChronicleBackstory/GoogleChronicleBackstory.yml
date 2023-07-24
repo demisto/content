@@ -127,7 +127,7 @@ configuration:
   name: max_fetch
   type: 0
   section: Collect
-- additionalinfo: Select Chronicle alert type to create actionable incident. Available options are IOC Domain matches(Default), Assets with alerts, Curated Rule Detection alerts, Detection alerts and User alerts.
+- additionalinfo: Select Chronicle alert type to create an actionable incident. Available options are IOC Domain matches(Default), Assets with alerts, Curated Rule Detection alerts, Detection alerts and User alerts.
   defaultvalue: IOC Domain matches
   display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).
   name: backstory_alert_type
@@ -151,7 +151,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
-- additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add multiple. Entered rules have precedence over the "Fetch all rules detections" checkbox. This parameter is mandatory when fetching Curated Rule Detection alerts.'
+- additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}. Enter in a comma separated format to add multiples. Entered rules have precedence over the "Fetch all rules detections" checkbox. This parameter is mandatory when fetching Curated Rule Detection alerts.'
   display: Detections to fetch by Rule ID or Version ID
   name: fetch_detection_by_ids
   type: 0
@@ -3620,7 +3620,7 @@ script:
     - default: false
       description: |-
         The value of the start time for your request.
-        The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.
+        The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.
         If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time.
 
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
@@ -3632,7 +3632,7 @@ script:
     - default: false
       description: |-
         The value of the end time for your request.
-        The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.
+        The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.
         If not supplied, the product considers the current UTC time.
 
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
@@ -3650,7 +3650,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify the identifier type of the asset indicator. The possible values are Host Name, IP Address, MAC Address, and Product ID.
+      description: Specify the identifier type of the asset indicator.
       isArray: false
       name: asset_identifier_type
       predefined:
@@ -3814,7 +3814,7 @@ script:
     - default: false
       description: |-
         The value of the start time for your request.
-        The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.
+        The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.
         If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time.
 
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
@@ -3826,7 +3826,7 @@ script:
     - default: false
       description: |-
         The value of the end time for your request.
-        The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.
+        The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.
         If not supplied, the product considers the current UTC time.
 
         Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
@@ -3844,7 +3844,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify the identifier type of the user indicator. The possible values are Email, Username, Windows SID, Employee ID, and Product object ID.
+      description: Specify the identifier type of the user indicator.
       isArray: false
       name: user_identifier_type
       predefined:
@@ -3879,7 +3879,7 @@ script:
       description: Employee ID associated with the user alias.
       type: String
     - contextPath: GoogleChronicleBackstory.UserAliases.user.product_object_id
-      description: Product Object ID associated with the user alias.
+      description: Product object ID associated with the user alias.
       type: String
     - contextPath: GoogleChronicleBackstory.UserAliases.user.aliases.metadata.collectedTimestamp
       description: Collected timestamp of the user alias metadata.
@@ -3991,7 +3991,7 @@ script:
         default: false
         description: |-
           Filter detections based on whether the alert state is ALERTING or NOT_ALERTING.
-          Avoid specifying to return all detections.
+          Do not specify to return all detections.
         isArray: false
         name: alert_state
         predefined:
@@ -4151,10 +4151,10 @@ script:
       description: The GMT timestamp when the event was ingested in the vendor's instance.
       type: Date
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.ingestionLabels.key
-      description: The key for a field specified in the ingestion labels of event.
+      description: The key for a field specified in the ingestion labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.ingestionLabels.value
-      description: The value for a field specified in the ingestion labels of event.
+      description: The value for a field specified in the ingestion labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.logType
       description: Type of log.
@@ -4208,16 +4208,16 @@ script:
       description: Associated country or region for IP Geolocation.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.latitude
-      description: Latitude coordinate of region for IP Geolocation.
+      description: Latitude coordinate of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.longitude
-      description: Longitude coordinate of region for IP Geolocation.
+      description: Longitude coordinate of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionLatitude
-      description: Latitude of region for IP Geolocation.
+      description: Latitude of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionLongitude
-      description: Longitude of region for IP Geolocation.
+      description: Longitude of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.state
       description: Associated state of IP Geolocation.
@@ -4238,40 +4238,40 @@ script:
       description: Associated country or region for IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.latitude
-      description: Latitude coordinate of region for IP location.
+      description: Latitude coordinate of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.longitude
-      description: Longitude coordinate of region for IP location.
+      description: Longitude coordinate of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLatitude
-      description: Latitude of region for IP location.
+      description: Latitude of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLongitude
-      description: Longitude of region for IP location.
+      description: Longitude of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.state
       description: Associated state of IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.labels.key
-      description: The key for a field specified in the principal labels of event.
+      description: The key for a field specified in the principal labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.labels.value
-      description: The value for a field specified in the principal labels of event.
+      description: The value for a field specified in the principal labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.countryOrRegion
       description: Associated country or region for principal location.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.latitude
-      description: Latitude coordinate of region for principal location.
+      description: Latitude coordinate of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.longitude
-      description: Longitude coordinate of region for principal location.
+      description: Longitude coordinate of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionLatitude
-      description: Latitude of region for principal location.
+      description: Latitude of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionLongitude
-      description: Longitude of region for principal location.
+      description: Longitude of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.state
       description: Associated state of principal location.
@@ -4283,10 +4283,10 @@ script:
       description: Associated resource sub-type of the project specified in the principal resource.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.labels.key
-      description: The key for a field specified in the principal resource labels of event.
+      description: The key for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.labels.value
-      description: The value for a field specified in the principal resource labels of event.
+      description: The value for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.user.attribute.cloud.environment
       description: Associated environment specified in the principal user.
@@ -4481,10 +4481,10 @@ script:
       description: Associated resource type specified in the event target.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.attribute.labels.key
-      description: The key for a field specified in the principal resource labels of event.
+      description: The key for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.attribute.labels.value
-      description: The value for a field specified in the principal resource labels of event.
+      description: The value for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.url
       description: Standard URL.
@@ -5372,7 +5372,7 @@ script:
       description: Specify a confidence with regards to a security event as estimated by the product.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.confidenceDetails
-      description: Additional detail with regards to the confidence of a security event as estimated by the product vendor.
+      description: Additional details with regards to the confidence of a security event as estimated by the product vendor.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.priority
       description: Specify a priority with regards to a security event as estimated by the product vendor.
@@ -5406,13 +5406,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun.'
+      description: 'The value of the start time for your request. The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun.'
+      description: 'The value of the end time for your request. The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun.'
       isArray: false
       name: end_time
       required: false
@@ -5448,10 +5448,10 @@ script:
       description: The GMT timestamp when the event was ingested in the vendor's instance.
       type: Date
     - contextPath: GoogleChronicleBackstory.Events.ingestionLabels.key
-      description: The key for a field specified in the ingestion labels of event.
+      description: The key for a field specified in the ingestion labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.ingestionLabels.value
-      description: The value for a field specified in the ingestion labels of event.
+      description: The value for a field specified in the ingestion labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.collectedTimestamp
       description: The GMT timestamp when the event was collected by the vendor's local collection infrastructure.
@@ -5508,16 +5508,16 @@ script:
       description: Associated country or region for IP Geolocation.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.latitude
-      description: Latitude coordinate of region for IP Geolocation.
+      description: Latitude coordinate of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.longitude
-      description: Longitude coordinate of region for IP Geolocation.
+      description: Longitude coordinate of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionLatitude
-      description: Latitude of region for IP Geolocation.
+      description: Latitude of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionLongitude
-      description: Longitude of region for IP Geolocation.
+      description: Longitude of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.state
       description: Associated state of IP Geolocation.
@@ -5538,43 +5538,43 @@ script:
       description: Associated country or region for IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.latitude
-      description: Latitude coordinate of region for IP location.
+      description: Latitude coordinate of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.longitude
-      description: Longitude coordinate of region for IP location.
+      description: Longitude coordinate of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionLatitude
-      description: Latitude of region for IP location.
+      description: Latitude of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionLongitude
-      description: Longitude of region for IP location.
+      description: Longitude of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.state
       description: Associated state of IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.labels.key
-      description: The key for a field specified in the principal labels of event.
+      description: The key for a field specified in the principal labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.labels.value
-      description: The value for a field specified in the principal labels of event.
+      description: The value for a field specified in the principal labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.location.countryOrRegion
-      description: Associated country or region for principal location.
+      description: Associated country or region for the principal location.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.location.regionCoordinates.latitude
-      description: Latitude coordinate of region for principal location.
+      description: Latitude coordinate of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.location.regionCoordinates.longitude
-      description: Longitude coordinate of region for principal location.
+      description: Longitude coordinate of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.location.regionLatitude
-      description: Latitude of region for principal location.
+      description: Latitude of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.location.regionLongitude
-      description: Longitude of region for principal location.
+      description: Longitude of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.location.state
-      description: Associated state of principal location.
+      description: Associated state of the principal location.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.resource.attribute.cloud.project.name
       description: Associated name of the project specified in the principal resource.
@@ -5583,10 +5583,10 @@ script:
       description: Associated resource sub-type of the project specified in the principal resource.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.resource.attribute.labels.key
-      description: The key for a field specified in the principal resource labels of event.
+      description: The key for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.resource.attribute.labels.value
-      description: The value for a field specified in the principal resource labels of event.
+      description: The value for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.user.attribute.cloud.environment
       description: Associated environment specified in the principal user.
@@ -5781,10 +5781,10 @@ script:
       description: Associated resource type specified in the event target.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.resource.attribute.labels.key
-      description: The key for a field specified in the principal resource labels of event.
+      description: The key for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.resource.attribute.labels.value
-      description: The value for a field specified in the principal resource labels of event.
+      description: The value for a field specified in the principal resource labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.url
       description: Standard URL.
@@ -6672,7 +6672,7 @@ script:
       description: Specify a confidence with regards to a security event as estimated by the product.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.confidenceDetails
-      description: Additional detail with regards to the confidence of a security event as estimated by the product vendor.
+      description: Additional details with regards to the confidence of a security event as estimated by the product vendor.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.priority
       description: Specify a priority with regards to a security event as estimated by the product vendor.

@@ -3973,7 +3973,7 @@ def test_gcb_start_retrohunt_command_when_invalid_rule_id_provided(client):
         gcb_start_retrohunt_command(client, args)
 
     assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: version ID must be in format {rule_id} ' \
-                           'or ''{rule_id}@v_{version_timestamp.seconds}_{version_timestamp.nanos}'
+                           'or {rule_id}@v_{version_timestamp.seconds}_{version_timestamp.nanos}'
 
 
 def test_gcb_start_retrohunt_command_when_provided_rule_id_does_not_exist(client):
@@ -4674,7 +4674,7 @@ def test_gcb_test_rule_stream_command_invalid_rule_text_provided(client):
     client.http_client.request.return_value = mock_response
     with pytest.raises(ValueError) as e:
         gcb_test_rule_stream_command(client, args)
-    assert str(e.value) == 'Status code: 400\n' 'Error: generic::invalid_argument: compiling rule: : variable full_path' \
+    assert str(e.value) == 'Status code: 400\nError: generic::invalid_argument: compiling rule: : variable full_path' \
                            ' used in both condition section and match section, should only be used in one\nline: 23 \n' \
                            'column: 30-39 '
 

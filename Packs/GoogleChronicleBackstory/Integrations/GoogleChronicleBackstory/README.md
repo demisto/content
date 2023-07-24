@@ -2934,10 +2934,10 @@ Lists all the aliases of a user in an enterprise for a specified user identifier
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The value of the start time for your request.<br/>The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
-| end_time | The value of the end time for your request.<br/>The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers the current UTC time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
-| page_size | Specify the maximum number of assets aliases to fetch. You can specify between 1 and 10000. Default is 10000. | Optional | 
-| user_identifier_type | Specify the identifier type of the user indicator. The possible values are Email, Username, Windows SID, Employee ID, and Product object ID. Possible values are: Email, Username, Windows SID, Employee ID, Product object ID. | Required | 
+| start_time | The value of the start time for your request.<br/>The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
+| end_time | The value of the end time for your request.<br/>The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers the current UTC time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
+| page_size | Specify the maximum number of users aliases to fetch. You can specify between 1 and 10000. Default is 10000. | Optional | 
+| user_identifier_type | Specify the identifier type of the user indicator. Possible values are: Email, Username, Windows SID, Employee ID, Product object ID. | Required | 
 | user_identifier | Value of the user identifier. | Required | 
 
 #### Context Output
@@ -2948,7 +2948,7 @@ Lists all the aliases of a user in an enterprise for a specified user identifier
 | GoogleChronicleBackstory.UserAliases.user.username | String | Username associated with the user alias. | 
 | GoogleChronicleBackstory.UserAliases.user.windows_sid | String | Windows Security Identifier \(SID\) associated with the user alias. | 
 | GoogleChronicleBackstory.UserAliases.user.employee_id | String | Employee ID associated with the user alias. | 
-| GoogleChronicleBackstory.UserAliases.user.product_object_id | String | Product Object ID associated with the user alias. | 
+| GoogleChronicleBackstory.UserAliases.user.product_object_id | String | Product object ID associated with the user alias. | 
 | GoogleChronicleBackstory.UserAliases.user.aliases.metadata.collectedTimestamp | Date | Collected timestamp of the user alias metadata. | 
 | GoogleChronicleBackstory.UserAliases.user.aliases.metadata.vendorName | String | Vendor name associated with the user alias metadata. | 
 | GoogleChronicleBackstory.UserAliases.user.aliases.metadata.productName | String | Product name associated with the user alias metadata. | 
@@ -3082,10 +3082,10 @@ Lists all the aliases of an asset in an enterprise for the specified asset ident
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The value of the start time for your request.<br/>The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
-| end_time | The value of the end time for your request.<br/>The date format should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers the current UTC time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
+| start_time | The value of the start time for your request.<br/>The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
+| end_time | The value of the end time for your request.<br/>The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time.<br/>If not supplied, the product considers the current UTC time.<br/><br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
 | page_size | Specify the maximum number of assets aliases to fetch. You can specify between 1 and 10000. Default is 10000. | Optional | 
-| asset_identifier_type | Specify the identifier type of the asset indicator. The possible values are Host Name, IP Address, MAC Address, and Product ID. Possible values are: Host Name, IP Address, MAC Address, Product ID. | Required | 
+| asset_identifier_type | Specify the identifier type of the asset indicator. Possible values are: Host Name, IP Address, MAC Address, Product ID. | Required | 
 | asset_identifier | Value of the asset identifier. | Required | 
 
 #### Context Output
@@ -3278,7 +3278,7 @@ Return the detections for the specified curated rule identifier.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Unique identifier for a curated rule, defined and returned by the server. You can specify exactly one curated rule identifier. | Required | 
-| alert_state | Filter detections based on whether the alert state is ALERTING or NOT_ALERTING.<br/>Avoid specifying to return all detections. Possible values are: ALERTING, NOT_ALERTING. | Optional | 
+| alert_state | Filter detections based on whether the alert state is ALERTING or NOT_ALERTING.<br/>Do not specify to return all detections. Possible values are: ALERTING, NOT_ALERTING. | Optional | 
 | page_size | Specify the limit on the number of detections to display. You can specify between 1 and 1000. Default is 100. | Optional | 
 | page_token | A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments. | Optional | 
 | list_basis | Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "DETECTION_TIME". Detections are returned in descending order of the timestamp. Possible values are: DETECTION_TIME, CREATED_TIME. | Optional | 
@@ -3324,8 +3324,8 @@ Return the detections for the specified curated rule identifier.
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.eventTimestamp | Date | The GMT timestamp when the event was generated. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.id | String | The event ID. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.ingestedTimestamp | Date | The GMT timestamp when the event was ingested in the vendor's instance. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.ingestionLabels.key | String | The key for a field specified in the ingestion labels of event. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.ingestionLabels.value | String | The value for a field specified in the ingestion labels of event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.ingestionLabels.key | String | The key for a field specified in the ingestion labels of the event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.ingestionLabels.value | String | The value for a field specified in the ingestion labels of the event. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.logType | String | Type of log. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.description | String | Human-readable description of the event. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.productEventType | String | Short, descriptive, human-readable, and product-specific event name or type. | 
@@ -3343,33 +3343,33 @@ Return the detections for the specified curated rule identifier.
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ip | String | IP address associated with a network connection. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.ip | String | IP address associated with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.countryOrRegion | String | Associated country or region for IP Geolocation. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.latitude | Number | Latitude coordinate of region for IP Geolocation. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.longitude | Number | Longitude coordinate of region for IP Geolocation. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionLatitude | Number | Latitude of region for IP Geolocation. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionLongitude | Number | Longitude of region for IP Geolocation. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.latitude | Number | Latitude coordinate of the region for IP Geolocation. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.longitude | Number | Longitude coordinate of the region for IP Geolocation. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionLatitude | Number | Latitude of the region for IP Geolocation. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionLongitude | Number | Longitude of the region for IP Geolocation. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.state | String | Associated state of IP Geolocation. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.network.asn | String | Associated ASN with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.network.carrierName | String | Associated carrier name with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.network.dnsDomain | String | Associated DNS domain with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.network.organizationName | String | Associated organization name with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.countryOrRegion | String | Associated country or region for IP location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.latitude | Number | Latitude coordinate of region for IP location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.longitude | Number | Longitude coordinate of region for IP location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLatitude | Number | Latitude of region for IP location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLongitude | Number | Longitude of region for IP location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.latitude | Number | Latitude coordinate of the region for IP location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.longitude | Number | Longitude coordinate of the region for IP location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLatitude | Number | Latitude of the region for IP location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLongitude | Number | Longitude of the region for IP location. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.state | String | Associated state of IP location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.labels.key | String | The key for a field specified in the principal labels of event. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.labels.value | String | The value for a field specified in the principal labels of event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.labels.key | String | The key for a field specified in the principal labels of the event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.labels.value | String | The value for a field specified in the principal labels of the event. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.countryOrRegion | String | Associated country or region for principal location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.latitude | Number | Latitude coordinate of region for principal location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.longitude | Number | Longitude coordinate of region for principal location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionLatitude | Number | Latitude of region for principal location. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionLongitude | Number | Longitude of region for principal location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.latitude | Number | Latitude coordinate of the region for the principal location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.longitude | Number | Longitude coordinate of the region for the principal location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionLatitude | Number | Latitude of the region for the principal location. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionLongitude | Number | Longitude of the region for the principal location. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.state | String | Associated state of principal location. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.cloud.project.name | String | Associated name of the project specified in the principal resource. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.cloud.project.resourceSubtype | String | Associated resource sub-type of the project specified in the principal resource. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of event. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of the event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of the event. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.user.attribute.cloud.environment | String | Associated environment specified in the principal user. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.user.attribute.cloud.project.id | String | Associated ID of the project specified in the principal user. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.user.attribute.permissions.name | String | Associated name of the permission specified in the principal user. | 
@@ -3434,8 +3434,8 @@ Return the detections for the specified curated rule identifier.
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.name | String | Associated resource name specified in the event target. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.productObjectId | String | Associated product object ID specified in the event target. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.resourceType | String | Associated resource type specified in the event target. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of event. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of the event. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of the event. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.url | String | Standard URL. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.file.fileMetadata | String | Metadata associated with the file. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.target.file.fullPath | String | Full path identifying the location of the file on the system. | 
@@ -3731,7 +3731,7 @@ Return the detections for the specified curated rule identifier.
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.detectionFields.key | String | The key for a field specified in the security result, for MULTI_EVENT rules. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.detectionFields.value | String | The value for a field specified in the security result, for MULTI_EVENT rules. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.confidence | String | Specify a confidence with regards to a security event as estimated by the product. | 
-| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.confidenceDetails | String | Additional detail with regards to the confidence of a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.confidenceDetails | String | Additional details with regards to the confidence of a security event as estimated by the product vendor. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.priority | String | Specify a priority with regards to a security event as estimated by the product vendor. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.priorityDetails | String | Vendor-specific information about the security result priority. | 
 | GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.ruleId | String | Identifier for the security rule. | 
@@ -4196,8 +4196,8 @@ Lists the events for the specified UDM Search query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
-| end_time | The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
+| start_time | The value of the start time for your request. The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 3 days earlier than the current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
+| end_time | The value of the end time for your request. The date format should comply with RFC 3339 (e.g., 2023-01-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. If the date is supplied in duration, it will be calculated as time.now() - duration. Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
 | limit | Specify the maximum number of matched events to return. You can specify between 1 and 1000. Default is 200. | Optional | 
 | query | UDM search query. | Required | 
 
@@ -4209,8 +4209,8 @@ Lists the events for the specified UDM Search query.
 | GoogleChronicleBackstory.Events.eventTimestamp | Date | The GMT timestamp when the event was generated. | 
 | GoogleChronicleBackstory.Events.id | String | The event ID. | 
 | GoogleChronicleBackstory.Events.ingestedTimestamp | Date | The GMT timestamp when the event was ingested in the vendor's instance. | 
-| GoogleChronicleBackstory.Events.ingestionLabels.key | String | The key for a field specified in the ingestion labels of event. | 
-| GoogleChronicleBackstory.Events.ingestionLabels.value | String | The value for a field specified in the ingestion labels of event. | 
+| GoogleChronicleBackstory.Events.ingestionLabels.key | String | The key for a field specified in the ingestion labels of the event. | 
+| GoogleChronicleBackstory.Events.ingestionLabels.value | String | The value for a field specified in the ingestion labels of the event. | 
 | GoogleChronicleBackstory.Events.collectedTimestamp | Date | The GMT timestamp when the event was collected by the vendor's local collection infrastructure. | 
 | GoogleChronicleBackstory.Events.logType | String | Type of log. | 
 | GoogleChronicleBackstory.Events.description | String | Human-readable description of the event. | 
@@ -4229,33 +4229,33 @@ Lists the events for the specified UDM Search query.
 | GoogleChronicleBackstory.Events.principal.ip | String | IP address associated with a network connection. | 
 | GoogleChronicleBackstory.Events.principal.ipGeoArtifact.ip | String | IP address associated with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.countryOrRegion | String | Associated country or region for IP Geolocation. | 
-| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.latitude | Number | Latitude coordinate of region for IP Geolocation. | 
-| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.longitude | Number | Longitude coordinate of region for IP Geolocation. | 
-| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionLatitude | Number | Latitude of region for IP Geolocation. | 
-| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionLongitude | Number | Longitude of region for IP Geolocation. | 
+| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.latitude | Number | Latitude coordinate of the region for IP Geolocation. | 
+| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.longitude | Number | Longitude coordinate of the region for IP Geolocation. | 
+| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionLatitude | Number | Latitude of the region for IP Geolocation. | 
+| GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionLongitude | Number | Longitude of the region for IP Geolocation. | 
 | GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.state | String | Associated state of IP Geolocation. | 
 | GoogleChronicleBackstory.Events.principal.ipGeoArtifact.network.asn | String | Associated ASN with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.Events.principal.ipGeoArtifact.network.carrierName | String | Associated carrier name with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.Events.principal.ipGeoArtifact.network.dnsDomain | String | Associated DNS domain with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.Events.principal.ipGeoArtifact.network.organizationName | String | Associated organization name with a network connection for IP Geolocation. | 
 | GoogleChronicleBackstory.Events.principal.ipLocation.countryOrRegion | String | Associated country or region for IP location. | 
-| GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.latitude | Number | Latitude coordinate of region for IP location. | 
-| GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.longitude | Number | Longitude coordinate of region for IP location. | 
-| GoogleChronicleBackstory.Events.principal.ipLocation.regionLatitude | Number | Latitude of region for IP location. | 
-| GoogleChronicleBackstory.Events.principal.ipLocation.regionLongitude | Number | Longitude of region for IP location. | 
+| GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.latitude | Number | Latitude coordinate of the region for IP location. | 
+| GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.longitude | Number | Longitude coordinate of the region for IP location. | 
+| GoogleChronicleBackstory.Events.principal.ipLocation.regionLatitude | Number | Latitude of the region for IP location. | 
+| GoogleChronicleBackstory.Events.principal.ipLocation.regionLongitude | Number | Longitude of the region for IP location. | 
 | GoogleChronicleBackstory.Events.principal.ipLocation.state | String | Associated state of IP location. | 
-| GoogleChronicleBackstory.Events.principal.labels.key | String | The key for a field specified in the principal labels of event. | 
-| GoogleChronicleBackstory.Events.principal.labels.value | String | The value for a field specified in the principal labels of event. | 
-| GoogleChronicleBackstory.Events.principal.location.countryOrRegion | String | Associated country or region for principal location. | 
-| GoogleChronicleBackstory.Events.principal.location.regionCoordinates.latitude | Number | Latitude coordinate of region for principal location. | 
-| GoogleChronicleBackstory.Events.principal.location.regionCoordinates.longitude | Number | Longitude coordinate of region for principal location. | 
-| GoogleChronicleBackstory.Events.principal.location.regionLatitude | Number | Latitude of region for principal location. | 
-| GoogleChronicleBackstory.Events.principal.location.regionLongitude | Number | Longitude of region for principal location. | 
-| GoogleChronicleBackstory.Events.principal.location.state | String | Associated state of principal location. | 
+| GoogleChronicleBackstory.Events.principal.labels.key | String | The key for a field specified in the principal labels of the event. | 
+| GoogleChronicleBackstory.Events.principal.labels.value | String | The value for a field specified in the principal labels of the event. | 
+| GoogleChronicleBackstory.Events.principal.location.countryOrRegion | String | Associated country or region for the principal location. | 
+| GoogleChronicleBackstory.Events.principal.location.regionCoordinates.latitude | Number | Latitude coordinate of the region for the principal location. | 
+| GoogleChronicleBackstory.Events.principal.location.regionCoordinates.longitude | Number | Longitude coordinate of the region for the principal location. | 
+| GoogleChronicleBackstory.Events.principal.location.regionLatitude | Number | Latitude of the region for the principal location. | 
+| GoogleChronicleBackstory.Events.principal.location.regionLongitude | Number | Longitude of the region for the principal location. | 
+| GoogleChronicleBackstory.Events.principal.location.state | String | Associated state of the principal location. | 
 | GoogleChronicleBackstory.Events.principal.resource.attribute.cloud.project.name | String | Associated name of the project specified in the principal resource. | 
 | GoogleChronicleBackstory.Events.principal.resource.attribute.cloud.project.resourceSubtype | String | Associated resource sub-type of the project specified in the principal resource. | 
-| GoogleChronicleBackstory.Events.principal.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of event. | 
-| GoogleChronicleBackstory.Events.principal.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of event. | 
+| GoogleChronicleBackstory.Events.principal.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of the event. | 
+| GoogleChronicleBackstory.Events.principal.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of the event. | 
 | GoogleChronicleBackstory.Events.principal.user.attribute.cloud.environment | String | Associated environment specified in the principal user. | 
 | GoogleChronicleBackstory.Events.principal.user.attribute.cloud.project.id | String | Associated ID of the project specified in the principal user. | 
 | GoogleChronicleBackstory.Events.principal.user.attribute.permissions.name | String | Associated name of the permission specified in the principal user. | 
@@ -4320,8 +4320,8 @@ Lists the events for the specified UDM Search query.
 | GoogleChronicleBackstory.Events.target.resource.name | String | Associated resource name specified in the event target. | 
 | GoogleChronicleBackstory.Events.target.resource.productObjectId | String | Associated product object ID specified in the event target. | 
 | GoogleChronicleBackstory.Events.target.resource.resourceType | String | Associated resource type specified in the event target. | 
-| GoogleChronicleBackstory.Events.target.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of event. | 
-| GoogleChronicleBackstory.Events.target.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of event. | 
+| GoogleChronicleBackstory.Events.target.resource.attribute.labels.key | String | The key for a field specified in the principal resource labels of the event. | 
+| GoogleChronicleBackstory.Events.target.resource.attribute.labels.value | String | The value for a field specified in the principal resource labels of the event. | 
 | GoogleChronicleBackstory.Events.target.url | String | Standard URL. | 
 | GoogleChronicleBackstory.Events.target.file.fileMetadata | String | Metadata associated with the file. | 
 | GoogleChronicleBackstory.Events.target.file.fullPath | String | Full path identifying the location of the file on the system. | 
@@ -4617,7 +4617,7 @@ Lists the events for the specified UDM Search query.
 | GoogleChronicleBackstory.Events.securityResult.detectionFields.key | String | The key for a field specified in the security result, for MULTI_EVENT rules. | 
 | GoogleChronicleBackstory.Events.securityResult.detectionFields.value | String | The value for a field specified in the security result, for MULTI_EVENT rules. | 
 | GoogleChronicleBackstory.Events.securityResult.confidence | String | Specify a confidence with regards to a security event as estimated by the product. | 
-| GoogleChronicleBackstory.Events.securityResult.confidenceDetails | String | Additional detail with regards to the confidence of a security event as estimated by the product vendor. | 
+| GoogleChronicleBackstory.Events.securityResult.confidenceDetails | String | Additional details with regards to the confidence of a security event as estimated by the product vendor. | 
 | GoogleChronicleBackstory.Events.securityResult.priority | String | Specify a priority with regards to a security event as estimated by the product vendor. | 
 | GoogleChronicleBackstory.Events.securityResult.priorityDetails | String | Vendor-specific information about the security result priority. | 
 | GoogleChronicleBackstory.Events.securityResult.ruleId | String | Identifier for the security rule. | 
