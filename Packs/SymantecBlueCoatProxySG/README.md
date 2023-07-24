@@ -38,3 +38,8 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - symantec
    - product as product - bluecoatproxysg
+
+
+![Server Screenshot](https://github.com/demisto/content/blob/95e575e53b534eb3948f5dadb74bb007fa9a6396/Packs/SymantecBlueCoatProxySG/docs_imgs/Symantec1.png)
+![Server Screenshot](https://github.com/demisto/content/blob/95e575e53b534eb3948f5dadb74bb007fa9a6396/Packs/SymantecBlueCoatProxySG/docs_imgs/Symantec2.png)
+![Server Screenshot](https://github.com/demisto/content/blob/95e575e53b534eb3948f5dadb74bb007fa9a6396/Packs/SymantecBlueCoatProxySG/docs_imgs/Symantec3.png)
