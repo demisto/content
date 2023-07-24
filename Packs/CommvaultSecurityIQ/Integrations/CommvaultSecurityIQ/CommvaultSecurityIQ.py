@@ -1016,7 +1016,7 @@ class Client(BaseClient):
             return False
         identityServers=[]
         if "identityServers" in resp:
-            identityServers=(list)response.get("identityServers")
+            identityServers=list(response.get("identityServers"))
         saml_identity_servers = [
             s for s in identityServers if s.get("type") == 1
         ]
@@ -1037,7 +1037,7 @@ class Client(BaseClient):
         try:
             self.validate_session_or_generate_token(self.current_api_token)
             response = self.http_request("GET", "/User?level=10")
-            userslist = (list)response.get("users")
+            userslist = list(response.get("users"))
             current_user = next(
                 (
                     user
@@ -1076,7 +1076,7 @@ class Client(BaseClient):
 
         clientname = demisto.incident().get("CustomFields", {}).get("commvaultoriginatingclient")
         resp = self.http_request("GET", "/GetId?clientname=" + clientname)
-        return (str)resp.get("clientId")
+        return str(resp.get("clientId"))
 
     def is_port_in_use(self, port: int) -> bool:
         """
