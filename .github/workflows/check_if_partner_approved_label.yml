@@ -1,4 +1,4 @@
-name: Check Label Workflow
+name: Check Partner-Approved label is set
 on:
   pull_request:
     types: [opened, synchronize, labeled, unlabeled]
