@@ -354,8 +354,7 @@ class Client(BaseClient):
                     raise DemistoException(
                         'Too many requests, try later or reduce the number of Fetch Limit parameter.'
                     ) from e
-                else:
-                    raise e
+                raise e               
 
             items = response.get('items', [])
             new_items = remove_duplicates_for_fetch(items, last_fetched_ids)
@@ -813,6 +812,7 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
     has_next = True
     page_number = 0
     while has_next and len(alerts) < max_alerts:
+        demisto.debug(f"fetching alerts, {page_number=}")
         try:
             response_body = client.incident_list_alerts_request(
                 page_number=str(page_number),
@@ -824,8 +824,7 @@ def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: 
                 raise DemistoException(
                     'Too many requests, try later or reduce the number of Fetch Limit parameter.'
                 ) from e
-            else:
-                raise e
+            raise e
 
         except Exception:
             demisto.error(f"Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
