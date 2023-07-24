@@ -23,6 +23,7 @@ from collections.abc import Iterable, Callable
 
 
 STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
+SCORE_LOWER_BOUND = 0.5  # Normalize Ranking Scores to be at least this much for user confidence
 
 # The /tmp directory will cache persistently across interactions.
 # Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
@@ -73,22 +74,39 @@ def featurize(asm_system_ids: list[str], owners: list[dict[str, Any]]) -> np.nda
 
 def normalize_scores(scores: list[float]) -> list[float]:
     """
-    Normalizes a list of non-negative reals to values between 0.5 and 1
+    Normalizes a list of non-negative reals to values between SCORE_LOWER_BOUND and 1
 
-    We want to show greater-than-half probabilities to the end user
-    for the sake of confidence/psychological comfort
+    Intuition: we expect showing e.g. greater-than-half probabilities to the end user
+    increases confidence/psychological comfort
     """
     total = sum(scores)
-    return [round(score / total / 2 + 0.5, ndigits=2) for score in scores]
+    return [round(score / total * (1 - SCORE_LOWER_BOUND) + SCORE_LOWER_BOUND, ndigits=2) for score in scores]
 
 
 def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[str, Any]]:
     """
     Load the model, featurize inputs, score owners, normalize scores, and update the owners dicts
+
+    If we fail to load or run inference with the model, return uniform scores of SCORE_LOWER_BOUND
     """
-    model = load_pickled_xpanse_object(MODEL_FILE_NAME)
-    featurized = featurize(asm_system_ids=asm_system_ids, owners=owners)
-    scores = model.predict(featurized)
+    def scoring_fallback(owners: list[dict[str, Any]]):
+        for owner in owners:
+            owner['Ranking Score'] = SCORE_LOWER_BOUND
+        return owners
+
+    try:
+        model = load_pickled_xpanse_object(MODEL_FILE_NAME)
+    except Exception as ex:
+        demisto.info(f"Error loading the model: {ex}. Using fallback scores")
+        return scoring_fallback(owners)
+
+    try:
+        featurized = featurize(asm_system_ids=asm_system_ids, owners=owners)
+        scores = model.predict(featurized)
+    except Exception as ex:
+        demisto.info(f"Error scoring the owners: {ex}. Using fallback scores")
+        return scoring_fallback(owners)
+
     normalized = normalize_scores(scores)
     for owner, score in zip(owners, normalized):
         owner['Ranking Score'] = score

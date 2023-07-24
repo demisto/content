@@ -11,6 +11,7 @@ from RankServiceOwners import (
     OwnerFeaturizationPipeline,
     load_pickled_xpanse_object,
     LOCAL_MODEL_CACHE_PATH,
+    SCORE_LOWER_BOUND,
     featurize,
     normalize_scores,
 )
@@ -184,7 +185,10 @@ def test_normalize_scores(scores, expected_out):
     assert np.allclose(normalize_scores(scores), expected_out, atol=0.01)
 
 
-def test_score(mocker):
+def test_score_base_case(mocker):
+    """
+    Test the default scoring case
+    """
     model_mock = Mock()
     model_mock.predict.return_value = np.array([4, 7, 31, 0.33, 15])
 
@@ -209,6 +213,65 @@ def test_score(mocker):
     ]
     scores_out = [owner['Ranking Score'] for owner in score(asm_system_ids=asm_system_ids, owners=owners)]
     assert np.allclose(scores_out, [0.53, 0.56, 0.77, 0.5, 0.63])
+
+
+def test_score_model_load_fail(mocker):
+    """
+    Test that if the model fails to download or be loaded from cache, the script
+    doesn't raise an error but instead scores the owners uniformly with the scoring lower bound
+    """
+    mocker.patch(
+        'RankServiceOwners.load_pickled_xpanse_object',
+        side_effect=Exception()
+    )
+
+    asm_system_ids = ["afr-rdp-1", "j291mv-is"]
+
+    owners = [
+        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP | \
+            Chain: GCP project owner of a service account attached to the VM | \
+                Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP', 'Timestamp': '1'},
+        {'Name': 'Brandon', 'Email': 'brandon@example.com', 'Source': 'GCP | \
+            Owner-In-Tags-From-GCP | Tenable.io | New-Log-Source', 'Timestamp': '2'},
+        {'Name': 'Chun', 'Email': 'chun@example.com', 'Source': 'SNOW-CMDB', 'Timestamp': '3'},
+        {'Name': 'Divya', 'Email': 'divya@example.com', 'Source': 'Chain: Chain: \VM launches with a service account, \
+            which belongs to GCP project my-project that grants Editor permissions to svc-acct@my-project.gserviceaccount.com, \
+                which this person can impersonate', 'Timestamp': '4'},
+        {'Name': 'Automation First Remediation', 'Email': 'afr@example.com', 'Source': 'GCP | Splunk', 'Timestamp': '5'},
+    ]
+    scores_out = [owner['Ranking Score'] for owner in score(asm_system_ids=asm_system_ids, owners=owners)]
+    assert np.allclose(scores_out, [SCORE_LOWER_BOUND for _ in range(len(owners))])
+
+
+def test_score_model_inference_fail(mocker, caplog):
+    """
+    Test that if featurization fails on the inputs, the script doesn't raise an error
+    but instead scores the owners uniformly with the scoring lower bound
+    """
+    model_mock = Mock()
+    model_mock.predict.side_effect = Exception()
+
+    mocker.patch(
+        'RankServiceOwners.load_pickled_xpanse_object',
+        return_value=model_mock
+    )
+
+    asm_system_ids = ["afr-rdp-1", "j291mv-is"]
+
+    owners = [
+        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP | \
+            Chain: GCP project owner of a service account attached to the VM | \
+                Owner-In-Tags-From-PrismaCloud | Owner-In-Tags-From-GCP', 'Timestamp': '1'},
+        {'Name': 'Brandon', 'Email': 'brandon@example.com', 'Source': 'GCP | \
+            Owner-In-Tags-From-GCP | Tenable.io | New-Log-Source', 'Timestamp': '2'},
+        {'Name': 'Chun', 'Email': 'chun@example.com', 'Source': 'SNOW-CMDB', 'Timestamp': '3'},
+        {'Name': 'Divya', 'Email': 'divya@example.com', 'Source': 'Chain: Chain: \VM launches with a service account, \
+            which belongs to GCP project my-project that grants Editor permissions to svc-acct@my-project.gserviceaccount.com, \
+                which this person can impersonate', 'Timestamp': '4'},
+        {'Name': 'Automation First Remediation', 'Email': 'afr@example.com', 'Source': 'GCP | Splunk', 'Timestamp': '5'},
+    ]
+    scores_out = [owner['Ranking Score'] for owner in score(asm_system_ids=asm_system_ids, owners=owners)]
+    assert np.allclose(scores_out, [SCORE_LOWER_BOUND for _ in range(len(owners))])
 
 
 @pytest.mark.parametrize('owners, asm_system_ids, expected_out', [
