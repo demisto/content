@@ -284,12 +284,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     """
 
     last_fetch = last_run.get('last_fetch')
+    XSOARMirror_is_fetch_reset = False
     if not last_fetch:
+        XSOARMirror_is_fetch_reset = True
         last_fetch = first_fetch_time  # type: ignore
-        integration_context = get_integration_context()
-        integration_context['XSOARMirror_is_fetch_reset'] = True
-        set_integration_context(integration_context)
-        demisto.debug('Set integration context XSOARMirror_is_fetch_reset to True.')
     else:
         demisto.debug('Trying to convert the last_fetch to int, and convert it to date string if succeed. '
                       'This is for preventing backward compatibility breakage.')
@@ -313,8 +311,15 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         start_time=last_fetch
     )
 
+    if XSOARMirror_is_fetch_reset:
+        integration_context, version = get_integration_context_with_version()
+        incident_mirror_reset: str = ','.join([incident['id'] for incident in incidents])
+        demisto.debug(f'Adding incidents id to mirror reset set:{incident_mirror_reset}')
+        integration_context['XSOARMirror_mirror_reset'] = incident_mirror_reset
+        set_integration_context(context=integration_context, version=version)
+
     for incident in incidents:
-        incident_result: Dict[str, Any] = dict()
+        incident_result: dict[str, Any] = {}
         incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
@@ -605,9 +610,13 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
         demisto_debug(f'tags: {tags}')
         demisto_debug(f'tags: {categories}')
-        integration_context = get_integration_context()
-        XSOARMirror_is_fetch_reset = integration_context.get('XSOARMirror_is_fetch_reset', False)
-        from_date = 0 if XSOARMirror_is_fetch_reset else remote_args.last_update * 1000        
+        integration_context, content_version = get_integration_context_with_version()
+        XSOARMirror_mirror_reset = integration_context.get('XSOARMirror_mirror_reset', None)
+        is_incident_update_after_reset = False
+        if XSOARMirror_mirror_reset:
+            XSOARMirror_mirror_reset = XSOARMirror_mirror_reset.split(',')
+            is_incident_update_after_reset = remote_args.remote_incident_id in XSOARMirror_mirror_reset
+        from_date = 0 if is_incident_update_after_reset else remote_args.last_update * 1000
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
             from_date=from_date,
@@ -616,10 +625,11 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             tags=tags,
             tags_and_operator=True
         )
-        if XSOARMirror_is_fetch_reset:
-            integration_context['XSOARMirror_is_fetch_reset'] = False
-            set_integration_context(integration_context)
-            demisto.debug('Set integration context variable XSOARMirror_is_fetch_reset to False.')
+        if is_incident_update_after_reset:
+            XSOARMirror_mirror_reset.remove(remote_args.remote_incident_id)
+            integration_context['XSOARMirror_mirror_reset'] = ','.join(XSOARMirror_mirror_reset)
+            set_integration_context(context=integration_context, version=content_version)
+            demisto.debug(f'Removed incident id: {remote_args.remote_incident_id} from list.')
 
         formatted_entries = []
         # file_attachments = []
