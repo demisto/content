@@ -13,8 +13,8 @@ set -e
 touch CloudEnvVariables
 
 #gsutil cp gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST # copy TestMachines locally for faster perf
-#XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
-#XSIAM_SERVERS_LIST=$(<XSIAM_SERVERS_PATH)
+XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
+
 echo here
 echo $XSIAM_SERVERS_PATH
 echo here2
