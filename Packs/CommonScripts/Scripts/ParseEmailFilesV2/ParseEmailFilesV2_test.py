@@ -49,7 +49,7 @@ def exec_command_for_file(
                 }
             ]
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     return executeCommand
 
@@ -85,7 +85,7 @@ def test_eml_type(mocker):
                 }
             ]
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
@@ -137,7 +137,7 @@ def test_eml_contains_eml(mocker):
                 }
             ]
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
@@ -202,7 +202,7 @@ def test_eml_contains_msg(mocker):
                 }
             ]
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
@@ -263,7 +263,7 @@ def test_eml_contains_eml_depth(mocker):
                 }
             ]
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
@@ -380,7 +380,7 @@ def test_md_output_empty_body_text():
         'From': 'email2@paloaltonetworks.com',
         'Text': None
     }
-    expected = u'### Results:\n' \
+    expected = '### Results:\n' \
                u'* From:\temail2@paloaltonetworks.com\n' \
                u'* To:\temail1@paloaltonetworks.com\n' \
                u'* CC:\t\n' \
@@ -396,7 +396,7 @@ def test_md_output_empty_body_text():
         'To': 'email1@paloaltonetworks.com',
         'From': 'email2@paloaltonetworks.com',
     }
-    expected = u'### Results:\n' \
+    expected = '### Results:\n' \
                u'* From:\temail2@paloaltonetworks.com\n' \
                u'* To:\temail1@paloaltonetworks.com\n' \
                u'* CC:\t\n' \
@@ -425,7 +425,7 @@ def test_md_output_with_body_text():
         'From': 'email2@paloaltonetworks.com',
         'Text': '<email text>'
     }
-    expected = u'### Results:\n' \
+    expected = '### Results:\n' \
                u'* From:\temail2@paloaltonetworks.com\n' \
                u'* To:\temail1@paloaltonetworks.com\n' \
                u'* CC:\t\n' \
@@ -502,7 +502,7 @@ def test_eml_contains_eml_nesting_level(mocker, nesting_level_to_return, results
                 }
             ]
         else:
-            raise ValueError('Unimplemented command called: {}'.format(name))
+            raise ValueError(f'Unimplemented command called: {name}')
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test',
                                                        'nesting_level_to_return': nesting_level_to_return})

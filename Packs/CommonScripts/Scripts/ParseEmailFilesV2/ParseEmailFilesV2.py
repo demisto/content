@@ -20,7 +20,7 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if email_data is None:
         return 'No data extracted from email'
 
-    md = u"### Results:\n"
+    md = "### Results:\n"
     if email_file_name:
         md = f"### {email_file_name}\n"
 
@@ -30,18 +30,18 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if parent_email_file:
         md += f"### Containing email: {parent_email_file}\n"
 
-    md += u"* {0}:\t{1}\n".format('From', email_data.get('From') or "")
-    md += u"* {0}:\t{1}\n".format('To', email_data.get('To') or "")
-    md += u"* {0}:\t{1}\n".format('CC', email_data.get('CC') or "")
-    md += u"* {0}:\t{1}\n".format('Subject', email_data.get('Subject') or "")
+    md += "* {}:\t{}\n".format('From', email_data.get('From') or "")
+    md += "* {}:\t{}\n".format('To', email_data.get('To') or "")
+    md += "* {}:\t{}\n".format('CC', email_data.get('CC') or "")
+    md += "* {}:\t{}\n".format('Subject', email_data.get('Subject') or "")
     if email_data.get('Text'):
         text = email_data['Text'].replace('<', '[').replace('>', ']')
-        md += u"* {0}:\t{1}\n".format('Body/Text', text or "")
+        md += "* {}:\t{}\n".format('Body/Text', text or "")
     if email_data.get('HTML'):
-        md += u"* {0}:\t{1}\n".format('Body/HTML', email_data['HTML'] or "")
+        md += "* {}:\t{}\n".format('Body/HTML', email_data['HTML'] or "")
 
-    md += u"* {0}:\t{1}\n".format('Attachments', email_data.get('Attachments') or "")
-    md += u"\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
+    md += "* {}:\t{}\n".format('Attachments', email_data.get('Attachments') or "")
+    md += "\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
     return md
 
 
@@ -89,10 +89,7 @@ def extract_file_info(entry_id: str) -> tuple:
         file_name = result[0]['Contents']['name']
 
         dt_file_type = demisto.dt(demisto.context(), f"File(val.EntryID=='{entry_id}').Type")
-        if isinstance(dt_file_type, list):
-            file_type = dt_file_type[0]
-        else:
-            file_type = dt_file_type
+        file_type = dt_file_type[0] if isinstance(dt_file_type, list) else dt_file_type
 
     except Exception as ex:
         return_error(
