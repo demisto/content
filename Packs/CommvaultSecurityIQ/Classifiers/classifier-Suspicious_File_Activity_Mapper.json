@@ -105,15 +105,7 @@
         },
         "Unclassified": {
             "dontMapEventToLabels": false,
-            "internalMapping": {
-                "link": {
-                    "complex": {
-                        "filters": [],
-                        "root": "link",
-                        "transformers": []
-                    }
-                }
-            }
+            "internalMapping": {}
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
