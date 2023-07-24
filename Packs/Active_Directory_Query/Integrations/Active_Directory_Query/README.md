@@ -388,7 +388,7 @@ Creates an Active Directory contact.
 `ad-create-contact`
 
 ##### Required Permissions
-Requires `Write All Properties` and `Read All Properties` permission from `Contact objects`.
+Requires `full control` permission from `Contact objects`.
 
 #### Input
 
