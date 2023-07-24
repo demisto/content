@@ -16,7 +16,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 
-def get_non_contributor_stale_branch_names(repo: Repository) -> Dict[str]:  # noqa: E999
+def get_non_contributor_stale_branch_names(repo: Repository) -> Dict[str, any]:  # noqa: E999
     """Return the list of branches that do not have the prefix of "contrib/" without open pull requests
     and that have not been updated for 2 months (stale). Protected branches are excluded from consideration.
 
