@@ -669,7 +669,7 @@ script:
       description: Whether the incident update was successful.
     description: Updates a given incident. Can be used to modify the status, severity,
       assignee, or add comments.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isFetchSamples: true
   isfetch: true
   script: ''
