@@ -47,7 +47,7 @@ def main():
     print(f'{t.cyan}Checking if {PARTNER_APPROVED_LABEL} label exist in PR {pr_number}')
     if not partner_approved:
         print(
-            f'{t.red}ERROR: Label Partner-Approved PR: {pr_number}.\n was not added to the PR.')
+            f'{t.red}ERROR: Label Partner-Approved was not added to PR: {pr_number}')
         sys.exit(1)
 
     print(f'{t.cyan}PR labels {pr_label_names} are valid for PR: {pr_number}')
