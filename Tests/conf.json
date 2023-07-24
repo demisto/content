@@ -224,7 +224,8 @@
         {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": "FireEye Central Management",
@@ -4710,7 +4711,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "GoogleDrive"
-            ]
+            ],
+            "memory_threshold": 300
         },
         {
             "playbookID": "RiskIQDigitalFootprint-Test",
@@ -5305,7 +5307,8 @@
                 "GoogleDrive"
             ],
             "playbookID": "GoogleSheets-Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 300
         },
         {
             "integrations": "CloudflareWAF",
