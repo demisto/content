@@ -568,9 +568,3 @@ def test_deduplicate(
         if not dedup.is_duplicate(event, time_from):
             events.append(event)
     assert expected_results == len(events)
-
-
-def test_e2e_for_fetch_process(
-    mocker, mock_client: Client, mock_value, expected_results
-):
-    ...
