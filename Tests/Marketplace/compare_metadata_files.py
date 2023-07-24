@@ -101,13 +101,15 @@ def main():
         existing_metadata = read_metadata(f"{new_pack_dir}/metadata.json")
         new_metadata = read_metadata(f"content_packs/{pack_dir_name}/metadata.json")
 
-        logging.info(f"Starting to compare metadata files {new_pack_dir}/metadata.json---./content_packs/{pack_dir_name}/metadata.json")
+        logging.info(f"Starting to compare metadata files {new_pack_dir}/metadata.json---content_packs/{pack_dir_name}"
+                     "/metadata.json")
         different_keys, different_ignored_keys = get_diff(existing_metadata, new_metadata, options.metadata_2)
 
         if different_keys:
-            logging.error(f"Found different values in '{new_metadata}' for keys '{different_keys}'")
+            logging.error(f"Found different values in 'content_packs/{pack_dir_name}/metadata.json' for keys '{different_keys}'")
         elif different_ignored_keys:
-            logging.debug(f"Found different values in '{new_metadata}' for keys '{different_ignored_keys}'")
+            logging.debug(f"Found different (ignored) values in 'content_packs/{pack_dir_name}/metadata.json' for keys "
+                          f"'{different_ignored_keys}'")
         else:
             logging.success("Found the metadata files equal")
 
