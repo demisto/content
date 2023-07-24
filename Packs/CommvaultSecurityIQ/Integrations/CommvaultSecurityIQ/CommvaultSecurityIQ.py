@@ -1016,7 +1016,7 @@ class Client(BaseClient):
         response = self.http_request("GET", "/IdentityServers")
         if "errorMessage" in response:
             return False
-		identityServers=[]
+        identityServers=[]
 		if "identityServers" in resp:
 			identityServers=(list)response.get("identityServers")
         saml_identity_servers = [
