@@ -14,9 +14,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: This integration uses DeepL (https://www.deepl.com/) to translate text or files
 display: DeepL
 name: DeepL

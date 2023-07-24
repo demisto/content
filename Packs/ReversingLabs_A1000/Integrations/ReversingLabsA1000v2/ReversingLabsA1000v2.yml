@@ -16,6 +16,7 @@ configuration:
   display: Verify host certificates
   name: verify
   type: 8
+  required: false
 - defaultvalue: C - Fairly reliable
   display: Reliability
   name: reliability
@@ -28,14 +29,17 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: '2'
   display: Wait time between report fetching retries (seconds). Deafult is 2 seconds.
   name: wait_time_seconds
   type: 0
+  required: false
 - defaultvalue: '30'
   display: Number of report fetching retries. Default is 30.
   name: num_of_retries
   type: 0
+  required: false
 description: ReversingLabs A1000 advanced Malware Analysis Platform.
 display: ReversingLabs A1000 v2
 name: ReversingLabs A1000 v2
@@ -274,156 +278,104 @@ script:
       type: Unknown
   - name: reversinglabs-a1000-url-report
     description: Get a report for the submitted URL.
-    deprecated: false
-    execution: false
     arguments:
-      - name: url
-        description: URL string
-        default: true
-        isArray: false
-        required: true
-        secret: false
+    - name: url
+      description: URL string
+      default: true
+      required: true
     outputs:
-      - contextPath: ReversingLabs.a1000_url_report
-        description: A1000 URL report
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_url_report
+      description: A1000 URL report
+      type: Unknown
   - name: reversinglabs-a1000-domain-report
     description: Get a report for the submitted domain.
-    deprecated: false
-    execution: false
     arguments:
-      - name: domain
-        description: Domain string
-        default: true
-        isArray: false
-        required: true
-        secret: false
+    - name: domain
+      description: Domain string
+      default: true
+      required: true
     outputs:
-      - contextPath: ReversingLabs.a1000_domain_report
-        description: A1000 domain report
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_domain_report
+      description: A1000 domain report
+      type: Unknown
   - name: reversinglabs-a1000-ip-address-report
     description: Get a report for the submitted IP address.
-    deprecated: false
-    execution: false
     arguments:
-      - name: ip_address
-        description: IP address string
-        default: true
-        isArray: false
-        required: true
-        secret: false
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
     outputs:
-      - contextPath: ReversingLabs.a1000_ip_address_report
-        description: A1000 IP address report
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_ip_address_report
+      description: A1000 IP address report
+      type: Unknown
   - name: reversinglabs-a1000-ip-downloaded-files
     description: Get a list of files downloaded from an IP address.
-    deprecated: false
-    execution: false
     arguments:
-      - name: ip_address
-        description: IP address string
-        default: true
-        isArray: false
-        required: true
-        secret: false
-      - name: extended_results
-        description: Return extended results
-        defaultValue: true
-        isArray: false
-        required: false
-        secret: false
-        auto: PREDEFINED
-        predefined:
-          - 'true'
-          - 'false'
-      - name: classification
-        description: Return only results with this classification
-        isArray: false
-        required: false
-        secret: false
-        auto: PREDEFINED
-        predefined:
-          - 'MALICIOUS'
-          - 'SUSPICIOUS'
-          - 'GOODWARE'
-          - 'UNKNOWN'
-      - name: page_size
-        description: Number of results per query page
-        defaultValue: 500
-        isArray: false
-        required: false
-        secret: false
-      - name: max_results
-        description: Maximum number of returned results
-        defaultValue: 5000
-        isArray: false
-        required: false
-        secret: false
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
+    - name: extended_results
+      description: Return extended results
+      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: classification
+      description: Return only results with this classification
+      auto: PREDEFINED
+      predefined:
+      - 'MALICIOUS'
+      - 'SUSPICIOUS'
+      - 'GOODWARE'
+      - 'UNKNOWN'
+    - name: page_size
+      description: Number of results per query page
+      defaultValue: 500
+    - name: max_results
+      description: Maximum number of returned results
+      defaultValue: 5000
     outputs:
-      - contextPath: ReversingLabs.a1000_ip_address_downloaded_files
-        description: A1000 Files downloaded from IP address
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_ip_address_downloaded_files
+      description: A1000 Files downloaded from IP address
+      type: Unknown
   - name: reversinglabs-a1000-ip-domain-resolutions
     description: Get a list of IP-to-domain resolutions.
-    deprecated: false
-    execution: false
     arguments:
-      - name: ip_address
-        description: IP address string
-        default: true
-        isArray: false
-        required: true
-        secret: false
-      - name: page_size
-        description: Number of results per query page
-        defaultValue: 500
-        isArray: false
-        required: false
-        secret: false
-      - name: max_results
-        description: Maximum number of returned results
-        defaultValue: 5000
-        isArray: false
-        required: false
-        secret: false
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
+    - name: page_size
+      description: Number of results per query page
+      defaultValue: 500
+    - name: max_results
+      description: Maximum number of returned results
+      defaultValue: 5000
     outputs:
-      - contextPath: ReversingLabs.a1000_ip_domain_resolutions
-        description: A1000 IP-to-domain resolutions
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_ip_domain_resolutions
+      description: A1000 IP-to-domain resolutions
+      type: Unknown
   - name: reversinglabs-a1000-ip-urls
     description: Get a list of URLs hosted on the requested IP address.
-    deprecated: false
-    execution: false
     arguments:
-      - name: ip_address
-        description: IP address string
-        default: true
-        isArray: false
-        required: true
-        secret: false
-      - name: page_size
-        description: Number of results per query page
-        defaultValue: 500
-        isArray: false
-        required: false
-        secret: false
-      - name: max_results
-        description: Maximum number of returned results
-        defaultValue: 5000
-        isArray: false
-        required: false
-        secret: false
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
+    - name: page_size
+      description: Number of results per query page
+      defaultValue: 500
+    - name: max_results
+      description: Maximum number of returned results
+      defaultValue: 5000
     outputs:
-      - contextPath: ReversingLabs.a1000_ip_urls
-        description: A1000 URL-s hosted on an IP address
-        type: Unknown
+    - contextPath: ReversingLabs.a1000_ip_urls
+      description: A1000 URL-s hosted on an IP address
+      type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.64132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

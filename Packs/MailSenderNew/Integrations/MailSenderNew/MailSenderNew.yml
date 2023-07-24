@@ -15,6 +15,7 @@ configuration:
 - display: Credentials
   name: credentials
   type: 9
+  required: false
 - defaultvalue: Cortex XSOAR <noreply@demisto.com>
   display: Sender address
   name: from
@@ -24,6 +25,7 @@ configuration:
 - display: Fully Qualified Domain Name (FQDN) - used in EHLO
   name: fqdn
   type: 0
+  required: false
 - display: Connection Security
   additionalinfo: The connection security. The `SSL/TLS` first establishes a secure `SSL/TLS` connection and conducts SMTP over that connection, and STARTTLS starts with unencrypted SMTP and then switches to SSL/TLS to ensure security.
   name: tls
@@ -33,10 +35,12 @@ configuration:
   - None
   - STARTTLS
   - SSL/TLS
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Send emails implemented in Python with embedded image support
 display: Mail Sender (New)
 name: Mail Sender (New)
@@ -105,7 +109,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 tests:
 - Mail Sender (New) Test
 fromversion: 5.0.0
