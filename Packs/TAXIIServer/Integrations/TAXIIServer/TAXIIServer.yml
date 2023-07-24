@@ -12,6 +12,7 @@ configuration:
   type: 8
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: Will run the TAXII server on this port from within Demisto. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
@@ -22,14 +23,17 @@ configuration:
   name: certificate
   type: 12
   section: Connect
+  required: false
 - display: Private Key (Required for HTTPS)
   name: key
   type: 14
   section: Connect
+  required: false
 - display: Username
   name: credentials
   type: 9
   section: Connect
+  required: false
 - additionalinfo: JSON string of indicator query collections - dictionary of the collection name as the key and the query as the value.
   defaultvalue: |-
     {
@@ -45,6 +49,7 @@ configuration:
   name: service_address
   type: 0
   section: Connect
+  required: false
 description: This integration provides TAXII Services for system indicators (Outbound feed).
 display: TAXII Server
 name: TAXII Server

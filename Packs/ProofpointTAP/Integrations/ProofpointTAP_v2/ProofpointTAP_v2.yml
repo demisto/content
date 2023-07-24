@@ -29,16 +29,19 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: A string specifying which threat type to return. If empty, all threat types are returned. Can be "url", "attachment", or "messageText".
   display: Threat type
   name: threat_type
@@ -49,6 +52,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: A string specifying which threat statuses to return. If empty, will return "active" and "cleared" threats. Can be "active", "cleared", or "falsePositive".
   display: Threat status
   name: threat_status
@@ -59,6 +63,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: All
   display: Events to fetch
   name: events_type
@@ -72,25 +77,30 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Proofpoint supports a maximum 1 week fetch back.
   defaultvalue: 1 hour
   display: First fetch time range
   name: fetch_time
   type: 0
   section: Collect
+  required: false
 - additionalinfo: 'The character encoding to apply on the message fetched (e.g. latin-1). Advanced configuration to be used only if instructed by XSOAR Support'
   display: 'Advanced: Raw message encoding'
   name: raw_json_encoding
   type: 0
   section: Collect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 display: Proofpoint TAP v2
 name: Proofpoint TAP v2
