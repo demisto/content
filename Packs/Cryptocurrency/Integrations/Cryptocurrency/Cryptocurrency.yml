@@ -70,7 +70,7 @@ script:
       description: The cryptocurrency type. e.g. 'bitcoin'.
       type: string
     description: Return Cryptocurrency reputation.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3
