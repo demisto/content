@@ -102,13 +102,13 @@ def main():
     api_key = params.get('api_key')
     username = params.get('username')
     try:
-        if demisto.command() == 'text-to-voice':
+        if demisto.command() == 'clicksend-text-to-voice':
             phoneNumber = demisto.args()['phoneNumber']
             Message = demisto.args()['Message']
             require_input = demisto.args()['require_input']
             voice = demisto.args()['voice']
             text_to_voice(api_key, username, phoneNumber, Message, require_input, voice)
-        elif demisto.command() == 'voice-history':
+        elif demisto.command() == 'clicksend-voice-history':
             voice_history(api_key, username)
         elif demisto.command() == 'test-module':
             return_results(test_module(api_key, username))

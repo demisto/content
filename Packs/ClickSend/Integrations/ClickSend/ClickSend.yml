@@ -40,7 +40,7 @@ script:
       - female
       required: true
     description: 'Make phone call with you own text. Example: !text-to-voice Message="Hi im here" phoneNumber=+972501234567 require_input=False voice=male'
-    name: text-to-voice
+    name: clicksend-text-to-voice
     outputs:
     - contextPath: Voice.MSG.id
       description: Message ID
@@ -50,7 +50,7 @@ script:
       description: Response MSG
   - arguments: []
     description: 'Your calls history Example: !voice-history'
-    name: voice-history
+    name: clicksend-voice-history
     outputs:
     - contextPath: Voice.History
       description: Your Calls History

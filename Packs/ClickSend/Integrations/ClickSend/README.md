@@ -1,4 +1,5 @@
 This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet
+
 ## Configure ClickSend on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -7,8 +8,8 @@ This is the ClickSend integration for make a phonecall from XSOAR  made by Trust
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Api Key | You'll find your api key here: https://dashboard.clicksend.com/account/subaccounts | True |
-    | Username | You'll find your username here: https://dashboard.clicksend.com/account/subaccounts | True |
+    | Api Key | You'll find your api key here: <https://dashboard.clicksend.com/account/subaccounts> | True |
+    | Username | You'll find your username here: <https://dashboard.clicksend.com/account/subaccounts> | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -17,14 +18,14 @@ This is the ClickSend integration for make a phonecall from XSOAR  made by Trust
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### text-to-voice
+### clicksend-text-to-voice
 
 ***
-Make phone call with you own text. Example: !text-to-voice Message="Hi im here" phoneNumber=+972501234567 require_input=False voice=male
+Make phone call with you own text. Example: !clicksend-text-to-voice Message="Hi im here" phoneNumber=+972501234567 require_input=False voice=male
 
 #### Base Command
 
-`text-to-voice`
+`clicksend-text-to-voice`
 
 #### Input
 
@@ -43,14 +44,14 @@ Make phone call with you own text. Example: !text-to-voice Message="Hi im here" 
 | Voice.MSG.responseCode | unknown | Response Code | 
 | Voice.MSG.responseMsg | unknown | Response MSG | 
 
-### voice-history
+### clicksend-voice-history
 
 ***
-Your calls history Example: !voice-history
+Your calls history Example: !clicksend-voice-history
 
 #### Base Command
 
-`voice-history`
+`clicksend-voice-history`
 
 #### Input
 
