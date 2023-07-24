@@ -1,15 +1,18 @@
 {
-    "name": "CheckPointHEC",
+    "name": "Check Point Harmony Email and Collaboration (HEC)",
     "description": "The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.",
     "support": "partner",
-    "currentVersion": "1.0.0",
-    "author": "Check Point Harmony Email & Collaboration",
+    "currentVersion": "1.0.1",
+    "author": "Check Point Harmony Email & Collaboration (HEC)",
     "url": "https://supportcenter.checkpoint.com/",
     "email": "EmailSecurity_Support@checkpoint.com",
     "categories": [
         "Email"
     ],
-    "tags": ["Email", "Security"],
+    "tags": [
+        "Email",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
