@@ -3,10 +3,14 @@
     "description": "Bitsight Integration will allow you visibility into BitSight findings for remediation in your security program.",
     "support": "partner",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "currentVersion": "1.1.14",
 =======
     "currentVersion": "1.1.15",
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    "currentVersion": "1.1.15",
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     "author": "BitSight",
     "url": "https://service.bitsighttech.com/",
     "email": "support@bitsight.com",

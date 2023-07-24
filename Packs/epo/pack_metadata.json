@@ -3,10 +3,14 @@
     "description": "McAfee ePolicy Orchestrator",
     "support": "xsoar",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "currentVersion": "2.0.20",
 =======
     "currentVersion": "2.0.21",
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    "currentVersion": "2.0.21",
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

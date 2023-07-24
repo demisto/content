@@ -31,10 +31,14 @@ You can execute these commands from the Cortex XSIAM CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ### symantec-get-events
 =======
 ### symantec-cloudsoc-get-events
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+### symantec-cloudsoc-get-events
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
 ***
 Gets events from Symantec CloudSOC.
@@ -42,16 +46,21 @@ Gets events from Symantec CloudSOC.
 #### Base Command
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 `symantec-get-events`
 =======
 `symantec-cloudsoc-get-events`
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+`symantec-cloudsoc-get-events`
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+<<<<<<< HEAD
 <<<<<<< HEAD
 | limit | Maximum number of results to return. | Optional | 
 
@@ -60,9 +69,15 @@ Gets events from Symantec CloudSOC.
 There is no context output for this command.
 
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 | limit | Maximum number of results to return. Default is 1000. | Optional | 
 
 #### Context Output
 
+<<<<<<< HEAD
 There is no context output for this command.
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+There is no context output for this command.
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c

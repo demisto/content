@@ -15,9 +15,13 @@ from pprint import pformat
 from threading import Thread
 from time import sleep
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 from typing import List, Tuple, Union, Set
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+from typing import List, Tuple, Union, Set
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
 from urllib.parse import quote_plus
 import demisto_client
@@ -142,10 +146,14 @@ class XSOARServer(Server):
         super().__init__()
         self.__client = None
 <<<<<<< HEAD
+<<<<<<< HEAD
         self.internal_ip: str = internal_ip
 =======
         self.internal_ip = internal_ip
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        self.internal_ip = internal_ip
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         self.user_name = user_name
         self.password = password
         self.build_number = build_number
@@ -167,10 +175,14 @@ class XSOARServer(Server):
                                                  password=self.password)
         custom_user_agent = self.get_custom_user_agent()
 <<<<<<< HEAD
+<<<<<<< HEAD
         logging.debug(f"Setting user agent on client to '{custom_user_agent}'.")
 =======
         logging.debug(f'Setting user agent on client to:{custom_user_agent}')
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -186,10 +198,14 @@ class XSOARServer(Server):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def get_id_set(id_set_path) -> dict | None:
 =======
 def get_id_set(id_set_path) -> Union[dict, None]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+def get_id_set(id_set_path) -> Union[dict, None]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Used to collect the ID set so it can be passed to the Build class on init.
 
@@ -256,10 +272,14 @@ class Build(ABC):
         """
         tests_to_run = []
 <<<<<<< HEAD
+<<<<<<< HEAD
         with open(tests_to_run_path) as filter_file:
 =======
         with open(tests_to_run_path, "r") as filter_file:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        with open(tests_to_run_path, "r") as filter_file:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
@@ -276,10 +296,14 @@ class Build(ABC):
         """
         tests_to_run = []
 <<<<<<< HEAD
+<<<<<<< HEAD
         with open(packs_to_install_path) as filter_file:
 =======
         with open(packs_to_install_path, "r") as filter_file:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        with open(packs_to_install_path, "r") as filter_file:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
@@ -327,10 +351,14 @@ class Build(ABC):
             disable_all_integrations(server.client)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def get_changed_integrations(self, packs_not_to_install: set[str] | None = None) -> tuple[list[str], list[str]]:
 =======
     def get_changed_integrations(self, packs_not_to_install: Set[str] | None = None) -> Tuple[List[str], List[str]]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    def get_changed_integrations(self, packs_not_to_install: Set[str] | None = None) -> Tuple[List[str], List[str]]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
         The modified list is exclude the packs_not_to_install and the new list is including it
@@ -359,6 +387,7 @@ class Build(ABC):
         pass
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def install_packs(self, pack_ids: list | None = None, multithreading=True, is_post_update: bool = False) -> bool:
         """
         Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and their dependencies.
@@ -374,6 +403,8 @@ class Build(ABC):
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
         logging.info(f"IDs of packs to install: {pack_ids}")
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     def install_packs(self, pack_ids=None, install_packs_one_by_one=False):
         """
         Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
@@ -387,11 +418,15 @@ class Build(ABC):
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
         logging.info(f"Packs ids to install: {pack_ids}")
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
+<<<<<<< HEAD
 <<<<<<< HEAD
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
                                                                           client=server.client,
@@ -403,6 +438,11 @@ class Build(ABC):
                                                                           install_packs_one_by_one,
                                                                           )
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
+                                                                          install_packs_one_by_one,
+                                                                          )
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -412,10 +452,14 @@ class Build(ABC):
         return installed_content_packs_successfully
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def get_tests(self) -> list[dict]:
 =======
     def get_tests(self) -> List[dict]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    def get_tests(self) -> List[dict]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         """
         Selects the tests from that should be run in this execution and filters those that cannot run in this server version
         Args:
@@ -543,10 +587,14 @@ class Build(ABC):
                          pre_update: bool,
                          use_mock: bool = True,
 <<<<<<< HEAD
+<<<<<<< HEAD
                          first_call: bool = True) -> tuple[set, set]:
 =======
                          first_call: bool = True) -> Tuple[set, set]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+                         first_call: bool = True) -> Tuple[set, set]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         """
         Runs 'test-module' command for the instances detailed in `all_module_instances`
         Args:
@@ -610,10 +658,14 @@ class Build(ABC):
         self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
                                  self.artifacts_folder, self.marketplace_buckets)
 <<<<<<< HEAD
+<<<<<<< HEAD
         installed_content_packs_successfully = self.install_packs(is_post_update=True)
 =======
         installed_content_packs_successfully = self.install_packs()
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        installed_content_packs_successfully = self.install_packs()
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -664,10 +716,14 @@ class XSOARBuild(Build):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
 <<<<<<< HEAD
+<<<<<<< HEAD
             configurations = {}
 =======
             configurations = dict()
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+            configurations = dict()
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             configure_types = []
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
@@ -869,10 +925,14 @@ class CloudBuild(Build):
         Uploads test_pack.zip to server
         """
 <<<<<<< HEAD
+<<<<<<< HEAD
         success = self.install_packs(multithreading=False, is_post_update=False)
 =======
         success = self.install_packs(install_packs_one_by_one=True)
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        success = self.install_packs(install_packs_one_by_one=True)
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         if not success:
             logging.error('Failed to install content packs, aborting.')
             sys.exit(1)
@@ -1444,10 +1504,14 @@ def group_integrations(integrations, skipped_integrations_conf, new_integrations
     for integration in integrations:
         integration_name = integration.get('name', '')
 <<<<<<< HEAD
+<<<<<<< HEAD
         if integration_name in skipped_integrations_conf:
 =======
         if integration_name in skipped_integrations_conf.keys():
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        if integration_name in skipped_integrations_conf.keys():
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             continue
 
         if integration_name in new_integrations_names:
@@ -1513,10 +1577,14 @@ def update_content_on_demisto_instance(client, server, ami_name):
         release, asset_id = get_content_version_details(client, ami_name)
         logging.info(f'Content Release Version: {release}')
 <<<<<<< HEAD
+<<<<<<< HEAD
         with open('./artifacts/content-descriptor.json') as cd_file:
 =======
         with open('./artifacts/content-descriptor.json', 'r') as cd_file:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        with open('./artifacts/content-descriptor.json', 'r') as cd_file:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
@@ -1650,10 +1718,14 @@ def get_servers(env_results, instance_role):
 
 def get_json_file(path):
 <<<<<<< HEAD
+<<<<<<< HEAD
     with open(path) as json_file:
 =======
     with open(path, 'r') as json_file:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    with open(path, 'r') as json_file:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         return json.loads(json_file.read())
 
 
@@ -1736,10 +1808,14 @@ def test_pack_zip(content_path, target, packs: list = None):
                 continue
             test = test.name
 <<<<<<< HEAD
+<<<<<<< HEAD
             with open(test_path) as test_file:
 =======
             with open(test_path, 'r') as test_file:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+            with open(test_path, 'r') as test_file:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
                 if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
@@ -1767,10 +1843,14 @@ def get_non_added_packs_ids(build: Build):
 
     added_files = filter(lambda x: x, added_files.split('\n'))
 <<<<<<< HEAD
+<<<<<<< HEAD
     added_pack_ids = (x.split('/')[1] for x in added_files)
 =======
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    added_pack_ids = map(lambda x: x.split('/')[1], added_files)
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     # build.pack_ids_to_install contains new packs and modified. added_pack_ids contains new packs only.
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
@@ -1785,10 +1865,14 @@ def run_git_diff(pack_name: str, build: Build) -> str:
         (str): The git diff output.
     """
 <<<<<<< HEAD
+<<<<<<< HEAD
     compare_against = 'origin/master{}'.format('' if build.branch_name != 'master' else '~1')
 =======
     compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
@@ -1803,11 +1887,14 @@ def check_hidden_field_changed(pack_name: str, build: Build) -> bool:
     """
     diff = run_git_diff(pack_name, build)
 <<<<<<< HEAD
+<<<<<<< HEAD
     return any('"hidden": false' in diff_line and diff_line.split()[0].startswith('+') for diff_line in diff.splitlines())
 
 
 def get_turned_non_hidden_packs(modified_packs_names: set[str], build: Build) -> set[str]:
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     for diff_line in diff.splitlines():
         if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
             return True
@@ -1815,7 +1902,10 @@ def get_turned_non_hidden_packs(modified_packs_names: set[str], build: Build) ->
 
 
 def get_turned_non_hidden_packs(modified_packs_names: Set[str], build: Build) -> Set[str]:
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Return a set of packs which turned from hidden to non-hidden.
     Args:
@@ -1844,10 +1934,14 @@ def create_build_object() -> Build:
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def packs_names_to_integrations_names(turned_non_hidden_packs_names: set[str]) -> list[str]:
 =======
 def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -> List[str]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -> List[str]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Convert packs names to the integrations names contained in it.
     Args:
@@ -1869,12 +1963,17 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def update_integration_lists(new_integrations_names: list[str], packs_not_to_install: set[str] | None,
                              modified_integrations_names: list[str]) -> tuple[list[str], list[str]]:
 =======
 def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str] | None,
                              modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str] | None,
+                             modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Add the turned non-hidden integrations names to the new integrations names list and
      remove it from modified integrations names.
@@ -1898,10 +1997,14 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def filter_new_to_marketplace_packs(build: Build, modified_pack_names: set[str]) -> set[str]:
 =======
 def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str]) -> Set[str]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str]) -> Set[str]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Return a set of packs that is new to the marketplace.
     Args:
@@ -1919,10 +2022,14 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def get_packs_to_install(build: Build) -> tuple[set[str], set[str]]:
 =======
 def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Return a set of packs to install only in the pre-update, and set to install in post-update.
     Args:
@@ -1952,12 +2059,17 @@ def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 def get_packs_with_higher_min_version(packs_names: set[str],
                                       server_numeric_version: str) -> set[str]:
 =======
 def get_packs_with_higher_min_version(packs_names: Set[str],
                                       server_numeric_version: str) -> Set[str]:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+def get_packs_with_higher_min_version(packs_names: Set[str],
+                                      server_numeric_version: str) -> Set[str]:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     """
     Return a set of packs that have higher min version than the server version.
 
@@ -2028,10 +2140,14 @@ def main():
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
 <<<<<<< HEAD
+<<<<<<< HEAD
         build.install_packs(pack_ids=list(packs_to_install_in_pre_update), is_post_update=False)
 =======
         build.install_packs(pack_ids=packs_to_install_in_pre_update)
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,

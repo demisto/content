@@ -622,7 +622,10 @@ test-upload-flow:
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 handle-dev-secrets:
   tags:
     - gke
@@ -639,7 +642,10 @@ handle-dev-secrets:
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
 
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 xsoar_server_master-test_playbooks_results:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"

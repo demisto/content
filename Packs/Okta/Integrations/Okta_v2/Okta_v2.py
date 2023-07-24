@@ -891,16 +891,22 @@ def search_command(client, args):
     term = args.get('term')
     limit = args.get('limit') or SEARCH_LIMIT
     verbose = args.get('verbose')
+<<<<<<< HEAD
 
 
 << << << < HEAD
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     advanced_search = args.get('advanced_search', '')
     if not term and not advanced_search:
         raise DemistoException('Please provide either the term or advanced_search argument')
     raw_response = client.search(term, limit, advanced_search)
+<<<<<<< HEAD
 == == == =
     raw_response = client.search(term, limit)
 >>>>>> > 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 
     if raw_response and len(raw_response) > 0:
         users_context = client.get_users_context(raw_response)
@@ -1017,6 +1023,7 @@ def list_users_command(client, args):
         'Account(val.ID && val.ID == obj.ID)': context,
         'Okta.User(val.tag)': {'tag': after_tag}
     }
+<<<<<<< HEAD
 
 
 << << << < HEAD
@@ -1024,6 +1031,9 @@ def list_users_command(client, args):
 == == == =
     return (
 >>>>>> > 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    return (
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         readable_output,
         outputs,
         raw_response

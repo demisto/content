@@ -2,6 +2,7 @@ $script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client) {
     $integration_context = @{
         "DeviceCode"              = $client.device_code
@@ -451,6 +452,8 @@ class ExchangeOnlineClient {
             https://docs.microsoft.com/en-us/powershell/partnercenter/multi-factor-auth?view=partnercenterps-3.0#exchange-online-powershell
         #>
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 Import-Module ExchangeOnlineManagement
 
 class ExchangeOnlinePowershellV3Client
@@ -491,7 +494,10 @@ class ExchangeOnlinePowershellV3Client
     DisconnectSession()
     {
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     }
     [Array]SearchUnifiedAuditLog(
         [string]$start_date,
@@ -504,9 +510,12 @@ class ExchangeOnlinePowershellV3Client
         [int]$result_size
     ) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         Import-PSSession -Session $this.session -CommandName Search-UnifiedAuditLog -AllowClobber
 =======
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         $cmd_args = @{
             "StartDate" = $start_date
             "EndDate"   = $end_date
@@ -536,6 +545,7 @@ class ExchangeOnlinePowershellV3Client
     }
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 #### COMMAND FUNCTIONS ####
 
@@ -590,11 +600,16 @@ function SearchAuditLogCommand {
     Param(
         [Parameter(Mandatory)][ExchangeOnlineClient]$client,
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 function SearchAuditLogCommand {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         [hashtable]$kwargs
     )
     try {
@@ -627,6 +642,7 @@ function SearchAuditLogCommand {
             $kwargs.free_text,
             $kwargs.record_type,
 <<<<<<< HEAD
+<<<<<<< HEAD
                 (ArgToList $kwargs.ip_addresses),
                 (ArgToList $kwargs.operations),
                 (ArgToList $kwargs.user_ids),
@@ -638,6 +654,8 @@ function SearchAuditLogCommand {
                 $list.add((ConvertFrom-Json $item.AuditData))
             }
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             (ArgToList $kwargs.ip_addresses),
             (ArgToList $kwargs.operations),
             (ArgToList $kwargs.user_ids),
@@ -649,7 +667,10 @@ function SearchAuditLogCommand {
                 $list.add((ConvertFrom-Json $item.AuditData))
             }
             # foreach ($item in ,@{AuditData = Get-Content "test_data/audit_log.json" -Raw}) {$list.add((ConvertFrom-Json $item.AuditData))}
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             $context = @{
                 "$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)" = $list
             }
@@ -663,6 +684,7 @@ function SearchAuditLogCommand {
 
     }
     finally {
+<<<<<<< HEAD
 <<<<<<< HEAD
         $client.CloseSession()
     }
@@ -689,6 +711,8 @@ function Main {
             $integration_params.url, $integration_params.credentials.identifier,
             $oauth2_client.access_token, $insecure, $no_proxy)
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         $client.DisconnectSession()
     }
 }
@@ -723,11 +747,15 @@ function Main {
             $password
     )
     try {
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         # Executing command
         $demisto.Debug("Command being called is $command")
         switch ($command) {
             "test-module" {
+<<<<<<< HEAD
 <<<<<<< HEAD
                 throw "To complete the authentication process, run the '!o365-auditlog-auth-start' command,
                 and follow the printed instructions.
@@ -745,21 +773,29 @@ function Main {
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $exo_client
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
                 $human_readable, $entry_context, $raw_response = TestModuleCommand $audit_log_client
             }
             "$script:COMMAND_PREFIX-search" {
                 $human_readable, $entry_context, $raw_response = SearchAuditLogCommand $audit_log_client $command_arguments
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             }
             default {
                 throw "Command $command no implemented"
             }
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
 =======
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         # Return results to server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
     }
@@ -769,15 +805,20 @@ function Main {
             Arguments: $($command_arguments | ConvertTo-Json)
             Error: $($_.Exception.Message)")
 <<<<<<< HEAD
+<<<<<<< HEAD
         if ($command -ne "test-module") {
             ReturnError "Error:
 =======
         ReturnError "Error:
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        ReturnError "Error:
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
             Integration: $script:INTEGRATION_NAME
             Command: $command
             Arguments: $($command_arguments | ConvertTo-Json)
             Error: $($_.Exception)" | Out-Null
+<<<<<<< HEAD
 <<<<<<< HEAD
         }
         else {
@@ -785,6 +826,8 @@ function Main {
         }
 =======
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     }
 }
 
@@ -792,7 +835,11 @@ function Main {
 if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
     Main
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 =======
 }
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+}
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c

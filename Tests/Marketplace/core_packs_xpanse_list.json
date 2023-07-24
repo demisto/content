@@ -26,10 +26,14 @@
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "Nmap",
 =======
     "Jira",
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    "Jira",
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     "PrismaCloud",
     "qualys",
     "Rapid7_Nexpose",
@@ -64,10 +68,14 @@
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "Nmap",
 =======
     "Jira",
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    "Jira",
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     "PrismaCloud",
     "qualys",
     "Rapid7_Nexpose",

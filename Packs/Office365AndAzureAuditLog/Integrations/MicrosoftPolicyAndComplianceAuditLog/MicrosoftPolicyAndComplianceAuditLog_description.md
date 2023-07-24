@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 ### Ews Audit Log
 This integration searches the unified audit log to view user and administrator activity in your organization.
 
@@ -12,6 +13,8 @@ Supported authentication methods:
 #### Permissions:
 The app uses the *https://outlook.office365.com/.default* scope.
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 ### Microsoft Policy And Compliance Audit Log
 This integration searches the unified audit log to view user and administrator activity in your organization.
 
@@ -28,5 +31,9 @@ To view and run Office 365 unified audit log searches, admins or users must be a
 -------
 ##### Note
 If the credentials object is used, make sure to set the `certificate` value as the `username` property and not as the certificate field
+<<<<<<< HEAD
 ![](../../doc_files/credentials_example.png)
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+![](../../doc_files/credentials_example.png)
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c

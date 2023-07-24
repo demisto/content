@@ -3,10 +3,14 @@
     "description": "The IronDefense Integration allows users to interact with IronDefense alerts within Demisto. The Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, and to report observed bad activity.",
     "support": "partner",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "currentVersion": "1.1.23",
 =======
     "currentVersion": "1.1.24",
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    "currentVersion": "1.1.24",
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     "author": "Iron Defense",
     "url": "https://ironnet.atlassian.net/servicedesk/customer/portal/4",
     "email": "support@ironnetcybersecurity.com",

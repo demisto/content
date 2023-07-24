@@ -1,7 +1,12 @@
 [INGEST:vendor="okta", product="okta", target_dataset="okta_okta_raw" , no_hit=keep]
 <<<<<<< HEAD
+<<<<<<< HEAD
 alter _time = published;
 =======
 filter published ~= ".*T\d{2}:\d{2}:\d{2}[\.\dZ]+"
 | alter _time = published;
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+filter published ~= ".*T\d{2}:\d{2}:\d{2}[\.\dZ]+"
+| alter _time = published;
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c

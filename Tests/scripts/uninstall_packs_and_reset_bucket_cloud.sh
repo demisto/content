@@ -15,8 +15,12 @@ else
   echo "sleeping 120 seconds"
   sleep 120
 <<<<<<< HEAD
+<<<<<<< HEAD
   python3 ./Tests/Marketplace/search_and_uninstall_pack.py --cloud_machine $CLOUD_CHOSEN_MACHINE_ID --cloud_servers_path $CLOUD_SERVERS_PATH --cloud_servers_api_keys "cloud_api_keys.json" --unremovable_packs $UNREMOVABLE_PACKS
 =======
   python3 ./Tests/Marketplace/search_and_uninstall_pack.py --cloud_machine $CLOUD_CHOSEN_MACHINE_ID --cloud_servers_path $CLOUD_SERVERS_PATH --cloud_servers_api_keys "cloud_api_keys.json" --unremovable_packs $UNREMOVABLE_PACKS --one-by-one
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+  python3 ./Tests/Marketplace/search_and_uninstall_pack.py --cloud_machine $CLOUD_CHOSEN_MACHINE_ID --cloud_servers_path $CLOUD_SERVERS_PATH --cloud_servers_api_keys "cloud_api_keys.json" --unremovable_packs $UNREMOVABLE_PACKS --one-by-one
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 fi

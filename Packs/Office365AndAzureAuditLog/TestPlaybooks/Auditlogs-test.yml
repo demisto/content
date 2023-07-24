@@ -6,20 +6,27 @@ tasks:
   "0":
     id: "0"
 <<<<<<< HEAD
+<<<<<<< HEAD
     taskid: f74bcfd6-0360-4f6a-81d1-33af672d231b
     type: start
     task:
       id: f74bcfd6-0360-4f6a-81d1-33af672d231b
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     taskid: 9a5f2f80-a23b-4310-817d-9093539f737f
     type: start
     task:
       id: 9a5f2f80-a23b-4310-817d-9093539f737f
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
       version: -1
       name: ""
       iscommand: false
       brand: ""
+<<<<<<< HEAD
 <<<<<<< HEAD
       description: ''
     nexttasks:
@@ -31,6 +38,8 @@ tasks:
         "position": {
           "x": 265,
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     nexttasks:
       '#none#':
       - "4"
@@ -40,7 +49,10 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
           "y": 50
         }
       }
@@ -49,6 +61,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+<<<<<<< HEAD
 <<<<<<< HEAD
   "1":
     id: "1"
@@ -59,6 +72,8 @@ tasks:
       version: -1
       name: o365-auditlog-search
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -69,23 +84,31 @@ tasks:
       id: bc4e1676-42c7-44dd-85d8-3a874f4344a7
       version: -1
       name: Run Audit Log Search Command
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
         for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
 <<<<<<< HEAD
+<<<<<<< HEAD
         user who performed the action, the action, or the target object.
 =======
         action, the user who performed the action, or the target object.
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        action, the user who performed the action, or the target object.
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
       script: MicrosoftPolicyAndComplianceAuditLog|||o365-auditlog-search
       type: regular
       iscommand: true
       brand: MicrosoftPolicyAndComplianceAuditLog
     nexttasks:
       '#none#':
+<<<<<<< HEAD
 <<<<<<< HEAD
       - "2"
     scriptarguments:
@@ -103,6 +126,8 @@ tasks:
         "position": {
           "x": 265,
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
       - "3"
     scriptarguments:
       operations:
@@ -117,7 +142,10 @@ tasks:
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
           "y": 370
         }
       }
@@ -126,6 +154,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+<<<<<<< HEAD
 <<<<<<< HEAD
   "2":
     id: "2"
@@ -172,6 +201,8 @@ tasks:
     task:
       id: 8ff43f3e-0218-4775-875e-ab15affebd0e
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -180,12 +211,16 @@ tasks:
     type: title
     task:
       id: 1c0dfb86-7a43-4317-8afc-808c8dbb5302
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+<<<<<<< HEAD
 <<<<<<< HEAD
       description: ''
     separatecontext: false
@@ -222,6 +257,10 @@ tasks:
     separatecontext: false
     continueonerrortype: ""
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    separatecontext: false
+    continueonerrortype: ""
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     view: |-
       {
         "position": {
@@ -235,6 +274,7 @@ tasks:
     skipunavailable: false
     quietmode: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
   "6":
     id: "6"
     taskid: c4715295-f59c-4c71-8986-0090328932ab
@@ -245,6 +285,8 @@ tasks:
       name: DeleteContext
       description: Delete field from context
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -318,7 +360,10 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -330,6 +375,7 @@ tasks:
       all:
         simple: "yes"
 <<<<<<< HEAD
+<<<<<<< HEAD
       index: {}
       key: {}
       keysToKeep: {}
@@ -340,13 +386,18 @@ tasks:
         "position": {
           "x": 265,
 =======
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
+<<<<<<< HEAD
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
           "y": 195
         }
       }
@@ -356,15 +407,21 @@ tasks:
     skipunavailable: false
     quietmode: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     isoversize: false
     isautoswitchedtoquietmode: false
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+    isoversize: false
+    isautoswitchedtoquietmode: false
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
+<<<<<<< HEAD
 <<<<<<< HEAD
         "height": 765,
         "width": 810,
@@ -372,6 +429,10 @@ view: |-
         "height": 735,
         "width": 380,
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+        "height": 735,
+        "width": 380,
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
         "x": 50,
         "y": 50
       }

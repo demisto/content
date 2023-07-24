@@ -33,11 +33,17 @@ if [ "$?" != "0" ]; then
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
 fi
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 cp ./content-test-conf/secrets_build_scripts/GoogleSecretManagerModule.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
 cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./Tests/scripts
 >>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
+=======
+cp ./content-test-conf/secrets_build_scripts/GoogleSecretManagerModule.py ./Tests/scripts
+cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
+cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./Tests/scripts
+>>>>>>> 24d3cbaa7b2722658b5abd26ce96fc4d2dc2486c
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
