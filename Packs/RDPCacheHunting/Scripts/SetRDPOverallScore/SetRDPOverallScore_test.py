@@ -3,7 +3,7 @@ from SetRDPOverallScore import main
 
 
 def test_happy_path_score_zero(mocker):
-    """    
+    """
     Given:
         - OverallScore zero
     When:
@@ -21,7 +21,7 @@ def test_happy_path_score_zero(mocker):
 
 
 def test_happy_path_score_50(mocker):
-    """    
+    """
     Given:
         - OverallScore 50
     When:
@@ -39,7 +39,7 @@ def test_happy_path_score_50(mocker):
 
 
 def test_happy_path_score_90(mocker):
-    """    
+    """
     Given:
         - OverallScore 50
     When:
@@ -57,7 +57,7 @@ def test_happy_path_score_90(mocker):
 
 
 def test_happy_path_score_100(mocker):
-    """    
+    """
     Given:
         - OverallScore 100
     When:

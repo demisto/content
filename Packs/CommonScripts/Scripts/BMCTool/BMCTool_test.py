@@ -86,7 +86,7 @@ def test_palette_colors():
 
 
 def test_color_black():
-    """    
+    """
     Given:
         - BMCContainer object
     When:
@@ -98,7 +98,7 @@ def test_color_black():
 
 
 def test_b_process():
-    """    
+    """
     Given:
         - BMCContainer object
     When:
@@ -116,7 +116,7 @@ def test_b_process():
     (b"\x00\x00\x00\x00", b"\x00\x00\x00\xff\x00\x00\x00\xff"),
 ])
 def test_b_parse_rgb565(data, expected_output):
-    """    
+    """
     Given:
         - BMCContainer object
     When:
