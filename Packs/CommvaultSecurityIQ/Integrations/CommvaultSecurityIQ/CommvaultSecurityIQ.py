@@ -1181,7 +1181,7 @@ class Client(BaseClient):
                 time.sleep(5)
 
 
-def fetch_incidents(client, last_run, first_fetch_time) -> Tuple[List[<nothing>], None]:
+def fetch_incidents(client, last_run, first_fetch_time) -> Tuple[dict, None]:
 
 
     max_fetch = demisto.params().get('max_fetch')
