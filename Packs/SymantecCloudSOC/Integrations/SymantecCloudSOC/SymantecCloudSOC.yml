@@ -53,7 +53,11 @@ script:
   script: '-'
   type: python
   subtype: python3
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.10.12.63474
+=======
+  dockerimage: demisto/python3:3.10.12.65389
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0

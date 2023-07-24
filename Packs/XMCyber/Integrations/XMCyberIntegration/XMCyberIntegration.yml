@@ -330,7 +330,11 @@ script:
     - contextPath: Host.IP
       description: The IP address of the host.
       type: String
+<<<<<<< HEAD
   dockerimage: demisto/python3:3.10.12.63474
+=======
+  dockerimage: demisto/python3:3.10.12.65389
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
   isfetch: true
   runonce: false
   script: '-'

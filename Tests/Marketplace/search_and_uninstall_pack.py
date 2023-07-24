@@ -20,7 +20,11 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
         client (demisto_client): The client to connect to.
 
     Returns:
+<<<<<<< HEAD
         list of installed python
+=======
+        list of id's of the installed packs
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     """
     try:
         logging.info("Attempting to fetch all installed packs.")
@@ -49,6 +53,60 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
         return None
 
 
+<<<<<<< HEAD
+=======
+def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable_packs: list):
+    """ Lists all installed packs and uninstalling them.
+    Args:
+        client (demisto_client): The client to connect to.
+        hostname (str): cloud hostname
+        unremovable_packs: list of packs that can't be uninstalled.
+
+    Returns (bool):
+        A flag that indicates if the operation succeeded or not.
+    """
+    packs_to_uninstall = get_all_installed_packs(client, unremovable_packs)
+    logging.info(f'Starting to search and uninstall packs in server: {hostname}, packs count to '
+                 f'uninstall: {len(packs_to_uninstall)}')
+    uninstalled_count = 0
+    failed_to_uninstall = []
+    if packs_to_uninstall:
+        for pack_to_uninstall in packs_to_uninstall:
+            logging.info(f"Attempting to uninstall a pack: {pack_to_uninstall}")
+            if uninstall_pack(client, pack_to_uninstall):
+                uninstalled_count += 1
+            else:
+                failed_to_uninstall.append(pack_to_uninstall)
+    logging.info(f"Finished uninstalling - Succeeded: {uninstalled_count} out of {len(packs_to_uninstall)}")
+    if failed_to_uninstall:
+        logging.error(f"Failed to uninstall: {','.join(failed_to_uninstall)}")
+    return uninstalled_count == len(packs_to_uninstall)
+
+
+def uninstall_pack(client: demisto_client, pack_id: str):
+    """
+
+    Args:
+        client (demisto_client): The client to connect to.
+        pack_id: packs id to uninstall
+
+    Returns:
+        Boolean - If the operation succeeded.
+
+    """
+    try:
+        demisto_client.generic_request_func(client,
+                                            path=f'/contentpacks/installed/{pack_id}',
+                                            method='DELETE',
+                                            accept='application/json',
+                                            _request_timeout=None)
+        return True
+    except Exception as e:
+        logging.exception(f'The request to uninstall packs has failed. Additional info: {str(e)}')
+    return False
+
+
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
 def uninstall_packs(client: demisto_client, pack_ids: list):
     """
 
@@ -109,8 +167,12 @@ def reset_core_pack_version(client: demisto_client, unremovable_packs: list):
     _, success = search_and_install_packs_and_their_dependencies(pack_ids=unremovable_packs,
                                                                  client=client,
                                                                  hostname=host,
+<<<<<<< HEAD
                                                                  multithreading=False,
                                                                  is_post_update=False)
+=======
+                                                                 install_packs_one_by_one=True)
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     return success
 
 
@@ -184,6 +246,10 @@ def options_handler():
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
     parser.add_argument('--unremovable_packs', help='List of packs that cant be removed.')
+<<<<<<< HEAD
+=======
+    parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
 
     options = parser.parse_args()
 
@@ -212,9 +278,19 @@ def main():
     # in earlier builds they will appear in the bucket as it is cached.
     sync_marketplace(client=client)
     unremovable_packs = options.unremovable_packs.split(',')
+<<<<<<< HEAD
     success = reset_core_pack_version(client, unremovable_packs) and \
         uninstall_all_packs(client, host, unremovable_packs) and \
         wait_for_uninstallation_to_complete(client, unremovable_packs)
+=======
+    success = reset_core_pack_version(client, unremovable_packs)
+    if success:
+        if options.one_by_one:
+            success = uninstall_all_packs_one_by_one(client, host, unremovable_packs)
+        else:
+            success = uninstall_all_packs(client, host, unremovable_packs) and \
+                wait_for_uninstallation_to_complete(client, unremovable_packs)
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     sync_marketplace(client=client)
     if not success:
         sys.exit(2)

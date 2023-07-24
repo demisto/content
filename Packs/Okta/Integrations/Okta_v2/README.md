@@ -492,8 +492,12 @@ Searches for Okta users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+<<<<<<< HEAD
 | term | Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required. | Optional | 
 | advanced_search | Searches for users with a supported [filtering expression](https://developer.okta.com/docs/reference/core-okta-api/#filter) for most properties, including custom-defined properties. [Supported operators](https://developer.okta.com/docs/reference/core-okta-api/#operators). If `term`, and `advanced_search` are provided, `advanced_search` will take precedence. The argument `term` or `advanced_search` is required. | Optional | 
+=======
+| term | Term by which to search. Can be a first name, last name, or email address. | Required | 
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
 | limit | The maximum number of results to return. The default and maximum is 200. | Optional | 
 | verbose | Whether to return details of users that match the found term. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
 

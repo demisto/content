@@ -25,7 +25,11 @@
     "Malware",
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
+<<<<<<< HEAD
     "Nmap",
+=======
+    "Jira",
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     "PrismaCloud",
     "qualys",
     "Rapid7_Nexpose",
@@ -59,7 +63,11 @@
     "Malware",
     "MicrosoftGraphIdentityandAccess",
     "MicrosoftGraphUser",
+<<<<<<< HEAD
     "Nmap",
+=======
+    "Jira",
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     "PrismaCloud",
     "qualys",
     "Rapid7_Nexpose",

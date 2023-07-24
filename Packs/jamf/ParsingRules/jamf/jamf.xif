@@ -1,2 +1,7 @@
 [INGEST:vendor="jamf", product="pro", target_dataset="jamf_pro_raw", no_hit=keep]
+<<<<<<< HEAD
 alter _time = to_timestamp(to_integer(json_extract_scalar(webhook, "$.eventTimestamp")), "millis");
+=======
+filter webhook ~= "\d{7,13}"
+| alter _time = to_timestamp(to_integer(json_extract_scalar(webhook, "$.eventTimestamp")), "millis");
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2

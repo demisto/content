@@ -12,6 +12,14 @@ part 2 - manage the schema on the mssql
   1. right click on the table that you want manage the fields and click on design.
   2. edit the sql and save the new design configurations.
 
+<<<<<<< HEAD
+=======
+  * Pay attention: Timestamp parsing is supported for the **EventTimeLocal** field with UTC format. To configure the format:
+    1. Access your Mcafee ePO interface.
+    2. At the main options bar at the top-left corner, under **Configuration** select **Personal Settings**.
+    3. At the left bar, select **Time Zone Prefrence** and set the system time zone to UTC +00:00 format.
+    
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
 ## Collect Events from Vendor
 
 In order to use the collector, you can use one of the following options to collect events from the vendor:

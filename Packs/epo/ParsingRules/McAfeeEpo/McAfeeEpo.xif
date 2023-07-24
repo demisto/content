@@ -1,2 +1,7 @@
 [INGEST:vendor="McAfee", product="ePO", target_dataset="mcafee_epo_raw" , no_hit=keep]
+<<<<<<< HEAD
 alter _time = EventTimeLocal;
+=======
+filter to_string(EventTimeLocal) ~= ".*\d{2}:\d{2}:\d{2}.*"
+| alter _time = EventTimeLocal;
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2

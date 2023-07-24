@@ -3681,7 +3681,12 @@
         },
         {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
+<<<<<<< HEAD
             "playbookID": "Audit Log - Test"
+=======
+            "playbookID": "Audit Log - Test",
+            "memory_threshold": 220
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
         },
         {
             "integrations": "Nutanix Hypervisor",
@@ -5655,7 +5660,10 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
+<<<<<<< HEAD
         "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266",
+=======
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
         "EWS_O365_test": "Issue CIAC-6753"
     },
     "skipped_integrations": {

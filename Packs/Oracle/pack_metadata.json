@@ -2,7 +2,11 @@
     "name": "Oracle",
     "description": "The modeling rules for Oracle event collectors.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "1.0.3",
+=======
+    "currentVersion": "1.0.4",
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -1,6 +1,7 @@
 $script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
+<<<<<<< HEAD
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client) {
     $integration_context = @{
         "DeviceCode"              = $client.device_code
@@ -449,6 +450,48 @@ class ExchangeOnlineClient {
             https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/remove-pssession?view=powershell-7
             https://docs.microsoft.com/en-us/powershell/partnercenter/multi-factor-auth?view=partnercenterps-3.0#exchange-online-powershell
         #>
+=======
+Import-Module ExchangeOnlineManagement
+
+class ExchangeOnlinePowershellV3Client
+{
+    [System.Security.Cryptography.X509Certificates.X509Certificate2]$certificate
+    [string]$organization
+    [string]$app_id
+    [SecureString]$password
+    ExchangeOnlinePowershellV3Client(
+            [string]$app_id,
+            [string]$organization,
+            [string]$certificate,
+            [SecureString]$password
+    )
+    {
+        try
+        {
+            $ByteArray = [System.Convert]::FromBase64String($certificate)
+        }
+        catch
+        {
+            throw "Could not decode the certificate. Try to re-enter it"
+        }
+        $this.certificate = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2 -ArgumentList ($ByteArray, $password)
+
+        $this.organization = $organization
+        $this.app_id = $app_id
+    }
+    CreateSession()
+    {
+        $cmd_params = @{
+            "AppID" = $this.app_id
+            "Organization" = $this.organization
+            "Certificate" = $this.certificate
+        }
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName Search-UnifiedAuditLog -WarningAction:SilentlyContinue | Out-Null
+    }
+    DisconnectSession()
+    {
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     }
     [Array]SearchUnifiedAuditLog(
         [string]$start_date,
@@ -460,7 +503,10 @@ class ExchangeOnlineClient {
         [String[]]$user_ids,
         [int]$result_size
     ) {
+<<<<<<< HEAD
         Import-PSSession -Session $this.session -CommandName Search-UnifiedAuditLog -AllowClobber
+=======
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
         $cmd_args = @{
             "StartDate" = $start_date
             "EndDate"   = $end_date
@@ -490,6 +536,7 @@ class ExchangeOnlineClient {
     }
 }
 
+<<<<<<< HEAD
 #### COMMAND FUNCTIONS ####
 
 function StartAuthCommand {
@@ -542,6 +589,12 @@ function SearchAuditLogCommand {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)][ExchangeOnlineClient]$client,
+=======
+function SearchAuditLogCommand {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
         [hashtable]$kwargs
     )
     try {
@@ -573,6 +626,7 @@ function SearchAuditLogCommand {
             $end_date,
             $kwargs.free_text,
             $kwargs.record_type,
+<<<<<<< HEAD
                 (ArgToList $kwargs.ip_addresses),
                 (ArgToList $kwargs.operations),
                 (ArgToList $kwargs.user_ids),
@@ -583,6 +637,19 @@ function SearchAuditLogCommand {
             foreach ($item in $raw_response) {
                 $list.add((ConvertFrom-Json $item.AuditData))
             }
+=======
+            (ArgToList $kwargs.ip_addresses),
+            (ArgToList $kwargs.operations),
+            (ArgToList $kwargs.user_ids),
+            ($kwargs.result_size -as [int])
+        )
+        if ($raw_response) {
+            $list = [System.Collections.Generic.List[object]]::new()
+            foreach ($item in $raw_response) {
+                $list.add((ConvertFrom-Json $item.AuditData))
+            }
+            # foreach ($item in ,@{AuditData = Get-Content "test_data/audit_log.json" -Raw}) {$list.add((ConvertFrom-Json $item.AuditData))}
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
             $context = @{
                 "$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)" = $list
             }
@@ -596,6 +663,7 @@ function SearchAuditLogCommand {
 
     }
     finally {
+<<<<<<< HEAD
         $client.CloseSession()
     }
 }
@@ -620,10 +688,47 @@ function Main {
         $exo_client = [ExchangeOnlineClient]::new(
             $integration_params.url, $integration_params.credentials.identifier,
             $oauth2_client.access_token, $insecure, $no_proxy)
+=======
+        $client.DisconnectSession()
+    }
+}
+
+function TestModuleCommand($client)
+{
+    try
+    {
+        $client.CreateSession()
+        $demisto.results("ok")
+    }
+    finally
+    {
+        $client.DisconnectSession()
+    }
+
+}
+
+function Main {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+    param()
+    $command = $demisto.GetCommand()
+    $command_arguments = $demisto.Args()
+    $integration_params = $demisto.Params()
+
+    $password = ConvertTo-SecureString $integration_params.certificate.password -AsPlainText -Force
+
+    $audit_log_client = [ExchangeOnlinePowershellV3Client]::new(
+            $integration_params.app_id,
+            $integration_params.organization,
+            $integration_params.certificate.identifier,
+            $password
+    )
+    try {
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
         # Executing command
         $demisto.Debug("Command being called is $command")
         switch ($command) {
             "test-module" {
+<<<<<<< HEAD
                 throw "To complete the authentication process, run the '!o365-auditlog-auth-start' command,
                 and follow the printed instructions.
                 Then to verify the authentication was successful, run '!o365-auditlog-auth-test'."
@@ -639,13 +744,22 @@ function Main {
             }
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $exo_client
+=======
+                $human_readable, $entry_context, $raw_response = TestModuleCommand $audit_log_client
+            }
+            "$script:COMMAND_PREFIX-search" {
+                $human_readable, $entry_context, $raw_response = SearchAuditLogCommand $audit_log_client $command_arguments
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
             }
             default {
                 throw "Command $command no implemented"
             }
         }
+<<<<<<< HEAD
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
+=======
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
         # Return results to server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
     }
@@ -654,20 +768,31 @@ function Main {
             Command: $command
             Arguments: $($command_arguments | ConvertTo-Json)
             Error: $($_.Exception.Message)")
+<<<<<<< HEAD
         if ($command -ne "test-module") {
             ReturnError "Error:
+=======
+        ReturnError "Error:
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
             Integration: $script:INTEGRATION_NAME
             Command: $command
             Arguments: $($command_arguments | ConvertTo-Json)
             Error: $($_.Exception)" | Out-Null
+<<<<<<< HEAD
         }
         else {
             ReturnError $_.Exception.Message
         }
+=======
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
     }
 }
 
 # Execute Main when not in Tests
 if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
     Main
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 5896217e5bc2e4aeea327a288d416e647bda2af2
