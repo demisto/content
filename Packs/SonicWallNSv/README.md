@@ -11,7 +11,10 @@ To configure the Sonicwall NSv to send Syslog to XSIAM server (Broker VM), use t
 To configure Sonicwall to send logs in UTC formats please do the following:
 1. Navigate to "Logs" -> "Syslog" -> "Syslog Settings"
 2. Turn on "Display Syslog Timestamp in UTC"
-   
+
+Note: In order to parse the timestamp correctly, make sure that the timestamp is displayed in UTC.
+The supported time format is yyyy-MM-dd hh:mm:ss (2021-12-08 10:00:00).
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
