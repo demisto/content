@@ -2,27 +2,16 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: MicrosoftPolicyAndComplianceAuditLog
   version: -1
-sectionOrder:
-- Connect
-- Collect
 configuration:
-- displaypassword: Certificate Password
-  display: Certificate
-  additionalinfo: A pfx certificate encoded in Base64.
-  name: certificate
+- display: Exchange Online URL
+  name: url
+  defaultvalue: https://outlook.office365.com
+  type: 0
   required: true
+- display: Email (UPN)
+  name: credentials
   type: 9
-  section: Connect
-- display: The organization used in app-only authentication.
-  name: organization
   required: true
-  type: 0
-  section: Connect
-- display: The application ID from the Azure portal
-  name: app_id
-  required: true
-  type: 0
-  section: Connect
   hiddenpassword: true
 - display: Trust any certificate (not secure)
   name: insecure
@@ -33,6 +22,15 @@ display: Microsoft Policy And Compliance (Audit Log)
 name: MicrosoftPolicyAndComplianceAuditLog
 script:
   commands:
+  - name: o365-auditlog-auth-start
+    arguments: []
+    description: Starts the OAuth2.0 authorization process.
+  - name: o365-auditlog-auth-complete
+    arguments: []
+    description: Completes the OAuth2.0 authorization process.
+  - name: o365-auditlog-auth-test
+    arguments: []
+    description: Tests the OAuth2.0 authorization process.
   - name: o365-auditlog-search
     arguments:
     - name: start_date
@@ -154,7 +152,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.49863
+  dockerimage: demisto/powershell-ubuntu:7.3.0.49844
 fromversion: 5.5.0
 tests:
 - Audit Log - Test
