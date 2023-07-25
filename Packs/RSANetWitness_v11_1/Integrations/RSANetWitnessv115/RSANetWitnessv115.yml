@@ -43,7 +43,7 @@ configuration:
   name: max_alerts
   type: 0
   required: false
-  additionalinfo: The maximum number of alerts for each fetch is 50 (as default).
+  additionalinfo: The maximum number of alerts to fetch for each incident. The maximum allowed is 50.
   defaultvalue: '50'
 - defaultvalue: NetWitness Incident
   display: Incident type
