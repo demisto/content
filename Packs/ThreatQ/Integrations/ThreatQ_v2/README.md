@@ -274,6 +274,7 @@
 <h3 id="h_7f270f17-e535-4e39-b67c-fb5d1edd2f14">3. Check a URL</h3>
 <hr>
 <p>Checks the reputation of a URL in ThreatQ.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>url</code></p>
 <h5>Input</h5>
@@ -721,6 +722,7 @@
 <h3 id="h_e60fe097-2ce1-4ec1-87da-d54bb142782f">6. Check a domain</h3>
 <hr>
 <p>Checks the reputation of a domain in ThreatQ.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>domain</code></p>
 <h5>Input</h5>
