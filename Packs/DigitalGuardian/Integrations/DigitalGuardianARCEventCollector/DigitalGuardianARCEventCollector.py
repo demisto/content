@@ -41,7 +41,7 @@ class Client(BaseClient):
             if time_now < valid_until:
                 # Token is still valid - did not expire yet
                 demisto.debug('Using cached token which is still valid')
-                demisto.debug(f'time-now: {time_now}\n valid token: {valid_until}')
+                demisto.debug(f'time-now: {time_now}\n valid token until: {valid_until}')
                 return token
         sec = self.client_secret.get("password")
         response = self._http_request(
