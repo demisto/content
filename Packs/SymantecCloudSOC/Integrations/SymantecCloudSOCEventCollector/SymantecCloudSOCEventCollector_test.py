@@ -1,7 +1,7 @@
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-from SymantecCloudSOC import Client
+from SymantecCloudSOCEventCollector import Client
 import pytest
 import json
 
@@ -66,7 +66,7 @@ def test_get_events_command():
         Then:
             - Verify human-readable outputs.
     """
-    from SymantecCloudSOC import get_events_command
+    from SymantecCloudSOCEventCollector import get_events_command
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
             url=get_mocked_url(app="investigate", subtype="all",
@@ -97,7 +97,7 @@ def test_test_module():
         Then:
             - Ensure that three API calls are executed and each call is execute only once.
     """
-    from SymantecCloudSOC import test_module
+    from SymantecCloudSOCEventCollector import test_module
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
             url=get_mocked_url(app="Investigate", subtype="all",
@@ -133,7 +133,7 @@ def test_add_fields_to_event(event, log_type, expected_event):
         Then:
             - Ensure that the fields _time and type are added.
     """
-    from SymantecCloudSOC import add_fields_to_event
+    from SymantecCloudSOCEventCollector import add_fields_to_event
     add_fields_to_event(event, log_type)
     assert event == expected_event
 
@@ -195,7 +195,7 @@ def test_dedup_by_id_with_last_run(last_run_for_log_type, log_events, log_type,
         Then:
             - Ensure that the last_run object is correct and verify content of the event_list.
     """
-    from SymantecCloudSOC import dedup_by_id
+    from SymantecCloudSOCEventCollector import dedup_by_id
     list_of_events, last_run_for_log_type = dedup_by_id(last_run_for_log_type, log_events, log_type,
                                                         max_fetch, number_of_events, last_fetch)
     assert expected_last_run == last_run_for_log_type
@@ -237,7 +237,7 @@ def test_dedup_by_id_without_last_run(last_run_for_log_type, log_events, log_typ
         Then:
             - Ensure that the last_run object is correct and verify content of the event_list.
     """
-    from SymantecCloudSOC import dedup_by_id
+    from SymantecCloudSOCEventCollector import dedup_by_id
     list_of_events, last_run_for_log_type = dedup_by_id(last_run_for_log_type, log_events, log_type,
                                                         max_fetch, number_of_events, last_fetch)
     assert expected_last_run == last_run_for_log_type
@@ -262,7 +262,7 @@ def test_get_first_fetch_time(first_fetch_from_params, expected_fetch_Incident, 
         Then:
             - Validate that the fetch_incident and the fetch_investigation are as expected.
     """
-    from SymantecCloudSOC import get_first_fetch_time
+    from SymantecCloudSOCEventCollector import get_first_fetch_time
     fetch_incident, fetch_investigation = get_first_fetch_time(first_fetch_from_params)
     assert fetch_incident == expected_fetch_Incident
     assert fetch_investigation == expected_fetch_investigation
@@ -277,7 +277,7 @@ def test_create_client_with_authorization():
         Then:
             - Ensure that the client created with the correct header and base url.
     """
-    from SymantecCloudSOC import create_client_with_authorization
+    from SymantecCloudSOCEventCollector import create_client_with_authorization
     client_results = create_client_with_authorization("http://some_mock_url.com", True,
                                                       False, key_id="key_id", key_secret="key_secret")
 
@@ -315,7 +315,7 @@ def test_get_all_events_for_log_type_with_pagination(max_fetch, log_type, last_r
             - Ensure that the pagination mechanism works as expected.
             - Validate that the last_run and the events_list are as expected.
     """
-    from SymantecCloudSOC import get_all_events_for_log_type
+    from SymantecCloudSOCEventCollector import get_all_events_for_log_type
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
             url=get_mocked_url(app="Investigate", subtype="all",
@@ -374,7 +374,7 @@ def test_get_all_events_for_log_type_without_pagination(max_fetch, log_type, las
         Then:
             - Validate that the last_run and the events_list are as expected.
     """
-    from SymantecCloudSOC import get_all_events_for_log_type
+    from SymantecCloudSOCEventCollector import get_all_events_for_log_type
     with requests_mock.Mocker() as request_mocker:
         investigate_mocker = request_mocker.get(
             url=get_mocked_url(app="Investigate", subtype="all",
@@ -421,7 +421,7 @@ def test_fetch_events_command(mocker, max_fetch, last_run, first_fetch_time, fir
         Then:
             - Validate that the last_run and the events are as expected.
     """
-    from SymantecCloudSOC import fetch_events_command
+    from SymantecCloudSOCEventCollector import fetch_events_command
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(demisto, 'params', return_value=test_params)
     with requests_mock.Mocker() as request_mocker:
