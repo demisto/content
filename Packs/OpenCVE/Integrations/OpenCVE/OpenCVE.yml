@@ -3,7 +3,7 @@ commonfields:
   id: OpenCVE
   version: -1
 configuration:
-- defaultvalue: https://opencve.io
+- defaultvalue: https://www.opencve.io
   display: Server URL
   name: url
   required: true
@@ -15,66 +15,13 @@ configuration:
 - display: Password
   name: password
   required: true
-  type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Fetch indicators
-  defaultvalue: 'true'
-  name: feed
-  required: false
-  type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- defaultvalue: indicatorType
-  display: ""
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- defaultvalue: "20160"
-  display: ""
-  name: feedExpirationInterval
-  required: false
-  type: 1
-- defaultvalue: "240"
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: false
-  type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
-  defaultvalue: RED
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
-- additionalinfo: Reliability of the source providing the intelligence data
+  type: 9
+- name: integration_reliability
   display: Source Reliability
-  name: feedReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A+ - 3rd party enrichment
   options:
+  - A+ - 3rd party enrichment
   - A - Completely reliable
   - B - Usually reliable
   - C - Fairly reliable
@@ -83,13 +30,12 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: Supports CSV values.
-  display: Tags
-  name: feedTags
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
-  type: 0
+  type: 8
 description: Searches for CVE information using OpenCVE.
-display: OpenCVE (Contribution)
+display: OpenCVE
 name: OpenCVE
 script:
   commands:
@@ -98,8 +44,8 @@ script:
       name: limit
     - description: Last run
       name: lastRun
-    description: Returns the latest updated CVEs.
-    name: cve-latest
+    description: Returns the latest updated CVEs from your reports.
+    name: opencve-latest
     outputs:
     - contextPath: CVE.ID
       description: The ID of the CVE.
@@ -132,7 +78,7 @@ script:
     - default: true
       description: 'The CVE ID. For example: CVE-2014-1234.'
       isArray: true
-      name: cve_id
+      name: cve
       required: true
     description: Returns CVE information by CVE ID.
     name: cve
@@ -166,13 +112,13 @@ script:
       type: String
   - arguments: []
     description: List the vendors subscriptions of the authenticated user.
-    name: ocve-get-my-vendors
+    name: opencve-get-my-vendors
     outputs:
     - contextPath: OpenCVE.Vendors
       description: Vendors
   - arguments: []
     description: List the products subscriptions of the authenticated user.
-    name: ocve-get-my-products
+    name: opencve-get-my-products
     outputs:
     - contextPath: OpenCVE.Products
       description: Products
@@ -180,35 +126,8 @@ script:
     - description: Vendor name
       name: vendor_name
       required: true
-    description: Get vendor info
-    name: ocve-get-vendor
-    outputs:
-    - contextPath: OpenCVE.Vendor
-      description: Vendor info
-  - arguments:
-    - description: Vendor name
-      name: vendor_name
-      required: true
-    - description: filter by keyword in summary
-      name: search
-    - description: filter by product name
-      name: product
-    - auto: PREDEFINED
-      description: filter by CVSS
-      name: cvss
-      predefined:
-      - none
-      - low
-      - medium
-      - high
-      - critical
-    - description: filter by CWE
-      name: cwe
-    - defaultValue: "1"
-      description: the page to start
-      name: page
     description: Get vendor CVEs
-    name: ocve-get-vendor-cves
+    name: opencve-get-vendor-cves
     outputs:
     - contextPath: vendor_cves
       description: CVEs for the vendor
@@ -219,128 +138,76 @@ script:
     - description: Product name
       name: product_name
       required: true
-    description: Get product info
-    name: ocve-get-product
-  - arguments:
-    - description: vendor name
-      name: vendor_name
-      required: true
-    - description: product name
-      name: product_name
-      required: true
-    - description: filter by keyword in summary
-      name: search
-    - auto: PREDEFINED
-      description: filter by CVSS
-      name: cvss
-      predefined:
-      - none
-      - low
-      - medium
-      - high
-      - critical
-    - description: filter by CWE
-      name: cwe
-    - defaultValue: "1"
-      description: the page to start
-      name: page
     description: Get product CVEs
-    name: ocve-get-product-cves
+    name: opencve-get-product-cves
     outputs:
     - contextPath: product_cves
       description: Product CVEs
-  - arguments: []
-    description: Get reports
-    name: ocve-get-reports
+  - arguments:
+    - description: Report ID
+      name: report_id
+      required: false
+    - description: Specific page to start from
+      name: page
+      required: false
+    description: List the reports of the authenticated user or get a specific report.
+    name: opencve-get-reports
     outputs:
     - contextPath: reports
-      description: The reports
+      description: Reports
   - arguments:
     - description: The report ID
       name: report_id
-      required: true
-    description: Get a specific report
-    name: ocve-get-report
-    outputs:
-    - contextPath: report
-      description: The report
-  - arguments:
-    - description: The report ID
-      name: report_id
-      required: true
-    - defaultValue: "1"
-      description: the page to start
+      required: false
+    - description: Specific page to start from
       name: page
-    description: Get alerts
-    name: ocve-get-alerts
+      required: false
+    - description: The Alert ID
+      name: alert_id
+      required: false
+    description: List the alerts of a report or get the details of a specific alert.
+    name: opencve-get-alerts
     outputs:
     - contextPath: alerts
       description: The Alerts from the provided Report ID
   - arguments:
-    - description: The Report ID
-      name: report_id
-      required: true
-    - description: The Alert ID
-      name: alert_id
-      required: true
-    description: Get a specific alert
-    name: ocve-get-alert
-    outputs:
-    - contextPath: alert
-      description: The Alert requested
-  - arguments:
-    - description: The CVE ID
-      name: cve_id
-      required: true
-    description: Get the details of a specific CVE.
-    name: ocve-get-cve
-    outputs:
-    - contextPath: CVE.ID
-      description: The ID of the CVE.
-    - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE.
-    - contextPath: CVE.Published
-      description: The date the CVE was published.
-    - contextPath: CVE.Modified
-      description: The date that the CVE was last modified.
-    - contextPath: CVE.Description
-      description: The description of the CVE.
-    - contextPath: DBotScore.Indicator
-      description: The indicator value.
-    - contextPath: DBotScore.Score
-      description: The indicator score.
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-    - contextPath: DBotScore.Vendor
-      description: The vendor reporting the score of the indicator.
-  - arguments:
-    - description: filter by keyword
-      name: search
-    - description: filter by the first letter
-      name: letter
-    - description: the page to start
-      name: page
-    description: Get vendors
-    name: ocve-get-vendors
-    outputs:
-    - contextPath: vendors
-      description: vendors
-  - arguments:
-    - description: vendor name
+    - description: Vendor name
       name: vendor_name
       required: true
-    - description: filter by keyword
+    - description: Product name
+      name: product_name
+      required: false
+    - description: Filter the search by a keyword
       name: search
-    - defaultValue: "1"
-      description: the page to start
+      required: false
+    - description: Specific page to start from
       name: page
-    description: Get vendor products
-    name: ocve-get-products
+      required: false
+    description: List the products associated to a vendor or get a specific one.
+    name: opencve-get-products
     outputs:
     - contextPath: products
-      description: products
-  dockerimage: demisto/python3:3.10.12.65389
-  feed: true
+      description: Products
+  - arguments:
+    - description: Vendor name
+      name: vendor_name
+      required: false
+    - description: Filter the search by a keyword
+      name: search
+      required: false
+    - description: Specific page to start from
+      name: page
+      required: false
+    - description: Filter by the first letter
+      name: letter
+      required: false
+    description: List the products associated to a vendor or get a specific product of a vendor by specifying its name.
+    name: opencve-get-vendors
+    outputs:
+    - contextPath: vendors
+      description: Vendors
+  dockerimage: demisto/python3:3.10.12.66339
+  feed: false
   isFetchSamples: true
   runonce: false
   script: ''
