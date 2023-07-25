@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'Workday'
-PRODUCT = 'Workday'
+PRODUCT = 'Activity'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
