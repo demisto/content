@@ -1,4 +1,4 @@
-This is a sub-playbook that reruns a single insight using a specified Insight Id as input. It is used to run insights one by one iteratively as part of the main rerun playbook - "SafeBreach Rerun Insights".
+Deprecated. No available replacement.
 
 ## Dependencies
 
@@ -14,8 +14,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* Print
 * Sleep
+* Print
 
 ### Commands
 
@@ -44,8 +44,3 @@ This playbook does not use any sub-playbooks.
 | SafeBreach.Test.AttacksCount | The number of attacks executed in the insight rerun test. | Number |
 | SafeBreach.Test.Status | Test run status. For insight rerun, starts from PENDING. | String |
 | SafeBreach.Test.ScheduledTime | Time when the test was triggered. | String |
-
-## Playbook Image
-
----
-![SafeBreach - Rerun Single Insight](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/SafeBreach_Rerun_Single_Insight.png)

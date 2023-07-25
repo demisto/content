@@ -1,4 +1,4 @@
-This is a sub-playbook reruns a list of SafeBreach insights based on Insight Id and waits until they complete. Used in main SafeBreach playbooks, such as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral Insights Feed".
+Deprecated. No available replacement.
 
 ## Dependencies
 
@@ -6,8 +6,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
 * SafeBreach - Rerun Single Insight
+* GenericPolling
 
 ### Integrations
 
@@ -51,8 +51,3 @@ This playbook does not use any commands.
 | SafeBreach.Insight.ThreatGroups | Array of APT names that are mapped to the insight | Array |
 | SafeBreach.Insight.NetworkDirection | Communication direction of Insight, relative to the target \(inbound/outbound\) | String |
 | SafeBreach.Insight.AttacksCount | List of all insight related SafeBreach attack ids | Array |
-
-## Playbook Image
-
----
-![SafeBreach - Rerun Insights](https://github.com/demisto/content/raw/6af01e00312a5558e9e2fecdb22534e98414bc9c/Packs/SafeBreach/doc_imgs/SafeBreach_Rerun_Insights.png)
