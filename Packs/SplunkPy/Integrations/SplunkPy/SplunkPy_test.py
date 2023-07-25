@@ -1,13 +1,15 @@
-from copy import deepcopy
-import pytest
-from splunklib.binding import AuthenticationError
-
-import SplunkPy as splunk
-from splunklib import client
 import demistomock as demisto
 from CommonServerPython import *
-from datetime import timedelta, datetime
+
+import pytest
+from copy import deepcopy
 from collections import namedtuple
+from datetime import timedelta, datetime
+
+from splunklib.binding import AuthenticationError
+from splunklib import client
+from splunklib import results
+import SplunkPy as splunk
 
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
@@ -578,7 +580,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
@@ -642,7 +644,7 @@ def test_fetch_notables(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = Service('DONE')
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = splunk.UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper=mapper)
     cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
@@ -997,8 +999,9 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
 def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
                                                 func_call_kwargs: dict, expected_closure_data: dict):
     class Jobs:
-        def __init__(self):
-            self.oneshot = lambda x: notable_data
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == splunk.OUTPUT_MODE_JSON
+            return notable_data
 
     class Service:
         def __init__(self):
@@ -1008,7 +1011,7 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[notable_data])
     mocker.patch.object(demisto, 'results')
     service = Service()
     splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False), **func_call_kwargs)
@@ -1023,12 +1026,59 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
     assert results == expected_results
 
 
+def test_get_remote_data_command_with_message(mocker):
+    """
+    Test for the get_remote_data_command function with a message.
+
+    This test verifies that when the splunk-sdk returns a message, the function correctly logs the message
+    using demisto.debug().
+
+    Args:
+        mocker: The mocker object for patching and mocking.
+
+    Returns:
+        None
+    """
+
+    class Message:
+        def __init__(self, message: str):
+            self.message = message
+
+    class Jobs:
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == splunk.OUTPUT_MODE_JSON
+            return Message("test message")
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": True,
+        "close_end_statuses": True,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(Service(), False),
+    }
+    debug_mock = mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
+    mocker.patch.object(demisto, "info")
+    mocker.patch(
+        "SplunkPy.results.JSONResultsReader", return_value=[Message("test message")]
+    )
+    mocker.patch("SplunkPy.isinstance", return_value=True)
+
+    splunk.get_remote_data_command(Service(), **func_call_kwargs)
+    (debug_message,) = debug_mock.call_args_list[1][0]
+    assert debug_message == "Splunk-SDK message: test message"
+
+
 def test_get_modified_remote_data_command(mocker):
     updated_incidet_review = {'rule_id': 'id'}
 
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x, count: [updated_incidet_review]
+            self.oneshot = lambda x, count, output_mode: [updated_incidet_review]
 
     class Service:
         def __init__(self):
@@ -1037,7 +1087,7 @@ def test_get_modified_remote_data_command(mocker):
     args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_incidet_review])
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[updated_incidet_review])
     mocker.patch.object(demisto, 'results')
     splunk.get_modified_remote_data_command(Service(), args)
     results = demisto.results.call_args[0][0]['Contents']
@@ -1376,9 +1426,15 @@ def test_splunk_search_command(mocker, polling, status):
     Then:
         Ensure the result as expected in polling and in regular search.
     """
-    mock_args = {'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
-                 'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'fast_mode': 'false', 'polling': polling}
+    mock_args = {
+        "query": "query",
+        "earliest_time": "2021-11-23T10:10:10",
+        "latest_time": "2020-10-20T10:10:20",
+        "app": "test_app",
+        "fast_mode": "false",
+        "polling": polling,
+    }
+
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     search_result = splunk.splunk_search_command(Service(status), mock_args)
 
@@ -1487,10 +1543,9 @@ def test_module_message_object(mocker):
     Then:
         - Validate the test_module run successfully and the info method was called once.
     """
-    from splunklib import results
     # prepare
     message = results.Message("DEBUG", "There's something in that variable...")
-    mocker.patch('splunklib.results.ResultsReader', return_value=[message])
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[message])
     service = mocker.patch('splunklib.client.connect', return_value=None)
     # run
     splunk.test_module(service, {'isFetch': True, 'fetchQuery': 'something'})
@@ -1539,7 +1594,7 @@ def test_labels_with_non_str_values(mocker):
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
-    mocker.patch('splunklib.results.ResultsReader', return_value=[mocked_response])
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[mocked_response])
 
     # run
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1728,3 +1783,17 @@ def test_basic_authentication_param(mocker, username, expected_username, basic_a
 
     assert client.connect.call_args[1]['username'] == expected_username
     assert ('basic' in client.connect.call_args[1]) == basic_auth
+
+
+@pytest.mark.parametrize(
+    'item, expected',
+    [
+        ({'message': 'Test message'}, False),
+        (results.Message('INFO', 'Test message'), True)
+    ]
+)
+def test_handle_message(item: dict | results.Message, expected: bool):
+    """
+    Tests that passing a results.Message object returns True
+    """
+    assert splunk.handle_message(item) is expected
