@@ -1130,17 +1130,11 @@ script:
         A comma-separated list of direction(s) in which to sort the fields defined by "sortFields".
         If multiple directions are chosen, they will be sequentially matched with "sortFields".
         If only one direction is chosen it will be used to sort all values in "sortFields".
-        Example 1:
-          sortFields: start_date,status
-          sortOrder: asc,desc
-        Result:
-          start_date is sorted in ascending order.
-          status is sorted in descending order.
-        Example 2:
-          sortFields: start_date,status
-          sortOrder: asc
-        Result:
-          Both start_date are status are sorted in ascending order.
+        For example:
+          If sortFields is "start_date,status" and sortOrder is "asc,desc",
+          then start_date is sorted in ascending order and status in descending order.
+          If sortFields is "start_date,status" and sortOrder is simply "asc",
+          then both start_date and status are sorted in ascending order.
       isArray: true
       defaultValue: asc
       auto: PREDEFINED
@@ -1227,18 +1221,27 @@ script:
         A comma-separated list of filters to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
+         For example:
+          If filterName is "n1,n2", filterQuality is "op1,op1" and filterValue is "val1,val2",
+          then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
       isArray: true
     - name: filterQuality
       description: |
         A comma-separated list of operators for the filter to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
+         For example:
+          If filterName is "n1,n2", filterQuality is "op1,op1" and filterValue is "val1,val2",
+          then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
       isArray: true
     - name: filterValue
       description: |
-        A comma-separated list of values for the filter to apply to the exported scan report.
+        A comma-separated list of regular expressions for the filter to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
+         For example:
+          If filterName is "n1,n2", filterQuality is "op1,op1" and filterValue is "val1,val2",
+          then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
       isArray: true
     - name: filterSearchType
       description: For multiple filters, specifies whether to use the AND or the OR logical operator.
