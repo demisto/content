@@ -1258,6 +1258,11 @@ script:
     - contextPath: OpsGenie.Incident.success
       description: Whether the request was successful.
       type: Boolean
+  - name: opsgenie-get-team-routing-rules
+    description: Lists team routing rules.
+    arguments:
+      - name: team_id
+        description: The ID of the team from Opsgenie.
 
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true

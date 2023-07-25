@@ -315,6 +315,11 @@ class Client(BaseClient):
                                   url_suffix=f"/v2/{TEAMS_SUFFIX}/{args.get('team_id')}"
                                   )
 
+    def get_team_routing_rules(self, args: dict):
+        return self._http_request(method='GET',
+                                  url_suffix=f"/v2/{TEAMS_SUFFIX}/{args.get('team_id')}/routing-rules"
+                                  )
+
     def list_teams(self):
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{TEAMS_SUFFIX}"
@@ -867,6 +872,16 @@ def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def get_team_routing_rules(client: Client, args: Dict[str, Any]) -> CommandResults:
+    result = client.get_team_routing_rules(args)
+    return CommandResults(
+        outputs_prefix="OpsGenie.Team.RoutingRules",
+        outputs=result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie Team Routing Rules", result.get("data")),
+        raw_response=result
+    )
+
+
 def _parse_fetch_time(fetch_time: str):
     fetch_time_date = dateparser.parse(date_string=f"{fetch_time} UTC")
     assert fetch_time_date is not None, f'could not parse {fetch_time} UTC'
@@ -1031,6 +1046,7 @@ def main() -> None:
             'opsgenie-add-tag-incident': add_tag_incident,
             'opsgenie-remove-tag-incident': remove_tag_incident,
             'opsgenie-get-teams': get_teams,
+            'opsgenie-get-team-routing-rules': get_team_routing_rules,
             'opsgenie-get-request': get_request_command
         }
         command = demisto.command()
