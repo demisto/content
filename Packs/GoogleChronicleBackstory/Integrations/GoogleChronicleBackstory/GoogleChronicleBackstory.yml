@@ -11,7 +11,7 @@ configuration:
   required: true
   type: 4
   section: Connect
-- additionalinfo: Select the region based on the location of the chronicle backstory instance. If region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
+- additionalinfo: Select the region based on the location of the chronicle backstory instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
   defaultvalue: General
   display: Region
   name: region
