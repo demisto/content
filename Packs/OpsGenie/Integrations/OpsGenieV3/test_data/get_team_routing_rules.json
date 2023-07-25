@@ -6,7 +6,7 @@
             "name": "Demisto_EscalationHigh",
             "ownerTeam": {
                 "id": "a6604a9f-b152-54c-b31-1b9741c109",
-                "name": "Merve Nur CowboyS"
+                "name": "Demisto"
             },
             "rules": [
                 {
@@ -24,7 +24,7 @@
                 }
             ]
         }
-    ]
+    ],
     "requestId": "f5aede7c-247e-4f38-b50b-6c9848f49beb",
     "took": 0.111
 }
