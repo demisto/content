@@ -184,7 +184,7 @@ def fetch_by_ioc(client: Client, args: dict[str, Any]) -> CommandResults:
 def fetch_events(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch events from an incident ID
     """
-    results = client.get_events(args['id'])['results']
+    results = client.get_events(str(args.get('id'))).get('results', [])
     for result in results:
         result['method'] = result.get('alert', {}).get('signature', 'algorithmic detection')
         result['info'] = ""
@@ -251,7 +251,7 @@ def linearize_host_id(host: dict) -> list:
 def fetch_host_id(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch host_id info from an IP
     """
-    result = client.get_host_id(args['ip'])
+    result = client.get_host_id(str(args.get('ip')))
     host_info = linearize_host_id(result)
 
     table = tableToMarkdown('Host Insight', host_info, headers=['timestamp', 'ip', 'type', 'value'])
