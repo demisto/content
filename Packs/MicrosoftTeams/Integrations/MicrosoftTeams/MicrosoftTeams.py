@@ -17,7 +17,7 @@ from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
-
+from cryptography.hazmat.primitives.asymmetric.rsa import (RSAPrivateKey, RSAPublicKey)
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
@@ -807,7 +807,7 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify endorsements')
         return False
 
-    public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key: RSAPrivateKey | RSAPublicKey = RSAAlgorithm.from_jwk(json.dumps(key_object))
     options = {
         'verify_aud': False,
         'verify_exp': True,
