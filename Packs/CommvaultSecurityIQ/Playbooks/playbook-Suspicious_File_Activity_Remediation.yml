@@ -155,7 +155,7 @@ tasks:
     message:
       bcc:
       body:
-        simple: Disable data aging on client {incident.originatingclient}
+        simple: Disable data aging on client {incident.commvaultoriginatingclient}
       cc:
       format: ""
       methods: []
@@ -291,7 +291,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       closeNotes:
-        simple: Suspicious activity found on ${incident.originatingclient}.
+        simple: Suspicious activity found on ${incident.commvaultoriginatingclient}.
       closeReason:
         simple: Resolved
     separatecontext: false

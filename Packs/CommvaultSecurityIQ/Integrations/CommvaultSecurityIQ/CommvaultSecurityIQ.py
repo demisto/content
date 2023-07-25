@@ -195,37 +195,13 @@ def format_alert_description(msg: str) -> str:
     Format alert description
     """
     default_value = msg
-    resp = msg[msg.find("<html>") + 6: msg.find("</html>")]
-    if resp and len(resp) > 0:
+    if msg.find("<html>") != -1 and msg.find("</html>") != -1:
+        resp = msg[msg.find("<html>") + 6: msg.find("</html>")]
         msg = resp.strip()
-        if msg:
-            msg = re.sub("<span.*</span>", "", msg)
-            if msg:
-                msg = re.sub("Please click.*details.", "", msg)
-                return msg
+        if msg.find("Detected ") != -1 and msg.find(" Please click ") != -1:
+            msg = msg[msg.find("Detected "): msg.find(" Please click ")]
             return msg
     return default_value
-
-
-def update_integration_context_samples(
-    incident: dict, max_samples: int = MAX_SAMPLES
-) -> None:
-    """
-    Updates the integration context samples with the newly created incident.
-    If the size of the samples has reached `MAX_SAMPLES`, will pop out the latest sample.
-    Args:
-        incident (dict): The newly created incident.
-        max_samples (int): Max samples size.
-
-    Returns:
-        (None): Modifies the integration context samples field.
-    """
-    ctx = get_integration_context()
-    updated_samples_list: list[dict] = [incident] + ctx.get("samples", [])
-    if len(updated_samples_list) > max_samples:
-        updated_samples_list.pop()
-    ctx["samples"] = updated_samples_list
-    set_integration_context(ctx)
 
 
 " MAIN FUNCTION "
@@ -444,10 +420,10 @@ class Client(BaseClient):
                 return False
         else:
             current_epoch = int(datetime.now().timestamp())
-            token_expiry_from_last_generation = (
+            token_expiry_from_last_generation = int((
                 self.access_token_last_generation
-                + self.access_token_expiry_in_days * 7 * 24 * 60 * 60
-            )
+                + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
+            ))
             if current_epoch > token_expiry_from_last_generation:
                 demisto.debug("Token is expired, re-generating")
                 if not self.generate_access_token(api_token):
@@ -620,7 +596,7 @@ class Client(BaseClient):
         ustring = (
             "/events?level=10&showInfo=false&showMinor=false&"
             "showMajor=true&showCritical=false&"
-            "showAnomalous=true&showAnomalous=true"
+            "showAnomalous=true"
         )
         event_endpoint = f"{ustring}&fromTime={fromtime}&toTime={seconds_since_epoch}"  # disable-secrets-detection
         headers = self.headers
@@ -640,7 +616,7 @@ class Client(BaseClient):
         """
         self.validate_session_or_generate_token(self.current_api_token)
         resp = self.http_request("GET", "/Subclient/" + str(subclient_id), None)
-        resp = resp.get("subClientProperties", {}).get(0, {}).get("content")
+        resp = resp.get("subClientProperties", [{}])[0].get("content")
         return resp
 
     def define_severity(self, anomaly_sub_type: str) -> str | None:
@@ -766,20 +742,17 @@ class Client(BaseClient):
             demisto.info(f"Invalid job [{job_id}]")
             return None
         job_start_time = int(
-            job_details.get("jobs", {})
-            .get(0, {})
+            job_details.get("jobs", [{}])[0]
             .get("jobSummary", {})
             .get("jobStartTime")
         )
         job_end_time = int(
-            job_details.get("jobs", {})
-            .get(0, {})
+            job_details.get("jobs", [{}])[0]
             .get("jobSummary", {})
             .get("jobEndTime")
         )
         subclient_id = (
-            job_details.get("jobs", {})
-            .get(0, {})
+            job_details.get("jobs", [{}])[0]
             .get("jobSummary", {})
             .get("subclient", {})
             .get("subclientId")
@@ -986,6 +959,7 @@ class Client(BaseClient):
                     return False
         except Exception as error:
             demisto.debug(f"Could not disable identity provider due to [{error}]")
+            return False
         return True
 
     def fetch_and_disable_saml_identity_provider(self) -> bool:
@@ -1027,9 +1001,9 @@ class Client(BaseClient):
             if current_user:
                 user_id = str(current_user.get("userEntity", {}).get("userId"))
                 response = self.http_request("GET", f"/User/{user_id}")
-                if response.get("users", {}).get(0, {}).get("enableUser"):
+                if response.get("users", [{}])[0].get("enableUser"):
                     response = self.http_request("PUT", f"/User/{user_id}/Disable")
-                    if response.get("response", {}).get(0, {}).get("errorCode") > 0:
+                    if response.get("response", [{}])[0].get("errorCode") > 0:
                         demisto.debug(f"Failed to disable user [{user_email}].")
                         return False
                 else:
@@ -1039,6 +1013,7 @@ class Client(BaseClient):
                 return False
         except Exception as error:
             demisto.debug(f"Could not disable user [{user_email}] due to [{error}]")
+            return False
         return True
 
     def get_client_id(self) -> str:
@@ -1170,15 +1145,15 @@ def fetch_incidents(
         {} if (last_run is None) else last_run, first_fetch_time, max_fetch
     )
 
-    if events is None:
-        demisto.info("There are no events")
-        return {}, None
     current_date = datetime.utcnow()
     epoch = datetime(1970, 1, 1)
 
     seconds_since_epoch = int((current_date - epoch).total_seconds())
     out = []
 
+    if events is None:
+        demisto.info("There are no events")
+        return {}, None
     domain = client.get_host()
 
     events = sorted(events, key=lambda d: d.get("timeSource"))
