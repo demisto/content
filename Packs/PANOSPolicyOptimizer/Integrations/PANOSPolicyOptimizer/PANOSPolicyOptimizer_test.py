@@ -1,7 +1,7 @@
 import pytest
-import io
 from CommonServerPython import *
-from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position
+from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position,\
+    get_policy_optimizer_statistics_command
 
 BASE_URL = 'https://test.com'
 
@@ -15,7 +15,7 @@ def get_panorama_instance_client():
 
 
 def read_json_file(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -79,6 +79,40 @@ def test_body_request_is_valid_when_querying_rules(mocker, client, position):
         'type': 'rpc',
         'tid': 1
     }
+
+
+@pytest.mark.parametrize("client, position, VERSION, excepted_position", [
+    (get_firewall_instance_client(), 'pre', '9.0.0', 'main'),
+    (get_panorama_instance_client(), 'pre', '10.2.0', 'pre'),
+    (get_panorama_instance_client(), 'post', '9.0.0', 'main')])
+def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker, client, position, VERSION, excepted_position):
+    """
+    Given
+        - a client.
+    When
+        - querying policy optimizer statistics in firewall/panorama instances.
+
+    Then
+        - Verify that the body request that was sent is correct for each type of instance.
+        case1: PAN-OS 9.0.0 should always return main.
+        case2: Panorama 10.2.0 should will return pre, the given position argument.
+        case3: Panorama 9.0.0 should always return main.
+    """
+    mocker.patch.object(client, 'token_generator', return_value='123')
+    response = requests.Response()
+    response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
+
+    response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
+    mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
+
+    client.session_metadata["headers"] = 'test'
+    get_policy_optimizer_statistics_command(
+        client=client, args={
+            'position': position
+        }
+    )
+    assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run', 'data': [
+        '123', 'PoliciesDirect.getRuleCountInRuleUsage', [{'type': 'security', 'position': excepted_position, 'vsysName': 'test'}]], 'type': 'rpc', 'tid': 1}
 
 
 CLIENTS = [
