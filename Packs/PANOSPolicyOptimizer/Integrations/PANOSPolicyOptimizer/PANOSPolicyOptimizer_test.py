@@ -194,3 +194,24 @@ def test_get_unused_rules(mocker, position, num_of_rules):
     rules = policy_optimizer_get_rules_command(client, args).outputs
 
     assert len(rules) == num_of_rules
+
+
+@pytest.mark.parametrize("VERSION, position , is_panorama, res",
+                         [('8', "post", True, "main"), ('9', "post", False, "main"), ('10.3', "post", True, "post")])
+def test_define_position(mocker, VERSION, position, is_panorama, res):
+    """
+    Given:
+        - version of PAN-OS.
+        - position of the rule.
+        -  is_panorama flag.
+    When:
+        - running define_position.
+    Then:
+        - return the correct position.
+        case 1: PAN-OS 8 should always return main.
+        case 2: PAN-OS 9 should always return main.
+        case 3: PAN-OS 10.3 should return post as its input.
+    """
+    mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
+    from PANOSPolicyOptimizer import define_position
+    assert define_position(args={"position": position}, is_panorama=is_panorama) == res
