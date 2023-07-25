@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 import json
 import os
-import sys
-
 from pathlib import Path
-from typing import Any
-
 import urllib3
 from blessings import Terminal
 from github import Github
@@ -13,18 +9,19 @@ from git import Repo
 from github.Repository import Repository
 
 
-from utils import get_env_var, timestamped_print, Checkout
+from utils import (
+    get_env_var,
+    timestamped_print,
+    Checkout,
+    load_json,
+    get_content_reviewers,
+    CONTENT_ROLES_PATH
+)
 from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-
-# Replace the Github Users of the reviewers and security reviewer according to the current contributions team
-CONTENT_ROLES_RELATIVE_PATH = "../../.github/content_roles.json"
-CONTENT_ROLES_PATH_ENV_KEY = "CONTENT_ROLES_FILE"
-CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
-CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
@@ -51,40 +48,6 @@ SECURITY_CONTENT_ITEMS = [
     "Classifiers",
     "Wizards"
 ]
-
-
-def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str]:
-    """
-    Retrieve the content reviewers from the JSON file
-
-    Args:
-        - `content_roles` (``dict[str, Any]``): The current content team roles and members.
-
-    Return:
-        - `list[str]` of content reviewers GitHub usernames.
-        - `str` of security reviewer GitHub username.
-    """
-
-    try:
-        contribution_reviewers: list[str] = content_roles[CONTRIBUTION_REVIEWERS_KEY]
-        security_reviewer: str = content_roles[CONTRIBUTION_SECURITY_REVIEWER_KEY]
-
-        if not isinstance(contribution_reviewers, list):
-            print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")
-            sys.exit(1)
-
-        if not isinstance(security_reviewer, str) or not security_reviewer:
-            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")
-            sys.exit(1)
-
-        if not contribution_reviewers or not security_reviewer:
-            print("No contribution or  reviewers")
-            sys.exit(1)
-
-        return contribution_reviewers, security_reviewer
-    except KeyError as ke:
-        print(f"Error parsing reviewers: {str(ke)}.")
-        sys.exit(1)
 
 
 def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
@@ -300,43 +263,30 @@ def main():
 
     # Parse PR reviewers from JSON and assign them
     # Exit if JSON doesn't exist or not parsable
-    content_roles_path = Path(get_env_var(CONTENT_ROLES_PATH_ENV_KEY, CONTENT_ROLES_RELATIVE_PATH))
-    if content_roles_path.exists():
-        with content_roles_path.open(encoding="utf8") as crp:
-            try:
-                content_roles = json.load(crp)
-            except json.JSONDecodeError as e:
-                print(f"WARNING: Unable to parse JSON from '{e.doc}': {e.msg}. Terminating...")
-                sys.exit(1)
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_reviewers, security_reviewer = get_content_reviewers(content_roles)
 
-        content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+    print(f"Content Reviewers: {','.join(content_reviewers)}")
+    print(f"Security Reviewer: {security_reviewer}")
 
-        print(f"Content Reviewers: {','.join(content_reviewers)}")
-        print(f"Security Reviewer: {security_reviewer}")
+    content_reviewer = determine_reviewer(content_reviewers, content_repo)
+    pr.add_to_assignees(content_reviewer)
+    reviewers = [content_reviewer]
 
-        content_reviewer = determine_reviewer(content_reviewers, content_repo)
-        pr.add_to_assignees(content_reviewer)
-        reviewers = [content_reviewer]
+    # Add a security architect reviewer if the PR contains security content items
+    if is_requires_security_reviewer(pr_files):
+        reviewers.append(security_reviewer)
+        pr.add_to_assignees(security_reviewer)
+        pr.add_to_labels(SECURITY_LABEL)
 
-        # Add a security architect reviewer if the PR contains security content items
-        if is_requires_security_reviewer(pr_files):
-            reviewers.append(security_reviewer)
-            pr.add_to_assignees(security_reviewer)
-            pr.add_to_labels(SECURITY_LABEL)
+    pr.create_review_request(reviewers=reviewers)
+    print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
 
-        pr.create_review_request(reviewers=reviewers)
-        print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
-
-        # create welcome comment (only users who contributed through Github need to have that contribution form filled)
-        message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
-        body = message_to_send.format(selected_reviewer=content_reviewer)
-        pr.create_issue_comment(body)
-        print(f'{t.cyan}Created welcome comment{t.normal}')
-
-    # Exit if no absolute/relative paths exist
-    else:
-        print(f"WARNING: No content role JSON exists in env var CONTENT_ROLES_FILE or '{CONTENT_ROLES_RELATIVE_PATH}'")
-        sys.exit(1)
+    # create welcome comment (only users who contributed through Github need to have that contribution form filled)
+    message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
+    body = message_to_send.format(selected_reviewer=content_reviewer)
+    pr.create_issue_comment(body)
+    print(f'{t.cyan}Created welcome comment{t.normal}')
 
 
 if __name__ == "__main__":
