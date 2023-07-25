@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-TOKEN_INPUT_IDENTIFIER = "__token"
+HEADERS = {"Accept": "application/json", "Csrf-Token": "nocheck"}
 
 """ CLIENT CLASS """
 
@@ -23,44 +23,27 @@ class Client(BaseClient):
         password: str,
         verify: bool,
         proxy: bool,
-        headers,
-        api_key: str = "",
     ):
         super().__init__(
-            base_url=f"{base_url}", headers=headers, verify=verify, proxy=proxy
+            base_url=f"{base_url}", headers=HEADERS, verify=verify, proxy=proxy
         )
         self.username = username
         self.password = password
-        self.api_key = api_key
-        self.session = requests.Session()
-        self.session.headers = headers
-        if not proxy:
-            self.session.trust_env = False
-        if self.username != TOKEN_INPUT_IDENTIFIER:
-            self._login()
 
-        # if self.username != TOKEN_INPUT_IDENTIFIER:
-        #     self._logout()
-        # super().__del__()
+        if not proxy:
+            self._session.trust_env = False  # TODO - need to check what this does
+
+        self._login()
 
     def _login(self):
         """
-        Login using the credentials and store the cookie
+        Login using the credentials and store the cookie in the session(in the BaseClient class).
         """
         self._http_request(
             "POST",
             full_url=f"{self._base_url}/api/auth/login",
             data={"username": self.username, "password": self.password},
         )
-
-    def _logout(self):
-        """
-        Logout from the session
-        """
-        try:
-            self._http_request("GET", full_url=f"{self._base_url}/api/auth/logout")
-        except Exception as err:
-            demisto.debug(f"An error occurred during the logout.\n{str(err)}")
 
     def test_module_request(self):
         """
@@ -213,10 +196,6 @@ def main() -> None:
 
     proxy = params.get("proxy", False)
 
-    headers = {"Accept": "application/json", "Csrf-Token": "nocheck"}
-
-    if username == TOKEN_INPUT_IDENTIFIER:
-        headers["ExaAuthToken"] = password
     try:
         client = Client(
             base_url,
@@ -224,7 +203,6 @@ def main() -> None:
             username=username,
             password=password,
             proxy=proxy,
-            headers=headers,
         )
 
         demisto.debug(f"Command being called is {command}")
