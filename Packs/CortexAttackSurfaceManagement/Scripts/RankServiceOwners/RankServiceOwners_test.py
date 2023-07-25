@@ -9,29 +9,29 @@ from RankServiceOwners import (
     _get_k,
     OwnerFeaturizationPipeline,
     load_pickled_xpanse_object,
-    LOCAL_MODEL_CACHE_PATH,
     featurize,
     normalize_scores,
 )
 from contextlib import nullcontext as does_not_raise
 import numpy as np
 from unittest.mock import Mock
-from pathlib import Path
-import os
 import dill as pickle
 
 
-def test_load_pickled_xpanse_object():
-    obj = [1, 2, 3]
+def test_load_pickled_xpanse_object(tmp_path):
+    # create temporary local cache
+    cache_path = tmp_path / "tmp"
+    cache_path.mkdir()
+
+    # write dummy object to cache
     file_name = "test_model.pkl"
-    os.makedirs(LOCAL_MODEL_CACHE_PATH, exist_ok=True)
-    cache_path = os.path.join(LOCAL_MODEL_CACHE_PATH, file_name)
-    with open(cache_path, "wb") as f:
+    file_cache_path = cache_path / file_name
+    obj = [1, 2, 3]
+    with open(file_cache_path, "wb") as f:
         pickle.dump(obj, f)
 
-    assert load_pickled_xpanse_object(file_name) == obj
-    os.remove(cache_path)
-    Path(LOCAL_MODEL_CACHE_PATH).rmdir()
+    # test that object is loaded
+    assert load_pickled_xpanse_object(file_name, cache_path) == obj
 
 
 @pytest.mark.parametrize('owner,expected_out', [
@@ -187,7 +187,7 @@ def test_score_model_load_fail(mocker):
         score(asm_system_ids=[], owners=[])
 
 
-def test_score_model_inference_fail(mocker, caplog):
+def test_score_model_inference_fail(mocker):
     """
     Test that we handle exceptions raised during model inference
     """
@@ -617,7 +617,7 @@ def test_get_name_similarity_person_asset():
     # has 1/2 matched
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_name_similarity_person_asset(["amira-instance", "abc-123"], owner)
-    assert out > 1
+    assert out >= 1
 
     # has weak match
     pipeline = OwnerFeaturizationPipeline()

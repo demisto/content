@@ -32,41 +32,41 @@ STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any add
 SCORE_LOWER_BOUND = 0.5
 SCORE_UPPER_BOUND = 1.0
 
-# The /tmp directory will cache persistently across interactions.
-# Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
-LOCAL_MODEL_CACHE_PATH = "/tmp/xpanse-ml"
 
-REMOTE_GCS_BUCKET = "xpanse-service-ownership-ml-models-dev"
-REMOTE_GCS_PATH = ""  # ok for this to be empty string
-
-MODEL_FILE_NAME = "service_owner_model.pkl"
-
-
-def load_pickled_xpanse_object(file_name: str) -> Any:
+def load_pickled_xpanse_object(
+    file_name: str = "service_owner_model.pkl",
+    cache_path: str = "/tmp/xpanse-ml",
+) -> Any:
     """
     Returns the pickled object at `file_name` as a Python object,
     either using the local cache or retrieving from the
     remote bucket as needed.
+
+    The default cache is a subdirectory of /tmp directory will cache persistently across interactions.
+    Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
     """
-    os.makedirs(LOCAL_MODEL_CACHE_PATH, exist_ok=True)
-    cache_path = os.path.join(LOCAL_MODEL_CACHE_PATH, file_name)
+    REMOTE_GCS_BUCKET = "xpanse-service-ownership-ml-models-dev"
+    REMOTE_GCS_PATH = ""  # ok for this to be empty string
+
+    os.makedirs(cache_path, exist_ok=True)
+    cached_file_path = os.path.join(cache_path, file_name)
 
     # check that file is not empty; if authorization fails it will
     # create the cache_path but the file will be empty
-    if not (os.path.exists(cache_path) and os.path.getsize(cache_path)):
+    if not (os.path.exists(cached_file_path) and os.path.getsize(cached_file_path)):
         remote_path = posixpath.join(REMOTE_GCS_PATH, file_name)
 
         demisto.info(f"Starting download of '{file_name}' from gs://{REMOTE_GCS_BUCKET}/{remote_path}")
         client = google.cloud.storage.client.Client()
         bucket = client.bucket(REMOTE_GCS_BUCKET)
         blob = bucket.blob(remote_path)
-        blob.download_to_filename(cache_path)
+        blob.download_to_filename(cached_file_path)
         demisto.info(f"Downloaded '{file_name}' from gs://{REMOTE_GCS_BUCKET}/{remote_path}")
 
     else:
         demisto.info(f"Found '{file_name}' locally")
 
-    with open(cache_path, "rb") as f:
+    with open(cached_file_path, "rb") as f:
         return pickle.load(f)
 
 
@@ -117,7 +117,7 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
         return owners
 
     try:
-        model = load_pickled_xpanse_object(MODEL_FILE_NAME)
+        model = load_pickled_xpanse_object()
     except Exception as ex:
         demisto.info(f"Error loading the model: {ex}. Using fallback scores")
         return scoring_fallback(owners)
