@@ -1,3 +1,4 @@
+import time
 from typing import Any
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -85,19 +86,37 @@ def get_machines_locks_details(storage_client: storage.Client, bucket_name: str,
     return files
 
 
-def check_job_status(token: str, job_id: str):
+def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval: float = 30.0):
     """
     get the status of a job in gitlab.
+
     Args:
         token(str): the gitlab token.
         job_id(str): the job id to check.
+        num_of_retries (int): num of retries to establish a connection to gitlab in case of a connection error.
+        interval (float): the interval to wait before trying to establish a connection to gitlab each attempt.
+
     Returns: the status of the job.
 
     """
     user_endpoint = JOB_STATUS_URL.format(CONTENT_GITLAB_PROJECT_ID, job_id)
     headers = {'PRIVATE-TOKEN': token}
-    response = requests.get(user_endpoint, headers=headers)
-    return response.json().get('status')
+
+    for attempt_num in range(1, num_of_retries + 1):
+        try:
+            logging.debug(f'Try to get the status of job ID {job_id} in attempt number {attempt_num}')
+            response = requests.get(user_endpoint, headers=headers)
+            response_as_json = response.json()
+            logging.debug(f'{user_endpoint=} raw response={response_as_json} for {job_id=}')
+            return response_as_json.get('status')
+        except requests.ConnectionError as error:
+            logging.error(f'Got connection error: {error} in attempt number {attempt_num}')
+            if attempt_num == num_of_retries:
+                raise error
+            else:
+                logging.debug(f'sleeping for {interval} seconds to try to re-establish gitlab connection')
+                time.sleep(interval)
+    return None
 
 
 def remove_file(storage_bucket: Any, file_path: str):

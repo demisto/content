@@ -30,23 +30,22 @@ Symantec CloudSOC Event Collector collects the following event types:
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### symantec-get-events
+### symantec-cloudsoc-get-events
 
 ***
 Gets events from Symantec CloudSOC.
 
 #### Base Command
 
-`symantec-get-events`
+`symantec-cloudsoc-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. | Optional | 
+| limit | Maximum number of results to return. Default is 1000. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
