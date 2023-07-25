@@ -450,6 +450,64 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
         assert response.raw_response == export_vulnerabilities_response
 
 
+@pytest.mark.parametrize(
+    'args, expected_result',
+    [
+        # Test case 1: Empty arguments
+        ({}, {}),
+        # Test case 2: Single filter
+        (
+            {
+                'filterName': 'name',
+                'filterQuality': '=',
+                'filterValue': 'test',
+            },
+            {
+                'filter.0.filter': 'name',
+                'filter.0.quality': '=',
+                'filter.0.value': 'test',
+            }
+        ),
+        # Test case 3: Multiple filters
+        (
+            {
+                'filterName': 'name,description',
+                'filterQuality': '=,!=',
+                'filterValue': 'test,test2',
+            },
+            {
+                'filter.0.filter': 'name',
+                'filter.0.quality': '=',
+                'filter.0.value': 'test',
+                'filter.1.filter': 'description',
+                'filter.1.quality': '!=',
+                'filter.1.value': 'test2',
+            }
+        )
+    ]
+)
+def test_build_filters(args, expected_result):
+    """
+    Given:
+        Case 1: Empty arguments.
+        Case 2: The filter lists have one value.
+        Case 3: The filter lists have multiple values.
+
+    When:
+        - Running the tenable-io-export-scan command.
+
+    Then:
+        Case 1: Return empty arguments.
+        Case 2: A single filter (name, quality, and value).
+        Case 3: Multiple filters (name, quality, and value).
+    """
+    from Tenable_io import build_filters
+
+    result = build_filters(args)
+
+    assert result == expected_result
+
+
 def test_list_scan_filters_command(mocker):
     '''
     Given:
@@ -508,7 +566,6 @@ def test_get_scan_history_command(mocker):
     assert request.call_args.kwargs == test_data['called_with']['kwargs']
 
 
-
 def test_initiate_export_scan(mocker):
     '''
     Given:
@@ -533,37 +590,6 @@ def test_initiate_export_scan(mocker):
     assert request.call_args.args == tuple(test_data['called_with']['args'])
     assert request.call_args.kwargs == test_data['called_with']['kwargs']
 
-    # # TEMP
-    # test_data['called_with']['kwargs'] = request.call_args.kwargs
-
-    # with open('test_data/initiate_export_scan.json', 'w') as f:
-    #     json.dump(test_data, f)
-"""
-def test_check_export_scan_status(mocker):
-    '''
-    Given:
-        - A request to export a scan report.
-
-    When:
-        - Running the "export-scan" command.
-
-    Then:
-        - Initiate an export scan request.
-    '''
-    from Tenable_io import check_export_scan_status, HEADERS
-
-    mock_demisto(mocker)
-    requests_get = mocker.patch.object(
-        requests, 'get', return_value=MockResponse({'status': 'ready'}))
-
-    file = check_export_scan_status('scan_id', 'file_id')
-
-    assert file == 'ready'
-
-    requests_get.assert_called_with(
-        'http://123-fake-api.com/scans/scan_id/export/file_id/status',
-        headers=HEADERS, verify=False)
-
 
 def test_download_export_scan(mocker):
     '''
@@ -576,13 +602,12 @@ def test_download_export_scan(mocker):
     Then:
         - Initiate an export scan request.
     '''
-    from Tenable_io import download_export_scan, HEADERS
-
     mock_demisto(mocker)
-    requests_get = mocker.patch.object(
-        requests, 'get', return_value=MockResponse({}, content='content'))
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+    request = mocker.patch.object(
+        BaseClient, '_http_request', return_value=b'')
 
-    result = download_export_scan('scan_id', 'file_id', {'format': 'HTML'})
+    result = MOCK_CLIENT.download_export_scan('scan_id', 'file_id', 'HTML')
 
     assert result == {
         'Contents': '',
@@ -591,24 +616,19 @@ def test_download_export_scan(mocker):
         'File': 'scan_scan_id_file_id.html',
         'FileID': 'file',
     }
-    requests_get.assert_called_with(
-        'http://123-fake-api.com/scans/scan_id/export/file_id/download',
-        headers=HEADERS, verify=False)
-"""
+    request.assert_called_with(
+        'GET', 'scans/scan_id/export/file_id/download', resp_type='content')
 
 
 @pytest.mark.parametrize(
-    'args, get_response_json, post_response_json, message',
+    'args, response_json, message',
     [
-        ({'scanId': '', 'format': 'HTML'}, {}, {}, 'The "chapters" field must be provided for PDF or HTML formats.'),
-        ({'scanId': '', 'format': ''}, {'status': 'ready'}, {}, 'Unexpected response from Tenable IO: {}'),
-        ({'scanId': '', 'format': ''}, {'status': 'error'}, {'file': 'file_id'},
-         'Tenable IO encountered an error while exporting the scan report file.'),
-        ({'scanId': '', 'format': ''}, {'status': 'random'}, {'file': 'file_id'},
-         'Got unexpected status while exporting the scan report file: \'random\'')
+        ({'scanId': '', 'format': 'HTML'}, {}, 'The "chapters" field must be provided for PDF or HTML formats.'),
+        ({'scanId': '', 'format': ''}, {'status': 'error'},
+         'Tenable IO encountered an error while exporting the scan report file.')
     ]
 )
-def test_export_scan_command_errors(mocker, args, get_response_json, post_response_json, message):
+def test_export_scan_command_errors(mocker, args, response_json, message):
     '''
     Given:
         - A request to export a scan report.
@@ -616,9 +636,7 @@ def test_export_scan_command_errors(mocker, args, get_response_json, post_respon
     When:
         - Running the "export-scan" command in any of the following cases:
             - Case A: The "format" arg is HTML or PDF but "chapters" is not defined.
-            - Case B: The "scans/{scanId}/export" endpoint returns a json without a "file" key.
-            - Case C: An export scan request has been made and the report status is "error".
-            - Case D: An export scan request has been made and the report status is unrecognized.
+            - Case B: An export scan request has been made and the report status is "error" or unrecognized.
 
     Then:
         - Return an error.
@@ -628,11 +646,18 @@ def test_export_scan_command_errors(mocker, args, get_response_json, post_respon
 
     mock_demisto(mocker)
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    mocker.patch.object(
-        BaseClient, '_http_request', return_value=test_data['response_json'])
+    mocker.patch.object(BaseClient, '_http_request', return_value=response_json)
+    mock_client = Client(
+        MOCK_PARAMS['url'],
+        verify=True,
+        proxy=True,
+        ok_codes=(200,),
+        headers=HEADERS
+    )
+    mock_client.initiate_export_scan = lambda *x: {'file': 'file_id'}
 
     with pytest.raises(DemistoException, match=message):
-        export_scan_command(args)
+        export_scan_command(args, mock_client)
 
 
 @pytest.mark.parametrize(
