@@ -1917,7 +1917,7 @@ script:
       required: true
     - description: The service ID of the endpoint server to be connected.
       name: service_id
-    - description: Drive or NTFS mount path for which MFT is requested.
+    - description: Drive or NTFS mount path for which MFT is requested. this parameter is required when using API version 11.5 onwards.
       name: path
     description: Initiates the MFT download to the endpoint server.
     name: rsa-nw-mft-download-request
@@ -2002,12 +2002,12 @@ script:
       required: true
     description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.12.65389
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   script: '-'
   subtype: python3
   type: python
 tests:
 - RSANetWitnessv115-Test
-- defaultmapperin: RSA NetWitness v11.5 - incoming mapper
+defaultmapperin: RSA NetWitness v11.5 - incoming mapper
 fromversion: 5.5.0
