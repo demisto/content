@@ -12,7 +12,7 @@ To use this integration, you need to connect an application with a certificate.
    7. Click **Application permissions**.
    8. Under Exchange, click the **ExchangeManageAsApp** checkbox.
    9. Click **Add permissions**.
-   10. Click **Grant admin consent for Demisto**.
+   10. Click **Grant admin consent for XSOAR**.
 2. Create the certificate in Cortex XSOAR.
    1. Run the **CreateCertificate** command in the Playground to acquire the certificate. 
 
