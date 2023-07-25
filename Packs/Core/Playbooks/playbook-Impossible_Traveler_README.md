@@ -36,9 +36,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Ticket Management - Generic
-* Containment Plan
 * Impossible Traveler - Enrichment
+* Containment Plan
+* Ticket Management - Generic
 
 ### Integrations
 
@@ -47,13 +47,13 @@ This playbook does not use any integrations.
 ### Scripts
 
 * Set
-* CreateArray
 * impossibleTravelerGetDistance
+* CreateArray
 
 ### Commands
 
 * closeInvestigation
-* setParentIncidentField
+* setParentIncidentFields
 
 ## Playbook Inputs
 
@@ -122,4 +122,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Impossible Traveler Response](../doc_files/Impossible_Traveler.png)
+![Impossible Traveler Response](../doc_files/Impossible_Traveler_Response.png)
