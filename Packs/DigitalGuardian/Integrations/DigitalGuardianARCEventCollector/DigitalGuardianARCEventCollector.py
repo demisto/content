@@ -23,14 +23,14 @@ class Client(BaseClient):
     """
 
     def __init__(self, verify, proxy, auth_url, gateway_url, client_id, client_secret, export_profile,
-                 base_url=None):
+                 headers=None, base_url=None):
         self.auth_url = auth_url
         self.gateway_url = gateway_url
         self.client_id = client_id
         self.client_secret = client_secret
         self.export_profile = export_profile
 
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def get_token(self):
         integration_context = get_integration_context()
@@ -41,6 +41,7 @@ class Client(BaseClient):
             if time_now < valid_until:
                 # Token is still valid - did not expire yet
                 demisto.debug('Using cached token which is still valid')
+                demisto.debug(f'time-now: {time_now}\n valid token: {valid_until}')
                 return token
         sec = self.client_secret.get("password")
         response = self._http_request(

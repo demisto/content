@@ -72,13 +72,6 @@ script:
       name: limit
       required: false
       secret: false
-    - default: false
-      description: Number of days to get data
-      isArray: false
-      name: days
-      required: false
-      defaultValue: '7'
-      secret: false
     deprecated: false
     description: Gets events from Hello World.
     execution: false
