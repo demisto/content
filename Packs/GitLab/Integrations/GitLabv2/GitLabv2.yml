@@ -3268,26 +3268,13 @@ script:
       type: String
   - name: gitlab-trigger-pipeline
     arguments:
-    - default: false
-      description: Project ID on which to run the pipeline.
-      isArray: false
+    - description: Project ID on which to run the pipeline.
       name: project_id
-      required: false
-      secret: false
-    - default: false
-      description: The branch on which to run the pipeline. Default is 'master'.
-      isArray: false
+    - description: The branch on which to run the pipeline. Default is 'master'.
       name: ref_branch
-      required: false
-      secret: false
-    - default: false
-      description: JSON containing the pipeline variables.
-      isArray: false
+    - description: JSON containing the pipeline variables.
       name: trigger_variables
-      required: false
-      secret: false
     description: Triggers a GitLab pipeline on a selected project and branch.
-    execution: false
     outputs:
     - contextPath: GitLab.Pipeline.id
       description: Pipeline ID.

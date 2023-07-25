@@ -56,7 +56,7 @@
   - section_start "Download content-test-conf" --collapsed
   - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
   - SECRET_CONF_PATH=$(cat secret_conf_path)
-  - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
+  - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
   - section_end "Download content-test-conf"
 
 .ssh-config-setup:
@@ -202,7 +202,7 @@
   trigger:
     strategy: depend
     include:
-      - local: .gitlab/ci/slack-notify.yml
+      - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
 
 
 .unittests-and-lint-settings:
@@ -237,11 +237,11 @@
     - .unittests-and-lint-settings
   script:
     - section_start "Test Infrastructure"
-    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-    - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/tests -v
-    - python3 -m pytest ./Tests/private_build/ -v
-    - python3 -m pytest Utils -v
+    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
+    - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
+    - python3 -m pytest ./Tests/tests -v --disable-warnings
+    - python3 -m pytest ./Tests/private_build/ -v --disable-warnings
+    - python3 -m pytest Utils -v --disable-warnings
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
         ./Tests/scripts/sdk_pylint_check.sh
