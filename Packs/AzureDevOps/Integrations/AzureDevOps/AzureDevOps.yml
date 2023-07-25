@@ -2937,6 +2937,56 @@ script:
       - type: Number
         contextPath: AzureDevOps.Team.count
         description: The count of properties in the collection.
+  - name: azure-devops-team-member-list
+    description: Get a list of members for a specific team.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: team_id
+        description: ''
+        required: true
+        isArray: false
+      - defaultValue: '1'
+        description: The page number of the results to retrieve. Minimum value is 1.
+        name: page
+      - defaultValue: '50'
+        description: The number of results to retrieve. Minimum  value is 1.
+        name: limit
+    outputs:
+      - type: Boolean
+        contextPath: AzureDevOps.TeamMember.value.isTeamAdmin
+        description: if the member is the team admin.
+      - type: String
+        contextPath: AzureDevOps.TeamMember.value.identity.displayName
+        description: The display name of the team member.
+      - type: String
+        contextPath: AzureDevOps.TeamMember.value.identity.url
+        description: URL to retrieve information about this member.
+      - type: String
+        contextPath: AzureDevOps.TeamMember.value.identity._links.avatar.href
+        description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
+      - type: String
+        contextPath: AzureDevOps.TeamMember.value.identity.id
+        description: ID of the team member.
+      - type: String
+        contextPath: AzureDevOps.TeamMember.value.identity.uniqueName
+        description: The unique name of team member.
+      - type: String
+        contextPath: AzureDevOps.TeamMember.value.identity.imageUrl
+        description: Link to the team member image.
+      - type: String
+        contextPath: AzureDevOps.TeamMember.value.identity.descriptor
+        description: The descriptor is the primary way to reference the graph subject while the system is running. This field will uniquely identify the same graph subject across both Accounts and Organizations.
+      - type: Number
+        contextPath: AzureDevOps.TeamMember.count
+        description: Count of the team members.
+
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []

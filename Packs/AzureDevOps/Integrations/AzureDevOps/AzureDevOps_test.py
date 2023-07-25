@@ -1647,3 +1647,38 @@ def test_project_team_list_command(requests_mock):
 
     assert result.readable_output.startswith('### Teams\n|Name|\n|---|\n| DevOpsDemo Team |\n')
     assert result.outputs_prefix == 'AzureDevOps.Team'
+
+def test_team_member_list_command(requests_mock):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing azure-devops-team-member-list command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, team_member_list_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+    team_id = "zzz"
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/_apis/projects/{project}/teams/{team_id}/members'
+
+    mock_response = json.loads(load_mock_response('team_member_list.json'))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = team_member_list_command(client, {"team_id": "zzz"}, ORGANIZATION, project)
+
+    assert result.readable_output.startswith('### Team Members\n|Name|\n|---|\n| XXX |\n| YYY |')
+    assert result.outputs_prefix == 'AzureDevOps.TeamMember'

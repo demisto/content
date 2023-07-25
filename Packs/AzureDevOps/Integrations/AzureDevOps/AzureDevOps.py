@@ -666,11 +666,24 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def project_team_list_request(self, organization: str, project: str):
+    def project_team_list_request(self, org_repo_project_tuple: namedtuple):
 
         params = {"api-version": 7.0}
 
-        full_url = f'https://dev.azure.com/{organization}/_apis/projects/{project}/teams'
+        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/_apis/projects/' \
+                   f'{org_repo_project_tuple.project}/teams'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='json')
+
+    def team_member_list_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any], limit: int, skip: int):
+
+        params = {"api-version": 7.0, "$skip": skip, "$top": limit}
+
+        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/_apis/projects/' \
+                   f'{org_repo_project_tuple.project}/teams/{args["team_id"]}/members'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -1810,7 +1823,7 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> Tuple[int, int
 
 
 def organization_repository_project_preprocess(args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
-                                               project: Optional[str]) -> namedtuple:
+                                               project: Optional[str], is_repository_id_required: bool = True) -> namedtuple:
     """
     The organization, repository and project are preprocessed by this function.
     """
@@ -1819,9 +1832,14 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
     organization = args.get('organization_name') or organization
     repository_id = args.get('repository_id') or repository_id
     project = args.get('project_name') or project
+
     # validate those arguments exist
-    if not (organization and repository_id and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG)
+    if is_repository_id_required:
+        if not (organization and repository_id and project):
+            raise DemistoException(PARAMETERS_ERROR_MSG)
+    else:
+        if not (organization and project):
+            raise DemistoException(PARAMETERS_ERROR_MSG_2)
 
     return OrgRepoProject(organization=organization, repository=repository_id, project=project)
 
@@ -2258,15 +2276,11 @@ def project_team_list_command(client: Client, args: Dict[str, Any], organization
     """
     Get a list of teams.
     """
-    # Those arguments are already set as parameters, but the user can override them.
-    organization = args.get('organization_name') or organization
-    project = args.get('project_name') or project
+    # pre-processing inputs
+    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
+                                                                        is_repository_id_required=False)
 
-    # validate those arguments exist
-    if not (organization and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_2)
-
-    response = client.project_team_list_request(organization, project)
+    response = client.project_team_list_request(org_repo_project_tuple)
 
     mapping = {"name": "Name"}
     readable_output = tableToMarkdown(
@@ -2279,6 +2293,38 @@ def project_team_list_command(client: Client, args: Dict[str, Any], organization
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.Team',
+        outputs=response,
+        raw_response=response
+    )
+
+
+def team_member_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                             project: Optional[str]) -> CommandResults:
+    """
+    Get a list of members for a specific team.
+    """
+    # pre-processing inputs
+    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id=None, project=project,
+                                                                        is_repository_id_required=False)
+    # pagination
+    limit, offset = pagination_preprocess_and_validation(args)
+
+    response = client.team_member_list_request(org_repo_project_tuple, args, limit, offset)
+
+    list_for_hr = []
+    list_for_hr.extend(
+        {"Name": member.get("identity").get("displayName")}
+        for member in response.get("value")
+    )
+    readable_output = tableToMarkdown(
+        "Team Members",
+        list_for_hr,
+        headers=["Name"],
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.TeamMember',
         outputs=response,
         raw_response=response
     )
@@ -2534,6 +2580,9 @@ def main() -> None:
 
         elif command == 'azure-devops-project-team-list':
             return_results(project_team_list_command(client, args, params.get('organization'), params.get('project')))
+
+        elif command == 'azure-devops-team-member-list':
+            return_results(team_member_list_command(client, args, params.get('organization'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
