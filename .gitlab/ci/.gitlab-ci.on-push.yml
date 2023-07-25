@@ -435,7 +435,7 @@ slack-notify-nightly-build:
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "upload"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "build"
     - source CloudEnvVariables
     - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
     - section_end "Lock Machine"
