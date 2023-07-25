@@ -244,3 +244,54 @@ def test_b_import_already_loaded(bmc_container):
     # Test importing when data is already loaded
     bmc_container.bdat = b"Some data"
     assert bmc_container.b_import("path/to/valid_bmc_container.bin") is False
+
+
+class Test__Init__:
+    # Tests that BMCContainer object is initialized with default parameters
+    def test_default_init(self):
+        bmc = BMCContainer()
+        assert bmc.bdat == b''
+        assert bmc.o_bmps == []
+        assert bmc.bmps == []
+        assert bmc.btype == b''
+        assert bmc.cnt == 0
+        assert bmc.fname == ''
+        assert not bmc.oldsave
+        assert not bmc.pal
+        assert not bmc.verb
+        assert not bmc.big
+        assert bmc.STRIPE_WIDTH == 64
+
+    # Tests that BMCContainer object is initialized with custom parameters
+    def test_custom_init(self):
+        bmc = BMCContainer(verbose=True, count=10, old=True, big=True, width=128)
+        assert bmc.bdat == b''
+        assert bmc.o_bmps == []
+        assert bmc.bmps == []
+        assert bmc.btype == b''
+        assert bmc.cnt == 10
+        assert bmc.fname == ''
+        assert bmc.oldsave
+        assert not bmc.pal
+        assert bmc.verb
+        assert bmc.big
+        assert bmc.STRIPE_WIDTH == 128
+
+    # Tests that BMCContainer object is initialized with count = 0
+    def test_zero_count(self):
+        bmc = BMCContainer(count=0)
+        assert bmc.cnt == 0
+
+    # Tests that BMCContainer object is initialized with old = True
+    def test_old_true(self):
+        bmc = BMCContainer(old=True)
+        assert bmc.oldsave
+
+    # Tests that BMCContainer object is initialized with width = 0
+    def test_width_zero(self):
+        bmc = BMCContainer(width=0)
+        assert bmc.STRIPE_WIDTH == 0
+
+    # Tests that debug messages are logged when count > 0 or old = True
+    def test_debug_messages(self):
+        assert BMCContainer(count=5, old=True)
