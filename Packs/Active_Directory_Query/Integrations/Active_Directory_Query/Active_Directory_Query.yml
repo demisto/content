@@ -22,12 +22,13 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
   section: Connect
+  displaypassword: Password 
 - display: NTLM authentication
   name: ntlm
   type: 8
@@ -785,7 +786,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.65178
+  dockerimage: demisto/py3-tools:1.0.0.65317
   ismappable: true
   isremotesyncout: true
 fromversion: 5.0.0
