@@ -94,19 +94,19 @@ def test_full_truth_table():
 
     # kv pair contains dev indicators only
     # DevEnv is set (--> dev)
-    assert final_decision(sample_dev_tag, sample_dev_tag, sample_no_match)["result"]
+    assert final_decision(sample_dev_classification, sample_dev_tag, sample_no_match)["result"]
     # DevEnv is not set (--> dev)
     assert final_decision(sample_no_match, sample_dev_tag, sample_no_match)["result"]
 
     # kv pair contains prod indicators only
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_tag, sample_no_match, sample_prod_tag)["result"]
+    assert not final_decision(sample_dev_classification, sample_no_match, sample_prod_tag)["result"]
     # DevEnv is not set (--> prod)
     assert not final_decision(sample_no_match, sample_no_match, sample_prod_tag)["result"]
 
     # kv pair contains conflicting indicators
     # DevEnv is set (--> conflicting)
-    assert not final_decision(sample_dev_tag, sample_dev_tag, sample_prod_tag)["result"]
+    assert not final_decision(sample_dev_classification, sample_dev_tag, sample_prod_tag)["result"]
     # DevEnv is not set (--> conflicting)
     assert not final_decision(sample_no_match, sample_dev_tag, sample_prod_tag)["result"]
 
