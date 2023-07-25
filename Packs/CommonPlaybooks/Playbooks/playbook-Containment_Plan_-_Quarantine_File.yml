@@ -25,8 +25,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": -140
+          "x": 240,
+          "y": -480
         }
       }
     note: false
@@ -53,8 +53,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 1350
+          "x": -260,
+          "y": 1360
         }
       }
     note: false
@@ -114,8 +114,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 210
+          "x": 560,
+          "y": -120
         }
       }
     note: false
@@ -132,7 +132,7 @@ tasks:
     task:
       id: 30398ddb-5182-4c19-84f2-6f06e62eabca
       version: -1
-      name: Auto file quarantine
+      name: File quarantine
       description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
       script: '|||core-quarantine-files'
       type: regular
@@ -188,10 +188,6 @@ tasks:
                 value:
                   simple: inputs.FilePath
                 iscontext: true
-      incident_id:
-        complex:
-          root: alert
-          accessor: id
       interval_in_seconds:
         simple: "20"
       timeout_in_seconds:
@@ -201,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 570
+          "x": 570,
+          "y": 240
         }
       }
     note: false
@@ -240,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1160
+          "x": 570,
+          "y": 1150
         }
       }
     note: false
@@ -307,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 380
+          "x": 560,
+          "y": 40
         }
       }
     note: false
@@ -361,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 770
+          "x": 240,
+          "y": 790
         }
       }
     note: false
@@ -400,8 +396,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 970
+          "x": 570,
+          "y": 960
         }
       }
     note: false
@@ -425,12 +421,14 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
-      "yes":
+      - "2"
+      Auto:
       - "7"
+      Manual:
+      - "23"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Auto
       condition:
       - - operator: isEqualString
           left:
@@ -442,12 +440,60 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileHash
+            iscontext: true
+    - label: Manual
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EndpointID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileHash
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 10
+          "x": 240,
+          "y": -340
         }
       }
     note: false
@@ -479,27 +525,27 @@ tasks:
           root: inputs.EndpointID
       file_hash:
         complex:
-          root: inputs.FileHash
+          root: FileHash
           filters:
           - - operator: stringHasLength
               left:
                 value:
-                  simple: inputs.FileHash
+                  simple: FileHash
                 iscontext: true
               right:
                 value:
                   simple: "64"
       file_path:
         complex:
-          root: inputs.FilePath
+          root: FilePath
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 210
+          "x": -40,
+          "y": 240
         }
       }
     note: false
@@ -565,8 +611,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 380
+          "x": -40,
+          "y": 410
         }
       }
     note: false
@@ -583,7 +629,7 @@ tasks:
     task:
       id: 48f240fd-334d-4f88-8e66-726f9971ba3c
       version: -1
-      name: Auto file quarantine
+      name: File quarantine
       description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
       script: '|||core-quarantine-files'
       type: regular
@@ -598,23 +644,19 @@ tasks:
           root: inputs.EndpointID
       file_hash:
         complex:
-          root: inputs.FileHash
+          root: FileHash
           filters:
           - - operator: stringHasLength
               left:
                 value:
-                  simple: inputs.FileHash
+                  simple: FileHash
                 iscontext: true
               right:
                 value:
                   simple: "64"
       file_path:
         complex:
-          root: inputs.FilePath
-      incident_id:
-        complex:
-          root: alert
-          accessor: id
+          root: FilePath
       interval_in_seconds:
         simple: "20"
       timeout_in_seconds:
@@ -624,8 +666,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 580
+          "x": -40,
+          "y": 600
         }
       }
     note: false
@@ -659,8 +701,127 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -50,
-          "y": 970
+          "x": -40,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c4b074c0-d8a1-4ef8-80a4-0b3ba35a3e76
+    type: regular
+    task:
+      id: c4b074c0-d8a1-4ef8-80a4-0b3ba35a3e76
+      version: -1
+      name: Set file path to quarantine
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: FilePath
+      value:
+        complex:
+          root: inputs.FilePath
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: Path\":\"(.+?)\"
+              unpack_matches: {}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: No value
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \
+              toReplace:
+                value:
+                  simple: \\
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e0e42cd2-c5a4-4148-855a-3f99dc7a6c91
+    type: regular
+    task:
+      id: e0e42cd2-c5a4-4148-855a-3f99dc7a6c91
+      version: -1
+      name: Set file hash to quarantine
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: FileHash
+      value:
+        complex:
+          root: inputs.FileHash
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: Hash\":\"(.+?)\"
+              unpack_matches: {}
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: No value
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 40
         }
       }
     note: false
@@ -673,17 +834,18 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "13_2_#default#": 0.17,
+      "13_2_#default#": 0.1,
       "15_16_yes": 0.6,
+      "17_2_#default#": 0.1,
       "19_20_yes": 0.44,
-      "19_2_#default#": 0.11
+      "19_2_#default#": 0.15
     },
     "paper": {
       "dimensions": {
-        "height": 1555,
-        "width": 1370,
-        "x": -50,
-        "y": -140
+        "height": 1905,
+        "width": 1210,
+        "x": -260,
+        "y": -480
       }
     }
   }

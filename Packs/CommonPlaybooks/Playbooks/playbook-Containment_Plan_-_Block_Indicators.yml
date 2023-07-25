@@ -41,7 +41,7 @@ tasks:
     task:
       id: 42177fdd-e676-4494-8430-473b77c4d326
       version: -1
-      name: Auto add to XSIAM hash block list
+      name: Add to XSIAM hash block list
       description: Block lists requested files which have not already been block listed or added to allow list.
       script: '|||core-blocklist-files'
       type: regular
@@ -394,7 +394,7 @@ tasks:
     task:
       id: fca5352e-ba68-4776-8b35-903387490051
       version: -1
-      name: Auto add to XSIAM hash block list
+      name: Add to XSIAM hash block list
       description: Block lists requested files which have not already been block listed or added to allow list.
       script: '|||core-blocklist-files'
       type: regular

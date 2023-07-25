@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Containment Plan
-description: "This playbook handles all the containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+description: "This playbook handles the main containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
 starttaskid: "0"
 tasks:
   "0":
@@ -19,14 +19,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "146"
+      - "150"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 60,
-          "y": -810
+          "y": -1210
         }
       }
     note: false
@@ -348,9 +348,16 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: inputs.FilePath
+            root: FilesList
             transformers:
             - operator: uniq
+            - operator: SetIfEmpty
+              args:
+                applyIfEmpty: {}
+                defaultValue:
+                  value:
+                    simple: inputs.FilePath
+                  iscontext: true
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -555,7 +562,35 @@ tasks:
           root: inputs.FileContainment
       FileHash:
         complex:
-          root: inputs.FileHash
+          root: inputs.AutoContainment
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: Which containment actions would you like to perform?.Answers.3
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.AutoContainment
+                iscontext: true
+              lhsB: {}
+              options: {}
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "True"
+              rhsB: {}
+              then:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
       FilePath:
         complex:
           root: inputs.AutoContainment
@@ -1037,7 +1072,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -110
+          "y": -120
         }
       }
     note: false
@@ -1075,17 +1110,126 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: afefe6f1-1bc6-4c69-8fd4-7072d4fa9962
+    type: regular
+    task:
+      id: afefe6f1-1bc6-4c69-8fd4-7072d4fa9962
+      version: -1
+      name: Set Process list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "146"
+    scriptarguments:
+      key:
+        simple: FilesList
+      stringify:
+        simple: "false"
+      value:
+        complex:
+          root: inputs.FilePath
+          transformers:
+          - operator: MakePair
+            args:
+              array1_key:
+                iscontext: true
+              array2:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              array2_key: {}
+              determine_output_length_by: {}
+              merge_dict: {}
+              output_name1:
+                value:
+                  simple: Path
+              output_name2:
+                value:
+                  simple: Hash
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: 4541881d-148b-4360-83d3-c66c78b3d624
+    type: condition
+    task:
+      id: 4541881d-148b-4360-83d3-c66c78b3d624
+      version: -1
+      name: The file path and file hash defined?
+      description: Check if the file path and file hash are defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "146"
+      "yes":
+      - "149"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileHash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "138_139_#default#": 0.64
+      "138_139_#default#": 0.64,
+      "150_146_#default#": 0.45
     },
     "paper": {
       "dimensions": {
-        "height": 1215,
+        "height": 1615,
         "width": 2060,
         "x": -780,
-        "y": -810
+        "y": -1210
       }
     }
   }
