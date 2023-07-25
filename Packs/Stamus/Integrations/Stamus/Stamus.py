@@ -20,6 +20,15 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f%z'
 PAGE_SIZE = 200  # https://xsoar.pan.dev/docs/integrations/fetching-incidents#fetch-limit
+ARRAY_ITEMS = ['client_service', 'hostname', 'username', 'http.user_agent', 'tls.ja3', 'ssh.client', 'roles']
+ITEM_KEY = {'client_service': 'name', 'hostname': 'host', 'username': 'user', 'http.user_agent': 'agent',
+            'tls.ja3': 'hash', 'ssh.client': 'software_version', 'roles': 'name', 'services': 'app_proto'}
+FIELDS_SUBSTITUTION = (['http.user_agent', 'http_user_agent'], ['http.user_agent_count', 'http_user_agent_count'],
+                       ['tls.ja3', 'tls_ja3'], ['tls.ja3_count', 'tls_ja3_count'], ['ssh.client', 'ssh_client'],
+                       ['ssh.client_count', 'ssh_client_count'])
+FIELDS_SUBSTITUTION_DICT = {'http.user_agent': 'http_user_agent', 'http.user_agent_count': 'http_user_agent_count',
+                            'tls.ja3': 'tls_ja3', 'tls.ja3_count': 'tls_ja3_count', 'ssh.client': 'ssh_client',
+                            'ssh.client_count': 'ssh_client_count'}
 
 ''' CLIENT CLASS '''
 
@@ -187,17 +196,6 @@ def fetch_events(client: Client, args: dict[str, Any]) -> CommandResults:
     headers = ['timestamp', 'asset', 'offender', 'killchain', 'method', 'info', 'src_ip', 'dest_ip', 'app_proto']
     table = tableToMarkdown('Individual Events List', results, headers=headers)
     return get_command_results(results, table, 'RelatedEvents')
-
-
-ARRAY_ITEMS = ['client_service', 'hostname', 'username', 'http.user_agent', 'tls.ja3', 'ssh.client', 'roles']
-ITEM_KEY = {'client_service': 'name', 'hostname': 'host', 'username': 'user', 'http.user_agent': 'agent',
-            'tls.ja3': 'hash', 'ssh.client': 'software_version', 'roles': 'name', 'services': 'app_proto'}
-FIELDS_SUBSTITUTION = (['http.user_agent', 'http_user_agent'], ['http.user_agent_count', 'http_user_agent_count'],
-                       ['tls.ja3', 'tls_ja3'], ['tls.ja3_count', 'tls_ja3_count'], ['ssh.client', 'ssh_client'],
-                       ['ssh.client_count', 'ssh_client_count'])
-FIELDS_SUBSTITUTION_DICT = {'http.user_agent': 'http_user_agent', 'http.user_agent_count': 'http_user_agent_count',
-                            'tls.ja3': 'tls_ja3', 'tls.ja3_count': 'tls_ja3_count', 'ssh.client': 'ssh_client',
-                            'ssh.client_count': 'ssh_client_count'}
 
 
 def linearize_host_id(host: dict) -> list:
