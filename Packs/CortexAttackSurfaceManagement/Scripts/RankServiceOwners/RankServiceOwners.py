@@ -24,12 +24,13 @@ from collections.abc import Iterable, Callable
 
 STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
 
-# Normalize owner scores to be greater than this lower bound.
-# We want to use a standard scale (i.e. between 0 and 1) for interpretability.
-# However, normalizing to greater-than-half probabilities is likely more accurate,
-# given that there are stringent conditions on initial detection such that
-# name should be considered well-attested and likely to be an owner.
+# Normalize owner scores to be within the following bounds.
+# We want to use a standard scale (e.g. between 0 and 1) for interpretability.
+# However, we expect that normalizing to greater-than-half "probabilities" is
+# likely more accurate, # given that there are stringent conditions on initial detection
+# such that any name should be considered well-attested and likely to be an owner.
 SCORE_LOWER_BOUND = 0.5
+SCORE_UPPER_BOUND = 1.0
 
 # The /tmp directory will cache persistently across interactions.
 # Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
@@ -78,16 +79,30 @@ def featurize(asm_system_ids: list[str], owners: list[dict[str, Any]]) -> np.nda
     return feats
 
 
-def normalize_scores(scores: list[float]) -> list[float]:
+def normalize_scores(
+    scores: list[float],
+    lower_bound: float = SCORE_LOWER_BOUND,
+    upper_bound: float = SCORE_UPPER_BOUND,
+) -> list[float]:
     """
-    Normalizes a list of non-negative reals to values between SCORE_LOWER_BOUND and 1
+    Normalizes a list of non-negative reals to values in range specified by `lower_bound`
+    and `upper_bound`
+    """
+    if lower_bound < 0 or upper_bound < 0:
+        raise ValueError("Lower and upper bounds must be non-negative")
+    if lower_bound > upper_bound:
+        raise ValueError("Lower bound must be greater than or equal to upper bound")
 
-    Intuition: we expect showing e.g. greater-than-half probabilities to the end user
-    is more accurate, because any owner available for ranking was recovered from
-    meaningful and relevant-to-ownership metadata
-    """
-    total = sum(scores)
-    return [round(score / total * (1 - SCORE_LOWER_BOUND) + SCORE_LOWER_BOUND, ndigits=2) for score in scores]
+    if not scores:
+        return scores
+    max_val = max(scores)
+    min_val = min(scores)
+    if max_val == min_val:
+        return [upper_bound] * len(scores)
+    return [
+        round(((score - min_val) / (max_val - min_val) * (upper_bound - lower_bound) + lower_bound), ndigits=2)
+        for score in scores
+    ]
 
 
 def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[str, Any]]:

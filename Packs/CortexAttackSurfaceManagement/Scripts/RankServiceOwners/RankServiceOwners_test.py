@@ -145,12 +145,34 @@ def test_aggregate(owners, expected_out):
 
 
 @pytest.mark.parametrize('scores,expected_out', [
-    ([0.5, 1], [0.67, 0.83]),
-    ([1, 10, 100], [.5, .55, .95]),
+    ([1, 1, 1], [1, 1, 1]),
+    ([0.5, 0.5, 0.5], [1, 1, 1]),
+    ([2, 1, 1], [1.0, 0.5, 0.5]),
+    ([5, 2, 1, 1], [1.0, 0.62, 0.5, 0.5]),
+    ([10, 2, 1, 1, 1], [1.0, 0.56, 0.5, 0.5, 0.5]),
+    ([100, 10, 1, 1, 1], [1.0, 0.55, 0.5, 0.5, 0.5]),
+    ([8, 6, 4], [1.0, 0.75, 0.5]),
+    ([8, 6, 4], [1.0, 0.75, 0.5]),
     ([], []),
 ])
 def test_normalize_scores(scores, expected_out):
+    """
+    This test verifies normalize_scores with the default lower and upper bound values
+    """
     assert np.allclose(normalize_scores(scores), expected_out, atol=0.01)
+
+
+@pytest.mark.parametrize('scores,expected_out,lower_bound,upper_bound', [
+    ([], [], -1, 1),
+    ([], [], 1, -1),
+    ([], [], 1, 0),
+])
+def test_normalize_scores_different_bounds(scores, expected_out, lower_bound, upper_bound):
+    """
+    This test verifies that if invalid bounds are provided, a ValueError is thrown
+    """
+    with pytest.raises(ValueError):
+        normalize_scores(scores, lower_bound, upper_bound)
 
 
 def test_score_model_load_fail(mocker):
