@@ -1,0 +1,21 @@
+{
+    "name": "listmonk",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "gernaude",
+    "url": "",
+    "email": "",
+    "created": "2023-07-25T22:37:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "gernaude"
+    ]
+}

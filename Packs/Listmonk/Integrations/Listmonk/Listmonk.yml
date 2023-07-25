@@ -1,0 +1,66 @@
+category: Utilities
+commonfields:
+  id: listmonk
+  version: -1
+configuration:
+- defaultvalue: https://listmonk.app
+  display: Listmonk URL
+  name: listmonk_url
+  required: true
+  type: 0
+- defaultvalue: listmonk
+  display: User Name
+  name: listmonk_username
+  required: true
+  type: 0
+- display: Password
+  displaypassword: listmonk
+  name: listmonk_password
+  required: true
+  type: 4
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5d15279a-399b-43d0-8abb-35bd5ecbd1cf
+    packName: listmonk Contribution Pack
+    prevname: ""
+    propagationLabels: []
+    toServerVersion: ""
+description: This is the Hello World integration for getting started.
+display: listmonk
+name: listmonk
+script:
+  commands:
+  - arguments:
+    - description: Maximum number of lists to return
+      name: limit
+    description: Get the lists from Listmonk
+    name: listmonk-get-lists
+    outputs:
+    - contextPath: Listmonk.ListsResults
+  - arguments:
+    - description: ID of the list to get subscribers for
+      name: list_id
+    description: Get subscribers for a specific list in Listmonk
+    name: listmonk-get-subscribers
+    outputs:
+    - contextPath: Listmonk.SubscribersResults
+  - arguments:
+    - description: ID of the list to add the subscriber to
+      name: list_ids
+    - description: Email address of the subscriber to add
+      name: email
+    - description: Name of the subscriber (optional)
+      name: name
+    - description: Additional metadata for the subscriber (optional)
+      name: attributes
+    - name: status
+    description: Add a subscriber to a list in Listmonk
+    name: listmonk-add-subscriber
+  dockerimage: demisto/python3-deb:3.9.7.24076
+  runonce: true
+  script: ''
+  subtype: python3
+  type: python
