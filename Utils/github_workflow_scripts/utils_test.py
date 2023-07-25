@@ -1,25 +1,14 @@
 #!/usr/bin/env python3
 import pytest
-<<<<<<< HEAD
-from typing import Any
-from utils import (
-    get_env_var,
-    EnvVariableError,
-    get_doc_reviewer,
-    DOC_REVIEWER_KEY
-)
-||||||| 78c32f890e
-from utils import get_env_var, EnvVariableError
-=======
 from typing import Any
 from utils import (
     get_env_var,
     EnvVariableError,
     get_content_reviewers,
     CONTRIBUTION_REVIEWERS_KEY,
-    CONTRIBUTION_SECURITY_REVIEWER_KEY
+    CONTRIBUTION_SECURITY_REVIEWER_KEY,
+    DOC_REVIEWER_KEY
 )
->>>>>>> master
 
 
 class TestGetEnvVar:
