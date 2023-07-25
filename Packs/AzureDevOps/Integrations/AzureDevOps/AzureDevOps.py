@@ -690,6 +690,18 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
+    def blob_zip_get_list_request(self, org_repo_project_tuple: namedtuple, file_object_id: str):
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
+                   f'repositories/{org_repo_project_tuple.repository}/blobs/{file_object_id}'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='response')
+
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
     """
     Create XSOAR context output for retrieving pipeline run information.
@@ -2139,8 +2151,8 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
 
     response = client.file_list_request(org_repo_project_tuple, args=args)
 
-    mapping = {"path": "File Name(s)"}
-    readable_output = tableToMarkdown('Files', response.get("value"), headers=["path"],
+    mapping = {"path": "File Name(s)", "objectId": "Object ID"}
+    readable_output = tableToMarkdown('Files', response.get("value"), headers=["path", "objectId"],
                                       headerTransform=lambda header: mapping.get(header, header))
 
     return CommandResults(
@@ -2328,6 +2340,19 @@ def team_member_list_command(client: Client, args: Dict[str, Any], organization:
         outputs=response,
         raw_response=response
     )
+
+
+def blob_zip_get_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                         repository_id: Optional[str], project: Optional[str]) -> dict:
+    """
+    Get a single blob.
+    """
+    # pre-processing inputs
+    org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+
+    response = client.blob_zip_get_list_request(org_repo_project_tuple, args["file_object_id"])
+
+    return fileResult(filename='blob.zip', data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
 
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
@@ -2583,6 +2608,10 @@ def main() -> None:
 
         elif command == 'azure-devops-team-member-list':
             return_results(team_member_list_command(client, args, params.get('organization'), params.get('project')))
+
+        elif command == 'azure-devops-blob-zip-get':
+            return_results(blob_zip_get_command(client, args, params.get('organization'),
+                                                params.get('repository'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

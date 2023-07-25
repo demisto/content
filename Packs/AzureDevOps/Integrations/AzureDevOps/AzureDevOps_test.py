@@ -1417,7 +1417,7 @@ def test_file_list_command(requests_mock):
             }
     result = file_list_command(client, args, ORGANIZATION, repository, project)
 
-    assert result.readable_output.startswith("### Files\n|File Name(s)|\n")
+    assert result.readable_output.startswith('### Files\n|File Name(s)|Object ID|\n|---|---|\n| / |  |\n| /.github |  |')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
 def test_file_content_get_command(requests_mock):
@@ -1682,3 +1682,39 @@ def test_team_member_list_command(requests_mock):
 
     assert result.readable_output.startswith('### Team Members\n|Name|\n|---|\n| XXX |\n| YYY |')
     assert result.outputs_prefix == 'AzureDevOps.TeamMember'
+
+def test_blob_zip_get_command(mocker, requests_mock):
+    """
+    Given:
+        - all required arguments
+    When:
+        - executing azure-devops-blob-zip-get command
+    Then:
+        - Ensure the output's type is INFO_FILE
+    """
+    import AzureDevOps
+    from AzureDevOps import Client, blob_zip_get_command
+    from requests import Response
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    with open('test_data/response_content') as content:
+        response = Response()
+        response._content = content
+
+    http_request = mocker.patch.object(client.ms_client, 'http_request', return_value=response)
+
+    args = {'file_object_id': 'zzz'}
+
+    mocker.patch.object(AzureDevOps, 'fileResult', return_value={'Type': EntryType.ENTRY_INFO_FILE})
+    res = blob_zip_get_command(client, args, ORGANIZATION, "test", "test")
+
+    assert res['Type'] == EntryType.ENTRY_INFO_FILE

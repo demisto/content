@@ -2986,6 +2986,25 @@ script:
       - type: Number
         contextPath: AzureDevOps.TeamMember.count
         description: Count of the team members.
+  - name: azure-devops-blob-zip-get
+    description: Get a single blob.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: repository_id
+        description: The repository ID. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: file_object_id
+        description: The ID of the blob object. This ID can be obtained by running the 'azure-devops-file-list' command.
+        required: true
+        isArray: false
 
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
