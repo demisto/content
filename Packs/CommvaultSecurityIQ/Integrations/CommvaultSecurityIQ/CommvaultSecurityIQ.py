@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from gevent.server import StreamServer
-from pydantic import BaseModel
+from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from uvicorn.logging import AccessFormatter
 from urllib.parse import urlparse
 import demistomock as demisto
