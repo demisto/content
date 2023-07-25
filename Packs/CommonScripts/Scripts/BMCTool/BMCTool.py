@@ -461,37 +461,39 @@ def main():
     verbose = args.get("verbose", False)
     width = int(args.get("width", 64))
     source = args.get("EntryID", '')
+    try:
+        bmcc = BMCContainer(verbose=verbose, count=-1, old=False, big=True, width=width)
 
-    bmcc = BMCContainer(verbose=verbose, count=-1, old=False, big=True, width=width)
+        if not source:
+            # If the user didn't specify a path to a specific file(s) the script will grab .bin files from context
 
-    if not source:
-        # If the user didn't specify a path to a specific file(s) the script will grab .bin files from context
+            sources = []
 
-        sources = []
+            files = argToList(demisto.context().get('File'))
 
-        files = argToList(demisto.context().get('File'))
+            for bin_file in files:
+                file = demisto.getFilePath(bin_file.get("EntryID"))
+                if file.get("name").endswith(('bin', 'bmc')):
+                    sources.append(file)
+        else:
+            sources = [demisto.getFilePath(source)]
 
-        for bin_file in files:
-            file = demisto.getFilePath(bin_file.get("EntryID"))
-            if file.get("name").endswith(('bin', 'bmc')):
-                sources.append(file)
-    else:
-        sources = [demisto.getFilePath(source)]
+        for source in sources:
+            if bmcc.b_import(source.get("path")):
+                bmcc.b_process()
+                bmcc.b_export(source.get("name"))
+                bmcc.b_flush()
 
-    for source in sources:
-        if bmcc.b_import(source.get("path")):
-            bmcc.b_process()
-            bmcc.b_export(source.get("name"))
-            bmcc.b_flush()
+        del bmcc
 
-    del bmcc
+        results = CommandResults(
+            outputs_prefix='Collages',
+            outputs=sources
+        )
 
-    results = CommandResults(
-        outputs_prefix='Collages',
-        outputs=sources
-    )
-
-    return_results(results)
+        return_results(results)
+    except Exception as e:
+        return_error(f'Failed to parse BMC cache file. Problem: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
