@@ -1,12 +1,13 @@
 [INGEST:vendor="linux", product="linux", target_dataset="linux_linux_raw", no_hit=keep]
-alter
+filter _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"
+| alter
 // Get the current year and timestamp.
     tmp_get_current_year = arrayindex(regextract(to_string(_insert_time), "\d{4}"), 0),
     tmp_get_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
-|alter 
+| alter 
 // Unifies the year and timestamp as String.
     tmp_timestamp1 = concat(tmp_get_current_year, " ", tmp_get_timestamp)
-|alter 
+| alter 
 // Converts the full timestamp to datetime format (First option).
     tmp_timestamp_format1 = parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp1)
 | alter 

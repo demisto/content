@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 import pytest
-from utils import get_env_var, EnvVariableError
+from typing import Any
+from utils import (
+    get_env_var,
+    EnvVariableError,
+    get_content_reviewers,
+    CONTRIBUTION_REVIEWERS_KEY,
+    CONTRIBUTION_SECURITY_REVIEWER_KEY
+)
 
 
-class TestGetEnvVar(object):
+class TestGetEnvVar:
     def test_no_env_var(self):
         """
         Scenario: Try getting an environment variable
@@ -112,3 +119,97 @@ class TestGetEnvVar(object):
         default_val = 'TIMOTHY'
         env_var_val = get_env_var('MADE_UP_ENV_VARIABLE', default_val)
         assert env_var_val == 'LEROY JENKINS'
+
+
+@pytest.mark.parametrize(
+    'content_roles,expected_content_reviewers,expected_security_reviewer',
+    [
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
+            "CONTRIBUTION_TL": "tl1",
+            "ON_CALL_DEVS": ["ocd1", "ocd2"]
+        }, ["cr1", "cr2", "cr3", "cr4"], "sr1")
+    ]
+)
+def test_get_content_reviewers(
+    content_roles: dict[str, Any],
+    expected_content_reviewers: list[str],
+    expected_security_reviewer: str
+):
+    """
+    Test retrieval of content and security reviewers.
+
+    Given:
+        - A ``dict[str, Any]``
+
+    When:
+        - 4 content reviewers and 1 security reviewers provided
+
+    Then:
+        - 4 content reviewers and 1 security reviewer added
+    """
+
+    actual_content_reviewers, actual_security_reviewer = get_content_reviewers(content_roles)
+    assert actual_content_reviewers == expected_content_reviewers
+    assert actual_security_reviewer == expected_security_reviewer
+
+
+@pytest.mark.parametrize(
+    'content_roles',
+    [
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: [],
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
+        }),
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2"],
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: None,
+        }),
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2"],
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: "",
+        }),
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: "sr1",
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: "cr1",
+        }),
+        ({
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1"],
+        }),
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: ["cr1"],
+        }),
+        ({
+            "CONTRIBUTION_TL": "tl1",
+            "ON_CALL_DEVS": ["ocd1", "ocd2"]
+        })
+    ]
+)
+def test_exit_get_content_reviewers(
+    content_roles: dict[str, Any]
+):
+    """
+    Test retrieval of content and security reviewers when the file/`dict`
+    has unexpected/incorrect structure.
+
+    Given:
+        - A ``dict[str, Any]``
+
+    When:
+        - Case A: An empty contribution reviewers `list` is supplied.
+        - Case B: An undefined security reviewer is supplied.
+        - Case C: An empty security reviewer is supplied.
+        - Case D: A `str` is supplied for the contribution reviewers.
+        - Case E: No contribution reviewers key is supplied.
+        - Case F: No security reviewer key is supplied.
+        - Case G: No security reviewer key nor contribution reviewers key is supplied.
+
+    Then:
+        - Case A-G: Result in `sys.exit(1)`.
+    """
+
+    with pytest.raises(SystemExit) as e:
+        get_content_reviewers(content_roles)
+        assert e.type == SystemExit
+        assert e.value.code == 1
