@@ -21,11 +21,11 @@ Allow integration with Zabbix api
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. zabbix-execute-command
-2. test-module
-3. zabbix-hostgroup-get
-4. zabbix-host-get
-5. zabbix-trigger-get
-6. zabbix-event-get
+2. zabbix-hostgroup-get
+3. zabbix-host-get
+4. zabbix-trigger-get
+5. zabbix-event-get
+
 ### 1. zabbix-execute-command
 ---
 Execute command on Zabbix API
@@ -110,31 +110,7 @@ Execute command on Zabbix API
 | 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
 
 
-### 2. test-module
----
-Test if module is working
-
-##### Base Command
-
-`test-module`
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-##### Context Output
-
-There is no context output for this command.
-
-##### Command Example
-```!test-module method="host.get"
-```
-
-##### Human Readable Output
-ok
-
-### 3. zabbix-hostgroup-get
+### 2. zabbix-hostgroup-get
 ---
 Get host groups
 
@@ -201,7 +177,7 @@ Get host groups
 | 0 | 4 | 0 | Zabbix servers |
 
 
-### 4. zabbix-host-get
+### 3. zabbix-host-get
 ---
 Get hosts
 
@@ -345,7 +321,7 @@ Get hosts
 | 1 | 2 |  | 1588621755 | Get value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused | 1585321618 | 0 | Zabbix server | 10084 | -1 | 0 | 0 |  | 0 |  | 2 |  | 0 | 0 |  | 0 | 0 | 0 | 0 | 0 | 0 | Zabbix server |  | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 | 1 |  |  |  |  |
 
 
-### 5. zabbix-trigger-get
+### 4. zabbix-trigger-get
 ---
 Get triggers
 ##### Base Command
@@ -446,7 +422,7 @@ Get triggers
 |  | 0 |  | Zabbix agent on {HOST.NAME} is unreachable for 5 minutes |  | {12900}=1 | 0 | 1585321941 | 0 | 3 |  | 0 | 0 | 0 | 10047 | 13491 | 0 |  | 1 |
 
 
-### 6. zabbix-event-get
+### 5. zabbix-event-get
 ---
 Get events
 ##### Base Command
