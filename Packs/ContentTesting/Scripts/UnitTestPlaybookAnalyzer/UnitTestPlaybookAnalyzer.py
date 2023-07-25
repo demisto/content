@@ -2,36 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, TypedDict, List  # type: ignore
 from datetime import datetime
 from dateutil.parser import parse
 
 
-class Task(TypedDict):
-    name: str
-    duration: float
-    state: str
-    tid: str
-    started: int
-    notexecuted: int
-
-
-class TaskStat(TypedDict):
-    tid: str
-    name: str
-    mindur: int
-    maxdur: int
-    avgdur: int
-    totdur: int
-    count: int
-    completed: int
-    started: int
-    notexecuted: int
-    waiting: int
-    error: int
-
-
-def BuildTask(t) -> Task:
+def BuildTask(t) -> dict:
     duration = -1.0
     state = "Unknown"
     started = 0
@@ -48,7 +23,8 @@ def BuildTask(t) -> Task:
         elif state == "WillNotBeExecuted":
             notexecuted = 1
 
-    newtask = Task(name=t['task']['name'], duration=duration, state=state, tid=t['id'], started=started, notexecuted=notexecuted)
+    newtask = {'name': t['task']['name'], 'duration': duration, 'state': state,
+               'tid': t['id'], 'started': started, 'notexecuted': notexecuted}
 
     return newtask
 
@@ -64,10 +40,10 @@ def GetSubpbTasks(subplaybook, t, tasks):
     return tasks
 
 
-def GetTasks(incid: str, subplaybook: str) -> List[Task]:
+def GetTasks(incid: str, subplaybook: str) -> list:
     resp = execute_command("demisto-api-get", {
         "uri": f"/inv-playbook/{incid}"})
-    tasks: List[Task] = []
+    tasks: list = []
 
     for key, t in resp['response']['tasks'].items():
         if (t['type'] in ["regular", "condition", "playbook", "collection"]):
@@ -79,20 +55,29 @@ def GetTasks(incid: str, subplaybook: str) -> List[Task]:
     return tasks
 
 
-def TaskStats(task: List[Task], taskstat: Dict[str, TaskStat]) -> Dict[str, TaskStat]:
+def TaskStats(task: list, taskstat: dict) -> dict:
     for t in task:
         taskid = t['tid']
-        dur = t['duration']
+        dur = int(t['duration'])
         if taskid not in taskstat:
-            taskstat[taskid] = TaskStat(tid=taskid, name=t['name'], mindur=None, maxdur=0, avgdur=0,
-                                        totdur=0, count=0, completed=0, started=0, notexecuted=0, error=0, waiting=0)
+            taskstat[taskid] = {
+                'tid': taskid,
+                'name': t['name'],
+                'mindur': 1000000,
+                'maxdur': 0,
+                'avgdur': 0,
+                'totdur': 0,
+                'count': 0,
+                'completed': 0,
+                'started': 0,
+                'notexecuted': 0,
+                'error': 0,
+                'waiting': 0
+            }
         if t['state'] == "Completed":
             if dur > taskstat[taskid]['maxdur']:
                 taskstat[taskid]['maxdur'] = dur
-            if taskstat[taskid]['mindur'] is not None:
-                if dur < taskstat[taskid]['mindur']:
-                    taskstat[taskid]['mindur'] = dur
-            else:
+            if dur < taskstat[taskid]['mindur']:
                 taskstat[taskid]['mindur'] = dur
             taskstat[taskid]['totdur'] += dur
             taskstat[taskid]['completed'] += 1
@@ -114,8 +99,8 @@ def TaskStats(task: List[Task], taskstat: Dict[str, TaskStat]) -> Dict[str, Task
 def GetTaskStats(playbookname, subplaybookname, firstday, lastday, maxinc):
     argument = {'query': f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
     response = execute_command("getIncidents", argument)
-    taskstat: TaskStat = {}  # type: ignore
-    taskstats: Dict[str, TaskStat] = {}  # type: ignore
+    taskstat: dict = {}
+    taskstats: dict = {}
     count = 0
     if response['data'] is not None:
         for inc in response['data']:
@@ -138,7 +123,7 @@ def SummaryMarkdown(playbook, subplaybook: str, firstday: str, lastday: str, cou
     return (output)
 
 
-def StatsInfoMarkdown(stats: Dict[str, TaskStat]) -> str:
+def StatsInfoMarkdown(stats: dict) -> str:
     markdown = "<br/>\n"
     markdown += "|Task Name|Minimum Duration(ms)|Average Duration(ms)|Maximum Duration(ms)|\n"
     markdown += "|---|:---:|:---:|:---:|\n"

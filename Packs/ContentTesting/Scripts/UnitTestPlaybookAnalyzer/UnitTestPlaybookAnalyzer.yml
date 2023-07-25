@@ -21,11 +21,10 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.66339
 enabled: true
 name: UnitTestPlaybookAnalyzer
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
@@ -35,3 +34,4 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+runonce: false
