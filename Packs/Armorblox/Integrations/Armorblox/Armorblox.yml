@@ -16,6 +16,7 @@ configuration:
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: API key
   name: apikey
   required: true
@@ -26,6 +27,7 @@ configuration:
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: lastDay
   display: First fetch timestamp
   name: first_fetch
@@ -41,26 +43,31 @@ configuration:
   - allTime
   type: 15
   section: Collect
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 description: |-
   Armorblox is an API-based platform that stops targeted email attacks,
     protects sensitive data, and automates incident response.
@@ -81,7 +88,7 @@ script:
     - contextPath: Armorblox.Threat.remediation_actions
       description: Should be the remediation action name for the incident under inspection
       type: string
-  dockerimage: demisto/armorblox:1.0.0.63866
+  dockerimage: demisto/armorblox:1.0.0.65856
   isfetch: true
   script: ''
   subtype: python3
