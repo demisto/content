@@ -14,7 +14,7 @@ plugin-load = audit_log.so
 audit_log_format=JSON
 ```
 
-Note: In order to parse the timestamp correctly, make sure that the timestamp field is in the default timezone - UTC.
+Note: In order to parse the timestamp correctly, make sure that the timestamp field is in the default time zone - UTC.
 The supported time format is yyyy-MM-dd hh:mm:ss (2021-12-08 10:00:00).
 
 

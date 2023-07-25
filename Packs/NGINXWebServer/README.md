@@ -1,8 +1,17 @@
 # NGINX
 This pack includes Cortex XSIAM content. 
 
-## Collect Events from Vendor
 
+## Configuration on Server Side
+
+
+Note: In order to parse the timestamp correctly, make sure that the timestamp is set to UTC time zone.
+The supported time formats are: 
+- dd/MMM/yyyy:hh:mm:ss [+|-]nnnn (18/Jul/2021:10:00:00 +0000)
+- yyyy/MM/dd hh:mm:ss (2020/01/19 10:00:00)
+
+
+## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
 ### Broker VM
