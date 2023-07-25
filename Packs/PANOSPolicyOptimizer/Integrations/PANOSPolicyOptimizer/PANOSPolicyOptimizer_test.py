@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import *
 from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position,\
-    get_policy_optimizer_statistics_command
+    get_policy_optimizer_statistics_command, policy_optimizer_no_apps_command
 
 BASE_URL = 'https://test.com'
 
@@ -33,6 +33,16 @@ QUERYING_RULES_PARAMS = [
         'post',
     )
 ]
+
+QUERYING_RULES_PARAMS_WITH_VERSION = [
+    (get_firewall_instance_client(), 'pre', '9.0.0', 'main'),
+    (get_panorama_instance_client(), 'pre', '10.2.0', 'pre'),
+    (get_panorama_instance_client(), 'post', '9.0.0', 'main')]
+
+QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG = [
+    (get_firewall_instance_client(), 'pre', '9.0.0', 'main', False, False),
+    (get_panorama_instance_client(), 'pre', '10.2.0', 'pre', True, True),
+    (get_panorama_instance_client(), 'post', '9.0.0', 'main', True, False)]
 
 
 @pytest.mark.parametrize("client, position", QUERYING_RULES_PARAMS)
@@ -81,10 +91,7 @@ def test_body_request_is_valid_when_querying_rules(mocker, client, position):
     }
 
 
-@pytest.mark.parametrize("client, position, VERSION, excepted_position", [
-    (get_firewall_instance_client(), 'pre', '9.0.0', 'main'),
-    (get_panorama_instance_client(), 'pre', '10.2.0', 'pre'),
-    (get_panorama_instance_client(), 'post', '9.0.0', 'main')])
+@pytest.mark.parametrize("client, position, VERSION, excepted_position", QUERYING_RULES_PARAMS_WITH_VERSION)
 def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker, client, position, VERSION, excepted_position):
     """
     Given
@@ -112,7 +119,39 @@ def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker,
         }
     )
     assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run', 'data': [
-        '123', 'PoliciesDirect.getRuleCountInRuleUsage', [{'type': 'security', 'position': excepted_position, 'vsysName': 'test'}]], 'type': 'rpc', 'tid': 1}
+        '123', 'PoliciesDirect.getRuleCountInRuleUsage', [{'type': 'security',
+                                                           'position': excepted_position, 'vsysName': 'test'}]],
+                                                        'type': 'rpc', 'tid': 1}
+
+@pytest.mark.parametrize("client, position, VERSION, excepted_position, flag, expected_flag", QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG)
+def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, client, position, VERSION, excepted_position, flag, expected_flag):
+    """
+    Given
+        - a client.
+    When
+        - querying policy optimizer no apps in firewall/panorama instances.
+
+    Then
+        - Verify that the body request that was sent is correct for each type of instance.
+        case1: PAN-OS 9.0.0 should always return main, and the isCmsSelected flag should be False.
+        case2: Panorama 10.2.0 should will return pre, the given position argument, and the isCmsSelected flag should be True.
+        case3: Panorama 9.0.0 should always return main, and the isCmsSelected flag should be False due to the given vresion.
+    """
+    mocker.patch.object(client, 'token_generator', return_value='123')
+    response = requests.Response()
+    response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
+
+    response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
+    mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
+
+    client.session_metadata["headers"] = 'test'
+    policy_optimizer_no_apps_command(
+        client=client, args={
+            'position': position
+        }
+    )
+    assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run',
+                                                        'data': ['123', 'PoliciesDirect.getPoliciesByUsage', [{'type': 'security', 'position': excepted_position, 'vsysName': 'test', 'isCmsSelected': expected_flag, 'isMultiVsys': False, 'showGrouped': False, 'usageAttributes': {'timeframeTag': '30', 'application/member': 'any', 'apps-seen-count': "geq '1'", 'action': 'allow'}, 'pageContext': 'app_usage', 'field': '$.bytes', 'direction': 'DESC'}]], 'type': 'rpc', 'tid': 1}
 
 
 CLIENTS = [
