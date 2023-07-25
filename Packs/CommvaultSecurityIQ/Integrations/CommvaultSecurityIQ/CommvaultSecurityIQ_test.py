@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 from gevent.server import StreamServer
 import demistomock as demisto
 from CommvaultSecurityIQ import (
@@ -14,6 +14,7 @@ from CommvaultSecurityIQ import (
     fetch_and_disable_saml_identity_provider,
     disable_user,
     get_secret_from_key_vault,
+    handle_post_helper,
 )
 
 
@@ -115,8 +116,8 @@ class CommvaultClientMock(Client):
                     "<html>Detected file type classification anomaly in job [185314]"
                     " for client [dihyperv]. Number of files affected [145]."
                     "'Please click  <a href=\"http://plusonecs.idx.commvault.com:80/commandcenter/#/"
-                    "fileAnomaly/5185?anomalyTypes=mime\"> here</a> for more"
-                    " details.<span style=\"display: none\">AnomalyType:[2];ClientName:[dihyperv];BackupSetName:"
+                    'fileAnomaly/5185?anomalyTypes=mime"> here</a> for more'
+                    ' details.<span style="display: none">AnomalyType:[2];ClientName:[dihyperv];BackupSetName:'
                     "[defaultBackupSet];SubclientName:[AnomalySubclient];"
                     "SuspiciousFileCount:[145];ModifiedFileCount:[0];RenamedFileCount:[0];CreatedFileCount:[0];"
                     "DeletedFileCount:[0];ApplicationType:[33];"
@@ -163,17 +164,6 @@ class CommvaultClientMock(Client):
                     demisto.debug("Finished reading message")
         finally:
             file_obj.close()
-
-    def prepare_globals_and_create_server(
-        self,
-        port: int,
-        certificate_path: Optional[str],
-        private_key_path: Optional[str],
-    ):
-        """Dummy function"""
-        del certificate_path, private_key_path
-        server = StreamServer(("0.0.0.0", port), self.perform_long_running_execution)
-        return server
 
 
 def test_disable_data_aging():
@@ -242,8 +232,10 @@ def test_fetch_incidents():
 
 def test_get_backup_anomaly():
     """Unit test function"""
-    resp = get_backup_anomaly(0)
-    assert resp == "Undefined"
+    resp0 = get_backup_anomaly(0)
+    resp1 = get_backup_anomaly(1)
+    resp2 = get_backup_anomaly(2)
+    assert resp0 == "Undefined" and resp1 == "File Activity" and resp2 == "File Type"
 
 
 def test_if_zero_set_none():
@@ -260,8 +252,8 @@ def test_extract_from_regex():
 
 def test_format_alert_description():
     """Unit test function"""
-    resp = format_alert_description("<html>Format Alert</html>")
-    assert resp == "<html>Format Alert</html>"
+    resp = format_alert_description("<html>Detected file  Please click  </html>")
+    assert resp == "<html>Detected file  Please click  </html>"
 
 
 def test_field_mapper():
@@ -278,3 +270,30 @@ def test_long_running_execution():
     )
     server: StreamServer = client.prepare_globals_and_create_server(port, "", "")
     assert server.address[1] == 33333
+
+
+def test_webhook():
+    """Unit test function"""
+    req = {
+        "Alert": "File Activity Anomaly Alert",
+        "Event ID": "38715891",
+        "Job ID": "79037346",
+        "Event Date": "Mon May  8 05: 05: 27 2023",
+        "Event Code": "14: 337",
+        "Program": "CvStatAnalysis",
+        "Client": "dihyperv_fda",
+        "Description": (
+            "<html>Detected file type classification anomaly in job [171069] for client [dihyperv_fda]. "
+            "Number of files affected [294]. Please click  <a href='http://SEARCHW"
+            "SV11:80/commandcenter/#/fileAnomaly/44180?anomalyTypes=mime'> here</a> for "
+            "more details.<span style='display: none'>AnomalyType:[2];ClientName:[dihyperv_fda];"
+            "BackupSetName:[defaultBackupSet];SubclientName:[AnomalySubclient];SuspiciousFileCount:[294];ModifiedFileCount:[0]"
+            ";RenamedFileCount:[0];CreatedFileCount:[0];DeletedFileCount:[0];ApplicationType:[33];"
+            "BackupSetId:[0];SubclientId:[0];JobId:[79037346]</span></html>"
+        ),
+    }
+    client = CommvaultClientMock(
+        base_url="https://webservice_url:81", verify=False, proxy=False
+    )
+    obj = handle_post_helper(client, req, None)
+    assert obj["job_id"] == "171069"
