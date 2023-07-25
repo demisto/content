@@ -23,8 +23,6 @@ You can configure the vendor and product by replacing [vendor]_[product]raw with
 
 When configuring the instance, you should use a YAML file that configures the vendor and product, as seen in the configuration below for the Microsoft WSUS product.
 
-* Pay attention: Timestamp parsing is supported in UTC (+0000) timezone for the **yyyy-mm-dd HH:MM:SS.3ms UTC** format.
-
 ## Filebeat Collection
 In order to use the collector, you need to use the following option to collect events from the vendor:
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
