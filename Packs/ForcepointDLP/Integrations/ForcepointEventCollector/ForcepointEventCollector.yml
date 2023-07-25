@@ -23,12 +23,12 @@ configuration:
   required: false
   type: 0
   section: Collect
-- defaultvalue: 3 days
-  display: First fetch
+- display: First fetch
   name: first_fetch
   required: false
   type: 0
   section: Collect
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
