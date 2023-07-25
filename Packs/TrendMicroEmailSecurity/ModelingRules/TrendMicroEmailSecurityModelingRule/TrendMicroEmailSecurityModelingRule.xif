@@ -33,7 +33,7 @@ alter
     xdm.alert.original_alert_id = mailID,
     xdm.email.message_id = messageID,
     xdm.network.rule = policyName,
-    // xdm.event.outcome_reason = coalesce(reason, details),
+    xdm.event.outcome_reason = coalesce(reason, details),
     xdm.email.sender = coalesce(headerFrom, sender),
     xdm.source.ipv4 = if(senderIP ~= "\.", senderIP, null),
     xdm.source.ipv6 = if(senderIP ~= "\:", senderIP, null),

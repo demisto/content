@@ -82,6 +82,40 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def add_missing_fields_to_event(event: dict):
+    for field in (
+        "action",
+        "mailID",
+        "sender",
+        "genTime",
+        "logType",
+        "subject",
+        "tlsInfo",
+        "senderIP",
+        "direction",
+        "eventType",
+        "messageID",
+        "recipient",
+        "domainName",
+        "headerFrom",
+        "policyName",
+        "eventSubtype",
+        "policyAction",
+        "deliveredTo",
+        "attachments",
+        "recipients",
+        "headerTo",
+        "details",
+        "timestamp",
+        "size",
+        "deliveryTime",
+        "reason",
+        "embeddedUrls",
+    ):
+        if field not in event:
+            event[field] = None
+
+
 def convert_datetime_to_without_milliseconds(time_: str) -> str:
     return time_.strip("Z").split(".")[0] + "Z"
 
@@ -150,12 +184,14 @@ class Deduplicate:
         Generate IDs for each of the events that are at risk as a duplicate
         to save it in the last_run object
         """
-        events_with_duplication_risk = self.get_events_with_duplication_risk(events, latest_time)
-        return [self.generate_id_for_event(event) for event in events_with_duplication_risk]
+        events_with_duplication_risk = self.get_events_with_duplication_risk(
+            events, latest_time
+        )
+        return [
+            self.generate_id_for_event(event) for event in events_with_duplication_risk
+        ]
 
-    def is_duplicate(
-        self, event: dict, time_from: str
-    ) -> bool:
+    def is_duplicate(self, event: dict, time_from: str) -> bool:
         """
         checks if the event is duplicate
         """
@@ -169,7 +205,11 @@ class Deduplicate:
 
 
 def managing_set_last_run(
-    events: list[dict], last_run: dict, start: str, event_type: EventType, deduplicate: Deduplicate
+    events: list[dict],
+    last_run: dict,
+    start: str,
+    event_type: EventType,
+    deduplicate: Deduplicate,
 ) -> dict:
     """
     Managing the `last_run` object
@@ -185,7 +225,6 @@ def managing_set_last_run(
     if not events:
         demisto.debug(f"No Events, No update the last_run for {event_type.value} type")
     else:
-
         # Time of one of the events that returned later than the `start`
         if deduplicate.is_fetch_time_moved:
             latest_time = deduplicate.get_last_time_event(events)
@@ -269,7 +308,9 @@ def fetch_by_event_type(
         if res.get("logs"):
             # Iterate over each event log, update their `type` and `_time` fields
             for event in res.get("logs"):
-                deduplicate_management.update_suspected_duplicate_events_list(event, start)
+                deduplicate_management.update_suspected_duplicate_events_list(
+                    event, start
+                )
                 if not deduplicate_management.is_duplicate(event, start):
                     event.update(
                         {"_time": event.get("timestamp"), "logType": event_type.value}
@@ -277,6 +318,7 @@ def fetch_by_event_type(
                     if hide_sensitive:
                         remove_sensitive_from_events(event)
 
+                    add_missing_fields_to_event(event)
                     events_res.append(event)
 
         else:  # no logs
@@ -298,7 +340,7 @@ def set_first_fetch(start_time: str = None) -> str:
     """
     set the start time of the first time of the fetch
     """
-    if first_fetch := arg_to_datetime(start_time or "1 hours"):
+    if first_fetch := arg_to_datetime(start_time or "72 hours"):
         return first_fetch.strftime(DATE_FORMAT_EVENT)
     raise ValueError("Failed to convert `str` to `datetime` object")
 
@@ -373,7 +415,7 @@ def fetch_events_command(
             last_run=last_run,
             start=time_from,
             event_type=event_type,
-            deduplicate=deduplicate_management
+            deduplicate=deduplicate_management,
         )
         new_last_run.update(last_run_for_type)
     demisto.debug(f"Done fetching, got {len(events)} events.")
