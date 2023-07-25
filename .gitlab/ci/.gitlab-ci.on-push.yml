@@ -420,18 +420,18 @@ slack-notify-nightly-build:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-#    - section_start "Are there tests to run?" --collapsed
-#    - |
-#      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
-#        # The files are empty.
-#        echo "Not running the instance flow, no tests to run were found."
-#        job-done
-#        exit $EXIT_CODE
-#      fi
-#    - section_end "Are there tests to run?"
+    - section_start "Are there tests to run?" --collapsed
+    - |
+      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
+        # The files are empty.
+        echo "Not running the instance flow, no tests to run were found."
+        job-done
+        exit $EXIT_CODE
+      fi
+    - section_end "Are there tests to run?"
 
     - section_start "Lock Machine" --collapsed
-#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
@@ -530,8 +530,9 @@ xsiam_server_ga:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
     UNREMOVABLE_PACKS: "Base"
-  needs: []
-
+  needs:
+    - job: mpv2-prepare-testing-bucket
+      optional: true
 
 xsoar_ng_server_ga:
   extends:
