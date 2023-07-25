@@ -90,19 +90,28 @@ async def handle_post(
 ):
     del credentials, token
     global client
+    timestamp = datetime.fromtimestamp((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+    incident_type: str | None = demisto.params().get(
+        "incidentType", "Commvault Suspicious File Activity"
+    )
+    incident_body = handle_post_helper(client, incident, request)
+    client.create_incident(incident_body, timestamp, incident_type, False)  # type: ignore
+    return "OK"
+
+
+def handle_post_helper(client, incident, request):
     try:
-        incident_type: str | None = demisto.params().get(
-            "incidentType", "Commvault Suspicious File Activity"
-        )
         current_date = datetime.utcnow()
         epoch = datetime(1970, 1, 1)
         seconds_since_epoch = (current_date - epoch).total_seconds()
-        timestamp = datetime.fromtimestamp(seconds_since_epoch)
         event_id = incident[field_mapper(Constants.event_id, Constants.source_webhook)]
         event_time = incident[
             field_mapper(Constants.event_time, Constants.source_webhook)
         ]
-        hostname = request.client.host  # type: ignore
+        if (request is None) or (request.client is None) or (request.client.host is None):
+            hostname = ""
+        else:
+            hostname = request.client.host  # type: ignore
         incident_body = {
             "facility": Constants.facility,
             "msg": None,
@@ -123,13 +132,11 @@ async def handle_post(
         incident_body.update(
             client.get_incident_details(incident.get("Description"))  # type: ignore
         )
+        return incident_body
     except Exception as err:
         logging.error(f"could not print REQUEST: {err}")
         return {"status": "ERR"}
-
-    client.create_incident(incident_body, timestamp, incident_type, False)  # type: ignore
-
-    return "OK"
+    return {}
 
 
 def get_backup_anomaly(anomaly_id: int) -> str:
