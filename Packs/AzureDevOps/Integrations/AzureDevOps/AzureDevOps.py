@@ -11,8 +11,12 @@ from collections import namedtuple
 from datetime import datetime
 
 
-PARAMETERS_ERROR_MSG_PRS_REVIEWER = "One or more arguments are missing." \
+PARAMETERS_ERROR_MSG = "One or more arguments are missing." \
       "Please pass with the command: organization name, repository id and project." \
+      "You can also re-configure the instance and set them as parameters."
+
+PARAMETERS_ERROR_MSG_2 = "One or more arguments are missing." \
+      "Please pass with the command: organization name and project." \
       "You can also re-configure the instance and set them as parameters."
 
 INCIDENT_TYPE_NAME = "Azure DevOps"
@@ -656,6 +660,17 @@ class Client:
 
         full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
                    f'repositories/{org_repo_project_tuple.repository}/pullRequests/{pull_request_id}/threads'
+
+        return self.ms_client.http_request(method='GET',
+                                           full_url=full_url,
+                                           params=params,
+                                           resp_type='json')
+
+    def project_team_list_request(self, organization: str, project: str):
+
+        params = {"api-version": 7.0}
+
+        full_url = f'https://dev.azure.com/{organization}/_apis/projects/{project}/teams'
 
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
@@ -1806,7 +1821,7 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
     project = args.get('project_name') or project
     # validate those arguments exist
     if not (organization and repository_id and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_PRS_REVIEWER)
+        raise DemistoException(PARAMETERS_ERROR_MSG)
 
     return OrgRepoProject(organization=organization, repository=repository_id, project=project)
 
@@ -2223,6 +2238,7 @@ def pull_request_thread_list_command(client: Client, args: Dict[str, Any], organ
             }
             for comment in thread.get("comments")
         )
+
     readable_output = tableToMarkdown(
         "Threads",
         list_to_table,
@@ -2235,6 +2251,38 @@ def pull_request_thread_list_command(client: Client, args: Dict[str, Any], organ
         outputs=response,
         raw_response=response
     )
+
+
+def project_team_list_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                              project: Optional[str]) -> CommandResults:
+    """
+    Get a list of teams.
+    """
+    # Those arguments are already set as parameters, but the user can override them.
+    organization = args.get('organization_name') or organization
+    project = args.get('project_name') or project
+
+    # validate those arguments exist
+    if not (organization and project):
+        raise DemistoException(PARAMETERS_ERROR_MSG_2)
+
+    response = client.project_team_list_request(organization, project)
+
+    mapping = {"name": "Name"}
+    readable_output = tableToMarkdown(
+        "Teams",
+        response.get("value"),
+        headers=["name"],
+        headerTransform=lambda header: mapping.get(header, header),
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureDevOps.Team',
+        outputs=response,
+        raw_response=response
+    )
+
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
                     first_fetch: str = None) -> None:
@@ -2483,6 +2531,9 @@ def main() -> None:
         elif command == 'azure-devops-pull-request-thread-list':
             return_results(pull_request_thread_list_command(client, args, params.get('organization'),
                                                             params.get('repository'), params.get('project')))
+
+        elif command == 'azure-devops-project-team-list':
+            return_results(project_team_list_command(client, args, params.get('organization'), params.get('project')))
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

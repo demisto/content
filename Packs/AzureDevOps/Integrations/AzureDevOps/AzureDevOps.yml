@@ -2901,6 +2901,42 @@ script:
       - type: Number
         contextPath: AzureDevOps.PullRequestThread.count
         description: The number of threads in the pull request.
+  - name: azure-devops-project-team-list
+    description: Get a list of teams.
+    arguments:
+      - name: organization_name
+        description: The name of the Azure DevOps organization. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+      - name: project_name
+        description: Project ID or project name. Default value will be config param, user can supply a different value.
+        required: false
+        isArray: false
+    outputs:
+      - type: String
+        contextPath: AzureDevOps.Team.value.id
+        description: Team (Identity) Guid. A Team Foundation ID.
+      - type: String
+        contextPath: AzureDevOps.Team.value.name
+        description: Team name.
+      - type: String
+        contextPath: AzureDevOps.Team.value.url
+        description: Team REST API Url.
+      - type: String
+        contextPath: AzureDevOps.Team.value.description
+        description: Team description.
+      - type: String
+        contextPath: AzureDevOps.Team.value.identityUrl
+        description: Identity REST API Url to this team.
+      - type: String
+        contextPath: AzureDevOps.Team.value.projectName
+        description: The project name.
+      - type: String
+        contextPath: AzureDevOps.Team.value.projectId
+        description: The project ID.
+      - type: Number
+        contextPath: AzureDevOps.Team.count
+        description: The count of properties in the collection.
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []

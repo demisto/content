@@ -1613,3 +1613,37 @@ def test_pull_request_thread_list_command(requests_mock):
     assert result.readable_output.startswith('### Threads\n|Thread ID|Content|Name|Date|\n|---|---|---|---|\n| 66 | 123 | XXX |'
                                              ' 2023-07-23T20:08:57.74Z |\n| 66 | 111 | XXX | 2023-07-23T20:11:30.633Z |')
     assert result.outputs_prefix == 'AzureDevOps.PullRequestThread'
+
+def test_project_team_list_command(requests_mock):
+    """
+    Given:
+     - all required arguments
+    When:
+     - executing azure-devops-project-team-list command
+    Then:
+     - Ensure outputs_prefix and readable_output are set up right
+    """
+    from AzureDevOps import Client, project_team_list_command
+
+    authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+    # setting parameters
+    project = 'test'
+
+    url = f'https://dev.azure.com/{ORGANIZATION}/_apis/projects/{project}/teams'
+
+    mock_response = json.loads(load_mock_response('project_team_list.json'))
+    requests_mock.get(url, json=mock_response)
+
+    client = Client(
+        client_id=CLIENT_ID,
+        organization=ORGANIZATION,
+        verify=False,
+        proxy=False,
+        auth_type='Device Code')
+
+    result = project_team_list_command(client, {}, ORGANIZATION, project)
+
+    assert result.readable_output.startswith('### Teams\n|Name|\n|---|\n| DevOpsDemo Team |\n')
+    assert result.outputs_prefix == 'AzureDevOps.Team'
