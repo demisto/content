@@ -342,7 +342,7 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
     try:
         response = client.list_alerts_request(request_data)
-    except Exception as e:
+    except Exception:
         command_results = CommandResults(
             outputs_prefix='ASM.Alert',
             outputs_key_field='alert_id',
