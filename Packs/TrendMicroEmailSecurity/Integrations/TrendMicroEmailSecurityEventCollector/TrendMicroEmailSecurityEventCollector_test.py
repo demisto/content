@@ -8,6 +8,7 @@ from TrendMicroEmailSecurityEventCollector import (
     fetch_by_event_type,
     fetch_events_command,
     remove_sensitive_from_events,
+    add_missing_fields_to_event,
     NoContentException,
     EventType,
     Deduplicate,
@@ -568,3 +569,26 @@ def test_deduplicate(
         if not dedup.is_duplicate(event, time_from):
             events.append(event)
     assert expected_results == len(events)
+
+
+@pytest.mark.parametrize(
+    "event",
+    [
+        {
+            "subject": "test",
+            "timestamp": "test"
+        },
+        {}
+    ]
+)
+def test_add_missing_fields_to_event(event: dict):
+    """
+    Givent:
+        - The event
+    When:
+        - run `add_missing_fields_to_event` function
+    Then:
+        - Ensure all fields are included in the event
+    """
+    add_missing_fields_to_event(event)
+    assert len(event) == 27
