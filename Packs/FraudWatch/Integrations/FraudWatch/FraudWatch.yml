@@ -6,11 +6,13 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: API Token (leave empty. Fill in the API token in the password field.)
   displaypassword: API Token
   name: credentials
   type: 9
   hiddenusername: true
+  required: false
 - display: Server URL
   name: base_url
   type: 0
@@ -21,6 +23,7 @@ configuration:
   name: brand
   type: 0
   additionalinfo: Fetch incidents that match the specified brand. An error is encountered if the brand does not exist. A list of the existing brands can be retrieved by the 'fraudwatch-brands-list' command.
+  required: false
 - display: Status
   name: status
   type: 15
@@ -35,28 +38,35 @@ configuration:
   - rejected
   - duplicate
   additionalinfo: Fetch incidents that have the specified status.
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 - defaultvalue: 1 day
   display: First fetch timestamp
   name: first_fetch
   type: 0
   additionalinfo: 'format: <number> <time unit>, e.g., 12 hours, 1 day. Due to limitations in FraudWatch API, first fetch timestamp can be at most 1 day.'
+  required: false
 - defaultvalue: '50'
   name: max_fetch
   type: 0
   display: Maximum Incidents To Fetch
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Manage incidents via the Fraudwatch API. FraudWatch International provides a fully managed Enterprise Digital Brand Protection Suite, including online brand management & monitoring, as well as providing other brand protection solutions that protect organizations and their customers around the world against online brand-related abuse.
 display: FraudWatch
 name: FraudWatch

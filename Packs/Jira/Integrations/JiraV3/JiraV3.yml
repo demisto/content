@@ -16,6 +16,7 @@ configuration:
   display: Cloud ID
   type: 0
   additionalinfo: This field is used to configure the Jira Cloud.
+  required: false
 - name: callback_url
   display: Callback URL
   type: 0
@@ -30,6 +31,7 @@ configuration:
   additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
   name: fetch_query
   type: 0
+  required: false
 - defaultvalue: id
   display: Issue Field to fetch by
   name: issue_field_to_fetch_from
@@ -39,36 +41,44 @@ configuration:
   - updated date
   type: 15
   additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
+  required: false
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
   defaultvalue: 0
   type: 0
+  required: false
 - defaultvalue: 3 days
   display: Time range for initial data fetch
   additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
   name: first_fetch
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   defaultvalue: 'false'
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   defaultvalue: 'false'
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: 'false'
   additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to `Done`.
   display: Close Mirrored XSOAR Incident
   name: close_incident
   type: 8
+  required: false
 - defaultvalue: None
   display: Mirroring Direction
   name: mirror_direction
@@ -78,41 +88,49 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   type: 15
+  required: false
 - additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
   display: Attachment Entry Tag to Jira
   name: attachment_tag_to_jira
   type: 0
+  required: false
 - additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
   defaultvalue: attachment tag from Jira
   display: Attachment Entry Tag from Jira
   name: attachment_tag_from_jira
   type: 0
+  required: false
 - additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
   display: Comment Entry Tag to Jira
   name: comment_tag_to_jira
   type: 0
+  required: false
 - additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
   name: comment_tag_from_jira
   type: 0
+  required: false
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
   defaultvalue: 'false'
   type: 8
+  required: false
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   name: fetch_attachments
   defaultvalue: 'false'
   type: 8
+  required: false
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
   additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
   type: 0
+  required: false
 script:
   commands:
   - arguments:
@@ -310,15 +328,9 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - default: false
-      description: The query that will be used to retrieve the first issue ID in it.
-      isArray: false
+    - description: The query that will be used to retrieve the first issue ID in it.
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the ID offset, which is the ID of the first issue that was created in the current Jira instance, or the ID of the first issue with respect to the given query argument if given. You can use its result as the initial ID when fetching incidents by the issue id field.
-    execution: false
     name: jira-get-id-offset
     outputs:
     - contextPath: Ticket.idOffSet
