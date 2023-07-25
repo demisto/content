@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from requests.adapters import HTTPAdapter, Retry
+import ipaddress
 
 
 # Disable insecure warnings
@@ -196,6 +197,30 @@ get_spans_for_trace_id = """{
 }
 """
 
+api_entities_query = """query entities
+{
+  entities(
+    scope: "API"
+    limit: $limit
+    between: {
+      startTime: "$starttime"
+      endTime: "$endtime"
+    }
+    offset: 0
+    $filter_by_clause
+  ) {
+    results {
+      id
+      name: attribute(expression: { key: "name" })
+      isExternal: attribute(expression: { key: "isExternal" })
+      isAuthenticated: attribute(expression: { key: "isAuthenticated" })
+      riskScore: attribute(expression: { key: "riskScore" })
+      riskScoreCategory: attribute(expression: { key: "riskScoreCategory" })
+    }
+    total
+  }
+}"""
+
 
 class Helper:
     @staticmethod
@@ -206,6 +231,10 @@ class Helper:
     @staticmethod
     def datetime_to_string(d):
         return d.strftime(DATE_FORMAT)
+
+    @staticmethod
+    def string_to_datetime(s):
+        return datetime.strptime(s, DATE_FORMAT)
 
     @staticmethod
     def construct_key_expression(key, value, _type="ATTRIBUTE", operator="IN"):
@@ -329,7 +358,7 @@ class Client(BaseClient):
                 _ipCategoriesList.append("IP_LOCATION_TYPE_BOT")
             else:
                 error = f"Unknown ipCategory {ipCategory} specified."
-                raise DemistoException(error)
+                raise Exception(error)
         self.ipCategoriesList = _ipCategoriesList
 
     def set_ip_abuse_velocity_list(self, ipAbuseVelocityList):
@@ -479,6 +508,30 @@ class Client(BaseClient):
         )
         return query
 
+    def get_api_endpoint_details_query(self, api_id_list, starttime, endtime):
+        filter_by_clause = Helper.construct_filterby_expression(
+            Helper.construct_key_expression("id", api_id_list)
+        )
+        return Template(api_entities_query).substitute(
+            filter_by_clause=filter_by_clause,
+            limit=self.limit,
+            starttime=Helper.datetime_to_string(starttime),
+            endtime=Helper.datetime_to_string(endtime),
+        )
+
+    def get_api_endpoint_details(self, api_id_list, starttime, endtime):
+        if len(api_id_list) == 0:
+            return []
+        query = self.get_api_endpoint_details_query(api_id_list, starttime, endtime)
+        result = self.graphql_query(query)
+
+        if Helper.is_error(result, "data", "entities", "results"):
+            msg = "Error Object: " + json.dumps(result)
+            demisto.error(msg)
+            raise Exception(msg)
+
+        return result["data"]["entities"]["results"]
+
     def get_threat_events(
         self,
         starttime,
@@ -500,6 +553,7 @@ class Client(BaseClient):
         events = []
         first = True
         future_list = []
+        api_id_list = []
         with ThreadPoolExecutor(max_workers=self.span_fetch_threadpool) as executor:
             for domain_event in results:
                 if Helper.is_error(domain_event, "traceId", "value"):
@@ -517,6 +571,12 @@ class Client(BaseClient):
 
                 trace_id = domain_event["traceId"]["value"]
                 span_id = domain_event["spanId"]["value"]
+                if (
+                    domain_event["apiId"] is not None
+                    and domain_event["apiId"]["value"] is not None
+                    and domain_event["apiId"]["value"] != "null"
+                ):
+                    api_id_list.append(domain_event["apiId"]["value"])
 
                 demisto.info("Forking thread for span retrieval")
 
@@ -530,6 +590,14 @@ class Client(BaseClient):
                 demisto.info("Submitted job successfully.")
                 future_list.append((domain_event, future))
                 demisto.info("Completed thread for span retrieval")
+
+        api_endpoint_details = self.get_api_endpoint_details(
+            api_id_list, starttime, endtime
+        )
+        api_endpoint_details_map = {}
+        for api_endpoint_detail in api_endpoint_details:
+            api_endpoint_details_map[api_endpoint_detail["id"]] = api_endpoint_detail
+        api_endpoint_details = None
 
         for domain_event, future in future_list:
             trace_results = future.result()
@@ -560,6 +628,53 @@ class Client(BaseClient):
                 domain_event["severity"] = domain_event["securityScoreCategory"][
                     "value"
                 ]
+            if (
+                domain_event["ipCategories"] is not None
+                and domain_event["ipCategories"]["value"] is not None
+                and len(domain_event["ipCategories"]["value"]) > 1
+                and domain_event["actorIpAddress"] is not None
+                and domain_event["actorIpAddress"]["value"] is not None
+            ):
+                is_private = False
+                for ipCategory in domain_event["ipCategories"]["value"]:
+                    if (
+                        ipCategory == "IP_LOCATION_TYPE_UNSPECIFIED"
+                        and ipaddress.ip_address(
+                            domain_event["actorIpAddress"]["value"]
+                        ).is_private
+                    ):
+                        domain_event["ipAddressType"] = "Internal"
+                        is_private = True
+                if not is_private:
+                    domain_event["ipAddressType"] = "External"
+
+            if (
+                domain_event["apiId"] is not None
+                and domain_event["apiId"]["value"] is not None
+                and domain_event["apiId"]["value"] != "null"
+                and domain_event["apiId"]["value"] in api_endpoint_details_map
+                and api_endpoint_details_map[domain_event["apiId"]["value"]] is not None
+                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                    "isExternal"
+                ]
+                is not None
+                and api_endpoint_details_map[domain_event["apiId"]["value"]][
+                    "isExternal"
+                ]
+                != "null"
+            ):
+                if api_endpoint_details_map[domain_event["apiId"]["value"]][
+                    "isExternal"
+                ]:
+                    domain_event["apiType"] = "External"
+                else:
+                    domain_event["apiType"] = "Internal"
+
+            if "ipAddressType" not in domain_event:
+                domain_event["ipAddressType"] = "Internal"
+
+            if "apiType" not in domain_event:
+                domain_event["apiType"] = "Unknown"
 
             if Helper.is_error(trace_results, "data", "spans", "results"):
                 msg = "Error Object: " + json.dumps(result) + ". Couldn't get the Span."
