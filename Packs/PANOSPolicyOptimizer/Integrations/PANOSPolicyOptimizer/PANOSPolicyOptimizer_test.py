@@ -123,8 +123,11 @@ def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker,
                                                            'position': excepted_position, 'vsysName': 'test'}]],
                                                         'type': 'rpc', 'tid': 1}
 
-@pytest.mark.parametrize("client, position, VERSION, excepted_position, flag, expected_flag", QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG)
-def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, client, position, VERSION, excepted_position, flag, expected_flag):
+
+@pytest.mark.parametrize("client, position, VERSION, excepted_position, flag, expected_flag",
+                         QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG)
+def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, client, position,
+                                                                      VERSION, excepted_position, flag, expected_flag):
     """
     Given
         - a client.
@@ -151,7 +154,16 @@ def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, cl
         }
     )
     assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run',
-                                                        'data': ['123', 'PoliciesDirect.getPoliciesByUsage', [{'type': 'security', 'position': excepted_position, 'vsysName': 'test', 'isCmsSelected': expected_flag, 'isMultiVsys': False, 'showGrouped': False, 'usageAttributes': {'timeframeTag': '30', 'application/member': 'any', 'apps-seen-count': "geq '1'", 'action': 'allow'}, 'pageContext': 'app_usage', 'field': '$.bytes', 'direction': 'DESC'}]], 'type': 'rpc', 'tid': 1}
+                                                        'data': ['123', 'PoliciesDirect.getPoliciesByUsage',
+                                                                 [{'type': 'security', 'position': excepted_position,
+                                                                   'vsysName': 'test', 'isCmsSelected': expected_flag,
+                                                                   'isMultiVsys': False, 'showGrouped': False,
+                                                                   'usageAttributes': {'timeframeTag': '30',
+                                                                                       'application/member': 'any',
+                                                                                       'apps-seen-count': "geq '1'",
+                                                                                       'action': 'allow'},
+                                                                   'pageContext': 'app_usage', 'field': '$.bytes',
+                                                                   'direction': 'DESC'}]], 'type': 'rpc', 'tid': 1}
 
 
 CLIENTS = [
