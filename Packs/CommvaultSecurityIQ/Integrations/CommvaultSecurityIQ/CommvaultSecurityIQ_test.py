@@ -14,7 +14,7 @@ from CommvaultSecurityIQ import (
     fetch_and_disable_saml_identity_provider,
     disable_user,
     get_secret_from_key_vault,
-    handle_post_helper,
+    handle_post_helper
 )
 
 
@@ -38,10 +38,6 @@ class CommvaultClientMock(Client):
         """Dummy function"""
         del token
         return True
-
-    def get_host(self):
-        """Dummy function"""
-        return None
 
     def fetch_and_disable_saml_identity_provider(self):
         """Dummy function"""
@@ -297,3 +293,6 @@ def test_webhook():
     )
     obj = handle_post_helper(client, req, None)
     assert obj["job_id"] == "171069"
+
+
+    
