@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 import pytest
-from utils import get_env_var, EnvVariableError
+from typing import Any
+from utils import (
+    get_env_var,
+    EnvVariableError,
+    get_doc_reviewer,
+    DOC_REVIEWER_KEY
+)
 
 
 class TestGetEnvVar(object):
@@ -112,3 +118,79 @@ class TestGetEnvVar(object):
         default_val = 'TIMOTHY'
         env_var_val = get_env_var('MADE_UP_ENV_VARIABLE', default_val)
         assert env_var_val == 'LEROY JENKINS'
+
+
+@pytest.mark.parametrize(
+    'content_roles,expected_doc_reviewer',
+    [
+        ({
+            "CONTRIBUTION_REVIEWERS": ["cr1", "cr2", "cr3", "cr4"],
+            "CONTRIBUTION_SECURITY_REVIEWER": "sr1",
+            "CONTRIBUTION_TL": "tl1",
+            "ON_CALL_DEVS": ["ocd1", "ocd2"],
+            DOC_REVIEWER_KEY: "dr1"
+        }, "dr1")
+    ]
+)
+def test_get_doc_reviewer(
+    content_roles: dict[str, Any],
+    expected_doc_reviewer: str
+):
+    """
+    Test retrieval of doc reviewer.
+
+    Given:
+        - A ``dict[str, Any]``
+
+    When:
+        - 4 content reviewers and 1 security reviewers provided, 1 doc reviewer
+
+    Then:
+        - 1 doc reviewer returned
+    """
+
+    actual_doc_reviewer = get_doc_reviewer(content_roles)
+    assert actual_doc_reviewer == expected_doc_reviewer
+
+
+@pytest.mark.parametrize(
+    'content_roles',
+    [
+        ({
+            DOC_REVIEWER_KEY: [],
+        }),
+        ({
+            "CONTRIBUTION_REVIEWERS": ["cr1", "cr2"],
+        }),
+        ({
+            DOC_REVIEWER_KEY: ""
+        }),
+        ({
+            DOC_REVIEWER_KEY: None
+        })
+    ]
+)
+def test_exit_get_doc_reviewer(
+    content_roles: dict[str, Any]
+):
+    """
+    Test retrieval of content and security reviewers when the file/`dict`
+    has unexpected/incorrect structure.
+
+    Given:
+        - A ``dict[str, Any]``
+
+    When:
+        - Case A: Document reviewer specified as an array/list.
+        - Case B: Document reviewer key is not specified.
+        - Case C: Document reviewer is empty.
+        - Case D: Document reviewer is undefined.
+
+    Then:
+        - Case A-G: Result in `sys.exit(1)`.
+    """
+
+    with pytest.raises(SystemExit) as e:
+        get_doc_reviewer(content_roles)
+        assert e.type == SystemExit
+        assert e.value.code == 1

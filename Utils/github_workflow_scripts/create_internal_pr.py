@@ -7,8 +7,13 @@ from blessings import Terminal
 from github import Github
 from handle_external_pr import EXTERNAL_LABEL
 
-from utils import get_env_var, timestamped_print
-
+from utils import (
+    get_env_var,
+    timestamped_print,
+    load_json,
+    get_doc_reviewer,
+    CONTENT_ROLES_PATH
+)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
@@ -70,8 +75,15 @@ def main():
     pr.create_review_request(reviewers=new_pr_reviewers)
     print(f'{t.cyan}Requested review from {new_pr_reviewers}{t.normal}')
 
-    # assign same users as in the merged PR
+    # Set PR assignees
     assignees = [assignee.login for assignee in merged_pr.assignees]
+
+    # Unassign the tech writer from the merged PR
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    doc_reviewer = get_doc_reviewer(content_roles)
+    if doc_reviewer in assignees:
+        assignees.remove(doc_reviewer)
+
     pr.add_to_assignees(*assignees)
     print(f'{t.cyan}Assigned users {assignees}{t.normal}')
 

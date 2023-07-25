@@ -2,6 +2,7 @@
 
 import os
 import json
+import sys
 from datetime import datetime
 from typing import Any, Generator, Iterable, Optional, Tuple, Union
 from pathlib import Path
@@ -9,6 +10,8 @@ from pathlib import Path
 from git import Repo
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
+DOC_REVIEWER_KEY = "DOC_REVIEWER"
+CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github/content_roles.json"))
 
 # override print so we have a timestamp with each print
 org_print = print
@@ -164,3 +167,31 @@ class ChangeCWD:
 
     def __exit__(self, *args):
         os.chdir(self.current)
+
+
+def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
+    """
+    Retrieve the doc reviewer from content roles JSON/`dict`.
+
+    Args:
+        - `content_roles` (``dict[str, Any]``): The current content team roles and members.
+
+    Return:
+        - `str` of document reviewer GitHub username.
+    """
+
+    try:
+        doc_reviewer: str = content_roles[DOC_REVIEWER_KEY]
+
+        if not isinstance(doc_reviewer, str) or not doc_reviewer:
+            print(f"'{DOC_REVIEWER_KEY}' is not a string. Terminating...")
+            sys.exit(1)
+
+        if not DOC_REVIEWER_KEY or not DOC_REVIEWER_KEY:
+            print(f"No '{DOC_REVIEWER_KEY}' key specified or '{DOC_REVIEWER_KEY}' is empty")
+            sys.exit(1)
+
+        return doc_reviewer
+    except KeyError as ke:
+        print(f"Error parsing doc reviewer: {str(ke)}.")
+        sys.exit(1)
