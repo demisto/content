@@ -43,7 +43,7 @@ def main():
     first_string = demisto.getArg('string_A')
     second_string = demisto.getArg('string_B')
     commandResults = stringSimilarity(first_string, second_string, similarity_threshold)
-    
+
     return_results(commandResults)
 
 

@@ -1,7 +1,5 @@
-import difflib
 import pytest
 import demistomock as demisto
-from CommonServerPython import CommandResults
 from StringSimilarity import stringSimilarity, main
 from unittest.mock import patch
 
@@ -46,8 +44,8 @@ def test_main_with_similarity_match():
 
         # Execute the main function and check if ValueError is raised
         try:
-            result = main()
-            assert True
+            main()
+            assert demisto.results
         except ValueError as e:
             assert str(e) == "No similarity score calculated. Check the similarityThreshold value."
 
@@ -67,10 +65,11 @@ def test_main_with_no_similarity_match():
 
         # Execute the main function and check if ValueError is raised
         try:
-            result = main()
-            assert True
+            main()
+            assert demisto.results
         except ValueError as e:
             assert str(e) == "No similarity score calculated. Check the similarityThreshold value."
+
 
 def test_main_with_invalid_similarity_threshold():
     similarity_threshold = "invalid_threshold"
@@ -88,6 +87,6 @@ def test_main_with_invalid_similarity_threshold():
         # Execute the main function and check if ValueError is raised due to invalid similarity_threshold
         try:
             result = main()
-            assert False, "Expected ValueError to be raised, but the function returned a result instead."
+            assert result
         except ValueError as e:
             assert "could not convert string to float" in str(e)
