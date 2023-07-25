@@ -32,6 +32,11 @@ This integration was integrated and tested with January 2023 release of Tenable.
 | tenable-io-get-asset-details            | BASIC [16] user permissions.                                                   |
 | tenable-io-export-assets                | ADMINISTRATOR [64] user permissions.                                           |
 | tenable-io-export-vulnerabilities       | ADMINISTRATOR [64] user permissions.                                           |
+| tenable-io-list-scan-filters            | BASIC [16] user permissions                                                    |
+| tenable-io-get-scan-history             | SCAN OPERATOR [24] user permissions and CAN VIEW [16] scan permissions         |
+| tenable-io-export-scan                  | SCAN OPERATOR [24] user permissions and CAN VIEW [16] scan permissions         |
+
+
 
 
 ## Concurrency Limits
@@ -1448,9 +1453,9 @@ Lists the individual runs of the specified scan.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scanId | The ID of the scan of which to get the runs. | Required | 
-| sortFields | The fields by which to sort, in the order defined by "sortOrder". Possible values are: start_date, end_date, status. | Optional | 
-| sortOrder | The direction in which to sort the fields defined by "sortFields". Possible values are: asc, desc. Default is asc. | Optional | 
-| excludeRollover | Whether to exclude rollover scans from the scan history. Default is false. Possible values are: true, false. Default is false. | Optional | 
+| sortFields | A comma-separated list of fields by which to sort, in the order defined by "sortOrder". Possible values are: start_date, end_date, status. | Optional | 
+| sortOrder | A comma-separated list of direction(s) in which to sort the fields defined by "sortFields".<br/>If multiple directions are chosen, they will be sequentially matched with "sortFields".<br/>If only one direction is chosen it will be used to sort all values in "sortFields".<br/>Example 1:<br/>  sortFields: start_date,status<br/>  sortOrder: asc,desc<br/>Result:<br/>  start_date is sorted in ascending order.<br/>  status is sorted in descending order.<br/>Example 2:<br/>  sortFields: start_date,status<br/>  sortOrder: asc<br/>Result:<br/>  Both start_date are status are sorted in ascending order.<br/>. Possible values are: asc, desc. Default is asc. | Optional | 
+| excludeRollover | Whether to exclude rollover scans from the scan history. Possible values are: true, false. Default is false. | Optional | 
 | page | The page number of scan records to retrieve (used for pagination) starting from 1. The page size is defined by the "pageSize" argument. | Optional | 
 | pageSize | The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument. | Optional | 
 | limit | The maximum number of records to retrieve. If "pageSize" is defined, this argument is ignored. Default is 50. | Optional | 
@@ -1551,6 +1556,8 @@ Lists the individual runs of the specified scan.
 
 ***
 Export and download a scan report.
+Scan results older than 35 days are supported in Nessus and CSV formats only.
+
 
 #### Base Command
 
@@ -1563,12 +1570,12 @@ Export and download a scan report.
 | scanId | The identifier for the scan to export. Run the "tenable-io-list-scans" command to get all available scans. | Required | 
 | historyId | The unique identifier of the historical data to export. Run the "tenable-io-get-scan-history" command to get history IDs. | Optional | 
 | historyUuid | The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs. | Optional | 
-| format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 60 days.<br/> For scans that are older than 60 days, only the Nessus and CSV formats are supported.<br/>Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Required | 
-| chapters | A list of chapters to include in the export.<br/> This argument is required if the file format is PDF or HTML.<br/>. Possible values are: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance. | Optional | 
-| filterName | A list of filters to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
-| filterQuality | A list of operators for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
-| filterValue | A list of values for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
-| filterSearchType | For multiple filters, specifies whether to use the AND or the OR logical operator. Possible values are: and, or. Default is and. | Optional | 
+| format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.<br/> For scans that are older than 35 days, only the Nessus and CSV formats are supported.<br/>. Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Required | 
+| chapters | A comma-separated list of chapters to include in the export. This argument is required if the file format is PDF or HTML. Possible values are: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance. | Optional | 
+| filterName | A comma-separated list of filters to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
+| filterQuality | A comma-separated list of operators for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
+| filterValue | A comma-separated list of values for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/>. | Optional | 
+| filterSearchType | For multiple filters, specifies whether to use the AND or the OR logical operator. Possible values are: AND, OR. Default is AND. | Optional | 
 | assetId | The ID of the asset scanned. | Optional | 
 
 #### Context Output

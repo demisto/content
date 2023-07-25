@@ -224,6 +224,7 @@ if not USE_PROXY:
 
 
 class Client(BaseClient):
+
     def list_scan_filters(self):
         return self._http_request(
             'GET', 'filters/scans/reports')
@@ -1276,8 +1277,12 @@ def scan_history_readable(history: list) -> str:
 def scan_history_params(args: dict) -> dict:
     return {
         'sort': ','.join(
-            f'{field}:{args["sortOrder"]}'
-            for field in argToList(args.get('sortFields'))),
+            f'{field}:{order}'
+            for field, order
+            in zip(
+                argToList(args.get('sortFields')),
+                argToList(args.get('sortOrder')) * 3
+            )),
         'exclude_rollover': args['excludeRollover'],
     } | sub_dict(args, 'limit', 'offset')
 

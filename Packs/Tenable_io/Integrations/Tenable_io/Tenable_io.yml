@@ -1118,7 +1118,7 @@ script:
       description: The ID of the scan of which to get the runs.
       required: true
     - name: sortFields
-      description: 'The fields by which to sort, in the order defined by "sortOrder".'
+      description: A comma-separated list of fields by which to sort, in the order defined by "sortOrder".
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -1126,7 +1126,22 @@ script:
       - end_date
       - status
     - name: sortOrder
-      description: The direction in which to sort the fields defined by "sortFields".
+      description: |
+        A comma-separated list of direction(s) in which to sort the fields defined by "sortFields".
+        If multiple directions are chosen, they will be sequentially matched with "sortFields".
+        If only one direction is chosen it will be used to sort all values in "sortFields".
+        Example 1:
+          sortFields: start_date,status
+          sortOrder: asc,desc
+        Result:
+          start_date is sorted in ascending order.
+          status is sorted in descending order.
+        Example 2:
+          sortFields: start_date,status
+          sortOrder: asc
+        Result:
+          Both start_date are status are sorted in ascending order.
+      isArray: true
       defaultValue: asc
       auto: PREDEFINED
       predefined:
@@ -1186,8 +1201,8 @@ script:
       description: The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs.
     - name: format
       description: |
-        The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 60 days.
-         For scans that are older than 60 days, only the Nessus and CSV formats are supported.
+        The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.
+         For scans that are older than 35 days, only the Nessus and CSV formats are supported.
       required: true
       defaultValue: CSV
       auto: PREDEFINED
@@ -1197,7 +1212,7 @@ script:
       - PDF
       - CSV
     - name: chapters
-      description: A list of chapters to include in the export. This argument is required if the file format is PDF or HTML.
+      description: A comma-separated list of chapters to include in the export. This argument is required if the file format is PDF or HTML.
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -1209,19 +1224,19 @@ script:
       - compliance
     - name: filterName
       description: |
-        A list of filters to apply to the exported scan report.
+        A comma-separated list of filters to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
       isArray: true
     - name: filterQuality
       description: |
-        A list of operators for the filter to apply to the exported scan report.
+        A comma-separated list of operators for the filter to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
       isArray: true
     - name: filterValue
       description: |
-        A list of values for the filter to apply to the exported scan report.
+        A comma-separated list of values for the filter to apply to the exported scan report.
          Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
       isArray: true
@@ -1235,7 +1250,9 @@ script:
     - name: assetId
       description: The ID of the asset scanned.
     polling: true
-    description: Export and download a scan report.
+    description: |
+      Export and download a scan report.
+      Scan results older than 35 days are supported in Nessus and CSV formats only.
     name: tenable-io-export-scan
     outputs:
     - contextPath: InfoFile.Size

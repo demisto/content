@@ -15,30 +15,28 @@
         "file": "123456789"
     },
     "expected_file": "123456789",
-    "call_args": {
-        "url": "http://123-fake-api.com/scans/16/export",
-        "params": {
-            "history_id": "19540157",
-            "history_uuid": "f7eaad37-23bd-4aac-a979-baab0e9a465b"
-        },
-        "json": {
-            "format": "html",
-            "chapters": "compliance_exec;remediations;vuln_by_plugin",
-            "filter.search_type": "or",
-            "asset_id": "10",
-            "filter.0.filter": "host.id",
-            "filter.0.quality": "eq",
-            "filter.0.value": ".*",
-            "filter.1.filter": "plugin.attributes.bid",
-            "filter.1.quality": "neq",
-            "filter.1.value": "(.[0-9]0-9)*"
-        },
-        "headers": {
-            "X-ApiKeys": "accessKey=fake_access_key; secretKey=fake_access_key",
-            "accept": "application/json",
-            "content-type": "application/json",
-            "User-Agent": "Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)"
-        },
-        "verify": false
+    "called_with": {
+        "args": [
+            "POST",
+            "scans/16/export"
+        ],
+        "kwargs": {
+            "params": {
+                "historyId": "19540157",
+                "historyUuid": "f7eaad37-23bd-4aac-a979-baab0e9a465b"
+            },
+            "json_data": {
+                "format": "html",
+                "chapters": "compliance_exec;remediations;vuln_by_plugin",
+                "filter.search_type": "or",
+                "asset_id": "10",
+                "filter.0.filter": "host.id",
+                "filter.0.quality": "eq",
+                "filter.0.value": ".*",
+                "filter.1.filter": "plugin.attributes.bid",
+                "filter.1.quality": "neq",
+                "filter.1.value": "(.[0-9]0-9)*"
+            }
+        }
     }
 }

@@ -509,7 +509,6 @@ def test_get_scan_history_command(mocker):
 
 
 
-"""
 def test_initiate_export_scan(mocker):
     '''
     Given:
@@ -526,18 +525,20 @@ def test_initiate_export_scan(mocker):
 
     test_data = load_json('initiate_export_scan')
     mock_demisto(mocker)
-    requests_post = mocker.patch.object(
+    request = mocker.patch.object(
         BaseClient, '_http_request', return_value=test_data['response_json'])
     file = initiate_export_scan(test_data['args'], MOCK_CLIENT)
 
     assert file == test_data['expected_file']
-    # TEMP
-    test_data['call_args'] = list(requests_post.call_args.args)
+    assert request.call_args.args == tuple(test_data['called_with']['args'])
+    assert request.call_args.kwargs == test_data['called_with']['kwargs']
 
-    with open('test_data/initiate_export_scan.json', 'w') as f:
-        json.dump(test_data, f)
-    # requests_post.assert_called_with(**test_data['call_args'])
+    # # TEMP
+    # test_data['called_with']['kwargs'] = request.call_args.kwargs
 
+    # with open('test_data/initiate_export_scan.json', 'w') as f:
+    #     json.dump(test_data, f)
+"""
 def test_check_export_scan_status(mocker):
     '''
     Given:
@@ -593,6 +594,7 @@ def test_download_export_scan(mocker):
     requests_get.assert_called_with(
         'http://123-fake-api.com/scans/scan_id/export/file_id/download',
         headers=HEADERS, verify=False)
+"""
 
 
 @pytest.mark.parametrize(
@@ -626,16 +628,11 @@ def test_export_scan_command_errors(mocker, args, get_response_json, post_respon
 
     mock_demisto(mocker)
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    get_response = MockResponse(get_response_json)
-    post_response = MockResponse(post_response_json)
-    mocker.patch.object(requests, 'get', return_value=get_response)
-    mocker.patch.object(requests, 'post', return_value=post_response)
+    mocker.patch.object(
+        BaseClient, '_http_request', return_value=test_data['response_json'])
 
     with pytest.raises(DemistoException, match=message):
         export_scan_command(args)
-
-
-"""
 
 
 @pytest.mark.parametrize(
@@ -653,6 +650,19 @@ def test_export_scan_command_errors(mocker, args, get_response_json, post_respon
             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
             5,
             "@paginate did not paginate five times"
+        ),
+        (
+            #  when limit is an exact multiple than api_limit, call multiple times:
+            {
+                "api_limit": 5,
+            },
+            {
+                "limit": 20
+            },
+            "{}",
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+            4,
+            "@paginate did not paginate four times"
         ),
         (
             #  when keys_to_pages is provided, extract the pages:
@@ -726,5 +736,5 @@ def test_paginate(paginate_args, args, embeder, expected_result, expected_call_c
 
     result = pagination_func(args)
 
-    assert call_count == expected_call_count
     assert result == expected_result, fail_message
+    assert call_count == expected_call_count
