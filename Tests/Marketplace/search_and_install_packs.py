@@ -1,5 +1,6 @@
 import contextlib
 from functools import lru_cache
+import base64
 import glob
 import json
 import os
@@ -8,6 +9,7 @@ import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from requests import Session
 from threading import Lock
 
 import demisto_client
@@ -33,16 +35,76 @@ SUCCESS_FLAG = True
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
 
-def is_pack_deprecated(pack_id: str, check_locally: bool = True, pack_api_data: dict | None = None) -> bool:
+def get_env_var(var_name: str) -> str:
+    """
+    Get an environment variable's value, raise an error if it's not set.
+
+    Args:
+        var_name (str): Name of the environment variable to get.
+
+    Returns:
+        str: The value of the environment variable.
+
+    Raises:
+        ValueError: If the environment variable is not set.
+    """
+    if value := os.getenv(var_name):
+        return value
+
+    raise ValueError(f"Required environment variable '{var_name}' is not set.")
+
+
+MASTER_COMMIT_HASH = get_env_var("LAST_UPLOAD_COMMIT")
+GITLAB_API_TOKEN = get_env_var('GITLAB_API_READ_TOKEN')
+GITLAB_SESSION = Session()
+GITLAB_SESSION.headers.update({'PRIVATE-TOKEN': GITLAB_API_TOKEN})
+GITLAB_PACK_METADATA_URL = 'https://code.pan.run/api/v4/projects/2596/repository/files/Packs%2F{pack_id}%2Fpack_metadata.json'  # noqa: E501
+
+
+def fetch_pack_metadata_from_gitlab(pack_id: str, commit_hash: str) -> dict:
+    """
+    Fetch pack metadata from master (a commit hash of the master branch when the build was triggered) using GitLab's API.
+
+    Args:
+        pack_id (str): ID of the pack to fetch metadata for (name of Pack's folder).
+        commit_hash (str): A commit hash to fetch the metadata file from.
+
+    Returns:
+        dict: A dictionary containing pack's metadata.
+    """
+    api_url = GITLAB_PACK_METADATA_URL.format(pack_id=pack_id)
+    response = GITLAB_SESSION.get(api_url, params={'ref': commit_hash})
+
+    if response.status_code != 200:
+        logging.error(f"Failed to fetch pack metadata from GitLab for pack '{pack_id}'.\n"
+                      f"Response code: {response.status_code}\nResponse body: {response.text}")
+        response.raise_for_status()
+
+    logging.debug(f"Successfully fetched 'pack_metadata.json' file from GitLab for pack '{pack_id}'.")
+    file_data_b64 = response.json()['content']
+    file_data = base64.b64decode(file_data_b64).decode('utf-8')
+
+    return json.loads(file_data)
+
+
+def is_pack_deprecated(pack_id: str, check_locally: bool = True,
+                       master_commit_hash: str | None = None, pack_api_data: dict | None = None) -> bool:
     """
     Check whether a pack is deprecated or not.
     Can be checked locally (pack_metadata.json), or using Marketplace API response data.
 
+    Note:
+        If 'check_locally' is False, one of 'master_commit_hash' or 'pack_api_data' must be provided in order to determine
+        whether the pack is deprecated or not.
+        'master_commit_hash' is used to fetch pack's metadata from the master branch,
+        'pack_api_data' is the API data of a specific pack item (and not the complete response with a list of packs).
+
     Args:
         pack_id (str): ID of the pack to check.
         check_locally (bool): Whether to check locally (pack_metadata file) or not (will use Marketplace API data instead).
-        pack_api_data (dict): Marketplace API data to use if 'check_locally' is False.
-            Needs to be the API data of a specific pack item (and not the complete response with a list of packs).
+        master_commit_hash (str, optional): Commit hash of the master branch to use if 'check_locally' is False.
+        pack_api_data (dict | None, optional): Marketplace API data to use if 'check_locally' is False.
+            Needs to be the API data of a specific pack item (and not the complete response with a list of packs),
 
     Returns:
         bool: True if the pack is deprecated, False otherwise
@@ -59,8 +121,11 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True, pack_api_data: 
         if pack_api_data:
             return pack_api_data['extras']['pack']['deprecated']
 
+        elif master_commit_hash:
+            return fetch_pack_metadata_from_gitlab(pack_id=pack_id, commit_hash=master_commit_hash).get('hidden', False)
+
         else:
-            raise ValueError("'If not checking locally, 'pack_api_data' parameter must be provided.'")
+            raise ValueError("If not checking locally, either 'master_commit_hash' or 'pack_api_data' must be provided.")
 
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
@@ -385,17 +450,34 @@ def search_pack_and_its_dependencies(client: demisto_client,
         batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
     """
-    # Note:
-    # On pre-update, we use current prod data, so packs to install should not be deprecated, and should exist on the Marketplace.
-    # If they are not for some reason - the API call will fail with a 400 status "item not found" error.
+    # On pre-update, we use current production data, so we don't want to check locally with branch changes, and we can't use
+    # Marketplace API data because the pack is not uploaded in to the bucket, resulting in API responses of "item not found".
+    # To solve that, we fetch the 'pack_metadata.json' file from the master branch using GitLab's API.
+    if not is_post_update:  # (pre-update)
+        master_commit_hash = os.getenv("LAST_UPLOAD_COMMIT")
+
+        if not master_commit_hash:
+            raise ValueError("'LAST_UPLOAD_COMMIT' environment variable is not set.")
+
+        try:
+            is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=False, master_commit_hash=master_commit_hash)
+
+        except Exception as ex:
+            logging.error(f"Failed to check deprecation status of pack '{pack_id}' using GitLab's API.\n"
+                          f"Error: {ex}\n")
+            logging.warning("Deprecation status will be checked locally instead.\n"
+                            "Note that this may result in a false positive if pack's deprecation status was changed.")
+            is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=True)
 
     # On post-update, we want to check for deprecation status locally before making the API call,
     # because if the pack has been deprecated, the test upload flow won't upload the pack to the bucket,
     # and the Marketplace API call for the pack will fail.
-    if is_post_update:
-        if is_pack_deprecated(pack_id=pack_id, check_locally=True):
-            logging.warning(f"Pack '{pack_id}' is deprecated (hidden) and will not be installed.")
-            return
+    else:  # (post-update)
+        is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=True)
+
+    if is_deprecated:
+        logging.warning(f"Pack '{pack_id}' is deprecated (hidden) and will not be installed.")
+        return
 
     api_data = get_pack_dependencies(client, pack_id, lock)
 

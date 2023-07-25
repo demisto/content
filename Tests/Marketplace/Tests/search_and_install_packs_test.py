@@ -232,28 +232,6 @@ def test_get_latest_version_from_bucket(mocker):
     assert script.get_latest_version_from_bucket('TestPack', dummy_prod_bucket) == '1.0.1'
 
 
-@pytest.mark.parametrize("pack_metadata_content, expected", [
-    ({'hidden': False}, False),
-    ({'hidden': True}, True),
-])
-def test_is_pack_hidden(tmp_path, pack_metadata_content, expected):
-    """
-    Given:
-        - Case A: Pack is not deprecated
-        - Case B: Pack is deprecated
-
-    When:
-        - Checking if pack is deprecated
-
-    Then:
-        - Case A: Verify pack is not deprecated, since the 'hidden' flag is set to 'false'
-        - Case B: Verify pack is deprecated, since the 'hidden' flag is set to 'true'
-    """
-    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
-    pack_metadata_file.write_text(json.dumps(pack_metadata_content))
-    assert script.is_pack_hidden(str(tmp_path)) == expected
-
-
 class MockHttpRequest:
     def __init__(self, body):
         self.status = ''
