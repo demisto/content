@@ -1,7 +1,6 @@
 import pytest
+from OpenCVE import OpenCVE, cve_to_indicator, cve_to_warroom, dedupe_cves, parse_cpes, parse_cve, parse_tags, valid_cve_format
 from CommonServerPython import *
-from OpenCVE import *
-
 
 OPEN_CVE = OpenCVE(tlp="red")
 
