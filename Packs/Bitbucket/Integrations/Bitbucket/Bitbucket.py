@@ -1586,6 +1586,8 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def main() -> None:  # pragma: no cover
+    # with fake params
+    print(demisto.params())
     workspace = demisto.params().get('workspace')
     server_url = demisto.params().get('server_url')
     user_name = demisto.params().get('credentials', {}).get('identifier', "")
