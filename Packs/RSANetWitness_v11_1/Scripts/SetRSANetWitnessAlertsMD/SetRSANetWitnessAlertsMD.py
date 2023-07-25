@@ -28,14 +28,14 @@ def parse_alerts(alerts: list) -> list:
             "Type": alert.get("type"),
             "Detail": alert.get("detail"),
         }
-        for alert in alerts
+        for alert in alerts if alerts
     ]
 
 
 def json_to_md(incident_fields: dict) -> str:
     return tableToMarkdown(
         name="RSA Alerts",
-        t=parse_alerts(incident_fields["RSA Alerts"]),
+        t=parse_alerts(incident_fields.get("RSA Alerts", [])),
         headers=["ID", "Title", "Type", "Risk Score", "Created", "Events", "Detail"],
         removeNull=True,
         json_transform_mapping={
@@ -51,7 +51,7 @@ def main():
     incident_fields = read_context_from_rsa_netwitness_alerts()
     return_results(
         CommandResults(
-            readable_output=json_to_md(incident_fields) or "No data to present."
+            readable_output=json_to_md(incident_fields) if incident_fields else "No data to present."
         )
     )
 
