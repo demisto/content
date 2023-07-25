@@ -95,9 +95,6 @@ configuration:
 script:
   dockerimage: demisto/python3:3.10.12.65389
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   subtype: python3
   type: python

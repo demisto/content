@@ -65,7 +65,6 @@ script:
     - name: limit
       description: Limits the amount of returned results
     - name: include
-      required: false
       description: Include all search results. Default is to exclude all lists owned by the system user.
       auto: PREDEFINED
       predefined:
@@ -100,11 +99,9 @@ script:
       description: Id of the list that should be added, can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal
     - name: entity_ids
       description: 'A comma-separated list of specific IDs from Recorded Future. For URLs containing commas, replace the comma with %2C. For more information, go to https://xsoar.pan.dev/docs/reference/integrations/recorded-future-lists#recordedfuture-lists-add-entities.'
-      required: false
     - name: freetext_names
       description: 'Freetext names will be matched to Recorded Future ids separated by comma, this alernative will add the best match in the Recorded Future data. For urls containing commas: escape with %2C'
     - name: entity_type
-      required: false
       description: Type of the entities that should be added. Use together with freetext_names to improve entity resolution.
       auto: PREDEFINED
       predefined:
@@ -147,12 +144,9 @@ script:
       description: ID of the list that should be removed. Can be found by running !recordedfuture-lists-search with the corresponding filters or in the Recorded Future portal.
     - name: entity_ids
       description: 'A comma-separated list of specific IDs from Recorded Future. For URLs containing commas, replace the comma with %2C. For more information, go to https://xsoar.pan.dev/docs/reference/integrations/recorded-future-lists#recordedfuture-lists-add-entities.'
-      required: false
     - name: freetext_names
       description: 'A comma-separated list of freetext names to be matched to Recorded Future IDs. Will remove the best match in the Recorded Future data. For URLs containing commas, escape with %2C.'
-      required: false
     - name: entity_type
-      required: false
       description: Type of the entities that should be removed. Use together with freetext_names to improve entity resolution.
       auto: PREDEFINED
       predefined:

@@ -102,20 +102,10 @@ script:
   - arguments:
     - description: The name of the storage account, optional.
       name: account_name
-      required: false
-      secret: false
-    - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
-      isArray: false
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      secret: false
-    - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-      isArray: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      secret: false
     description: Run this command to get the all or specific account storage details
     name: azure-storage-account-list
     outputs:
@@ -257,25 +247,14 @@ script:
     - contextPath: AzureStorage.StorageAccount.type
       description: The type of the resource.
       type: String
-    deprecated: false
   - arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: The name of the storage account.
       name: account_name
       required: true
-      default: false
-      isArray: false
     - auto: PREDEFINED
       description: Gets or sets the SKU name, Required for account creation; optional for update.
       name: sku
@@ -564,19 +543,9 @@ script:
   - arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      default: false
-      isArray: false
-      secret: false
-    - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-      isArray: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The name of the storage account.
-      isArray: false
+    - description: The name of the storage account.
       name: account_name
       required: true
     description: Run this command to get the blob service properties of a specific account storage.
@@ -606,20 +575,10 @@ script:
   - arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      default: false
-      isArray: false
-      required: false
-      secret: false
     - description: The name of the storage account.
       name: account_name
-      default: false
-      isArray: false
       required: true
     - auto: PREDEFINED
       description: Indicates whether change feed event logging is enabled for the Blob service.
@@ -728,20 +687,10 @@ script:
   - arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: The name of the storage account.
       name: account_name
-      default: false
-      isArray: false
       required: true
     - description: The name of the container.
       name: container_name
@@ -776,20 +725,10 @@ script:
   - arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: The name of the storage account.
       name: account_name
-      default: false
-      isArray: false
       required: true
     - description: The name of the container.
       name: container_name
@@ -838,20 +777,10 @@ script:
   - arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      default: false
-      isArray: false
-      required: false
-      secret: false
     - description: The name of the storage account.
       name: account_name
-      default: false
-      isArray: false
       required: true
     - description: The name of the container.
       name: container_name
@@ -896,19 +825,9 @@ script:
   - arguments:
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
-      default: false
-      isArray: false
-      secret: false
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      default: false
-      isArray: false
-      secret: false
-    - default: false
-      description: The name of the storage account.
-      isArray: false
+    - description: The name of the storage account.
       name: account_name
       required: true
     - description: The name of the container.
@@ -958,20 +877,13 @@ script:
   - description: Gets all resource groups for a subscription.
     name: azure-storage-resource-group-list
     arguments:
-    - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-      isArray: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      secret: false
     - name: limit
       description: Limit on the number of resource groups to return. Default value is 50.
-      required: false
       defaultValue: 50
-    - default: false
-      name: tag
+    - name: tag
       description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
-      required: false
     outputs:
     - contextPath: AzureStorage.ResourceGroup.id
       description: 'The unique identifier of the Azure storage resource group.'
