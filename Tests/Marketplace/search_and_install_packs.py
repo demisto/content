@@ -61,6 +61,7 @@ GITLAB_SESSION.headers.update({'PRIVATE-TOKEN': GITLAB_API_TOKEN})
 GITLAB_PACK_METADATA_URL = 'https://code.pan.run/api/v4/projects/2596/repository/files/Packs%2F{pack_id}%2Fpack_metadata.json'  # noqa: E501
 
 
+@lru_cache
 def fetch_pack_metadata_from_gitlab(pack_id: str, commit_hash: str) -> dict:
     """
     Fetch pack metadata from master (a commit hash of the master branch when the build was triggered) using GitLab's API.
@@ -91,7 +92,8 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True,
                        master_commit_hash: str | None = None, pack_api_data: dict | None = None) -> bool:
     """
     Check whether a pack is deprecated or not.
-    Can be checked locally (pack_metadata.json), or using Marketplace API response data.
+    If an error is encountered, and status can't be checked properly,
+    the deprecated status will be set to a default value of False.
 
     Note:
         If 'check_locally' is False, one of 'master_commit_hash' or 'pack_api_data' must be provided in order to determine
@@ -101,10 +103,11 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True,
 
     Args:
         pack_id (str): ID of the pack to check.
-        check_locally (bool): Whether to check locally (pack_metadata file) or not (will use Marketplace API data instead).
+        check_locally (bool): Whether to check locally ('pack_metadata.json' file) or not.
         master_commit_hash (str, optional): Commit hash of the master branch to use if 'check_locally' is False.
+            If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
         pack_api_data (dict | None, optional): Marketplace API data to use if 'check_locally' is False.
-            Needs to be the API data of a specific pack item (and not the complete response with a list of packs),
+            Needs to be the API data of a specific pack item (and not the complete response with a list of packs).
 
     Returns:
         bool: True if the pack is deprecated, False otherwise
@@ -113,9 +116,20 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True,
         pack_metadata_path = Path(PACKS_FOLDER) / pack_id / PACK_METADATA_FILENAME
 
         if not pack_metadata_path.is_file():
-            return True
+            logging.warning(f"Failed to find 'pack_metadata.json' file for pack '{pack_id}'.\n"
+                            "Deprecation status of '{pack_id}' has been set to a default value of 'False'.\n"
+                            "Note that this might result in an unexpected behavior.")
 
-        return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
+            return False
+
+        try:
+            return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
+
+        except Exception as ex:
+            logging.error(f"Failed to open 'pack_metadata.json' file for pack '{pack_id}'.\nError: {ex}")
+            logging.warning(f"Deprecation status of '{pack_id}' has been set to a default value of 'False'.\n"
+                            "Note that this might result in an unexpected behavior.")
+            return False
 
     else:
         if pack_api_data:
@@ -139,24 +153,6 @@ def get_pack_id_from_error_with_gcp_path(error: str) -> str:
         str: The id of given pack.
     """
     return error.split('/packs/')[1].split('.zip')[0].split('/')[0]
-
-
-@lru_cache
-def is_pack_hidden(pack_id: str) -> bool:
-    """
-    Check if the given pack is deprecated.
-
-    :param pack_id: ID of the pack.
-    :return: True if the pack is deprecated, i.e. has 'hidden: true' field, False otherwise.
-    """
-    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
-    if pack_id and os.path.isfile(metadata_path):
-        with open(metadata_path) as json_file:
-            pack_metadata = json.load(json_file)
-            return pack_metadata.get('hidden', False)
-    else:
-        logging.warning(f'Could not open metadata file of pack {pack_id}')
-    return False
 
 
 def create_dependencies_data_structure(response_data: dict, dependants_ids: list, dependencies_data: list, checked_packs: list):
@@ -604,7 +600,7 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
 
     # Add deprecated packs to IGNORED_FILES list:
     for pack_id in os.listdir(PACKS_FULL_PATH):
-        if is_pack_hidden(pack_id):
+        if is_pack_deprecated(pack_id=pack_id, check_locally=True):
             logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
             IGNORED_FILES.append(pack_id)
 
