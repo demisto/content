@@ -7,6 +7,7 @@ configuration:
   additionalinfo: When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used.
   name: org_id
   type: 0
+  required: false
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection
   name: credentials
@@ -16,9 +17,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: 'Administrate your IT organization from XSOAR with comprehensive commands for the Automox platform.'
 display: Automox
 name: Automox

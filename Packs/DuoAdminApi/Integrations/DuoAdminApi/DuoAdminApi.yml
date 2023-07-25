@@ -11,20 +11,25 @@ configuration:
   name: integration_key
   type: 0
   hidden: true
+  required: false
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
+  required: false
 - displaypassword: Secret Key
   name: credentials_key
   display: Integration Key
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: |-
   DUO for admins.
   Must have access to the admin api in order to use this.
@@ -319,7 +324,7 @@ script:
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
-  dockerimage: demisto/duoadmin3:1.0.0.63681
+  dockerimage: demisto/duoadmin3:1.0.0.65621
   script: ''
   type: python
   subtype: python3

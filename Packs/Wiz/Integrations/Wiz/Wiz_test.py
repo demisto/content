@@ -28,7 +28,7 @@ def set_mocks(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params_with_auth_url)
 
 
-test_get_filtered_issues_response = {
+test_get_issues_response = {
     "data": {
         "issues": {
             "nodes": [
@@ -58,7 +58,7 @@ test_get_filtered_issues_response = {
 }
 
 
-@patch('Wiz.checkAPIerrors', return_value=test_get_filtered_issues_response)
+@patch('Wiz.checkAPIerrors', return_value=test_get_issues_response)
 def test_get_filtered_issues(checkAPIerrors):
     from Wiz import get_filtered_issues
 
@@ -157,32 +157,16 @@ def test_reject_issue(checkAPIerrors, capfd):
     assert res == test_reject_issue_response
 
 
-test_reject_issue_fail_response = {
-    "errors": [
-        {
-            "message": "Resource not found",
-            "extensions": {
-                "code": "NOT_FOUND",
-                "exception": {
-                    "message": "Resource not found",
-                    "path": [
-                        "issue"
-                    ]
-                }
-            }
-        }
-    ],
-    "data": None
-}
+test_issue_id_not_valid = 'Error details: The Issue ID is not correct'
 
 
-@patch('Wiz.checkAPIerrors', return_value=test_reject_issue_fail_response)
+@patch('Wiz.checkAPIerrors', return_value=test_issue_id_not_valid)
 def test_reject_issue_failed(checkAPIerrors, capfd):
     with capfd.disabled():
         from Wiz import reject_issue
 
         res = reject_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'WONT_FIX', 'blah_note')
-        assert res == ("Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f78")
+        assert res == 'Error details: The Issue ID is not correct'
 
 
 @patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
@@ -253,9 +237,9 @@ def test_issue_in_progress_exception(checkAPIerrors, capfd):
 @patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
 def test_set_issue_note_exception(checkAPIerrors, capfd):
     with capfd.disabled():
-        from Wiz import set_issue_note
+        from Wiz import set_issue_comment
         try:
-            set_issue_note('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
+            set_issue_comment('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
         except DemistoException:
             assert True
 
@@ -283,27 +267,22 @@ def test_set_issue_date_exception(checkAPIerrors, capfd):
 @patch('Wiz.return_error', side_effect=Exception('no command'))
 def test_main_without_params(return_error, capfd):
     from Wiz import main
-    try:
+    with pytest.raises(Exception) as e:
         main()
-    except Exception as e:
-        assert str(e) == 'no command'
+    assert str(e.value) == 'no command'
     captured = capfd.readouterr()
     assert 'Unrecognized command' in captured.out
 
 
 def test_no_command(mocker):
     from Wiz import main
-    try:
-        mocker.patch.object(demisto, 'command', return_value='test-module')
-        mocker.patch('Wiz.get_token', return_value=TEST_TOKEN)
-        mocker.patch('Wiz.checkAPIerrors', return_value=test_set_issue_reopen_fail_response)
-        main()
-    except Exception as e:
-        assert str(e) == 'no command'
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch('Wiz.get_token', return_value=TEST_TOKEN)
+    mocker.patch('Wiz.checkAPIerrors', return_value=test_issue_id_not_valid)
+    main()
 
 
 INVALID_RESPONSE_ERROR = 'blabla error blabla'
-
 
 VALID_RESPONSE_JSON = {
     "data": {
@@ -314,7 +293,11 @@ VALID_RESPONSE_JSON = {
                     "name": "test-1",
                     "createdAt": "2022-07-06T11:21:28.372924Z",
                     "type": "CORTEX_XSOAR",
+                    "evidenceQuery": "test_query",
                     "status": "SUCCESS",
+                    "notes": [{
+                        "id": "test_note_result"
+                    }],
                     "project": None,
                     "isAccessibleToAllProjects": True,
                     "params": {
@@ -375,16 +358,6 @@ VALID_RESPONSE_JSON = {
 }
 
 
-def test_fetch_incidents(mocker):
-    from Wiz import main
-    try:
-        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
-        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
-        main()
-    except Exception as e:
-        assert str(e) == 'no command'
-
-
 DEMISTO_ARGS = {
     'issue_type': 'Publicly exposed VM instance with effective global admin permissions',
     'resource_id': 'test-id',
@@ -405,32 +378,13 @@ def test_reopen_issue_direct(checkAPIerrors):
     assert res == test_reopen_issue_response
 
 
-test_set_issue_reopen_fail_response = {
-    "errors": [
-        {
-            "message": "Resource not found",
-            "extensions": {
-                "code": "NOT_FOUND",
-                "exception": {
-                    "message": "Resource not found",
-                    "path": [
-                        "issue"
-                    ]
-                }
-            }
-        }
-    ],
-    "data": None
-}
-
-
-@patch('Wiz.checkAPIerrors', return_value=test_set_issue_reopen_fail_response)
+@patch('Wiz.checkAPIerrors', return_value=test_issue_id_not_valid)
 def test_set_issue_reopen_failed(checkAPIerrors, capfd):
     with capfd.disabled():
         from Wiz import reopen_issue
 
         res = reopen_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
-        assert res == ("Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f78")
+        assert res == 'Error details: The Issue ID is not correct'
 
 
 test_issue_in_progress_response = {
@@ -451,16 +405,12 @@ test_issue_in_progress_response = {
 @pytest.mark.parametrize("command_name", SIMILAR_COMMANDS)
 def test_main_command(mocker, capfd, command_name):
     from Wiz import main
-    try:
-        with capfd.disabled():
-            mocker.patch.object(demisto, 'command', return_value=command_name)
-            mocker.patch.object(demisto, 'args', return_value=DEMISTO_ARGS)
-            mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
-            mocker.patch('CommonServerPython.tableToMarkdown', return_value=[])
-            main()
-
-    except Exception as e:
-        assert str(e) == 'no command'
+    with capfd.disabled():
+        mocker.patch.object(demisto, 'command', return_value=command_name)
+        mocker.patch.object(demisto, 'args', return_value=DEMISTO_ARGS)
+        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+        mocker.patch('CommonServerPython.tableToMarkdown', return_value=[])
+        main()
 
 
 def test_has_next_page(mocker, capfd):
@@ -543,32 +493,13 @@ def test_issue_in_progress(checkAPIerrors):
     assert res == test_issue_in_progress_response
 
 
-test_set_issue_in_progress_fail_response = {
-    "errors": [
-        {
-            "message": "Resource not found",
-            "extensions": {
-                "code": "NOT_FOUND",
-                "exception": {
-                    "message": "Resource not found",
-                    "path": [
-                        "issue"
-                    ]
-                }
-            }
-        }
-    ],
-    "data": None
-}
-
-
-@patch('Wiz.checkAPIerrors', return_value=test_set_issue_in_progress_fail_response)
+@patch('Wiz.checkAPIerrors', return_value=test_issue_id_not_valid)
 def test_set_issue_in_progress_failed(checkAPIerrors, capfd):
     with capfd.disabled():
         from Wiz import issue_in_progress
 
         res = issue_in_progress('12345678-2222-3333-1111-ff5fa2ff7f78')
-        assert res == ("Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f78")
+        assert res == "Error details: The Issue ID is not correct"
 
 
 test_set_issue_note_response = {
@@ -596,9 +527,9 @@ test_set_issue_note_response = {
 
 @patch('Wiz.checkAPIerrors', return_value=test_set_issue_note_response)
 def test_set_issue_note(checkAPIerrors):
-    from Wiz import set_issue_note
+    from Wiz import set_issue_comment
 
-    res = set_issue_note('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
+    res = set_issue_comment('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
     assert res == test_set_issue_note_response
 
 
@@ -621,13 +552,13 @@ test_set_issue_note_fail_response = {
 }
 
 
-@patch('Wiz.checkAPIerrors', return_value=test_set_issue_note_fail_response)
+@patch('Wiz.checkAPIerrors', return_value=test_issue_id_not_valid)
 def test_set_issue_note_failed(checkAPIerrors, capfd):
     with capfd.disabled():
-        from Wiz import set_issue_note
+        from Wiz import set_issue_comment
 
-        res = set_issue_note('12345678-2222-3333-1111-ff5fa2ff7f78', "blah")
-        assert res == ("Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f78")
+        res = set_issue_comment('12345678-2222-3333-1111-ff5fa2ff7f78', "blah")
+        assert res == "Error details: The Issue ID is not correct"
 
 
 test_clear_issue_note_response = {
@@ -644,74 +575,29 @@ test_clear_issue_note_response = {
     }
 }
 
-
-@patch('Wiz.checkAPIerrors', return_value=test_clear_issue_note_response)
-def test_clear_issue_note(checkAPIerrors):
-    from Wiz import clear_issue_note
-
-    res = clear_issue_note('12345678-2222-3333-1111-ff5fa2ff7f78')
-    assert res == test_clear_issue_note_response
+test_clear_issue_note_fail_response = 'Error details: Only the user who created the note, can delete it.\n' \
+                                      'Check server.log file for additional information'
 
 
-test_clear_issue_note_fail_response = {
-    "errors": [
-        {
-            "message": "Resource not found",
-            "extensions": {
-                "code": "NOT_FOUND",
-                "exception": {
-                    "message": "Resource not found",
-                    "path": [
-                        "issue"
-                    ]
-                }
-            }
-        }
-    ],
-    "data": None
-}
-
-
+@patch('Wiz._get_issue', return_value=VALID_RESPONSE_JSON)
 @patch('Wiz.checkAPIerrors', return_value=test_clear_issue_note_fail_response)
 def test_clear_issue_note_failed(checkAPIerrors, capfd):
     with capfd.disabled():
         from Wiz import clear_issue_note
 
         res = clear_issue_note('12345678-2222-3333-1111-ff5fa2ff7f78')
-        assert res == ("Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f78")
+        assert res == 'Error details: Only the user who created the note, can delete it.\n' \
+                      'Check server.log file for additional information'
 
 
-test_get_issue_evidence_fail_response = {
-    "errors": [
-        {
-            "message": "Resource not found",
-            "extensions": {
-                "code": "NOT_FOUND",
-                "exception": {
-                    "message": "Resource not found",
-                    "path": [
-                        "issue"
-                    ]
-                }
-            }
-        }
-    ],
-    "data": {
-        "issue": None,
-        "issueSettings": {
-            "requireNoteOnRejection": True
-        }
-    }
-}
-
-
-@patch('Wiz.checkAPIerrors', return_value=test_get_issue_evidence_fail_response)
-def test_get_issue_evidence_failure(checkAPIerrors, capfd):
+@patch('Wiz._get_issue', return_value=VALID_RESPONSE_JSON)
+@patch('Wiz.checkAPIerrors', side_effect=DemistoException('no command'))
+def test_get_issue_evidence_failure(checkAPIerrors, _get_issue, capfd):
     with capfd.disabled():
         from Wiz import get_issue_evidence
-
-        res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
-        assert res == ("Could not find Issue with ID 12345678-1234-1234-1234-d25e16359c19")
+        with pytest.raises(Exception) as e:
+            get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
+        assert "Failed getting Issue evidence on ID 12345678-1234-1234-1234-d25e16359c19" in str(e)
 
 
 test_set_issue_due_data_response = {
@@ -752,25 +638,7 @@ def test_set_issue_due_date_error(checkAPIerrors, capfd):
         from Wiz import set_issue_due_date
 
         res = set_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78', '2022-01-20')
-        assert "Could not find Issue with ID" in res
-
-
-@patch('Wiz.checkAPIerrors', return_value="errors blabla")
-def test_get_issue_evidence_error(checkAPIerrors, capfd):
-    with capfd.disabled():
-        from Wiz import get_issue_evidence
-
-        res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
-        assert "Could not find Issue with ID" in res
-
-
-@patch('Wiz.checkAPIerrors', return_value="errors blabla")
-def test_clear_issue_due_date_error(checkAPIerrors, capfd):
-    with capfd.disabled():
-        from Wiz import clear_issue_due_date
-
-        res = clear_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78')
-        assert "Could not find Issue with ID" in res
+        assert "errors blabla" in res
 
 
 test_clear_issue_due_data_response = {
@@ -813,15 +681,6 @@ test_clear_issue_due_data_failed_response = {
 }
 
 
-@patch('Wiz.checkAPIerrors', return_value=test_clear_issue_due_data_failed_response)
-def test_clear_issue_due_date_no_issue_id(checkAPIerrors, capfd):
-    with capfd.disabled():
-        from Wiz import clear_issue_due_date
-
-        res = clear_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f71')
-        assert res == "Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f71"
-
-
 test_bad_token_response = {
     "error": "access_denied",
     "error_description": "Unauthorized"
@@ -841,14 +700,12 @@ def mocked_requests_get(json, status):
 
 
 def test_bad_get_token(capfd):
-    with capfd.disabled():
-        with patch('requests.post') as mocked_request:
-            with pytest.raises(Exception):
-                mocked_request().return_value = test_bad_token_response
-                from Wiz import get_token
+    with capfd.disabled(), patch('requests.post') as mocked_request, pytest.raises(Exception):
+        mocked_request().return_value = test_bad_token_response
+        from Wiz import get_token
 
-                res = get_token()
-                assert res == test_bad_token_response
+        res = get_token()
+        assert res == test_bad_token_response
 
 
 def test_token_url():
@@ -900,23 +757,22 @@ def test_good_token(capfd, mocker):
         res = get_token()
         assert res == good_token
 
-        set_authentication_endpoint('')
-        try:
-            from Wiz import get_token
+        set_authentication_endpoint('bad')
+        from Wiz import get_token
+        with pytest.raises(Exception) as e:
             get_token()
-        except Exception as e:
-            assert str(e) == 'Not a valid authentication endpoint'
+        assert str(e.value) == 'Not a valid authentication endpoint'
 
 
 def test_token_no_access(capfd, mocker):
     with capfd.disabled():
         mocker.patch('requests.post', return_value=mocked_requests_get({}, 200))
-        try:
-            from Wiz import get_token, set_authentication_endpoint
+        from Wiz import get_token, set_authentication_endpoint
+        with pytest.raises(Exception) as e:
+
             set_authentication_endpoint('auth.app.wiz.io/oauth/token')
             get_token()
-        except Exception as e:
-            assert 'Could not retrieve token from Wiz' in str(e)
+        assert 'Could not retrieve token from Wiz' in str(e.value)
 
 
 def test_check_api_access(capfd, mocker):
@@ -926,12 +782,12 @@ def test_check_api_access(capfd, mocker):
         from Wiz import checkAPIerrors
         checkAPIerrors(query='test', variables='test')
 
-        try:
-            mocker.patch('Wiz.get_token', return_value=TEST_TOKEN)
-            mocker.patch('requests.post', side_effect=Exception('bad request'))
+        mocker.patch('Wiz.get_token', return_value=TEST_TOKEN)
+        mocker.patch('requests.post', side_effect=Exception('bad request'))
+        with pytest.raises(Exception) as e:
+
             checkAPIerrors(query='test', variables='test')
-        except Exception as e:
-            assert str(e) == 'bad request'
+        assert str(e.value) == 'bad request'
 
 
 def test_check_api_access_bad_gw(capfd, mocker):
@@ -939,10 +795,9 @@ def test_check_api_access_bad_gw(capfd, mocker):
         from Wiz import checkAPIerrors
         mocker.patch('requests.post', side_effect=Exception('502: Bad Gateway'))
 
-        try:
+        with pytest.raises(Exception) as e:
             checkAPIerrors(query='test', variables='test')
-        except Exception as e:
-            assert '502: Bad Gateway' in str(e)
+        assert '502: Bad Gateway' in str(e.value)
 
 
 test_issue_severity_crit_response = {

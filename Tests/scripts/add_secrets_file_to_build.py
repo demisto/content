@@ -1,6 +1,7 @@
 import argparse
 import json5
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
+from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 
@@ -22,6 +23,7 @@ def run(options):
 
 
 def options_handler(args=None):
+    install_logging('add_secrets_file_to_build.log', logger=logging)
     parser = argparse.ArgumentParser(description='Utility for Importing secrets from Google Secret Manager.')
     parser.add_argument('-gpid', '--gsm_project_id', help='The project id for the GSM.')
     parser.add_argument('-u', '--user', help='the user for Demisto.')
