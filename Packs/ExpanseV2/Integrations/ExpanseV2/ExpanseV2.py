@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 """
 
+
 from CommonServerUserPython import *  # noqa
 
 import urllib3
@@ -13,9 +14,9 @@ import base64
 import re
 
 from typing import (
-    Any, Dict, Optional, Iterator,
-    Tuple, Union, cast, Set, List
+    Any, cast
 )
+from collections.abc import Iterator
 
 from itertools import islice
 from dateparser import parse
@@ -130,8 +131,8 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=hdr, **kwargs)
 
     def _paginate(self, method: str, url_suffix: str,
-                  params: Optional[Dict[str, Any]]) -> Iterator[Any]:
-        next_url: Optional[str] = None
+                  params: dict[str, Any] | None) -> Iterator[Any]:
+        next_url: str | None = None
 
         while True:
             result = self._http_request(
@@ -203,24 +204,24 @@ class Client(BaseClient):
 
     def get_issues(self,
                    limit: int,
-                   content_search: Optional[str] = None,
-                   provider: Optional[str] = None,
-                   business_units: Optional[str] = None,
-                   assignee: Optional[str] = None,
-                   issue_type: Optional[str] = None,
-                   inet_search: Optional[str] = None,
-                   domain_search: Optional[str] = None,
-                   port_number: Optional[str] = None,
-                   progress_status: Optional[str] = None,
-                   activity_status: Optional[str] = None,
-                   priority: Optional[str] = None,
-                   tags: Optional[str] = None,
-                   created_before: Optional[str] = None,
-                   created_after: Optional[str] = None,
-                   modified_before: Optional[str] = None,
-                   modified_after: Optional[str] = None,
-                   cloud_management_status: Optional[str] = None,
-                   sort: Optional[str] = None
+                   content_search: str | None = None,
+                   provider: str | None = None,
+                   business_units: str | None = None,
+                   assignee: str | None = None,
+                   issue_type: str | None = None,
+                   inet_search: str | None = None,
+                   domain_search: str | None = None,
+                   port_number: str | None = None,
+                   progress_status: str | None = None,
+                   activity_status: str | None = None,
+                   priority: str | None = None,
+                   tags: str | None = None,
+                   created_before: str | None = None,
+                   created_after: str | None = None,
+                   modified_before: str | None = None,
+                   modified_after: str | None = None,
+                   cloud_management_status: str | None = None,
+                   sort: str | None = None
                    ) -> Iterator[Any]:
 
         params = {
@@ -249,15 +250,15 @@ class Client(BaseClient):
             method='GET', url_suffix="/v1/issues/issues", params=params
         )
 
-    def get_issue_by_id(self, issue_id: str) -> Dict[str, Any]:
+    def get_issue_by_id(self, issue_id: str) -> dict[str, Any]:
         return self._http_request(
             method='GET', url_suffix=f'/v1/issues/issues/{issue_id}')
 
-    def get_issue_updates(self, issue_id: str, update_types: Optional[List],
-                          created_after: Optional[str], limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
+    def get_issue_updates(self, issue_id: str, update_types: list | None,
+                          created_after: str | None, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
         updates = self._paginate(
             method='GET', url_suffix=f'/v1/issues/issues/{issue_id}/updates',
-            params=dict(limit=limit))
+            params={"limit": limit})
         after = datestring_to_timestamp_us(created_after) if created_after else None
 
         for u in updates:
@@ -269,19 +270,19 @@ class Client(BaseClient):
 
     def get_services(self,
                      limit: int,
-                     content_search: Optional[str] = None,
-                     provider: Optional[str] = None,
-                     business_units: Optional[str] = None,
-                     service_type: Optional[str] = None,
-                     inet_search: Optional[str] = None,
-                     domain_search: Optional[str] = None,
-                     port_number: Optional[str] = None,
-                     activity_status: Optional[str] = None,
-                     discovery_type: Optional[str] = None,
-                     country_code: Optional[str] = None,
-                     tags: Optional[str] = None,
-                     cloud_management_status: Optional[str] = None,
-                     sort: Optional[str] = None
+                     content_search: str | None = None,
+                     provider: str | None = None,
+                     business_units: str | None = None,
+                     service_type: str | None = None,
+                     inet_search: str | None = None,
+                     domain_search: str | None = None,
+                     port_number: str | None = None,
+                     activity_status: str | None = None,
+                     discovery_type: str | None = None,
+                     country_code: str | None = None,
+                     tags: str | None = None,
+                     cloud_management_status: str | None = None,
+                     sort: str | None = None
                      ) -> Iterator[Any]:
 
         params = {
@@ -305,12 +306,12 @@ class Client(BaseClient):
             method='GET', url_suffix="/v1/services/services", params=params
         )
 
-    def get_service_by_id(self, service_id: str) -> Dict[str, Any]:
+    def get_service_by_id(self, service_id: str) -> dict[str, Any]:
         return self._http_request(
             method='GET', url_suffix=f'/v1/services/services/{service_id}')
 
     def list_businessunits(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
-        params = dict(limit=limit)
+        params = {"limit": limit}
         return self._paginate(
             method='GET',
             url_suffix='/v1/issues/businessUnits',
@@ -318,7 +319,7 @@ class Client(BaseClient):
         )
 
     def list_providers(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
-        params = dict(limit=limit)
+        params = {"limit": limit}
         return self._paginate(
             method='GET',
             url_suffix='/v1/issues/providers',
@@ -326,16 +327,16 @@ class Client(BaseClient):
         )
 
     def list_pocs(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
-        params = dict(limit=limit)
+        params = {"limit": limit}
         return self._paginate(
             method='GET',
             url_suffix='/v2/annotation/point-of-contact',
             params=params
         )
 
-    def create_poc(self, email: str, first_name: Optional[str], last_name: Optional[str], role: Optional[str],
-                   phone: Optional[str]) -> Dict[str, Any]:
-        data: Dict = {
+    def create_poc(self, email: str, first_name: str | None, last_name: str | None, role: str | None,
+                   phone: str | None) -> dict[str, Any]:
+        data: dict = {
             'email': email,
             'firstName': first_name,
             'lastName': last_name,
@@ -349,15 +350,15 @@ class Client(BaseClient):
         )
 
     def list_tags(self, limit: int = DEFAULT_RESULTS) -> Iterator[Any]:
-        params = dict(limit=limit)
+        params = {"limit": limit}
         return self._paginate(
             method='GET',
             url_suffix='/v3/annotations/tags',
             params=params
         )
 
-    def create_tag(self, name: str, description: Optional[str]) -> Dict[str, Any]:
-        data: Dict = {
+    def create_tag(self, name: str, description: str | None) -> dict[str, Any]:
+        data: dict = {
             'name': name,
             'description': description
 
@@ -369,8 +370,8 @@ class Client(BaseClient):
         )
 
     def get_asset_details(self, asset_type: str, asset_id: str,
-                          include: str = 'annotations,attributionReasons') -> Dict[str, Any]:
-        data: Dict = {}
+                          include: str = 'annotations,attributionReasons') -> dict[str, Any]:
+        data: dict = {}
         if asset_type == 'IpRange':
             data = self.get_iprange_by_id(
                 iprange_id=asset_id,
@@ -385,7 +386,7 @@ class Client(BaseClient):
         return data
 
     def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str,
-                          tag_ids: List[str]) -> Dict[str, Any]:
+                          tag_ids: list[str]) -> dict[str, Any]:
         # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
         if asset_type == "ip-range":
             tag_url = f'/v2/{asset_type}/tag-assignments/bulk'
@@ -412,7 +413,7 @@ class Client(BaseClient):
             retries=3
         )
 
-    def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
+    def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: list[str]) -> dict[str, Any]:
         # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
         if asset_type == "ip-range":
             poc_url = f'/v2/{asset_type}/contact-assignments/bulk'
@@ -439,8 +440,8 @@ class Client(BaseClient):
             retries=3
         )
 
-    def update_issue(self, issue_id: str, update_type: str, value: str) -> Dict[str, Any]:
-        data: Dict = {
+    def update_issue(self, issue_id: str, update_type: str, value: str) -> dict[str, Any]:
+        data: dict = {
             'updateType': update_type,
             'value': value
         }
@@ -450,9 +451,9 @@ class Client(BaseClient):
             data=json.dumps(data)
         )
 
-    def get_iprange_by_id(self, iprange_id: str, include: str) -> Dict[str, Any]:
+    def get_iprange_by_id(self, iprange_id: str, include: str) -> dict[str, Any]:
         try:
-            result: Dict = self._http_request(
+            result: dict = self._http_request(
                 method='GET',
                 url_suffix=f'/v2/ip-range/{iprange_id}',
                 raise_on_status=True,
@@ -466,7 +467,7 @@ class Client(BaseClient):
             raise e
         return result
 
-    def get_domain_by_domain(self, domain: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
+    def get_domain_by_domain(self, domain: str, last_observed_date: str | None = None) -> dict[str, Any]:
         params = {}
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
@@ -484,14 +485,14 @@ class Client(BaseClient):
             raise e
         return result
 
-    def get_certificate_by_md5_hash(self, md5_hash: str, last_observed_date: Optional[str] = None) -> Dict[str, Any]:
+    def get_certificate_by_md5_hash(self, md5_hash: str, last_observed_date: str | None = None) -> dict[str, Any]:
         params = {}
 
         if last_observed_date is not None:
             params['minRecentIpLastObservedDate'] = last_observed_date
 
         try:
-            result: Dict = self._http_request(
+            result: dict = self._http_request(
                 method='GET',
                 url_suffix=f'/v2/assets/certificates/{md5_hash}',
                 raise_on_status=True,
@@ -503,44 +504,44 @@ class Client(BaseClient):
             raise e
         return result
 
-    def get_ipranges(self, params: Dict[str, Any]) -> Iterator[Any]:
+    def get_ipranges(self, params: dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
             method='GET',
             url_suffix='/v2/ip-range',
             params=params
         )
 
-    def get_domains(self, params: Dict[str, Any]) -> Iterator[Any]:
+    def get_domains(self, params: dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
             method='GET',
             url_suffix='/v2/assets/domains',
             params=params
         )
 
-    def get_certificates(self, params: Dict[str, Any]) -> Iterator[Any]:
+    def get_certificates(self, params: dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
             method='GET',
             url_suffix='/v2/assets/certificates',
             params=params
         )
 
-    def get_ips(self, params: Dict[str, Any]) -> Iterator[Any]:
+    def get_ips(self, params: dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
             method='GET',
             url_suffix='/v2/assets/ips',
             params=params
         )
 
-    def get_cloud_resources(self, params: Dict[str, Any]) -> Iterator[Any]:
+    def get_cloud_resources(self, params: dict[str, Any]) -> Iterator[Any]:
         return self._paginate(
             method='GET',
             url_suffix='/v2/assets/cloud-resources',
             params=params
         )
 
-    def get_cloud_resource(self, asset_id: str) -> Dict[str, Any]:
+    def get_cloud_resource(self, asset_id: str) -> dict[str, Any]:
         try:
-            result: Dict = self._http_request(
+            result: dict = self._http_request(
                 method='GET',
                 url_suffix=f'/v2/assets/cloud-resources/{asset_id}',
                 raise_on_status=True,
@@ -552,11 +553,11 @@ class Client(BaseClient):
             raise e
         return result
 
-    def parse_asset_data(self, issue: Dict[str, Any],
-                         fetch_details: Optional[bool] = False) -> Tuple[List[Dict[str, Any]], List[str], bool]:
-        assets: List[Dict[str, Any]] = []
+    def parse_asset_data(self, issue: dict[str, Any],
+                         fetch_details: bool | None = False) -> tuple[list[dict[str, Any]], list[str], bool]:
+        assets: list[dict[str, Any]] = []
         changed = False
-        ml_feature_list: List[str] = []
+        ml_feature_list: list[str] = []
         if issue.get('assets') and isinstance(issue['assets'], list):
             assets = copy.deepcopy(issue['assets'])
             for n, a in enumerate(assets):
@@ -652,7 +653,7 @@ class Client(BaseClient):
                                 if (x := reg.get(f)):
                                     ml_feature_list.append(x)
 
-        if len(ml_feature_list) > 0:
+        if ml_feature_list:
             changed = True
         return assets, ml_feature_list, changed
 
@@ -679,21 +680,21 @@ class DBotScoreOnlyIndicator(Common.Indicator):
         return self.dbot_score.to_context()
 
 
-def calculate_limits(limit: Any) -> Tuple[int, int]:
+def calculate_limits(limit: Any) -> tuple[int, int]:
     total_results = check_int(limit, 'limit', None, None, False)
     if not total_results:
         total_results = DEFAULT_RESULTS
     elif total_results > MAX_RESULTS:
         total_results = MAX_RESULTS
-    max_page_size = MAX_PAGE_SIZE if total_results > MAX_PAGE_SIZE else total_results
+    max_page_size = min(total_results, MAX_PAGE_SIZE)
     return (total_results, max_page_size)
 
 
-def handle_iprange_include(arg: Optional[str], arg_name: Optional[str]) -> str:
+def handle_iprange_include(arg: str | None, arg_name: str | None) -> str:
     include = argToList(arg)
     sanitized_include: str = ''
-    if include and not any('none' in i for i in include):
-        if not all(i in IPRANGE_INCLUDE_OPTIONS for i in include):
+    if include and all('none' not in i for i in include):
+        if any(i not in IPRANGE_INCLUDE_OPTIONS for i in include):
             raise ValueError(f'{arg_name} must contain the following options: {", ".join(IPRANGE_INCLUDE_OPTIONS)}')
         else:
             sanitized_include = ','.join(include)
@@ -706,11 +707,11 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         for i in ipaddress.summarize_address_range(ipaddress.IPv4Address(start), ipaddress.IPv4Address(end)):
             yield str(i)
     except ipaddress.AddressValueError as e:
-        raise ValueError(f'Invalid IP address in range: {str(e)}')
+        raise ValueError(f'Invalid IP address in range: {str(e)}') from e
 
 
 def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int | None = None,
-              required: bool = False) -> Optional[int]:
+              required: bool = False) -> int | None:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
     it into an ``int`` type. It will throw a ValueError if the input is invalid
@@ -720,19 +721,19 @@ def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int 
 
     # check if argument is mandatory
     if arg is None:
-        if required is True:
+        if required:
             raise ValueError(f'Missing argument "{arg_name}"')
         return None
 
-    i: Optional[int] = None
+    i: int | None = None
 
     if isinstance(arg, str):
         if not arg.isdigit():
             raise ValueError(f'Integer invalid: "{arg_name}"="{arg}"')
         try:
             i = int(arg)
-        except ValueError:
-            raise ValueError(f'Integer invalid: "{arg_name}"="{arg}"')
+        except ValueError as e:
+            raise ValueError(f'Integer invalid: "{arg_name}"="{arg}"') from e
     elif isinstance(arg, int):
         i = arg
     else:
@@ -773,8 +774,8 @@ def timestamp_us_to_datestring_utc(ts: int, date_format: str = DATE_FORMAT) -> s
     return ds
 
 
-def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
-    cidr_data_list: List[Dict[str, Any]] = []
+def format_cidr_data(cidrs: list[dict[str, Any]]) -> list[CommandResults]:
+    cidr_data_list: list[dict[str, Any]] = []
     command_results = []
     for cidr_data in cidrs:
         cidr_data['cidr'] = ','.join(range_to_cidrs(cidr_data['startAddress'], cidr_data['endAddress'])) \
@@ -783,7 +784,7 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
         if not cidr_data['cidr']:
             continue
 
-        cidr_context_excluded_fields: List[str] = ['startAddress', 'endAddress']
+        cidr_context_excluded_fields: list[str] = ['startAddress', 'endAddress']
         cidr_data_list.append({
             k: cidr_data[k]
             for k in cidr_data if k not in cidr_context_excluded_fields
@@ -802,15 +803,17 @@ def format_cidr_data(cidrs: List[Dict[str, Any]]) -> List[CommandResults]:
             readable_output=tableToMarkdown("New CIDR indicator was found", cidr_standard_context.to_context()),
             indicator=cidr_standard_context
         ))
-    command_results.append(CommandResults(
-        outputs_prefix='Expanse.IPRange',
-        outputs_key_field='id',
-        outputs=cidr_data_list if len(cidr_data_list) > 0 else None,
-    ))
+    command_results.append(
+        CommandResults(
+            outputs_prefix='Expanse.IPRange',
+            outputs_key_field='id',
+            outputs=cidr_data_list if cidr_data_list else None,
+        )
+    )
     return command_results
 
 
-def find_indicator_md5_by_hash(h: str) -> Optional[str]:
+def find_indicator_md5_by_hash(h: str) -> str | None:
     field = {
         40: 'sha1',
         64: 'sha256',
@@ -833,8 +836,8 @@ def find_indicator_md5_by_hash(h: str) -> Optional[str]:
     return custom_fields.get('md5')
 
 
-def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
-    domain_data_list: List[Dict[str, Any]] = []
+def format_domain_data(domains: list[dict[str, Any]]) -> list[CommandResults]:
+    domain_data_list: list[dict[str, Any]] = []
     command_results = []
     for domain_data in domains:
         if not isinstance(domain_data, dict) or 'domain' not in domain_data:
@@ -874,10 +877,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
             )
 
         domain_standard_context: Common.Domain
-        if domain.startswith('*.'):
-            indicator_type = DBotScoreType.DOMAINGLOB
-        else:
-            indicator_type = DBotScoreType.DOMAIN
+        indicator_type = DBotScoreType.DOMAINGLOB if domain.startswith("*.") else DBotScoreType.DOMAIN
 
         domain_standard_context = Common.Domain(
             domain=domain,
@@ -894,26 +894,31 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
             readable_output=tableToMarkdown("New Domain indicator was found", domain_standard_context.to_context()),
             indicator=domain_standard_context
         ))
-        domain_context_excluded_fields: List[str] = []
+        domain_context_excluded_fields: list[str] = []
         domain_data_list.append({
             k: domain_data[k]
             for k in domain_data if k not in domain_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.Domain',
-        outputs_key_field='domain',
-        outputs=domain_data_list if len(domain_data_list) > 0 else None,
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse Domain List', domain_data_list)
+        if domain_data_list
+        else "## No Domains found"
+    )
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.Domain',
+            outputs_key_field='domain',
+            outputs=domain_data_list if domain_data_list else None,
+        )
+    )
     return command_results
 
 
-def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandResults]:
-    certificate_data_list: List[Dict[str, Any]] = []
-    certificate_context_excluded_fields: List[str] = []
+def format_certificate_data(certificates: list[dict[str, Any]]) -> list[CommandResults]:
+    certificate_data_list: list[dict[str, Any]] = []
+    certificate_context_excluded_fields: list[str] = []
     command_results = []
     for certificate in certificates:
         expanse_certificate = certificate.get('certificate')
@@ -985,21 +990,25 @@ def format_certificate_data(certificates: List[Dict[str, Any]]) -> List[CommandR
             for k in certificate if k not in certificate_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse Certificate List', certificate_data_list) if len(
-        certificate_data_list) > 0 else "## No Certificates found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.Certificate',
-        outputs_key_field='id',
-        outputs=certificate_data_list if len(certificate_data_list) > 0 else None,
-        ignore_auto_extract=True,
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse Certificate List', certificate_data_list)
+        if certificate_data_list
+        else "## No Certificates found"
+    )
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.Certificate',
+            outputs_key_field='id',
+            outputs=certificate_data_list if certificate_data_list else None,
+            ignore_auto_extract=True,
+        )
+    )
     return command_results
 
 
-def format_cloud_resource_data(cloud_resources: List[Dict[str, Any]]) -> List[CommandResults]:
-    cloud_resource_data_list: List[Dict[str, Any]] = []
+def format_cloud_resource_data(cloud_resources: list[dict[str, Any]]) -> list[CommandResults]:
+    cloud_resource_data_list: list[dict[str, Any]] = []
     command_results = []
     hr_cloud_resource_list = []
     for cloud_resource_data in cloud_resources:
@@ -1028,16 +1037,22 @@ def format_cloud_resource_data(cloud_resources: List[Dict[str, Any]]) -> List[Co
             "Region": cloud_resource_data.get("region"),
             "Source": cloud_resource_data.get("sourceDetails"),
         })
-    readable_output = tableToMarkdown(
-        'Expanse Cloud Resource List', hr_cloud_resource_list) if len(hr_cloud_resource_list) > 0 else \
-        "## No Cloud Resources found"
-    command_results.append(CommandResults(
-        outputs_prefix='Expanse.CloudResource',
-        outputs_key_field='id',
-        outputs=cloud_resource_data_list if len(cloud_resource_data_list) > 0 else None,
-        readable_output=readable_output,
-        raw_response=cloud_resources
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse Cloud Resource List', hr_cloud_resource_list)
+        if hr_cloud_resource_list
+        else "## No Cloud Resources found"
+    )
+    command_results.append(
+        CommandResults(
+            outputs_prefix='Expanse.CloudResource',
+            outputs_key_field='id',
+            outputs=cloud_resource_data_list
+            if cloud_resource_data_list
+            else None,
+            readable_output=readable_output,
+            raw_response=cloud_resources,
+        )
+    )
 
     return command_results
 
@@ -1069,7 +1084,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_issues_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     provider = ','.join(argToList(args.get('provider')))
@@ -1088,40 +1103,40 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     port_number = ','.join(arg_list)
 
     arg_list = argToList(args.get('progress_status'))
-    if arg_list and not all(i in ISSUE_PROGRESS_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_PROGRESS_STATUS for i in arg_list):
         raise ValueError(f'progress_status must include: {", ".join(ISSUE_PROGRESS_STATUS)}')
     progress_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('activity_status'))
-    if arg_list and not all(i in ISSUE_ACTIVITY_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_ACTIVITY_STATUS for i in arg_list):
         raise ValueError(f'activity_status must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
     activity_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('priority'))
-    if arg_list and not all(i in ISSUE_PRIORITY for i in arg_list):
+    if arg_list and any(i not in ISSUE_PRIORITY for i in arg_list):
         raise ValueError(f'priority must include: {", ".join(ISSUE_PRIORITY)}')
     priority = ','.join(arg_list)
 
     arg_list = argToList(args.get('cloud_management_status'))
-    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+    if arg_list and any(i not in CLOUD_MANAGEMENT_STATUS for i in arg_list):
         raise ValueError(f'cloud_management_status must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
     cloud_management_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('sort'))
-    if arg_list and not all(i in ISSUE_SORT_OPTIONS for i in arg_list):
+    if arg_list and any(i not in ISSUE_SORT_OPTIONS for i in arg_list):
         raise ValueError(f'sort must include: {", ".join(ISSUE_SORT_OPTIONS)}')
     sort = ','.join(arg_list)
 
-    d = args.get('created_before', None)
+    d = args.get('created_before')
     created_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('created_after', None)
+    d = args.get('created_after')
     created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('modified_before', None)
+    d = args.get('modified_before')
     modified_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
-    d = args.get('modified_after', None)
+    d = args.get('modified_after')
     modified_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issues = list(
@@ -1137,7 +1152,7 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
     )
 
-    if len(issues) < 1:
+    if not issues:
         return CommandResults(readable_output='No Issues Found')
 
     readable_output = tableToMarkdown(
@@ -1152,7 +1167,7 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_services_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     provider = ','.join(argToList(args.get('provider')))
@@ -1176,17 +1191,17 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     country_code = ','.join([i.upper() for i in arg_list])
 
     arg_list = argToList(args.get('activity_status'))
-    if arg_list and not all(i in ISSUE_ACTIVITY_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_ACTIVITY_STATUS for i in arg_list):
         raise ValueError(f'activity_status must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
     activity_status = ','.join(arg_list)
 
     arg_list = argToList(args.get('discovery_type'))
-    if arg_list and not all(i in SERVICE_DISCOVERY_TYPE for i in arg_list):
+    if arg_list and any(i not in SERVICE_DISCOVERY_TYPE for i in arg_list):
         raise ValueError(f'discovery_type must include: {", ".join(SERVICE_DISCOVERY_TYPE)}')
     discovery_type = ','.join(arg_list)
 
     arg_list = argToList(args.get('cloud_management_status'))
-    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+    if arg_list and any(i not in CLOUD_MANAGEMENT_STATUS for i in arg_list):
         raise ValueError(f'cloud_management_status must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
     cloud_management_status = ','.join(arg_list)
 
@@ -1206,7 +1221,7 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
         )
     )
 
-    if len(services) < 1:
+    if not services:
         return CommandResults(readable_output='No Services Found')
 
     # reduce some objects for human readable
@@ -1233,7 +1248,7 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_service_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not (service_id := args.get('service_id')):
         raise ValueError('service_id not specified')
 
@@ -1263,7 +1278,7 @@ def get_service_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
@@ -1284,14 +1299,14 @@ def get_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_issue_updates_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
     update_types = argToList(args.get('update_types'))
-    if update_types and not all(i in ISSUE_UPDATE_TYPES.keys() for i in update_types):
+    if update_types and any(i not in ISSUE_UPDATE_TYPES for i in update_types):
         raise ValueError(f'Invalid update_type: {update_types}. Must include: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
     d = args.get('created_after')
@@ -1318,7 +1333,7 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_issue_comments_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     if not (issue_id := args.get('issue_id')):
@@ -1363,7 +1378,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if not (issue_id := args.get('issue_id')):
         raise ValueError('issue_id not specified')
 
@@ -1384,13 +1399,13 @@ def update_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 def fetch_incidents(client: Client, max_incidents: int,
-                    last_run: Dict[str, Union[Optional[int], Optional[str]]], first_fetch: Optional[int],
-                    priority: Optional[str], activity_status: Optional[str],
-                    progress_status: Optional[str], business_units: Optional[str], issue_types: Optional[str],
-                    tags: Optional[str], cloud_management_status: Optional[str],
-                    mirror_direction: Optional[str], sync_tags: Optional[List[str]],
-                    fetch_details: Optional[bool]
-                    ) -> Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]:
+                    last_run: dict[str, int | None | str | None], first_fetch: int | None,
+                    priority: str | None, activity_status: str | None,
+                    progress_status: str | None, business_units: str | None, issue_types: str | None,
+                    tags: str | None, cloud_management_status: str | None,
+                    mirror_direction: str | None, sync_tags: list[str] | None,
+                    fetch_details: bool | None
+                    ) -> tuple[dict[str, int | None | str | None], list[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
     This function has to implement the logic of making sure that incidents are
     fetched only onces and no incidents are missed. By default it's invoked by
@@ -1408,35 +1423,32 @@ def fetch_incidents(client: Client, max_incidents: int,
     """
     demisto.debug(f"ExpanseV2 - Last run: {json.dumps(last_run)}")
     last_fetch = last_run.get('last_fetch')
-    if last_fetch is None:
-        last_fetch = cast(int, first_fetch)
-    else:
-        last_fetch = cast(int, last_fetch)
+    last_fetch = cast(int, first_fetch) if last_fetch is None else cast(int, last_fetch)
 
     latest_created_time = last_fetch
 
     last_issue_id = last_run.get('last_issue_id')
-    latest_issue_id: Optional[str] = None
+    latest_issue_id: str | None = None
 
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     arg_list = argToList(priority)
-    if arg_list and not all(i in ISSUE_PRIORITY for i in arg_list):
+    if arg_list and any(i not in ISSUE_PRIORITY for i in arg_list):
         raise ValueError(f'priority must include: {", ".join(ISSUE_PRIORITY)}')
     _priority = ','.join(arg_list)
 
     arg_list = argToList(progress_status)
-    if arg_list and not all(i in ISSUE_PROGRESS_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_PROGRESS_STATUS for i in arg_list):
         raise ValueError(f'progressStatus must include: {", ".join(ISSUE_PROGRESS_STATUS)}')
     _progress_status = ','.join(arg_list)
 
     arg_list = argToList(activity_status)
-    if arg_list and not all(i in ISSUE_ACTIVITY_STATUS for i in arg_list):
+    if arg_list and any(i not in ISSUE_ACTIVITY_STATUS for i in arg_list):
         raise ValueError(f'activityStatus must include: {", ".join(ISSUE_ACTIVITY_STATUS)}')
     _activity_status = ','.join(arg_list)
 
     arg_list = argToList(cloud_management_status)
-    if arg_list and not all(i in CLOUD_MANAGEMENT_STATUS for i in arg_list):
+    if arg_list and any(i not in CLOUD_MANAGEMENT_STATUS for i in arg_list):
         raise ValueError(f'cloudManagementStatus must include: {", ".join(CLOUD_MANAGEMENT_STATUS)}')
     _cloud_management_status = ','.join(arg_list)
 
@@ -1450,7 +1462,7 @@ def fetch_incidents(client: Client, max_incidents: int,
         created_after=created_after, sort='created'
     )
     broken = False
-    issues: List = []
+    issues: list = []
     skip = cast(str, last_issue_id)
     for i in r:
         if skip and not broken:
@@ -1472,18 +1484,17 @@ def fetch_incidents(client: Client, max_incidents: int,
     demisto.debug(f"ExpanseV2 - Number of incidents before filtering: {len(issues)}")
     skip_incidents = 0
     for issue in issues:
-        ml_feature_list: List[str] = []
+        ml_feature_list: list[str] = []
 
         if 'created' not in issue or 'id' not in issue:
             continue
         incident_created_time = datestring_to_timestamp_us(issue.get('created'))
 
-        if last_fetch:
-            if incident_created_time < last_fetch:
-                skip_incidents += 1
-                demisto.debug(f"ExpanseV2 - Skipping incident with id={issue.get('id')} and date={incident_created_time} "
-                              "because its creation time is smaller than the last fetch.")
-                continue
+        if last_fetch and incident_created_time < last_fetch:
+            skip_incidents += 1
+            demisto.debug(f"ExpanseV2 - Skipping incident with id={issue.get('id')} and date={incident_created_time} "
+                          "because its creation time is smaller than the last fetch.")
+            continue
         incident_name = issue.get('headline') if 'headline' in issue else issue.get('id')
 
         # Mirroring
@@ -1508,17 +1519,16 @@ def fetch_incidents(client: Client, max_incidents: int,
         if (
                 (latest_evidence := issue.get('latestEvidence'))
                 and isinstance(latest_evidence, dict)
+        ) and (
+                (geolocation := latest_evidence.get('geolocation'))
+                and isinstance(geolocation, dict)
         ):
-            if (
-                    (geolocation := latest_evidence.get('geolocation'))
-                    and isinstance(geolocation, dict)
-            ):
-                for f in ['countryCode', 'city']:
-                    if (x := geolocation.get(f)):
-                        ml_feature_list.append(x)
+            for f in ['countryCode', 'city']:
+                if (x := geolocation.get(f)):
+                    ml_feature_list.append(x)
 
         # dedup, sort and join ml feature list
-        issue['ml_features'] = ' '.join(sorted(list(set(ml_feature_list))))
+        issue['ml_features'] = ' '.join(sorted(set(ml_feature_list)))
         incident = {
             'name': incident_name,
             'details': issue.get('helpText'),
@@ -1542,7 +1552,7 @@ def fetch_incidents(client: Client, max_incidents: int,
     return next_run, incidents
 
 
-def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
 
@@ -1557,7 +1567,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> Ge
         modified_after=modified_after
     )
 
-    modified_incident_ids = list()
+    modified_incident_ids = []
     for raw_incident in modified_incidents:
         incident_id = raw_incident.get('id')
         modified_incident_ids.append(incident_id)
@@ -1565,12 +1575,12 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> Ge
     return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: bool = False,
-                            incoming_tags: Optional[List[str]] = [],
+def get_remote_data_command(client: Client, args: dict[str, Any], sync_owners: bool = False,
+                            incoming_tags: list[str] | None = [],
                             mirror_details: bool = False) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
     demisto.debug(f'Performing get-remote-data command with incident id: {parsed_args.remote_incident_id}')
-    issue_updates: List[Dict[str, Any]] = sorted(
+    issue_updates: list[dict[str, Any]] = sorted(
         islice(
             client.get_issue_updates(
                 issue_id=parsed_args.remote_incident_id,
@@ -1583,9 +1593,9 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
         key=lambda k: k.get('created')  # type: ignore
     )
 
-    new_entries: List = []
-    incident_updates: Dict[str, Any] = {}
-    latest_comment: Dict[str, Any] = {}  # used for closing comment
+    new_entries: list = []
+    incident_updates: dict[str, Any] = {}
+    latest_comment: dict[str, Any] = {}  # used for closing comment
     for update in issue_updates:
         update_type = update.get('updateType')
         if not update_type or update_type not in ISSUE_UPDATE_TYPES:
@@ -1689,7 +1699,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
 
     # update_assets
     if mirror_details:
-        issue_details: Dict[str, Any] = client.get_issue_by_id(issue_id=parsed_args.remote_incident_id)
+        issue_details: dict[str, Any] = client.get_issue_by_id(issue_id=parsed_args.remote_incident_id)
         assets, ml_feature_list, changed = client.parse_asset_data(issue_details, mirror_details)
         if changed:
             incident_updates['assets'] = assets
@@ -1697,16 +1707,16 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
             incident_updates['ml_features'] = ' '.join(sorted(set(ml_feature_list)))
 
     # process incident updates only if anything has changed
-    if len(incident_updates) > 0 or len(new_entries) > 0:
+    if incident_updates or new_entries:
         incident_updates['id'] = parsed_args.remote_incident_id
 
     return GetRemoteDataResponse(incident_updates, new_entries)
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owners: bool = False) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any], sync_owners: bool = False) -> str:
     remote_args = UpdateRemoteSystemArgs(args)
     remote_incident_id = remote_args.remote_incident_id
-    entries: List = remote_args.entries if remote_args.entries else []
+    entries: list = remote_args.entries if remote_args.entries else []
     for e in entries:
         if 'contents' in e and 'category' in e and e.get('category') == 'chat':
             client.update_issue(
@@ -1720,7 +1730,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
 
         # handle ownership change
         if sync_owners and 'owner' in delta:
-            owner_email: Optional[str] = None
+            owner_email: str | None = None
             owner_user = delta.get('owner')
             if owner_user:
                 user_info = demisto.findUser(username=owner_user)
@@ -1775,7 +1785,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], sync_owne
     return remote_incident_id
 
 
-def list_businessunits_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_businessunits_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
         islice(client.list_businessunits(limit=max_page_size), total_results)
@@ -1784,12 +1794,12 @@ def list_businessunits_command(client: Client, args: Dict[str, Any]) -> CommandR
     return CommandResults(
         outputs_prefix="Expanse.BusinessUnit",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Business Units found" if len(outputs) == 0 else None
+        outputs=outputs if outputs else None,
+        readable_output="## No Business Units found" if not outputs else None,
     )
 
 
-def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_providers_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
         islice(client.list_providers(limit=max_page_size), total_results)
@@ -1797,12 +1807,12 @@ def list_providers_command(client: Client, args: Dict[str, Any]) -> CommandResul
     return CommandResults(
         outputs_prefix="Expanse.Provider",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Providers found" if len(outputs) == 0 else None
+        outputs=outputs if outputs else None,
+        readable_output="## No Providers found" if not outputs else None,
     )
 
 
-def list_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_pocs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
         islice(client.list_pocs(limit=max_page_size), total_results)
@@ -1817,12 +1827,14 @@ def list_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="Expanse.PointOfContact",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Point Of Contacts found" if len(outputs) == 0 else readable_output
+        outputs=outputs if outputs else None,
+        readable_output="## No Point Of Contacts found"
+        if not outputs
+        else readable_output,
     )
 
 
-def create_poc_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_poc_command(client: Client, args: dict[str, Any]) -> CommandResults:
     email: str = args.get('email', '')
     if not email or not re.match(POC_EMAIL_PATTERN, email):
         raise ValueError('Point of Contact email needs to be a valid email')
@@ -1858,7 +1870,7 @@ def create_poc_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_tags_command(client: Client, args: dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit'))
     outputs = list(
         islice(client.list_tags(limit=max_page_size), total_results)
@@ -1866,14 +1878,14 @@ def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return CommandResults(
         outputs_prefix="Expanse.Tag",
         outputs_key_field="id",
-        outputs=outputs if len(outputs) > 0 else None,
-        readable_output="## No Tags found" if len(outputs) == 0 else None
+        outputs=outputs if outputs else None,
+        readable_output="## No Tags found" if not outputs else None,
     )
 
 
-def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
     name: str = args.get('name', '')
-    if not name or len(name) < 1 or len(name) > 127:
+    if not name or len(name) > 127:
         raise ValueError('Tag name must be less than 128 characters long')
 
     description: str = args.get('description', '')
@@ -1894,7 +1906,7 @@ def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def manage_asset_tags_command(client: Client, args: dict[str, Any]) -> CommandResults:
     operation_type = args.get('operation_type')
     if operation_type not in ASSET_TAG_OPERATIONS:
         raise ValueError(f'Operation type must be one of {",".join(ASSET_TAG_OPERATIONS)}')
@@ -1912,8 +1924,8 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
     tag_names = argToList(args.get('tag_names'))
     if len(tag_names) > 0:
         [tag_ids.append(t['id']) for t in client.list_tags() if t['name'] in tag_names]
-    tags: List[str] = list(set(tag_ids))
-    if len(tags) < 1:
+    tags: list[str] = list(set(tag_ids))
+    if not tags:
         raise ValueError('Must provide valid tag IDs or names')
 
     client.manage_asset_tags(mapped_asset_type, operation_type, asset_id, tags)
@@ -1922,7 +1934,7 @@ def manage_asset_tags_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def manage_asset_pocs_command(client: Client, args: dict[str, Any]) -> CommandResults:
     operation_type = args.get('operation_type')
     if operation_type not in ASSET_POC_OPERATIONS:
         raise ValueError(f'Operation type must be one of {",".join(ASSET_POC_OPERATIONS)}')
@@ -1943,8 +1955,8 @@ def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandRe
         for p in client.list_pocs():
             if p.get('email') in poc_emails:
                 poc_ids.append(p['id'])
-    pocs: List[str] = list(set(poc_ids))
-    if len(pocs) < 1:
+    pocs: list[str] = list(set(poc_ids))
+    if not pocs:
         raise ValueError('Must provide valid Point of Contact IDs or emails')
 
     client.manage_asset_pocs(mapped_asset_type, operation_type, asset_id, pocs)
@@ -1953,20 +1965,20 @@ def manage_asset_pocs_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def get_iprange_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_iprange_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     include = handle_iprange_include(args.pop('include', None), 'include')
-    id_: Optional[str] = args.pop('id', None)
+    id_: str | None = args.pop('id', None)
 
-    if id_ is not None and len(args) != 0:
+    if id_ is not None and args:
         raise ValueError("You can only use [id] only with [include] parameter")
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
 
-    outputs: List[Dict[str, Any]]
+    outputs: list[dict[str, Any]]
     if id_ is not None:
         outputs = [client.get_iprange_by_id(id_, include)]
     else:
-        params: Dict = {
+        params: dict = {
             "include": include,
             "limit": max_page_size
         }
@@ -1997,11 +2009,11 @@ def get_iprange_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     return (format_cidr_data(outputs))
 
 
-def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    domain: Optional[str] = args.pop('domain', None)
-    last_observed_date: Optional[str] = args.pop('last_observed_date', None)
+def get_domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    domain: str | None = args.pop('domain', None)
+    last_observed_date: str | None = args.pop('last_observed_date', None)
 
-    if domain is not None and len(args) != 0:
+    if domain is not None and args:
         raise ValueError("The only argument allowed with domain is last_observed_date")
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
@@ -2012,11 +2024,11 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
             output['domain'] = domain
         return format_domain_data([output])
 
-    params: Dict[str, Any] = {
+    params: dict[str, Any] = {
         "limit": max_page_size
     }
 
-    domain_search: Optional[str] = args.get('search')
+    domain_search: str | None = args.get('search')
     if domain_search is not None:
         params['domainSearch'] = domain_search
 
@@ -2069,8 +2081,8 @@ def get_domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return format_domain_data(domain_data)
 
 
-def get_cloud_resource_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    asset_id: Optional[str] = args.pop('id', None)
+def get_cloud_resource_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    asset_id: str | None = args.pop('id', None)
 
     if asset_id is not None:
         output = client.get_cloud_resource(asset_id=asset_id)
@@ -2078,15 +2090,15 @@ def get_cloud_resource_command(client: Client, args: Dict[str, Any]) -> List[Com
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
 
-    params: Dict[str, Any] = {
+    params: dict[str, Any] = {
         "limit": max_page_size
     }
 
-    domain_search: Optional[str] = args.get('domain')
+    domain_search: str | None = args.get('domain')
     if domain_search is not None:
         params['domainSearch'] = domain_search
 
-    ip_search: Optional[str] = args.get('ip')
+    ip_search: str | None = args.get('ip')
     if ip_search is not None:
         params['inetSearch'] = ip_search
 
@@ -2122,7 +2134,7 @@ def get_cloud_resource_command(client: Client, args: Dict[str, Any]) -> List[Com
     if len(region_search) > 0:
         params['region'] = ','.join(region_search)
 
-    last_observed_date: Optional[str] = args.pop('last_observed_date', None)
+    last_observed_date: str | None = args.pop('last_observed_date', None)
     if last_observed_date is not None:
         params['minLastObservedDate'] = last_observed_date
 
@@ -2135,11 +2147,11 @@ def get_cloud_resource_command(client: Client, args: Dict[str, Any]) -> List[Com
     return format_cloud_resource_data(cloud_resource_data)
 
 
-def get_certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    md5_hash: Optional[str] = args.pop('md5_hash', None)
-    last_observed_date: Optional[str] = args.pop('last_observed_date', None)
+def get_certificate_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    md5_hash: str | None = args.pop('md5_hash', None)
+    last_observed_date: str | None = args.pop('last_observed_date', None)
 
-    if md5_hash is not None and len(args) != 0:
+    if md5_hash is not None and args:
         raise ValueError("The only argument allowed with md5_hash is last_observed_date")
 
     total_results, max_page_size = calculate_limits(args.get('limit'))
@@ -2159,10 +2171,10 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> List[Comman
         )
         return format_certificate_data(certificates=[output])
 
-    params: Dict[str, Any] = {
+    params: dict[str, Any] = {
         "limit": max_page_size
     }
-    cn_search: Optional[str] = args.get('search')
+    cn_search: str | None = args.get('search')
     if cn_search is not None:
         params['commonNameSearch'] = cn_search
 
@@ -2218,7 +2230,7 @@ def get_certificate_command(client: Client, args: Dict[str, Any]) -> List[Comman
     return format_certificate_data(certificates=cert_data)
 
 
-def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_associated_domains_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     cn_search = args.get('common_name')
     ip_search = args.get('ip')
     command_results = []
@@ -2230,7 +2242,7 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List
 
     max_certificates, certificates_max_page_size = calculate_limits(args.get('limit'))
     max_domains, domains_max_page_size = calculate_limits(args.get('domains_limit'))
-    ips_base_params: Dict[str, Any] = {
+    ips_base_params: dict[str, Any] = {
         "limit": domains_max_page_size
     }
 
@@ -2239,8 +2251,8 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List
         "limit": certificates_max_page_size
     }
 
-    matching_domains: Dict[str, Dict[str, Any]] = {}
-    ips_to_query: Dict[str, Set[str]] = defaultdict(set)
+    matching_domains: dict[str, dict[str, Any]] = {}
+    ips_to_query: dict[str, set[str]] = defaultdict(set)
 
     if ip_search is not None:
         ips_to_query[ip_search].clear()  # create an empty set
@@ -2263,8 +2275,8 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List
 
                 ips_to_query[ip_address].add(md5_hash)
 
-    for ip2q in ips_to_query.keys():
-        ips_search_params: Dict[str, Any] = {
+    for ip2q, value in ips_to_query.items():
+        ips_search_params: dict[str, Any] = {
             'inetSearch': ip2q,
             'assetType': 'DOMAIN'
         }
@@ -2282,29 +2294,35 @@ def get_associated_domains_command(client: Client, args: Dict[str, Any]) -> List
                 }
 
             matching_domains[domain]['IP'].append(ip2q)
-            matching_domains[domain]['certificate'].extend(list(ips_to_query[ip2q]))
+            matching_domains[domain]['certificate'].extend(list(value))
 
     readable_output = tableToMarkdown(
         f"Expanse Domains matching Certificate Common Name: {cn_search}",
-        list(matching_domains.values()) if len(matching_domains) > 0 else "## No Domains found",
-        headers=['name', 'IP', 'certificate']
+        list(matching_domains.values())
+        if matching_domains
+        else "## No Domains found",
+        headers=['name', 'IP', 'certificate'],
     )
-    for d in matching_domains.keys():
+    for d in matching_domains:
         indicator = Common.Domain(d, Common.DBotScore(d, DBotScoreType.DOMAIN, "ExpanseV2", Common.DBotScore.NONE))
         command_results.append(CommandResults(
             readable_output=tableToMarkdown("New Domain indicator was found.", indicator.to_context()),
             indicator=indicator
         ))
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.AssociatedDomain',
-        outputs_key_field='name',
-        outputs=list(
-            matching_domains.values()) if len(matching_domains) > 0 else None, ))
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.AssociatedDomain',
+            outputs_key_field='name',
+            outputs=list(matching_domains.values())
+            if matching_domains
+            else None,
+        )
+    )
     return command_results
 
 
-def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def certificate_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     hashes = argToList(args.get('certificate'))
     if len(hashes) == 0:
         raise ValueError('certificate hash(es) not specified')
@@ -2314,7 +2332,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     if len(hashes) > MAX_RESULTS:
         hashes = hashes[:MAX_RESULTS]
 
-    certificate_data: List[Dict[str, Any]] = []
+    certificate_data: list[dict[str, Any]] = []
 
     for curr_hash in hashes:
         # we try to convert it as hex, and if we fail we trust it's a base64 encoded
@@ -2346,8 +2364,8 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     if not set_expanse_fields or (result and result[0].outputs is None):
         return result
 
-    indicators: List[Dict[str, Any]] = []
-    result_outputs = cast(List[Dict[str, Any]], result[0].outputs)  # we keep mypy happy
+    indicators: list[dict[str, Any]] = []
+    result_outputs = cast(list[dict[str, Any]], result[0].outputs)  # we keep mypy happy
     for certificate in result_outputs:
         ec_sha256 = certificate.get('certificate', {}).get('pemSha256')
         if ec_sha256 is None:
@@ -2363,24 +2381,20 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
         if 'tags' in annotations:
             tags = [tag['name'] for tag in annotations['tags']]
 
-        provider_name: Optional[str] = None
+        provider_name: str | None = None
         providers = certificate.get('providers')
         if isinstance(providers, list) and len(providers) > 0:
             provider_name = providers[0].get('name')
 
-        tenant_name: Optional[str] = None
+        tenant_name: str | None = None
         tenant = certificate.get('tenant')
         if tenant is not None:
             tenant_name = tenant.get('name')
 
-        business_unit_names: List[str] = []
+        business_unit_names: list[str] = []
         business_units = certificate.get("businessUnits", [])
-        for bu in business_units:
-            if 'name' not in bu:
-                continue
-            business_unit_names.append(bu['name'])
-
-        indicator: Dict[str, Any] = {
+        business_unit_names.extend(bu['name'] for bu in business_units if 'name' in bu)
+        indicator: dict[str, Any] = {
             'type': 'Certificate',
             'value': indicator_value,
             'score': Common.DBotScore.NONE,
@@ -2407,7 +2421,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     return result
 
 
-def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     # XXX - implement feed related indicators using recentIPs
     domains = argToList(args.get('domain'))
     if len(domains) == 0:
@@ -2417,7 +2431,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     if len(domains) > MAX_RESULTS:
         domains = domains[:MAX_RESULTS]
 
-    domain_data: List[Dict[str, Any]] = []
+    domain_data: list[dict[str, Any]] = []
 
     for domain in domains:
         d = client.get_domain_by_domain(domain=domain)
@@ -2430,7 +2444,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     return format_domain_data(domain_data)
 
 
-def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('ip(s) not specified')
@@ -2439,7 +2453,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     if len(ips) > MAX_RESULTS:
         ips = ips[:MAX_RESULTS]
 
-    ip_data_list: List[Dict[str, Any]] = []
+    ip_data_list: list[dict[str, Any]] = []
     command_results = []
     for ip in ips:
         ip_data = next(client.get_ips(params={'inetSearch': f"{ip}", "limit": 1}), None)
@@ -2467,24 +2481,29 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             readable_output=tableToMarkdown("New IP indicator was found", {"IP": ip, "Domain": ip_data.get('domain')}),
             indicator=ip_standard_context
         ))
-        ip_context_excluded_fields: List[str] = []
+        ip_context_excluded_fields: list[str] = []
         ip_data_list.append({
             k: ip_data[k]
             for k in ip_data if k not in ip_context_excluded_fields
         })
 
-    readable_output = tableToMarkdown(
-        'Expanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Expanse.IP',
-        outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
-        outputs=ip_data_list if len(ip_data_list) > 0 else None,
-    ))
+    readable_output = (
+        tableToMarkdown('Expanse IP List', ip_data_list)
+        if ip_data_list
+        else "## No IPs found"
+    )
+    command_results.append(
+        CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='Expanse.IP',
+            outputs_key_field=['ip', 'type', 'assetKey', 'assetType'],
+            outputs=ip_data_list if ip_data_list else None,
+        )
+    )
     return command_results
 
 
-def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def cidr_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     cidrs = argToList(args.get('cidr'))
     if len(cidrs) == 0:
         raise ValueError('cidr(s) not specified')
@@ -2495,7 +2514,7 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
     include = handle_iprange_include(args.get('include'), 'include')
 
-    cidr_data: List[Dict[str, Any]] = []
+    cidr_data: list[dict[str, Any]] = []
 
     for cidr in cidrs:
         c = next(client.get_ipranges(params={'inet': cidr, 'include': include, 'limit': 1}), None)
@@ -2507,15 +2526,15 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return format_cidr_data(cidr_data)
 
 
-def list_risk_rules_command(client: Client, args: Dict[str, Any]):
+def list_risk_rules_command(client: Client, args: dict[str, Any]):
     raise DeprecatedCommandException
 
 
-def get_risky_flows_command(client: Client, args: Dict[str, Any]):
+def get_risky_flows_command(client: Client, args: dict[str, Any]):
     raise DeprecatedCommandException
 
 
-def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domains_for_certificate_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns all domains that have resolved to IP addresses a certificate has been seen on. There is no direct way to
     correlate between certificates and domains in Expanse this does so indirectly.
@@ -2528,7 +2547,7 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
     matching_domains = []  # type:ignore
 
     certificates_iterator = client.get_certificates(params=params)
-    certificates = [certificate for certificate in certificates_iterator]
+    certificates = list(certificates_iterator)
 
     for certificate in certificates:
         certificate_details = client.get_certificate_by_md5_hash(
@@ -2548,7 +2567,7 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
 
     context_copy = context.copy()
     del context_copy['DomainList']  # Remove full objects from human readable response
-    human_readable = tableToMarkdown("Expanse Domains matching Certificate Common Name: {search}".format(search=search),
+    human_readable = tableToMarkdown(f"Expanse Domains matching Certificate Common Name: {search}",
                                      context_copy)
 
     return CommandResults(

@@ -2,13 +2,14 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 
-from typing import Dict, Any, List, Union, Tuple, Optional
+from typing import Any
 from requests import ConnectionError
 from requests.exceptions import MissingSchema, InvalidSchema
 import urllib3
 import traceback
 import re
 from urllib import parse
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -30,7 +31,7 @@ DEFAULT_PAGE_NUMBER = 0
 
 DEFAULT_SIZE = 50
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured Username and API secret.',
     'PAGE_NOT_FOUND_ERROR': 'No record(s) found.',
     'INTERNAL_SERVER_ERROR': 'The server encountered an internal error for PassiveTotal and was unable to complete '
@@ -74,7 +75,7 @@ MESSAGES: Dict[str, str] = {
     "NOT_VALID_PAGE_SIZE": "{} is an invalid value for page size. Page size must be between 1 and 1000."
 }
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'TEST_MODULE': '/v2/account',
     'SSL_CERT_SEARCH': '/v2/ssl-certificate/search',
     'GET_PDNS_DETAILS': '/v2/dns/passive',
@@ -108,7 +109,7 @@ URL_SUFFIX: Dict[str, str] = {
     "LIST_THIRD_PARTY_ASI_OBSERVATIONS": "v2/attack-surface/vuln-intel/third-party/{}/cves/{}/observations"
 }
 
-ISO_DATE: Dict[str, str] = {
+ISO_DATE: dict[str, str] = {
     DATE_TIME_FORMAT: '"yyyy-mm-dd hh:mm:ss"',
     DATE_FORMAT: '"yyyy-mm-dd"'
 }
@@ -140,7 +141,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         self.request_timeout = request_timeout
 
-    def http_request(self, method: str, url_suffix: str, json_data=None, params=None, headers=None) -> Dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, json_data=None, params=None, headers=None) -> dict[str, Any]:
         """
             Override http_request method from BaseClient class. This method will print an error based on status code
             and exceptions.
@@ -171,15 +172,15 @@ class Client(BaseClient):
             resp = self._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
                                       headers=headers, timeout=self.request_timeout, resp_type='response',
                                       ok_codes=(200, 400, 401, 404, 407, 500), proxies=handle_proxy())
-        except MissingSchema:
-            raise ValueError(MESSAGES['MISSING_SCHEMA_ERROR'])
-        except InvalidSchema:
-            raise ValueError(MESSAGES['INVALID_SCHEMA_ERROR'])
+        except MissingSchema as e:
+            raise ValueError(MESSAGES['MISSING_SCHEMA_ERROR']) from e
+        except InvalidSchema as e:
+            raise ValueError(MESSAGES['INVALID_SCHEMA_ERROR']) from e
         except DemistoException as e:
             if 'Proxy Error' in str(e):
-                raise ConnectionError(MESSAGES['PROXY_ERROR'])
+                raise ConnectionError(MESSAGES['PROXY_ERROR']) from e
             elif 'ConnectionError' in str(e) or 'ConnectTimeout' in str(e):
-                raise ConnectionError(MESSAGES['CONNECTION_ERROR'])
+                raise ConnectionError(MESSAGES['CONNECTION_ERROR']) from e
             else:
                 raise e
 
@@ -189,18 +190,20 @@ class Client(BaseClient):
         if status_code != 200:
             error_message = ''
             if resp.json().get('message', ''):
-                error_message = 'Reason: {}'.format(resp.json().get('message', ''))
+                error_message = f"Reason: {resp.json().get('message', '')}"
             status_code_message_map = {
-                400: '{} {}'.format(MESSAGES['BAD_REQUEST_ERROR'], error_message),
+                400: f"{MESSAGES['BAD_REQUEST_ERROR']} {error_message}",
                 401: MESSAGES['AUTHENTICATION_ERROR'],
                 404: MESSAGES['PAGE_NOT_FOUND_ERROR'],
-                407: MESSAGES['PROXY_ERROR']
+                407: MESSAGES['PROXY_ERROR'],
             }
             if status_code in status_code_message_map:
-                demisto.info('Response code: {}. Reason: {}'.format(status_code, status_code_message_map[status_code]))
+                demisto.info(f'Response code: {status_code}. Reason: {status_code_message_map[status_code]}')
                 raise ValueError(status_code_message_map[status_code])
             elif status_code >= 500:
-                demisto.info('Response code: {}. Reason: {}'.format(status_code, MESSAGES['INTERNAL_SERVER_ERROR']))
+                demisto.info(
+                    f"Response code: {status_code}. Reason: {MESSAGES['INTERNAL_SERVER_ERROR']}"
+                )
                 raise ValueError(MESSAGES['INTERNAL_SERVER_ERROR'])
             else:
                 resp.raise_for_status()
@@ -211,7 +214,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_request_timeout() -> Optional[Any]:
+def get_request_timeout() -> Any | None:
     """
     Validate and return the request timeout parameter.
     The parameter must be a positive integer.
@@ -222,10 +225,10 @@ def get_request_timeout() -> Optional[Any]:
     """
     try:
         request_timeout = demisto.params().get('request_timeout', DEFAULT_REQUEST_TIMEOUT)
-        request_timeout = DEFAULT_REQUEST_TIMEOUT if not request_timeout else request_timeout
+        request_timeout = request_timeout if request_timeout else DEFAULT_REQUEST_TIMEOUT
         request_timeout = int(request_timeout)
-    except ValueError:
-        raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
+    except ValueError as e:
+        raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION']) from e
 
     if request_timeout <= 0:
         raise ValueError(MESSAGES['REQUEST_TIMEOUT_VALIDATION'])
@@ -249,7 +252,7 @@ def remove_empty_elements_for_context(src):
     def empty(x):
         return x is None or x == '' or x == {} or x == []
 
-    if not isinstance(src, (dict, list)):
+    if not isinstance(src, dict | list):
         return src
     elif isinstance(src, list):
         return [v for v in (remove_empty_elements_for_context(v) for v in src) if not empty(v)]
@@ -258,7 +261,7 @@ def remove_empty_elements_for_context(src):
                                   for k, v in src.items()) if not empty(v)}
 
 
-def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list, list]:
+def get_host_attribute_context_data(records: list[dict[str, Any]]) -> tuple[list, list]:
     """
     Prepares context data for get components and get trackers command
 
@@ -266,7 +269,7 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
     :return: standard entry command results list and custom entry context
     """
     custom_ec = createContext(data=records, removeNull=True)
-    standard_results: List[CommandResults] = []
+    standard_results: list[CommandResults] = []
     for record in records:
         if record.get('hostname'):
             hostname = record.get('hostname')
@@ -300,7 +303,7 @@ def get_host_attribute_context_data(records: List[Dict[str, Any]]) -> Tuple[list
     return standard_results, custom_ec
 
 
-def get_components_hr(components: List[Dict[str, Any]]) -> str:
+def get_components_hr(components: list[dict[str, Any]]) -> str:
     """
     Prepares human readable text for get components command
 
@@ -308,7 +311,7 @@ def get_components_hr(components: List[Dict[str, Any]]) -> str:
     :return: Human readable output for components
     """
 
-    hr_table: List[Dict[str, Any]] = []
+    hr_table: list[dict[str, Any]] = []
 
     for component in components:
         hr_row = {
@@ -323,11 +326,11 @@ def get_components_hr(components: List[Dict[str, Any]]) -> str:
         hr_table.append(hr_row)
 
     hr_headers = ['Hostname', 'Address', 'First (GMT)', 'Last (GMT)', 'Category', 'Value', 'Version']
-    hr = '### Total Retrieved Record(s): {0}\n'.format(len(components))
+    hr = f'### Total Retrieved Record(s): {len(components)}\n'
     return hr + tableToMarkdown('COMPONENTS', hr_table, hr_headers, removeNull=True)
 
 
-def get_trackers_hr(trackers: List[Dict[str, Any]]) -> str:
+def get_trackers_hr(trackers: list[dict[str, Any]]) -> str:
     """
     Prepares human readable text for get trackers command
 
@@ -335,7 +338,7 @@ def get_trackers_hr(trackers: List[Dict[str, Any]]) -> str:
     :return: Human readable output for trackers
     """
 
-    hr_table: List[Dict[str, Any]] = []
+    hr_table: list[dict[str, Any]] = []
 
     for tracker in trackers:
         hr_row = {
@@ -349,11 +352,11 @@ def get_trackers_hr(trackers: List[Dict[str, Any]]) -> str:
         hr_table.append(hr_row)
 
     hr_headers = ['Hostname', 'Address', 'First (GMT)', 'Last (GMT)', 'Type', 'Value']
-    hr = '### Total Retrieved Record(s): {0}\n'.format(len(trackers))
+    hr = f'### Total Retrieved Record(s): {len(trackers)}\n'
     return hr + tableToMarkdown('TRACKERS', hr_table, hr_headers, removeNull=True)
 
 
-def get_host_pairs_hr(host_pairs: List[Dict[str, Any]]) -> str:
+def get_host_pairs_hr(host_pairs: list[dict[str, Any]]) -> str:
     """
     Prepares human readable text for get host pairs command
 
@@ -361,7 +364,7 @@ def get_host_pairs_hr(host_pairs: List[Dict[str, Any]]) -> str:
     :return: Human readable output for host pairs
     """
 
-    hr_table: List[Dict[str, Any]] = []
+    hr_table: list[dict[str, Any]] = []
 
     for pair in host_pairs:
         hr_row = {
@@ -374,11 +377,11 @@ def get_host_pairs_hr(host_pairs: List[Dict[str, Any]]) -> str:
         hr_table.append(hr_row)
 
     hr_headers = ['Parent Hostname', 'Child Hostname', 'First (GMT)', 'Last (GMT)', 'Cause']
-    hr = '### Total Retrieved Record(s): {0}\n'.format(len(host_pairs))
+    hr = f'### Total Retrieved Record(s): {len(host_pairs)}\n'
     return hr + tableToMarkdown('HOST PAIRS', hr_table, hr_headers, removeNull=True)
 
 
-def get_common_arguments(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_common_arguments(args: dict[str, Any]) -> dict[str, Any]:
     """
     Validates the common arguments and prepares parameter dictionary
     This method is used in commands "get-trackers", "get-components", "get-host-pairs"
@@ -386,7 +389,7 @@ def get_common_arguments(args: Dict[str, Any]) -> Dict[str, Any]:
     :param args: The general arguments
     :return: dict of params or message describing error in argument validation
     """
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
 
     if not args.get('query'):
         raise ValueError(MESSAGES['INVALID_QUERY_VALUE'])
@@ -400,7 +403,7 @@ def get_common_arguments(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def get_valid_whois_search_arguments(args: Dict[str, Any]) -> Tuple[str, str]:
+def get_valid_whois_search_arguments(args: dict[str, Any]) -> tuple[str, str]:
     """
     Get and Validate arguments for pt-whois-search command.
 
@@ -416,7 +419,7 @@ def get_valid_whois_search_arguments(args: Dict[str, Any]) -> Tuple[str, str]:
     return query, field
 
 
-def get_valid_get_whois_arguments(args: Dict[str, Any]) -> Tuple[str, str]:
+def get_valid_get_whois_arguments(args: dict[str, Any]) -> tuple[str, str]:
     """
     Get and Validate arguments for pt-get-whois command.
 
@@ -433,7 +436,7 @@ def get_valid_get_whois_arguments(args: Dict[str, Any]) -> Tuple[str, str]:
     return query, history
 
 
-def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
+def nested_to_flat(src: dict[str, Any], key: str) -> dict[str, Any]:
     """
     Convert nested dictionary to flat by contact the keys. Also converts keys in pascal string format.
 
@@ -442,17 +445,17 @@ def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
     :return: flat dictionary with pascal formatted keys (e.g. {"FooBar": "some-value"})
     """
 
-    flat_dict: Dict[str, str] = {}
+    flat_dict: dict[str, str] = {}
     for sub_key, sub_value in src.items():
-        pascal_key = '{}{}'.format(key, sub_key[0].upper() + sub_key[1:])
+        pascal_key = f'{key}{sub_key[0].upper() + sub_key[1:]}'
         flat_dict[pascal_key] = sub_value
 
     return flat_dict
 
 
-def prepare_context_dict(response_dict: Dict[str, Any],
+def prepare_context_dict(response_dict: dict[str, Any],
                          keys_with_hierarchy: tuple = (),
-                         exclude_keys: tuple = ()) -> Dict[str, str]:
+                         exclude_keys: tuple = ()) -> dict[str, str]:
     """
     Prepare the context dictionary as per the standards.
 
@@ -461,7 +464,7 @@ def prepare_context_dict(response_dict: Dict[str, Any],
     :param exclude_keys: keys need to exclude.
     :return: single level dictionary
     """
-    simple_dict: Dict[str, str] = {}
+    simple_dict: dict[str, str] = {}
     for key, value in response_dict.items():
         if key in keys_with_hierarchy:
             simple_dict.update(nested_to_flat(response_dict.get(key, {}), key))
@@ -470,7 +473,7 @@ def prepare_context_dict(response_dict: Dict[str, Any],
     return simple_dict
 
 
-def get_context_for_whois_commands(domains: List[Dict[str, Any]], score=0) -> Tuple[list, list]:
+def get_context_for_whois_commands(domains: list[dict[str, Any]], score=0) -> tuple[list, list]:
     """
     Prepare context for whois and domain reputation commands.
 
@@ -478,8 +481,8 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]], score=0) -> Tu
     :param score:
     :return: command results for standard context and custom context for whois and domain reputation command
     """
-    command_results: List[CommandResults] = []
-    custom_context: List[Dict[str, Any]] = []
+    command_results: list[CommandResults] = []
+    custom_context: list[dict[str, Any]] = []
     # set domain standard context
     for domain in domains:
         # set domain standard context
@@ -526,40 +529,42 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]], score=0) -> Tu
     return command_results, createContext(custom_context, removeNull=True)
 
 
-def get_context_for_get_whois_commands(domains: List[Dict[str, Any]]) -> list:
+def get_context_for_get_whois_commands(domains: list[dict[str, Any]]) -> list:
     """
     Prepare context for pt-get-whois command.
 
     :param domains: list of domains return from response
     :return: command results for custom context for whois command
     """
-    custom_context: List[Dict[str, Any]] = []
+    custom_context: list[dict[str, Any]] = []
     # set domain standard context
-    for domain in domains:
-        custom_context.append(
-            prepare_context_dict(
-                response_dict=domain,
-                keys_with_hierarchy=('registrant', 'admin', 'billing', 'tech'),
-                exclude_keys=('zone', 'rawText')
-            )
+    custom_context.extend(
+        prepare_context_dict(
+            response_dict=domain,
+            keys_with_hierarchy=('registrant', 'admin', 'billing', 'tech'),
+            exclude_keys=('zone', 'rawText'),
         )
+        for domain in domains
+    )
     return createContext(custom_context, removeNull=True)
 
 
-def prepare_hr_cell_for_whois_info(domain_info: Dict[str, Any]) -> str:
+def prepare_hr_cell_for_whois_info(domain_info: dict[str, Any]) -> str:
     """
     Prepare cell information for Registrant, Admin, Billing and Tech columns.
 
     :param domain_info: domain information as a directory
     :return: domain information as a readable format
     """
-    hr_cell_info: List[str] = []
-    for key, value in domain_info.items():
-        hr_cell_info.append('**{}:** {}'.format(key[0].upper() + key[1:], value))
+    hr_cell_info: list[str] = []
+    hr_cell_info.extend(
+        f'**{key[0].upper() + key[1:]}:** {value}'
+        for key, value in domain_info.items()
+    )
     return ',\n'.join(hr_cell_info)
 
 
-def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]], is_reputation_command=False):
+def get_human_readable_for_whois_commands(domains: list[dict[str, Any]], is_reputation_command=False):
     """
     Prepare readable output for whois commands
 
@@ -567,7 +572,7 @@ def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]], is_repu
     :param is_reputation_command: true if the command is execute for reputation command else false, default is false
     :return: markdown of whois commands based on domains passed
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     table_name = 'Domain(s)'
     for domain in domains:
         hr_row = {
@@ -589,7 +594,7 @@ def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]], is_repu
 
     hr = ''
     if not is_reputation_command:
-        hr += '### Total Retrieved Record(s): ' + str(len(domains)) + '\n'
+        hr += f'### Total Retrieved Record(s): {len(domains)}' + '\n'
         table_name = 'Associated Domains'
     hr += tableToMarkdown(
         name=table_name,
@@ -602,14 +607,14 @@ def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]], is_repu
     return hr
 
 
-def get_human_readable_for_articles_commands(articles: List[Dict[str, Any]]):
+def get_human_readable_for_articles_commands(articles: list[dict[str, Any]]):
     """
     Prepare readable output for pt-get-articles command
 
     :param articles: list of articles return from response
     :return: markdown of article command based on articles passed
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     table_name = 'Article(s)'
     for article in articles:
         hr_row = {
@@ -624,7 +629,7 @@ def get_human_readable_for_articles_commands(articles: List[Dict[str, Any]]):
         }
         hr_table_content.append(hr_row)
 
-    hr = '### Total Retrieved Record(s): ' + str(len(articles)) + '\n'
+    hr = f'### Total Retrieved Record(s): {len(articles)}' + '\n'
     hr += tableToMarkdown(
         name=table_name,
         t=hr_table_content,
@@ -634,7 +639,7 @@ def get_human_readable_for_articles_commands(articles: List[Dict[str, Any]]):
     return hr
 
 
-def get_human_readable_for_data_card_command(results: Dict[str, Any]) -> str:
+def get_human_readable_for_data_card_command(results: dict[str, Any]) -> str:
     """
         Parse and convert the Data Card Summary in the response into human-readable markdown string.
 
@@ -644,7 +649,7 @@ def get_human_readable_for_data_card_command(results: Dict[str, Any]) -> str:
         :return: Human Readable string containing information of data card.
         :rtype: ``str``
         """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     summary = results.get('data_summary', {})
     summary = {pascalToSpace(underscoreToCamelCase(k)): v for k, v in summary.items()}
 
@@ -665,7 +670,7 @@ def get_human_readable_for_data_card_command(results: Dict[str, Any]) -> str:
                                     "Operating System", "Data Card Summary"], removeNull=True)
 
 
-def get_human_readable_for_reputation_command(results: Dict[str, Any], query: str) -> str:
+def get_human_readable_for_reputation_command(results: dict[str, Any], query: str) -> str:
     """
         Parse and convert the response into human-readable markdown string.
 
@@ -684,15 +689,12 @@ def get_human_readable_for_reputation_command(results: Dict[str, Any], query: st
 
     reputation_message = f"The reputation score for '{query}' is {reputation_score} and is classified as '{classification}'.\n"
 
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
 
     rules = results.get('rules', [])
     for rule in rules:
         link = rule.get('link')
-        if link:
-            name = f"[{rule.get('name', '')}]({rule.get('link')})"
-        else:
-            name = rule.get('name', '')
+        name = f'[{rule.get("name", "")}]({rule.get("link")})' if link else rule.get('name', '')
         hr_row = {
             'Name': name,
             'Description': rule.get('description', ''),
@@ -705,7 +707,7 @@ def get_human_readable_for_reputation_command(results: Dict[str, Any], query: st
     return reputation_message + hr_table
 
 
-def prepare_human_readable_dict_for_ssl(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def prepare_human_readable_dict_for_ssl(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Preparing human-readable dictionary for ssl certificate command.
 
@@ -740,7 +742,7 @@ def prepare_human_readable_dict_for_ssl(results: List[Dict[str, Any]]) -> List[D
     } for result in results]
 
 
-def prepare_human_readable_dict_for_pdns(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def prepare_human_readable_dict_for_pdns(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Prepare human-readable dictionary for passive DNS command.
 
@@ -760,16 +762,16 @@ def prepare_human_readable_dict_for_pdns(results: List[Dict[str, Any]]) -> List[
     } for result in results]
 
 
-def get_ssl_cert_search_hr(results: List[Dict[str, Any]]) -> str:
+def get_ssl_cert_search_hr(results: list[dict[str, Any]]) -> str:
     """
     Retrieved information of ssl certificates and convert it into human-readable markdown string.
 
     :param results: ssl certificates details
     :return: human-readable string
     """
-    ssl_cert_search_hr: List[Dict[str, Any]] = prepare_human_readable_dict_for_ssl(results)
+    ssl_cert_search_hr: list[dict[str, Any]] = prepare_human_readable_dict_for_ssl(results)
 
-    hr = '### Total Retrieved Record(s): ' + str(len(results)) + '\n'
+    hr = f'### Total Retrieved Record(s): {len(results)}' + '\n'
     hr += tableToMarkdown('SSL certificate(s)', ssl_cert_search_hr,
                           ['Sha1', 'Serial Number', 'Issued (GMT)', 'Expires (GMT)', 'SSL Version', 'First (GMT)',
                            'Last (GMT)', 'Issuer Common Name', 'Subject Common Name', 'Subject Alternative Names',
@@ -781,7 +783,7 @@ def get_ssl_cert_search_hr(results: List[Dict[str, Any]]) -> str:
     return hr
 
 
-def get_pdns_details_hr(results: List[Dict[str, Any]], total_record: int) -> str:
+def get_pdns_details_hr(results: list[dict[str, Any]], total_record: int) -> str:
     """
     Retrieved information of passive DNS and convert it into human-readable markdown string.
 
@@ -789,16 +791,16 @@ def get_pdns_details_hr(results: List[Dict[str, Any]], total_record: int) -> str
     :param total_record: number of record retrieved from response
     :return: human-readable string
     """
-    pdns_details_hr: List[Dict[str, Any]] = prepare_human_readable_dict_for_pdns(results)
+    pdns_details_hr: list[dict[str, Any]] = prepare_human_readable_dict_for_pdns(results)
 
     table_headers = ['Resolve', 'Resolve Type', 'Record Type', 'Collected (GMT)', 'First (GMT)', 'Last (GMT)',
                      'Source', 'Record Hash']
-    hr = '### Total Retrieved Record(s): ' + str(total_record) + '\n'
+    hr = f'### Total Retrieved Record(s): {total_record}' + '\n'
     hr += tableToMarkdown('PDNS detail(s)', pdns_details_hr, table_headers, removeNull=True)
     return hr
 
 
-def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[CommandResults]:
+def create_pdns_standard_context(results: list[dict[str, Any]]) -> list[CommandResults]:
     """
     Preparing standard context and dbotScore for pdns command.
     here, standard context includes ip and domain model.
@@ -806,12 +808,12 @@ def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[CommandR
     :param results: pdns details from response
     :return: list of CommandResults of standard context
     """
-    standard_results: List[CommandResults] = []
+    standard_results: list[CommandResults] = []
     for result in results:
         resolve_type = result.get('resolveType', '')
         resolve = result.get('resolve', '')
 
-        if 'domain' == resolve_type:
+        if resolve_type == 'domain':
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.Domain:
                 domain_ioc = Common.Domain(resolve, dbot_score)
@@ -820,7 +822,7 @@ def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[CommandR
                     indicator=domain_ioc,
                     readable_output=tableToMarkdown('', domain_ioc.to_context().get(Common.Domain.CONTEXT_PATH))
                 ))
-        elif 'ip' == resolve_type:
+        elif resolve_type == 'ip':
             dbot_score = Common.DBotScore(resolve, resolve_type, INTEGRATION_NAME, Common.DBotScore.NONE)
             if auto_detect_indicator_type(resolve) == FeedIndicatorType.IP:
                 ip_ioc = Common.IP(resolve, dbot_score)
@@ -838,10 +840,11 @@ def get_services_hr(total_records: int, results: list) -> str:
     for result in results:
         current_services = result.get("currentServices", [])
         labels = []
-        for services in current_services:
-            if services.get("label"):
-                labels.append(services.get("label"))
-
+        labels.extend(
+            services.get("label")
+            for services in current_services
+            if services.get("label")
+        )
         services_hr.append({
             "Port Number": result.get("portNumber"),
             "Protocol": result.get("protocol"),
@@ -860,7 +863,7 @@ def get_services_hr(total_records: int, results: list) -> str:
     return f"### Total Retrieved Record(s) {total_records} \n {table_output}"
 
 
-def validate_get_cookies_arguments(args: Dict[str, Any]) -> None:
+def validate_get_cookies_arguments(args: dict[str, Any]) -> None:
     """
     Validate arguments for get cookies command, raise ValueError on invalid arguments.
 
@@ -871,8 +874,8 @@ def validate_get_cookies_arguments(args: Dict[str, Any]) -> None:
     try:
         if int(args.get("page", "0")) < 0:
             raise ValueError
-    except ValueError:
-        raise ValueError(MESSAGES['INVALID_WHOLE_NUMBER'].format('page'))
+    except ValueError as e:
+        raise ValueError(MESSAGES['INVALID_WHOLE_NUMBER'].format('page')) from e
 
     # check if the single-select values of arguments are valid or not
     valid_values = {
@@ -907,7 +910,7 @@ def validate_get_cookies_arguments(args: Dict[str, Any]) -> None:
             raise ValueError(MESSAGES['INVALID_QUERY_COOKIE_NAME'])
 
 
-def get_cookies_hr(results: List[Dict[str, Any]], hostname_header: str, total_records: int):
+def get_cookies_hr(results: list[dict[str, Any]], hostname_header: str, total_records: int):
     """
     Retrieved information of cookies and convert it into human-readable markdown string.
 
@@ -926,8 +929,8 @@ def get_cookies_hr(results: List[Dict[str, Any]], hostname_header: str, total_re
 
     table_headers = [hostname_header, 'Cookie Name', 'Cookie Domain', 'First Seen Date (GMT)', 'Last Seen Date (GMT)']
 
-    hr = '### Total Record(s): ' + str(total_records) + '\n'
-    hr += '### Total Retrieved Record(s): ' + str(len(hr_results)) + '\n'
+    hr = f'### Total Record(s): {total_records}' + '\n'
+    hr += f'### Total Retrieved Record(s): {len(hr_results)}' + '\n'
     hr += tableToMarkdown('Cookies', hr_results, table_headers, removeNull=True)
     return hr
 
@@ -939,14 +942,13 @@ def calculate_dbot_score(classification: str) -> int:
     :return: Dbot Score
     """
     if classification == "UNKNOWN":
-        score = Common.DBotScore.NONE  # unknown
+        return Common.DBotScore.NONE
     elif classification == "MALICIOUS":
-        score = Common.DBotScore.BAD  # bad
+        return Common.DBotScore.BAD
     elif classification == "SUSPICIOUS":
-        score = Common.DBotScore.SUSPICIOUS  # suspicious
+        return Common.DBotScore.SUSPICIOUS
     else:
-        score = Common.DBotScore.GOOD  # good
-    return score
+        return Common.DBotScore.GOOD
 
 
 def get_standard_context(score: int, ip: str) -> Common.IP:
@@ -978,14 +980,14 @@ def get_data_card_summary(summary: dict) -> str:
     data_card_summary = ""
     for key, value in summary.items():
         if value.get("count") == 0:
-            data_card_summary += "{}: {}, ".format(key, value.get("count"))
+            data_card_summary += f'{key}: {value.get("count")}, '
         else:
-            data_card_summary += "{}: [{}]({}), ".format(key, value.get("count"), value.get("link"))
+            data_card_summary += f'{key}: [{value.get("count")}]({value.get("link")}), '
 
     return data_card_summary[:-2]
 
 
-def validate_list_intel_profile_args(args: Dict[str, str]) -> Tuple[Dict[str, Any], int]:
+def validate_list_intel_profile_args(args: dict[str, str]) -> tuple[dict[str, Any], int]:
     """
     Validate arguments for pt-list-intel-profiles, raise ValueError on invalid arguments.
 
@@ -993,7 +995,7 @@ def validate_list_intel_profile_args(args: Dict[str, str]) -> Tuple[Dict[str, An
     :return: Parameters to send in request
 
     """
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
     query = args.get('query', '')
     if query:
         params["query"] = query
@@ -1027,7 +1029,7 @@ def validate_list_intel_profile_args(args: Dict[str, str]) -> Tuple[Dict[str, An
     return params, page_size
 
 
-def get_human_readable_for_intel_profile_command(results: List[Dict[str, Any]]) -> str:
+def get_human_readable_for_intel_profile_command(results: list[dict[str, Any]]) -> str:
     """
     Parse and convert the response into human-readable markdown string.
 
@@ -1039,7 +1041,7 @@ def get_human_readable_for_intel_profile_command(results: List[Dict[str, Any]]) 
         hr_record = {
             'ID': profile.get('id', ''),
             'Title': profile.get('title', ''),
-            'Aliases': ", ".join("{}".format(i) for i in profile.get("aliases", [])),
+            'Aliases': ", ".join(f"{i}" for i in profile.get("aliases", [])),
             'Public Indicators': profile.get('osintIndicatorsCount', ''),
             'RiskIQ Indicators': profile.get('riskIqIndicatorsCount', '')
         }
@@ -1050,14 +1052,14 @@ def get_human_readable_for_intel_profile_command(results: List[Dict[str, Any]]) 
                            removeNull=True)
 
 
-def validate_page_and_size_args(args: Dict[str, str]) -> dict:
+def validate_page_and_size_args(args: dict[str, str]) -> dict:
     """
     Validate page and size arguments for all commands, raise ValueError on invalid arguments.
     :param args: The command arguments provided by the user.
     :return: Parameters to send in request
     """
 
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
 
     page_size = arg_to_number(args.get('page_size', DEFAULT_SIZE))
 
@@ -1079,7 +1081,7 @@ def validate_page_and_size_args(args: Dict[str, str]) -> dict:
     return params
 
 
-def validate_list_intel_profile_indicators_args(args: Dict[str, Any]) -> Tuple[str, dict]:
+def validate_list_intel_profile_indicators_args(args: dict[str, Any]) -> tuple[str, dict]:
     """
     Validate arguments of list_intel_profile_indicators commands, raise ValueError on invalid arguments.
     :param args: The command arguments provided by the user.
@@ -1114,13 +1116,13 @@ def validate_list_intel_profile_indicators_args(args: Dict[str, Any]) -> Tuple[s
     return profile_id, params
 
 
-def get_human_readable_for_intel_profile_indicator_command(indicators: Dict[str, Any]) -> str:
+def get_human_readable_for_intel_profile_indicator_command(indicators: dict[str, Any]) -> str:
     """
     Parse and convert the intel profile indicator list into human-readable markdown string.
     :param indicators: Details of indicators.
     :return: Human Readable string containing information of intel profile indicators.
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     total_records = indicators.get('totalCount', 0)
 
     for indicator in indicators.get('results', []):
@@ -1141,7 +1143,7 @@ def get_human_readable_for_intel_profile_indicator_command(indicators: Dict[str,
     return hr
 
 
-def validate_list_my_asi_insights_args(args: Dict[str, Any]) -> Tuple[str, int]:
+def validate_list_my_asi_insights_args(args: dict[str, Any]) -> tuple[str, int]:
     """
     Validate arguments of pt-list-my-attack-surface-insights, pt-list-third-party-asi-insights command, raise ValueError
     on invalid arguments.
@@ -1163,7 +1165,7 @@ def validate_list_my_asi_insights_args(args: Dict[str, Any]) -> Tuple[str, int]:
     return priority, page_size
 
 
-def prepare_context_for_my_asi_insights(response, priority_level) -> Dict[str, Any]:
+def prepare_context_for_my_asi_insights(response, priority_level) -> dict[str, Any]:
     """
     Prepare context data for pt-list-my-attack-surface-insights, pt-list-third-party-asi-insights command
     :param response: API response.
@@ -1188,7 +1190,7 @@ def prepare_context_for_my_asi_insights(response, priority_level) -> Dict[str, A
     return context_data
 
 
-def get_human_readable_for_my_asi_insights_command(results: Dict[str, Any], priority: str, active_insights: int,
+def get_human_readable_for_my_asi_insights_command(results: dict[str, Any], priority: str, active_insights: int,
                                                    total_insights: int, total_observations: int) -> str:
     """
     Parse and convert the asi insight list into human-readable markdown string.
@@ -1199,7 +1201,7 @@ def get_human_readable_for_my_asi_insights_command(results: Dict[str, Any], prio
     :param total_observations: Total observations
     :return: Human Readable string containing information.
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
 
     insights = results.get('insight', {})
     for insight in insights:
@@ -1223,13 +1225,13 @@ def get_human_readable_for_my_asi_insights_command(results: Dict[str, Any], prio
     return hr
 
 
-def get_human_readable_for_attack_surface_command(response: List[Dict[str, Any]]) -> str:
+def get_human_readable_for_attack_surface_command(response: list[dict[str, Any]]) -> str:
     """
     Parse and convert the attack surface list into human-readable markdown string.
     :param response: Details of attack surface.
     :return: Human Readable string containing information of attack surface.
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
 
     for result in response:
         hr_row = {
@@ -1245,7 +1247,7 @@ def get_human_readable_for_attack_surface_command(response: List[Dict[str, Any]]
                            headers=["ID", "Name", "High Severity", "Medium Severity", "Low Severity"], removeNull=True)
 
 
-def validate_list_my_asi_assets_args(args: Dict[str, Any]) -> Tuple[str, dict]:
+def validate_list_my_asi_assets_args(args: dict[str, Any]) -> tuple[str, dict]:
     """
     Validate arguments of list_my_asi_assets_command commands, raise ValueError on invalid arguments.
     :param args: The command arguments provided by the user.
@@ -1265,13 +1267,13 @@ def validate_list_my_asi_assets_args(args: Dict[str, Any]) -> Tuple[str, dict]:
     return insight_id, params
 
 
-def get_human_readable_for_my_asi_assets_command(results: Dict[str, Any]) -> str:
+def get_human_readable_for_my_asi_assets_command(results: dict[str, Any]) -> str:
     """
     Parse and convert the asi asset list into human-readable markdown string.
     :param results: Details of assets.
     :return: Human Readable string containing information.
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     assets = results.get('assets', [])
     for asset in assets:
         hr_row = {
@@ -1288,13 +1290,13 @@ def get_human_readable_for_my_asi_assets_command(results: Dict[str, Any]) -> str
     return hr
 
 
-def get_human_readable_for_my_asi_vulnerable_components_command(results: List[Dict[str, Any]]) -> str:
+def get_human_readable_for_my_asi_vulnerable_components_command(results: list[dict[str, Any]]) -> str:
     """
     Parse and convert the asi vulnerable component list into human-readable markdown string.
     :param results: Details of vulnerable component.
     :return: Human Readable string containing information.
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     for component in results:
         hr_row = {
             'Name': component.get('name', ''),
@@ -1310,17 +1312,17 @@ def get_human_readable_for_my_asi_vulnerable_components_command(results: List[Di
     return hr
 
 
-def get_human_readable_for_my_asi_vulnerabilities_command(results: List[Dict[str, Any]]) -> str:
+def get_human_readable_for_my_asi_vulnerabilities_command(results: list[dict[str, Any]]) -> str:
     """
     Parse and convert the asi vulnerabilities list into human-readable markdown string.
     :param results: Details of vulnerability.
     :return: Human Readable string containing information.
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     for component in results:
         hr_row = {
             'CVE ID': component.get('cveId', ''),
-            'CWE ID': f'{", ".join("{}".format(i.get("cweId")) for i in component.get("cwes", []))} ',
+            'CWE ID': f"""{", ".join(f'{i.get("cweId")}' for i in component.get("cwes", []))} """,
             'RiskIQ Priority Score': component.get('priorityScore', ''),
             'Asset Count': component.get('observationCount', ''),
         }
@@ -1332,13 +1334,13 @@ def get_human_readable_for_my_asi_vulnerabilities_command(results: List[Dict[str
     return hr
 
 
-def get_human_readable_for_my_asi_observations_command(results: Dict[str, Any]) -> str:
+def get_human_readable_for_my_asi_observations_command(results: dict[str, Any]) -> str:
     """
     Parse and convert the asi observations list into human-readable markdown string.
     :param results: Details of observations.
     :return: Human Readable string containing information.
     """
-    hr_table_content: List[Dict[str, Any]] = []
+    hr_table_content: list[dict[str, Any]] = []
     assets = results.get('assets', [])
     for asset in assets:
         hr_row = {
@@ -1355,7 +1357,7 @@ def get_human_readable_for_my_asi_observations_command(results: Dict[str, Any]) 
     return hr
 
 
-def validate_page_size_args(args: Dict[str, str]) -> int:
+def validate_page_size_args(args: dict[str, str]) -> int:
     """
     Validate page_size argument for all command which does not supports pagination, raise ValueError on invalid
     arguments.
@@ -1390,7 +1392,7 @@ def test_function(client: Client) -> str:
 
 
 @logger
-def get_components_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
+def get_components_command(client: Client, args: dict[str, Any]) -> str | list[CommandResults]:
     """
     Retrieves the host attribute components for a domain or IP address.
 
@@ -1432,7 +1434,7 @@ def get_components_command(client: Client, args: Dict[str, Any]) -> Union[str, L
 
 
 @logger
-def pt_whois_search_command(client_obj: Client, args: Dict[str, Any]) -> Union[List[CommandResults], str]:
+def pt_whois_search_command(client_obj: Client, args: dict[str, Any]) -> list[CommandResults] | str:
     """
     Gets WHOIS information records based on field matching queries
 
@@ -1472,7 +1474,7 @@ def pt_whois_search_command(client_obj: Client, args: Dict[str, Any]) -> Union[L
 
 
 @logger
-def get_trackers_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
+def get_trackers_command(client: Client, args: dict[str, Any]) -> str | list[CommandResults]:
     """
     Retrieves the host attribute trackers for a domain or IP address.
 
@@ -1514,7 +1516,7 @@ def get_trackers_command(client: Client, args: Dict[str, Any]) -> Union[str, Lis
 
 
 @logger
-def ssl_cert_search_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def ssl_cert_search_command(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieve SSL certificates based on various field and its value.
 
@@ -1530,15 +1532,15 @@ def ssl_cert_search_command(client: Client, args: Dict[str, Any]) -> Union[str, 
     url_suffix: str = URL_SUFFIX['SSL_CERT_SEARCH']
 
     # Prepare query data
-    request_data: Dict[str, Any] = {
+    request_data: dict[str, Any] = {
         'field': field,
         'query': query
     }
 
     # http call
-    resp: Dict[str, Any] = client.http_request("GET", url_suffix, request_data)
+    resp: dict[str, Any] = client.http_request("GET", url_suffix, request_data)
 
-    results: List[Dict[str, Any]] = resp.get('results', [])
+    results: list[dict[str, Any]] = resp.get('results', [])
     if len(results) <= 0:
         return MESSAGES['NO_RECORDS_FOUND'].format('SSL certificate(s)')
 
@@ -1558,7 +1560,7 @@ def ssl_cert_search_command(client: Client, args: Dict[str, Any]) -> Union[str, 
 
 
 @logger
-def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
+def get_pdns_details_command(client: Client, args: dict[str, Any]) -> str | list[CommandResults]:
     """
     Retrieve passive DNS details based on ip or host.
 
@@ -1600,7 +1602,7 @@ def get_pdns_details_command(client: Client, args: Dict[str, Any]) -> Union[str,
 
 
 @logger
-def get_host_pairs_command(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_host_pairs_command(client: Client, args: dict[str, Any]) -> str | CommandResults:
     """
     Retrieves the host attribute pairs related to a domain or IP address.
 
@@ -1644,7 +1646,7 @@ def get_host_pairs_command(client: Client, args: Dict[str, Any]) -> Union[str, C
 
 
 @logger
-def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union[str, List[CommandResults]]:
+def domain_reputation_command(client_obj: Client, args: dict[str, Any]) -> str | list[CommandResults]:
     """
     Reputation command for domain.
 
@@ -1659,9 +1661,9 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
     if len(domains) == 0:
         raise ValueError('domain(s) not specified')
 
-    command_results: List[CommandResults] = []
-    custom_domain_context: List[Dict[str, Any]] = []
-    domain_responses: List[Dict[str, Any]] = []
+    command_results: list[CommandResults] = []
+    custom_domain_context: list[dict[str, Any]] = []
+    domain_responses: list[dict[str, Any]] = []
     custom_reputation_response = []
     for domain in domains:
         # argument validation
@@ -1719,7 +1721,7 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
 
 
 @logger
-def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_services_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the services for the specified IP address.
 
@@ -1761,7 +1763,7 @@ def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
 
 @logger
-def pt_get_whois_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def pt_get_whois_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets WHOIS information records based on queries
 
@@ -1802,7 +1804,7 @@ def pt_get_whois_command(client_obj: Client, args: Dict[str, Any]) -> CommandRes
 
 
 @logger
-def get_cookies_command(client: Client, args: Dict[str, str]) -> Union[str, CommandResults]:
+def get_cookies_command(client: Client, args: dict[str, str]) -> str | CommandResults:
     """
     Retrieve cookies with hostnames or addresses based on cookie name or cookie domain.
 
@@ -1846,7 +1848,11 @@ def get_cookies_command(client: Client, args: Dict[str, str]) -> Union[str, Comm
     total_records = resp.get("totalRecords", 0)
     # return standard no records found message on empty results
     if len(results) <= 0:
-        return 'Total Record(s): ' + str(total_records) + '\n' + MESSAGES['NO_RECORDS_FOUND'].format('cookies')
+        return (
+            f'Total Record(s): {str(total_records)}'
+            + '\n'
+            + MESSAGES['NO_RECORDS_FOUND'].format('cookies')
+        )
 
     # creating entry context
     entry_context = createContext(results, removeNull=True)
@@ -1865,7 +1871,7 @@ def get_cookies_command(client: Client, args: Dict[str, str]) -> Union[str, Comm
 
 
 @logger
-def pt_get_articles_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def pt_get_articles_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets an article information based on queries
 
@@ -1910,7 +1916,7 @@ def pt_get_articles_command(client_obj: Client, args: Dict[str, Any]) -> Command
 
 
 @logger
-def get_data_card_summary_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def get_data_card_summary_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves a summary data card associated with the given query.
 
@@ -1942,7 +1948,7 @@ def get_data_card_summary_command(client_obj: Client, args: Dict[str, Any]) -> C
 
 
 @logger
-def get_reputation_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def get_reputation_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets reputation for a given domain, host or IP.
 
@@ -1976,7 +1982,7 @@ def get_reputation_command(client_obj: Client, args: Dict[str, Any]) -> CommandR
 
 
 @logger
-def ip_reputation_command(client_obj: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_reputation_command(client_obj: Client, args: dict[str, Any]) -> list[CommandResults]:
     """
     Reputation command for IP.
 
@@ -1988,10 +1994,10 @@ def ip_reputation_command(client_obj: Client, args: Dict[str, Any]) -> List[Comm
     ips = [x.strip() for x in argToList(args.get('ip', '')) if x.strip()]
 
     # argument validation
-    if len(ips) == 0:
+    if not ips:
         raise ValueError(MESSAGES["EMPTY_IP_ARGUMENT"])
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
 
     for ip in ips:
         if not is_ip_valid(ip, True):
@@ -2022,7 +2028,7 @@ def ip_reputation_command(client_obj: Client, args: Dict[str, Any]) -> List[Comm
 
 
 @logger
-def get_intel_profile_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def get_intel_profile_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of all profiles.
 
@@ -2047,10 +2053,7 @@ def get_intel_profile_command(client_obj: Client, args: Dict[str, Any]) -> Comma
     # http call
     response = client_obj.http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    if profile_id:
-        profiles = [response]
-    else:
-        profiles = response.get("results", [])
+    profiles = [response] if profile_id else response.get('results', [])
 
     if not profiles:
         return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format("profiles"))
@@ -2070,7 +2073,7 @@ def get_intel_profile_command(client_obj: Client, args: Dict[str, Any]) -> Comma
 
 
 @logger
-def list_intel_profile_indicators_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_intel_profile_indicators_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the indicators for the given profile.
 
@@ -2103,7 +2106,7 @@ def list_intel_profile_indicators_command(client_obj: Client, args: Dict[str, An
 
 
 @logger
-def list_my_asi_insights_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_my_asi_insights_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface insight information of the individual's account.
 
@@ -2146,7 +2149,7 @@ def list_my_asi_insights_command(client_obj: Client, args: Dict[str, Any]) -> Co
 
 
 @logger
-def list_third_party_asi_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_third_party_asi_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface observations by severity level for the given third-party account.
 
@@ -2165,10 +2168,7 @@ def list_third_party_asi_command(client_obj: Client, args: Dict[str, Any]) -> Co
 
     response = client_obj.http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    if vendor_id:
-        context_data = [remove_empty_elements(response)]
-    else:
-        context_data = remove_empty_elements(response.get('vendors', []))
+    context_data = [remove_empty_elements(response)] if vendor_id else remove_empty_elements(response.get('vendors', []))
 
     hr_response = get_human_readable_for_attack_surface_command(context_data)
 
@@ -2196,7 +2196,7 @@ def list_third_party_asi_command(client_obj: Client, args: Dict[str, Any]) -> Co
 
 
 @logger
-def list_my_attack_surfaces_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_my_attack_surfaces_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface information of the individual's account.
 
@@ -2227,7 +2227,7 @@ def list_my_attack_surfaces_command(client_obj: Client, args: Dict[str, Any]) ->
 
 
 @logger
-def list_third_party_asi_insights_command(client_obj: Client, args: Dict[str, Any]):
+def list_third_party_asi_insights_command(client_obj: Client, args: dict[str, Any]):
     """
     Retrieves the attack surface insight information of the given third-party account.
 
@@ -2280,7 +2280,7 @@ def list_third_party_asi_insights_command(client_obj: Client, args: Dict[str, An
 
 
 @logger
-def list_my_asi_assets_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_my_asi_assets_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface asset information of the individual's account.
 
@@ -2322,7 +2322,7 @@ def list_my_asi_assets_command(client_obj: Client, args: Dict[str, Any]) -> Comm
 
 
 @logger
-def list_my_asi_vulnerable_components_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_my_asi_vulnerable_components_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface vulnerable component information of the individual's account.
 
@@ -2361,7 +2361,7 @@ def list_my_asi_vulnerable_components_command(client_obj: Client, args: Dict[str
 
 
 @logger
-def list_my_asi_vulnerabilities_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_my_asi_vulnerabilities_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface vulnerable component information of the individual's account.
 
@@ -2400,7 +2400,7 @@ def list_my_asi_vulnerabilities_command(client_obj: Client, args: Dict[str, Any]
 
 
 @logger
-def list_third_party_asi_vulnerable_components_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_third_party_asi_vulnerable_components_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface vulnerable component information of the given third-party account.
 
@@ -2451,7 +2451,7 @@ def list_third_party_asi_vulnerable_components_command(client_obj: Client, args:
 
 
 @logger
-def list_my_asi_observations_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_my_asi_observations_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface vulnerability observation information of the individual's account.
 
@@ -2498,7 +2498,7 @@ def list_my_asi_observations_command(client_obj: Client, args: Dict[str, Any]) -
 
 
 @logger
-def list_third_party_asi_assets_command(client_obj: Client, args: Dict[str, Any]):
+def list_third_party_asi_assets_command(client_obj: Client, args: dict[str, Any]):
     """
     Retrieves the attack surface asset information of the given third-party account.
 
@@ -2549,7 +2549,7 @@ def list_third_party_asi_assets_command(client_obj: Client, args: Dict[str, Any]
 
 
 @logger
-def list_third_party_asi_observations_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_third_party_asi_observations_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface vulnerability observation information of the given third-party account.
 
@@ -2608,7 +2608,7 @@ def list_third_party_asi_observations_command(client_obj: Client, args: Dict[str
 
 
 @logger
-def list_third_party_attack_surface_vulnerabilities_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+def list_third_party_attack_surface_vulnerabilities_command(client_obj: Client, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the attack surface vulnerability information of the given third party account.
 

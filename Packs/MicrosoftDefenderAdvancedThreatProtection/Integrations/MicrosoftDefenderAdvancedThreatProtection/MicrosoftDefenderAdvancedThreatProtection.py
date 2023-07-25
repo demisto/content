@@ -1,15 +1,13 @@
 import copy
 from itertools import product
 from json import JSONDecodeError
-from typing import Tuple, List, Dict, Callable, Optional, Any, Union
+from typing import Any
+from collections.abc import Callable
 from CommonServerPython import *
-import urllib3
 from dateutil.parser import parse
 from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 APP_NAME = 'ms-defender-atp'
@@ -73,7 +71,7 @@ class HuntingQueryBuilder:
                    ' or "device_id".'
 
     @staticmethod
-    def get_time_range_query(time_range: Optional[str]) -> str:
+    def get_time_range_query(time_range: str | None) -> str:
         """
         Given a human readable time_range returns the time_range query
         """
@@ -98,7 +96,7 @@ class HuntingQueryBuilder:
         return f'{query[:insert_pos - 1]} | where {time_range_query} {query[insert_pos:]}'
 
     @staticmethod
-    def get_filter_values(list_values: Optional[Union[list, str]]) -> Optional[str]:
+    def get_filter_values(list_values: list | str | None) -> str | None:
         """
         creates a string of CSV values wrapped by parenthesis and brackets
         """
@@ -125,7 +123,7 @@ class HuntingQueryBuilder:
     ):
         if not query_dict:
             return query_prefix + query_suffix
-        query = query_prefix + ' ('
+        query = f'{query_prefix} ('
         for key, val in query_dict.items():
             if isinstance(val, tuple):
                 # dict_val with special operator
@@ -155,13 +153,13 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     remote_ip_count: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     remote_ip_count: str | None = None,
                      ):
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
@@ -283,13 +281,13 @@ class HuntingQueryBuilder:
                      query_operation: str,
                      query_purpose: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     process_cmd: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     process_cmd: str | None = None,
                      ):
             if query_purpose == 'registry_entry' and not process_cmd:
                 raise DemistoException('Cannot initiate "registry_entry" query without "process_cmd" argument.')
@@ -509,12 +507,12 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
                      ):
             if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(
@@ -566,13 +564,13 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     query_purpose: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     query_purpose: str | None = None,
                      ):
             if query_purpose == 'process_excecution_powershell':
                 if not (file_name or sha1 or sha256 or md5):
@@ -714,12 +712,12 @@ class HuntingQueryBuilder:
                      query_operation: str,
                      query_purpose: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
                      ):
             if query_purpose == 'encoded_commands':
                 if not (device_id or device_name):
@@ -791,8 +789,8 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     device_id: str | None = None,
                      ):
             if not (device_name or device_id):
                 raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
@@ -822,8 +820,8 @@ class HuntingQueryBuilder:
                      limit: str,
                      query_operation: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     device_id: Optional[str] = None,
+                     device_name: str | None = None,
+                     device_id: str | None = None,
                      ):
             self._limit = limit * (int(page))
             self._query_operation = query_operation
@@ -865,18 +863,27 @@ class HuntingQueryBuilder:
                      query_operation: str,
                      query_purpose: str,
                      page: str,
-                     device_name: Optional[str] = None,
-                     file_name: Optional[str] = None,
-                     sha1: Optional[str] = None,
-                     sha256: Optional[str] = None,
-                     md5: Optional[str] = None,
-                     device_id: Optional[str] = None,
-                     username: Optional[str] = None,
+                     device_name: str | None = None,
+                     file_name: str | None = None,
+                     sha1: str | None = None,
+                     sha256: str | None = None,
+                     md5: str | None = None,
+                     device_id: str | None = None,
+                     username: str | None = None,
                      ):
-            if query_purpose in ('compromised_information', 'connected_devices', 'action_types', 'common_files'):
+            if query_purpose in {
+                'compromised_information',
+                'connected_devices',
+                'action_types',
+                'common_files',
+            }:
                 if not username:
                     raise DemistoException(self.USERNAME_ERROR)
-            elif query_purpose == 'event_log_cleared' and not (device_name or device_id):
+            elif (
+                query_purpose == 'event_log_cleared'
+                and not device_name
+                and not device_id
+            ):
                 raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
             elif not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
@@ -969,7 +976,7 @@ class HuntingQueryBuilder:
             return query
 
 
-def file_standard(observable: Dict) -> Common.File:
+def file_standard(observable: dict) -> Common.File:
     """Gets a file observable and returns a context key
 
     Args:
@@ -985,19 +992,18 @@ def file_standard(observable: Dict) -> Common.File:
         path=observable.get('filePath')
     )
     hash_type = observable.get('fileHashType', '').lower()
-    if hash_type:
-        if hash_type in INDICATOR_TYPE_TO_CONTEXT_KEY:
-            hash_value = observable.get('fileHashValue')
-            if hash_type == 'md5':
-                file_obj.md5 = hash_value
-            elif hash_type == 'sha256':
-                file_obj.sha256 = hash_value
-            elif hash_type == 'sha1':
-                file_obj.sha1 = hash_value
+    if hash_type and hash_type in INDICATOR_TYPE_TO_CONTEXT_KEY:
+        hash_value = observable.get('fileHashValue')
+        if hash_type == 'md5':
+            file_obj.md5 = hash_value
+        elif hash_type == 'sha256':
+            file_obj.sha256 = hash_value
+        elif hash_type == 'sha1':
+            file_obj.sha1 = hash_value
     return file_obj
 
 
-def network_standard(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL]]:
+def network_standard(observable: dict) -> Common.Domain | Common.IP | Common.URL | None:
     """Gets a network observable and returns a context key
 
     Args:
@@ -1018,7 +1024,7 @@ def network_standard(observable: Dict) -> Optional[Union[Common.Domain, Common.I
     return None
 
 
-def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP, Common.URL, Common.File]]:
+def standard_output(observable: dict) -> Common.Domain | Common.IP | Common.URL | Common.File | None:
     """Gets an observable and returns a context standard object.
 
     Args:
@@ -1041,7 +1047,7 @@ def standard_output(observable: Dict) -> Optional[Union[Common.Domain, Common.IP
     return network_standard(observable)
 
 
-def build_std_output(indicators: Union[Dict, List]) -> Dict:
+def build_std_output(indicators: dict | list) -> dict:
     """
 
     Args:
@@ -1052,7 +1058,7 @@ def build_std_output(indicators: Union[Dict, List]) -> Dict:
     """
     if isinstance(indicators, dict):
         indicators = [indicators]
-    outputs = dict()
+    outputs = {}
     for indicator in indicators:
         output = standard_output(indicator)
         if output:
@@ -1089,7 +1095,7 @@ def alert_to_incident(alert, alert_creation_time):
     incident = {
         'rawJSON': json.dumps(alert),
         'name': 'Microsoft Defender ATP Alert ' + alert['id'],
-        'occurred': alert_creation_time.isoformat() + 'Z'
+        'occurred': f'{alert_creation_time.isoformat()}Z',
     }
 
     return incident
@@ -1102,8 +1108,8 @@ class MsClient:
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
-                 auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: Optional[str] = None,
-                 private_key: Optional[str] = None, managed_identities_client_id: Optional[str] = None):
+                 auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: str | None = None,
+                 private_key: str | None = None, managed_identities_client_id: str | None = None):
         self.endpoint_type = endpoint_type
         if auth_type == 'Authorization Code':
             token_retrieval_url = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
@@ -1345,7 +1351,7 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[str] = None) -> Dict[str, Any]:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: str | None = None) -> dict[str, Any]:
         """Retrieves results according to query.
 
         Args:
@@ -1755,7 +1761,7 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def sc_list_indicators(self, indicator_id: Optional[str] = None, limit: Optional[int] = 50) -> List:
+    def sc_list_indicators(self, indicator_id: str | None = None, limit: int | None = 50) -> list:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
                 Args:
@@ -1780,8 +1786,8 @@ class MsClient:
         return [assign_params(**item) for item in values_list] if values_list else [resp]
 
     def list_indicators(self,
-                        indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50,
-                        should_use_security_center: bool = False) -> List:
+                        indicator_id: str | None = None, page_size: str = '50', limit: int = 50,
+                        should_use_security_center: bool = False) -> list:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
@@ -1829,7 +1835,7 @@ class MsClient:
             results = [results]  # type: ignore
         return [assign_params(values_to_ignore=[None], **item) for item in results]
 
-    def create_indicator(self, body: Dict) -> Dict:
+    def create_indicator(self, body: dict) -> dict:
         """Creates indicator from the given body.
 
         Args:
@@ -1849,13 +1855,13 @@ class MsClient:
                                                     action: str,
                                                     indicator_title: str,
                                                     description: str,
-                                                    expiration_date_time: Optional[str] = None,
-                                                    severity: Optional[str] = None,
-                                                    indicator_application: Optional[str] = None,
-                                                    recommended_actions: Optional[str] = None,
-                                                    rbac_group_names: Optional[list] = None,
-                                                    generate_alert: Optional[bool] = True
-                                                    ) -> Dict:
+                                                    expiration_date_time: str | None = None,
+                                                    severity: str | None = None,
+                                                    indicator_application: str | None = None,
+                                                    recommended_actions: str | None = None,
+                                                    rbac_group_names: list | None = None,
+                                                    generate_alert: bool | None = True
+                                                    ) -> dict:
         """creates or updates (if already exists) a given indicator
 
         Args:
@@ -1903,8 +1909,8 @@ class MsClient:
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
-            description: Optional[str], severity: Optional[int]
-    ) -> Dict:
+            description: str | None, severity: int | None
+    ) -> dict:
         """Updates a given indicator
 
         Args:
@@ -1965,7 +1971,9 @@ class MsClient:
         try:
             response = requests.get(url=url_link, verify=self.ms_client.verify)
         except Exception as e:
-            raise Exception(f'Could not download file. {url_link=}. error: {str(e)}')
+            raise Exception(
+                f'Could not download file. {url_link=}. error: {str(e)}'
+            ) from e
         return response
 
     def cancel_action(self, action_id, request_body):
@@ -1986,8 +1994,8 @@ class MsClient:
         cmd_url = f"/machines/{machine_id}/logonusers"
         try:
             response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
-        except Exception:
-            raise Exception(f"Machine {machine_id} was not found")
+        except Exception as e:
+            raise Exception(f"Machine {machine_id} was not found") from e
         return response
 
     def get_machine_alerts(self, machine_id):
@@ -2003,8 +2011,8 @@ class MsClient:
         cmd_url = f"/machines/{machine_id}/alerts"
         try:
             response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
-        except Exception:
-            raise Exception(f"Machine {machine_id} not found")
+        except Exception as e:
+            raise Exception(f"Machine {machine_id} not found") from e
         return response
 
     def get_list_machines_by_software(self, software_id: str) -> dict:
@@ -2332,6 +2340,7 @@ def get_machine_mac_address(machine):
     for ip_object in ip_addresses:
         if last_ip_address and ip_object.get('ipAddress') == last_ip_address:
             return ip_object.get('macAddress', '')
+    return None
 
 
 def reformat_filter(fields_to_filter_by):
@@ -2387,7 +2396,7 @@ def reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list)
     for item in field_value_from_type_list:
         current_fields_to_filter = {key: value for (key, value) in fields_to_filter_by.items() if
                                     key != field_key_from_type_list}
-        current_fields_to_filter.update({field_key_from_type_list: item})
+        current_fields_to_filter[field_key_from_type_list] = item
         filter_conditions.append(reformat_filter(current_fields_to_filter))
 
     return ' or '.join(f"({condition})" for condition in filter_conditions)
@@ -2411,8 +2420,10 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
         try:
             machines_response = client.get_file_related_machines(file)
             raw_response.append(machines_response)
-            for machine in machines_response['value']:
-                all_machines_outputs.append(get_machine_data(machine))
+            all_machines_outputs.extend(
+                get_machine_data(machine)
+                for machine in machines_response['value']
+            )
             context_outputs.append({
                 'File': file,
                 'Machines': get_machines_list(machines_response)
@@ -2430,7 +2441,7 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
                           raw_response=raw_response)
 
 
-def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
+def parse_ip_addresses(ip_addresses: list[dict]) -> list[dict]:
     """
     Creates new dict with readable keys and concat all the ip addresses with the same MAC address.
     Args:
@@ -2455,7 +2466,7 @@ def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
     return list(mac_addresses.values())  # type: ignore
 
 
-def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
+def print_ip_addresses(parsed_ip_addresses: list[dict]) -> str:
     """
     Converts the given list of ip addresses to ascii table.
     Args:
@@ -2465,10 +2476,17 @@ def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
         ascii table without headers
     """
 
-    rows = list()
-    for i, entry in enumerate(parsed_ip_addresses, start=1):
-        rows.append([f"{i}.", f"MAC : {entry['MACAddress']}", f"IP Addresses : {','.join(entry['IPAddresses'])}",
-                     f"Type : {entry['Type']}", f"Status : {entry['Status']}"])
+    rows = []
+    rows.extend(
+        [
+            f"{i}.",
+            f"MAC : {entry['MACAddress']}",
+            f"IP Addresses : {','.join(entry['IPAddresses'])}",
+            f"Type : {entry['Type']}",
+            f"Status : {entry['Status']}",
+        ]
+        for i, entry in enumerate(parsed_ip_addresses, start=1)
+    )
     max_lengths = [len(max(col, key=lambda x: len(x))) for col in zip(*rows)]  # to make sure the table is pretty
     string_rows = [' | '.join([cell.ljust(max_len_col) for cell, max_len_col in zip(row, max_lengths)]) for row in rows]
 
@@ -2662,7 +2680,7 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     if not query and not query_batch:
         raise DemistoException('Both query and query_batch were not given, please provide one')
 
-    queries: List[Dict[str, str]] = []
+    queries: list[dict[str, str]] = []
     if query:
         queries.append({'timeout': args.get('timeout', '10'),
                         'time_range': args.get('time_range', ''),
@@ -2685,7 +2703,7 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
         time_range = query_details.get('time_range') or args.get('time_range', '')
 
         response = client.get_advanced_hunting(query, timeout, time_range)
-        results: Dict[str, Any] = response.get('Results', {})
+        results: dict[str, Any] = response.get('Results', {})
         if isinstance(results, list) and len(results) == 1:
             report_id = results[0].get('ReportId')
             if report_id:
@@ -2752,9 +2770,10 @@ def get_alert_related_files_command(client: MsClient, args: dict):
     files_data_list = []
     from_index = min(offset, len(response_files_list))
     to_index = min(offset + limit, len(response_files_list))
-    for file_obj in response_files_list[from_index:to_index]:
-        files_data_list.append(get_file_data(file_obj))
-
+    files_data_list.extend(
+        get_file_data(file_obj)
+        for file_obj in response_files_list[from_index:to_index]
+    )
     context_output = {
         'AlertID': alert_id,
         'Files': files_data_list
@@ -2831,9 +2850,7 @@ def get_alert_related_ips_command(client: MsClient, args: dict):
     from_index = min(offset, len(response_ips_list))
     to_index = min(offset + limit, len(response_ips_list))
 
-    for ip in response_ips_list[from_index:to_index]:
-        ips_list.append(ip['id'])
-
+    ips_list.extend(ip['id'] for ip in response_ips_list[from_index:to_index])
     context_output = {
         'AlertID': alert_id,
         'IPs': ips_list
@@ -2860,8 +2877,9 @@ def get_alert_related_domains_command(client: MsClient, args: dict):
     domains_list = []
     from_index = min(offset, len(response_domains_list))
     to_index = min(offset + limit, len(response_domains_list))
-    for domain in response_domains_list[from_index:to_index]:
-        domains_list.append(domain['host'])
+    domains_list.extend(
+        domain['host'] for domain in response_domains_list[from_index:to_index]
+    )
     context_output = {
         'AlertID': alert_id,
         'Domains': domains_list
@@ -2896,7 +2914,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
                 if 'ResourceNotFound' in str(e) and index < 3:
                     time.sleep(1)
                 else:
-                    raise Exception(f'Machine action {action_id} was not found')
+                    raise Exception(f'Machine action {action_id} was not found') from e
         response = client.get_machine_action_by_id(action_id)
         action_data = get_machine_action_data(response)
         human_readable = tableToMarkdown(f'Action {action_id} Info:', action_data, headers=headers, removeNull=True)
@@ -2913,8 +2931,10 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
         filter_req = reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
         response = client.get_machine_actions(filter_req, limit)
         machine_actions_list = []
-        for machine_action in response['value']:
-            machine_actions_list.append(get_machine_action_data(machine_action))
+        machine_actions_list.extend(
+            get_machine_action_data(machine_action)
+            for machine_action in response['value']
+        )
         human_readable = tableToMarkdown(f'Machine actions Info with limit of {limit}:',
                                          machine_actions_list, headers=headers, removeNull=True)
         context_output = machine_actions_list
@@ -3123,8 +3143,10 @@ def get_investigations_by_id_command(client: MsClient, args: dict):
         investigations_list = []
         from_index = min(offset, len(response))
         to_index = min(offset + limit, len(response))
-        for investigation in response[from_index:to_index]:
-            investigations_list.append(get_investigation_data(investigation))
+        investigations_list.extend(
+            get_investigation_data(investigation)
+            for investigation in response[from_index:to_index]
+        )
         human_readable = tableToMarkdown('Investigations Info:', investigations_list, headers=headers, removeNull=True)
         context_output = investigations_list
     entry_context = {
@@ -3569,7 +3591,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         last_fetch_time = datetime.strftime(parse_date_string(last_fetch_time) + timedelta(milliseconds=1), TIME_FORMAT)
         # handling old version of time format:
         if not last_fetch_time.endswith('Z'):
-            last_fetch_time = last_fetch_time + "Z"
+            last_fetch_time = f"{last_fetch_time}Z"
 
     else:
         last_fetch_time = datetime.strftime(first_fetch_time, TIME_FORMAT)  # type: ignore
@@ -3592,7 +3614,8 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
             demisto.debug(f'Query crashed API, probably due to a big response. Params sent to query: {params}')
             raise Exception(
                 f'Failed to fetch {client.max_alerts_to_fetch} alerts. This may caused due to large amount of alert. '
-                f'Try using a lower limit.')
+                f'Try using a lower limit.'
+            ) from err
         demisto.debug(f'Query crashed API. Params sent to query: {params}')
         raise err
     skipped_incidents = 0
@@ -3637,16 +3660,17 @@ def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
         statuses = argToList(client.alert_status_to_fetch)
         status_filter_list = [f"status+eq+'{status}'" for status in statuses]
         if len(status_filter_list) > 1:
-            status_filter_list = list(map(lambda x: f'({x})', status_filter_list))
-        filter_query = filter_query + ' and (' + ' or '.join(status_filter_list) + ')'
+            status_filter_list = [f'({x})' for x in status_filter_list]
+        filter_query = f'{filter_query} and (' + ' or '.join(status_filter_list) + ')'
     if client.alert_severities_to_fetch:
         severities = argToList(client.alert_severities_to_fetch)
         severities_filter_list = [f"severity+eq+'{severity}'" for severity in severities]
         if len(severities_filter_list) > 1:
-            severities_filter_list = list(map(lambda x: f'({x})', severities_filter_list))
-        filter_query = filter_query + ' and (' + ' or '.join(severities_filter_list) + ')'
-    params = {'$filter': filter_query}
-    params['$orderby'] = 'alertCreationTime asc'
+            severities_filter_list = [f'({x})' for x in severities_filter_list]
+        filter_query = (
+            f'{filter_query} and (' + ' or '.join(severities_filter_list) + ')'
+        )
+    params = {'$filter': filter_query, '$orderby': 'alertCreationTime asc'}
     if fetch_evidence:
         params['$expand'] = 'evidence'
     params['$top'] = client.max_alerts_to_fetch
@@ -3665,7 +3689,7 @@ def create_filter_alerts_creation_time(last_alert_fetched_time):
     filter_alerts_creation_time = f"alertCreationTime+gt+{last_alert_fetched_time.isoformat()}"
 
     if not filter_alerts_creation_time.endswith('Z'):
-        filter_alerts_creation_time = filter_alerts_creation_time + "Z"
+        filter_alerts_creation_time = f"{filter_alerts_creation_time}Z"
 
     return filter_alerts_creation_time
 
@@ -3758,7 +3782,7 @@ def get_last_alert_fetched_time(last_run, alert_time_to_fetch):
     return last_alert_fetched_time
 
 
-def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str, Optional[Dict], Optional[List]]:
+def list_indicators_command(client: MsClient, args: dict[str, str]) -> tuple[str, dict | None, list | None]:
     """
 
     Args:
@@ -3772,7 +3796,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
     raw_response = client.list_indicators(args.get('indicator_id'), args.get('page_size', '50'), limit)
     raw_response = raw_response[:limit]
     if raw_response:
-        indicators = list()
+        indicators = []
         for item in raw_response:
             item['severity'] = NUMBER_TO_SEVERITY.get(item['severity'])
             indicators.append(item)
@@ -3803,7 +3827,7 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
         return 'No indicators found', None, None
 
 
-def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) -> Dict:
+def create_indicator_command(client: MsClient, args: dict, specific_args: dict) -> dict:
     """Adds required arguments to indicator (arguments that must be in every create call).
 
     Args:
@@ -3832,13 +3856,13 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
     expiration_time = get_future_time(args.get('expiration_time', ''))
     threat_type = args.get('threat_type', '')
     tlp_level = args.get('tlp_level', '')
-    confidence = args.get('confidence', None)
+    confidence = args.get('confidence')
     try:
         if confidence is not None:
             confidence = int(confidence)
             assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
-    except ValueError:
-        raise DemistoException('The confidence argument must be an integer.')
+    except ValueError as e:
+        raise DemistoException('The confidence argument must be an integer.') from e
     severity = SEVERITY_TO_NUMBER.get(args.get('severity', 'Informational'))
     tags = argToList(args.get('tags'))
     body = assign_params(
@@ -3856,7 +3880,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
     return client.create_indicator(body)
 
 
-def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_file_indicator_command(client: MsClient, args: dict) -> tuple[str, dict, dict]:
     """Creates a file indicator
 
     Args:
@@ -3910,7 +3934,7 @@ def create_file_indicator_command(client: MsClient, args: Dict) -> Tuple[str, Di
     return human_readable, outputs, raw_response
 
 
-def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
+def create_network_indicator_command(client, args) -> tuple[str, dict, dict]:
     """Creates a network indicator
 
     Args:
@@ -3971,7 +3995,7 @@ def create_network_indicator_command(client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, outputs, raw_response
 
 
-def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, Dict]:
+def update_indicator_command(client: MsClient, args: dict) -> tuple[str, dict, dict]:
     """Updates an indicator
 
     Args:
@@ -4019,7 +4043,7 @@ def delete_indicator_command(client: MsClient, args: dict) -> str:
     return f'Indicator ID: {indicator_id} was successfully deleted'
 
 
-def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> CommandResults:
+def sc_delete_indicator_command(client: MsClient, args: dict[str, str]) -> CommandResults:
     """Deletes an indicator
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/delete-ti-indicator-by-id?view=o365-worldwide
     Args:
@@ -4034,7 +4058,7 @@ def sc_delete_indicator_command(client: MsClient, args: Dict[str, str]) -> Comma
     return CommandResults(readable_output=f'Indicator ID: {indicator_id} was successfully deleted')
 
 
-def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -> CommandResults:
+def sc_create_update_indicator_command(client: MsClient, args: dict[str, str]) -> CommandResults:
     """Updates an indicator if exists, if does not exist, create new one
     Note: CIDR notation for IPs is not supported.
 
@@ -4074,7 +4098,7 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
         return CommandResults(readable_output=f'Indicator {indicator_value} was NOT updated.')
 
 
-def sc_update_batch_indicators_command(client: MsClient, args: Dict[str, str]):  # -> CommandResults:
+def sc_update_batch_indicators_command(client: MsClient, args: dict[str, str]):    # -> CommandResults:
     """Updates batch of indicators. If an indicator exists it will be updated. Otherwise, will create new one
     Note: CIDR notation for IPs is not supported.
 
@@ -4089,7 +4113,9 @@ def sc_update_batch_indicators_command(client: MsClient, args: Dict[str, str]): 
     try:
         batch_json = json.loads(indicator_batch)
     except JSONDecodeError as e:
-        raise DemistoException(f'{INTEGRATION_NAME}: The `indicator_batch` argument is not a valid json, {e}.')
+        raise DemistoException(
+            f'{INTEGRATION_NAME}: The `indicator_batch` argument is not a valid json, {e}.'
+        ) from e
 
     all_indicators = client.create_update_indicator_batch_security_center_api({"Indicators": batch_json})
     outputs = parse_indicator_batch_response(all_indicators)
@@ -4104,17 +4130,19 @@ def parse_indicator_batch_response(indicators_response):
     parsed_response = []
     if indicators_response and indicators_response.get('value'):
         indicators = indicators_response.get('value')
-        for indicator in indicators:
-            parsed_response.append({
+        parsed_response.extend(
+            {
                 "ID": indicator.get("id"),
                 "Value": indicator.get("indicator"),
                 "IsFailed": indicator.get("isFailed"),
                 "FailureReason": indicator.get("failureReason"),
-            })
+            }
+            for indicator in indicators
+        )
     return parsed_response
 
 
-def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[CommandResults, List[CommandResults]]:
+def sc_list_indicators_command(client: MsClient, args: dict[str, str]) -> CommandResults | list[CommandResults]:
     """
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-ti-indicators-collection?view=o365-worldwide
     Args:
@@ -4497,6 +4525,7 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
         return Common.Domain(domain=value, dbot_score=dbot_score)
     if dbot_type == DBotScoreType.URL:
         return Common.URL(url=value, dbot_score=dbot_score)
+    return None
 
 
 def get_indicator_dbot_object(indicator):
@@ -4628,8 +4657,8 @@ def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
     """
     query = ''
     filters_arg_list = list(filter(None, filters_arg_list))
-    list_length = len(filters_arg_list)
     if filters_arg_list:
+        list_length = len(filters_arg_list)
         for index, list_item in enumerate(filters_arg_list):
             if index == list_length - 1 or list_length == 1:
                 query = f"{query}{name} eq '{list_item}'"
@@ -4639,7 +4668,7 @@ def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
     return query
 
 
-def add_backslash_infront_of_underscore_list(markdown_data: Optional[list[dict]]) -> list[dict]:
+def add_backslash_infront_of_underscore_list(markdown_data: list[dict] | None) -> list[dict]:
     """ Escape underscores with a backslash in order to show underscores after markdown parsing.
         Args:
             markdown_data: list[dict] - list of dicts.
@@ -4668,12 +4697,12 @@ def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
     """
     query = ''
     filters_arg_list = list(filter(None, filters_arg_list))
-    list_length = len(filters_arg_list)
     if filters_arg_list:
+        list_length = len(filters_arg_list)
         for index, list_item in enumerate(filters_arg_list):
-            if list_length == 1 and list_item == '':
-                continue
             if list_length == 1:
+                if list_item == '':
+                    continue
                 query = f'{query}{list_item}'
                 continue
             if index == list_length - 1:
@@ -4694,8 +4723,10 @@ def create_filter(args_and_name_list: list[tuple[list[str], str]]) -> str:
             A str corresponding to the filter param in a qury.
     """
     list_for_disjunctions = []
-    for arg_and_name in args_and_name_list:
-        list_for_disjunctions.append(create_filters_conjunction(arg_and_name[0], arg_and_name[1]))
+    list_for_disjunctions.extend(
+        create_filters_conjunction(arg_and_name[0], arg_and_name[1])
+        for arg_and_name in args_and_name_list
+    )
     return create_filters_disjunctions(list_for_disjunctions)
 
 
@@ -4915,7 +4946,7 @@ def create_related_cve_list_for_machine(machines):
     and the output after remove duplicates will be:
     unique_machines = [{'ID': 1, 'CVE': ['CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
     """
-    machine_id_to_cve_list: Dict[str, List[str]] = {}
+    machine_id_to_cve_list: dict[str, list[str]] = {}
     for machine in machines:
         machine_id = machine.get('ID')
         cve_id = machine.get('CVE')
@@ -4934,7 +4965,7 @@ def create_related_cve_list_for_machine(machines):
     return unique_machines
 
 
-def get_file_context(file_info_response: Dict[str, str], headers: list):
+def get_file_context(file_info_response: dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
 
@@ -4945,8 +4976,6 @@ def get_file_info_command(client: MsClient, args: dict):
         CommandResults. Human readable, context, raw response
     """
     headers = ['Sha1', 'Sha256', 'Size', 'FileType', 'Signer', 'IsValidCertificate']
-    file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
-                        'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
     file_hashes = remove_duplicates_from_list_arg(args, 'hash')
     raw_response = []
     file_outputs = []
@@ -4976,6 +5005,8 @@ def get_file_info_command(client: MsClient, args: dict):
     human_readable += add_error_message(failed_hashes, file_hashes)
     human_readable += not_found_message(not_found_ids)
     if file_outputs:
+        file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
+                            'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
         context = {
             'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
             file_context_path: file_context_outputs
@@ -5037,7 +5068,7 @@ def validate_args_endpoint_command(hostnames, ips, ids):
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
 
-def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
+def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
 
     Returns:
@@ -5264,7 +5295,9 @@ def cancel_action_command(client, args):
         client.cancel_action(action_id, body)
     except Exception as e:
         if '404' in str(e):
-            raise DemistoException(f'Action ID {action_id} could not be found. Make sure you entered the correct ID.')
+            raise DemistoException(
+                f'Action ID {action_id} could not be found. Make sure you entered the correct ID.'
+            ) from e
         raise
 
     return CommandResults(

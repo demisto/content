@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 import urllib3
 import dateparser
 import traceback
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
+
 
 ################################################################
 # CimTrak Python API Begin
@@ -61,26 +62,29 @@ class CimTrak:
         return response.text
 
     def disconnect(self):
-        if self.connected is True:
+        if self.connected is not True:
+            return
+        if self.debug >= 1:
+            self.debug_print("Disconnecting")
+        request_data = {"authToken": self.auth_token}
+        if self.debug >= 4:
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
+        response = self.http_post(
+            f"{self.url_root}Client.logoff",
+            json.dumps(request_data),
+            self.verify_cert,
+        )
+        if self.debug >= 4:
+            self.debug_print(f"Response:{response}")
+        request_response = json.loads(response)
+        if request_response["status"] == "success":
+            self.connected = False
+            self.auth_token = ""
             if self.debug >= 1:
-                self.debug_print("Disconnecting")
-            request_data = {"authToken": self.auth_token}
-            if self.debug >= 4:
-                self.debug_print("Request Data:" + json.dumps(request_data))
-            response = self.http_post(
-                self.url_root + "Client.logoff", json.dumps(request_data), self.verify_cert
-            )
-            if self.debug >= 4:
-                self.debug_print("Response:" + response)
-            request_response = json.loads(response)
-            if request_response["status"] == "success":
-                self.connected = False
-                self.auth_token = ""
-                if self.debug >= 1:
-                    self.debug_print("Success logging off")
-            else:
-                if self.debug >= 1:
-                    self.debug_print("Failed logging off")
+                self.debug_print("Success logging off")
+        else:
+            if self.debug >= 1:
+                self.debug_print("Failed logging off")
 
     def connect(self, url, port, username, password):
         if self.debug >= 1:
@@ -93,21 +97,21 @@ class CimTrak:
             "port": port,
         }
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.connectToServer",
+            f"{self.url_root}Client.connectToServer",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
         if request_response["status"] == "success":
             self.connected = True
             for item in request_response["results"]:
                 self.auth_token = item["authToken"]
             if self.debug >= 1:
-                self.debug_print("Logon successful, authToken:" + self.auth_token)
+                self.debug_print(f"Logon successful, authToken:{self.auth_token}")
         else:
             self.connected = False
             self.auth_token = ""
@@ -119,7 +123,7 @@ class CimTrak:
             self.debug_print("get_events")
         request_data = {
             "authToken": self.auth_token,
-            "cursorName": self.auth_token + "pythonLibrary",
+            "cursorName": f"{self.auth_token}pythonLibrary",
             "server": self.server,
             "port": self.port,
             "apiKey": self.api_key,
@@ -132,20 +136,19 @@ class CimTrak:
         if filter is not None and filter != "":
             request_data["filter"] = filter
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getEventLogRaw",
+            f"{self.url_root}Client.getEventLogRaw",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_events successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_events failed")
         return request_response
 
@@ -154,7 +157,7 @@ class CimTrak:
             self.debug_print("get_unreconciled_items")
         request_data = {
             "authToken": self.auth_token,
-            "cursorName": self.auth_token + "pythonLibrary",
+            "cursorName": f"{self.auth_token}pythonLibrary",
             "server": self.server,
             "port": self.port,
             "apiKey": self.api_key,
@@ -166,20 +169,19 @@ class CimTrak:
         if sorts is not None and sorts != "":
             request_data["sorts"] = sorts
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getUnreconciledItems",
+            f"{self.url_root}Client.getUnreconciledItems",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_unreconciled_items successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_unreconciled_items failed")
         return request_response
 
@@ -194,20 +196,19 @@ class CimTrak:
             "hash": hash,
         }
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.fileAnalysisByHash",
+            f"{self.url_root}Client.fileAnalysisByHash",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("file_analysis_by_hash successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("file_analysis_by_hash failed")
         return request_response
 
@@ -222,20 +223,19 @@ class CimTrak:
             "objectDetailId": object_detail_id,
         }
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.fileAnalysisByObjectDetailId",
+            f"{self.url_root}Client.fileAnalysisByObjectDetailId",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("file_analysis_by_object_detail_id successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("file_analysis_by_object_detail_id failed")
         return request_response
 
@@ -250,20 +250,19 @@ class CimTrak:
             "hashes": hashes,
         }
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.checkFileAgainstTrustedFileRegistryByHash",
+            f"{self.url_root}Client.checkFileAgainstTrustedFileRegistryByHash",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("check_file_against_trusted_file_registry_by_hash successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("check_file_against_trusted_file_registry_by_hash failed")
         return request_response
 
@@ -278,20 +277,19 @@ class CimTrak:
             "hash": hash,
         }
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.searchTrustedFileRegistryByHash",
+            f"{self.url_root}Client.searchTrustedFileRegistryByHash",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("search_trusted_file_registry_by_hash successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("search_trusted_file_registry_by_hash failed")
         return request_response
 
@@ -306,20 +304,19 @@ class CimTrak:
             "objectDetailId": object_detail_ids,
         }
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.promoteAuthoritativeBaselineFiles",
+            f"{self.url_root}Client.promoteAuthoritativeBaselineFiles",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("promote_authoritative_baseline_files successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("promote_authoritative_baseline_files failed")
         return request_response
 
@@ -334,20 +331,19 @@ class CimTrak:
             "objectDetailId": object_detail_ids,
         }
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.demoteAuthoritativeBaselineFiles",
+            f"{self.url_root}Client.demoteAuthoritativeBaselineFiles",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("demote_authoritative_baseline_files successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("demote_authoritative_baseline_files failed")
         return request_response
 
@@ -366,18 +362,19 @@ class CimTrak:
             request_data["filters"] = filters
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getTickets", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.getTickets",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_tickets successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_tickets failed")
         return request_response
 
@@ -397,20 +394,19 @@ class CimTrak:
             request_data["filters"] = filters
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getTicketTasks",
+            f"{self.url_root}Client.getTicketTasks",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_ticket_tasks successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_ticket_tasks failed")
         return request_response
 
@@ -468,18 +464,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.addTicket", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.addTicket",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("add_ticket successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("add_ticket failed")
         return request_response
 
@@ -539,20 +536,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.updateTickets",
+            f"{self.url_root}Client.updateTickets",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("update_ticket successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("update_ticket failed")
         return request_response
 
@@ -570,20 +566,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.addTicketComment",
+            f"{self.url_root}Client.addTicketComment",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("add_ticket_comment successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("add_ticket_comment failed")
         return request_response
 
@@ -600,20 +595,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.updateTaskDisposition",
+            f"{self.url_root}Client.updateTaskDisposition",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("update_task_disposition successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("update_task_disposition failed")
         return request_response
 
@@ -637,20 +631,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.addHashWhitelist",
+            f"{self.url_root}Client.addHashWhitelist",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("add_hash_allow_list successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("add_hash_allow_list failed")
         return request_response
 
@@ -674,20 +667,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.addHashBlacklist",
+            f"{self.url_root}Client.addHashBlacklist",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("add_hash_deny_list successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("add_hash_deny_list failed")
         return request_response
 
@@ -704,20 +696,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.deleteHashWhitelist",
+            f"{self.url_root}Client.deleteHashWhitelist",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("delete_hash_allow_list successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("delete_hash_allow_list failed")
         return request_response
 
@@ -734,20 +725,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.deleteHashBlacklist",
+            f"{self.url_root}Client.deleteHashBlacklist",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("delete_hash_deny_list successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("delete_hash_deny_list failed")
         return request_response
 
@@ -763,20 +753,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getSubGenerations",
+            f"{self.url_root}Client.getSubGenerations",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_sub_generations successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_sub_generations failed")
         return request_response
 
@@ -794,18 +783,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.deploy", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.deploy",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("deploy successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("deploy failed")
         return request_response
 
@@ -821,20 +811,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getObjectGroup",
+            f"{self.url_root}Client.getObjectGroup",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_object_group successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_object_group failed")
         return request_response
 
@@ -850,18 +839,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.unlock", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.unlock",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("unlock successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("unlock failed")
         return request_response
 
@@ -877,18 +867,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.lock", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.lock",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("lock successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("lock failed")
         return request_response
 
@@ -904,18 +895,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getObject", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.getObject",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_object successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_object failed")
         return request_response
 
@@ -931,18 +923,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.forceSync", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.forceSync",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("force_sync successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("force_sync failed")
         return request_response
 
@@ -958,18 +951,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.viewFile", json.dumps(request_data), self.verify_cert
+            f"{self.url_root}Client.viewFile",
+            json.dumps(request_data),
+            self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("view_file successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("view_file failed")
         return request_response
 
@@ -989,20 +983,19 @@ class CimTrak:
             request_data["reportParameterValues"] = report_parameter_values
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.runReportByName",
+            f"{self.url_root}Client.runReportByName",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("run_report_by_name successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("run_report_by_name failed")
         return request_response
 
@@ -1020,20 +1013,19 @@ class CimTrak:
             request_data["complianceScanId"] = compliance_scan_id
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getCurrentComplianceItems",
+            f"{self.url_root}Client.getCurrentComplianceItems",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_current_compliance_items successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_current_compliance_items failed")
         return request_response
 
@@ -1070,20 +1062,19 @@ class CimTrak:
             request_data["objectSubType"] = object_subtype
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getObjects",
+            f"{self.url_root}Client.getObjects",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_objects successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_objects failed")
         return request_response
 
@@ -1099,20 +1090,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getAgentInfo",
+            f"{self.url_root}Client.getAgentInfo",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_agent_info successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_agent_info failed")
         return request_response
 
@@ -1136,20 +1126,19 @@ class CimTrak:
             request_data["filter"] = filter
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getComplianceArchiveDetails",
+            f"{self.url_root}Client.getComplianceArchiveDetails",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_compliance_archive_details successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_compliance_archive_details failed")
         return request_response
 
@@ -1173,20 +1162,19 @@ class CimTrak:
             request_data["filter"] = filter
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getComplianceArchiveSummary",
+            f"{self.url_root}Client.getComplianceArchiveSummary",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_compliance_archive_summary successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_compliance_archive_summary failed")
         return request_response
 
@@ -1202,20 +1190,19 @@ class CimTrak:
         }
 
         if self.debug >= 4:
-            self.debug_print("Request Data:" + json.dumps(request_data))
+            self.debug_print(f"Request Data:{json.dumps(request_data)}")
         response = self.http_post(
-            self.url_root + "Client.getAgentObjectIdByAlternateSystemId",
+            f"{self.url_root}Client.getAgentObjectIdByAlternateSystemId",
             json.dumps(request_data),
             self.verify_cert,
         )
         if self.debug >= 4:
-            self.debug_print("Response:" + response)
+            self.debug_print(f"Response:{response}")
         request_response = json.loads(response)
-        if request_response["status"] == "success":
-            if self.debug >= 1:
+        if self.debug >= 1:
+            if request_response["status"] == "success":
                 self.debug_print("get_agent_object_id_by_alternate_system_id successful")
-        else:
-            if self.debug >= 1:
+            else:
                 self.debug_print("get_agent_object_id_by_alternate_system_id failed")
         return request_response
 
@@ -1259,17 +1246,17 @@ class CimTrak:
                     target_gen = subgen["subGenerationId"]
                     agent_objectId = subgen["agentObjectId"]
         if self.debug >= 4:
-            self.debug_print("Got target agent:" + str(target_gen))
+            self.debug_print(f"Got target agent:{str(target_gen)}")
         if target_gen != 0:
             return self.deploy(agent_objectId, target_gen)
-        else:
-            ret_data: Dict[str, Any] = {}
-            ret_results: List[Dict[str, Any]] = []
-            ret_data['status'] = 'success'
-            ret_data['errorCode'] = ''
-            ret_data['errorDescription'] = ''
-            ret_data['results'] = ret_results
-            return ret_data
+        ret_results: list[dict[str, Any]] = []
+        ret_data: dict[str, Any] = {
+            'status': 'success',
+            'errorCode': '',
+            'errorDescription': '',
+            'results': ret_results,
+        }
+        return ret_data
 
     def compliance_scan_children(self, object_parent_id):
         request_response = self.get_objects(parent_id=object_parent_id)
@@ -1280,12 +1267,13 @@ class CimTrak:
                 if self.debug >= 4:
                     self.debug_print("Scanning compliance object:" + str(object["objectId"]))
                 self.force_sync(object["objectId"])
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
-        ret_data['status'] = 'success'
-        ret_data['errorCode'] = ''
-        ret_data['errorDescription'] = ''
-        ret_data['results'] = ret_results
+        ret_results: list[dict[str, Any]] = []
+        ret_data: dict[str, Any] = {
+            'status': 'success',
+            'errorCode': '',
+            'errorDescription': '',
+            'results': ret_results,
+        }
         return ret_data
 
     def compliance_scan_with_summary(self, object_id, retry_count=20, retry_seconds=10):
@@ -1300,7 +1288,7 @@ class CimTrak:
         for scan in results:
             last_scanid = scan["scanid"]
         if self.debug >= 4:
-            self.debug_print("Got last scan id:" + str(last_scanid))
+            self.debug_print(f"Got last scan id:{str(last_scanid)}")
         # Get the last log id
         filter = [{"name": "lObjectID", "operator": "=", "value": object_id}]
         sorts = [{"field": "id", "descending": True}]
@@ -1311,7 +1299,7 @@ class CimTrak:
         for log in results:
             last_logid = log["id"]
         if self.debug >= 4:
-            self.debug_print("Got last log id:" + str(last_logid))
+            self.debug_print(f"Got last log id:{str(last_logid)}")
 
         # Start the scan
         self.force_sync(object_id)
@@ -1326,21 +1314,22 @@ class CimTrak:
         resultcount = 0
         tries = 0
         while resultcount == 0 and tries < retry_count:
-            tries = tries + 1
+            tries += 1
             if self.debug >= 4:
                 self.debug_print("Polling log entries")
             request_response = self.get_events(filter=filter)
             results = request_response["results"]
-            for scan in results:
+            for _ in results:
                 resultcount = resultcount + 1
             if resultcount == 0:
                 if self.debug >= 4:
-                    self.debug_print("Sleeping to wait for compliance results: Try " + str(tries) + " of " + str(retry_count))
+                    self.debug_print(
+                        f"Sleeping to wait for compliance results: Try {tries} of {str(retry_count)}"
+                    )
                 time.sleep(retry_seconds)
 
-        if resultcount == 0:
-            if self.debug >= 4:
-                self.debug_print("Timeout waiting for compliance scan to complete")
+        if resultcount == 0 and self.debug >= 4:
+            self.debug_print("Timeout waiting for compliance scan to complete")
         # Get results
         filter = [{"name": "scanid", "operator": ">", "value": last_scanid}]
         request_response = self.get_compliance_archive_summary(object_id, filter=filter)
@@ -1352,17 +1341,18 @@ class CimTrak:
 
         request_response = self.get_objects(object_path_and_name=agent_name, object_type=self.OBJECT_TYPE_AGENT)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
-        for object in results:
-            if object['name'] == agent_name:
-                ret_results.append(object)
-        ret_data['status'] = 'success'
-        ret_data['errorCode'] = ''
-        ret_data['errorDescription'] = ''
-        ret_data['results'] = ret_results
+        ret_results: list[dict[str, Any]] = []
+        ret_results.extend(
+            object for object in results if object['name'] == agent_name
+        )
+        ret_data: dict[str, Any] = {
+            'status': 'success',
+            'errorCode': '',
+            'errorDescription': '',
+            'results': ret_results,
+        }
         if self.debug >= 4:
-            self.debug_print("get_agent_object_id_by_name returning:" + str(ret_data))
+            self.debug_print(f"get_agent_object_id_by_name returning:{ret_data}")
 
         return ret_data
 
@@ -1372,20 +1362,19 @@ class CimTrak:
 
         request_response = self.get_agent_object_id_by_alternate_system_id(alternate_system_id=alternate_system_id)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
+        ret_data: dict[str, Any] = {}
+        ret_results: list[dict[str, Any]] = []
         for result in results:
             if result['agentObjectId'] > 0:
                 request_response_object = self.get_object(result['agentObjectId'])
                 results_object = request_response_object["results"]
-                for result_object in results_object:
-                    ret_results.append(result_object)
+                ret_results.extend(iter(results_object))
         ret_data['status'] = 'success'
         ret_data['errorCode'] = ''
         ret_data['errorDescription'] = ''
         ret_data['results'] = ret_results
         if self.debug >= 4:
-            self.debug_print("get_agent_object_by_alternate_id returning:" + str(ret_data))
+            self.debug_print(f"get_agent_object_by_alternate_id returning:{ret_data}")
 
         return ret_data
 
@@ -1393,11 +1382,13 @@ class CimTrak:
         if self.debug >= 4:
             self.debug_print("get_agent_object_by_ip")
         if ip.find(':') == -1:
-            ip_fixed = "cast($DQ$" + ip + "$DQ$::inet - $DQ$0.0.0.0$DQ$::inet as bigint)"
+            ip_fixed = f"cast($DQ${ip}$DQ$::inet - $DQ$0.0.0.0$DQ$::inet as bigint)"
         else:
-            ip_fixed = "cast($DQ$" + ip + "$DQ$::inet - $DQ$::ffff:0.0.0.0$DQ$::inet as bigint)"
-        ip_if_statement = "cast(iif(position($DQ$:$DQ$ in get_objects.szlastip) > 0  ,"
-        ip_if_statement += "cast(get_objects.szlastip::inet - $DQ$::ffff:0.0.0.0$DQ$::inet  as text)"
+            ip_fixed = f"cast($DQ${ip}$DQ$::inet - $DQ$::ffff:0.0.0.0$DQ$::inet as bigint)"
+        ip_if_statement = (
+            "cast(iif(position($DQ$:$DQ$ in get_objects.szlastip) > 0  ,"
+            + "cast(get_objects.szlastip::inet - $DQ$::ffff:0.0.0.0$DQ$::inet  as text)"
+        )
         ip_if_statement += ",iif(position($DQ$.$DQ$ in get_objects.szlastip) > 0 ,"
         ip_if_statement += "cast(get_objects.szlastip::inet - $DQ$::ffff:0.0.0.0$DQ$::inet as text),$DQ$0$DQ$)) as bigint) - "
         ip_if_statement += ip_fixed
@@ -1412,17 +1403,16 @@ class CimTrak:
         ]
         request_response = self.get_objects(object_type=self.OBJECT_TYPE_AGENT, filter=filter)
         results = request_response["results"]
-        ret_data: Dict[str, Any] = {}
-        ret_results: List[Dict[str, Any]] = []
-        for object in results:
-            ret_results.append(object)
-        ret_data['status'] = 'success'
-        ret_data['errorCode'] = ''
-        ret_data['errorDescription'] = ''
-        ret_data['results'] = ret_results
-
+        ret_results: list[dict[str, Any]] = []
+        ret_results.extend(iter(results))
+        ret_data: dict[str, Any] = {
+            'status': 'success',
+            'errorCode': '',
+            'errorDescription': '',
+            'results': ret_results,
+        }
         if self.debug >= 4:
-            self.debug_print("get_agent_object_by_ip returning:" + str(ret_data))
+            self.debug_print(f"get_agent_object_by_ip returning:{ret_data}")
         return ret_data
 
 
@@ -1459,7 +1449,7 @@ class Client(BaseClient, CimTrak):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def test(self) -> Dict[str, Any]:
+    def test(self) -> dict[str, Any]:
         request_response = self.get_unreconciled_items(1, MAX_INCIDENTS_TO_FETCH)
         return request_response
 
@@ -1468,8 +1458,8 @@ class Client(BaseClient, CimTrak):
 
 
 def parse_domain_date(
-    domain_date: Union[List[str], str], date_format: str = "%Y-%m-%dT%H:%M:%S.000Z"
-) -> Optional[str]:
+    domain_date: list[str] | str, date_format: str = "%Y-%m-%dT%H:%M:%S.000Z"
+) -> str | None:
     """Converts whois date format to an ISO8601 string
 
     Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
@@ -1537,15 +1527,15 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 def fetch_incidents(
     client: Client,
     max_results: int,
-    last_run: Dict[str, int],
-    first_fetch_time: Optional[int],
-    alert_status: Optional[str],
+    last_run: dict[str, int],
+    first_fetch_time: int | None,
+    alert_status: str | None,
     min_severity: str,
-    alert_type: Optional[str],
+    alert_type: str | None,
 ):
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get("last_fetch", None)
+    last_fetch = last_run.get("last_fetch")
     # Handle first fetch time
     if last_fetch is None or last_fetch == "":
         # if missing, use what provided via first_fetch_time
@@ -1557,7 +1547,7 @@ def fetch_incidents(
 
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
     # Get the CSV list of severities from min_severity
     # severity = ',Low'
     request_response = client.get_unreconciled_items(1, MAX_INCIDENTS_TO_FETCH)
@@ -1623,8 +1613,8 @@ def ResolveJson(value):
         return json.loads(value)
 
 
-def get_events_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_events_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     start = int(ResolveString(args.get('Start')))
     end = int(ResolveString(args.get('End')))
@@ -1706,8 +1696,8 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def file_analysis_by_hash_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def file_analysis_by_hash_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('Hash'))
     response = client.file_analysis_by_hash(
@@ -1747,8 +1737,8 @@ def file_analysis_by_hash_command(client: Client, args: Dict[str, Any]) -> List[
     return command_results
 
 
-def file_analysis_by_object_detail_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def file_analysis_by_object_detail_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_id = int(ResolveString(args.get('ObjectDetailId')))
     response = client.file_analysis_by_object_detail_id(
@@ -1788,8 +1778,8 @@ def file_analysis_by_object_detail_id_command(client: Client, args: Dict[str, An
     return command_results
 
 
-def check_file_against_trusted_file_registry_by_hash_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def check_file_against_trusted_file_registry_by_hash_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hashes = ResolveString(args.get('Hashes')).split(',')
     response = client.check_file_against_trusted_file_registry_by_hash(
@@ -1827,8 +1817,8 @@ def check_file_against_trusted_file_registry_by_hash_command(client: Client, arg
     return command_results
 
 
-def promote_authoritative_baseline_files_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def promote_authoritative_baseline_files_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_ids = ResolveString(args.get('ObjectDetaildIds')).split(',')
     response = client.promote_authoritative_baseline_files(
@@ -1869,8 +1859,8 @@ def promote_authoritative_baseline_files_command(client: Client, args: Dict[str,
     return command_results
 
 
-def demote_authoritative_baseline_files_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def demote_authoritative_baseline_files_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_ids = ResolveString(args.get('ObjectDetaildIds')).split(',')
     response = client.demote_authoritative_baseline_files(
@@ -1909,8 +1899,8 @@ def demote_authoritative_baseline_files_command(client: Client, args: Dict[str, 
     return command_results
 
 
-def update_task_disposition_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def update_task_disposition_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     task_id = int(ResolveString(args.get('taskId')))
     disposition = ResolveString(args.get('Disposition'))
@@ -1951,8 +1941,8 @@ def update_task_disposition_command(client: Client, args: Dict[str, Any]) -> Lis
     return command_results
 
 
-def get_tickets_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_tickets_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     response = client.get_tickets(
 
@@ -2015,8 +2005,8 @@ def get_tickets_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     return command_results
 
 
-def get_ticket_tasks_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_ticket_tasks_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     response = client.get_ticket_tasks(
 
@@ -2080,8 +2070,8 @@ def get_ticket_tasks_command(client: Client, args: Dict[str, Any]) -> List[Comma
     return command_results
 
 
-def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_ticket_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     title = ResolveString(args.get('title'))
     priority = int(ResolveString(args.get('priority')))
@@ -2175,8 +2165,8 @@ def add_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def update_ticket_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     ticket_id = int(ResolveString(args.get('ticketId')))
     title = ResolveString(args.get('title'))
@@ -2272,8 +2262,8 @@ def update_ticket_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     return command_results
 
 
-def add_ticket_comment_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_ticket_comment_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     ticket_id = int(ResolveString(args.get('ticketId')))
     comment = ResolveString(args.get('comment'))
@@ -2297,8 +2287,8 @@ def add_ticket_comment_command(client: Client, args: Dict[str, Any]) -> List[Com
     return command_results
 
 
-def add_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_hash_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     filename = ResolveString(args.get('filename'))
@@ -2346,8 +2336,8 @@ def add_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[Co
     return command_results
 
 
-def add_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def add_hash_deny_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     filename = ResolveString(args.get('filename'))
@@ -2395,8 +2385,8 @@ def add_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[Com
     return command_results
 
 
-def delete_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def delete_hash_allow_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     reason = ResolveString(args.get('reason'))
@@ -2438,8 +2428,8 @@ def delete_hash_allow_list_command(client: Client, args: Dict[str, Any]) -> List
     return command_results
 
 
-def delete_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def delete_hash_deny_list_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     hash = ResolveString(args.get('hash'))
     reason = ResolveString(args.get('reason'))
@@ -2481,8 +2471,8 @@ def delete_hash_deny_list_command(client: Client, args: Dict[str, Any]) -> List[
     return command_results
 
 
-def get_sub_generations_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_sub_generations_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.get_sub_generations(
@@ -2532,8 +2522,8 @@ def get_sub_generations_command(client: Client, args: Dict[str, Any]) -> List[Co
     return command_results
 
 
-def deploy_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def deploy_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     agent_object_id = int(ResolveString(args.get('agentObjectId')))
     sub_generation_id = int(ResolveString(args.get('subGenerationId')))
@@ -2559,8 +2549,8 @@ def deploy_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     return command_results
 
 
-def get_object_group_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_object_group_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.get_object_group(
@@ -2632,8 +2622,8 @@ def get_object_group_command(client: Client, args: Dict[str, Any]) -> List[Comma
     return command_results
 
 
-def unlock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def unlock_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.unlock(
@@ -2655,8 +2645,8 @@ def unlock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     return command_results
 
 
-def lock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def lock_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.lock(
@@ -2678,8 +2668,8 @@ def lock_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return command_results
 
 
-def get_object_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_object_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.get_object(
@@ -2748,8 +2738,8 @@ def get_object_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def force_sync_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def force_sync_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     response = client.force_sync(
@@ -2771,8 +2761,8 @@ def force_sync_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     return command_results
 
 
-def view_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def view_file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_detail_id = int(ResolveString(args.get('objectDetailId')))
     response = client.view_file(
@@ -2810,8 +2800,8 @@ def view_file_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     return command_results
 
 
-def run_report_by_name_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def run_report_by_name_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     name = ResolveString(args.get('name'))
     object_id = int(ResolveString(args.get('objectId')))
@@ -2853,8 +2843,8 @@ def run_report_by_name_command(client: Client, args: Dict[str, Any]) -> List[Com
     return command_results
 
 
-def deploy_by_date_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def deploy_by_date_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     date = ResolveString(args.get('date'))
     object_id = int(ResolveString(args.get('objectId')))
@@ -2878,8 +2868,8 @@ def deploy_by_date_command(client: Client, args: Dict[str, Any]) -> List[Command
     return command_results
 
 
-def get_current_compliance_items_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_current_compliance_items_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
@@ -2927,8 +2917,8 @@ def get_current_compliance_items_command(client: Client, args: Dict[str, Any]) -
     return command_results
 
 
-def get_objects_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_objects_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_type = int(ResolveString(args.get('ObjectType')))
     object_subtype = int(ResolveString(args.get('ObjectSubType')))
@@ -3015,8 +3005,8 @@ def get_objects_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
     return command_results
 
 
-def get_agent_info_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_info_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     response = client.get_agent_info(
@@ -3057,8 +3047,8 @@ def get_agent_info_command(client: Client, args: Dict[str, Any]) -> List[Command
     return command_results
 
 
-def get_compliance_archive_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_compliance_archive_details_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
@@ -3146,8 +3136,8 @@ def get_compliance_archive_details_command(client: Client, args: Dict[str, Any])
     return command_results
 
 
-def get_compliance_archive_summary_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_compliance_archive_summary_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('ObjectId')))
     compliance_scan_id = int(ResolveString(args.get('ComplianceScanId')))
@@ -3220,8 +3210,8 @@ def get_compliance_archive_summary_command(client: Client, args: Dict[str, Any])
     return command_results
 
 
-def compliance_scan_children_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def compliance_scan_children_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_parent_id = int(ResolveString(args.get('objectParentId')))
     response = client.compliance_scan_children(
@@ -3243,8 +3233,8 @@ def compliance_scan_children_command(client: Client, args: Dict[str, Any]) -> Li
     return command_results
 
 
-def compliance_scan_with_summary_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def compliance_scan_with_summary_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     object_id = int(ResolveString(args.get('objectId')))
     retry_count = int(ResolveString(args.get('retryCount')))
@@ -3313,8 +3303,8 @@ def compliance_scan_with_summary_command(client: Client, args: Dict[str, Any]) -
     return command_results
 
 
-def get_agent_object_id_by_alternate_system_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_id_by_alternate_system_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     alternate_system_id = ResolveString(args.get('alternateSystemId'))
     response = client.get_agent_object_id_by_alternate_system_id(
@@ -3352,8 +3342,8 @@ def get_agent_object_id_by_alternate_system_id_command(client: Client, args: Dic
     return command_results
 
 
-def get_agent_object_by_name_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_name_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     agent_name = ResolveString(args.get('agentName'))
     response = client.get_agent_object_by_name(
@@ -3422,8 +3412,8 @@ def get_agent_object_by_name_command(client: Client, args: Dict[str, Any]) -> Li
     return command_results
 
 
-def get_agent_object_by_alternate_id_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_alternate_id_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     alternate_system_id = ResolveString(args.get('alternateSystemId'))
     response = client.get_agent_object_by_alternate_id(
@@ -3492,8 +3482,8 @@ def get_agent_object_by_alternate_id_command(client: Client, args: Dict[str, Any
     return command_results
 
 
-def get_agent_object_by_ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    command_results: List[CommandResults] = []
+def get_agent_object_by_ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    command_results: list[CommandResults] = []
     client.debug = 5
     ip = ResolveString(args.get('ip'))
     response = client.get_agent_object_by_ip(
