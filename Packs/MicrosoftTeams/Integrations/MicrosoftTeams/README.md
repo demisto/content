@@ -394,7 +394,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Investigation mirrored successfully in channel incident-100.
 
-### Delete a channel
+### close-channel
 ***
 Deletes the specified Microsoft Teams channel.
 
@@ -426,7 +426,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Channel was successfully closed.
 
-### Get information on the integration status
+### microsoft-teams-integration-health
 ***
 Returns real-time and historical data on the integration status.
 
@@ -447,13 +447,13 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### Microsoft API Health
-| Bot Framework API Health | Graph API Health |
-|--------------------------|------------------|
-| Operational              | Operational      |
-No mirrored channels.
+>### Microsoft API Health
+>| Bot Framework API Health | Graph API Health |
+>|--------------------------|------------------|
+>| Operational              | Operational      |
+>No mirrored channels.
 
-### Ring a user's Team account
+### microsoft-teams-ring-user
 ***
 Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
 
@@ -485,7 +485,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Calling Avishai Brandeis
 
-### Add a user to a channel
+### microsoft-teams-add-user-to-channel
 ***
 Adds a member (user) to a private/shared channel.
 For a comparison of Teams features for each channel type, see the Microsoft documentation:  [Channel feature comparison](https://learn.microsoft.com/en-us/MicrosoftTeams/teams-channels-overview#channel-feature-comparison).
@@ -520,7 +520,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The User "itayadmin" has been added to channel "example channel" successfully.
 
-### Create a channel
+### microsoft-teams-create-channel
 ***
 Creates a new channel in a Microsoft Teams team.
 For more information about the channels types, see the Microsoft documentation: [standard, private, or shared channels](https://support.microsoft.com/en-us/office/teams-can-have-standard-private-or-shared-channels-de3e20b0-7494-439c-b7e5-75899ebe6a0e)
@@ -558,7 +558,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The channel "example channel" was created successfully
 
-### Create a meeting
+### microsoft-teams-create-meeting
 ***
 Creates a new meeting in Microsoft Teams.
 
@@ -790,10 +790,10 @@ Sends a new chat message in the specified chat.
 ```!microsoft-teams-message-send-to-chat chat="example chat" content="Hello World"```
 
 ##### Human Readable Output
-### Message was sent successfully in the 'example chat' chat.
-| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
-|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
-| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
+>### Message was sent successfully in the 'example chat' chat.
+>| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
+>|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
+>| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
 
 ### microsoft-teams-chat-add-user
 ***
@@ -865,11 +865,11 @@ Retrieves a list of members from a chat.
 ```!microsoft-teams-chat-member-list chat="example chat"```
 
 ##### Human Readable Output
-### Chat "example chat" Members List:
-| User Id                              | User roles | Name         | Email          | Tenant Id                            |
-|--------------------------------------|------------|--------------|----------------|--------------------------------------|
-| 359d2c3c-162b-414c-b2eq-386461e5l050 | owner      | itayadmin    | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
-| 48d31887-5fad-4d73-a9f5-3c356e68a038 | owner      | Bruce Willis | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
+>### Chat "example chat" Members List:
+>| User Id                              | User roles | Name         | Email          | Tenant Id                            |
+>|--------------------------------------|------------|--------------|----------------|--------------------------------------|
+>| 359d2c3c-162b-414c-b2eq-386461e5l050 | owner      | itayadmin    | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
+>| 48d31887-5fad-4d73-a9f5-3c356e68a038 | owner      | Bruce Willis | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
 
 ### microsoft-teams-chat-list
 ***
@@ -915,11 +915,11 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 ```!microsoft-teams-chat-list filter="topic eq 'testing'"```
 
 ##### Human Readable Output
-### Chats List:
-| Chat Id                                       | Chat name | Created Date Time        | Last Updated Date Time   | Chat Type | webUrl | Tenant Id | Last Message Read Date Time |
-|-----------------------------------------------|-----------|--------------------------|--------------------------|-----------|--------|-----------|-----------------------------|
-| 19:561082c0f3f847a58069deb8eb300807@thread.v2 | testing   | 2023-01-08T14:15:45.412Z | 2023-01-08T14:15:45.412Z | group     | webUrl | tenantId  | 2023-01-08T14:16:48.662Z    |
-| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | testing   | 2022-12-29T11:10:49.173Z | 2022-12-29T11:10:49.173Z | group     | webUrl | tenantId  | 2022-12-29T12:00:07.317Z    |
+>### Chats List:
+>| Chat Id                                       | Chat name | Created Date Time        | Last Updated Date Time   | Chat Type | webUrl | Tenant Id | Last Message Read Date Time |
+>|-----------------------------------------------|-----------|--------------------------|--------------------------|-----------|--------|-----------|-----------------------------|
+>| 19:561082c0f3f847a58069deb8eb300807@thread.v2 | testing   | 2023-01-08T14:15:45.412Z | 2023-01-08T14:15:45.412Z | group     | webUrl | tenantId  | 2023-01-08T14:16:48.662Z    |
+>| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | testing   | 2022-12-29T11:10:49.173Z | 2022-12-29T11:10:49.173Z | group     | webUrl | tenantId  | 2022-12-29T12:00:07.317Z    |
 
 ### microsoft-teams-chat-message-list
 ***
@@ -977,10 +977,10 @@ Retrieves a list of messages in a chat.
 ```!!microsoft-teams-chat-message-list chat="example chat" order_by=createdDateTime```
 
 ##### Human Readable Output
-### Messages list in "example chat" chat:
-| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
-|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
-| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
+>### Messages list in "example chat" chat:
+>| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
+>|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
+>| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
 
 ### microsoft-teams-chat-update
 ***
