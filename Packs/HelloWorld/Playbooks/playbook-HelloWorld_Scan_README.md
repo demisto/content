@@ -2,6 +2,8 @@ This Playbook simulates a vulnerability scan using the "HelloWorld" sample integ
 
 Other inputs include the report output format (JSON context or File attached), and the Interval/Timeouts to use for polling the scan status until it's complete.
 
+Change needed for tech writer review.
+
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
