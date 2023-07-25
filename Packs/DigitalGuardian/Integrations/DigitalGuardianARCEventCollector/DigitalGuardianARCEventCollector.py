@@ -158,9 +158,11 @@ def create_events_for_push(event_list, last_time, id_list, limit):
     demisto.debug('Checking duplications and creating events for pushing to XSIAM')
     for event in event_list:
         if last_time:
+            last_time_date = arg_to_datetime(last_time).date()
+            event_date = arg_to_datetime(event.get("inc_mtime")).date()
             if event.get("inc_mtime") < last_time or event.get("dg_guid") in id_list:
                 continue
-            if last_time[:10] == event.get("inc_mtime")[:10]:
+            if last_time_date == event_date:
                 id_list.append(event.get("dg_guid"))
             else:
                 id_list = [event.get("dg_guid")]
