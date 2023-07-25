@@ -33,10 +33,7 @@ SCORE_LOWER_BOUND = 0.5
 SCORE_UPPER_BOUND = 1.0
 
 
-def load_pickled_xpanse_object(
-    file_name: str = "service_owner_model.pkl",
-    cache_path: str = "/tmp/xpanse-ml",
-) -> Any:
+def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml") -> Any:
     """
     Returns the pickled object at `file_name` as a Python object,
     either using the local cache or retrieving from the
@@ -117,7 +114,7 @@ def score(owners: list[dict[str, Any]], asm_system_ids: list[str]) -> list[dict[
         return owners
 
     try:
-        model = load_pickled_xpanse_object()
+        model = load_pickled_xpanse_object("service_owner_model.pkl")
     except Exception as ex:
         demisto.info(f"Error loading the model: {ex}. Using fallback scores")
         return scoring_fallback(owners)
@@ -324,17 +321,15 @@ def _get_k(
 # Begin: Model Featurization Code
 def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str]:
     """
-    Return all the spaceless ways that `personal_monikers` might manifest.
+    Return all the spaceless ways that `personal_monikers` (such as a name or
+    email address) might manifest.
+
     Guaranteed lower case. Removes hyphens and quotes, and anything that
     looks like a domain of an email address.
 
-    Examples:
-
-    personal_monikers = ["jane@example.com", "Jane Doe"]
-    returns: {"jane", "jane", "doe", "janedoe", "jd", "jdoe", }
-
-    personal_monikers = ["joreilly@example.com", "John C Reilly"]
-    returns: {"jcreilly", "john", "c", "reilly", "johncreilly", "johnreilly", "jcr", "jreilly", "jr"}
+    Example:
+        personal_monikers = ["mike@example.com", "Michael Jordan"]
+        returns: {"mike", "michael", "jordan", "mj", "mjordan"}
     """
     result_set = set()
     for moniker in personal_monikers:
@@ -471,7 +466,8 @@ def get_name_similarity_index(
                     total_indicators += 0.01
 
     # check for a hypothesized-middle-initial match
-    # for example, both mij-test and mjj-test are potential matches for Michael Jordan
+    # for example, this may help us attest a dev server named mjj-test
+    # (or mbj-test, or mij-test) to Michael Jordan
     hypothesized_initials = get_possible_3initials(personal_monikers) - all_monikers
     for hypothesized_initial in hypothesized_initials:
         if hypothesized_initial in all_names:
@@ -601,7 +597,7 @@ class OwnerFeaturizationPipeline():
                     else:
                         X[sample_idx, feature_idx] = method(owner)
                 except Exception as e:
-                    demisto.error(f"Setting 0 for {method_name} because of processing exception: {e}")
+                    demisto.info(f"Setting 0 for {method_name} because of processing exception: {e}")
                     X[sample_idx, feature_idx] = 0
         return X
 
