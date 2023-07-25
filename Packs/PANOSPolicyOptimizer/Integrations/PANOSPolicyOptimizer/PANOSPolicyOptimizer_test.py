@@ -1,7 +1,7 @@
 import pytest
 import io
 from CommonServerPython import *
-from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command
+from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position
 
 BASE_URL = 'https://test.com'
 
@@ -213,5 +213,4 @@ def test_define_position(mocker, VERSION, position, is_panorama, res):
         case 3: PAN-OS 10.3 should return post as its input.
     """
     mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
-    from PANOSPolicyOptimizer import define_position
     assert define_position(args={"position": position}, is_panorama=is_panorama) == res
