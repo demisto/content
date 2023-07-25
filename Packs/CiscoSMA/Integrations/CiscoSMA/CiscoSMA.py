@@ -400,7 +400,7 @@ class Client(BaseClient):
         sender_filter_value: str = None,
         recipient_filter_operator: str = None,
         recipient_filter_value: str = None,
-        subject_filter_operator: str = None,
+        subject_filter_by: str = None,
         subject_filter_value: str = None,
         attachment_name_operator: str = None,
         attachment_name_value: str = None,
@@ -425,10 +425,10 @@ class Client(BaseClient):
                 Required if recipient_filter_value is specified. Defaults to None.
             recipient_filter_value (str, Optional): Recipient address filter.
                 Required if recipient_filter_operator is specified. Defaults to None.
-            subject_filter_operator (str, Optional): Subject filter operator.
+            subject_filter_by (str, Optional): Subject filter operator.
                 Required if subject_filter_value is specified. Defaults to None.
             subject_filter_value (str, Optional): Subject address filter.
-                Required if subject_filter_operator is specified. Defaults to None.
+                Required if subject_filter_by is specified. Defaults to None.
             attachment_name_operator (str, Optional): Attachment name operator.
                 Required if attachment_name_value is specified. Defaults to None.
             attachment_name_value (str, Optional): Attachment name filter.
@@ -448,7 +448,7 @@ class Client(BaseClient):
             envelopeSenderfilterValue=sender_filter_value,
             envelopeRecipientfilterOperator=recipient_filter_operator,
             envelopeRecipientfilterValue=recipient_filter_value,
-            subjectfilterOperator=subject_filter_operator,
+            subjectFilterBy=subject_filter_by,
             subjectfilterValue=subject_filter_value,
             ciscoHost=cisco_host,
             searchOption=search_option,
@@ -1253,7 +1253,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
     sender_filter_value = args.get("sender_filter_value")
     recipient_filter_operator = args.get("recipient_filter_operator")
     recipient_filter_value = args.get("recipient_filter_value")
-    subject_filter_operator = args.get("subject_filter_operator")
+    subject_filter_by = args.get("subject_filter_by")
     subject_filter_value = args.get("subject_filter_value")
     attachment_name_operator = args.get("attachment_name_operator")
     attachment_name_value = args.get("attachment_name_value")
@@ -1267,7 +1267,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
         related_arguments_list=[
             ["sender_filter_operator", "sender_filter_value"],
             ["recipient_filter_operator", "recipient_filter_value"],
-            ["subject_filter_operator", "subject_filter_value"],
+            ["subject_filter_by", "subject_filter_value"],
             ["attachment_name_operator", "attachment_name_value"],
             ["order_by", "order_dir"],
         ],
@@ -1282,7 +1282,7 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
         sender_filter_value=sender_filter_value,
         recipient_filter_operator=recipient_filter_operator,
         recipient_filter_value=recipient_filter_value,
-        subject_filter_operator=subject_filter_operator,
+        subject_filter_by=subject_filter_by,
         subject_filter_value=subject_filter_value,
         attachment_name_operator=attachment_name_operator,
         attachment_name_value=attachment_name_value,
