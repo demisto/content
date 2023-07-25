@@ -340,7 +340,17 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     else:
         request_data = {"request_data": {"filters": search_params, 'search_from': search_from, 'search_to': search_to}}
 
-    response = client.list_alerts_request(request_data)
+    try:
+        response = client.list_alerts_request(request_data)
+    except Exception as e:
+        command_results = CommandResults(
+            outputs_prefix='ASM.Alert',
+            outputs_key_field='alert_id',
+            outputs=[],
+            raw_response={'reply': {'alerts': []}},
+            readable_output=tableToMarkdown('ASM Alerts', [], removeNull=True, headerTransform=string_to_table_header)
+        )
+        return command_results
 
     parsed = response.get('reply', {}).get('alerts')
     markdown = tableToMarkdown('ASM Alerts', parsed, removeNull=True, headerTransform=string_to_table_header)
