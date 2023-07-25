@@ -2,6 +2,7 @@ from typing import Any, Optional
 from gevent.server import StreamServer
 import demistomock as demisto
 from CommvaultSecurityIQ import (
+    Client,
     disable_data_aging,
     generate_access_token,
     fetch_incidents,
@@ -16,7 +17,7 @@ from CommvaultSecurityIQ import (
 )
 
 
-class CommvaultClientMock:
+class CommvaultClientMock(Client):
     def __init__(self, base_url: str, verify: bool, proxy: bool):
         """
         Constructor to initialize the Commvault client object
@@ -47,16 +48,21 @@ class CommvaultClientMock:
 
     def http_request(
         self,
-        method,
-        endpoint,
-        params,
-        json_data,
-        ignore_empty_response,
-        headers,
+        method: str,
+        endpoint: str,
+        params: dict | None = None,
+        json_data: dict[str, Any] | None = None,
+        ignore_empty_response: bool = False,
+        headers: dict | None = None,
     ):
         """Dummy function"""
-        del method, endpoint, params, json_data, ignore_empty_response, headers
-        return {"identityServers": None}
+        del method, params, json_data, ignore_empty_response, headers
+
+        if endpoint == "/DoBrowse":
+            return {"browseResponses": []}
+        if endpoint == "/Subclient/11351":
+            return {"subClientProperties": [{"content": []}]}
+        return {}
 
     def validate_session_or_generate_token(self, token):
         """Dummy function"""
@@ -77,10 +83,56 @@ class CommvaultClientMock:
         del key
         return "Secret"
 
+    def get_job_details(self, job_id):
+        """Dummy function"""
+        return {
+            "jobs": [
+                {
+                    "jobSummary": {
+                        "jobStartTime": 1690283943,
+                        "jobEndTime": 1690283995,
+                        "subclient": {
+                            "subclientId": 11351,
+                            "subclientName": "AnomalySubclient",
+                        },
+                    }
+                }
+            ]
+        }
+
     def get_events_list(self, last_run, first_fetch_time, max_fetch):
         """Dummy function"""
         del last_run, first_fetch_time, max_fetch
-        return None
+        apiresp = [
+            {
+                "severity": 6,
+                "eventCode": "234881361",
+                "jobId": 185314,
+                "acknowledge": 0,
+                "eventCodeString": "14:337",
+                "subsystem": "CvStatAnalysis",
+                "description": (
+                    "<html>Detected file type classification anomaly in job [185314]"
+                    " for client [dihyperv]. Number of files affected [145]."
+                    "'Please click  <a href=\"http://plusonecs.idx.commvault.com:80/commandcenter/#/"
+                    "fileAnomaly/5185?anomalyTypes=mime\"> here</a> for more"
+                    " details.<span style=\"display: none\">AnomalyType:[2];ClientName:[dihyperv];BackupSetName:"
+                    "[defaultBackupSet];SubclientName:[AnomalySubclient];"
+                    "SuspiciousFileCount:[145];ModifiedFileCount:[0];RenamedFileCount:[0];CreatedFileCount:[0];"
+                    "DeletedFileCount:[0];ApplicationType:[33];"
+                    "BackupSetId:[0];SubclientId:[0];JobId:[185314]</span></html>"
+                ),
+                "id": 5196568,
+                "timeSource": 1690284138,
+                "type": 0,
+                "clientEntity": {
+                    "clientId": 5185,
+                    "clientName": "dihyperv",
+                    "displayName": "dihyperv",
+                },
+            }
+        ]
+        return apiresp
 
     def perform_long_running_execution(self, sock: Any, address: tuple) -> None:
         """
@@ -185,7 +237,7 @@ def test_fetch_incidents():
         base_url="https://webservice_url:81", verify=False, proxy=False
     )
     _, resp = fetch_incidents(client, 0, 0)
-    assert resp is None
+    assert resp[0]["affected_files_count"] == "145"
 
 
 def test_get_backup_anomaly():
@@ -209,7 +261,7 @@ def test_extract_from_regex():
 def test_format_alert_description():
     """Unit test function"""
     resp = format_alert_description("<html>Format Alert</html>")
-    assert resp == "Format Alert"
+    assert resp == "<html>Format Alert</html>"
 
 
 def test_field_mapper():
