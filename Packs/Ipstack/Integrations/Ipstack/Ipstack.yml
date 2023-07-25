@@ -11,11 +11,13 @@ configuration:
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - name: credentials
   display: ""
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -29,9 +31,11 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: '-'
   type: python
