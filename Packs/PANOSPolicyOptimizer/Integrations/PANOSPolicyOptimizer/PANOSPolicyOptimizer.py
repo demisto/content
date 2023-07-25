@@ -132,6 +132,9 @@ class Client:
             json_cmd=json_cmd)
 
     def policy_optimizer_no_apps(self, position: str) -> dict:
+        # in panorama this parameter Should be True, in firewall it is False. this should be probably fixed in all versions,
+        # but for now we'll just fix it for version 10.2.0 and above since thats the version we have access to.
+        isCmsSelected = self.is_cms_selected if LooseVersion(VERSION) >= LooseVersion('10.2.0') else False
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -142,7 +145,7 @@ class Client:
                         "type": "security",
                         "position": position,
                         "vsysName": self.machine,
-                        "isCmsSelected": self.is_cms_selected,
+                        "isCmsSelected": isCmsSelected,
                         "isMultiVsys": False,
                         "showGrouped": False,
                         "usageAttributes": {
@@ -165,6 +168,9 @@ class Client:
             json_cmd=json_cmd)
 
     def policy_optimizer_get_unused_apps(self, position: str) -> dict:
+        # in panorama this parameter Should be True, in firewall it is False. this should be probably fixed in all versions,
+        # but for now we'll just fix it for version 10.2.0 and above since thats the version we have access to.
+        isCmsSelected = self.is_cms_selected if LooseVersion(VERSION) >= LooseVersion('10.2.0') else False
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -177,7 +183,7 @@ class Client:
                         "position": position,
                         "vsysName": self.machine,
                         "serialNumber": "",
-                        "isCmsSelected": self.is_cms_selected,
+                        "isCmsSelected": isCmsSelected,
                         "isMultiVsys": False,
                         "showGrouped": False,
                         "usageAttributes": {
@@ -489,6 +495,7 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
 
 
 ''' HELPER FUNCTIONS '''
+
 
 def define_position(args: dict, is_panorama: bool) -> str:
     """
