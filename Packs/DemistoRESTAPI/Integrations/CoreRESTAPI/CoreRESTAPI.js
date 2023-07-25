@@ -300,6 +300,7 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 };
 
 switch (command) {
+    log("TEST")
     case 'test-module':
         sendRequest('GET','user');
         return 'ok';
