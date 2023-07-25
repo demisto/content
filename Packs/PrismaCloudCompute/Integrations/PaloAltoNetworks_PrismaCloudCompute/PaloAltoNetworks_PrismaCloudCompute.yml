@@ -987,7 +987,7 @@ script:
       - "true"
       - "false"
     - name: fields
-      description: A comma-separated list of fields to return.
+      description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
       defaultValue: ""
     - name: hostname
@@ -1215,7 +1215,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: fields
-      description: A comma-separated list of fields to return.
+      description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
       defaultValue: ""
     - name: hostname
