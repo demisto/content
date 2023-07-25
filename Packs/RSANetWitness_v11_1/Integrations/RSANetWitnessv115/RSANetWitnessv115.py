@@ -850,8 +850,7 @@ def fetch_incidents(client: Client, params: dict) -> list:
         # add to incident object an array of all related alerts
         if params['import_alerts']:
             max_alerts = min(arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS, DEFAULT_MAX_INCIDENT_ALERTS)
-            alerts = fetch_alerts_related_incident(client, inc_id, max_alerts)
-            item['alerts'] = alerts
+            item['alerts'] = fetch_alerts_related_incident(client, inc_id, max_alerts)
 
         incident = {"name": f"RSA NetWitness 11.5 {inc_id} - {item.get('title')}",
                     "occurred": item.get('created'),
