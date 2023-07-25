@@ -1033,7 +1033,7 @@ def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex
 def add_exclusion_filter(reco_client: RecoClient, key_to_add: str, values: list[str]) -> CommandResults:
     """Add exclusion filter to Reco."""
     response = reco_client.add_exclusion_filter(key_to_add, values)
-    return CommandResults(raw_response=response)
+    return CommandResults(raw_response=response, readable_output="Exclusion filter added successfully")
 
 
 def assets_to_command_result(assets: list[dict[str, Any]]) -> CommandResults:
