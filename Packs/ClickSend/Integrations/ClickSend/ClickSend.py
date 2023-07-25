@@ -7,9 +7,9 @@ import base64
 
 def text_to_voice(api_key, username, phoneNumber, Message, require_input, voice):
     url = 'https://rest.clicksend.com/v3/voice/send'
-    if require_input == False or require_input == "False":
+    if require_input is False or require_input == "False":
         require_input = "0"
-    elif require_input == True or require_input == "True":
+    elif require_input is True or require_input == "True":
         require_input = "1"
     else:
         require_input = "0"
