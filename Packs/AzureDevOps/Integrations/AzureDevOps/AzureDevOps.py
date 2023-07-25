@@ -2618,6 +2618,8 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())
+        if type(e) == NotFoundError:
+            return_error(f"{str(e)}. There is a possibility that the organization's name is incorrect")
         return_error(str(e))
 
 
