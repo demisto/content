@@ -1304,13 +1304,12 @@ def prepare_file_permission_request(client: 'GSuiteClient', args: dict[str, str]
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
     client.set_authorized_http(scopes=scopes, subject=user_id)
-
     # Prepare generic HTTP request params
     http_request_params: dict[str, str] = assign_params(
         fileId=args.get('file_id'),
         supportsAllDrives=args.get('supports_all_drives'),
         fields='*',
-        useDomainAdminAccess=('true' if argToBoolean(args.get('use_domain_admin_access')) else 'false')
+        useDomainAdminAccess=('true' if argToBoolean(args.get('use_domain_admin_access', 'false')) else 'false')
     )
 
     return {
@@ -1362,7 +1361,6 @@ def file_permission_create_command(client: 'GSuiteClient', args: dict[str, str])
     prepare_file_permission_request_res = prepare_file_permission_request(
         client, args, scopes=COMMAND_SCOPES['FILE_PERMISSIONS_CRUD'])
     http_request_params: dict[str, str] = prepare_file_permission_request_res['http_request_params']
-
     http_request_params.update(
         assign_params(
             sendNotificationEmail=args.get('send_notification_email'),
@@ -1375,7 +1373,6 @@ def file_permission_create_command(client: 'GSuiteClient', args: dict[str, str])
         domain=args.get('domain'),
         emailAddress=args.get('email_address'),
     )
-
     url_suffix = URL_SUFFIX['FILE_PERMISSION_CREATE'].format(args.get('file_id'))
     response = client.http_request(url_suffix=url_suffix, method='POST', params=http_request_params, body=body)
     return handle_response_permission_single(response, args)
