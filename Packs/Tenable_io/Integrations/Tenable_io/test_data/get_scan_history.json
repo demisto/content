@@ -57,7 +57,7 @@
             "status": "completed"
         }
     ],
-    "readable_output": "### Tenable IO Scan History\n|History id|History uuid|Status|Is archived|Targets custom|Targets default|Visibility|Time start|Time end|\n|---|---|---|---|---|---|---|---|---|\n| 10535512 | fc9dc7c5-8eec-4d39-ad9c-20e833cca69b | canceled | true | false |  | public | 1545945482 | 1545945607 |\n| 10535505 | 9e3a89e5-f3d0-4708-9ec9-403a34e7cd5e | completed | true | false |  | public | 1545945321 | 1545945457 |\n",
+    "readable_output": "### Tenable IO Scan History\n|History id|History uuid|Status|Is archived|Targets custom|Visibility|Time start|Time end|\n|---|---|---|---|---|---|---|---|\n| 10535512 | fc9dc7c5-8eec-4d39-ad9c-20e833cca69b | canceled | true | false | public | 1545945482 | 1545945607 |\n| 10535505 | 9e3a89e5-f3d0-4708-9ec9-403a34e7cd5e | completed | true | false | public | 1545945321 | 1545945457 |\n",
     "args": {
         "scanId": "16",
         "excludeRollover": "true",
@@ -68,22 +68,16 @@
     },
     "called_with": {
         "args": [
-            "http://123-fake-api.com/scans/16/history"
+            "GET",
+            "scans/16/history"
         ],
         "kwargs": {
             "params": {
                 "sort": "end_date:desc,status:desc",
                 "exclude_rollover": "true",
-                "limit": "30",
+                "limit": 30,
                 "offset": 30
-            },
-            "headers": {
-                "X-ApiKeys": "accessKey=fake_access_key; secretKey=fake_access_key",
-                "accept": "application/json",
-                "content-type": "application/json",
-                "User-Agent": "Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)"
-            },
-            "verify": false
+            }
         }
     }
 }

@@ -38,43 +38,39 @@ def paginate(
                 if isinstance(keys_to_pages, str)
                 # could be None or list/tuple
                 else keys_to_pages or [])
-            pages = []
 
             def get_page(**page_args):
-                nonlocal pages
                 demisto.debug(f'{page_args=}')
-                pages += dict_safe_get(
+                return dict_safe_get(
                     func(args | page_args, *arguments, **kwargs),
-                    keys, default_return_value=[], return_type=list)
+                    keys, return_type=list)
+            pages: list[Any] = []
 
-            page, page_size = map(arg_to_number, map(args.get, (page_arg_name, page_size_arg_name)))
-            if isinstance(page, int) and isinstance(page_size, int):
-                demisto.debug(f'{page=}, {page_size=}')
-                offset = (page - page_start) * page_size
+            try:
+                page, page_size = map(int, map(args.get, (page_arg_name, page_size_arg_name)))
+                limit, offset = page_size, (page - page_start) * page_size
 
-                if offset < 0:
-                    raise ValueError
+            except (ValueError, TypeError):  # from conversion to int
 
-                get_page(
-                    limit=page_size,
-                    offset=offset)
-
-            else:
-                limit = arg_to_number(args[limit_arg_name])
-                demisto.debug(f'{limit=}')
-                offset = 0
+                limit, offset = int(args[limit_arg_name]), 0
 
                 if api_limit:
-                    while limit > api_limit:
-                        get_page(
-                            limit=api_limit,
-                            offset=offset)
-                        limit -= api_limit
-                        offset += api_limit
+                    pages += sum(
+                        (
+                            get_page(
+                                limit=api_limit,
+                                offset=(offset := curr_offset))
+                            for curr_offset
+                            in range(0, limit - api_limit, api_limit)
+                        ),
+                        []
+                    )
+                    limit = limit % api_limit or api_limit
+                    offset += api_limit
 
-                get_page(
-                    limit=limit,
-                    offset=offset)
+            pages += get_page(
+                limit=limit,
+                offset=offset)
 
             return pages
 
@@ -1257,7 +1253,7 @@ def list_scan_filters_command(client: Client) -> CommandResults:
         raw_response=response_dict)
 
 
-def scan_history_human_readable(history: list) -> str:
+def scan_history_readable(history: list) -> str:
     context_to_hr = {
         'id': 'History id',
         'scan_uuid': 'History uuid',
@@ -1289,20 +1285,21 @@ def scan_history_params(args: dict) -> dict:
 @paginate(
     page_size_arg_name='pageSize',
     keys_to_pages='history')
-def paginated_scan_history(args: dict[str, Any], client: Client):
-    client.get_scan_history(
+def scan_history_request(args: dict[str, Any], client: Client):
+    return client.get_scan_history(
         args['scanId'],
         scan_history_params(args))
 
 
 def get_scan_history_command(*args) -> CommandResults:
 
-    history = paginated_scan_history(*args)
+    history = scan_history_request(*args)
 
     return CommandResults(
         outputs_prefix='TenableIO.ScanHistory',
         outputs_key_field='id',
-        outputs=history)
+        outputs=history,
+        readable_output=scan_history_readable(history))
 
 
 def build_filters(args: dict) -> dict:

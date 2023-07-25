@@ -69,19 +69,11 @@
             "group_name": null
         }
     ],
-    "readable_output": "### Tenable IO Scan Filters\n|Filter name|Filter Readable name|Filter Control type|Filter regex|Readable regex|Filter operators|Filter group name|\n|---|---|---|---|---|---|---|\n| host.id | Asset ID | entry | [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})* | a94fd560-f8d9-4ed1-9b46-cba00c21bcdb | eq,<br>neq,<br>match,<br>nmatch |  |\n| plugin.attributes.exploit_framework_canvas | CANVAS Exploit Framework | dropdown |  |  | eq,<br>neq |  |\n",
+    "readable_output": "### Tenable IO Scan Filters\n|Filter name|Filter Readable name|Filter Control type|Filter regex|Readable regex|Filter operators|\n|---|---|---|---|---|---|\n| host.id | Asset ID | entry | [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})* | a94fd560-f8d9-4ed1-9b46-cba00c21bcdb | eq,<br>neq,<br>match,<br>nmatch |\n| plugin.attributes.exploit_framework_canvas | CANVAS Exploit Framework | dropdown |  |  | eq,<br>neq |\n",
     "called_with": {
         "args": [
-            "http://123-fake-api.com/filters/scans/reports"
-        ],
-        "kwargs": {
-            "headers": {
-                "X-ApiKeys": "accessKey=fake_access_key; secretKey=fake_access_key",
-                "accept": "application/json",
-                "content-type": "application/json",
-                "User-Agent": "Integration/1.0 (PAN; Cortex-XSOAR; Build/2.0)"
-            },
-            "verify": false
-        }
+            "GET",
+            "filters/scans/reports"
+        ]
     }
 }
