@@ -18,7 +18,7 @@ class GoogleSecreteManagerModule:
                 f'got error: {e}')
             return {}
 
-    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple()) -> list:
+    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=()) -> list:
         secrets = []
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
