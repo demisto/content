@@ -11,39 +11,47 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Threshold for fraud score from IP lookup to be marked as suspicious
   defaultvalue: '75'
   display: IP Suspicious Score Threshold
   name: ip_suspicious_score_threshold
   type: 0
+  required: false
 - additionalinfo: Threshold for fraud score from IP lookup to be marked as malicious
   defaultvalue: '90'
   display: IP Malicious Score Threshold
   name: ip_malicious_score_threshold
   type: 0
+  required: false
 - additionalinfo: Threshold for fraud score from Email lookup to be marked as suspicious
   defaultvalue: '75'
   display: Email Suspicious Score Threshold
   name: email_suspicious_score_threshold
   type: 0
+  required: false
 - additionalinfo: Threshold for fraud score from Email lookup to be marked as malicious
   defaultvalue: '90'
   display: Email Malicious Score Threshold
   name: email_malicious_score_threshold
   type: 0
+  required: false
 - additionalinfo: Threshold for fraud score from Url lookup to be marked as suspicious
   defaultvalue: '75'
   display: Url Suspicious Score Threshold
   name: url_suspicious_score_threshold
   type: 0
+  required: false
 - additionalinfo: Threshold for fraud score from Url lookup to be marked as malicious
   defaultvalue: '90'
   display: Url Malicious Score Threshold
   name: url_malicious_score_threshold
   type: 0
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability

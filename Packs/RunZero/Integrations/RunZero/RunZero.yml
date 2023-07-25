@@ -17,9 +17,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: "RunZero is a network discovery and asset inventory\n platform that uncovers every network in use and identifies every device connected – without credentials.\n Scan your network and build your asset inventory in minutes."
 display: 'RunZero'
 name: RunZero

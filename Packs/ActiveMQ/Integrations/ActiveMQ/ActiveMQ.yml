@@ -11,38 +11,49 @@ configuration:
   display: Port
   name: port
   type: 0
+  required: false
 - defaultvalue: Demisto
   display: Client ID
   name: client-id
   type: 0
+  required: false
 - display: '---------------------------- Basic Authentication ----------------------------                         Username'
   name: credentials
   type: 9
+  required: false
 - display: '--------------------- Certificate Authentication ---------------------                         Client certificate (.pem)'
   name: client_cert
   type: 12
+  required: false
 - display: Client certificate key (.key)
   name: client_key
   type: 12
+  required: false
 - display: Root Certificate
   name: root_ca
   type: 12
+  required: false
 - defaultvalue: '1'
   display: '---------------------------- Fetch Incidents ----------------------------                         Subscription ID'
   name: subscription-id
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Topic Name (for subscription)
   name: topic-name
   type: 0
+  required: false
 - display: Queue Name (for subscription)
   name: queue_name
   type: 0
+  required: false
 description: Integration with ActiveMQ queue
 display: ActiveMQ
 name: ActiveMQ
