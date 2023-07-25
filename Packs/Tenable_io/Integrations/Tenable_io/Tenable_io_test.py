@@ -623,8 +623,8 @@ def test_download_export_scan(mocker):
 @pytest.mark.parametrize(
     'args, response_json, message',
     [
-        ({'scanId': '', 'format': 'HTML'}, {}, 'The "chapters" field must be provided for PDF or HTML formats.'),
-        ({'scanId': '', 'format': ''}, {'status': 'error'},
+        ({'scanId': '', 'format': 'HTML', 'filterSearchType': ''}, {}, 'The "chapters" field must be provided for PDF or HTML formats.'),
+        ({'scanId': '', 'format': '', 'filterSearchType': ''}, {'status': 'error'},
          'Tenable IO encountered an error while exporting the scan report file.')
     ]
 )
@@ -647,17 +647,10 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
     mock_demisto(mocker)
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     mocker.patch.object(BaseClient, '_http_request', return_value=response_json)
-    mock_client = Client(
-        MOCK_PARAMS['url'],
-        verify=True,
-        proxy=True,
-        ok_codes=(200,),
-        headers=HEADERS
-    )
-    mock_client.initiate_export_scan = lambda *x: {'file': 'file_id'}
+    mocker.patch.object(Client, 'initiate_export_scan', return_value={'file': 'file_id'})
 
     with pytest.raises(DemistoException, match=message):
-        export_scan_command(args, mock_client)
+        export_scan_command(args, MOCK_CLIENT)
 
 
 @pytest.mark.parametrize(
