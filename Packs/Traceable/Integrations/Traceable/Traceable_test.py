@@ -58,10 +58,151 @@ sample_span_result = """{
   }
 }"""
 
+sample_api_result = """{
+  "data": {
+    "entities": {
+      "results": [
+        {
+          "id": "ea0f77c0-adc2-3a69-89ea-93b1c8341d8f",
+          "name": "POST /cart",
+          "isExternal": true,
+          "isAuthenticated": true,
+          "riskScore": 2,
+          "riskScoreCategory": "LOW"
+        },
+        {
+          "id": "067bb0d7-3740-3ba6-89eb-c457491fbc53",
+          "name": "POST /get_user",
+          "isExternal": true,
+          "isAuthenticated": true,
+          "riskScore": 3,
+          "riskScoreCategory": "MEDIUM"
+        },
+        {
+          "id": "be344182-c100-3287-874a-cb47eac709f2",
+          "name": "POST /cart",
+          "isExternal": false,
+          "isAuthenticated": true,
+          "riskScore": 2,
+          "riskScoreCategory": "LOW"
+        }
+      ],
+      "total": 3
+    }
+  }
+}"""
+
 empty_domain_event = """{
   "data": {
     "explore": {
       "results": []
+    }
+  }
+}"""
+
+sample_domain_event_empty_api = """{
+  "data": {
+    "explore": {
+      "results": [
+        {
+          "threatCategory": {
+            "value": "null"
+          },
+          "id": {
+            "value": "9dd9261a-23db-472e-9d2a-a4c3227d6502"
+          },
+          "name": {
+            "value": "XSS Filter - Category 1: Script Tag Vector"
+          },
+          "type": {
+            "value": "Cross Site Scripting (XSS)"
+          },
+          "environment": {
+            "value": "Fintech_app"
+          },
+          "serviceName": {
+            "value": "frontend"
+          },
+          "apiName": {
+            "value": "POST /get_user"
+          },
+          "apiId": {
+            "value": "null"
+          },
+          "serviceId": {
+            "value": "3d67aadf-4605-385d-bd3a-b297789046fd"
+          },
+          "threatActorScore": {
+            "value": -2147483648
+          },
+          "anomalousAttribute": {
+            "value": "default.password"
+          },
+          "eventDescription": {
+            "value": "Matched Data: <script alert(1) /> found within ARGS:password: ${<script alert(1) />}"
+          },
+          "actorId": {
+            "value": "xxx@outlook.zz"
+          },
+          "actorCountry": {
+            "value": "United States"
+          },
+          "actorIpAddress": {
+            "value": "8.8.8.8"
+          },
+          "actorDevice": {
+            "value": "null"
+          },
+          "apiUri": {
+            "value": "http://localhost:1111/get_user?forwardUrl=http%3A%2F%2Fdummyjon.com"
+          },
+          "traceId": {
+            "value": "a1f93e44b31be69835cfeeac4f181869"
+          },
+          "statusCode": {
+            "value": "200"
+          },
+          "actorEntityId": {
+            "value": "null"
+          },
+          "actorScoreCategory": {
+            "value": "null"
+          },
+          "securityScoreCategory": {
+            "value": "LOW"
+          },
+          "securityScore": {
+            "value": 0
+          },
+          "category": {
+            "value": "SECURITY"
+          },
+          "securityEventType": {
+            "value": "MODSEC"
+          },
+          "ipCategories": {
+            "value": [
+              "IP_LOCATION_TYPE_PUBLIC_PROXY",
+              "IP_LOCATION_TYPE_BOT"
+            ]
+          },
+          "ipReputationLevel": {
+            "value": "CRITICAL"
+          },
+          "ipAbuseVelocity": {
+            "value": "HIGH"
+          },
+          "spanId": {
+            "value": "f7dded93dc8b49c7"
+          },
+          "actorSession": {
+            "value": "00b79cf7-f47a-7903-2b72-f6c3c65ae04e"
+          },
+          "timestamp": {
+            "value": 1687388516786
+          }
+        }
+      ]
     }
   }
 }"""
@@ -192,6 +333,8 @@ def empty_response_handler(*args, **kwargs):
     elif "spans(" in data:
         r.text = sample_span_result
         return r
+    elif "entities(" in data:
+        r.text = sample_api_result
     return None
 
 
@@ -205,12 +348,32 @@ def response_handler(*args, **kwargs):
     elif "spans(" in data:
         r.text = sample_span_result
         return r
+    elif "entities(" in data:
+        r.text = sample_api_result
+        return r
+    return None
+
+
+def empty_api_response_handler(*args, **kwargs):
+    data: str = kwargs["json"]["query"]
+
+    r = Response()
+    if "DOMAIN_EVENT" in data:
+        r.text = sample_domain_event_empty_api
+        return r
+    elif "spans(" in data:
+        r.text = sample_span_result
+        return r
+    elif "entities(" in data:
+        r.text = sample_api_result
+        return r
     return None
 
 
 def test_fetch_incidents_last_fetch_none(mocker):
     from Traceable import Client, fetch_incidents
     import urllib3
+    import json
 
     urllib3.disable_warnings()
     headers = {}
@@ -229,6 +392,34 @@ def test_fetch_incidents_last_fetch_none(mocker):
 
     next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
     assert len(incidents) == 1
+    rawJSON = json.loads(incidents[0]["rawJSON"])
+    assert rawJSON["ipAddressType"] == "External"
+
+
+def test_fetch_incidents_no_linked_api(mocker):
+    from Traceable import Client, fetch_incidents
+    import urllib3
+    import json
+
+    urllib3.disable_warnings()
+    headers = {}
+    headers["Content-Type"] = "application/json"
+    headers["Accept"] = "application/json"
+
+    client = Client(base_url="https://mock.url", verify=False, headers=headers)
+    client.set_security_score_category_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    # client.set_threat_category_list(threatCategoryList)
+    client.set_ip_reputation_level_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_ip_abuse_velocity_list(["CRITICAL", "HIGH", "MEDIUM", "LOW"])
+    client.set_limit(100)
+
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.side_effect = empty_api_response_handler
+
+    next_run, incidents = fetch_incidents(client, {"last_fetch": None}, "3 days")
+    assert len(incidents) == 1
+    rawJSON = json.loads(incidents[0]["rawJSON"])
+    assert rawJSON["apiType"] == "Unknown"
 
 
 def test_fetch_incidents_last_fetch_not_none(mocker):
@@ -601,3 +792,55 @@ def test_graphql_query_non_200(mocker, caplog, capfd):
     assert encountered_exception
     caplog.clear()
     capfd.readouterr()
+
+
+def test_get_api_endpoint_details_query():
+    from Traceable import Client, Helper
+
+    client = Client("https://mock.url")
+    client.set_limit(100)
+
+    query = client.get_api_endpoint_details_query(
+        [
+            "067bb0d7-3740-3ba6-89eb-c457491fbc53",
+            "ea0f77c0-adc2-3a69-89ea-93b1c8341d8f",
+            "be344182-c100-3287-874a-cb47eac709f2",
+        ],
+        Helper.string_to_datetime("2023-07-23T09:07:59Z"),
+        Helper.string_to_datetime("2023-07-24T09:07:59Z"),
+    )
+    expected_query = (
+        'query entities\n{\n  entities(\n    scope: "API"\n    limit: 100\n    between: '
+        + '{\n      startTime: "2023-07-23T09:07:59Z"\n      endTime: "2023-07-24T09:07:59Z"\n    }\n    of'
+        + 'fset: 0\n    filterBy: [{keyExpression: {key: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-8'
+        + '9eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1c8341d8f","be344182-c100-3287-874a-cb47eac709f2"]'
+        + ', type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      name: attribute(expression: { key: "n'
+        + 'ame" })\n      isExternal: attribute(expression: { key: "isExternal" })\n      isAuthenticated: '
+        + 'attribute(expression: { key: "isAuthenticated" })\n      riskScore: attribute(expression: { key:'
+        + ' "riskScore" })\n      riskScoreCategory: attribute(expression: { key: "riskScoreCategory" })\n '
+        + "   }\n    total\n  }\n}"
+    )
+
+    assert query == expected_query
+
+
+def test_get_api_endpoint_details(mocker):
+    from Traceable import Client, Helper
+
+    resp = Response()
+    resp.text = sample_api_result
+    resp.status_code = 200
+    client = Client("https://mock.url")
+    client.set_limit(100)
+    mocked_post = mocker.patch("requests.post")
+    mocked_post.return_value = resp
+    result = client.get_api_endpoint_details(
+        [
+            "067bb0d7-3740-3ba6-89eb-c457491fbc53",
+            "ea0f77c0-adc2-3a69-89ea-93b1c8341d8f",
+            "be344182-c100-3287-874a-cb47eac709f2",
+        ],
+        Helper.string_to_datetime("2023-07-23T09:07:59Z"),
+        Helper.string_to_datetime("2023-07-24T09:07:59Z"),
+    )
+    assert len(result) == 3
