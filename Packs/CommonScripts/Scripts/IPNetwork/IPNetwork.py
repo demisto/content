@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # STD imports
 import ipaddress
-from typing import Dict, Tuple
+from typing import Dict
 
 
 # Local imports
