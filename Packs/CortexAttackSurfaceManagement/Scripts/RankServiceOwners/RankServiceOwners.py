@@ -312,6 +312,14 @@ def generate_all_spaceless_monikers(personal_monikers: Iterable[str]) -> set[str
     Return all the spaceless ways that `personal_monikers` might manifest.
     Guaranteed lower case. Removes hyphens and quotes, and anything that
     looks like a domain of an email address.
+
+    Examples:
+
+    personal_monikers = ["jane@example.com", "Jane Doe"]
+    returns: {"jane", "jane", "doe", "janedoe", "jd", "jdoe", }
+
+    personal_monikers = ["joreilly@example.com", "John C Reilly"]
+    returns: {"jcreilly", "john", "c", "reilly", "johncreilly", "johnreilly", "jcr", "jreilly", "jr"}
     """
     result_set = set()
     for moniker in personal_monikers:
@@ -448,7 +456,7 @@ def get_name_similarity_index(
                     total_indicators += 0.01
 
     # check for a hypothesized-middle-initial match
-    # we want this because gmj-test --> George Jones (gejones)
+    # for example, both mij-test and mjj-test are potential matches for Michael Jordan
     hypothesized_initials = get_possible_3initials(personal_monikers) - all_monikers
     for hypothesized_initial in hypothesized_initials:
         if hypothesized_initial in all_names:
