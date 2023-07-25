@@ -23,7 +23,13 @@ from collections.abc import Iterable, Callable
 
 
 STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
-SCORE_LOWER_BOUND = 0.5  # Normalize Ranking Scores to be at least this much for user confidence
+
+# Normalize owner scores to be greater than this lower bound.
+# We want to use a standard scale (i.e. between 0 and 1) for interpretability.
+# However, normalizing to greater-than-half probabilities is likely more accurate,
+# given that there are stringent conditions on initial detection such that
+# name should be considered well-attested and likely to be an owner.
+SCORE_LOWER_BOUND = 0.5
 
 # The /tmp directory will cache persistently across interactions.
 # Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
@@ -77,7 +83,8 @@ def normalize_scores(scores: list[float]) -> list[float]:
     Normalizes a list of non-negative reals to values between SCORE_LOWER_BOUND and 1
 
     Intuition: we expect showing e.g. greater-than-half probabilities to the end user
-    increases confidence/psychological comfort
+    is more accurate, because any owner available for ranking was recovered from
+    meaningful and relevant-to-ownership metadata
     """
     total = sum(scores)
     return [round(score / total * (1 - SCORE_LOWER_BOUND) + SCORE_LOWER_BOUND, ndigits=2) for score in scores]
