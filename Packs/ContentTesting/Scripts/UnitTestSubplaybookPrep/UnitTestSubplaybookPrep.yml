@@ -11,6 +11,7 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.10.12.66339
 enabled: true
 name: UnitTestSubplaybookPrep
+comment: ''
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
