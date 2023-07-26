@@ -42,7 +42,7 @@
         },
         "md5values": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "cs1Label": {
             "type": "string",

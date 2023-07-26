@@ -15,6 +15,9 @@ This pack includes XSIAM content.
 In order to use the collector, you need to use the following option to collect events from the vendor:
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
 You will need to configure the vendor and product for this specific collector.
+
+* Pay attention: Timestamp parsing is supported in UTC (+0000) timezone for the **yyyy-mm-dd HH:MM:SS.3ms UTC** format.
+
 ### XDRC (XDR Collector)
 
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).
