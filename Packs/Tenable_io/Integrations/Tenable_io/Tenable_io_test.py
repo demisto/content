@@ -755,10 +755,10 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
             "@paginate did not extract the pages"
         ),
         (
-            # when page_size and page are in args, don't use limit and get pages in respect to page_start:
+            # when page_size and page are in args, don't use limit and get pages in respect to page_start_index:
             {
                 "api_limit": 1,
-                "page_start": 0,
+                "page_start_index": 0,
             },
             {
                 "page": 10,
@@ -768,7 +768,7 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
             "{}",
             [50, 51, 52, 53, 54],
             1,
-            "@paginate used limit or did not use page_start"
+            "@paginate used limit or did not use page_start_index"
         ),
         (
             # mixed bag:
@@ -778,7 +778,7 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
                 "page_size_arg_name": 'fake_page_size',
                 "api_limit": 5,
                 "keys_to_pages": 'a',
-                "page_start": 1
+                "page_start_index": 1
             },
             {
                 "fake_page": 10,

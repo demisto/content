@@ -1434,10 +1434,10 @@ Lists the filtering, sorting, and pagination capabilities available for scan rec
 #### Human Readable Output
 
 >### Tenable IO Scan Filters
->|Filter name|Filter Readable name|Filter Control type|Filter regex|Readable regex|Filter operators|Filter group name|
->|---|---|---|---|---|---|---|
->| host.id | Asset ID | entry | [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})* | 01234567-abcd-ef01-2345-6789abcdef01 | eq,<br/>neq,<br/>match,<br/>nmatch |  |
->| plugin.attributes.bid | Bugtraq ID | entry | ^[0-9]+(,[0-9]+)* | NUMBER | eq,<br/>neq,<br/>match,<br/>nmatch |  |
+>|Filter name|Filter Readable name|Filter Control type|Filter regex|Readable regex|Filter operators|
+>|---|---|---|---|---|---|
+>| host.id | Asset ID | entry | [0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}(,[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})* | 01234567-abcd-ef01-2345-6789abcdef01 | eq,<br/>neq,<br/>match,<br/>nmatch |
+>| plugin.attributes.bid | Bugtraq ID | entry | ^[0-9]+(,[0-9]+)* | NUMBER | eq,<br/>neq,<br/>match,<br/>nmatch |
 
 ### tenable-io-get-scan-history
 
@@ -1465,7 +1465,7 @@ Lists the individual runs of the specified scan.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TenableIO.ScanHistory.time_end | Number | The end time of the scan. | 
-| TenableIO.ScanHistory.scan_uuid | String | The UUID \(Universally Unique Identifier\) of the scan. | 
+| TenableIO.ScanHistory.scan_uuid | String | The UUID (Universally Unique Identifier) of the scan. | 
 | TenableIO.ScanHistory.id | Number | The ID of the scan history. | 
 | TenableIO.ScanHistory.is_archived | Boolean | Indicates whether the scan history is archived or not. | 
 | TenableIO.ScanHistory.time_start | Number | The start time of the scan. | 
@@ -1545,12 +1545,12 @@ Lists the individual runs of the specified scan.
 #### Human Readable Output
 
 >### Tenable IO Scan History
->|History id|History uuid|Status|Is archived|Targets custom|Targets default|Visibility|Time start|Time end|
->|---|---|---|---|---|---|---|---|---|
->| 17235445 | 69a55b8e-0d52-427a-81e0-7dfe4dc6eda6 | completed | true |  | false | public | 1677424566 | 1677425182 |
->| 17235342 | 2c592d52-df56-42e0-9f18-d892bdeb1e18 | completed | true |  | false | public | 1677423906 | 1677424556 |
->| 17235033 | 44586b4f-1051-415c-b375-db86f6bd8c13 | completed | true |  | false | public | 1677423247 | 1677423865 |
->| 17234969 | 06c12bf7-436f-489d-bb04-aae511ea9f5c | completed | true |  | false | public | 1677422585 | 1677423205 |
+>|History id|History uuid|Status|Is archived|Targets default|Visibility|Time start|Time end|
+>|---|---|---|---|---|---|---|---|
+>| 17235445 | 69a55b8e-0d52-427a-81e0-7dfe4dc6eda6 | completed | true | false | public | 1677424566 | 1677425182 |
+>| 17235342 | 2c592d52-df56-42e0-9f18-d892bdeb1e18 | completed | true | false | public | 1677423906 | 1677424556 |
+>| 17235033 | 44586b4f-1051-415c-b375-db86f6bd8c13 | completed | true | false | public | 1677423247 | 1677423865 |
+>| 17234969 | 06c12bf7-436f-489d-bb04-aae511ea9f5c | completed | true | false | public | 1677422585 | 1677423205 |
 
 ### tenable-io-export-scan
 

@@ -21,7 +21,7 @@ def paginate(
         page_size_arg_name='page_size',
         api_limit=None,
         keys_to_pages=None,
-        page_start=1):
+        page_start_index=1):
     """
     Decorator for paginating an API in a request function.
 
@@ -44,8 +44,8 @@ def paginate(
                           without surrounding dictionaries. Default is None.
     :type keys_to_pages: Iterable | str | None
 
-    :param page_start: The starting page index. Default is 1.
-    :type page_start: int
+    :param page_start_index: The starting page index. Default is 1.
+    :type page_start_index: int
     """
     def dec(func):
         def inner(args, *arguments, **kwargs):
@@ -61,7 +61,7 @@ def paginate(
             keys = (
                 [keys_to_pages]
                 if isinstance(keys_to_pages, str)
-                # Could be None or list/tuple
+                # Could be None or iterable
                 else keys_to_pages or [])
 
             def get_page(**page_args):
@@ -71,26 +71,24 @@ def paginate(
 
             pages: list[Any] = []
 
-            try:
-                page, page_size = map(int, map(args.get, (page_arg_name, page_size_arg_name)))
-                limit, offset = page_size, (page - page_start) * page_size
+            page = arg_to_number(args.get(page_arg_name))
+            page_size = arg_to_number(args.get(page_size_arg_name))
+            if isinstance(page, int) and isinstance(page_size, int):
+                limit = page_size
+                offset = (page - page_start_index) * page_size
 
-            except (ValueError, TypeError):  # From conversion to int
-                limit, offset = int(args[limit_arg_name]), 0
+            else:
+                limit = int(args[limit_arg_name])
+                offset = 0
 
                 if api_limit:
-                    pages += sum(
-                        (
-                            get_page(
-                                limit=api_limit,
-                                offset=(offset := curr_offset))
-                            for curr_offset
-                            in range(0, limit - api_limit, api_limit)
-                        ),
-                        []
-                    )
-                    limit = limit % api_limit or api_limit
-                    offset += api_limit
+                    for curr_offset in range(0, limit - api_limit, api_limit):
+                        pages += get_page(
+                            limit=api_limit,
+                            offset=curr_offset)
+
+                    offset = limit - (limit % api_limit or api_limit)
+                    limit -= offset
 
             pages += get_page(
                 limit=limit,
@@ -1300,14 +1298,17 @@ def scan_history_readable(history: list) -> str:
 
 
 def scan_history_params(args: dict) -> dict:
+    sort_fields = argToList(args.get('sortFields'))
+    sort_order = argToList(args.get('sortOrder'))
+
+    if len(sort_order) == 1:
+        sort_order *= len(sort_fields)
+
     return {
         'sort': ','.join(
             f'{field}:{order}'
             for field, order
-            in zip(
-                argToList(args.get('sortFields')),
-                # * 3 makes it apply to all sortFields even if it has only one value
-                argToList(args.get('sortOrder')) * 3)),
+            in zip(sort_fields, sort_order)),
         'exclude_rollover': args['excludeRollover'],
     } | sub_dict(args, 'limit', 'offset')
 
@@ -1332,36 +1333,12 @@ def get_scan_history_command(*args) -> CommandResults:
         readable_output=scan_history_readable(history))
 
 
-def build_filters(args: dict) -> dict:
-    '''
-    Makes filter args for the export scan endpoint by sequentially matching
-    the filterName, filterQuality and filterValue lists in args.
-    Example:
-
-        filterName:     name,description
-        filterQuality:  =,!=
-        filterValue:    test,test2
-
-        returns:
-        {
-            'filter.0.filter': 'name',
-            'filter.0.quality': '=',
-            'filter.0.value': 'test',
-            'filter.1.filter': 'description',
-            'filter.1.quality': '!=',
-            'filter.1.value': 'test2',
-        }
-    '''
-    filters: dict[str, str] = {}
-    filter_lists = map(argToList, map(args.get, ('filterName', 'filterQuality', 'filterValue')))
-    for i, (name, quality, value) in enumerate(zip(*filter_lists)):
-        filters |= {
-            f'filter.{i}.filter': name,
-            f'filter.{i}.quality': quality,
-            f'filter.{i}.value': value,
-        }
-
-    return filters
+def build_filter(filter: str | None, name: str) -> dict:
+    return {
+        f'filter.{i}.{name}': value
+        for i, value
+        in enumerate(argToList(filter))
+    }
 
 
 def export_scan_body(args: dict) -> dict:
@@ -1376,7 +1353,13 @@ def export_scan_body(args: dict) -> dict:
         'chapters': chapters,
         'filter.search_type': args['filterSearchType'].lower(),
         'asset_id': args.get('assetId'),
-    } | build_filters(args)
+    } | build_filter(
+        args.get('filterName'), 'filter'
+    ) | build_filter(
+        args.get('filterQuality'), 'quality'
+    ) | build_filter(
+        args.get('filterValue'), 'value'
+    )
     return body
 
 
