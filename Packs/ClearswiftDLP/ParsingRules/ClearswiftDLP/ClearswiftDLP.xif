@@ -1,0 +1,18 @@
+[INGEST:vendor="clearswift", product="dlp", target_dataset="clearswift_dlp_raw", no_hit=keep]
+// Support only date time of format: yyyy-MM-ddThh:mm:ss.nnnnnn or format: yyyy-MM-ddThh:mm:ssZ. For example: "2023-01-01 10:00:00.123456" or "2021-01-01T10:00:00Z".
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}"
+| alter
+    tmp_get_datetime = arraystring(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}"), ""),
+    tmp_get_milli = if(_raw_log ~= "\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}\.(\d{3})", arraystring(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}\s\d{2}:\d{2}:\d{2}\.(\d{3})"), ""), null)
+| alter
+    tmp_log_datetime1 = parse_timestamp("%Y-%m-%d %H:%M:%S", tmp_get_datetime),
+    tmp_get_milli_string = to_string(tmp_get_milli)
+| alter
+    tmp_log_datetime2 = to_string(to_epoch(tmp_log_datetime1))
+| alter
+    tmp_log_fulltime2 = to_integer(arraystring(arraycreate(tmp_log_datetime2, tmp_get_milli_string), ""))
+| alter
+    tmp_check_log_time = if(tmp_get_milli = null, tmp_log_datetime1, to_timestamp(tmp_log_fulltime2, "millis"))
+| alter
+    _time = coalesce(tmp_check_log_time, _insert_time)
+| fields -tmp_get_datetime, tmp_get_milli, tmp_log_datetime1, tmp_get_milli_string, tmp_log_datetime2, tmp_log_fulltime2, tmp_check_log_time;

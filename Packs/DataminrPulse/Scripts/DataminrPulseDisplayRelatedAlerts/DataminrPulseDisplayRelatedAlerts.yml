@@ -1,0 +1,21 @@
+comment: Shows the related alerts fetched for this alert id.
+commonfields:
+  id: DataminrPulseDisplayRelatedAlerts
+  version: -1
+name: DataminrPulseDisplayRelatedAlerts
+script: ''
+type: python
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - Dataminr Pulse|||dataminrpulse-related-alerts-get
+  - '|||dataminrpulse-related-alerts-get'
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

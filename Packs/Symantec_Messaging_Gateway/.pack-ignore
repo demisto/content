@@ -1,2 +1,6 @@
 [known_words]
-Symantec
+symantec
+
+[file:SymantecMessagingGateway.yml]
+ignore=BA124
+

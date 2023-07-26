@@ -1,4 +1,4 @@
-from ExtractEmailFormatting import main, check_tld, extract_email, refang_email
+from ExtractEmailFormatting import main, check_tld, extract_email, refang_email, extract_email_from_url_query
 import pytest
 import demistomock as demisto
 
@@ -36,10 +36,19 @@ def test_check_tld(address, valid):
     ('\\u003ctest@test.com', 'test@test.com'),
     ('"test@test.com"', 'test@test.com'),
     ('<test@test.com>', 'test@test.com'),
-    ('test', '')
+    ('test', ''),
+    ('co/ed/trn/update?a=b&email=user@test6.net', 'user@test6.net'),
 ])  # noqa: E124
 def test_extract_email(input, output):
     assert extract_email(input) == output
+
+
+@pytest.mark.parametrize('input,output', [  # noqa: E501 disable-secrets-detection # no processing needed
+    ('co/ed/trn/update?a=b&email=user@test6.net', 'user@test6.net'),
+    ('co/ed/trn/update?', ''),
+])  # noqa: E124
+def test_extract_email_from_url_query(input, output):
+    assert extract_email_from_url_query(input) == output
 
 
 ARGS = {

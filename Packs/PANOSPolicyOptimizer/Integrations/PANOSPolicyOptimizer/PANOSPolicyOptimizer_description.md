@@ -8,7 +8,7 @@ You can use this new feature on:
 * Firewalls that run PAN-OS version 9.0 and have App-ID enabled.
 * Panorama running PAN-OS version 9.0. You don’t have to upgrade firewalls that Panorama manages to use the Policy Optimizer capabilities. However, to use these capabilities, managed firewalls must run PAN-OS 8.1 or later. If managed firewalls connect to Log Collectors, those Log Collectors must also run PAN-OS version 9.0. Managed PA-7000 Series firewalls that have a Log Processing Card (LPC) can also run PAN-OS 8.1 (or later).
 
-For more information, visit the [Palo Alto Networks documentation](https://www.paloaltonetworks.com/documentation).
+For more information, visit the [Palo Alto Networks documentation](https://docs.paloaltonetworks.com/pan-os/10-1/pan-os-admin/app-id/security-policy-rule-optimization).
 
 ---
 You need to create a separate integration instance for Palo Alto Networks Firewall and Palo Alto Networks. Unless specified otherwise, all commands are valid for both Firewall and Panorama.

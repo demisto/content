@@ -1,0 +1,14 @@
+[
+    {
+        "_id": "5b1d49c3a8f4f438dfc41988",
+        "CompanyName": "Example",
+        "Status": "Enabled",
+        "Note": "This is a note"
+    },
+    {
+        "_id": "5b1d49b5a8f4f438dfc41987",
+        "CompanyName": "Another example",
+        "Status": "Disabled",
+        "Note": "This is another note"
+    }
+]

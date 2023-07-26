@@ -1,0 +1,109 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Sumo Logic Signal"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sumologiccloudsiemsignalrecords",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Description",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "description",
+            "required": true,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Device Hostname",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "device_hostname",
+            "required": true,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "ListMatches",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "listmatches",
+            "required": false,
+            "script": "",
+            "selectValues": [],
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Matched Items",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "matchedItems",
+            "required": false,
+            "script": "",
+            "selectValues": [],
+            "type": "longText",
+            "width": 150
+        },
+        {
+            "displayName": "Severity",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "severity",
+            "required": true,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "RawFields",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "fields",
+            "required": true,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 250
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sumologiccloudsiemsignalrecords",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "Sumo Logic Cloud SIEM Signal Records",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

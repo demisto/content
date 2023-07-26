@@ -17,12 +17,10 @@ def test_format_comment():
     assert result == expected
 
 
-CONTEXT_RESULTS = str([
-    {'name': 'test', 'kind': 'test_kind', 'properties':
-        {'message': 'test_message', 'createdTimeUtc': 'test_time', 'author': {'userPrincipalName': 'test_user'}}},
-    {'name': 'test2', 'kind': 'test_kind2', 'properties':
-        {'message': 'test_message2', 'createdTimeUtc': 'test_time2', 'author': {'userPrincipalName': 'test_user2'}}}
-])
+CONTEXT_RESULTS = ('[{"name": "test", "kind": "test_kind", "properties": {"message": "test_message", '
+                   '"createdTimeUtc": "test_time", "author": {"userPrincipalName": "test_user"}}}, '
+                   '{"name": "test2", "kind": "test_kind2", "properties": {"message": "test_message2", '
+                   '"createdTimeUtc": "test_time2", "author": {"userPrincipalName": "test_user2"}}}]')
 
 EXPECTED_TABLE = "|Name|Message|Created Time Utc|User Principal Name|\n" \
                  "|---|---|---|---|\n" \

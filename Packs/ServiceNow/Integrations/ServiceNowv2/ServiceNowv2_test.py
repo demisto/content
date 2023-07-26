@@ -6,6 +6,7 @@ import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
+import requests
 from CommonServerPython import DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
@@ -122,12 +123,9 @@ def test_split_fields():
     assert expected_custom_sys_params == split_fields(
         "sysparm_display_value=all;sysparm_exclude_reference_link=True;sysparm_query=number=TASK0000001")
 
-    try:
+    with pytest.raises(Exception) as err:
         split_fields('a')
-    except Exception as err:
-        assert "must contain a '=' to specify the keys and values" in str(err)
-        return
-    assert False
+    assert "must contain a '=' to specify the keys and values" in str(err)
 
 
 def test_split_fields_with_special_delimiter():
@@ -146,12 +144,9 @@ def test_split_fields_with_special_delimiter():
     expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text<;/a>"}
     assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text<;/a>", ',')
 
-    try:
+    with pytest.raises(Exception) as e:
         split_fields('a')
-    except Exception as err:
-        assert "must contain a '=' to specify the keys and values" in str(err)
-        return
-    assert False
+    assert "must contain a '=' to specify the keys and values" in str(e)
 
 
 def test_convert_to_notes_result():
@@ -538,20 +533,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '4'
+                            'number': '4',
+                            'sys_id': '4'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '5'
+                            'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 },
@@ -561,6 +559,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '3',
+                    'sys_id': '3'
                 },
                 {
                     'opened_at': (
@@ -568,6 +567,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '1',
+                    'sys_id': '1'
                 },
                 15
             ),
@@ -580,20 +580,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '4'
+                            'number': '4',
+                            'sys_id': '4'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '5'
+                            'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 },
@@ -603,6 +606,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '3',
+                    'sys_id': '3'
                 },
                 {
                     'opened_at': (
@@ -610,6 +614,7 @@ class TestFetchIncidentsWithLookBack:
                     ).strftime(API_TIME_FORMAT),
                     'severity': '1',
                     'number': '1',
+                    'sys_id': '1'
                 },
                 1000
             )
@@ -687,20 +692,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '1',
+                            'sys_id': '1'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '2'
+                            'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '3'
+                            'number': '3',
+                            'sys_id': '3'
                         }
                     ]
                 },
@@ -712,6 +720,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4',
+                            'sys_id': '4'
                         }
                     ]
                 },
@@ -723,6 +732,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 },
@@ -736,20 +746,23 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
                             'number': '1',
+                            'sys_id': '1'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
-                            'number': '2'
+                            'number': '2',
+                            'sys_id': '2'
                         },
                         {
                             'opened_at': (
                                 start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
                             ).strftime(API_TIME_FORMAT),
                             'severity': '2',
-                            'number': '3'
+                            'number': '3',
+                            'sys_id': '3'
                         }
                     ]
                 },
@@ -761,6 +774,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '4',
+                            'sys_id': '4'
                         }
                     ]
                 },
@@ -772,6 +786,7 @@ class TestFetchIncidentsWithLookBack:
                             ).strftime(API_TIME_FORMAT),
                             'severity': '1',
                             'number': '5',
+                            'sys_id': '5'
                         }
                     ]
                 }
@@ -867,7 +882,11 @@ def test_incident_name_is_initialized(mocker, requests_mock):
             },
             'incident_name': None,
             'file_tag_from_service_now': 'FromServiceNow',
-            'file_tag_to_service_now': 'ToServiceNow'
+            'file_tag_to_service_now': 'ToServiceNow',
+            'comment_tag': 'comments',
+            'comment_tag_from_servicenow': 'CommentFromServiceNow',
+            'work_notes_tag': 'work_notes',
+            'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -1050,7 +1069,11 @@ def test_oauth_authentication(mocker, requests_mock):
             },
             'use_oauth': True,
             'file_tag_from_service_now': 'FromServiceNow',
-            'file_tag': 'ForServiceNow'
+            'file_tag': 'ForServiceNow',
+            'comment_tag': 'comments',
+            'comment_tag_from_servicenow': 'CommentFromServiceNow',
+            'work_notes_tag': 'work_notes',
+            'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'
         }
     )
     ServiceNowClient.get_access_token = MagicMock()
@@ -1088,10 +1111,9 @@ def test_test_module(mocker):
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
 
-    try:
+    with pytest.raises(Exception) as e:
         module(client)
-    except Exception as e:
-        assert 'Test button cannot be used when using OAuth 2.0' in e.args[0]
+    assert 'Test button cannot be used when using OAuth 2.0' in str(e)
 
 
 def test_oauth_test_module(mocker):
@@ -1112,10 +1134,9 @@ def test_oauth_test_module(mocker):
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
-    try:
+    with pytest.raises(Exception) as e:
         oauth_test_module(client)
-    except Exception as e:
-        assert 'command should be used only when using OAuth 2.0 authorization.' in e.args[0]
+    assert 'command should be used only when using OAuth 2.0 authorization.' in str(e)
 
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
@@ -1142,10 +1163,9 @@ def test_oauth_login_command(mocker):
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
-    try:
+    with pytest.raises(Exception) as e:
         login_command(client, args={'username': 'username', 'password': 'password'})
-    except Exception as e:
-        assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in e.args[0]
+    assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in str(e)
 
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
@@ -1256,7 +1276,7 @@ def test_assigned_to_field_no_user():
     """
 
     class Client:
-        def get(self, table, value):
+        def get(self, table, value, no_record_found_res):
             return {'results': {}}
 
     assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
@@ -1277,7 +1297,7 @@ def test_assigned_to_field_user_exists():
     """
 
     class Client:
-        def get(self, table, value):
+        def get(self, table, value, no_record_found_res):
             return USER_RESPONSE
 
     assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
@@ -1286,8 +1306,8 @@ def test_assigned_to_field_user_exists():
     assert res == 'oscar@example.com'
 
 
-CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Resolved'}
-CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Test'}
+CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'Test', 'closeReason': 'Resolved'}
+CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'Test', 'closeReason': 'Test'}
 
 closed_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, {
                        'close_incident': 'closed'}, 'closed_at', CLOSING_RESPONSE)
@@ -1330,6 +1350,37 @@ def test_get_remote_data_closing_incident(mocker, response_closing_ticket_mirror
     if time:
         assert time in res[0]
     assert closing_response == res[2]['Contents']
+
+
+def test_get_remote_data_closing_incident_with_different_closing_state(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  arguments: id and LastUpdate(set to lower then the modification time).
+        -  ServiceNow ticket in closed state
+        -  close_incident parameter is set to closed
+        -  server_close_custom_state parameter differs from the ticket's closing state
+    When
+        - running get_remote_data_command.
+    Then
+        - Validate that the incident does not get closed
+    """
+
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url="cr_server_url", username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='sc_task', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 0}
+    params = {'close_incident': 'closed', 'server_close_custom_state': '6=Design'}
+    mocker.patch.object(client, 'get', return_value=RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM)
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+    res = get_remote_data_command(client, args, params)
+    assert len(res) == 2
+    # This means that the entry is of type Note, which does not indicate the closing of the incident
+    assert res[1].get('Note', False) is True
 
 
 def test_get_remote_data_no_attachment(mocker):
@@ -1747,8 +1798,8 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     assert requests_get_mocker.call_args.kwargs.get('auth') is None, \
         "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
     assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
-           f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
-                                                      " Header argument should be passed to 'requests.get' function"
+        f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
+        " Header argument should be passed to 'requests.get' function"
 
 
 @pytest.mark.parametrize(
@@ -1924,3 +1975,42 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
     # assert the state argument in the last call to client.update
     assert mocker_update.call_args[0][2]['state'] == result_close_state
     assert mocker_update.call_count == update_call_count
+
+
+@pytest.mark.parametrize('mock_json, expected_results',
+                         [
+                             ({'error': 'invalid client.'}, 'ServiceNow Error: invalid client.'),
+                             ({'error': {'message': 'invalid client', 'detail': 'the client you have entered is invalid.'}},
+                              'ServiceNow Error: invalid client, details: the client you have entered is invalid.')
+                         ])
+def test_send_request_with_str_error_response(mocker, mock_json, expected_results):
+    """
+    Given:
+     - a client and a mock response.
+     - case 1: a mock response where the error field is a string.
+     - case 2: a mock response where the error field is a dict.
+
+    When:
+     - Running send_request function.
+
+    Then:
+     - Verify that the function extracted the data from the response without problems and the expected exception is raised.
+     - case 1: Shouldn't attempt to extract inner fields from the error field, only present the error value.
+     - case 2: Should attempt to extract inner fields from the error field, present the parsed extracted error values.
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name', display_date_format='yyyy-MM-dd')
+
+    class MockResponse:
+        def __init__(self, mock_json):
+            self.text = 'some text'
+            self.json_data = mock_json
+            self.status_code = 400
+
+        def json(self):
+            return self.json_data
+    mocker.patch.object(requests, 'request', return_value=MockResponse(mock_json))
+    with pytest.raises(Exception) as e:
+        client.send_request(path='table')
+    assert str(e.value) == expected_results

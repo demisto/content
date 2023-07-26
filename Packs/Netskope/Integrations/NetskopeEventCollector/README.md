@@ -12,9 +12,14 @@
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max events per fetch | The maximum amount of events to retrieve \(up to 10000 events\). | False |
+    | Max events per fetch | The maximum amount of events to retrieve \(up to 30000 events\). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Fetch Events Limitation
+The first fetch is limited to the last 50,000 events (for each event type) due to API limitation.
+
+
 ## Commands
 You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

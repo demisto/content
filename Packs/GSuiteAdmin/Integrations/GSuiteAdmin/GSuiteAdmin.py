@@ -567,7 +567,7 @@ def mobile_update_command(client: Client, args: Dict[str, str]) -> CommandResult
         return CommandResults(readable_output=HR_MESSAGES['MOBILE_UPDATE_SUCCESS'].format(resource_id))
     except DemistoException as e:
         error_message = str(e)
-        if('Internal error encountered' in error_message or 'Bad Request' in error_message):
+        if ('Internal error encountered' in error_message or 'Bad Request' in error_message):
             raise DemistoException(MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', ''))
         raise DemistoException(error_message)
 
@@ -1179,7 +1179,8 @@ def device_list_automatic_pagination(request_by_device_type: Callable, client, c
     continue_pagination = True  # This will decide if we should continue requesting from the API or that we should stop
     while continue_pagination:
         query_params['maxResults'] = results_limit if results_limit <= MAX_PAGE_SIZE else MAX_PAGE_SIZE
-        query_params['pageToken'] = next_page_token
+        if next_page_token:
+            query_params['pageToken'] = next_page_token
         response = request_by_device_type(client=client, customer_id=customer_id, query_params=query_params)
         responses.append(response)
         response_mobile_devices = response.get(response_devices_list_key, [])
@@ -1187,7 +1188,7 @@ def device_list_automatic_pagination(request_by_device_type: Callable, client, c
 
         devices.extend(response_mobile_devices)
         results_limit -= len(response_mobile_devices)
-        if(results_limit <= 0 or not next_page_token):
+        if (results_limit <= 0 or not next_page_token):
             continue_pagination = False
     return {'data': devices, 'raw_response': responses}
 
@@ -1210,7 +1211,8 @@ def device_list_manual_pagination(request_by_device_type: Callable, client, cust
         dict: A dictionary that holds all the relevant data for creating a CommandResult.
     """
     query_params['maxResults'] = page_size
-    query_params['pageToken'] = page_token
+    if page_token:
+        query_params['pageToken'] = page_token
     response = request_by_device_type(client=client, customer_id=customer_id, query_params=query_params)
     devices = response.get(response_devices_list_key, [])
     return {'data': devices, 'raw_response': [response], 'next_page_token': response.get('nextPageToken', '')}
@@ -1226,7 +1228,7 @@ def prepare_pagination_arguments(page_token: str, page_size: int | None, limit: 
     Returns:
         dict: A dictionary that holds the pagination information.
     """
-    if(page_token or page_size is not None):
+    if (page_token or page_size is not None):
         if limit is not None:
             raise DemistoException(MESSAGES.get('INVALID_PAGINATION_ARGS_SUPPLIED'))
         page_size = page_size if (page_size is not None) else DEFAULT_PAGE_SIZE
@@ -1235,7 +1237,7 @@ def prepare_pagination_arguments(page_token: str, page_size: int | None, limit: 
         return {'page_size': page_size, 'page_token': page_token}
 
     limit = limit if (limit is not None) else DEFAULT_LIMIT
-    if(limit <= 0):
+    if (limit <= 0):
         raise DemistoException(message=MESSAGES.get('LIMIT_ARG_INVALID_ERROR'))
     return {'limit': limit}
 
@@ -1423,7 +1425,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         return command_results
     except DemistoException as e:
         error_message = str(e)
-        if('INVALID_OU_ID' in error_message):
+        if ('INVALID_OU_ID' in error_message):
             raise DemistoException(MESSAGES.get('INVALID_ORG_UNIT_PATH', ''))
         raise DemistoException(error_message)
 
@@ -1451,7 +1453,7 @@ def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) 
 
     except DemistoException as e:
         error_message = str(e)
-        if('Delinquent account' in error_message):
+        if ('Delinquent account' in error_message):
             raise DemistoException(MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', ''))
         raise DemistoException(error_message)
     command_results = CommandResults(
@@ -1494,7 +1496,8 @@ def main() -> None:
 
     try:
         params = demisto.params()
-        service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
+        service_account_dict = GSuiteClient.safe_load_non_strict_json(
+            params.get('admin_email_creds', {}).get('password') or params.get('user_service_account_json'))
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
 
@@ -1504,7 +1507,9 @@ def main() -> None:
 
         args = GSuiteClient.strip_dict(demisto.args())
 
-        admin_email = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
+        admin_email = args.get('admin_email')\
+            or params.get('admin_email_creds', {}).get('identifier')\
+            or params.get('admin_email')
 
         if admin_email and not is_email_valid(admin_email):
             raise ValueError(MESSAGES['INVALID_ADMIN_EMAIL'])

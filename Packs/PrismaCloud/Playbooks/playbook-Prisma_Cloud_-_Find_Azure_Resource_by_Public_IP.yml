@@ -1,4 +1,5 @@
 description: |
+  Deprecated. Use Prisma Cloud - Find Azure Resource by Public IP v2 instead.
   Find Azure resources by Public IP using Prisma Cloud inventory.
   Supported services: Azure VM, Azure Load Balancer, Azure Application Gateway, Azure Web Apps.
 id: Prisma Cloud - Find Azure Resource by Public IP
@@ -496,4 +497,5 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests
+- No tests (deprecated)
+deprecated: true

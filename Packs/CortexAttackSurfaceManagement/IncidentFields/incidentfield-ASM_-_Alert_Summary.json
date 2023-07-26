@@ -40,7 +40,7 @@
     "description": "Summary report of alert",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmalertsummary",
     "isReadOnly": false,
     "locked": false,

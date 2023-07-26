@@ -36,7 +36,7 @@ class MockApiClient:
     def __init__(self):
         self.configuration = MockConfiguration()
 
-    def call_api(self, resource_path, method, header_params, files, auth_settings):
+    def call_api(self, resource_path, method, header_params, files, auth_settings, response_type):
 
         return 'MOCK_HELLOWORLD_SEARCH_RESULTS', 200, None
 

@@ -1,5 +1,5 @@
 {
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.5.0",
     "name": "Symantec EDR - Incident Classifier",
     "type": "classification",
     "id": "Symantec EDR - Incident Classifier",

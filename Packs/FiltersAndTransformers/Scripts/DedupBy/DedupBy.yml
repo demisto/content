@@ -1,0 +1,25 @@
+commonfields:
+  id: DedupBy
+  version: -1
+name: DedupBy
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: This transformer will remove elements of the array that contain an identical combination of values for the keys given.
+enabled: true
+args:
+- name: value
+  description: The array to deduplicate
+  isArray: true
+- name: keys
+  description: Comma-separated list of keys to identify a value
+  isArray: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

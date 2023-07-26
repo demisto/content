@@ -1,15 +1,15 @@
 id: Test XDR Playbook execute script commands
-version: 5
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook execute script commands
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 714cf502-c142-4e2b-8c75-c2fb27064dfd
+    taskid: 8fdaf197-298c-478d-8c4a-93c3bbabfca1
     type: start
     task:
-      id: 714cf502-c142-4e2b-8c75-c2fb27064dfd
+      id: 8fdaf197-298c-478d-8c4a-93c3bbabfca1
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7f1c56ab-bace-4996-86bb-6f9820d49b4b
+    taskid: 2ba63fa8-112e-4677-8aa6-4b300a044911
     type: regular
     task:
-      id: 7f1c56ab-bace-4996-86bb-6f9820d49b4b
+      id: 2ba63fa8-112e-4677-8aa6-4b300a044911
       version: -1
       name: Run Script
       description: Initiate a new endpoint script execution action using a script
@@ -52,18 +52,7 @@ tasks:
       - "2"
     scriptarguments:
       endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
-                iscontext: true
-              right:
-                value:
-                  simple: EC2AMAZ-P7PPOI4
-          accessor: endpoint_id
+        simple: aeec6a2cc92e46fab3b6f621722e9916
       parameters:
         simple: '{"commands_list":["echo hi"]}'
       script_uid:
@@ -97,10 +86,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9492226d-ad6b-47e1-8a39-17992e11809e
+    taskid: 92d0b893-f817-43d7-8f59-7ca4a47b4484
     type: regular
     task:
-      id: 9492226d-ad6b-47e1-8a39-17992e11809e
+      id: 92d0b893-f817-43d7-8f59-7ca4a47b4484
       version: -1
       name: Get Script Execution Status
       description: Retrieve the status of a script execution action.
@@ -132,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b3cca478-1e9f-4bef-89ab-d304cb3125e5
+    taskid: 8f2864c5-658a-4615-8af1-9bcacbcf8e4c
     type: condition
     task:
-      id: b3cca478-1e9f-4bef-89ab-d304cb3125e5
+      id: 8f2864c5-658a-4615-8af1-9bcacbcf8e4c
       version: -1
       name: Verify Execution Status Is Pending
       type: condition
@@ -181,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: bd8c613a-d7d5-4400-8de4-105db2d24126
+    taskid: 5d470184-2a5f-4256-8e92-5660d4647a3a
     type: regular
     task:
-      id: bd8c613a-d7d5-4400-8de4-105db2d24126
+      id: 5d470184-2a5f-4256-8e92-5660d4647a3a
       version: -1
       name: Get Script Results
       description: Retrieve the results of a script execution action.
@@ -216,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 26bce69a-fae0-49e1-8f76-8099d21ed67e
+    taskid: 46f7525a-b435-49e0-8a28-46edbb46e3b1
     type: condition
     task:
-      id: 26bce69a-fae0-49e1-8f76-8099d21ed67e
+      id: 46f7525a-b435-49e0-8a28-46edbb46e3b1
       version: -1
       name: Verify Execution Status Is Pending
       type: condition
@@ -265,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 879f0385-35ef-45b3-8d83-b35f8db58476
+    taskid: 70795bc4-5071-4641-8d47-38feac652047
     type: regular
     task:
-      id: 879f0385-35ef-45b3-8d83-b35f8db58476
+      id: 70795bc4-5071-4641-8d47-38feac652047
       version: -1
       name: Run snippet code script
       description: Initiate a new endpoint script execution action using provided
@@ -282,18 +271,7 @@ tasks:
       - "7"
     scriptarguments:
       endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
-                iscontext: true
-              right:
-                value:
-                  simple: EC2AMAZ-P7PPOI4
-          accessor: endpoint_id
+        simple: aeec6a2cc92e46fab3b6f621722e9916
       snippet_code:
         simple: print("hello world")
     separatecontext: false
@@ -314,10 +292,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 60add6ef-b238-4b10-811a-6ed4844d97af
+    taskid: 3565a777-815e-42cd-8617-2d0e66eda334
     type: regular
     task:
-      id: 60add6ef-b238-4b10-811a-6ed4844d97af
+      id: 3565a777-815e-42cd-8617-2d0e66eda334
       version: -1
       name: Run script execute commands
       description: Initiate a new endpoint script execution of shell commands.
@@ -332,18 +310,7 @@ tasks:
       commands:
         simple: tasklist
       endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
-                iscontext: true
-              right:
-                value:
-                  simple: EC2AMAZ-P7PPOI4
-          accessor: endpoint_id
+        simple: aeec6a2cc92e46fab3b6f621722e9916
       timeout:
         simple: "1"
     separatecontext: false
@@ -364,10 +331,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 92c03f94-830e-4568-86cf-958655473acd
+    taskid: 7647ef0a-4b82-4e50-8b76-afd04ae22439
     type: regular
     task:
-      id: 92c03f94-830e-4568-86cf-958655473acd
+      id: 7647ef0a-4b82-4e50-8b76-afd04ae22439
       version: -1
       name: Run Script With Empty Params
       description: Initiate a new endpoint script execution action using a script
@@ -381,18 +348,7 @@ tasks:
       - "9"
     scriptarguments:
       endpoint_ids:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
-                iscontext: true
-              right:
-                value:
-                  simple: EC2AMAZ-P7PPOI4
-          accessor: endpoint_id
+        simple: aeec6a2cc92e46fab3b6f621722e9916
       parameters:
         simple: ${inputs.parameters}
       script_uid:
@@ -415,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 90f3fab6-e163-4c0d-8e18-e042aff0a459
+    taskid: 0e535412-bce9-47ac-8fb3-d79189d83263
     type: regular
     task:
-      id: 90f3fab6-e163-4c0d-8e18-e042aff0a459
+      id: 0e535412-bce9-47ac-8fb3-d79189d83263
       version: -1
       name: Adds requested files to block list if they are not already added to the
         block list or allow list
@@ -452,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b7f64610-7a1c-40fb-8013-dff0b09659b7
+    taskid: 5c51cb0e-2420-4d63-83b1-482c001dbad0
     type: condition
     task:
-      id: b7f64610-7a1c-40fb-8013-dff0b09659b7
+      id: 5c51cb0e-2420-4d63-83b1-482c001dbad0
       version: -1
       name: Verify Outputs
       type: condition
@@ -493,10 +449,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 73765866-b88c-472e-81f8-b9c0b0b06be7
+    taskid: 5900ac08-af8d-40ec-8daf-173930f25944
     type: regular
     task:
-      id: 73765866-b88c-472e-81f8-b9c0b0b06be7
+      id: 5900ac08-af8d-40ec-8daf-173930f25944
       version: -1
       name: xdr-get-endpoints-by-status
       description: Returns the number of the connected\disconnected endpoints.
@@ -528,10 +484,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 0593c2ee-5215-4898-849e-f6c21273fbad
+    taskid: 240c3a1e-84bd-4e70-8892-3317d6de9d3d
     type: condition
     task:
-      id: 0593c2ee-5215-4898-849e-f6c21273fbad
+      id: 240c3a1e-84bd-4e70-8892-3317d6de9d3d
       version: -1
       name: Verify Outputs
       type: condition
@@ -574,10 +530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e77f8146-9ea2-4d15-8790-2280c42b7e1c
+    taskid: f72e15ba-ddc9-492e-8fbd-d00ff9d133b4
     type: regular
     task:
-      id: e77f8146-9ea2-4d15-8790-2280c42b7e1c
+      id: f72e15ba-ddc9-492e-8fbd-d00ff9d133b4
       version: -1
       name: DeleteContext
       description: DeleteContext
@@ -609,10 +565,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 2ddc6fbd-44ee-4a44-8778-e33e44191c1c
+    taskid: b08dca50-ddfb-4ae1-875c-152c5b62c118
     type: regular
     task:
-      id: 2ddc6fbd-44ee-4a44-8778-e33e44191c1c
+      id: b08dca50-ddfb-4ae1-875c-152c5b62c118
       version: -1
       name: xdr-get-endpoints
       description: Gets a list of endpoints, according to the passed filters. If there
@@ -645,10 +601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 7280d94f-cb67-41ce-833b-863ee94d7a2a
+    taskid: 8f79c2a9-a3c1-4f55-8447-eb16d96bac13
     type: regular
     task:
-      id: 7280d94f-cb67-41ce-833b-863ee94d7a2a
+      id: 8f79c2a9-a3c1-4f55-8447-eb16d96bac13
       version: -1
       name: xdr-get-script-code
       description: Gets the code of a specific script in the script library.
@@ -684,10 +640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 29dd4e1b-d1c4-45eb-8a47-6f4e54b56724
+    taskid: e84c91ab-5a9e-4ae0-830a-5718471e0bf3
     type: regular
     task:
-      id: 29dd4e1b-d1c4-45eb-8a47-6f4e54b56724
+      id: e84c91ab-5a9e-4ae0-830a-5718471e0bf3
       version: -1
       name: xdr-get-scripts
       description: Gets a list of scripts available in the scripts library.
@@ -716,10 +672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 6027a508-771a-415c-8120-1c08b559d0fd
+    taskid: 5e0a7894-d9c7-4a90-806a-02d007836eff
     type: condition
     task:
-      id: 6027a508-771a-415c-8120-1c08b559d0fd
+      id: 5e0a7894-d9c7-4a90-806a-02d007836eff
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -759,10 +715,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 099786b9-ddc2-486d-8725-715a296423f9
+    taskid: a7e7c747-8122-48f9-86db-3382d3df4620
     type: regular
     task:
-      id: 099786b9-ddc2-486d-8725-715a296423f9
+      id: a7e7c747-8122-48f9-86db-3382d3df4620
       version: -1
       name: xdr-get-script-metadata
       description: Gets the full definition of a specific script in the scripts library.
@@ -798,10 +754,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 1bcb8b83-0d57-411b-850a-31fe0606bbba
+    taskid: f9a0d9f4-3967-4225-8481-79327f099719
     type: condition
     task:
-      id: 1bcb8b83-0d57-411b-850a-31fe0606bbba
+      id: f9a0d9f4-3967-4225-8481-79327f099719
       version: -1
       name: Verify Outputs
       description: Verify Outputs
@@ -837,10 +793,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 1923b846-754e-4b8a-8bf9-2ddb51761b13
+    taskid: 61c767bf-04b7-440a-8b40-ab271b28ac68
     type: title
     task:
-      id: 1923b846-754e-4b8a-8bf9-2ddb51761b13
+      id: 61c767bf-04b7-440a-8b40-ab271b28ac68
       version: -1
       name: Test Done
       description: Test Done
@@ -877,4 +833,5 @@ view: |-
   }
 inputs: []
 outputs: []
+quiet: false
 fromversion: 5.0.0

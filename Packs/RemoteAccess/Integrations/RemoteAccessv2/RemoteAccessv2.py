@@ -172,7 +172,7 @@ def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], 
                     for host in hosts])
 
     if not clients and host_name:
-        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate, port)
         clients.append(client)
 
     return clients

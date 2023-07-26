@@ -1,0 +1,45 @@
+{
+    "test_case_1":{
+        "args": {
+            "scan_type": "scan_type",
+            "name": "scan_name",
+            "repository_id": "repository_id",
+            "asset_ids": "AllManageable",
+            "schedule": "rollover",
+            "dependent_id": "1"
+        },
+        "expected_body": {"type": "scan_type", "name": "scan_name", "repository": {"id": "repository_id"}, "assets": [{"id": "1"}, {"id": "2"}],
+        "maxScanTime": 3600, "schedule": {"type": "rollover", "dependentID": "1"}},
+        "mock_response": {"error_code":0,"error_msg":"","response":{
+            "manageable":[
+                {"description":"asset_1_description","groups":[],"id":"1","ipCount":122,"modifiedTime":"1684660372","name":"asset_1_name","owner":{
+                "firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"},
+                "tags":"","type":"dynamic","uuid":"uuid"},
+                {"description":"Asset test", "groups":[],"id":"2","ipCount":159,"modifiedTime":"1673270083","name":"Systems that have been Scanned","owner":
+                {"firstname":"test","id":"1","lastname":"","username":"test","uuid":"uuid"}, "tags":"","type":"dynamic","uuid":"uuid"}]}}
+    },
+    "test_case_2":{
+        "args": {
+            "policy_id": "1",
+            "scan_name": "scan_name",
+            "credentials": "1,2,3",
+            "max_scan_time": "5",
+            "schedule": "ical",
+            "time_zone": "time_zone",
+            "start_time": "2023-09-09:07:30:00",
+            "repeat_rule_freq": "DAILY",
+            "repeat_rule_interval": "8",
+            "repeat_rule_by_day": "SU,MO"
+        },
+        "expected_body": {"type": "policy", "name": "scan_name", "policy": {"id": "1"}, "credentials": [{"id": "1"}, {"id": "2"}, {"id": "3"}],
+         "maxScanTime": 18000, "schedule": {"type": "ical", "start": "TZID=20230909T073000:20230909T073000", "repeatRule": "FREQ=DAILY;INTERVAL=8;", "enabled": true}}
+    },
+    "test_case_3":{
+        "args": {
+            "zone_id": "zone_id",
+            "report_ids": "1,2,3"
+        },
+        "expected_body": {"type": "plugin", "zone": {"id": "zone_id"},
+        "reports": [{"id": "1", "reportSource": "individual"}, {"id": "2", "reportSource": "individual"}, {"id": "3", "reportSource": "individual"}], "maxScanTime": 3600}
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "groupId": "g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc",
+    "acknowledged": false,
+    "mitreTactics": [
+        "privilege-escalation"
+    ],
+    "incidentEvents": [
+        {
+        "eventId": "750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc",
+        "start": "2022-07-26T16:38:52.000Z",
+        "title": "Possible Hijack of Office365 Account",
+        "deviceId": 1976,
+        "visible": true
+        },
+        {
+        "eventId": "bc64f242-ce29-4f35-bc94-230991116564",
+        "start": "2022-07-26T16:38:52.000Z",
+        "title": "Possible Hijack of AzureActiveDirectory",
+        "deviceId": 1975,
+        "visible": true
+        }
+    ],
+    "groupCategory": "critical",
+    "groupScore": 40.7
+}

@@ -1,0 +1,23 @@
+[INGEST:vendor="bluecat", product="address_manager", target_dataset="bluecat_address_manager_raw", no_hit=keep]
+filter _raw_log ~= "<\d+>(\w+\s*\d+\s\d+:\d+:\d+)\s"
+| alter 
+    tmp_time1 = arrayindex(regextract(_raw_log,"<\d+>(\w+\s*\d+\s\d+:\d+:\d+)\s"),0),
+    tmp_Year = format_timestamp("%Y",_insert_time)
+// Parsing time format 1
+| alter 
+    tmp_time1_1 = concat(tmp_Year, " ", tmp_time1)
+| alter 
+    tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time1_1)
+| alter 
+    tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "DAY")
+// Check if the date is a future date
+| alter 
+    tmp_Year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_Year),1)),null)
+// Create timestamp minus 1 year if the timestamp is a future one
+| alter 
+    tmp_time1_2 = if(tmp_Year2 != null, concat(tmp_Year2, " ", tmp_time1), null)
+| alter 
+    tmp_time1_2 = if(tmp_time1_2 != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_time1_2), null)
+// final result
+| alter _time = coalesce(tmp_time1_2, tmp_time1_1)
+| fields -tmp_time1, tmp_Year, tmp_Year2, tmp_timeDiff, tmp_time1_1, tmp_time1_2;

@@ -13,7 +13,8 @@
     "Symantec DLP Endpoint Incident",
     "Symantec DLP Network Incident",
     "Skyhigh Security Alert",
-    "Skyhigh Security Threat"
+    "Skyhigh Security Threat",
+    "Prisma Cloud - VM Alert Prioritization"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -49,7 +50,8 @@
     "Saas Security Incident",
     "Symantec DLP Discover Incident",
     "Symantec DLP Endpoint Incident",
-    "Symantec DLP Network Incident"
+    "Symantec DLP Network Incident",
+    "Prisma Cloud - VM Alert Prioritization"
   ],
   "threshold": 72,
   "type": "shortText",

@@ -12,15 +12,15 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-PrismaCloud v2
+* PrismaCloud v2
 
 ### Scripts
 
-PrismaCloudAttribution
+* PrismaCloudAttribution
 
 ### Commands
 
-prisma-cloud-config-search
+* prisma-cloud-config-search
 
 ## Playbook Inputs
 
@@ -37,6 +37,7 @@ prisma-cloud-config-search
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | PrismaCloud.Attribution | Prisma Cloud attributed asset information. | unknown |
+| PrismaCloud.Config.data.tags | Prisma Cloud Tags information. | unknown |
 
 ## Playbook Image
 

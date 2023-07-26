@@ -1,0 +1,18 @@
+commonfields:
+  id: SecuronixGetViolations
+  version: -1
+name: SecuronixGetViolations
+script: ''
+type: python
+tags:
+- field-change-triggered
+- dynamic-section
+comment: Gets a list of violations related to a specific threat from the context data and displays it in the layout.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

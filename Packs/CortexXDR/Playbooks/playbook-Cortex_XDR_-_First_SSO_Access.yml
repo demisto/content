@@ -34,7 +34,7 @@ tasks:
       {
         "position": {
           "x": 267.5,
-          "y": -1820
+          "y": -1800
         }
       }
     note: false
@@ -74,7 +74,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": -1540
+          "y": -1520
         }
       }
     note: false
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 267.5,
-          "y": -1685
+          "y": -1665
         }
       }
     note: false
@@ -367,7 +367,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -1540
+          "y": -1520
         }
       }
     note: false
@@ -488,7 +488,7 @@ tasks:
       {
         "position": {
           "x": 267.5,
-          "y": -1360
+          "y": -1340
         }
       }
     note: false
@@ -512,14 +512,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "159"
+      - "181"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -112.5,
-          "y": -1170
+          "y": -1150
         }
       }
     note: false
@@ -571,7 +571,7 @@ tasks:
       id: 74577fe2-2dc9-4913-8f77-18be32c48ca2
       version: -1
       name: Should the Endpoint be isolated automatically?
-      description: Checks if the endpoint can be isolated automatically based on the input's value. (inputs.AutomaticallyIsolateEndpoint)
+      description: Checks if the endpoint can be isolated automatically based on the input's value. (AutomaticallyIsolateEndpoint)
       type: condition
       iscommand: false
       brand: ""
@@ -696,13 +696,13 @@ tasks:
     scriptarguments:
       countryname:
         complex:
-          root: inputs.Country
+          root: inputs.LoginCountry
           transformers:
           - operator: ConvertCountryCodeCountryName
             args:
               country_code:
                 value:
-                  simple: inputs.Country
+                  simple: inputs.LoginCountry
                 iscontext: true
               country_name: {}
       xdralertsearchresults:
@@ -775,8 +775,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": -450
+          "x": -112.5,
+          "y": -430
         }
       }
     note: false
@@ -854,13 +854,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "145":
     id: "145"
-    taskid: 8c539bb2-beb6-48ca-8e19-aacf87e28277
+    taskid: 3bbe0d0f-f54d-42e6-862c-fc994a95d963
     type: regular
     task:
-      id: 8c539bb2-beb6-48ca-8e19-aacf87e28277
+      id: 3bbe0d0f-f54d-42e6-862c-fc994a95d963
       version: -1
-      name: Manually reset account password
-      description: Manually expire the user's password.
+      name: Manually reset 2FA / clear user sessions / block if needed
+      description: Manually reset 2FA / clear user sessions / block if needed.
       type: regular
       iscommand: false
       brand: ""
@@ -872,8 +872,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": -640
+          "x": -552.5,
+          "y": -600
         }
       }
     note: false
@@ -881,116 +881,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "146":
-    id: "146"
-    taskid: 30631bcf-27fa-4f70-8338-f33e6482dcd7
-    type: regular
-    task:
-      id: 30631bcf-27fa-4f70-8338-f33e6482dcd7
-      version: -1
-      name: Expire Password for the account
-      description: Expires the password of an Active Directory user.
-      script: '|||ad-expire-password'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "123"
-    scriptarguments:
-      username:
-        complex:
-          root: inputs.Username
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "2"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -110,
-          "y": -640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: User Disabled Status
-      output:
-        simple: Contained
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "147":
-    id: "147"
-    taskid: 849c0f61-76a4-44ce-8adc-ea6ab9c818c7
-    type: condition
-    task:
-      id: 849c0f61-76a4-44ce-8adc-ea6ab9c818c7
-      version: -1
-      name: Is Active Directory enabled?
-      description: Checks whether the Active Directory Query v2 integration is enabled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "145"
-      "yes":
-      - "146"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Active Directory Query v2
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -110,
-          "y": -870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
   "149":
@@ -1324,52 +1214,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "159":
-    id: "159"
-    taskid: cd6ce59e-5a6a-42be-8cc3-3d4a347e1368
-    type: condition
-    task:
-      id: cd6ce59e-5a6a-42be-8cc3-3d4a347e1368
-      version: -1
-      name: Should reset the account password automatically?
-      description: Checks if the account can be disabled and reset the account's password automatically based on the input's value. (inputs.AutomaticallyBlockAccount)
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "145"
-      "yes":
-      - "147"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutomaticallyResetPassword
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -110,
-          "y": -1050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "160":
     id: "160"
     taskid: 36cba334-80b3-45b9-8f46-d04ab74bc01a
@@ -1378,7 +1222,7 @@ tasks:
       id: 36cba334-80b3-45b9-8f46-d04ab74bc01a
       version: -1
       name: Should the Account be disabled automatically?
-      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (inputs.AutomaticallyBlockAccount)
+      description: Checks if the account can be disabled and resets the account's password automatically based on the input's value. (AutomaticallyBlockAccount)
       type: condition
       iscommand: false
       brand: ""
@@ -1783,6 +1627,149 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "180":
+    id: "180"
+    taskid: 81105405-75c9-4faa-80ad-3ee28a75be66
+    type: condition
+    task:
+      id: 81105405-75c9-4faa-80ad-3ee28a75be66
+      version: -1
+      name: Is Okta V2 integration enabled ?
+      description: Checks if Okta V2 integration enabled and the user email is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "145"
+      "yes":
+      - "187"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    id: "181"
+    taskid: 418e7f45-3394-43eb-8ff0-50453c346092
+    type: condition
+    task:
+      id: 418e7f45-3394-43eb-8ff0-50453c346092
+      version: -1
+      name: Should verify factor authentication automatically?
+      description: Checks whether to automatically initiate two-factor authentication verification based on the input's value. (AutomaticallyClearSessions)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "145"
+      "yes":
+      - "180"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutomaticallyClearSessions
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: a8480757-5f5c-4693-8c86-3dd10307f003
+    type: regular
+    task:
+      id: a8480757-5f5c-4693-8c86-3dd10307f003
+      version: -1
+      name: Okta - Clear user sessions
+      description: |-
+        Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        For more information and examples:
+        https://developer.okta.com/docs/reference/api/users/#user-sessions
+      script: '|||okta-clear-user-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      userId:
+        complex:
+          root: Account
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -112.5,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1790,27 +1777,27 @@ view: |-
       "111_115_#default#": 0.11,
       "116_117_#default#": 0.64,
       "116_120_yes": 0.56,
-      "147_146_yes": 0.63,
       "158_150_yes": 0.54,
       "158_6_#default#": 0.35,
-      "159_147_yes": 0.44,
       "160_143_yes": 0.56,
       "160_79_#default#": 0.54,
-      "163_179_False positive": 0.46,
-      "163_72_True positive": 0.42,
       "177_175_yes": 0.37,
       "177_176_#default#": 0.16,
       "178_179_#default#": 0.32,
       "178_72_yes": 0.32,
+      "180_145_#default#": 0.51,
+      "180_187_yes": 0.37,
+      "181_145_#default#": 0.36,
+      "181_180_yes": 0.44,
       "88_100_yes": 0.46,
       "88_176_#default#": 0.25
     },
     "paper": {
       "dimensions": {
-        "height": 5145,
-        "width": 1750,
-        "x": -520,
-        "y": -1820
+        "height": 5125,
+        "width": 1782.5,
+        "x": -552.5,
+        "y": -1800
       }
     }
   }
@@ -1863,11 +1850,6 @@ inputs:
   value: {}
   required: false
   description: IP Address from the XDR Alert.
-  playbookInputQuery:
-- key: AlertID
-  value: {}
-  required: false
-  description: Alert ID.
   playbookInputQuery:
 - key: LoginCountry
   value: {}
@@ -1969,11 +1951,11 @@ inputs:
   required: false
   description: Cortex XDR User name Field.
   playbookInputQuery:
-- key: AutomaticallyResetPassword
+- key: AutomaticallyClearSessions
   value:
     simple: "False"
   required: false
-  description: Whether to reset the account password automatically.
+  description: Whether to clear all the user sessions automatically.
   playbookInputQuery:
 outputs: []
 tests:

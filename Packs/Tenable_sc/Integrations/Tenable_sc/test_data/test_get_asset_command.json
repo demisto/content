@@ -1,0 +1,29 @@
+{
+    "test_case_1":{
+        "args": {
+            "asset_id": "35"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"createdTime":"1676279189","description":"The remote host has an antivirus installed and running, and its engine and virus definitions are up to date.",
+        "id":"35","modifiedTime":"1676279189","name":"Anti-Virus Current","owner":{"firstname":"","id":"2","lastname":"","username":"secman","uuid":"6012E220-AFF8-499F-AEB9-401E48155451"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},"status":"0","tags":"","uuid":"uuid",
+        "viewableIPs":[{"ipCount":"6","ipList":"192.168.1.14|\n192.168.1.21|\n192.168.1.104|\n192.168.1.133|\n192.168.1.145|\n",
+        "repository":{"description":"","id":"1","name":"Local","type":"Local","uuid":"74DFEBB4-BE70-410E-BDDC-466CB4CDA7C2"}}]},"timestamp":1687158580,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Asset\n|ID|Name|Description|Created|Modified|Owner|Group|IPs|\n|---|---|---|---|---|---|---|---|\n| 35 | Anti-Virus Current | The remote host has an antivirus installed and running, and its engine and virus definitions are up to date. | 2023-02-13T09:06:29Z | 2023-02-13T09:06:29Z | secman | Full Access | 192.168.1.14,\u003cbr\u003e192.168.1.21,\u003cbr\u003e192.168.1.104,\u003cbr\u003e192.168.1.133,\u003cbr\u003e192.168.1.145 |\n",
+        "expected_ec": {
+            "Created": "2023-02-13T09:06:29Z",
+            "Description": "The remote host has an antivirus installed and running, and its engine and virus definitions are up to date.",
+            "Group": "Full Access",
+            "ID": "35",
+            "IPs": [
+              "192.168.1.14",
+              "192.168.1.21",
+              "192.168.1.104",
+              "192.168.1.133",
+              "192.168.1.145"
+            ],
+            "Modified": "2023-02-13T09:06:29Z",
+            "Name": "Anti-Virus Current",
+            "Owner": "secman"
+          }        
+    }
+}

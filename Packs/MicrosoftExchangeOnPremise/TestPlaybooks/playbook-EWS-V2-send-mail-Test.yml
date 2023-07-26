@@ -5,18 +5,20 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 21aaed67-8b83-4255-8f91-5686ea984c61
+    taskid: b6a30efd-f6f6-451b-8c46-92d8921fd224
     type: start
     task:
-      id: 21aaed67-8b83-4255-8f91-5686ea984c61
+      id: b6a30efd-f6f6-451b-8c46-92d8921fd224
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5c5c9851-198d-4275-8860-8886f4dc899a
+    taskid: c556fd47-93f7-49d6-8f98-82c96426c0be
     type: regular
     task:
-      id: 5c5c9851-198d-4275-8860-8886f4dc899a
+      id: c556fd47-93f7-49d6-8f98-82c96426c0be
       version: -1
       name: Test send mail
       script: EWS v2|||send-mail
@@ -49,17 +51,12 @@ tasks:
     scriptarguments:
       attachIDs:
         simple: ${File.EntryID}
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
-        simple: test_rešňa
+        simple: test
       to:
         simple: buildtests@demisto.int
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -76,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 371db546-d62c-437e-8ae5-b5d62b48cde1
+    taskid: 25e6d467-8660-4058-8ad3-f8c47a4bb5e2
     type: regular
     task:
-      id: 371db546-d62c-437e-8ae5-b5d62b48cde1
+      id: 25e6d467-8660-4058-8ad3-f8c47a4bb5e2
       version: -1
       name: Get file
       scriptName: http
@@ -90,22 +87,16 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      body: {}
       filename:
-        simple: test_file_пожалуйста
-      headers: {}
-      insecure: {}
+        simple: test_file
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
-      username: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -122,19 +113,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 81e8e117-3c88-42c4-8bab-e87a8e9fbe91
+    taskid: 1500bd1b-66d7-4586-85c4-089dcf371cc9
     type: title
     task:
-      id: 81e8e117-3c88-42c4-8bab-e87a8e9fbe91
+      id: 1500bd1b-66d7-4586-85c4-089dcf371cc9
       version: -1
       name: Test success after failure
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -151,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0c7e82c3-ac71-42ae-801d-9d492d673f7c
+    taskid: 0cd75765-297c-4ea1-872c-17d1c5436cd9
     type: regular
     task:
-      id: 0c7e82c3-ac71-42ae-801d-9d492d673f7c
+      id: 0cd75765-297c-4ea1-872c-17d1c5436cd9
       version: -1
       name: Send Bad Email (Should fail)
       description: Sends an email using EWS.
@@ -166,21 +159,15 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      attachCIDs: {}
       attachIDs:
         simple: bad
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: Bad Email That Fails
       to:
         simple: buildtests@demisto.int
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -197,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1ce3f82a-9aea-4edc-8891-ee721c063342
+    taskid: 98514559-3405-440a-81e5-886dd9a653bd
     type: regular
     task:
-      id: 1ce3f82a-9aea-4edc-8891-ee721c063342
+      id: 98514559-3405-440a-81e5-886dd9a653bd
       version: -1
       name: Send Good Email
       script: EWS v2|||send-mail
@@ -208,20 +195,14 @@ tasks:
       iscommand: true
       brand: EWS v2
     scriptarguments:
-      attachCIDs: {}
       attachIDs:
         simple: ${File.EntryID}
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      htmlBody: {}
-      replyTo: {}
       subject:
         simple: test
       to:
         simple: buildtests@demisto.int
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -238,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3e9a3f05-6619-4700-86e7-57ca4e3ae7e3
+    taskid: 42c66f7d-f513-4a63-8b77-073fe64f11b0
     type: regular
     task:
-      id: 3e9a3f05-6619-4700-86e7-57ca4e3ae7e3
+      id: 42c66f7d-f513-4a63-8b77-073fe64f11b0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -255,11 +236,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {

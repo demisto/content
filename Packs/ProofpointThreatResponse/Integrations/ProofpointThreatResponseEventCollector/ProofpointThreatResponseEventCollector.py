@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 from datetime import timedelta
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 import urllib3
@@ -390,36 +390,38 @@ def main():  # pragma: no cover
             headers=headers,
             proxy=proxy,
         )
+
         if command == 'test-module':
             return_results(test_module(client, first_fetch))
 
-        elif command in ('proofpoint-trap-get-events', 'fetch-events'):
-
-            if command == 'proofpoint-trap-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, human_readable, raw_response = list_incidents_command(client, args)
-                results = CommandResults(raw_response=raw_response, readable_output=human_readable)
-                return_results(results)
-
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
-                events, last_run = fetch_events_command(
-                    client,
-                    first_fetch,
-                    last_run,
-                    fetch_limit,
-                    fetch_delta,
-                    incidents_states,
-                )
-                demisto.setLastRun(last_run)
-
-            if should_push_events:
+        elif command == 'proofpoint-trap-get-events':
+            events, human_readable, raw_response = list_incidents_command(client, args)
+            results = CommandResults(raw_response=raw_response, readable_output=human_readable)
+            return_results(results)
+            if argToBoolean(args.pop('should_push_events')):
                 send_events_to_xsiam(
                     events,
                     VENDOR,
                     PRODUCT
                 )
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            events, last_run = fetch_events_command(
+                client,
+                first_fetch,
+                last_run,
+                fetch_limit,
+                fetch_delta,
+                incidents_states,
+            )
+
+            send_events_to_xsiam(
+                events,
+                VENDOR,
+                PRODUCT
+            )
+            demisto.setLastRun(last_run)
 
     # Log exceptions and return errors
     except Exception as e:

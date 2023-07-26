@@ -18,8 +18,7 @@ args:
   description: An array for which to return the last value.
   isArray: true
 scripttarget: 0
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 tests:
 - No test - unit test

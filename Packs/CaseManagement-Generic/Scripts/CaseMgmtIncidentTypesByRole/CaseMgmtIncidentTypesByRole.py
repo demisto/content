@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 # check if this is a new Incident or not
 incident = demisto.incident().get("id")
 
@@ -25,9 +26,10 @@ if not incident:
             # set default Incident types for all roles
             allowedTypes = role_list["Default"]
 
-            # for each role the user has, add their types
+            # for each role the user has, add their types if the role exists in the list
             for role in roles:
-                allowedTypes.extend(role_list[role])
+                if role in role_list.keys():
+                    allowedTypes.extend(role_list[role])
 
             # remove duplicates
             allowedTypes = list(set(allowedTypes))

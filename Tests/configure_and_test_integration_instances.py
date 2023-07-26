@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import argparse
 import ast
@@ -39,6 +38,8 @@ from Tests.test_content import get_server_numeric_version
 from Tests.test_integration import __get_integration_config, test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
+from Tests.private_build.upload_packs_private import extract_packs_artifacts
+from tempfile import mkdtemp
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -88,21 +89,25 @@ class Server:
 
     def __init__(self):
         self.internal_ip = None
-        self.ssh_tunnel_port = None
         self.user_name = None
         self.password = None
         self.name = ''
+        self.build_number = 'unknown'
+
+    def get_custom_user_agent(self):
+        return f"demisto-py/dev (Build:{self.build_number})"
 
 
 class CloudServer(Server):
 
-    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
+    def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name, build_number=''):
         super().__init__()
         self.name = name
         self.api_key = api_key
         self.server_numeric_version = server_numeric_version
         self.base_url = base_url
         self.xdr_auth_id = xdr_auth_id
+        self.build_number = build_number
         self.__client = None
         # we use client without demisto username
         os.environ.pop('DEMISTO_USERNAME', None)
@@ -122,19 +127,21 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
+        custom_user_agent = self.get_custom_user_agent()
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
 
 class XSOARServer(Server):
 
-    def __init__(self, internal_ip, port, user_name, password):
+    def __init__(self, internal_ip, user_name, password, build_number=''):
         super().__init__()
-        self.__ssh_client = None
         self.__client = None
         self.internal_ip = internal_ip
-        self.ssh_tunnel_port = port
         self.user_name = user_name
         self.password = password
+        self.build_number = build_number
 
     def __str__(self):
         return self.internal_ip
@@ -147,10 +154,13 @@ class XSOARServer(Server):
         return self.__client
 
     def reconnect_client(self):
-        self.__client = demisto_client.configure(f'https://localhost:{self.ssh_tunnel_port}',
+        self.__client = demisto_client.configure(f'https://{self.internal_ip}',
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
+        custom_user_agent = self.get_custom_user_agent()
+        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
     def add_server_configuration(self, config_dict, error_msg, restart=False):
@@ -277,7 +287,7 @@ class Build(ABC):
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number, marketplace_name=None, artifacts_folder=None,
                             marketplace_buckets=None):
-        pass
+        raise NotImplementedError
 
     def check_if_new_to_marketplace(self, diff: str) -> bool:
         """
@@ -287,13 +297,13 @@ class Build(ABC):
             (bool): whether new (current) marketplace was added to the pack_metadata or not
         """
         spaced_diff = " ".join(diff.split())
-        return (f'+ "{self.marketplace_name}"' in spaced_diff) and not (f'- "{self.marketplace_name}"' in spaced_diff)
+        return (f'+ "{self.marketplace_name}"' in spaced_diff) and f'- "{self.marketplace_name}"' not in spaced_diff
 
     def disable_instances(self):
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self, packs_not_to_install: Set[str] = None) -> Tuple[List[str], List[str]]:
+    def get_changed_integrations(self, packs_not_to_install: Set[str] | None = None) -> Tuple[List[str], List[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
         The modified list is exclude the packs_not_to_install and the new list is including it
@@ -360,6 +370,7 @@ class Build(ABC):
         """
         server_numeric_version: str = self.server_numeric_version
         tests: dict = self.tests
+        tests_for_iteration: list[dict]
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
             if self.is_nightly:
@@ -391,9 +402,6 @@ class Build(ABC):
         #  END CHANGE ON LOCAL RUN  #
 
     def configure_server_instances(self, tests_for_iteration, all_new_integrations, modified_integrations):
-        """
-
-        """
         modified_module_instances = []
         new_module_instances = []
         testing_client = self.servers[0].client
@@ -564,11 +572,11 @@ class XSOARBuild(Build):
     def __init__(self, options):
         super().__init__(options)
         self.ami_env = options.ami_env
-        self.server_to_port_mapping, self.server_numeric_version = self.get_servers(options.ami_env)
+        servers_list, self.server_numeric_version = self.get_servers(options.ami_env)
         self.servers = [XSOARServer(internal_ip,
-                                    port,
                                     self.username,
-                                    self.password) for internal_ip, port in self.server_to_port_mapping.items()]
+                                    self.password,
+                                    self.ci_build_number) for internal_ip in servers_list]
 
     @property
     def proxy(self) -> MITMProxy:
@@ -723,12 +731,12 @@ class XSOARBuild(Build):
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        server_to_port_mapping = map_server_to_port(env_conf, ami_env)
+        servers = get_servers(env_conf, ami_env)
         if Build.run_environment == Running.CI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return server_to_port_mapping, server_numeric_version
+        return servers, server_numeric_version
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         threads_list = []
@@ -759,8 +767,8 @@ class CloudBuild(Build):
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
-                                    self.cloud_machine)]
-        self.marketplace_tag_name = options.marketplace_name
+                                    self.cloud_machine, self.ci_build_number)]
+        self.marketplace_tag_name: str = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
         self.marketplace_buckets = options.marketplace_buckets
 
@@ -869,7 +877,7 @@ class CloudBuild(Build):
                 # were added, they will not appear on the cloud marketplace without sync.
                 _ = demisto_client.generic_request_func(
                     self=server.client, method='POST',
-                    path='/contentpacks/marketplace/sync')
+                    path='/contentpacks/marketplace/sync?hard=true')
             except Exception as e:
                 logging.error(f'Filed to sync marketplace. Error: {e}')
         logging.info('Finished copying successfully.')
@@ -1160,6 +1168,18 @@ def set_integration_params(build,
     for integration in integrations:
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        if integration['name'] == "Core REST API" and build.is_cloud:
+            integration_params[0]['params'] = {  # type: ignore
+                "url": build.base_url,
+                "creds_apikey": {
+                    "identifier": str(build.xdr_auth_id),
+                    "password": build.api_key,
+                },
+                "auth_method": "Standard",
+                "insecure": True,
+                "proxy": False,
+            }
+
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1217,7 +1237,7 @@ def set_module_params(param_conf, integration_params):
     if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
         # param defined in conf
         key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
-        if key == 'credentials':
+        if key == 'credentials' or key == "creds_apikey":
             credentials = integration_params[key]
             param_value = {
                 'credential': '',
@@ -1533,7 +1553,7 @@ def get_env_conf():
     return None
 
 
-def map_server_to_port(env_results, instance_role):
+def get_servers(env_results, instance_role):
     """
     Arguments:
         env_results: (dict)
@@ -1545,9 +1565,7 @@ def map_server_to_port(env_results, instance_role):
         (lst): The server url list to connect to
     """
 
-    ip_to_port_map = {env.get('InstanceDNS'): env.get('TunnelPort') for env in env_results if
-                      instance_role in env.get('Role', '')}
-    return ip_to_port_map
+    return [env.get('InstanceDNS') for env in env_results if instance_role in env.get('Role')]
 
 
 def get_json_file(path):
@@ -1634,7 +1652,7 @@ def test_pack_zip(content_path, target, packs: list = None):
                 continue
             test = test.name
             with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
+                if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
@@ -1649,7 +1667,9 @@ def get_non_added_packs_ids(build: Build):
     :param build: the build object
     :return: all non added packs i.e. unchanged packs (dependencies) and modified packs
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    compare_against = (
+        'master~1' if build.branch_name == 'master' else 'origin/master'
+    )
     added_files = run_command(f'git diff --name-only --diff-filter=A '
                               f'{compare_against}..refs/heads/{build.branch_name} -- Packs/*/pack_metadata.json')
     if os.getenv('CONTRIB_BRANCH'):
@@ -1741,7 +1761,7 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     return hidden_integrations_names
 
 
-def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str],
+def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str] | None,
                              modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
     """
     Add the turned non-hidden integrations names to the new integrations names list and
@@ -1782,20 +1802,22 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
     return first_added_to_marketplace
 
 
-def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
+def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
     """
-    Return a set of packs to install only in the post-update, and set not to install in pre-update.
+    Return a set of packs to install only in the pre-update, and set to install in post-update.
     Args:
-        modified_packs_names (Set[str]): The set of packs to install.
         build (Build): The build object.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
         (Set[str]): The set of the pack names that should be installed only in post update. (non-hidden packs or packs
                                                 that new to current marketplace)
     """
+    modified_packs_names = get_non_added_packs_ids(build)
+
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
-    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
-                                                                      build.content_path, build.server_numeric_version)
+
+    packs_with_higher_min_version = get_packs_with_higher_min_version(set(build.pack_ids_to_install),
+                                                                      build.server_numeric_version)
     # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
 
@@ -1805,27 +1827,32 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
 
     packs_not_to_install_in_pre_update = set().union(*[packs_with_higher_min_version,
                                                        non_hidden_packs, first_added_to_marketplace])
-    return packs_not_to_install_in_pre_update, non_hidden_packs
+    packs_to_install_in_pre_update = modified_packs_names - packs_not_to_install_in_pre_update
+    return packs_to_install_in_pre_update, non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: Set[str],
+                                      server_numeric_version: str) -> Set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 
     Args:
         packs_names (Set[str]): A set of packs to install.
-        content_path (str): The content root path.
         server_numeric_version (str): The server version.
 
     Returns:
         (Set[str]): The set of the packs names that supposed to be not installed because
                     their min version is greater than the server version.
     """
+    extract_content_packs_path = mkdtemp()
+    packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/content_packs.zip'
+    extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
+
     packs_with_higher_version = set()
     for pack_name in packs_names:
-
-        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
-        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+        pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
+                                               pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
 
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
@@ -1873,16 +1900,15 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
-        modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_not_to_install(
-            modified_packs_names, build)
-        packs_to_install = modified_packs_names - packs_not_to_install_in_pre_update
-        build.install_packs(pack_ids=packs_to_install)
+        packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
+        logging.info("Installing packs in pre-update step")
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
+        logging.info("Installing packs in post-update step")
         installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)

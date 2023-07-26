@@ -1,0 +1,24 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "f6471e45-a5e1-498e-86e5-3e04e3abc2cb",
+    "isPredefined": true,
+    "name": "Use Case time in Production",
+    "query": "usecaseproductiontimer.runStatus:running and type:\"Use Case Builder\"",
+    "version": -1,
+    "widgetType": "duration",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

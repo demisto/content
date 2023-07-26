@@ -1,7 +1,8 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Darktrace Model Breach"
+  "Darktrace Model Breach",
+  "Darktrace Model Breach Alert"
  ],
  "caseInsensitive": true,
  "cliName": "darktracemodeluuid",

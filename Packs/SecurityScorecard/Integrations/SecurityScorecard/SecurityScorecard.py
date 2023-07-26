@@ -4,9 +4,10 @@ from CommonServerPython import *
 import requests
 import traceback
 from typing import Dict, Any
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 """ CONSTANTS """

@@ -186,7 +186,11 @@ var fetchIncidents = function(args, test_module=false) {
         if (args.limit && parseInt(args.limit)) {
             url += '&limit=' + args.limit;
         }
+        if (args.sort) {
+            url += '&sort=' + encodeURIComponent(args.sort);
+        }
     }
+
     if (test_module) {
         url += '?limit=1&q=Submitter="' + params.credentials.identifier + '"';
     }

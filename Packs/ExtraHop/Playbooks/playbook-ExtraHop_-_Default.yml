@@ -2,15 +2,17 @@ id: ExtraHop - Default
 version: -1
 fromversion: 5.0.0
 name: ExtraHop - Default
-description: Default playbook to run for all ExtraHop Detection incidents.  This playbook handles ticket tracking as well as triggering specific playbooks based on the name of the ExtraHop Detection.
+description: Default playbook to run for all ExtraHop Detection incidents.  This playbook
+  handles ticket tracking as well as triggering specific playbooks based on the name
+  of the ExtraHop Detection.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e05c49e8-d5fc-49cc-8e4f-febae049f470
+    taskid: 596ac2d9-2aec-48f6-8a38-f93ae747883a
     type: start
     task:
-      id: e05c49e8-d5fc-49cc-8e4f-febae049f470
+      id: 596ac2d9-2aec-48f6-8a38-f93ae747883a
       version: -1
       name: ""
       description: ""
@@ -30,12 +32,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: aacb39b5-ff6b-405e-8891-e03e73e4b101
+    taskid: 60c216dd-4745-461b-866b-55a99dd9199e
     type: title
     task:
-      id: aacb39b5-ff6b-405e-8891-e03e73e4b101
+      id: 60c216dd-4745-461b-866b-55a99dd9199e
       version: -1
       name: Done
       description: ""
@@ -53,15 +59,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c46704ba-c334-4b3b-887f-fa1dd8339fd0
+    taskid: dbf05a35-3c94-42d5-8cff-93ea45542d8f
     type: condition
     task:
-      id: c46704ba-c334-4b3b-887f-fa1dd8339fd0
+      id: dbf05a35-3c94-42d5-8cff-93ea45542d8f
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
-      description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
+      description: Checks if there is an active instance of the ExtraHop Reveal(x)
+        integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -104,15 +115,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: b24f8753-bb48-4a77-8b97-a33ed472cd05
+    taskid: 9e039e8b-93b8-49a6-82f1-c89b6278263d
     type: playbook
     task:
-      id: b24f8753-bb48-4a77-8b97-a33ed472cd05
+      id: 9e039e8b-93b8-49a6-82f1-c89b6278263d
       version: -1
       name: ExtraHop - Ticket Tracking v2
-      description: Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
+      description: Links the Demisto incident back to the ExtraHop detection that
+        created it for ticket tracking purposes.
       playbookName: ExtraHop - Ticket Tracking v2
       type: playbook
       iscommand: false
@@ -125,6 +141,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -135,15 +152,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a67d8b24-4516-46c0-85a0-3fd3cf7c2279
+    taskid: a3a89fe2-78a0-4efe-8cd3-5691ca187145
     type: regular
     task:
-      id: a67d8b24-4516-46c0-85a0-3fd3cf7c2279
+      id: a3a89fe2-78a0-4efe-8cd3-5691ca187145
       version: -1
       name: Add initial investigation notes
-      description: This task is for the ExtraHop analyst to enter notes on the ExtraHop Detection that created this Incident.  Used as a method of initial investigation and tracking notes within the Work Plan.
+      description: This task is for the ExtraHop analyst to enter notes on the ExtraHop
+        Detection that created this Incident.  Used as a method of initial investigation
+        and tracking notes within the Work Plan.
       type: regular
       iscommand: false
       brand: ""
@@ -161,15 +184,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 03bac09d-d03d-45d5-86f1-4209973b4a4d
+    taskid: 4478086b-b644-4d48-8ba5-6c164bdaab3a
     type: title
     task:
-      id: 03bac09d-d03d-45d5-86f1-4209973b4a4d
+      id: 4478086b-b644-4d48-8ba5-6c164bdaab3a
       version: -1
       name: Detection Playbooks
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: title
       iscommand: false
       brand: ""
@@ -187,12 +215,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: f4749919-007f-47da-85ce-4428c0000d64
+    taskid: 043daa98-9b02-45f0-822a-092f9cc4a3aa
     type: title
     task:
-      id: f4749919-007f-47da-85ce-4428c0000d64
+      id: 043daa98-9b02-45f0-822a-092f9cc4a3aa
       version: -1
       name: Ticket Tracking
       description: ""
@@ -213,15 +245,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 7a4202c3-81a2-4275-8ceb-474fa9f90a39
+    taskid: 96034d09-a0ec-47e4-8e18-4a384745112f
     type: condition
     task:
-      id: 7a4202c3-81a2-4275-8ceb-474fa9f90a39
+      id: 96034d09-a0ec-47e4-8e18-4a384745112f
       version: -1
       name: Does the detection have a playbook?
-      description: Check if the incoming detection has a specific playbook to run.
+      description: |-
+        Check if the incoming detection has a specific playbook to run.
+        The incident name here refers to the detection's type.
       type: condition
       iscommand: false
       brand: ""
@@ -241,7 +279,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: CVE-2019-0708
+              simple: CVE_2019_0708
     view: |-
       {
         "position": {
@@ -252,12 +290,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: ecbb3f9e-7e2b-4497-800d-b13e7dfcb858
+    taskid: e91bd3c6-9ca3-4ec6-80cd-6c8f51e6541b
     type: playbook
     task:
-      id: ecbb3f9e-7e2b-4497-800d-b13e7dfcb858
+      id: e91bd3c6-9ca3-4ec6-80cd-6c8f51e6541b
       version: -1
       name: ExtraHop - CVE-2019-0708 (BlueKeep)
       description: |-
@@ -282,6 +324,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -292,6 +335,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -322,7 +369,5 @@ outputs:
 - contextPath: ExtraHop.Record.Source
   description: Associated transaction records from ExtraHop.
   type: unknown
-marketplaces:
-- xsoar
 tests:
 - ExtraHop_v2-Test

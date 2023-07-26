@@ -18,12 +18,10 @@ def test_format_relation():
     assert result == expected
 
 
-CONTEXT_RESULTS = str([
-    {'name': 'test', 'properties': {'relatedResourceKind': 'test_kind', 'relatedResourceType': 'test_type',
-                                    'relatedResourceName': 'test_name', 'relatedResourceId': 'test_id'}},
-    {'name': 'test2', 'properties': {'relatedResourceKind': 'test_kind2', 'relatedResourceType': 'test_type2',
-                                     'relatedResourceName': 'test_name2', 'relatedResourceId': 'test_id2'}}
-])
+CONTEXT_RESULTS = ('[{"name": "test", "properties": {"relatedResourceKind": "test_kind", "relatedResourceType": "test_type", '
+                   '"relatedResourceName": "test_name", "relatedResourceId": "test_id"}}, {"name": "test2", "properties": '
+                   '{"relatedResourceKind": "test_kind2", "relatedResourceType": "test_type2", '
+                   '"relatedResourceName": "test_name2", "relatedResourceId": "test_id2"}}]')
 
 EXPECTED_TABLE = "|Name|Related Resource Kind|Related Resource Type|Related Resource Name|Related Resource Id|\n" \
                  "|---|---|---|---|---|\n" \

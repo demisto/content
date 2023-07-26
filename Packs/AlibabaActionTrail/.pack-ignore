@@ -1,0 +1,9 @@
+[file:AlibabaActionTrailEventCollector.yml]
+ignore=BA124
+
+[file:AlibabaParsingRules.yml]
+ignore=PR101
+
+[known_words]
+Alibaba
+ActionTrail

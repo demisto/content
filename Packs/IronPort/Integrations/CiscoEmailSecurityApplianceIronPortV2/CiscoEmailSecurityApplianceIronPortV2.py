@@ -1,11 +1,10 @@
-from typing import Callable, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from collections.abc import Callable
 
 import uuid
 
 
-JWT_TOKEN_EXPIRATION_PERIOD = 30
 DEFAULT_FETCH = 50
 TIMESTAMP_FORMAT = "%d %b %Y %H:%M:%S (%Z +00:00)"
 QUARANTINE_TIMESTAMP_FORMAT = "%d %b %Y %H:%M (%Z +00:00)"
@@ -32,28 +31,36 @@ class Client(BaseClient):
     """Client class to interact with Cisco ESA API."""
 
     def __init__(
-        self, server_url: str, username: str, password: str, verify: bool, proxy: bool
+        self,
+        server_url: str,
+        username: str,
+        password: str,
+        verify: bool,
+        proxy: bool,
+        jwt_token_expiration_period: int = 30,
     ):
         super().__init__(base_url=server_url, headers={}, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
+        self.jwt_token_expiration_period = jwt_token_expiration_period
         self.handle_request_headers()
 
-    def handle_request_headers(self):
+    def handle_request_headers(self, force_retrieve_jwt: bool = False):
         """Retrieve and save to integration context JWT token for authorized client class API requests."""
         integration_context = get_integration_context()
         jwt_token = integration_context.get("jwt_token")
-        jwt_token_issued_time = integration_context.get("jwt_token_issued_time")
-        if jwt_token and jwt_token_issued_time >= datetime.timestamp(
-            datetime.now() - timedelta(minutes=JWT_TOKEN_EXPIRATION_PERIOD)
-        ):
-            self._headers["jwtToken"] = jwt_token
-        else:
+        jwt_token_issued_time = integration_context.get("jwt_token_issued_time", 0.0)
+        current_time = datetime.now().timestamp()
+        next_refresh = (
+            datetime.fromtimestamp(jwt_token_issued_time)
+            + timedelta(minutes=self.jwt_token_expiration_period - 0.2)
+        ).timestamp()
+        if force_retrieve_jwt or not jwt_token or current_time > next_refresh:
             jwt_token = self.retrieve_jwt_token()
             set_integration_context(
-                {"jwt_token": jwt_token, "jwt_token_issued_time": time.time()}
+                {"jwt_token": jwt_token, "jwt_token_issued_time": current_time}
             )
-            self._headers["jwtToken"] = jwt_token
+        self._headers["jwtToken"] = jwt_token
 
     def retrieve_jwt_token(self) -> str:
         """
@@ -69,14 +76,24 @@ class Client(BaseClient):
             }
         }
         try:
-            response = self._http_request("POST", "login", json_data=data)
+            response = super()._http_request("POST", "login", json_data=data)
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
             if e.res.status_code == 401:
                 raise Exception(
                     "Authorization Error: make sure username and password are set correctly."
-                )
+                ) from e
+            raise e
+
+    def _http_request(self, *args, **kwargs):
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as e:
+            if e.res.status_code == 401:
+                self._session.cookies.clear()
+                self.handle_request_headers(force_retrieve_jwt=True)
+                return super()._http_request(*args, **kwargs)
             raise e
 
     def spam_quarantine_message_search_request(
@@ -603,12 +620,7 @@ def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
     """
     try:
         if custom_query:
-            return {
-                key: value
-                for key, value in (
-                    field.split("=") for field in custom_query.split(";")
-                )
-            }
+            return dict(field.split("=") for field in custom_query.split(";"))
         else:
             return {}
     except ValueError:
@@ -644,45 +656,25 @@ def format_reporting_datetime(time_expression: str) -> str:
     return arg_to_datetime(time_expression).strftime(CISCO_REPORTING_TIME_FORMAT)  # type: ignore
 
 
-def format_timestamp(timestamp: str) -> str:
+def format_timestamp(timestamp: str, output_format: str = DATETIME_FORMAT) -> str:
     """
     Format Cisco ESA timestamp to datetime string.
 
     Args:
         timestamp (str): Cisco ESA timestamp.
+        output_format (str): The format of the return date.
 
     Returns:
         str: Datetime formatted string.
     """
-    return datetime.strptime(timestamp, TIMESTAMP_FORMAT).strftime(DATETIME_FORMAT)
-
-
-def format_quarantine_timestamp(timestamp: str) -> str:
-    """
-    Format Cisco ESA Quarantine timestamp to datetime string.
-
-    Args:
-        timestamp (str): Cisco ESA quarantine timestamp.
-
-    Returns:
-        str: Datetime formatted string.
-    """
-    return datetime.strptime(timestamp, QUARANTINE_TIMESTAMP_FORMAT).strftime(
-        DATETIME_FORMAT
-    )
-
-
-def format_last_run(last_run: str) -> str:
-    """
-    Format fetch incidents last run to Cisco ESA datetime format.
-
-    Args:
-        last_run (str): Fetch incidents last run.
-
-    Returns:
-        str: Datetime formatted string.
-    """
-    return datetime.strptime(last_run, DATETIME_FORMAT).strftime(CISCO_TIME_FORMAT)
+    try:
+        try:
+            datetime_res = arg_to_datetime(timestamp)
+        except ValueError:
+            datetime_res = arg_to_datetime(timestamp.replace("GMT ", "GMT"))
+        return datetime_res.strftime(output_format)  # type: ignore
+    except:  # noqa: E722
+        return timestamp
 
 
 def format_number_list_argument(number_list_string: str) -> List[int]:
@@ -701,7 +693,7 @@ def format_number_list_argument(number_list_string: str) -> List[int]:
 def validate_pagination_arguments(
     page: Optional[int] = None,
     page_size: Optional[int] = None,
-    limit: Optional[int] = None
+    limit: Optional[int] = None,
 ):
     """
     Validate pagination arguments, raise error if argument is not valid.
@@ -719,10 +711,14 @@ def validate_pagination_arguments(
             )
 
         if page < MIN_PAGE_NUMBER:
-            raise ValueError(f"page argument must be equal or greater than {MIN_PAGE_NUMBER}.")
+            raise ValueError(
+                f"page argument must be equal or greater than {MIN_PAGE_NUMBER}."
+            )
     else:
         if limit and limit < MIN_LIMIT:
-            raise ValueError(f"limit argument must be equal or greater than {MIN_LIMIT}.")
+            raise ValueError(
+                f"limit argument must be equal or greater than {MIN_LIMIT}."
+            )
 
 
 def validate_related_arguments(
@@ -779,7 +775,7 @@ def format_list_entry_arguments(view_by: str, args: Dict[str, Any]) -> Dict[str,
     return args
 
 
-def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> Tuple:
+def pagination(request_command: Callable, args: Dict[str, Any], **kwargs) -> tuple:
     """
     Executing Manual Pagination (using the page and page size arguments)
     or Automatic Pagination (display a number of total results).
@@ -1236,8 +1232,8 @@ def list_entry_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
         sender_list=sender_list,
     )
 
-    deleted_entries = (
-        ", ".join(recipient_list if view_by == "recipient" else sender_list)
+    deleted_entries = ", ".join(
+        recipient_list if view_by == "recipient" else sender_list
     )
 
     return CommandResults(
@@ -1690,7 +1686,9 @@ def report_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     try:
         table = {
-            k: v for results in response.get("resultSet", [{}]) for k, v in results.items()
+            k: v
+            for results in response.get("resultSet", [{}])
+            for k, v in results.items()
         }
     except Exception:
         table = response.get("resultSet", response)
@@ -1742,15 +1740,19 @@ def fetch_incidents(
     """
     start_time = last_run.get("start_time")
     start_date = (
-        format_last_run(start_time) if start_time else format_datetime(first_fetch)
+        format_timestamp(start_time, output_format=CISCO_TIME_FORMAT)
+        if start_time
+        else format_datetime(first_fetch)
     )
     end_date = format_datetime("now")
     quarantine_type = QUARANTINE_TYPE
-    offset = 0
+    offset = last_run.pop("offset", 0) or 0
     order_by = "date"
     order_dir = "asc"
 
-    quarantine_messages: List[Dict[str, Any]] = client.spam_quarantine_message_search_request(
+    quarantine_messages: List[
+        Dict[str, Any]
+    ] = client.spam_quarantine_message_search_request(
         quarantine_type=quarantine_type,
         start_date=start_date,
         end_date=end_date,
@@ -1763,23 +1765,30 @@ def fetch_incidents(
         recipient_filter_value=recipient_filter_value,
         order_by=order_by,
         order_dir=order_dir,
-    ).get("data", [])
+    ).get(
+        "data", []
+    )
 
+    data_length = len(quarantine_messages)
     incidents: List[Dict[str, Any]] = []
     last_minute_incident_ids = last_run.get("last_minute_incident_ids", [])
     for incident in quarantine_messages:
-        incident_datetime = format_quarantine_timestamp(
+        incident_datetime = format_timestamp(
             dict_safe_get(incident, ["attributes", "date"])
         )
         message_id = incident.get("mid")
         if (
-            message_id and message_id not in last_minute_incident_ids
+            message_id
+            and message_id not in last_minute_incident_ids
             and start_date < incident_datetime
         ):
-            quarantine_message: Dict[str, Any] = client.spam_quarantine_message_get_request(
-                quarantine_type=quarantine_type,
-                message_id=message_id
-            ).get("data", {})
+            quarantine_message: Dict[
+                str, Any
+            ] = client.spam_quarantine_message_get_request(
+                quarantine_type=quarantine_type, message_id=message_id
+            ).get(
+                "data", {}
+            )
 
             incident_details = dict(
                 quarantine_message.get("attributes", {}),
@@ -1796,12 +1805,18 @@ def fetch_incidents(
     if incidents:
         start_time = incidents[-1].get("occurred")
         last_run["start_time"] = start_time
-        last_run["last_minute_incident_ids"] = [
+        new_fetched_tickets = [
             json.loads(incident.get("rawJSON", {})).get("mid")
             for incident in incidents
             if incident.get("occurred") == start_time
         ]
-
+        if offset == 0:
+            last_run["last_minute_incident_ids"] = new_fetched_tickets
+        else:
+            last_run["last_minute_incident_ids"].extend(new_fetched_tickets)
+    # In case that all the incidents where dropped
+    if data_length != 0 and not incidents:
+        last_run["offset"] = offset + max_fetch
     return incidents, last_run
 
 
@@ -1859,7 +1874,7 @@ def main() -> None:
 
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-
+    jwt_token_expiration_period = int(params.get("jwt_token_expiration_period") or 30)
     command = demisto.command()
     commands = {
         "cisco-esa-spam-quarantine-message-search": spam_quarantine_message_search_command,
@@ -1885,6 +1900,7 @@ def main() -> None:
             password,
             verify_certificate,
             proxy,
+            jwt_token_expiration_period,
         )
 
         if command == "test-module":

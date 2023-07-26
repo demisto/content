@@ -1,0 +1,111 @@
+{
+    "data": [
+        {
+            "CustomFields": {
+                "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+                "lastseenbysource": "2021-05-02T11:03:19.191107Z",
+                "revoked": true,
+                "description": "Test"
+            },
+            "createdInSystem": "2021-05-02T11:03:19.6949691Z",
+            "entityA": "1.1.1.1",
+            "entityAFamily": "Indicator",
+            "entityAType": "IP",
+            "entityB": "2.2.2.2",
+            "entityBFamily": "Indicator",
+            "entityBType": "IP",
+            "id": "7ed6656f4c2aaa8f0cbc5cb83606be44",
+            "modified": "2021-05-02T11:03:19.694968637Z",
+            "name": "related to",
+            "primaryTerm": 1,
+            "reverseName": "related to",
+            "sortValues": [
+                "1619953399694",
+                "7ed6656f4c2aaa8f0cbc5cb83606be43"
+            ],
+            "sources": [
+                {
+                    "CustomFields": {
+                        "firstseenbysource": "2021-05-02T11:03:19.191095Z",
+                        "lastseenbysource": "2021-05-02T11:03:19.191107Z",
+                        "revoked": true
+                    },
+                    "brand": "XSOAR",
+                    "createdInSystem": "2021-05-02T11:03:19.694918187Z",
+                    "instance": "XSOAR",
+                    "reliability": "F - Reliability cannot be judged",
+                    "updatedInSystem": "2021-05-02T11:03:19.694918187Z"
+                }
+            ],
+            "type": "uses",
+            "updatedInSystemBySource": "2021-05-02T11:03:19.694918187Z",
+            "version": 1
+        },
+        {
+            "CustomFields": {},
+            "createdInSystem": "2021-05-02T11:03:19.6949691Z",
+            "entityA": "1.1.1.1",
+            "entityAFamily": "Indicator",
+            "entityAType": "IP",
+            "entityB": "4.4.4.4",
+            "entityBFamily": "Indicator",
+            "entityBType": "IP",
+            "id": "7ed6656f4c2aaa8f0cbc5cb83606be45",
+            "modified": "2021-05-02T11:03:19.694968637Z",
+            "name": "related to",
+            "primaryTerm": 1,
+            "reverseName": "related to",
+            "sortValues": [
+                "1619953399694",
+                "7ed6656f4c2aaa8f0cbc5cb83606be43"
+            ],
+            "sources": [
+                {
+                    "CustomFields": {},
+                    "brand": "XSOAR",
+                    "createdInSystem": "2021-05-02T11:03:19.694918187Z",
+                    "instance": "XSOAR",
+                    "reliability": "F - Reliability cannot be judged",
+                    "updatedInSystem": "2021-05-02T11:03:19.694918187Z"
+                }
+            ],
+            "type": "IndicatorToIndicator",
+            "updatedInSystemBySource": "2021-05-02T11:03:19.694918187Z",
+            "version": 1
+        },
+        {
+            "CustomFields": {
+                "description": "Test",
+                "firstseenbysource": "2023-03-29T08:44:54.175Z",
+                "lastseenbysource": "2023-03-29T08:44:54.175Z"
+            },
+            "cacheVersn": 0,
+            "createdInSystem": "2023-03-29T08:44:57.767885755Z",
+            "entityA": "f1412386aa8db2579aff2636cb9511cacc5fd9880ecab60c048508fbe26ee4d9",
+            "entityAFamily": "Indicator",
+            "entityAType": "File",
+            "entityB": "bad-domain.com",
+            "entityBFamily": "Indicator",
+            "entityBType": "Domain",
+            "id": "5",
+            "modified": "2023-03-29T08:44:57.767893947Z",
+            "name": "related-to",
+            "reverseName": "related-to",
+            "sources": [
+                {
+                    "CustomFields": {
+                        "firstseenbysource": "2023-03-29T08:44:54.175Z",
+                        "lastseenbysource": "2023-03-29T08:44:54.175Z"
+                    },
+                    "createdInSystem": "2023-03-29T08:44:57.767835262Z",
+                    "instance": "@tir",
+                    "isManual": true,
+                    "updatedInSystem": "2023-03-29T08:44:57.767835262Z"
+                }
+            ],
+            "type": "IndicatorToIndicator",
+            "updatedInSystemBySource": "0001-01-01T00:00:00Z",
+            "version": 1
+        }
+    ]
+}

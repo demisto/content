@@ -1,7 +1,7 @@
 {
     "id": "incident_symantecedrincidentevents",
     "version": -1,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.5.0",
     "modified": "2023-01-11T16:30:45.188670787+05:30",
     "name": "SymantecEDR Incident Events",
     "ownerOnly": false,

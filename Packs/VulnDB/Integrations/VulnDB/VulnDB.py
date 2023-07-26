@@ -4,11 +4,11 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-import requests
+import urllib3
 import urllib.parse
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' HELPER FUNCTIONS '''
 
@@ -356,26 +356,49 @@ def vulndb_get_version_command(args: dict, client: Client):
     vulndb_product_results_to_demisto_results(res)
 
 
-def vulndb_get_cve_command(args: dict, client: Client):
-    cve_id = args['cve_id']
+def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: DBotScoreReliability):
+    cve_id = args.get('cve_id', '') or args.get('cve', '')
+
+    if not cve_id:
+        raise DemistoException("You must provide a value to the `cve` argument")
+
     max_size = args.get('max_size')
 
-    res = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
-    results = res.get("results")
+    response = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
+    results = response.get("results")
     if not results:
         return_error('Could not find "results" in the returned JSON')
     result = results[0]
     cvss_metrics_details = result.get("cvss_metrics", [])
+
     data = {
         "ID": cve_id,
         "CVSS": cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
         "Published": result.get('vulndb_published_date', '').rstrip('Z'),
         "Modified": result.get('vulndb_last_modified', '').rstrip('Z'),
-        "Description": result.get("description", '')
+        "Description": result.get("description", ''),
     }
-    human_readable = tableToMarkdown(f'Result for CVE ID: {cve_id}', data)
-    ec = {'CVE(val.ID === obj.ID)': data}
-    return_outputs(human_readable, outputs=ec, raw_response=res)
+
+    cve_data = Common.CVE(
+        id=data["ID"],
+        cvss=data["CVSS"],
+        published=data["Published"],
+        modified=data["Modified"],
+        description=data["Description"],
+        dbot_score=Common.DBotScore(
+            indicator=cve_id,
+            indicator_type=DBotScoreType.CVE,
+            integration_name="VulnDB",
+            score=Common.DBotScore.NONE,
+            reliability=dbot_score_reliability,
+        ),
+    )
+
+    return_results(CommandResults(
+        indicator=cve_data,
+        readable_output=tableToMarkdown(f'Result for CVE ID: {cve_id}', data, removeNull=True),
+        raw_response=response,
+    ))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -389,6 +412,7 @@ def main():
     client_secret = params['client_secret']
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    dbot_score_reliability = params['integration_reliability']
     client = Client(proxy, use_ssl, api_url, client_id, client_secret)
     args = demisto.args()
     command = demisto.command()
@@ -419,7 +443,7 @@ def main():
         elif command == 'vulndb-get-updates-by-dates-or-hours':
             vulndb_get_updates_by_dates_or_hours_command(args, client)
         elif command == 'cve':
-            vulndb_get_cve_command(args, client)
+            vulndb_get_cve_command(args, client, dbot_score_reliability)
     except Exception as e:
         error_message = f'Failed to execute {command} command. Error: {str(e)}'
         return_error(error_message)

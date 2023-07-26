@@ -1,63 +1,39 @@
 args:
-- default: false
-  description: The name of the IoT alert.
-  isArray: false
+- description: The name of the IoT alert.
   name: alert_name
-  required: false
-  secret: false
-- default: false
-  description: The raw type of the incident.
-  isArray: false
+- description: The raw type of the incident.
   name: raw_type
   required: true
-  secret: false
 - default: true
   description: The device category.
-  isArray: false
   name: category
-  required: false
-  secret: false
 - default: true
   description: The device profile.
-  isArray: false
   name: profile
-  required: false
-  secret: false
 - default: true
   description: The device vendor.
-  isArray: false
   name: vendor
-  required: false
-  secret: false
 - default: true
   description: The device model.
-  isArray: false
   name: model
-  required: false
-  secret: false
 - default: true
   description: The variable name for IOT_CONFIG.
-  isArray: false
   name: iot_config_list_name
-  required: false
-  secret: false
   defaultValue: IOT_CONFIG
 comment: IoT RACI model script
 commonfields:
   id: iot-security-get-raci
   version: -1
-enabled: false
 name: iot-security-get-raci
 outputs:
 - contextPath: PaloAltoNetworksIoT.RACI
   description: The RACI model of the IoT incident.
   type: unknown
 script: '-'
-system: false
 tags:
 - iot
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0

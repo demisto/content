@@ -1,0 +1,13 @@
+{
+    "department": {
+        "description": "Support Team",
+        "custom_fields": {},
+        "id": 1,
+        "name": "Customer Support",
+        "created_at": "departments[0]_created_at",
+        "updated_at": "departments[0]_updated_at",
+        "prime_user_id": null,
+        "head_user_id": null,
+        "domains": []
+    }
+}

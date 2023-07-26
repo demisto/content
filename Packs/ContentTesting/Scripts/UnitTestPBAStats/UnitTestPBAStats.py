@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import traceback
 # Final Test: 6.10
 from typing import Dict, TypedDict
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 RED = "rgb(204, 57, 24)"
 ORANGE = "rgb(201, 176, 48)"

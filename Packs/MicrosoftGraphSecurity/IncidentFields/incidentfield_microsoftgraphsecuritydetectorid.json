@@ -1,0 +1,31 @@
+{
+    "id": "incident_microsoftgraphsecuritydetectorid",
+    "version": -1,
+    "modified": "2023-04-18T08:43:35.877972654Z",
+    "name": "Microsoft Graph Security Detector Id",
+    "ownerOnly": false,
+    "cliName": "microsoftgraphsecuritydetectorid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Graph Security Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}

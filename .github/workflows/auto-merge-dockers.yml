@@ -1,4 +1,4 @@
-name: Docker Update Auto Merge
+name: Auto Merge Docker Update
 on:
   pull_request:
     types: [opened, edited, synchronize, assigned]
@@ -18,12 +18,15 @@ jobs:
           echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
+      - name: Sleep for 5 minutes
+        run: sleep 300s
+        shell: bash
       - name: Approve and auto-merge for docker update PRs
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Approving the pull request"
+          echo "Approving the pull request."
           gh pr review --approve "$PR_URL"
           echo "Waiting tii all the checks are done"
           gh pr checks --required --interval 60 --watch "$PR_URL"

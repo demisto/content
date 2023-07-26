@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import dateparser
 from datetime import datetime, timezone
 import json
 import time
 from typing import Any, Optional
 
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # IMPORTS
@@ -25,6 +25,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def __init__(self, base_url, tenant_id, first_fetch='-1', max_fetch=10, api_timeout=60, verify=True, proxy=False,
                  ok_codes=tuple(), headers=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers)
@@ -437,6 +438,8 @@ def fetch_incidents(client, last_run, is_test=False):
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+    demisto.debug("PaloAltoNetworks_IoT - Start fetching")
+    demisto.debug(f"PaloAltoNetworks_IoT - Last run: {json.dumps(last_run)}")
     # Get the last fetch time, if exists
     last_alerts_fetch = last_run.get('last_alerts_fetch')
     last_vulns_fetch = last_run.get('last_vulns_fetch')
@@ -451,6 +454,7 @@ def fetch_incidents(client, last_run, is_test=False):
             stime = datetime.utcfromtimestamp(last_alerts_fetch + 0.001).isoformat() + "Z"
 
         alerts = client.list_alerts(stime, pagelength=max_fetch)
+        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- alerts before filtering: {len(alerts)}")
 
         # special handling for the case of having more than the pagelength
         if len(alerts) == max_fetch:
@@ -502,23 +506,34 @@ def fetch_incidents(client, last_run, is_test=False):
         if len(vulns) == max_fetch:
             # get the last date
             last_date = vulns[-1]['detected_date']
+            if last_date and isinstance(last_date, list):
+                last_date = last_date[0]
+
             offset = 0
             done = False
             while not done:
                 offset += max_fetch
                 others = client.list_vulns(stime, offset, pagelength=max_fetch)
                 for vuln in others:
-                    if vuln['detected_date'] == last_date:
+                    detected_date = vuln['detected_date']
+                    if detected_date and isinstance(detected_date, list):
+                        detected_date = detected_date[0]
+
+                    if detected_date == last_date:
                         vulns.append(vuln)
                     else:
                         done = True
                         break
                 if len(others) != max_fetch:
                     break
-
+        demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents- vulnerability before filtering: {len(alerts)}")
         for vuln in vulns:
+            detected_date = vuln['detected_date']
+            if detected_date and isinstance(detected_date, list):
+                detected_date = detected_date[0]
+
             vuln_date_epoch = datetime.strptime(
-                vuln['detected_date'], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
+                detected_date, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc).timestamp()
             vuln_name_encoded = vuln['vulnerability_name'].replace(' ', '+')
             incident = {
                 'name': vuln['name'],
@@ -540,6 +555,8 @@ def fetch_incidents(client, last_run, is_test=False):
         'last_alerts_fetch': last_alerts_fetch,
         'last_vulns_fetch': last_vulns_fetch
     }
+    demisto.debug(f"PaloAltoNetworks_IoT - Number of incidents (alerts and vulnerability) after filtering : {len(incidents)}")
+    demisto.debug(f'PaloAltoNetworks_IoT - Next run after incidents fetching: {json.dumps(next_run)}')
 
     if is_test:
         return None, None

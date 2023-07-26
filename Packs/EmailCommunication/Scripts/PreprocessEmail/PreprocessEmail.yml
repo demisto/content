@@ -5,6 +5,9 @@ args:
   name: attachments
 - description: Files
   name: files
+- name: CreateIncidentUntaggedEmail
+  description: Allow the creation of an email for which we can't find an existing incident.
+  defaultValue: 'true'
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
@@ -23,7 +26,7 @@ tags:
 - email
 - preProcessing
 type: python
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotRole
 tests:
 - No tests (auto formatted)
@@ -32,4 +35,3 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
 scripttarget: 0
-runonce: false

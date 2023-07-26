@@ -1,0 +1,117 @@
+[
+    {
+      "time": "2023-01-20 17:36:05",
+      "timems": 1674236165000,
+      "pbid": 30859,
+      "pid": 72,
+      "phid": 10581,
+      "eventType": "policybreach",
+      "action": "policybreach",
+      "creationTime": 1674236171000,
+      "creationTimestamp": "2023-01-20 17:36:11",
+      "name": "Device::Attack and Recon Tools",
+      "components": [
+        19678,
+        19681,
+        19683,
+        19682,
+        19679,
+        19680,
+        19677
+      ],
+      "didRestrictions": [],
+      "didExclusions": [],
+      "throttle": 604800,
+      "sharedEndpoints": false,
+      "interval": 3600,
+      "sequenced": false,
+      "active": true,
+      "retired": false,
+      "instanceID": 19000,
+      "acknowledged": false,
+      "state": "New",
+      "score": 0.8711497,
+      "commentCount": 0,
+      "componentBreaches": [
+        19681
+      ],
+      "componentBreachTimes": [
+        1674236164000
+      ],
+      "devices": [
+        1428
+      ],
+      "deviceLabels": [
+        ""
+      ]
+    },
+    {
+      "time": "2023-01-20 17:36:04",
+      "timems": 1674236164739,
+      "action": "connection",
+      "eventType": "connection",
+      "recentbytessincems": 1674236164739,
+      "recentbytessince": "2023-01-20 17:36:04",
+      "recentbytesout": 62,
+      "recentbytesin": 150,
+      "totalbytessincems": 1674236164739,
+      "totalbytessince": "2023-01-20 17:36:04",
+      "totalbytesout": 62,
+      "totalbytesin": 150,
+      "uid": "Cba4153qWfRKE3WqE201",
+      "dns": {
+        "hostname": "kali.download",
+        "success": true,
+        "antigena-email": false,
+        "hostnamepopularity": "0",
+        "internal": false
+      },
+      "sdid": 1428,
+      "ddid": 1562,
+      "port": 53,
+      "sourcePort": 35368,
+      "destinationPort": 53,
+      "direction": "out",
+      "applicationprotocol": "DNS",
+      "protocol": "UDP",
+      "sourceDevice": {
+        "id": 1428,
+        "did": 1428,
+        "ip": "192.168.1.6",
+        "ips": [
+          {
+            "ip": "192.168.1.6",
+            "timems": 1674550800000,
+            "time": "2023-01-24 09:00:00",
+            "sid": 133
+          }
+        ],
+        "sid": 133,
+        "time": "1644001729000",
+        "typename": "desktop",
+        "typelabel": "Desktop"
+      },
+      "destinationDevice": {
+        "id": 1562,
+        "did": 1562,
+        "macaddress": "06:72:a9:5d:e0:fe",
+        "ip": "192.168.1.2",
+        "ips": [
+          {
+            "ip": "192.168.1.2",
+            "timems": 1674572400000,
+            "time": "2023-01-24 15:00:00",
+            "sid": 133
+          }
+        ],
+        "sid": 133,
+        "time": "1649669122000",
+        "os": "Windows  (10.0)",
+        "typename": "dnsserver",
+        "typelabel": "DNS Server"
+      },
+      "source": "192.168.1.6",
+      "destination": "192.168.1.2",
+      "antigena-email": false
+    }
+]

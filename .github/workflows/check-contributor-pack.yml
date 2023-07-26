@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.8'
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v7
+        uses: Gr1N/setup-poetry@v8
       - name: Install python dependencies
         run: |
           poetry install --with ci

@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 from typing import Dict
 
-import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -243,7 +243,7 @@ def test_module(client: Client) -> str:
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
     if client.client_credentials:
-        raise DemistoException("When using a self-deployed configuration, run the !microsoft-365-defender-auth-test"
+        raise DemistoException("When using a self-deployed configuration, run the !microsoft-365-defender-auth-test "
                                "command in order to test the connection")
 
     test_connection(client)
@@ -606,10 +606,10 @@ def main() -> None:
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
-    app_id = params.get('app_id') or params.get('_app_id')
+    app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
 
-    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
+    tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \

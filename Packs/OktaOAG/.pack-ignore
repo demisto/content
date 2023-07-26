@@ -1,0 +1,9 @@
+[file:OktaOAG.yml]
+ignore=MR108
+
+[file:OktaOAG_1_3.yml]
+ignore=MR108
+
+[file:OktaOAGParsingRules.yml]
+ignore=PR101
+

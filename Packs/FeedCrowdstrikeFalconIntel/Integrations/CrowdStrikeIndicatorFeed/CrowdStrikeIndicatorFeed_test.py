@@ -301,3 +301,30 @@ def test_handling_first_fetch_and_old_integration_context(mocker,
     assert get_indicator_call.call_args.kwargs['params'].get('filter') == filter_arg_call
     assert results[0] == expected_results[0]
     assert len(results[1]) == expected_results[1]
+
+
+@pytest.mark.parametrize(
+    'indicator, expected_results',
+    [
+        (
+            {'indicator': '1.1.1.1', 'type': 'ip_address'},
+            'IP'
+        ),
+        (
+            {'indicator': 'fe80:0000:0000:0000:91ba:7558:26d3:acde', 'type': 'ip_address'},
+            'IPv6'
+        ),
+        (
+            {'indicator': 'test_test', 'type': 'username'},
+            'Account'
+        ),
+        (
+            {'indicator': 'test_test', 'type': 'password'},
+            None
+        )
+    ]
+)
+def test_auto_detect_indicator_type_from_cs(indicator: dict, expected_results: str | None):
+    from CrowdStrikeIndicatorFeed import auto_detect_indicator_type_from_cs
+
+    assert auto_detect_indicator_type_from_cs(indicator['indicator'], indicator['type']) == expected_results

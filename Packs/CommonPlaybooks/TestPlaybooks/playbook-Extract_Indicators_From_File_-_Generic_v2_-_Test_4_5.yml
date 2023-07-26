@@ -17,17 +17,18 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f10bd55b-010e-4493-80ee-34a56f0adedd
+    taskid: a69c0463-3114-4589-8e60-c2b2c35c9d87
     type: start
     task:
-      id: f10bd55b-010e-4493-80ee-34a56f0adedd
+      id: a69c0463-3114-4589-8e60-c2b2c35c9d87
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - "26"
     separatecontext: false
     view: |-
       {
@@ -43,12 +44,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: c6b1cdd8-cc2f-4771-83d0-c919564b7ae1
+    taskid: a0160227-a703-4712-87f6-dc69a1565adc
     type: regular
     task:
-      id: c6b1cdd8-cc2f-4771-83d0-c919564b7ae1
+      id: a0160227-a703-4712-87f6-dc69a1565adc
       version: -1
       name: Download TXT file
       description: Downloads a TXT file using HTTP GET.
@@ -72,7 +74,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -82,16 +84,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: c94f4db7-d87d-4275-8c2c-9f32e1d01688
+    taskid: 41346bcb-949a-4e79-818e-3da67118e742
     type: condition
     task:
-      id: c94f4db7-d87d-4275-8c2c-9f32e1d01688
+      id: 41346bcb-949a-4e79-818e-3da67118e742
       version: -1
       name: Were the correct indicators extracted?
-      description: Checks whether specific indicators were extracted from each one
-        of the downloaded files.
+      description: Checks whether specific indicators were extracted from each one of the downloaded files.
       type: condition
       iscommand: false
       brand: ""
@@ -166,7 +168,7 @@ tasks:
       {
         "position": {
           "x": 280,
-          "y": 980
+          "y": 1670
         }
       }
     note: false
@@ -176,23 +178,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 2d38ca43-b1cd-4971-8937-0146b58e7a2d
+    taskid: eeabc93f-2386-4de0-823e-115de5896ee1
     type: title
     task:
-      id: 2d38ca43-b1cd-4971-8937-0146b58e7a2d
+      id: eeabc93f-2386-4de0-823e-115de5896ee1
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1400
+          "y": 2090
         }
       }
     note: false
@@ -202,16 +206,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: e1495fa8-36dd-4d5a-8a4c-e83133f2b322
+    taskid: 7e5d7a45-e32b-4d7c-8814-919b382e7fe9
     type: regular
     task:
-      id: e1495fa8-36dd-4d5a-8a4c-e83133f2b322
+      id: 7e5d7a45-e32b-4d7c-8814-919b382e7fe9
       version: -1
       name: Make test fail
-      description: Causes the test playbook to fail if the correct email addresses
-        were not extracted.
+      description: Causes the test playbook to fail if the correct email addresses were not extracted.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -228,7 +232,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 1220
+          "y": 1910
         }
       }
     note: false
@@ -238,17 +242,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 2b17fce9-33b7-45a1-8fed-85bb11efe0c2
+    taskid: 2cb17aa3-e706-4164-8703-06d46031d534
     type: title
     task:
-      id: 2b17fce9-33b7-45a1-8fed-85bb11efe0c2
+      id: 2cb17aa3-e706-4164-8703-06d46031d534
       version: -1
       name: Download Files
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -265,7 +271,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 990
         }
       }
     note: false
@@ -275,12 +281,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: ae17ea98-3984-4873-8774-e54d5cdb1720
+    taskid: 2389b820-7cb9-41c9-8e9f-949b5345eb1e
     type: regular
     task:
-      id: ae17ea98-3984-4873-8774-e54d5cdb1720
+      id: 2389b820-7cb9-41c9-8e9f-949b5345eb1e
       version: -1
       name: Download DOC file
       description: Downloads a DOC file using HTTP GET.
@@ -304,7 +311,7 @@ tasks:
       {
         "position": {
           "x": 1010,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -314,12 +321,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 06bd0d36-f79e-4f31-8842-268bde0fe582
+    taskid: 9dd967f1-b00e-4ee7-89ee-566653f5ae25
     type: regular
     task:
-      id: 06bd0d36-f79e-4f31-8842-268bde0fe582
+      id: 9dd967f1-b00e-4ee7-89ee-566653f5ae25
       version: -1
       name: Download DOCX file
       description: Downloads a DOCX file using HTTP GET.
@@ -343,7 +351,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -353,12 +361,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 52d0a8e4-e39c-4a69-838e-070c46fc7d94
+    taskid: c4d38e96-8120-4591-8377-5e701efec32f
     type: regular
     task:
-      id: 52d0a8e4-e39c-4a69-838e-070c46fc7d94
+      id: c4d38e96-8120-4591-8377-5e701efec32f
       version: -1
       name: Download PDF file
       description: Downloads a PDF file using HTTP GET.
@@ -382,7 +391,7 @@ tasks:
       {
         "position": {
           "x": -430,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -392,12 +401,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 5b550dfb-4c3b-4d6a-8adf-fe6482faf6d6
+    taskid: f1073193-3fe9-4507-840e-0cc0314bd7bd
     type: regular
     task:
-      id: 5b550dfb-4c3b-4d6a-8adf-fe6482faf6d6
+      id: f1073193-3fe9-4507-840e-0cc0314bd7bd
       version: -1
       name: Delete Context
       description: Delete the context of the incident to start with clear context.
@@ -417,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 210
+          "y": 780
         }
       }
     note: false
@@ -427,12 +437,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: e527766e-9de5-43e0-8520-7de8b614ec29
+    taskid: 246a12eb-d65c-43b9-8a4d-d3670b1015e5
     type: condition
     task:
-      id: e527766e-9de5-43e0-8520-7de8b614ec29
+      id: 246a12eb-d65c-43b9-8a4d-d3670b1015e5
       version: -1
       name: Did the PDF file return outputs?
       description: |-
@@ -507,7 +518,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": 980
+          "y": 1670
         }
       }
     note: false
@@ -517,12 +528,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: c0160d0a-e586-4bd2-82a3-cad671d38967
+    taskid: 23d5efeb-0bb3-4a30-8d61-3f153e1f6c02
     type: regular
     task:
-      id: c0160d0a-e586-4bd2-82a3-cad671d38967
+      id: 23d5efeb-0bb3-4a30-8d61-3f153e1f6c02
       version: -1
       name: Download EML file
       description: Downloads an EML file using HTTP GET.
@@ -546,7 +558,7 @@ tasks:
       {
         "position": {
           "x": -910,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -556,12 +568,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
-    taskid: 7f0a6589-1016-48c8-85b0-a6ab2753fc34
+    taskid: a85e95fa-539d-45de-8e64-0d9070f0ddec
     type: regular
     task:
-      id: 7f0a6589-1016-48c8-85b0-a6ab2753fc34
+      id: a85e95fa-539d-45de-8e64-0d9070f0ddec
       version: -1
       name: Download XLSX file
       description: Downloads an XLSX file using HTTP GET.
@@ -585,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 1480,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -595,12 +608,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: c02485c6-d613-4056-8777-927971f22256
+    taskid: e97c7c3e-95ed-4aeb-80ec-ab7fad4f4e26
     type: regular
     task:
-      id: c02485c6-d613-4056-8777-927971f22256
+      id: e97c7c3e-95ed-4aeb-80ec-ab7fad4f4e26
       version: -1
       name: Download RTF file
       description: Sends http request. Returns the response as json.
@@ -623,7 +637,7 @@ tasks:
       {
         "position": {
           "x": -1380,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -633,18 +647,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: 74470d23-dae2-46f0-8a6c-4da0b5d4d6c0
+    taskid: 6f567dcb-2883-4768-8b58-bcc1d49c383e
     type: playbook
     task:
-      id: 74470d23-dae2-46f0-8a6c-4da0b5d4d6c0
+      id: 6f567dcb-2883-4768-8b58-bcc1d49c383e
       version: -1
       name: Extract Indicators From File - Generic v2
       playbookName: Extract Indicators From File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -665,7 +681,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 770
+          "y": 1460
         }
       }
     note: false
@@ -675,12 +691,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 59507f4e-6085-40af-897e-b6f50650c293
+    taskid: 18e76c33-0871-4a07-899d-7edce117bd3d
     type: regular
     task:
-      id: 59507f4e-6085-40af-897e-b6f50650c293
+      id: 18e76c33-0871-4a07-899d-7edce117bd3d
       version: -1
       name: Download PPTX file
       description: Downloads an PPTX file using HTTP GET.
@@ -704,7 +721,7 @@ tasks:
       {
         "position": {
           "x": 1940,
-          "y": 570
+          "y": 1260
         }
       }
     note: false
@@ -714,12 +731,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
-    taskid: 0255ff3d-7ea7-4d74-8c79-0e4916e088ab
+    taskid: a7d0ff62-c11b-4247-8a41-fd6d6fd49614
     type: regular
     task:
-      id: 0255ff3d-7ea7-4d74-8c79-0e4916e088ab
+      id: a7d0ff62-c11b-4247-8a41-fd6d6fd49614
       version: -1
       name: Download XML file
       description: Downloads an XML file using HTTP GET.
@@ -743,7 +761,107 @@ tasks:
       {
         "position": {
           "x": 2400,
-          "y": 570
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "13":
+    id: "13"
+    taskid: 5ba2f65d-de19-4be9-8f89-c2e80267ac11
+    type: regular
+    task:
+      id: 5ba2f65d-de19-4be9-8f89-c2e80267ac11
+      version: -1
+      name: Delete Context
+      description: Delete the context of the incident to start with clear context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: d1678745-cc9c-455b-82d4-437f86c7834c
+    type: title
+    task:
+      id: d1678745-cc9c-455b-82d4-437f86c7834c
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 7f82ccf7-472f-4515-8f72-034862a51aea
+    type: playbook
+    task:
+      id: 7f82ccf7-472f-4515-8f72-034862a51aea
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
         }
       }
     note: false
@@ -761,7 +879,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1415,
+        "height": 2105,
         "width": 4160,
         "x": -1380,
         "y": 50

@@ -3,14 +3,13 @@
 - Use the Netscout Arbor Edge Defense integration to detect and stop both inbound threats
   and outbound malicious communication from compromised internal devices.
 
-### Creating an API client
-AED uses token-based authentication to access the API.
-To authenticate with a token:
+### Generate API Key
+Sightline uses token-based authentication to access the API. To authenticate with a token:
 
 1. Log in to the CLI with your administrator user name and password.
 2. To create the token, enter ***/ service aaa local apitoken generate*** *userName* *“tokenDescription”*
 
-    - userName = the name of a valid AED user
+    - userName = the name of a valid Sightline user
     - tokenDescription = A brief description of the token. This description is appended to the token.
 
     The system responds with something similar to the following text:

@@ -20,10 +20,14 @@ class Client(BaseClient):
         Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
         within XSOAR (both on-prem and cloud).
         """
+        # This block is a patch - need to remove it once the server side fix of the following issue is merged:
+        # https://jira-hq.paloaltonetworks.local/browse/CRTX-77146
+        if version := get_demisto_version().get('version'):
+            if version == '8.1.0':
+                return 'xsoartim'
+
         platform = get_demisto_version().get('platform')
-        if platform == 'x2':
-            return 'xsoartim' if is_demisto_version_ge('8.0.0') else 'xdr'
-        return 'xsoartim'
+        return 'xdr' if platform == 'x2' else 'xsoartim'
 
     def get_file_report(self, file_hash: str):
         return self._http_request(
@@ -43,7 +47,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no coverage
     try:
         wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
         res = client.get_file_report(wildfire_hash_example)
@@ -94,7 +98,7 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no coverage
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()

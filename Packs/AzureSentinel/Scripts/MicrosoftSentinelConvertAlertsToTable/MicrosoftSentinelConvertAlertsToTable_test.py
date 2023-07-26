@@ -16,10 +16,9 @@ def test_format_alert():
     assert result == expected
 
 
-CONTEXT_RESULTS = str([
-    {'name': 'test', 'kind': 'test_kind', 'properties': {'testProp': 'test_value'}},
-    {'name': 'test2', 'kind': 'test_kind2', 'properties': {'testProp': 'test_value2', 'testProp2': 'test_value3'}}
-])
+CONTEXT_RESULTS = ('[{"name": "test", "kind": "test_kind", "properties": {"testProp": "test_value"}}, '
+                   '{"name": "test2", "kind": "test_kind2", "properties": {"testProp": "test_value2", '
+                   '"testProp2": "test_value3"}}]')
 
 EXPECTED_TABLE = "|Name|Kind|Test Prop|Test Prop 2|\n" \
                  "|---|---|---|---|\n" \

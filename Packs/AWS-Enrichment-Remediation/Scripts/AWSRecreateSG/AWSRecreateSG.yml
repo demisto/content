@@ -1,0 +1,41 @@
+args:
+- description: EC2 Instance ID.
+  name: instance_id
+  required: true
+- description: TCP/UDP port to be restricted.
+  name: port
+  required: true
+- description: Protocol of the port to be restricted.
+  auto: PREDEFINED
+  name: protocol
+  predefined:
+  - tcp
+  - udp
+  required: true
+- description: Public IP address of the EC2 instance.
+  name: public_ip
+  required: true
+comment: Automation to determine which interface on an EC2 instance has an over-permissive security group, determine which security groups have over-permissive rules, and replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+commonfields:
+  id: AWSRecreateSG
+  version: -1
+dependson:
+  must:
+  - AWS - EC2|||aws-ec2-describe-instances
+  - AWS - EC2|||aws-ec2-create-security-group
+  - AWS - EC2|||aws-ec2-authorize-security-group-ingress-rule
+  - AWS - EC2|||aws-ec2-authorize-security-group-egress-rule
+  - AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
+  - AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
+dockerimage: demisto/python3:3.10.10.49934
+enabled: true
+name: AWSRecreateSG
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

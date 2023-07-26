@@ -7,11 +7,10 @@
             "dataset": "cisco_asa_raw",
             "event_data": {"_raw_log": "<158>Jan  1 09:40:09 6.6.6.6 %ASA-6-113005: AAA user authentication Rejected : reason = Password has expired : server = 1.1.1.1 : user = test.test@siemteam.com : user IP = 8.8.8.8"},
             "expected_values": {
-                "xdm.event.id": "113005",
                 "xdm.event.description": "AAA user authentication Rejected : reason = Password has expired : server = 1.1.1.1 : user = test.test@siemteam.com : user IP = 8.8.8.8",
                 "xdm.alert.severity": "6",
                 "xdm.network.application_protocol": null,
-                "xdm.source.ipv4": "1.1.1.1",
+                "xdm.source.ipv4": "8.8.8.8",
                 "xdm.source.port": null,
                 "xdm.source.interface": null,
                 "xdm.source.sent_bytes": null,

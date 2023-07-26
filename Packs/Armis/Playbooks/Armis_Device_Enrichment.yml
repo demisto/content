@@ -74,7 +74,7 @@ tasks:
       - "3"
     scriptarguments:
       device_id:
-        simple: ${inputs.Armis_Device_ID}
+        simple: ${inputs.Armis_Device_Identifier}
       device_type: {}
       ip_address: {}
       mac_address: {}
@@ -99,19 +99,19 @@ tasks:
     fieldMapping:
     - incidentfield: Device Name
       output:
-        simple: ${Armis.SearchDevices.name}
+        simple: ${Armis.Device.name}
     - incidentfield: Device Model
       output:
-        simple: ${Armis.SearchDevices.model}
+        simple: ${Armis.Device.model}
     - incidentfield: Armis Device Risk Level
       output:
-        simple: ${Armis.SearchDevices.riskLevel}
+        simple: ${Armis.Device.riskLevel}
     - incidentfield: Device Local IP
       output:
-        simple: ${Armis.SearchDevices.ipaddress}
-    - incidentfield: Armis Device ID
+        simple: ${Armis.Device.ipAddress}
+    - incidentfield: Armis Device Identifier
       output:
-        simple: ${Armis.SearchDevices.id}
+        simple: ${Armis.Device.id}
     skipunavailable: false
     quietmode: 0
 view: |-
@@ -127,9 +127,9 @@ view: |-
     }
   }
 inputs:
-- key: Armis_Device_ID
+- key: Armis_Device_Identifier
   value:
-    simple: ${incident.armisdeviceid}
+    simple: ${incident.armisdeviceidentifier}
   required: true
   description: Get the device ID that is associated with the alert.
   playbookInputQuery:
@@ -137,19 +137,19 @@ outputs:
 - contextPath: Device ID
   description: Device ID
   type: string
-- contextPath: Armis.SearchDevices.name
+- contextPath: Armis.Device.name
   description: Device name.
   type: string
-- contextPath: Armis.SearchDevices.riskLevel
+- contextPath: Armis.Device.riskLevel
   description: Device risk level defined by Armis.
   type: number
-- contextPath: Armis.SearchDevices.ipaddress
+- contextPath: Armis.Device.ipAddress
   description: IPv4 address.
   type: string
-- contextPath: Armis.SearchDevices.site
+- contextPath: Armis.Device.site
   description: Site name
   type: string
-- contextPath: Armis.SearchDevices.tags
+- contextPath: Armis.Device.tags
   description: Tags.
   type: string
 tests:

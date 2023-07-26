@@ -1,0 +1,24 @@
+{
+    "application": {
+        "additional_data": {
+            "overview": null,
+            "graph_data": null,
+            "last_sync_date": null
+        },
+        "user_count": 1,
+        "installation_count": 0,
+        "id": 1,
+        "name": "Freshservice",
+        "description": null,
+        "notes": null,
+        "publisher_id": 21000275403,
+        "created_at": "applications[0]_created_at",
+        "updated_at": "applications[0]_updated_at",
+        "workspace_id": 2,
+        "application_type": "saas",
+        "status": "managed",
+        "managed_by_id": 21001397563,
+        "category": null,
+        "sources": []
+    }
+}

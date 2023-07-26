@@ -1,16 +1,16 @@
 alert_category: CREDENTIAL_ACCESS
 alert_description: This correlation rule will trigger in an event in which 4 or more Failed Logins events occurred from a single user during a 10 minutes timeframe.
 alert_fields:
-  actor_image:
-  actor_path:
-  cmd:
-  domain:
-  hash:
-  hostname:
-  local_ip: xdm.source.ipv4
-  remote_ip:
-  remote_port:
-  username: xdm.target.user.username
+  actor_process_image_name:
+  actor_process_image_path:
+  actor_process_command_line:
+  agent_device_domain:
+  actor_process_image_sha256:
+  agent_hostname:
+  action_local_ip: xdm.source.ipv4
+  action_remote_ip:
+  action_remote_port:
+  actor_effective_username: xdm.target.user.username
 alert_name: CyberArk Failed Logins
 crontab: '*/10 * * * *'
 dataset: alerts
@@ -30,3 +30,4 @@ suppression_fields:
 user_defined_category:
 user_defined_severity:
 xql_query: "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.event.type=\"Cloud.Core.LoginFail\"\r\n|comp count(xdm.event.type) as `Failed Logins` by xdm.target.user.username, xdm.source.ipv4 \r\n|filter  `Failed Logins` >=4 "
+fromversion: 6.10.0

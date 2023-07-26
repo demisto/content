@@ -1,247 +1,164 @@
 args:
 - auto: PREDEFINED
-  default: false
   description: A list of dictionaries of headers in the form of "Header name":"Header value".
   isArray: true
   name: headers
   predefined:
   - admin
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
-  isArray: false
   name: original_authentication_header
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for SPF=None.
-  isArray: false
   name: SPF_override_none
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for SPF=neutral.
-  isArray: false
   name: SPF_override_neutral
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for SPF=pass.
-  isArray: false
   name: SPF_override_pass
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for SPF=fail.
-  isArray: false
   name: SPF_override_fail
   predefined:
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for SPF=softfail.
-  isArray: false
   name: SPF_override_softfail
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for SPF=temperror.
-  isArray: false
   name: SPF_override_temperror
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: 'Override value for SPF=permerror. '
-  isArray: false
   name: SPF_override_permerror
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DKIM=none.
-  isArray: false
   name: DKIM_override_none
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DKIM=pass.
-  isArray: false
   name: DKIM_override_pass
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DKIM=fail.
-  isArray: false
   name: DKIM_override_fail
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DKIM=policy.
-  isArray: false
   name: DKIM_override_policy
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DKIM=neutral.
-  isArray: false
   name: DKIM_override_neutral
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DKIM=temperror.
-  isArray: false
   name: DKIM_override_temperror
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DKIM=permerror.
-  isArray: false
   name: DKIM_override_permerror
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DMARC=none.
-  isArray: false
   name: DMARC_override_none
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DMARC=pass.
-  isArray: false
   name: DMARC_override_pass
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DMARC=fail.
-  isArray: false
   name: DMARC_override_fail
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DMARC=temperror.
-  isArray: false
   name: DMARC_override_temperror
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Override value for DMARC=permerror.
-  isArray: false
   name: DMARC_override_permerror
   predefined:
   - Fail
   - Suspicious
   - Undetermined
   - Pass
-  required: false
-  secret: false
 comment: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
 commonfields:
   id: CheckEmailAuthenticity
@@ -298,7 +215,6 @@ outputs:
   description: Validation result. Possible values are "None", "Pass", "Fail", "Policy", "Neutral", "Temperror", and "Permerror".
   type: Unknown
 script: '-'
-system: false
 tags:
 - phishing
 - ews
@@ -306,7 +222,6 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
-runonce: false
 fromversion: 5.0.0

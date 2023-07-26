@@ -1,6 +1,6 @@
 {
     "data": {
-        "globalSlaConnection": {
+        "slaDomains": {
             "edges": [],
             "pageInfo": {
                 "endCursor": "Y3Vyc29yOmludDotMQ==",

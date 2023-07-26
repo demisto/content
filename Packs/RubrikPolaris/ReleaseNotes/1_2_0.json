@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In command 'rubrik-gps-vm-livemount', 'snappbale_id' is added as a required argument. In command 'rubrik-polaris-object-list', 'type_filter' is now a required argument."
+}

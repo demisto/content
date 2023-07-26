@@ -1,0 +1,16 @@
+commonfields:
+  id: ZoomApiModule
+  version: -1
+name: ZoomApiModule
+script: "-"
+subtype: python3
+type: python
+comment: Common Zoom code that provides generic infrastructure, and will be appended to each Zoom integration when it is deployed.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/pyjwt3:1.0.0.49643
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

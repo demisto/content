@@ -17,6 +17,7 @@ The Playbooks accelerate incident response and make security operations more sca
     | API Key | True |
     | Use system proxy settings | False |
     | Trust any certificate (not secure) | False |
+    | Retry requests when API is rate limited | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

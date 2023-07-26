@@ -1,7 +1,7 @@
 {
     "id": "incident_symantecedreventactorfile",
     "version": -1,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.5.0",
     "modified": "2023-01-12T14:41:27.351337181+05:30",
     "name": "SymantecEDR Event Actor File",
     "ownerOnly": false,

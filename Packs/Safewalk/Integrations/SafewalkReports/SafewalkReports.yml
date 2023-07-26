@@ -42,17 +42,17 @@ configuration:
   defaultvalue: "1"
   type: 19
   required: false
-- display: ""
+- display: First fetch
   name: first_fetch
   defaultvalue: 0 minutes
   type: 0
   required: false
-- display: ""
+- display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
-- display: ""
+- display: Fetch Query Filter
   name: fetch_query_filter
   defaultvalue: ACCESS_DENIED,USER_DOES_NOT_EXIST,INVALID_OTP
   type: 0
@@ -60,14 +60,13 @@ configuration:
 - name: feedReputation
   display: Indicator Reputation
   type: 18
-  required: false
   options:
   - None
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -83,12 +82,12 @@ configuration:
 - name: feedExpirationPolicy
   display: ''
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   display: ''
   type: 1
@@ -100,15 +99,13 @@ configuration:
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
 - name: feedTags
   display: Tags
-  required: false
   type: 0
   additionalinfo: Supports CSV values.
+  required: false
 - name: tlp_color
   display: Traffic Light Protocol Color
   options:
@@ -116,10 +113,9 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 script:
   commands:
   - name: safewalk-get-associated-users
@@ -323,14 +319,12 @@ script:
       type: Number
     arguments: []
     description: safewalk-get-users-associations-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  feed: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: false
   isFetchSamples: true
 fromversion: 6.0.0
 tests:

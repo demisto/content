@@ -1,0 +1,86 @@
+[
+  {
+    "commentCount": 0,
+    "pbid": 30960,
+    "time": 1674522265000,
+    "creationTime": 1674522271000,
+    "model": {
+      "then": {
+        "name": "Compromise::Watched Domain",
+        "pid": 559,
+        "phid": 8928,
+        "uuid": "80010119-6d7f-0000-0305-5e0000000256",
+        "priority": 5,
+        "category": "Critical",
+        "compliance": false
+      },
+      "now": {
+        "name": "Compromise::Watched Domain",
+        "pid": 559,
+        "phid": 8928,
+        "uuid": "80010119-6d7f-0000-0305-5e0000000256",
+        "priority": 5,
+        "category": "Critical",
+        "compliance": false
+      }
+    },
+    "triggeredComponents": [
+      {}
+    ],
+    "score": 0.592,
+    "device": {
+      "did": 1417,
+      "ip": "192.168.16.100",
+      "ips": [
+        {
+          "ip": "192.168.16.100",
+          "timems": 1674572400000,
+          "time": "2023-01-24 15:00:00",
+          "sid": 148
+        }
+      ],
+      "sid": 148,
+      "devicelabel": "vSensor01",
+      "typename": "server",
+      "typelabel": "Server"
+    }
+  },
+  {
+    "commentCount": 0,
+    "pbid": 30953,
+    "time": 1674496795000,
+    "creationTime": 1674496835000,
+    "model": {
+      "then": {
+        "name": "Attack Path Modelling::Model Breach on Critical Attack Path",
+        "pid": 2673,
+        "phid": 10721,
+        "uuid": "ef668f8f-aaa4-4f5e-a8b7-49b79aee2515",
+        "priority": 5,
+        "category": "Critical",
+        "compliance": false
+      },
+      "now": {
+        "name": "Attack Path Modelling::Model Breach on Critical Attack Path",
+        "pid": 2673,
+        "phid": 10721,
+        "uuid": "ef668f8f-aaa4-4f5e-a8b7-49b79aee2515",
+        "priority": 5,
+        "category": "Critical",
+        "compliance": false
+      }
+    },
+    "triggeredComponents": [
+      {}
+    ],
+    "score": 0.953,
+    "device": {
+      "did": 2540,
+      "sid": -11,
+      "hostname": "EC2AMAZ-44COMHV",
+      "devicelabel": "S1-Lap-Csens",
+      "typename": "laptop",
+      "typelabel": "Laptop"
+    }
+  }
+]

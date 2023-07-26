@@ -1,17 +1,11 @@
 args:
-- default: false
-  description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
+- description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
   isArray: true
   name: entities
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
   isArray: true
   name: entities_types
-  required: false
-  secret: false
   predefined:
   - IP
   - Domain
@@ -37,13 +31,10 @@ args:
   - Campaign
   - Course of Action
   - Infrastructure.
-- default: false
-  description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
+- description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
   isArray: true
   auto: PREDEFINED
   name: relationships
-  required: false
-  secret: false
   predefined:
   - applied
   - attachment-of
@@ -118,31 +109,19 @@ args:
   - variant-of
   - detects
   - detected-by
-- default: false
-  defaultValue: '20'
+- defaultValue: '20'
   description: The number of results to return. Default is 20.
-  isArray: false
   name: limit
-  required: false
-  secret: false
-- default: false
-  defaultValue: 'false'
+- defaultValue: 'false'
   description: Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned.
-  isArray: false
   name: verbose
-  required: false
-  secret: false
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
-- default: false
-  defaultValue: 'false'
+- defaultValue: 'false'
   description: The status of the relationships to return. Default is false.
-  isArray: false
   name: revoked
-  required: false
-  secret: false
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -151,7 +130,6 @@ comment: This automation outputs the indicator relationships to context accordin
 commonfields:
   id: SearchIndicatorRelationships
   version: -1
-enabled: false
 name: SearchIndicatorRelationships
 outputs:
 - contextPath: Relationships.EntityA
@@ -197,13 +175,12 @@ outputs:
   description: The type of the relationship.
   type: string
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

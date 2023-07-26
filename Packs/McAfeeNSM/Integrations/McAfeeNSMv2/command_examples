@@ -17,3 +17,11 @@
 !nsm-delete-rule-object rule_id=125
 !nsm-list-pcap-file sensor_id=1001
 !nsm-export-pcap-file sensor_id=1003 file_name=Virtual_NSP_01-PacketCapture-2022-12-21_16-25-52.pcap
+!nsm-list-domain-device domain_id=0
+!nsm-list-device-interface device_id=1003 domain_id=0
+!nsm-list-device-policy domain_id=0
+!nsm-list-interface-policy domain_id=0
+!nsm-assign-device-policy device_id=1003 domain_id=0 pre_firewall_policy_name=Test
+!nsm-assign-interface-policy domain_id=0 interface_id=102 ips_policy_name=testing
+!nsm-get-device-configuration device_id=1003
+!nsm-deploy-device-configuration device_id=1003 push_configuration_signature_set="true" interval_in_seconds=10

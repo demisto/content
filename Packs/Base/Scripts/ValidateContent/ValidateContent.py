@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import io
 import json
 import traceback
@@ -10,6 +12,7 @@ from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory
 from typing import Any, Dict, List, Optional, Tuple
+import logging
 
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
@@ -24,8 +27,6 @@ from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel.yaml import YAML
 
-import demistomock as demisto
-from CommonServerPython import *
 
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML()
@@ -178,8 +179,8 @@ def run_validate(file_path: str, json_output_file: str) -> None:
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
     v_manager = ValidateManager(
-        is_backward_check=False, prev_ver=None, use_git=False, only_committed_files=False,
-        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
+        is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
+        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
         validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
         silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
         staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
@@ -188,15 +189,16 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
-    logging_setup(verbose=3, quiet=False, log_path=lint_log_dir)
+    logging_setup(console_log_threshold=logging.DEBUG)
     lint_manager = LintManager(
-        input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
-        prev_ver='', json_file_path=json_output_file
+        input=str(file_path), git=False, all_packs=False,
+        prev_ver='origin/master', json_file_path=json_output_file
     )
-    lint_manager.run_dev_packages(
+    lint_manager.run(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
         no_pylint=True, no_coverage=True, coverage_report='', no_vulture=False, no_test=True, no_pwsh_analyze=True,
         no_pwsh_test=True, keep_container=False, test_xml='', failure_report=lint_log_dir, docker_timeout=60,
+        docker_image_flag=None, docker_image_target=None
     )
 
 
@@ -255,7 +257,8 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
-    code_fp_to_row_offset = None
+    log_capture = io.StringIO()
+
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
             if filename.endswith('.zip'):
@@ -267,9 +270,19 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
                     filename, data, tmp_directory
                 )
 
+            handler = logging.StreamHandler(log_capture)
+            for name in [None, 'demisto-sdk']:
+                logger = logging.getLogger(name)
+                logger.handlers.clear()
+                logger.addHandler(handler)
+
             run_validate(path_to_validate, json_output_path)
             run_lint(path_to_validate, lint_output_path)
 
+            handler.flush()
+            handler.close()
+
+    demisto.debug("log capture:" + log_capture.getvalue())
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
         outputs_as_json = json.load(json_outputs)
@@ -343,6 +356,12 @@ def get_content_modules(content_tmp_dir: str, verify_ssl: bool = True) -> None:
             'file': 'approved_tags.json',
             'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
                           'Tests/Marketplace/approved_tags.json',
+            'content_path': 'Tests/Marketplace',
+        },
+        {
+            'file': 'approved_categories.json',
+            'github_url': 'https://raw.githubusercontent.com/demisto/content/master/'
+                          'Tests/Marketplace/approved_categories.json',
             'content_path': 'Tests/Marketplace',
         },
 

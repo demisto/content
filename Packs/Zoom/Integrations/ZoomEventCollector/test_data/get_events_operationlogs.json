@@ -1,0 +1,22 @@
+{
+  "from": "2023-03-01",
+  "to": "2023-03-30",
+  "page_size": 2,
+  "next_page_token": "next_token",
+  "operation_logs": [
+    {
+      "time": "2023-03-21T08:22:09Z",
+      "operator": "test@test.com",
+      "category_type": "Channels",
+      "action": "Update",
+      "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+    },
+    {
+      "time": "2023-03-21T08:22:06Z",
+      "operator": "admin@test.com",
+      "category_type": "Channels",
+      "action": "Update",
+      "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+    }
+  ]
+}

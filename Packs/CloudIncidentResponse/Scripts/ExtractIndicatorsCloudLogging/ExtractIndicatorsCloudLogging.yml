@@ -1,0 +1,35 @@
+commonfields:
+  id: ExtractIndicators-CloudLogging
+  version: -1
+name: ExtractIndicators-CloudLogging
+script: ''
+type: python
+tags: []
+comment: This script will extract indicators from a given AWS CloudTrail or GCP Logging event.
+enabled: true
+args:
+- name: json_data
+  required: true
+  description: The event JSON or data.
+outputs:
+- contextPath: CloudIndicators.arn
+  description: "The ARN extracted from the event"
+- contextPath: CloudIndicators.access_key_id
+  description: "The access key ID extracted from the event"
+- contextPath: CloudIndicators.resource_name
+  description: "The resource name extracted from the event"
+- contextPath: CloudIndicators.source_ip
+  description: "The source ip extracted from the event"
+- contextPath: CloudIndicators.username
+  description: "The username extracted from the event"
+- contextPath: CloudIndicators.event_name
+  description: "The event name extracted from the event"
+- contextPath: CloudIndicators.user_agent
+  description: "The user agent extracted from the event"
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/bs4-tld:1.0.0.63807
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

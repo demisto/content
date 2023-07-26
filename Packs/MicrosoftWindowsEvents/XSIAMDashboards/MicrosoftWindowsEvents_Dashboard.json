@@ -1,0 +1,488 @@
+{
+    "dashboards_data": [
+        {
+            "name": "Microsoft Windows Events",
+            "description": "This dashboard displays common statistics from windows events",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-1237",
+                    "data": [
+                        {
+                            "key": "xql_1677418467521",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 475.5,
+                                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.event.operation_sub_type) as ActionCount by xdm.event.operation_sub_type\n| view graph type = pie subtype = full xaxis = xdm.event.operation_sub_type yaxis = ActionCount ",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.event.operation_sub_type"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "ActionCount"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1677409452302",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 475.5,
+                                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|filter xdm.logon.type!=null\n|comp count(xdm.logon.type) by xdm.logon.type\n| view graph type = pie subtype = full xaxis = xdm.logon.type yaxis = count_1 valuecolor(\"NETWORK\",\"#7876b6\") valuecolor(\"INTERACTIVE\",\"#f15050\") valuecolor(\"SERVICE\",\"#b7b797\") seriestitle(\"count_1\",\"Count\") ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.logon.type"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "count_1"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "NETWORK",
+                                                    "#7876b6"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "INTERACTIVE",
+                                                    "#f15050"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "SERVICE",
+                                                    "#b7b797"
+                                                ],
+                                                "name": "valuecolor"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "count_1",
+                                                    "Count"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1678005649807",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 33.333333333333336,
+                                "height": 475.5,
+                                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.source.process.name) as `Count` by xdm.source.process.name\n|sort desc `Count`\n| view graph type = pie xaxis = xdm.source.process.name yaxis = Count ",
+                                "time_frame": {
+                                    "relativeTime": 604800000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.source.process.name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "Count"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5362",
+                    "data": [
+                        {
+                            "key": "xql_1677410396873",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 475.5,
+                                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.alert.name=\"An account failed to log on\"\n|filter xdm.source.user.username !=\"-\"\n|bin _time span = 10M\n|comp count(xdm.alert.name) as EventCount by _time\n| view graph type = line header = \"Failed Logins in 10 Minutes\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Failed Logins in 10 Minutes\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "_time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "EventCount"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "EventCount",
+                                                    "#1e83f7"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "key": "xql_1677409686512",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50,
+                                "height": 475.5,
+                                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.alert.name !=null\n|comp count(xdm.alert.name) as `Event Count` by xdm.alert.name , xdm.event.id \n| fields xdm.alert.name as `Event Name` , xdm.event.id as `Event ID` , `Event Count` \n|sort desc `Event Count` ",
+                                "entityType": "xql-widget-table-5b9b5a9e-8567-4c9d-97df-9a9f412dece6",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "table",
+                                    "commands": []
+                                },
+                                "gridRawStorageInfo": {
+                                    "sort": null,
+                                    "coldefs": {},
+                                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                                    "columnWidth": null
+                                }
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "4cc13d01e2524e9c8113439fd9099058"
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1677409452302",
+            "title": "Microsoft Windows Events - Logon Types",
+            "creation_time": 1677409452302,
+            "description": "This widget displys the common logon types",
+            "data": {
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|filter xdm.logon.type!=null\n|comp count(xdm.logon.type) by xdm.logon.type\n| view graph type = pie subtype = full xaxis = xdm.logon.type yaxis = count_1 valuecolor(\"NETWORK\",\"#7876b6\") valuecolor(\"INTERACTIVE\",\"#f15050\") valuecolor(\"SERVICE\",\"#b7b797\") seriestitle(\"count_1\",\"Count\") ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.logon.type"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "count_1"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"NETWORK\"",
+                                    "\"#7876b6\""
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"INTERACTIVE\"",
+                                    "\"#f15050\""
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"SERVICE\"",
+                                    "\"#b7b797\""
+                                ],
+                                "name": "valuecolor"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"count_1\"",
+                                    "\"Count\""
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1677409686512",
+            "title": "Microsoft Windows Events - Top Events",
+            "creation_time": 1677409686512,
+            "description": "This widget displays the top Event ID's in a descending order",
+            "data": {
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.event.operation_sub_type) as ActionCount by xdm.event.operation_sub_type\n| view graph type = pie subtype = full xaxis = xdm.event.operation_sub_type yaxis = ActionCount ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "table",
+                    "commands": []
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": "\"stretch\""
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1677410396873",
+            "title": "Microsoft Windows Events - Failed Logins",
+            "creation_time": 1677410396873,
+            "description": "This widget displays failure logins in a 10 minute period",
+            "data": {
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type contains \"Microsoft-Windows-\"\n|filter xdm.alert.name=\"An account failed to log on\"\n|filter xdm.source.user.username !=\"-\"\n|bin _time span = 10M\n|comp count(xdm.alert.name) as EventCount by _time\n| view graph type = line header = \"Failed Logins in 10 Minutes\" xaxis = _time yaxis = EventCount seriescolor(\"EventCount\",\"#1e83f7\") ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Failed Logins in 10 Minutes\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "EventCount"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"EventCount\"",
+                                    "\"#1e83f7\""
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1677418467521",
+            "title": "Microsoft Windows Events - Top Actions",
+            "creation_time": 1677418467521,
+            "description": "This widget displys the common actions",
+            "data": {
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.event.operation_sub_type) as ActionCount by xdm.event.operation_sub_type\n| view graph type = pie subtype = full xaxis = xdm.event.operation_sub_type yaxis = ActionCount ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.event.operation_sub_type"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "ActionCount"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1678005649807",
+            "title": "Microsoft Windows Events - Top Proccesses",
+            "creation_time": 1678005649807,
+            "description": "This widget displays the top proceeses running events",
+            "data": {
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.source.process.name) as `Count` by xdm.source.process.name\n|sort desc `Count`\n| view graph type = pie xaxis = xdm.source.process.name yaxis = Count ",
+                "time_frame": {
+                    "relativeTime": 604800000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.source.process.name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "Count"
+                            }
+                        }
+                    ]
+                },
+                "gridRawStorageInfo": {
+                    "sort": null,
+                    "coldefs": {},
+                    "rowHeight": "{\"rowHeight\":\"regular\",\"gridRowsHeight\":\"medium-row\"}",
+                    "columnWidth": null
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

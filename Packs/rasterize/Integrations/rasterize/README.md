@@ -1,7 +1,7 @@
 Converts URLs, PDF files, and emails to an image file or PDF file.
 ## Docker Security Recommendations
      
-If you are using the integration to rasterize un-trusted URLs or HTML content, such as those obtained via external emails, we recommend following the instructions at the [Docker Network Hardening](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/docker/docker-hardening-guide/docker-network-hardening.html) under the Block Internal Network Access section.
+If you are using the integration to rasterize un-trusted URLs or HTML content, such as those obtained via external emails, we recommend following the instructions at the [Docker Network Hardening](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Network-Hardening) under the Block Internal Network Access section.
 
 ## Configure Rasterize on Cortex XSOAR
 

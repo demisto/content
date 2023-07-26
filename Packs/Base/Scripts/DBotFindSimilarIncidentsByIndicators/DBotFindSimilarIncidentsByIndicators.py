@@ -263,7 +263,7 @@ def enriched_incidents(df, fields_incident_to_display, from_date: str):
     if is_error(res):
         return_error(res)
     if not json.loads(res[0]['Contents']):
-        return df
+        return []
     else:
         incidents = json.loads(res[0]['Contents'])
         incidents_dict = {incident['id']: incident for incident in incidents}
@@ -478,6 +478,7 @@ def get_incidents_ids_related_to_indicators(indicators, query):
 
 def get_incidents_filtered_from_query(incident_ids, query):
     if incident_ids:
+        incident_ids = [f'incident.id:{inc_id}' for inc_id in incident_ids]
         ids_condition = "(" + " OR ".join(incident_ids) + ")"
     else:
         ids_condition = ""

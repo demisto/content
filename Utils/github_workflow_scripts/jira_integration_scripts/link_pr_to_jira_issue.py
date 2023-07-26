@@ -47,12 +47,12 @@ def find_fixed_issue_in_body(body_text, is_merged):
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
     # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
-    fixed_issue = [{"link": link, "id": issue_id} for link, issue_id in fixed_jira_issues]
+    fixed_issue = [{"link": link, "id": issue_id, "action": 'fixes'} for link, issue_id in fixed_jira_issues]
     related_issue = []
 
     if not is_merged:
         print("Not merging, getting related issues.")
-        related_issue = [{"link": link, "id": issue_id} for link, issue_id in related_jira_issue]
+        related_issue = [{"link": link, "id": issue_id, "action": 'relates'} for link, issue_id in related_jira_issue]
 
     return fixed_issue + related_issue
 
@@ -65,7 +65,8 @@ def trigger_generic_webhook(options):
     pr_num = options.pr_num
     username = options.username
     password = options.password
-    instance_url = options.url
+    gold_server_url = options.url
+    instance_url = f"{gold_server_url}/instance/execute/{GENERIC_WEBHOOK_NAME}"
 
     print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
@@ -87,12 +88,12 @@ def trigger_generic_webhook(options):
     print(f"found issues in PR: {issues_in_pr}")
 
     body = {
-        "name": GENERIC_WEBHOOK_NAME,
+        "name": f'{GENERIC_WEBHOOK_NAME} - #{pr_num}',
         "raw_json": {
             "PullRequestNum": pr_num,
             "closeIssue": "true" if is_merged else "false",  # whether to close the fixed issue in Jira
             "PullRequestLink": pr_link,  # will be used to add to jira issue's fields
-            "PullRequestTitle": f"{pr_title} ({pr_link})",  # will be used in comment of attaching jira issue.
+            "PullRequestTitle": f"[{pr_title}|{pr_link}]",  # will be used in comment of attaching jira issue.
             "JiraIssues": issues_in_pr
         },
     }

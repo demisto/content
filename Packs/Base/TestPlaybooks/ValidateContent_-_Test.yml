@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 98d7cbd0-538d-43cf-8cc9-d4841dc7ba39
+    taskid: d31a9644-80b6-4cdc-80ff-8fa7c1a5c9b2
     type: start
     task:
-      id: 98d7cbd0-538d-43cf-8cc9-d4841dc7ba39
+      id: d31a9644-80b6-4cdc-80ff-8fa7c1a5c9b2
       version: -1
       name: ""
       iscommand: false
@@ -17,11 +17,12 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
@@ -30,12 +31,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ca50af09-a810-4c50-8e58-f657d7b3b58e
+    taskid: 58fcef75-c421-4f6b-8e2c-e078d089588d
     type: regular
     task:
-      id: ca50af09-a810-4c50-8e58-f657d7b3b58e
+      id: 58fcef75-c421-4f6b-8e2c-e078d089588d
       version: -1
       name: Download unified integration
       description: Sends http request. Returns the response as json.
@@ -47,27 +51,20 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      body: {}
       filename:
         simple: integration.yml
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: https://raw.githubusercontent.com/demisto/demisto-sdk/master/demisto_sdk/tests/test_files/UnifiedIntegrations/Integrations/integration-Symantec_Messaging_Gateway.yml
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 220
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -75,12 +72,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 552b499e-6d57-4b7c-8457-ab929092b45f
+    taskid: 1243b355-7d89-405a-8e79-c9d7f614428f
     type: regular
     task:
-      id: 552b499e-6d57-4b7c-8457-ab929092b45f
+      id: 1243b355-7d89-405a-8e79-c9d7f614428f
       version: -1
       name: ValidateContent
       description: Runs validation and linting on content items.
@@ -89,16 +89,14 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      data: {}
       entry_id:
         simple: ${lastCompletedTaskEntries}
-      filename: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -106,14 +104,220 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    nexttasks:
+      '#none#':
+      - "8"
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 234937e9-6b55-4cd9-8aa7-41f28bec867d
+    type: regular
+    task:
+      id: 234937e9-6b55-4cd9-8aa7-41f28bec867d
+      version: -1
+      name: Download integration with errors
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      filename:
+        simple: integration-errors.yml
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/4bff829d93ffc7fd0b770be7a04a425fd05ec075/Packs/Base/Scripts/ValidateContent/test_data/automationwitherrors.yml
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 646a8c37-e436-406f-8b22-e6c0c87147fc
+    type: regular
+    task:
+      id: 646a8c37-e436-406f-8b22-e6c0c87147fc
+      version: -1
+      name: ValidateContent
+      description: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
+      scriptName: ValidateContent
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8f8b5c2b-1121-4215-8b6b-66b962dda8ff
+    type: condition
+    task:
+      id: 8f8b5c2b-1121-4215-8b6b-66b962dda8ff
+      version: -1
+      name: AssertMypyValidationFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ValidationResult.Error
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: ValidationResult.Error
+                      iscontext: true
+                    right:
+                      value:
+                        simple: unterminated string literal
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2c3cb64a-bf4d-4efc-8050-fd01fa4360fa
+    type: condition
+    task:
+      id: 2c3cb64a-bf4d-4efc-8050-fd01fa4360fa
+      version: -1
+      name: ValidateDemistoValiudateErrorFound
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ValidationResult.Error
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: ValidationResult.Error
+                      iscontext: true
+                    right:
+                      value:
+                        simple: There is no docker image provided
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 06a4519d-7189-4c38-8d65-10742ecc4a55
+    type: title
+    task:
+      id: 06a4519d-7189-4c38-8d65-10742ecc4a55
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 455,
-        "width": 380,
-        "x": 450,
+        "height": 910,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }

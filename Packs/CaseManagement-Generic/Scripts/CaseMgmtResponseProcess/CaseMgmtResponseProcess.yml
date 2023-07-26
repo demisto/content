@@ -1,0 +1,17 @@
+comment: Dynamic display script to display a response process on an Incident layout.   The response process display can change depending on the Incident Type.
+commonfields:
+  id: CaseMgmtResponseProcess
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: CaseMgmtResponseProcess
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

@@ -19,16 +19,16 @@ configuration:
   type: 15
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
@@ -37,8 +37,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -60,23 +60,23 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 description: Enrich and analyze any domain, URL, or IP. Pivot to search on data points and linked indicators to investigate risky properties.
 display: Pulsedive
 name: Pulsedive
@@ -445,11 +445,11 @@ script:
     - contextPath: URL.DATA
       description: The URL.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
-  runonce: false
+  dockerimage: demisto/python3:3.10.12.65389
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

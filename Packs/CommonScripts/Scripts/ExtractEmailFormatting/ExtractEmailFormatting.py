@@ -20,16 +20,21 @@ def extract_email(email_address: str) -> str:
     """
     email_address = email_address.lower()
 
+    if {"=", "?"}.issubset(set(email_address)):
+        # If we find these chars in a string it means the regex caught it as part of a url query and needs pruning.
+        email_address = extract_email_from_url_query(email_address)
+
     email_format = re.compile("[<(\[{\"\'.]*"
                               "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
                               "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
                               "\[?@]?[\w.-]{1,255}(?:\[?\.]?"
                               "[A-Za-z]{2,}){1,2})", re.IGNORECASE)
 
-    try:
-        return re.findall(email_format, email_address)[0]
+    email_address = re.match(email_format, email_address)
 
-    except IndexError:
+    if email_address:
+        return email_address.group(1)
+    else:
         return ''
 
 
@@ -60,6 +65,27 @@ def refang_email(email_address: str) -> str:
 
     """
     return email_address.replace("[@]", "@").replace("[.]", ".") if check_tld(email_address) else ''
+
+
+def extract_email_from_url_query(email_address: str) -> str:
+    """
+    As most characters are valid in the content part of an email the regex can sometimes
+    catch a the email as part of a URL query. This function will extract only the email from it.
+
+    Args:
+        email_address (str): extracted raw email address (within a query)
+
+    Returns:
+        str: an email address
+    """
+
+    extracted_email = re.match('(.*?)=', email_address[::-1])
+
+    if extracted_email:
+        return extracted_email.group(1)[::-1]
+
+    else:
+        return ''
 
 
 def main():

@@ -1,0 +1,4 @@
+[INGEST:vendor="tanium", product="threat_response", target_dataset="tanium_threat_response_raw", no_hit = keep]
+// Support only date time of format: yyyy-MM-ddThh:mm:ss.nnnZ. For example: "2022-01-01T10:00:00.000Z".
+filter json_extract_scalar(_raw_log, "$.Timestamp") ~= "\d+-\d+-\d+T\d+:\d+:\d+\.\d{3}Z"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", json_extract_scalar(_raw_log, "$.Timestamp"));

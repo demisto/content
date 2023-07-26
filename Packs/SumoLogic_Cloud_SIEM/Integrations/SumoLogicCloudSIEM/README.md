@@ -15,14 +15,19 @@ You'll need an access key in order to complete the instance setup. Instructions 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Sumo Logic API Endpoint | https://api.&amp;lt;deployment&amp;gt;.sumologic.com/api/ | True |
+    | Sumo Logic Instance Endpoint | For the incident field sumoURL link to work, e.g: https://&amp;lt;yoursubdomain&amp;gt;.&amp;lt;deployment&amp;gt;.sumologic.com | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Access ID |  | True |
     | Access Key |  | True |
     | Incidents Fetch Interval |  | False |
-    | Fetch Limit | Fetch limit must not be greater than 20 | False |
+    | Fetch Limit | Fetch limit of Sumo Logic insights | False |
     | Override default fetch query | Default fetch query is status:in\("new", "inprogress"\) | False |
     | First fetch time |  | False |
+    | Pull associated Sumo Logic signals | Whether to pull the Sumo Logic Signals associated with the Insights as Cortex XSOAR incidents | False |
+    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Sumo Logic SIEM to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Sumo Logic SIEM\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sumo Logic SIEM\). | False |
+    | Close Mirrored Cortex XSOAR Incident (Incoming Mirroring) | When selected, closing the Sumo Logic Insight with a "Closed" status will close the Cortex XSOAR incident. | False |
+    | Close Mirrored Sumo Logic Insight (Outgoing Mirroring) | When selected, closing the Cortex XSOAR incident will close the Sumo Logic Insight in SIEM. | False |
     | Override Record Summary Fields | Record Summary Fields included when fetching Insights (override default) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -159,6 +164,44 @@ Insight Details:
 |Id|Readable Id|Name|Action|Status|Assignee|Description|Last Updated|Last Updated By|Severity|Closed|Closed By|Timestamp|Entity|Resolution|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-10T23:48:10.016204 |  | HIGH | 2021-05-10T23:48:09.961023 | obfuscated@email.com | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
+
+
+
+### sumologic-sec-insight-get-comments
+***
+Get comments for a specific Insight ID. (Users can post and update comments on the Sumo Logic Cloud SIEM portal for any Insight ID.)
+
+
+#### Base Command
+
+`sumologic-sec-insight-add-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| insight_id | The insight ID for which to add a comment. | Required |
+| comment | The comment to be added. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogicSec.InsightComments.Id | String | ID of comment |
+| SumoLogicSec.InsightComments.Body | String | Comment contents |
+| SumoLogicSec.InsightComments.Author | String | User that created the comment |
+| SumoLogicSec.InsightComments.Timestamp | Date | Comment created timestamp |
+| SumoLogicSec.InsightComments.InsightId | String | The ID of the Insight |
+
+
+#### Command Example
+`!sumologic-sec-insight-add-comment insight-id=INSIGHT-116 comment="This is an example comment"`
+
+#### Human Readable Output
+Insight Comment:
+|Id|Insight Id|Author|Body|Last Updated|Timestamp|
+|---|---|---|---|---|---|
+| 2 | INSIGHT-116 | obfuscated@email.com | This is an example comment |  | 2021-04-23T00:38:43.977543 |
 
 
 

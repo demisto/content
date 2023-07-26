@@ -2,4 +2,8 @@
 ignore=IM111
 
 [known_words]
-HCL
+hcl
+
+[file:BigFix.yml]
+ignore=BA124
+

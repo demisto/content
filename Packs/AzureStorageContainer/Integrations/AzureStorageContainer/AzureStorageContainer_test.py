@@ -1,4 +1,5 @@
 import pytest
+import defusedxml.ElementTree as defused_ET
 
 from CommonServerPython import *
 
@@ -19,7 +20,7 @@ def load_mock_response(file_name: str, file_type: str = "json"):
     file_path = f'test_data/{file_name}'
 
     if file_type == "xml":
-        top = ET.parse(file_path)
+        top = defused_ET.parse(file_path)
         return ET.tostring(top.getroot(), encoding='utf8').decode("utf-8")
 
     else:

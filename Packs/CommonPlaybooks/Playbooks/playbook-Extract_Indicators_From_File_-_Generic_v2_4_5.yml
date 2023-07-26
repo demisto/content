@@ -1,7 +1,5 @@
 id: Extract Indicators From File - Generic v2
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Extract Indicators From File - Generic v2
 description: |-
   This playbook extracts indicators from a file.
@@ -28,10 +26,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 66ff4520-efa0-4c28-81d4-6d933e7ac182
+    taskid: bcdc9d1b-25b8-4f8e-8718-043218ed8977
     type: start
     task:
-      id: 66ff4520-efa0-4c28-81d4-6d933e7ac182
+      id: bcdc9d1b-25b8-4f8e-8718-043218ed8977
       version: -1
       name: ""
       iscommand: false
@@ -58,10 +56,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 01e70914-25f3-495d-81f4-5864bd04340a
+    taskid: 9c37cfa4-5bd3-4994-80df-33bd4b58728f
     type: condition
     task:
-      id: 01e70914-25f3-495d-81f4-5864bd04340a
+      id: 9c37cfa4-5bd3-4994-80df-33bd4b58728f
       version: -1
       name: Is there a file?
       description: |
@@ -102,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
+    taskid: b287e371-7f7f-43cf-8f07-ea42b1ab70b6
     type: regular
     task:
-      id: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
+      id: b287e371-7f7f-43cf-8f07-ea42b1ab70b6
       version: -1
       name: Set file to local context
       description: Sets the input file into local context.
@@ -143,10 +141,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: cd4f63cd-d080-4574-86f2-73b6dd9854d9
+    taskid: 9f01ab9b-8991-4705-83a8-2bc3f0e902b2
     type: title
     task:
-      id: cd4f63cd-d080-4574-86f2-73b6dd9854d9
+      id: 9f01ab9b-8991-4705-83a8-2bc3f0e902b2
       version: -1
       name: Done
       type: title
@@ -171,10 +169,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3745ecc5-a6c8-4c53-83ff-25d3dbef7eb1
+    taskid: ccedd221-520c-4c64-8ec8-fc07d1b107fc
     type: title
     task:
-      id: 3745ecc5-a6c8-4c53-83ff-25d3dbef7eb1
+      id: ccedd221-520c-4c64-8ec8-fc07d1b107fc
       version: -1
       name: Extract Indicators From Files
       type: title
@@ -206,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 816708c1-620e-495b-8102-081c06a0146f
+    taskid: 6b1ca925-a7ee-46d9-8f41-bc1ca5ee1f28
     type: condition
     task:
-      id: 816708c1-620e-495b-8102-081c06a0146f
+      id: 6b1ca925-a7ee-46d9-8f41-bc1ca5ee1f28
       version: -1
       name: Is there a text-based file?
       description: Checks if there is a text-based file in context. Skips MSG and EML files.
@@ -361,10 +359,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: baa0320d-9647-44bb-8110-99b6d1c618df
+    taskid: 25e595b9-5c08-4247-8888-ad17fecd9703
     type: regular
     task:
-      id: baa0320d-9647-44bb-8110-99b6d1c618df
+      id: 25e595b9-5c08-4247-8888-ad17fecd9703
       version: -1
       name: Extract indicators from text-based file
       description: Extracts indicators from text-based files.
@@ -503,10 +501,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 60ecb284-7af0-463e-80d7-8f7e36dce929
+    taskid: 6456e51c-3165-435e-8fd4-9b3143f4b011
     type: condition
     task:
-      id: 60ecb284-7af0-463e-80d7-8f7e36dce929
+      id: 6456e51c-3165-435e-8fd4-9b3143f4b011
       version: -1
       name: Is there a PDF file?
       description: Checks if there is a PDF file in context.
@@ -545,11 +543,14 @@ tasks:
                     right:
                       value:
                         simple: pdf
+                    ignorecase: true
                 accessor: EntryID
                 transformers:
                 - operator: uniq
             iscontext: true
           ignorecase: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -567,10 +568,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: fa0e5d0b-c66c-4837-8b73-bacf7e890d12
+    taskid: 413768ed-dc27-441e-8395-9878777549e5
     type: regular
     task:
-      id: fa0e5d0b-c66c-4837-8b73-bacf7e890d12
+      id: 413768ed-dc27-441e-8395-9878777549e5
       version: -1
       name: Extract indicators from PDF file
       description: Load a PDF file's content and metadata into context.
@@ -586,14 +587,15 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
+          - - operator: containsString
               left:
                 value:
                   simple: File.Type
                 iscontext: true
               right:
                 value:
-                  simple: application/pdf
+                  simple: pdf
+              ignorecase: true
             - operator: containsString
               left:
                 value:
@@ -601,7 +603,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: application/pdf
+                  simple: pdf
               ignorecase: true
           accessor: EntryID
           transformers:
@@ -625,10 +627,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a43c6497-ba16-4f6e-8432-04b149d9810c
+    taskid: 56597c25-22cd-42b4-8c2f-f08c31fd1dd4
     type: condition
     task:
-      id: a43c6497-ba16-4f6e-8432-04b149d9810c
+      id: 56597c25-22cd-42b4-8c2f-f08c31fd1dd4
       version: -1
       name: Is there a Word file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
@@ -798,6 +800,24 @@ tasks:
                     right:
                       value:
                         simple: docm
+                - - operator: isNotEqualString
+                    left:
+                       value:
+                         simple: File.Extension
+                       iscontext: true
+                    right:
+                       value:
+                         simple: oft
+                    ignorecase: true
+                  - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: oft
+                    ignorecase: true
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -821,10 +841,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: c0b4f86a-6063-455f-8bc7-92d09cd519fa
+    taskid: 68b22c92-c5b7-4e98-8b45-cadb678c6da8
     type: title
     task:
-      id: c0b4f86a-6063-455f-8bc7-92d09cd519fa
+      id: 68b22c92-c5b7-4e98-8b45-cadb678c6da8
       version: -1
       name: No File To Parse
       type: title
@@ -852,10 +872,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
+    taskid: 94620d34-671a-4869-81f1-dcf67071a9ee
     type: regular
     task:
-      id: a7b3afc7-61ea-41b9-8b87-2b7026f8c1db
+      id: 94620d34-671a-4869-81f1-dcf67071a9ee
       version: -1
       name: Extract indicators from Word file
       description: Extracts indicators from word files (DOC, DOCX).
@@ -986,6 +1006,24 @@ tasks:
               right:
                 value:
                   simple: xlsm
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: oft
+              ignorecase: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: oft
+              ignorecase: true
           accessor: EntryID
           transformers:
           - operator: uniq
@@ -1008,10 +1046,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1572cbb3-ceff-4d00-8f8a-468ad338953b
+    taskid: 53f7a7dd-1720-451f-892d-28bdc2938d12
     type: condition
     task:
-      id: 1572cbb3-ceff-4d00-8f8a-468ad338953b
+      id: 53f7a7dd-1720-451f-892d-28bdc2938d12
       version: -1
       name: Were images extracted?
       description: Checks whether images were extracted from PDF files.
@@ -1089,10 +1127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 92e92794-63db-4875-88c3-89bd5a4ec179
+    taskid: 016dfd29-eb0c-4638-8f9c-b47a21dbf83e
     type: condition
     task:
-      id: 92e92794-63db-4875-88c3-89bd5a4ec179
+      id: 016dfd29-eb0c-4638-8f9c-b47a21dbf83e
       version: -1
       name: Is Image OCR enabled?
       description: Checks whether there is an active instance of the Image OCR integration. enabled.
@@ -1140,10 +1178,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c6d841e4-812f-40e0-8ef4-9203859c9781
+    taskid: 9e63e4dc-c072-46b9-876d-6862cf429573
     type: regular
     task:
-      id: c6d841e4-812f-40e0-8ef4-9203859c9781
+      id: 9e63e4dc-c072-46b9-876d-6862cf429573
       version: -1
       name: Extract text from images
       description: Extracts text from PNG, JPEG, and GIF image files, and uses auto-extract to get reputation for indicators.
@@ -1217,10 +1255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 32dd3613-cac8-4ac6-8b2a-59fd9c2e4233
+    taskid: ffb93222-0298-4fc1-8087-6e2e66eecda4
     type: condition
     task:
-      id: 32dd3613-cac8-4ac6-8b2a-59fd9c2e4233
+      id: ffb93222-0298-4fc1-8087-6e2e66eecda4
       version: -1
       name: Is there another supported document type?
       description: |-
@@ -1368,10 +1406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 430b4252-4478-4150-8641-2444119a6005
+    taskid: 9a754389-5cc2-4638-84b4-2877b55a649a
     type: regular
     task:
-      id: 430b4252-4478-4150-8641-2444119a6005
+      id: 9a754389-5cc2-4638-84b4-2877b55a649a
       version: -1
       name: Convert a document to PDF
       description: |-
@@ -1507,10 +1545,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
+    taskid: 0fa1cea9-9c2e-4512-81d1-37058f817ea2
     type: regular
     task:
-      id: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
+      id: 0fa1cea9-9c2e-4512-81d1-37058f817ea2
       version: -1
       name: Preview PDF files
       description: Gets a preview (image) of the PDF files.
@@ -1569,10 +1607,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: d3466327-cfe5-4364-8b19-187f67320432
+    taskid: f7e70aea-197a-48b0-8e5b-1a0e4e813a15
     type: condition
     task:
-      id: d3466327-cfe5-4364-8b19-187f67320432
+      id: f7e70aea-197a-48b0-8e5b-1a0e4e813a15
       version: -1
       name: Is Rasterize enabled?
       description: Checks if the Rasterize integration is enabled.
@@ -1632,10 +1670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+    taskid: dff24f87-3133-4c5b-85f0-3e8cfb5910f6
     type: regular
     task:
-      id: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+      id: dff24f87-3133-4c5b-85f0-3e8cfb5910f6
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
@@ -1673,10 +1711,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 60347e57-061c-46ec-87bf-dff0684adc13
+    taskid: 0ca91cf6-8403-4e3e-84fd-a5076cb1e172
     type: playbook
     task:
-      id: 60347e57-061c-46ec-87bf-dff0684adc13
+      id: 0ca91cf6-8403-4e3e-84fd-a5076cb1e172
       version: -1
       name: Microsoft Office File Enrichment - Oletools
       description: |-
@@ -1726,7 +1764,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1985,7 +2022,6 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
   type: number
-quiet: true
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0

@@ -1,7 +1,7 @@
 {
     "id": "incident_symantecedrprocessuser",
     "version": -1,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.5.0",
     "modified": "2023-01-12T14:26:09.016422526+05:30",
     "name": "SymantecEDR Process User",
     "ownerOnly": false,

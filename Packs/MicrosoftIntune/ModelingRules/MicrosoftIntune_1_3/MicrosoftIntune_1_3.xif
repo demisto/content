@@ -1,0 +1,57 @@
+[MODEL: dataset="msft_azure_raw"]
+filter category contains "DeviceComplianceOrg"
+|alter xdm.event.type=category,
+xdm.observer.unique_identifier=tenantId,
+xdm.event.operation_sub_type=operationName,
+xdm.event.outcome=if(resultType="Completed", XDM_CONST.OUTCOME_SUCCESS , resultType="Success", XDM_CONST.OUTCOME_SUCCESS , resultType="None", XDM_CONST.OUTCOME_UNKNOWN, resultType),
+xdm.source.ipv4=callerIpAddress,
+xdm.observer.name=_collector_name,
+xdm.source.host.hostname=json_extract_scalar(properties,"$.DeviceName"),
+xdm.source.user.upn=json_extract_scalar(properties,"$.UPN"),
+xdm.source.host.os=json_extract_scalar(properties,"$.OS"),
+xdm.event.outcome_reason=json_extract_scalar(properties,"$.ComplianceState_loc"),
+xdm.source.host.device_id=json_extract_scalar(properties,"$.DeviceId"),
+xdm.source.user.identifier=json_extract_scalar(properties,"$.UserId"),
+xdm.source.user.username=coalesce(json_extract_scalar(properties,"$.UserName"),identity),
+xdm.intermediate.agent.identifier=json_extract_scalar(properties,"$.IntuneAccountId");
+ 
+filter category="AuditLogs"
+|alter xdm.event.type=category,
+xdm.observer.unique_identifier=tenantId,
+xdm.source.ipv4=callerIpAddress,
+xdm.observer.name=_collector_name,
+xdm.event.operation_sub_type=operationName,
+xdm.event.outcome=if(json_extract_scalar(properties,"$.ActivityResultStatus")="1",XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
+xdm.event.outcome_reason=resultType,
+xdm.source.application.name=json_extract_scalar(properties,"$.Actor.ApplicationName"),
+xdm.source.user.username=coalesce(json_extract_scalar(properties,"$.Actor.Name"),identity),
+xdm.source.user.upn=json_extract_scalar(properties,"$.Actor.UPN"),
+xdm.event.description=json_extract_scalar(properties,"$.AdditionalDetails"),
+xdm.event.id=json_extract_scalar(properties,"$.AuditEventId"),
+xdm.target.resource_before.name=json_extract_scalar(properties,"$.TargetDisplayNames"),
+xdm.target.resource.name=json_extract_scalar(properties,"$.Targets[0].ModifiedProperties[0].Name"),
+activityType=json_extract_scalar(properties,"$.ActivityType")
+|alter eventCategory=json_extract_scalar(properties,"$.Category"),
+Targets = json_extract_array(properties, "$.Targets"),
+actorType=json_extract_scalar(properties,"$.Actor.ActorType")
+|alter ModifiedProperties = json_extract_array(arrayindex(targets,0), "$.ModifiedProperties")
+|alter xdm.event.original_event_type=if(eventCategory="0", "Other",eventCategory="1", "Enrollment", eventCategory="2", "Compliance", eventCategory="3", "DeviceConfiguration", eventCategory="4",  "Device", eventCategory="5", "Application", eventCategory="6", "EBookManagement",eventCategory="7", "ConditionalAccess",eventCategory="8", "OnPremiseAccess", eventCategory="9", "Role", eventCategory="10", "SoftwareUpdates", eventCategory="11", "DeviceSetupConfiguration", eventCategory="12", "DeviceIntent", eventCategory="13", "DeviceIntentSetting", eventCategory="14", "DeviceSecurity", eventCategory="15", "GroupPolicyAnalytics"),
+xdm.observer.action=if(activityType="0","Create",activityType="1","Delete",activityType="2","Patch",activityType="3","Action",activityType="4","SetReference",activityType="5","RemoveReference",activityType="6","Get",activityType="7","Search",activityType),
+xdm.source.user.user_type=if(actorType="0", "Unknown",actorType="1", "ItPro", actorType="2", "IW", actorType="3", "System", actorType="4", "Partner", actorType="5", "Application", actorType="6", "GuestUser"),
+xdm.target.resource.name = arraystring(arraymap(ModifiedProperties, json_extract_scalar("@element","$.Name")), ", "),
+xdm.target.resource_before.value = arraystring(arraymap(ModifiedProperties, json_extract_scalar("@element","$.Old")), ", "),
+xdm.target.resource.value = arraystring(arraymap(ModifiedProperties, json_extract_scalar("@element","$.New")), ", ");
+
+filter category contains "OperationalLogs"
+|alter xdm.event.type=category,
+xdm.observer.unique_identifier=tenantId,
+xdm.event.outcome=if(resultType="Completed", XDM_CONST.OUTCOME_SUCCESS , resultType="Success", XDM_CONST.OUTCOME_SUCCESS , resultType="None", XDM_CONST.OUTCOME_UNKNOWN, resultType),
+xdm.source.ipv4=callerIpAddress,
+xdm.observer.name=_collector_name,
+xdm.intermediate.agent.identifier=json_extract_scalar(properties,"$.IntuneAccountId"),
+xdm.source.user.identifier=json_extract_scalar(properties,"$.IntuneUserId"),
+xdm.session_context_id=json_extract_scalar(properties,"$.MessageId"),
+xdm.event.original_event_type=json_extract_scalar(properties,"$.OperationalLogCategory"),
+xdm.event.operation_sub_type=coalesce(json_extract_scalar(properties,"$.ScenarioName"),operationName),
+xdm.source.host.os=json_extract_scalar(properties,"$.OS"),
+xdm.event.outcome_reason=json_extract_scalar(properties,"$.EnrollmentType");

@@ -8,6 +8,7 @@ def main():
 
     team_member: str = script_arguments.get('team_member', '')
     channel: str = script_arguments.get('channel', '')
+    team: str = script_arguments.get('team', '')
 
     if not (team_member or channel):
         raise ValueError('Either team member or channel must be provided.')
@@ -47,6 +48,8 @@ def main():
 
     if channel:
         command_arguments['channel'] = channel
+        if team:
+            command_arguments['team'] = team
     elif team_member:
         command_arguments['team_member'] = team_member
 

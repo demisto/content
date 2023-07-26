@@ -302,8 +302,7 @@ script:
       default: true
       description: Query value to use in your request
     - name: compact_record
-      description: Compress the WHOIS record into a deduplicated format - true or
-        false
+      description: Compress the WHOIS record into a deduplicated format - true or false
       defaultValue: "true"
     outputs:
     - contextPath: passivetotal.whois.email
@@ -326,8 +325,7 @@ script:
       description: Query value to use in your request
     - name: field
       required: true
-      description: 'WHOIS field to execute the search on: domain, email, name, organization,
-        address, phone, nameserver'
+      description: 'WHOIS field to execute the search on: domain, email, name, organization, address, phone, nameserver'
     description: Get WHOIS records based on field matching queries
   - name: pt-get-components
     deprecated: true
@@ -364,8 +362,7 @@ script:
       required: true
       default: true
       description: The SHA1 or IP to retrieve SSL certificate data for
-    description: Get the SSL certificate history associated with an IP address or
-      SHA-1
+    description: Get the SSL certificate history associated with an IP address or SHA-1
   - name: pt-ssl-cert-keyword
     deprecated: true
     arguments:
@@ -383,15 +380,8 @@ script:
       description: Query value to use in your request
     - name: field
       required: true
-      description: 'Field to search against: issuerSurname, subjectOrganizationName,
-        issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName,
-        serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName,
-        issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName,
-        sha1, sslVersion, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName,
-        subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName,
-        subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
+      description: 'Field to search against: issuerSurname, subjectOrganizationName, issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName, serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName, issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName, sha1, sslVersion, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName, subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName, subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress'
     description: Search for SSL certificates based on field values
-  runonce: false
 tests:
 - no test
 fromversion: 5.0.0

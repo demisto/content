@@ -1,0 +1,112 @@
+{
+    "prisma_cloud_raw": {
+        "policy": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyId": {
+            "type": "string",
+            "is_array": false
+        },
+        "reason": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "source": {
+            "type": "string",
+            "is_array": false
+        },
+        "role": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "region": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceIp": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceIPAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "awsRegion": {
+            "type": "string",
+            "is_array": false
+        },
+        "cloudType": {
+            "type": "string",
+            "is_array": false
+        },
+        "errorCode": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventName": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },   
+        "userAgent": {
+            "type": "string",
+            "is_array": false
+        },
+        "tlsDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventSource": {
+            "type": "string",
+            "is_array": false
+        },
+        "anomalyDetail": {
+            "type": "string",
+            "is_array": false
+        }, 
+        "userAgentOsName": {
+            "type": "string",
+            "is_array": false
+        },
+        "additionalEventData": {
+            "type": "string",
+            "is_array": false
+        },
+        "userAgentBrowserName": {
+            "type": "string",
+            "is_array": false
+        },
+        "isSuccess": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "userIdentity": {
+            "type": "string",
+            "is_array": false
+        }                                                                                                              
+   }
+}

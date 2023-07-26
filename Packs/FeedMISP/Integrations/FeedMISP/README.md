@@ -117,3 +117,22 @@ Gets indicators from the feed.
 
 #### Human Readable Output
 Retrieved 7 indicators.
+
+## Additional Information
+If you experience a timeout error while fetching indicators, the following query configuration may be helpful for you.
+
+You can configure the feed to return results from the last 24 hours as shown below:
+```json
+{
+    "returnFormat": "json",
+    "type": {
+        "OR": []
+    },
+    "tags": {
+        "OR": []
+    },
+    "last":"24h"
+}
+```
+
+Both of the above queries can be modified however you would like depending on your specific use case. Additional information can be found here https://www.misp-project.org/openapi/#tag/Attributes/operation/restSearchAttributes

@@ -1,0 +1,282 @@
+{
+    "description": "Securonix incident incoming mapper.",
+    "feed": false,
+    "id": "Securonix Incident - Incoming Mapper",
+    "mapping": {
+        "Securonix Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Assigned User": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assignedUser",
+                        "transformers": []
+                    }
+                },
+                "Assignment Group": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assignedGroup",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "url",
+                        "transformers": []
+                    }
+                },
+                "Securonix Bulk Action Allowed": {
+                    "complex": {
+                        "filters": [],
+                        "root": "bulkactionallowed",
+                        "transformers": []
+                    }
+                },
+                "Securonix Case Create Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "casecreatetime",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Securonix Case Event End Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "caseEventEndTime",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Securonix Close Incident": {
+                    "complex": {
+                        "filters": [],
+                        "root": "close_sx_incident",
+                        "transformers": []
+                    }
+                },
+                "Securonix Entity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity",
+                        "transformers": []
+                    }
+                },
+                "Securonix Incident ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": []
+                    }
+                },
+                "Securonix Incident Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentStatus",
+                        "transformers": []
+                    }
+                },
+                "Securonix Incident Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentType",
+                        "transformers": []
+                    }
+                },
+                "Securonix Is Whitelisted": {
+                    "complex": {
+                        "filters": [],
+                        "root": "isWhitelisted",
+                        "transformers": []
+                    }
+                },
+                "Securonix Last Update Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "lastUpdateDate",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Securonix Parent Case ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "parentCaseId",
+                        "transformers": []
+                    }
+                },
+                "Securonix Policies": {
+                    "complex": {
+                        "accessor": "Policies",
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
+                "Securonix Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
+                "Securonix Risk Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "riskscore",
+                        "transformers": []
+                    }
+                },
+                "Securonix Sandbox Policy": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sandBoxPolicy",
+                        "transformers": []
+                    }
+                },
+                "Securonix Status Completed": {
+                    "complex": {
+                        "filters": [],
+                        "root": "statusCompleted",
+                        "transformers": []
+                    }
+                },
+                "Securonix Tenant Color": {
+                    "complex": {
+                        "accessor": "tenantcolor",
+                        "filters": [],
+                        "root": "tenantInfo",
+                        "transformers": []
+                    }
+                },
+                "Securonix Tenant ID": {
+                    "complex": {
+                        "accessor": "tenantid",
+                        "filters": [],
+                        "root": "tenantInfo",
+                        "transformers": []
+                    }
+                },
+                "Securonix Tenant Short Code": {
+                    "complex": {
+                        "accessor": "tenantshortcode",
+                        "filters": [],
+                        "root": "tenantInfo",
+                        "transformers": []
+                    }
+                },
+                "Securonix Violation Spotter Query": {
+                    "complex": {
+                        "filters": [],
+                        "root": "solrquery",
+                        "transformers": []
+                    }
+                },
+                "Securonix Violator ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "violatorId",
+                        "transformers": []
+                    }
+                },
+                "Securonix Violator Sub Text": {
+                    "complex": {
+                        "filters": [],
+                        "root": "violatorSubText",
+                        "transformers": []
+                    }
+                },
+                "Securonix Violator Text": {
+                    "complex": {
+                        "filters": [],
+                        "root": "violatorText",
+                        "transformers": []
+                    }
+                },
+                "Securonix Watchlisted": {
+                    "complex": {
+                        "filters": [],
+                        "root": "watchlisted",
+                        "transformers": []
+                    }
+                },
+                "Securonix Workflow Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "workflowName",
+                        "transformers": []
+                    }
+                },
+                "Tenant Name": {
+                    "complex": {
+                        "accessor": "tenantname",
+                        "filters": [],
+                        "root": "tenantInfo",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incidentId",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorTags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_tags",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "caseEventStartTime",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Securonix Incident - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

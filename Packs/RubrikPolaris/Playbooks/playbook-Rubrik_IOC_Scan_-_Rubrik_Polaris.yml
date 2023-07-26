@@ -1,0 +1,1868 @@
+id: Rubrik IOC Scan - Rubrik Polaris
+version: -1
+name: Rubrik IOC Scan - Rubrik Polaris
+description: This playbook starts an IOC Scan with the provided IOC values. It can
+  be looped until recoverable snapshots are obtained or the limit to loop is reached.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 355fe4ce-4d73-463b-89c4-3ad9f94716d6
+    type: start
+    task:
+      id: 355fe4ce-4d73-463b-89c4-3ad9f94716d6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8b5c73b8-fab2-4799-8565-a44b19dcb90c
+    type: regular
+    task:
+      id: 8b5c73b8-fab2-4799-8565-a44b19dcb90c
+      version: -1
+      name: Start IOC scan
+      description: |-
+        Triggers an IOC scan of a system.
+
+        Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" command and to list the running/completed IOC scans on a cluster use the "rubrik-radar-ioc-scan-list" command.
+      script: '|||rubrik-radar-ioc-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      advance_ioc:
+        complex:
+          root: AdvanceIOC
+          transformers:
+          - operator: Stringify
+      cluster_id:
+        complex:
+          root: inputs.ClusterId
+      end_date:
+        complex:
+          root: RubrikPolaris
+          accessor: EndDate
+      max_file_size:
+        complex:
+          root: inputs.MaxFileSize
+      object_id:
+        complex:
+          root: inputs.ObjectId
+      paths_to_exclude:
+        complex:
+          root: inputs.PathsToExclude
+      paths_to_exempt:
+        complex:
+          root: inputs.PathsToExempt
+      paths_to_include:
+        complex:
+          root: inputs.PathsToInclude
+      requested_hash_types:
+        complex:
+          root: inputs.RequestedHashType
+      scan_name:
+        complex:
+          root: inputs.ScanName
+      start_date:
+        complex:
+          root: RubrikPolaris
+          accessor: StartDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2dd84512-ec34-421e-816c-f737e6a12f27
+    type: playbook
+    task:
+      id: 2dd84512-ec34-421e-816c-f737e6a12f27
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: cluster_id
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.ClusterId
+      Ids:
+        complex:
+          root: RubrikPolaris
+          accessor: RadarIOCScan
+          transformers:
+          - operator: LastArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      Interval:
+        complex:
+          root: inputs.PollingInterval
+      PollingCommandArgName:
+        simple: scan_id
+      PollingCommandName:
+        simple: rubrik-radar-ioc-scan-results
+      Timeout:
+        complex:
+          root: inputs.PollingTimeout
+      dt:
+        simple: RubrikPolaris.RadarIOCScan(val.status === 'RUNNING').id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d1f7d65f-945f-4883-867e-787b1067431d
+    type: title
+    task:
+      id: d1f7d65f-945f-4883-867e-787b1067431d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 4275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b205387e-7bef-4270-88b0-f1f8d0baa008
+    type: regular
+    task:
+      id: b205387e-7bef-4270-88b0-f1f8d0baa008
+      version: -1
+      name: Prepare IOC Path
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IOCPath
+      value:
+        complex:
+          root: inputs.IOCPath
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IOCPath
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME": ['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 93b32382-d0ad-4f61-8f66-f8114970bfe5
+    type: regular
+    task:
+      id: 93b32382-d0ad-4f61-8f66-f8114970bfe5
+      version: -1
+      name: Prepare IOC Hash
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IOCHash
+      value:
+        complex:
+          root: inputs.IOCHash
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IOCHash
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"INDICATOR_OF_COMPROMISE_TYPE_HASH": ['
+              suffix:
+                value:
+                  simple: ']'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e49bfa6d-455b-4b70-8c40-1a5e2d113900
+    type: regular
+    task:
+      id: e49bfa6d-455b-4b70-8c40-1a5e2d113900
+      version: -1
+      name: Prepare Advance IOC
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: AdvanceIOC
+      value:
+        complex:
+          root: IOCPath
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ', '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${IOCHash}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ', '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${IOCYaraRule}
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{'
+              suffix:
+                value:
+                  simple: '}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 34c2662e-516b-42d6-8955-bb6d734030df
+    type: regular
+    task:
+      id: 34c2662e-516b-42d6-8955-bb6d734030df
+      version: -1
+      name: Get scan results
+      description: |-
+        Retrieves the results of IOC scan of a system.
+
+        Note: To initiate a scan use the "rubrik-radar-ioc-scan" command and to list the running/completed scans on a cluster use the "rubrik-radar-ioc-scan-list" command.
+      script: '|||rubrik-radar-ioc-scan-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: inputs.ClusterId
+      scan_id:
+        complex:
+          root: RubrikPolaris
+          accessor: RadarIOCScan
+          transformers:
+          - operator: LastArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fc9e66b2-83ef-411a-8658-6a56a6a944d2
+    type: condition
+    task:
+      id: fc9e66b2-83ef-411a-8658-6a56a6a944d2
+      version: -1
+      name: Is scan successfull?
+      description: Checks if the IOC Scan is successful.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      FINISHED:
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: FINISHED
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris
+                accessor: RadarIOCScan
+                transformers:
+                - operator: LastArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: status
+            iscontext: true
+          right:
+            value:
+              simple: FINISHED
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5064ea92-b868-4a07-854c-b389bd53eccf
+    type: regular
+    task:
+      id: 5064ea92-b868-4a07-854c-b389bd53eccf
+      version: -1
+      name: Decrease limit
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Limit
+      value:
+        complex:
+          root: Limit
+          transformers:
+          - operator: subtraction
+            args:
+              by:
+                value:
+                  simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2c9de1ee-6bff-41a5-8dd1-42c7ad3d44ae
+    type: regular
+    task:
+      id: 2c9de1ee-6bff-41a5-8dd1-42c7ad3d44ae
+      version: -1
+      name: Set recoverable snapshots
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RubrikPolaris.RecoverableSnapshot.id
+      value:
+        complex:
+          root: RubrikPolaris.RadarIOCScan.results.snapshotResults
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: RubrikPolaris.RadarIOCScan.results.snapshotResults.matches
+                iscontext: true
+          accessor: snapshotId
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '[]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a594a758-f92d-4e93-8ab0-451aa9b78ef3
+    type: regular
+    task:
+      id: a594a758-f92d-4e93-8ab0-451aa9b78ef3
+      version: -1
+      name: Update the start date
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RubrikPolaris.StartDate
+      value:
+        complex:
+          root: RubrikPolaris.Epoch
+          accessor: StartDate
+          transformers:
+          - operator: multiply
+            args:
+              by:
+                value:
+                  simple: "2"
+          - operator: subtraction
+            args:
+              by:
+                value:
+                  simple: RubrikPolaris.Epoch.EndDate
+                iscontext: true
+          - operator: TimeStampToDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 937e6567-180e-4591-88cb-b877f822b059
+    type: regular
+    task:
+      id: 937e6567-180e-4591-88cb-b877f822b059
+      version: -1
+      name: Update the end date
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RubrikPolaris.EndDate
+      value:
+        complex:
+          root: RubrikPolaris.Epoch
+          accessor: StartDate
+          transformers:
+          - operator: TimeStampToDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3ca6f1cb-166b-4b8b-8a83-f03696b25e83
+    type: regular
+    task:
+      id: 3ca6f1cb-166b-4b8b-8a83-f03696b25e83
+      version: -1
+      name: Set limit to zero
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: Limit
+      value:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ec3284b4-b027-49ca-8423-024002179512
+    type: regular
+    task:
+      id: ec3284b4-b027-49ca-8423-024002179512
+      version: -1
+      name: Convert start date to epochs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "18"
+    scriptarguments:
+      key:
+        simple: RubrikPolaris.Epoch.StartDate
+      value:
+        complex:
+          root: RubrikPolaris
+          accessor: StartDate
+          transformers:
+          - operator: DateToTimeStamp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 13c61bb1-0235-479a-89b8-ffc1eb59c277
+    type: regular
+    task:
+      id: 13c61bb1-0235-479a-89b8-ffc1eb59c277
+      version: -1
+      name: Convert end date to epochs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "18"
+    scriptarguments:
+      key:
+        simple: RubrikPolaris.Epoch.EndDate
+      value:
+        complex:
+          root: RubrikPolaris
+          accessor: EndDate
+          transformers:
+          - operator: DateToTimeStamp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1145,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 7143c8dd-b20b-4359-8f05-11bd65f3f503
+    type: condition
+    task:
+      id: 7143c8dd-b20b-4359-8f05-11bd65f3f503
+      version: -1
+      name: Is time delta available?
+      description: Checks if time delta is given as input or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.TimeDelta
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d2152ba1-911d-43df-81fc-67952bcd560b
+    type: condition
+    task:
+      id: d2152ba1-911d-43df-81fc-67952bcd560b
+      version: -1
+      name: Is limit reached?
+      description: ' Checks if limit has reached the maximum number of iterations.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: Limit
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 4f0f656b-5d73-45f6-8017-f3a910f19843
+    type: regular
+    task:
+      id: 4f0f656b-5d73-45f6-8017-f3a910f19843
+      version: -1
+      name: Update the start date using time delta
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RubrikPolaris.StartDate
+      value:
+        complex:
+          root: RubrikPolaris.Epoch
+          accessor: StartDate
+          transformers:
+          - operator: Stringify
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: inputs.TimeDelta
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 02f47f08-0a0b-4f53-8967-718891f8e59f
+    type: title
+    task:
+      id: 02f47f08-0a0b-4f53-8967-718891f8e59f
+      version: -1
+      name: Prepare advance IOC value
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "4"
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 52960e51-4bfa-4170-84a9-133be9d6635a
+    type: title
+    task:
+      id: 52960e51-4bfa-4170-84a9-133be9d6635a
+      version: -1
+      name: Skip IOC Scan
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1595,
+          "y": 4115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 741158cc-3c68-4f55-8da2-0ddb90de5945
+    type: regular
+    task:
+      id: 741158cc-3c68-4f55-8da2-0ddb90de5945
+      version: -1
+      name: Set limit from input
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: Limit
+      value:
+        complex:
+          root: inputs.Limit
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: ae819bf3-c35e-4b63-8d74-c1271786432f
+    type: condition
+    task:
+      id: ae819bf3-c35e-4b63-8d74-c1271786432f
+      version: -1
+      name: Is limit set?
+      description: Checks whether limit is set in the context or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Limit
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: d5686da5-f167-4562-88b4-264951a76b86
+    type: condition
+    task:
+      id: d5686da5-f167-4562-88b4-264951a76b86
+      version: -1
+      name: Are there any recoverable snapshots?
+      description: Checks if any recoverable snapshot were found in the scan.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RubrikPolaris.RecoverableSnapshot.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 956e81d4-a94d-4cb7-8850-8dc80fc209c4
+    type: regular
+    task:
+      id: 956e81d4-a94d-4cb7-8850-8dc80fc209c4
+      version: -1
+      name: Prepare IOC Yara Rule
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IOCYaraRule
+      value:
+        complex:
+          root: inputs.IOCYaraRule
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '["'
+              suffix:
+                value:
+                  simple: '"]'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE":'
+              suffix: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '[]'
+              toReplace:
+                value:
+                  simple: '[""]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: b3cbd375-1c2d-41c9-8c8e-b226bf28ccd2
+    type: condition
+    task:
+      id: b3cbd375-1c2d-41c9-8c8e-b226bf28ccd2
+      version: -1
+      name: Is start date set?
+      description: Checks whether start date is set in the context or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.StartDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 582.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: e0d57462-b6b8-455b-8619-ecd98a8d50bc
+    type: condition
+    task:
+      id: e0d57462-b6b8-455b-8619-ecd98a8d50bc
+      version: -1
+      name: Is end date set?
+      description: Checks whether end date is set in the context or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: RubrikPolaris.EndDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1482.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 85f48cbf-0efc-479a-8eba-3a57932d2d54
+    type: regular
+    task:
+      id: 85f48cbf-0efc-479a-8eba-3a57932d2d54
+      version: -1
+      name: Set start date from input
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: RubrikPolaris.StartDate
+      value:
+        complex:
+          root: inputs.StartDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: f6f6e375-56e0-4f4d-838f-9768138ebc6a
+    type: regular
+    task:
+      id: f6f6e375-56e0-4f4d-838f-9768138ebc6a
+      version: -1
+      name: Set end date from input
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: RubrikPolaris.EndDate
+      value:
+        complex:
+          root: inputs.EndDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 7838b47a-50bd-46d6-88d2-8850fbe1f73d
+    type: title
+    task:
+      id: 7838b47a-50bd-46d6-88d2-8850fbe1f73d
+      version: -1
+      name: Set looping fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+      - "35"
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: d42ffc6b-1089-4ff0-872d-c4b0afbd51da
+    type: condition
+    task:
+      id: d42ffc6b-1089-4ff0-872d-c4b0afbd51da
+      version: -1
+      name: Is advance IOC prepared?
+      description: ' Checks if advance IOC value is set in the context or not.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: AdvanceIOC
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: b7ccef8a-9b0e-4001-83e6-9895f4b8da2a
+    type: title
+    task:
+      id: b7ccef8a-9b0e-4001-83e6-9895f4b8da2a
+      version: -1
+      name: Start IOC scan
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 3406e2de-3e1d-4812-816c-8652e93431ea
+    type: title
+    task:
+      id: 3406e2de-3e1d-4812-816c-8652e93431ea
+      version: -1
+      name: Update looping fields
+      description: Checks if any recoverable snapshot were found in the scan.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: b7e5e62f-b283-4d84-84fd-7c9355aac247
+    type: condition
+    task:
+      id: b7e5e62f-b283-4d84-84fd-7c9355aac247
+      version: -1
+      name: Is this the first playbook run?
+      description: Checks if this is the first iteration of the playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Limit
+            iscontext: true
+          right:
+            value:
+              simple: Limit
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 6f23d23a-2993-4a6b-892b-ce0a85cbec15
+    type: condition
+    task:
+      id: 6f23d23a-2993-4a6b-892b-ce0a85cbec15
+      version: -1
+      name: Is the latest snapshot infected?
+      description: Checks whether the latest snapshot is infected or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.RadarIOCScan.results
+                accessor: snapshotResults
+                transformers:
+                - operator: FirstArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: matches
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 29285729-3e57-4737-8b7c-5d27b589ec19
+    type: regular
+    task:
+      id: 29285729-3e57-4737-8b7c-5d27b589ec19
+      version: -1
+      name: Set isLatestInfected to true
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RubrikPolaris.RecoverableSnapshot.isLatestInfected
+      value:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: a6810dd8-f5d6-4580-8197-d50d937de2cc
+    type: regular
+    task:
+      id: a6810dd8-f5d6-4580-8197-d50d937de2cc
+      version: -1
+      name: Set isLatestInfected to false
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: RubrikPolaris.RecoverableSnapshot.isLatestInfected
+      value:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 12d5d25e-0928-4719-8f1c-33262fbe91ba
+    type: condition
+    task:
+      id: 12d5d25e-0928-4719-8f1c-33262fbe91ba
+      version: -1
+      name: Are recoverable snapshot ID(s) obtained?
+      description: Checks whether snapshot ID(s) are obtained in the IOC Scan or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.RadarIOCScan.results.snapshotResults
+                filters:
+                - - operator: isEmpty
+                    left:
+                      value:
+                        simple: RubrikPolaris.RadarIOCScan.results.snapshotResults.matches
+                      iscontext: true
+                accessor: snapshotId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_31_yes": 0.51,
+      "35_28_yes": 0.42,
+      "38_28_yes": 0.76,
+      "39_28_yes": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4290,
+        "width": 1925,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ClusterId
+  value: {}
+  required: true
+  description: Cluster ID of the object.
+  playbookInputQuery:
+- key: ObjectId
+  value: {}
+  required: true
+  description: ID of the object.
+  playbookInputQuery:
+- key: StartDate
+  value:
+    simple: 7 days ago
+  required: true
+  description: |-
+    Start Date for IOC Scan.
+
+    Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+
+    Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
+  playbookInputQuery:
+- key: EndDate
+  value:
+    simple: now
+  required: true
+  description: |-
+    End Date for IOC Scan.
+
+    Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+
+    Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
+  playbookInputQuery:
+- key: IOCPath
+  value: {}
+  required: false
+  description: "Path of IOC to scan. Supports comma separated multiple values. \n\n\
+    Note: Do not provide quoted values."
+  playbookInputQuery:
+- key: IOCHash
+  value: {}
+  required: false
+  description: "Hash of IOC to scan. Supports comma separated multiple values. \n\n\
+    Note: Do not provide quoted values."
+  playbookInputQuery:
+- key: IOCYaraRule
+  value: {}
+  required: false
+  description: "Yara Rule(s) for IOC scan. \n\nNote: Do not provide quoted values."
+  playbookInputQuery:
+- key: PollingInterval
+  value:
+    simple: "5"
+  required: false
+  description: Frequency that the IOC scan command will run (minutes).
+  playbookInputQuery:
+- key: PollingTimeout
+  value:
+    simple: "720"
+  required: false
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  playbookInputQuery:
+- key: TimeDelta
+  value: {}
+  required: false
+  description: Provide the time delta to move backward while looping to find out the
+    recoverable snapshot. If not provided, it defaults to the time difference between
+    provided start date, and end date.
+  playbookInputQuery:
+- key: PathsToInclude
+  value: {}
+  required: false
+  description: |-
+    Paths to include in the scan. Supports comma separated values.
+
+    Format accepted:
+    path_to_include_1, path_to_include_2
+  playbookInputQuery:
+- key: PathsToExclude
+  value: {}
+  required: false
+  description: |-
+    Paths to exclude from the scan. Supports comma separated values.
+
+    Format accepted:
+    path_to_exclude_1, path_to_exclude_2
+  playbookInputQuery:
+- key: PathsToExempt
+  value: {}
+  required: false
+  description: |-
+    Paths to exempt from exclusion. Supports comma separated values.
+
+    Format accepted:
+    path_to_exempt_1, path_to_exempt_2
+  playbookInputQuery:
+- key: Limit
+  value:
+    simple: "1"
+  required: true
+  description: The maximum number of times to run IOC scans to find recoverable snapshot.
+  playbookInputQuery:
+- key: RequestedHashType
+  value: {}
+  required: false
+  description: The type of the hash values of the matched files to be blocked, if
+    enabled.
+  playbookInputQuery:
+- key: ScanName
+  value: {}
+  required: false
+  description: Name of the scan. Default value is "PAXSOAR-1.1.0".
+  playbookInputQuery:
+- key: MaxFileSize
+  value:
+    simple: '5000000'
+  required: false
+  description: Maximum size of the file in bytes that will be included in the scan. The maximum allowed size is 15000000 bytes.
+  playbookInputQuery:
+outputs:
+- contextPath: RubrikPolaris.RecoverableSnapshot.id
+  description: ID of the snapshot that can be recovered.
+  type: unknown
+- contextPath: RubrikPolaris.RadarIOCScan
+  description: The results of the IOC scan.
+- contextPath: RubrikPolaris.RecoverableSnapshot.isLatestInfected
+  description: Boolean value to indicate whether the newest snapshot is infected or
+    not.
+  type: unknown
+tests:
+- RubrikPolaris-Test
+fromversion: 6.0.0

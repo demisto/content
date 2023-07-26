@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from itertools import chain
-import ast
 
 
 def format_alert(alert: dict) -> dict:
@@ -23,7 +22,7 @@ def convert_to_table(context_results: str) -> CommandResults:
     Returns:
         CommandResults: CommandResults object containing only readable_output
     """
-    context_results = ast.literal_eval(context_results)
+    context_results = json.loads(context_results)
 
     context_formatted = [
         format_alert(alert) for alert in context_results
@@ -43,7 +42,7 @@ def convert_to_table(context_results: str) -> CommandResults:
     )
 
 
-def main():
+def main():  # pragma: no cover
     context = dict_safe_get(
         demisto.callingContext,
         ['context', 'Incidents', 0, 'CustomFields', 'microsoftsentinelalerts'],

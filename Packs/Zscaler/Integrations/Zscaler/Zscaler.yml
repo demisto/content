@@ -6,7 +6,7 @@ commonfields:
   id: Zscaler
   version: -1
 configuration:
-- display: Cloud Name (i.e., https://admin.zscalertwo.net)
+- display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
   name: cloud
   required: true
   type: 0
@@ -17,21 +17,21 @@ configuration:
   type: 9
   section: Connect
 - name: creds_key
-  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key
   name: key
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: reliability
-  required: false
   type: 15
   options:
   - A+ - 3rd party enrichment
@@ -43,42 +43,43 @@ configuration:
   - F - Reliability cannot be judged
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: If enabled, the integration will log out after executing each command.
   defaultvalue: 'true'
   display: Auto Logout
   name: auto_logout
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: If enabled, the integration will activate the command changes after each execution. If disabled, use the 'zscaler-activate-changes' command to activate Zscaler command changes.
   defaultvalue: 'true'
   display: Auto Activate Changes
   name: auto_activate
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '15'
   display: Timeout (in seconds) for HTTP requests to Zscaler
   name: requestTimeout
-  required: false
   type: 0
   section: Connect
   advanced: true
-description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, and manually log in, log out, and activate changes in a Zscaler session.
+  required: false
+description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
 display: Zscaler Internet Access
 name: Zscaler
 script:
@@ -221,19 +222,19 @@ script:
     name: zscaler-whitelist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4.
+      description: A comma-separated list of IP addresses to remove from the block list. For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
-    description: Removes the specified IP addresses from the allow list.
+    description: Removes the specified IP addresses from the block list.
     name: zscaler-undo-blacklist-ip
   - arguments:
     - default: true
-      description: A comma-separated list of IP addresses to add to the allow list. For example, 8.8.8.8,1.2.3.4.
+      description: A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4.
       isArray: true
       name: ip
       required: true
-    description: Adds the specified IP addresses to the allow list.
+    description: Adds the specified IP addresses to the block list.
     execution: true
     name: zscaler-blacklist-ip
   - arguments:
@@ -462,7 +463,7 @@ script:
     description: Get Zscaler users
     name: zscaler-get-users
   - arguments:
-    - description: The unique identifer for the user.
+    - description: The unique identifier for the user.
       name: id
       required: true
     - description: 'New user information. Docs: https://help.zscaler.com/zia/api#/User%20Management/updateUser'
@@ -492,10 +493,1433 @@ script:
       name: pageSize
     description: Gets a list of groups
     name: zscaler-get-usergroups
-  runonce: false
+  - name: zscaler-create-ip-destination-group
+    arguments:
+    - name: name
+      required: true
+      description: Destination IP group name.
+      type: textArea
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
+      type: textArea
+    - name: addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      isArray: true
+      type: textArea
+    - name: description
+      description: Additional information about the destination IP group
+      type: textArea
+    - name: ip_categories
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - NONE
+      - OTHER_ADULT_MATERIAL
+      - ADULT_THEMES
+      - LINGERIE_BIKINI
+      - NUDITY
+      - PORNOGRAPHY
+      - SEXUALITY
+      - ADULT_SEX_EDUCATION
+      - K_12_SEX_EDUCATION
+      - SOCIAL_ADULT
+      - OTHER_BUSINESS_AND_ECONOMY
+      - CORPORATE_MARKETING
+      - FINANCE
+      - PROFESSIONAL_SERVICES
+      - CLASSIFIEDS
+      - TRADING_BROKARAGE_INSURANCE
+      - CUSTOM_00
+      - CUSTOM_01
+      - CUSTOM_02
+      - CUSTOM_03
+      - CUSTOM_04
+      - CUSTOM_05
+      - CUSTOM_06
+      - CUSTOM_07
+      - CUSTOM_08
+      - CUSTOM_09
+      - CUSTOM_10
+      - CUSTOM_11
+      - CUSTOM_12
+      - CUSTOM_13
+      - CUSTOM_14
+      - CUSTOM_15
+      - CUSTOM_16
+      - CUSTOM_17
+      - CUSTOM_18
+      - CUSTOM_19
+      - CUSTOM_20
+      - CUSTOM_21
+      - CUSTOM_22
+      - CUSTOM_23
+      - CUSTOM_24
+      - CUSTOM_25
+      - CUSTOM_26
+      - CUSTOM_27
+      - CUSTOM_28
+      - CUSTOM_29
+      - CUSTOM_30
+      - CUSTOM_31
+      - CUSTOM_32
+      - CUSTOM_33
+      - CUSTOM_34
+      - CUSTOM_35
+      - CUSTOM_36
+      - CUSTOM_37
+      - CUSTOM_38
+      - CUSTOM_39
+      - CUSTOM_40
+      - CUSTOM_41
+      - CUSTOM_42
+      - CUSTOM_43
+      - CUSTOM_44
+      - CUSTOM_45
+      - CUSTOM_46
+      - CUSTOM_47
+      - CUSTOM_48
+      - CUSTOM_49
+      - CUSTOM_50
+      - CUSTOM_51
+      - CUSTOM_52
+      - CUSTOM_53
+      - CUSTOM_54
+      - CUSTOM_55
+      - CUSTOM_56
+      - CUSTOM_57
+      - CUSTOM_58
+      - CUSTOM_59
+      - CUSTOM_60
+      - CUSTOM_61
+      - CUSTOM_62
+      - CUSTOM_63
+      - CUSTOM_64
+      - CUSTOM_65
+      - CUSTOM_66
+      - CUSTOM_67
+      - CUSTOM_68
+      - CUSTOM_69
+      - CUSTOM_70
+      - CUSTOM_71
+      - CUSTOM_72
+      - CUSTOM_73
+      - CUSTOM_74
+      - CUSTOM_75
+      - CUSTOM_76
+      - CUSTOM_77
+      - CUSTOM_78
+      - CUSTOM_79
+      - CUSTOM_80
+      - CUSTOM_81
+      - CUSTOM_82
+      - CUSTOM_83
+      - CUSTOM_84
+      - CUSTOM_85
+      - CUSTOM_86
+      - CUSTOM_87
+      - CUSTOM_88
+      - CUSTOM_89
+      - CUSTOM_90
+      - CUSTOM_91
+      - CUSTOM_92
+      - CUSTOM_93
+      - CUSTOM_94
+      - CUSTOM_95
+      - CUSTOM_96
+      - CUSTOM_97
+      - CUSTOM_98
+      - CUSTOM_99
+      - CUSTOM_100
+      - CUSTOM_101
+      - CUSTOM_102
+      - CUSTOM_103
+      - CUSTOM_104
+      - CUSTOM_105
+      - CUSTOM_106
+      - CUSTOM_107
+      - CUSTOM_108
+      - CUSTOM_109
+      - CUSTOM_110
+      - CUSTOM_111
+      - CUSTOM_112
+      - CUSTOM_113
+      - CUSTOM_114
+      - CUSTOM_115
+      - CUSTOM_116
+      - CUSTOM_117
+      - CUSTOM_118
+      - CUSTOM_119
+      - CUSTOM_120
+      - CUSTOM_121
+      - CUSTOM_122
+      - CUSTOM_123
+      - CUSTOM_124
+      - CUSTOM_125
+      - CUSTOM_126
+      - CUSTOM_127
+      - CUSTOM_128
+      - CUSTOM_129
+      - CUSTOM_130
+      - CUSTOM_131
+      - CUSTOM_132
+      - CUSTOM_133
+      - CUSTOM_134
+      - CUSTOM_135
+      - CUSTOM_136
+      - CUSTOM_137
+      - CUSTOM_138
+      - CUSTOM_139
+      - CUSTOM_140
+      - CUSTOM_141
+      - CUSTOM_142
+      - CUSTOM_143
+      - CUSTOM_144
+      - CUSTOM_145
+      - CUSTOM_146
+      - CUSTOM_147
+      - CUSTOM_148
+      - CUSTOM_149
+      - CUSTOM_150
+      - CUSTOM_151
+      - CUSTOM_152
+      - CUSTOM_153
+      - CUSTOM_154
+      - CUSTOM_155
+      - CUSTOM_156
+      - CUSTOM_157
+      - CUSTOM_158
+      - CUSTOM_159
+      - CUSTOM_160
+      - CUSTOM_161
+      - CUSTOM_162
+      - CUSTOM_163
+      - CUSTOM_164
+      - CUSTOM_165
+      - CUSTOM_166
+      - CUSTOM_167
+      - CUSTOM_168
+      - CUSTOM_169
+      - CUSTOM_170
+      - CUSTOM_171
+      - CUSTOM_172
+      - CUSTOM_173
+      - CUSTOM_174
+      - CUSTOM_175
+      - CUSTOM_176
+      - CUSTOM_177
+      - CUSTOM_178
+      - CUSTOM_179
+      - CUSTOM_180
+      - CUSTOM_181
+      - CUSTOM_182
+      - CUSTOM_183
+      - CUSTOM_184
+      - CUSTOM_185
+      - CUSTOM_186
+      - CUSTOM_187
+      - CUSTOM_188
+      - CUSTOM_189
+      - CUSTOM_190
+      - CUSTOM_191
+      - CUSTOM_192
+      - CUSTOM_193
+      - CUSTOM_194
+      - CUSTOM_195
+      - CUSTOM_196
+      - CUSTOM_197
+      - CUSTOM_198
+      - CUSTOM_199
+      - CUSTOM_200
+      - CUSTOM_201
+      - CUSTOM_202
+      - CUSTOM_203
+      - CUSTOM_204
+      - CUSTOM_205
+      - CUSTOM_206
+      - CUSTOM_207
+      - CUSTOM_208
+      - CUSTOM_209
+      - CUSTOM_210
+      - CUSTOM_211
+      - CUSTOM_212
+      - CUSTOM_213
+      - CUSTOM_214
+      - CUSTOM_215
+      - CUSTOM_216
+      - CUSTOM_217
+      - CUSTOM_218
+      - CUSTOM_219
+      - CUSTOM_220
+      - CUSTOM_221
+      - CUSTOM_222
+      - CUSTOM_223
+      - CUSTOM_224
+      - CUSTOM_225
+      - CUSTOM_226
+      - CUSTOM_227
+      - CUSTOM_228
+      - CUSTOM_229
+      - CUSTOM_230
+      - CUSTOM_231
+      - CUSTOM_232
+      - CUSTOM_233
+      - CUSTOM_234
+      - CUSTOM_235
+      - CUSTOM_236
+      - CUSTOM_237
+      - CUSTOM_238
+      - CUSTOM_239
+      - CUSTOM_240
+      - CUSTOM_241
+      - CUSTOM_242
+      - CUSTOM_243
+      - CUSTOM_244
+      - CUSTOM_245
+      - CUSTOM_246
+      - CUSTOM_247
+      - CUSTOM_248
+      - CUSTOM_249
+      - CUSTOM_250
+      - CUSTOM_251
+      - CUSTOM_252
+      - CUSTOM_253
+      - CUSTOM_254
+      - CUSTOM_255
+      - CUSTOM_256
+      - OTHER_DRUGS
+      - MARIJUANA
+      - OTHER_EDUCATION
+      - CONTINUING_EDUCATION_COLLEGES
+      - HISTORY
+      - K_12
+      - REFERENCE_SITES
+      - SCIENCE_AND_TECHNOLOGY
+      - OTHER_ENTERTAINMENT_AND_RECREATION
+      - ENTERTAINMENT
+      - TELEVISION_AND_MOVIES
+      - MUSIC
+      - STREAMING_MEDIA
+      - RADIO_STATIONS
+      - GAMBLING
+      - OTHER_GAMES
+      - SOCIAL_NETWORKING_GAMES
+      - OTHER_GOVERNMENT_AND_POLITICS
+      - GOVERNMENT
+      - POLITICS
+      - HEALTH
+      - OTHER_ILLEGAL_OR_QUESTIONABLE
+      - COPYRIGHT_INFRINGEMENT
+      - COMPUTER_HACKING
+      - QUESTIONABLE
+      - PROFANITY
+      - MATURE_HUMOR
+      - ANONYMIZER
+      - OTHER_INFORMATION_TECHNOLOGY
+      - TRANSLATORS
+      - IMAGE_HOST
+      - FILE_HOST
+      - SHAREWARE_DOWNLOAD
+      - WEB_BANNERS
+      - WEB_HOST
+      - WEB_SEARCH
+      - PORTALS
+      - SAFE_SEARCH_ENGINE
+      - CDN
+      - OSS_UPDATES
+      - DNS_OVER_HTTPS
+      - OTHER_INTERNET_COMMUNICATION
+      - INTERNET_SERVICES
+      - DISCUSSION_FORUMS
+      - ONLINE_CHAT
+      - EMAIL_HOST
+      - BLOG
+      - P2P_COMMUNICATION
+      - REMOTE_ACCESS
+      - WEB_CONFERENCING
+      - ZSPROXY_IPS
+      - JOB_SEARCH
+      - MILITANCY_HATE_AND_EXTREMISM
+      - OTHER_MISCELLANEOUS
+      - MISCELLANEOUS_OR_UNKNOWN
+      - NEWLY_REG_DOMAINS
+      - NON_CATEGORIZABLE
+      - NEWS_AND_MEDIA
+      - OTHER_RELIGION
+      - TRADITIONAL_RELIGION
+      - CULT
+      - ALT_NEW_AGE
+      - OTHER_SECURITY
+      - ADWARE_OR_SPYWARE
+      - ENCR_WEB_CONTENT
+      - MALICIOUS_TLD
+      - OTHER_SHOPPING_AND_AUCTIONS
+      - SPECIALIZED_SHOPPING
+      - REAL_ESTATE
+      - ONLINE_AUCTIONS
+      - OTHER_SOCIAL_AND_FAMILY_ISSUES
+      - SOCIAL_ISSUES
+      - FAMILY_ISSUES
+      - OTHER_SOCIETY_AND_LIFESTYLE
+      - ART_CULTURE
+      - ALTERNATE_LIFESTYLE
+      - HOBBIES_AND_LEISURE
+      - DINING_AND_RESTAURANT
+      - ALCOHOL_TOBACCO
+      - SOCIAL_NETWORKING
+      - SPECIAL_INTERESTS
+      - SPORTS
+      - TASTELESS
+      - TRAVEL
+      - USER_DEFINED
+      - VEHICLES
+      - VIOLENCE
+      - WEAPONS_AND_BOMBS
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values, you can execute the zscaler-get-categories command.
+      isArray: true
+      type: textArea
+    - name: countries
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - NONE
+      - COUNTRY_AD
+      - COUNTRY_AE
+      - COUNTRY_AF
+      - COUNTRY_AG
+      - COUNTRY_AI
+      - COUNTRY_AL
+      - COUNTRY_AM
+      - COUNTRY_AN
+      - COUNTRY_AO
+      - COUNTRY_AQ
+      - COUNTRY_AR
+      - COUNTRY_AS
+      - COUNTRY_AT
+      - COUNTRY_AU
+      - COUNTRY_AW
+      - COUNTRY_AZ
+      - COUNTRY_BA
+      - COUNTRY_BB
+      - COUNTRY_BD
+      - COUNTRY_BE
+      - COUNTRY_BF
+      - COUNTRY_BG
+      - COUNTRY_BH
+      - COUNTRY_BI
+      - COUNTRY_BJ
+      - COUNTRY_BM
+      - COUNTRY_BN
+      - COUNTRY_BO
+      - COUNTRY_BR
+      - COUNTRY_BS
+      - COUNTRY_BT
+      - COUNTRY_BV
+      - COUNTRY_BW
+      - COUNTRY_BY
+      - COUNTRY_BZ
+      - COUNTRY_CA
+      - COUNTRY_CC
+      - COUNTRY_CD
+      - COUNTRY_CF
+      - COUNTRY_CG
+      - COUNTRY_CH
+      - COUNTRY_CI
+      - COUNTRY_CK
+      - COUNTRY_CL
+      - COUNTRY_CM
+      - COUNTRY_CN
+      - COUNTRY_CO
+      - COUNTRY_CR
+      - COUNTRY_CU
+      - COUNTRY_CV
+      - COUNTRY_CX
+      - COUNTRY_CY
+      - COUNTRY_CZ
+      - COUNTRY_DE
+      - COUNTRY_DJ
+      - COUNTRY_DK
+      - COUNTRY_DM
+      - COUNTRY_DO
+      - COUNTRY_DZ
+      - COUNTRY_EC
+      - COUNTRY_EE
+      - COUNTRY_EG
+      - COUNTRY_EH
+      - COUNTRY_ER
+      - COUNTRY_ES
+      - COUNTRY_ET
+      - COUNTRY_FI
+      - COUNTRY_FJ
+      - COUNTRY_FK
+      - COUNTRY_FM
+      - COUNTRY_FO
+      - COUNTRY_FR
+      - COUNTRY_FX
+      - COUNTRY_GA
+      - COUNTRY_GB
+      - COUNTRY_GD
+      - COUNTRY_GE
+      - COUNTRY_GF
+      - COUNTRY_GH
+      - COUNTRY_GI
+      - COUNTRY_GL
+      - COUNTRY_GM
+      - COUNTRY_GN
+      - COUNTRY_GP
+      - COUNTRY_GQ
+      - COUNTRY_GR
+      - COUNTRY_GS
+      - COUNTRY_GT
+      - COUNTRY_GU
+      - COUNTRY_GW
+      - COUNTRY_GY
+      - COUNTRY_HK
+      - COUNTRY_HM
+      - COUNTRY_HN
+      - COUNTRY_HR
+      - COUNTRY_HT
+      - COUNTRY_HU
+      - COUNTRY_ID
+      - COUNTRY_IE
+      - COUNTRY_IL
+      - COUNTRY_IN
+      - COUNTRY_IO
+      - COUNTRY_IQ
+      - COUNTRY_IR
+      - COUNTRY_IS
+      - COUNTRY_IT
+      - COUNTRY_JM
+      - COUNTRY_JO
+      - COUNTRY_JP
+      - COUNTRY_KE
+      - COUNTRY_KG
+      - COUNTRY_KH
+      - COUNTRY_KI
+      - COUNTRY_KM
+      - COUNTRY_KN
+      - COUNTRY_KP
+      - COUNTRY_KR
+      - COUNTRY_KW
+      - COUNTRY_KY
+      - COUNTRY_KZ
+      - COUNTRY_LA
+      - COUNTRY_LB
+      - COUNTRY_LC
+      - COUNTRY_LI
+      - COUNTRY_LK
+      - COUNTRY_LR
+      - COUNTRY_LS
+      - COUNTRY_LT
+      - COUNTRY_LU
+      - COUNTRY_LV
+      - COUNTRY_LY
+      - COUNTRY_MA
+      - COUNTRY_MC
+      - COUNTRY_MD
+      - COUNTRY_MG
+      - COUNTRY_MH
+      - COUNTRY_MK
+      - COUNTRY_ML
+      - COUNTRY_MM
+      - COUNTRY_MN
+      - COUNTRY_MO
+      - COUNTRY_MP
+      - COUNTRY_MQ
+      - COUNTRY_MR
+      - COUNTRY_MS
+      - COUNTRY_MT
+      - COUNTRY_MU
+      - COUNTRY_MV
+      - COUNTRY_MW
+      - COUNTRY_MX
+      - COUNTRY_MY
+      - COUNTRY_MZ
+      - COUNTRY_NA
+      - COUNTRY_NC
+      - COUNTRY_NE
+      - COUNTRY_NF
+      - COUNTRY_NG
+      - COUNTRY_NI
+      - COUNTRY_NL
+      - COUNTRY_NO
+      - COUNTRY_NP
+      - COUNTRY_NR
+      - COUNTRY_NU
+      - COUNTRY_NZ
+      - COUNTRY_OM
+      - COUNTRY_PA
+      - COUNTRY_PE
+      - COUNTRY_PF
+      - COUNTRY_PG
+      - COUNTRY_PH
+      - COUNTRY_PK
+      - COUNTRY_PL
+      - COUNTRY_PM
+      - COUNTRY_PN
+      - COUNTRY_PR
+      - COUNTRY_PS
+      - COUNTRY_PT
+      - COUNTRY_PW
+      - COUNTRY_PY
+      - COUNTRY_QA
+      - COUNTRY_RE
+      - COUNTRY_RO
+      - COUNTRY_RU
+      - COUNTRY_RW
+      - COUNTRY_SA
+      - COUNTRY_SB
+      - COUNTRY_SC
+      - COUNTRY_SD
+      - COUNTRY_SE
+      - COUNTRY_SG
+      - COUNTRY_SH
+      - COUNTRY_SI
+      - COUNTRY_SJ
+      - COUNTRY_SK
+      - COUNTRY_SL
+      - COUNTRY_SM
+      - COUNTRY_SN
+      - COUNTRY_SO
+      - COUNTRY_SR
+      - COUNTRY_ST
+      - COUNTRY_SV
+      - COUNTRY_SY
+      - COUNTRY_SZ
+      - COUNTRY_TC
+      - COUNTRY_TD
+      - COUNTRY_TF
+      - COUNTRY_TG
+      - COUNTRY_TH
+      - COUNTRY_TJ
+      - COUNTRY_TK
+      - COUNTRY_TM
+      - COUNTRY_TN
+      - COUNTRY_TO
+      - COUNTRY_TL
+      - COUNTRY_TR
+      - COUNTRY_TT
+      - COUNTRY_TV
+      - COUNTRY_TW
+      - COUNTRY_TZ
+      - COUNTRY_UA
+      - COUNTRY_UG
+      - COUNTRY_UM
+      - COUNTRY_US
+      - COUNTRY_UY
+      - COUNTRY_UZ
+      - COUNTRY_VA
+      - COUNTRY_VC
+      - COUNTRY_VE
+      - COUNTRY_VG
+      - COUNTRY_VI
+      - COUNTRY_VN
+      - COUNTRY_VU
+      - COUNTRY_WF
+      - COUNTRY_WS
+      - COUNTRY_YE
+      - COUNTRY_YT
+      - COUNTRY_RS
+      - COUNTRY_ZA
+      - COUNTRY_ZM
+      - COUNTRY_ME
+      - COUNTRY_ZW
+      - COUNTRY_AX
+      - COUNTRY_GG
+      - COUNTRY_IM
+      - COUNTRY_JE
+      - COUNTRY_BL
+      - COUNTRY_MF
+      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post
+      isArray: true
+      type: textArea
+    outputs:
+    - contextPath: Zscaler.IPDestinationGroup.ID
+      description: Unique identifier for the destination IP group.
+      type: number
+    - contextPath: Zscaler.IPDestinationGroup.Name
+      description: Destination IP group name.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Type
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Description
+      description: Destination IP group description.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.IpCategories
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Countries
+      description: Destination IP address countries. You can identify destinations based on the location of a server.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.IsNonEditable
+      description: If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified.
+      type: boolean
+    description: Adds a new IP destination group.
+  - name: zscaler-edit-ip-destination-group
+    arguments:
+    - name: ip_group_id
+      required: true
+      description: The unique identifier for the IP destination group.
+      type: textArea
+    - name: name
+      description: Destination IP group name.
+      type: textArea
+    - name: addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      isArray: true
+      type: textArea
+    - name: description
+      description: Additional information about the destination IP group.
+      type: textArea
+    - name: ip_categories
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - NONE
+      - OTHER_ADULT_MATERIAL
+      - ADULT_THEMES
+      - LINGERIE_BIKINI
+      - NUDITY
+      - PORNOGRAPHY
+      - SEXUALITY
+      - ADULT_SEX_EDUCATION
+      - K_12_SEX_EDUCATION
+      - SOCIAL_ADULT
+      - OTHER_BUSINESS_AND_ECONOMY
+      - CORPORATE_MARKETING
+      - FINANCE
+      - PROFESSIONAL_SERVICES
+      - CLASSIFIEDS
+      - TRADING_BROKARAGE_INSURANCE
+      - CUSTOM_00
+      - CUSTOM_01
+      - CUSTOM_02
+      - CUSTOM_03
+      - CUSTOM_04
+      - CUSTOM_05
+      - CUSTOM_06
+      - CUSTOM_07
+      - CUSTOM_08
+      - CUSTOM_09
+      - CUSTOM_10
+      - CUSTOM_11
+      - CUSTOM_12
+      - CUSTOM_13
+      - CUSTOM_14
+      - CUSTOM_15
+      - CUSTOM_16
+      - CUSTOM_17
+      - CUSTOM_18
+      - CUSTOM_19
+      - CUSTOM_20
+      - CUSTOM_21
+      - CUSTOM_22
+      - CUSTOM_23
+      - CUSTOM_24
+      - CUSTOM_25
+      - CUSTOM_26
+      - CUSTOM_27
+      - CUSTOM_28
+      - CUSTOM_29
+      - CUSTOM_30
+      - CUSTOM_31
+      - CUSTOM_32
+      - CUSTOM_33
+      - CUSTOM_34
+      - CUSTOM_35
+      - CUSTOM_36
+      - CUSTOM_37
+      - CUSTOM_38
+      - CUSTOM_39
+      - CUSTOM_40
+      - CUSTOM_41
+      - CUSTOM_42
+      - CUSTOM_43
+      - CUSTOM_44
+      - CUSTOM_45
+      - CUSTOM_46
+      - CUSTOM_47
+      - CUSTOM_48
+      - CUSTOM_49
+      - CUSTOM_50
+      - CUSTOM_51
+      - CUSTOM_52
+      - CUSTOM_53
+      - CUSTOM_54
+      - CUSTOM_55
+      - CUSTOM_56
+      - CUSTOM_57
+      - CUSTOM_58
+      - CUSTOM_59
+      - CUSTOM_60
+      - CUSTOM_61
+      - CUSTOM_62
+      - CUSTOM_63
+      - CUSTOM_64
+      - CUSTOM_65
+      - CUSTOM_66
+      - CUSTOM_67
+      - CUSTOM_68
+      - CUSTOM_69
+      - CUSTOM_70
+      - CUSTOM_71
+      - CUSTOM_72
+      - CUSTOM_73
+      - CUSTOM_74
+      - CUSTOM_75
+      - CUSTOM_76
+      - CUSTOM_77
+      - CUSTOM_78
+      - CUSTOM_79
+      - CUSTOM_80
+      - CUSTOM_81
+      - CUSTOM_82
+      - CUSTOM_83
+      - CUSTOM_84
+      - CUSTOM_85
+      - CUSTOM_86
+      - CUSTOM_87
+      - CUSTOM_88
+      - CUSTOM_89
+      - CUSTOM_90
+      - CUSTOM_91
+      - CUSTOM_92
+      - CUSTOM_93
+      - CUSTOM_94
+      - CUSTOM_95
+      - CUSTOM_96
+      - CUSTOM_97
+      - CUSTOM_98
+      - CUSTOM_99
+      - CUSTOM_100
+      - CUSTOM_101
+      - CUSTOM_102
+      - CUSTOM_103
+      - CUSTOM_104
+      - CUSTOM_105
+      - CUSTOM_106
+      - CUSTOM_107
+      - CUSTOM_108
+      - CUSTOM_109
+      - CUSTOM_110
+      - CUSTOM_111
+      - CUSTOM_112
+      - CUSTOM_113
+      - CUSTOM_114
+      - CUSTOM_115
+      - CUSTOM_116
+      - CUSTOM_117
+      - CUSTOM_118
+      - CUSTOM_119
+      - CUSTOM_120
+      - CUSTOM_121
+      - CUSTOM_122
+      - CUSTOM_123
+      - CUSTOM_124
+      - CUSTOM_125
+      - CUSTOM_126
+      - CUSTOM_127
+      - CUSTOM_128
+      - CUSTOM_129
+      - CUSTOM_130
+      - CUSTOM_131
+      - CUSTOM_132
+      - CUSTOM_133
+      - CUSTOM_134
+      - CUSTOM_135
+      - CUSTOM_136
+      - CUSTOM_137
+      - CUSTOM_138
+      - CUSTOM_139
+      - CUSTOM_140
+      - CUSTOM_141
+      - CUSTOM_142
+      - CUSTOM_143
+      - CUSTOM_144
+      - CUSTOM_145
+      - CUSTOM_146
+      - CUSTOM_147
+      - CUSTOM_148
+      - CUSTOM_149
+      - CUSTOM_150
+      - CUSTOM_151
+      - CUSTOM_152
+      - CUSTOM_153
+      - CUSTOM_154
+      - CUSTOM_155
+      - CUSTOM_156
+      - CUSTOM_157
+      - CUSTOM_158
+      - CUSTOM_159
+      - CUSTOM_160
+      - CUSTOM_161
+      - CUSTOM_162
+      - CUSTOM_163
+      - CUSTOM_164
+      - CUSTOM_165
+      - CUSTOM_166
+      - CUSTOM_167
+      - CUSTOM_168
+      - CUSTOM_169
+      - CUSTOM_170
+      - CUSTOM_171
+      - CUSTOM_172
+      - CUSTOM_173
+      - CUSTOM_174
+      - CUSTOM_175
+      - CUSTOM_176
+      - CUSTOM_177
+      - CUSTOM_178
+      - CUSTOM_179
+      - CUSTOM_180
+      - CUSTOM_181
+      - CUSTOM_182
+      - CUSTOM_183
+      - CUSTOM_184
+      - CUSTOM_185
+      - CUSTOM_186
+      - CUSTOM_187
+      - CUSTOM_188
+      - CUSTOM_189
+      - CUSTOM_190
+      - CUSTOM_191
+      - CUSTOM_192
+      - CUSTOM_193
+      - CUSTOM_194
+      - CUSTOM_195
+      - CUSTOM_196
+      - CUSTOM_197
+      - CUSTOM_198
+      - CUSTOM_199
+      - CUSTOM_200
+      - CUSTOM_201
+      - CUSTOM_202
+      - CUSTOM_203
+      - CUSTOM_204
+      - CUSTOM_205
+      - CUSTOM_206
+      - CUSTOM_207
+      - CUSTOM_208
+      - CUSTOM_209
+      - CUSTOM_210
+      - CUSTOM_211
+      - CUSTOM_212
+      - CUSTOM_213
+      - CUSTOM_214
+      - CUSTOM_215
+      - CUSTOM_216
+      - CUSTOM_217
+      - CUSTOM_218
+      - CUSTOM_219
+      - CUSTOM_220
+      - CUSTOM_221
+      - CUSTOM_222
+      - CUSTOM_223
+      - CUSTOM_224
+      - CUSTOM_225
+      - CUSTOM_226
+      - CUSTOM_227
+      - CUSTOM_228
+      - CUSTOM_229
+      - CUSTOM_230
+      - CUSTOM_231
+      - CUSTOM_232
+      - CUSTOM_233
+      - CUSTOM_234
+      - CUSTOM_235
+      - CUSTOM_236
+      - CUSTOM_237
+      - CUSTOM_238
+      - CUSTOM_239
+      - CUSTOM_240
+      - CUSTOM_241
+      - CUSTOM_242
+      - CUSTOM_243
+      - CUSTOM_244
+      - CUSTOM_245
+      - CUSTOM_246
+      - CUSTOM_247
+      - CUSTOM_248
+      - CUSTOM_249
+      - CUSTOM_250
+      - CUSTOM_251
+      - CUSTOM_252
+      - CUSTOM_253
+      - CUSTOM_254
+      - CUSTOM_255
+      - CUSTOM_256
+      - OTHER_DRUGS
+      - MARIJUANA
+      - OTHER_EDUCATION
+      - CONTINUING_EDUCATION_COLLEGES
+      - HISTORY
+      - K_12
+      - REFERENCE_SITES
+      - SCIENCE_AND_TECHNOLOGY
+      - OTHER_ENTERTAINMENT_AND_RECREATION
+      - ENTERTAINMENT
+      - TELEVISION_AND_MOVIES
+      - MUSIC
+      - STREAMING_MEDIA
+      - RADIO_STATIONS
+      - GAMBLING
+      - OTHER_GAMES
+      - SOCIAL_NETWORKING_GAMES
+      - OTHER_GOVERNMENT_AND_POLITICS
+      - GOVERNMENT
+      - POLITICS
+      - HEALTH
+      - OTHER_ILLEGAL_OR_QUESTIONABLE
+      - COPYRIGHT_INFRINGEMENT
+      - COMPUTER_HACKING
+      - QUESTIONABLE
+      - PROFANITY
+      - MATURE_HUMOR
+      - ANONYMIZER
+      - OTHER_INFORMATION_TECHNOLOGY
+      - TRANSLATORS
+      - IMAGE_HOST
+      - FILE_HOST
+      - SHAREWARE_DOWNLOAD
+      - WEB_BANNERS
+      - WEB_HOST
+      - WEB_SEARCH
+      - PORTALS
+      - SAFE_SEARCH_ENGINE
+      - CDN
+      - OSS_UPDATES
+      - DNS_OVER_HTTPS
+      - OTHER_INTERNET_COMMUNICATION
+      - INTERNET_SERVICES
+      - DISCUSSION_FORUMS
+      - ONLINE_CHAT
+      - EMAIL_HOST
+      - BLOG
+      - P2P_COMMUNICATION
+      - REMOTE_ACCESS
+      - WEB_CONFERENCING
+      - ZSPROXY_IPS
+      - JOB_SEARCH
+      - MILITANCY_HATE_AND_EXTREMISM
+      - OTHER_MISCELLANEOUS
+      - MISCELLANEOUS_OR_UNKNOWN
+      - NEWLY_REG_DOMAINS
+      - NON_CATEGORIZABLE
+      - NEWS_AND_MEDIA
+      - OTHER_RELIGION
+      - TRADITIONAL_RELIGION
+      - CULT
+      - ALT_NEW_AGE
+      - OTHER_SECURITY
+      - ADWARE_OR_SPYWARE
+      - ENCR_WEB_CONTENT
+      - MALICIOUS_TLD
+      - OTHER_SHOPPING_AND_AUCTIONS
+      - SPECIALIZED_SHOPPING
+      - REAL_ESTATE
+      - ONLINE_AUCTIONS
+      - OTHER_SOCIAL_AND_FAMILY_ISSUES
+      - SOCIAL_ISSUES
+      - FAMILY_ISSUES
+      - OTHER_SOCIETY_AND_LIFESTYLE
+      - ART_CULTURE
+      - ALTERNATE_LIFESTYLE
+      - HOBBIES_AND_LEISURE
+      - DINING_AND_RESTAURANT
+      - ALCOHOL_TOBACCO
+      - SOCIAL_NETWORKING
+      - SPECIAL_INTERESTS
+      - SPORTS
+      - TASTELESS
+      - TRAVEL
+      - USER_DEFINED
+      - VEHICLES
+      - VIOLENCE
+      - WEAPONS_AND_BOMBS
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values you can execute the zscaler-get-categories command.
+      isArray: true
+      type: textArea
+    - name: countries
+      auto: PREDEFINED
+      predefined:
+      - ANY
+      - NONE
+      - COUNTRY_AD
+      - COUNTRY_AE
+      - COUNTRY_AF
+      - COUNTRY_AG
+      - COUNTRY_AI
+      - COUNTRY_AL
+      - COUNTRY_AM
+      - COUNTRY_AN
+      - COUNTRY_AO
+      - COUNTRY_AQ
+      - COUNTRY_AR
+      - COUNTRY_AS
+      - COUNTRY_AT
+      - COUNTRY_AU
+      - COUNTRY_AW
+      - COUNTRY_AZ
+      - COUNTRY_BA
+      - COUNTRY_BB
+      - COUNTRY_BD
+      - COUNTRY_BE
+      - COUNTRY_BF
+      - COUNTRY_BG
+      - COUNTRY_BH
+      - COUNTRY_BI
+      - COUNTRY_BJ
+      - COUNTRY_BM
+      - COUNTRY_BN
+      - COUNTRY_BO
+      - COUNTRY_BR
+      - COUNTRY_BS
+      - COUNTRY_BT
+      - COUNTRY_BV
+      - COUNTRY_BW
+      - COUNTRY_BY
+      - COUNTRY_BZ
+      - COUNTRY_CA
+      - COUNTRY_CC
+      - COUNTRY_CD
+      - COUNTRY_CF
+      - COUNTRY_CG
+      - COUNTRY_CH
+      - COUNTRY_CI
+      - COUNTRY_CK
+      - COUNTRY_CL
+      - COUNTRY_CM
+      - COUNTRY_CN
+      - COUNTRY_CO
+      - COUNTRY_CR
+      - COUNTRY_CU
+      - COUNTRY_CV
+      - COUNTRY_CX
+      - COUNTRY_CY
+      - COUNTRY_CZ
+      - COUNTRY_DE
+      - COUNTRY_DJ
+      - COUNTRY_DK
+      - COUNTRY_DM
+      - COUNTRY_DO
+      - COUNTRY_DZ
+      - COUNTRY_EC
+      - COUNTRY_EE
+      - COUNTRY_EG
+      - COUNTRY_EH
+      - COUNTRY_ER
+      - COUNTRY_ES
+      - COUNTRY_ET
+      - COUNTRY_FI
+      - COUNTRY_FJ
+      - COUNTRY_FK
+      - COUNTRY_FM
+      - COUNTRY_FO
+      - COUNTRY_FR
+      - COUNTRY_FX
+      - COUNTRY_GA
+      - COUNTRY_GB
+      - COUNTRY_GD
+      - COUNTRY_GE
+      - COUNTRY_GF
+      - COUNTRY_GH
+      - COUNTRY_GI
+      - COUNTRY_GL
+      - COUNTRY_GM
+      - COUNTRY_GN
+      - COUNTRY_GP
+      - COUNTRY_GQ
+      - COUNTRY_GR
+      - COUNTRY_GS
+      - COUNTRY_GT
+      - COUNTRY_GU
+      - COUNTRY_GW
+      - COUNTRY_GY
+      - COUNTRY_HK
+      - COUNTRY_HM
+      - COUNTRY_HN
+      - COUNTRY_HR
+      - COUNTRY_HT
+      - COUNTRY_HU
+      - COUNTRY_ID
+      - COUNTRY_IE
+      - COUNTRY_IL
+      - COUNTRY_IN
+      - COUNTRY_IO
+      - COUNTRY_IQ
+      - COUNTRY_IR
+      - COUNTRY_IS
+      - COUNTRY_IT
+      - COUNTRY_JM
+      - COUNTRY_JO
+      - COUNTRY_JP
+      - COUNTRY_KE
+      - COUNTRY_KG
+      - COUNTRY_KH
+      - COUNTRY_KI
+      - COUNTRY_KM
+      - COUNTRY_KN
+      - COUNTRY_KP
+      - COUNTRY_KR
+      - COUNTRY_KW
+      - COUNTRY_KY
+      - COUNTRY_KZ
+      - COUNTRY_LA
+      - COUNTRY_LB
+      - COUNTRY_LC
+      - COUNTRY_LI
+      - COUNTRY_LK
+      - COUNTRY_LR
+      - COUNTRY_LS
+      - COUNTRY_LT
+      - COUNTRY_LU
+      - COUNTRY_LV
+      - COUNTRY_LY
+      - COUNTRY_MA
+      - COUNTRY_MC
+      - COUNTRY_MD
+      - COUNTRY_MG
+      - COUNTRY_MH
+      - COUNTRY_MK
+      - COUNTRY_ML
+      - COUNTRY_MM
+      - COUNTRY_MN
+      - COUNTRY_MO
+      - COUNTRY_MP
+      - COUNTRY_MQ
+      - COUNTRY_MR
+      - COUNTRY_MS
+      - COUNTRY_MT
+      - COUNTRY_MU
+      - COUNTRY_MV
+      - COUNTRY_MW
+      - COUNTRY_MX
+      - COUNTRY_MY
+      - COUNTRY_MZ
+      - COUNTRY_NA
+      - COUNTRY_NC
+      - COUNTRY_NE
+      - COUNTRY_NF
+      - COUNTRY_NG
+      - COUNTRY_NI
+      - COUNTRY_NL
+      - COUNTRY_NO
+      - COUNTRY_NP
+      - COUNTRY_NR
+      - COUNTRY_NU
+      - COUNTRY_NZ
+      - COUNTRY_OM
+      - COUNTRY_PA
+      - COUNTRY_PE
+      - COUNTRY_PF
+      - COUNTRY_PG
+      - COUNTRY_PH
+      - COUNTRY_PK
+      - COUNTRY_PL
+      - COUNTRY_PM
+      - COUNTRY_PN
+      - COUNTRY_PR
+      - COUNTRY_PS
+      - COUNTRY_PT
+      - COUNTRY_PW
+      - COUNTRY_PY
+      - COUNTRY_QA
+      - COUNTRY_RE
+      - COUNTRY_RO
+      - COUNTRY_RU
+      - COUNTRY_RW
+      - COUNTRY_SA
+      - COUNTRY_SB
+      - COUNTRY_SC
+      - COUNTRY_SD
+      - COUNTRY_SE
+      - COUNTRY_SG
+      - COUNTRY_SH
+      - COUNTRY_SI
+      - COUNTRY_SJ
+      - COUNTRY_SK
+      - COUNTRY_SL
+      - COUNTRY_SM
+      - COUNTRY_SN
+      - COUNTRY_SO
+      - COUNTRY_SR
+      - COUNTRY_ST
+      - COUNTRY_SV
+      - COUNTRY_SY
+      - COUNTRY_SZ
+      - COUNTRY_TC
+      - COUNTRY_TD
+      - COUNTRY_TF
+      - COUNTRY_TG
+      - COUNTRY_TH
+      - COUNTRY_TJ
+      - COUNTRY_TK
+      - COUNTRY_TM
+      - COUNTRY_TN
+      - COUNTRY_TO
+      - COUNTRY_TL
+      - COUNTRY_TR
+      - COUNTRY_TT
+      - COUNTRY_TV
+      - COUNTRY_TW
+      - COUNTRY_TZ
+      - COUNTRY_UA
+      - COUNTRY_UG
+      - COUNTRY_UM
+      - COUNTRY_US
+      - COUNTRY_UY
+      - COUNTRY_UZ
+      - COUNTRY_VA
+      - COUNTRY_VC
+      - COUNTRY_VE
+      - COUNTRY_VG
+      - COUNTRY_VI
+      - COUNTRY_VN
+      - COUNTRY_VU
+      - COUNTRY_WF
+      - COUNTRY_WS
+      - COUNTRY_YE
+      - COUNTRY_YT
+      - COUNTRY_RS
+      - COUNTRY_ZA
+      - COUNTRY_ZM
+      - COUNTRY_ME
+      - COUNTRY_ZW
+      - COUNTRY_AX
+      - COUNTRY_GG
+      - COUNTRY_IM
+      - COUNTRY_JE
+      - COUNTRY_BL
+      - COUNTRY_MF
+      description: Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put
+      isArray: true
+      type: textArea
+    - name: is_non_editable
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified.
+      defaultValue: "False"
+      type: textArea
+    outputs:
+    - contextPath: Zscaler.IPDestinationGroup.ID
+      description: Unique identifier for the destination IP group.
+      type: number
+    - contextPath: Zscaler.IPDestinationGroup.Name
+      description: Destination IP group name.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Type
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Description
+      description: Destination IP group description.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.IpCategories
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Countries
+      description: Destination IP address countries. You can identify destinations based on the location of a server.
+      type: string
+    description: Updates the IP destination group information for the specified group ID.
+  - name: zscaler-list-ip-destination-groups
+    arguments:
+    - name: ip_group_id
+      description: A comma-separated list of unique identifiers for the IP destination groups.
+      isArray: true
+      type: textArea
+    - name: exclude_type
+      auto: PREDEFINED
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+      description: The IP group type to be excluded from the results.
+      type: textArea
+    - name: category_type
+      auto: PREDEFINED
+      isArray: true
+      predefined:
+      - DSTN_IP
+      - DSTN_FQDN
+      - DSTN_DOMAIN
+      - DSTN_OTHER
+      description: The IP group type to be filtered from results. This argument is only supported when the 'lite' argument is set to True.
+    - name: include_ipv6
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Retrieve IPv6 destination groups.
+      defaultValue: "False"
+      type: textArea
+    - name: limit
+      description: Limit of the results to be retrieved.
+      defaultValue: "50"
+      type: textArea
+    - name: all_results
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to retrieve all results at once.
+      defaultValue: "False"
+      type: textArea
+    - name: lite
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to retrieve only limited information of IP destination groups. Includes ID, name and type of the IP destination groups.
+      defaultValue: "False"
+      type: textArea
+    outputs:
+    - contextPath: Zscaler.IPDestinationGroup.ID
+      description: Unique identifier for the destination IP group.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Name
+      description: Destination IP group name.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Type
+      description: Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs).
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Addresses
+      description: Destination IP addresses, FQDNs, or wildcard FQDNs added to the group.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Description
+      description: Additional information about the destination IP group
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.IpCategories
+      description: Destination IP address URL categories. You can identify destinations based on the URL category of the domain.
+      type: string
+    - contextPath: Zscaler.IPDestinationGroup.Countries
+      description: Destination IP address countries. You can identify destinations based on the location of a server.
+      type: string
+    description: Gets a list of all IP destination groups or the IP destination group information for the specified group ID.
+  - name: zscaler-delete-ip-destination-groups
+    arguments:
+    - name: ip_group_ids
+      description: A comma-separated list of unique identifiers for the IP destination groups.
+      type: textArea
+      isArray: true
+    description: Deletes the IP destination groups for the specified group ID.
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.12.63474
   type: python
 fromversion: 5.0.0
 tests:

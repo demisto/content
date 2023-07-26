@@ -688,7 +688,15 @@ CAMPAIGN = {
     "response": {
         "modified": "2022-09-30T21:05:22.490Z",
         "name": "Operation Dust Storm",
-        "description": "[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) was a long-standing persistent cyber espionage campaign that targeted multiple industries in Japan, South Korea, the United States, Europe, and several Southeast Asian countries. By 2015, the [Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors shifted from government and defense-related intelligence targets to Japanese companies or Japanese subdivisions of larger foreign organizations supporting Japan's critical infrastructure, including electricity generation, oil and natural gas, finance, transportation, and construction.(Citation: Cylance Dust Storm)\n\n[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors also began to use Android backdoors in their operations by 2015, with all identified victims at the time residing in Japan or South Korea.(Citation: Cylance Dust Storm)",
+        "description": "[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) was a long-standing persistent cyber\
+ espionage campaign that targeted multiple industries in Japan, South Korea, the United States, Europe, and several\
+ Southeast Asian countries. By 2015, the [Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat\
+ actors shifted from government and defense-related intelligence targets to Japanese companies or Japanese\
+ subdivisions of larger foreign organizations supporting Japan's critical infrastructure, including\
+ electricity generation, oil and natural gas, finance, transportation, and construction.(Citation:\
+ Cylance Dust Storm)\n\n[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat\
+ actors also began to use Android backdoors in their operations by 2015, with all identified\
+ victims at the time residing in Japan or South Korea.(Citation: Cylance Dust Storm)",
         "aliases": ["Operation Dust Storm"],
         "first_seen": "2010-01-01T07:00:00.000Z",
         "last_seen": "2016-02-01T06:00:00.000Z",
@@ -706,10 +714,12 @@ CAMPAIGN = {
             {
                 "source_name": "Cylance Dust Storm",
                 "description": "Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.",
-                "url": "https://s7d2.scene7.com/is/content/cylance/prod/cylance-web/en-us/resources/knowledge-center/resource-library/reports/Op_Dust_Storm_Report.pdf",
+                "url": "https://s7d2.scene7.com/is/content/cylance/prod/cylance-web/en-us/resources/knowledge-center/\
+resource-library/reports/Op_Dust_Storm_Report.pdf",
             },
         ],
-        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168", "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"],
+        "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168",
+                                "marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9"],
         "x_mitre_first_seen_citation": "(Citation: Cylance Dust Storm)",
         "x_mitre_last_seen_citation": "(Citation: Cylance Dust Storm)",
         "x_mitre_deprecated": False,
@@ -724,8 +734,17 @@ CAMPAIGN = {
         'modified': '2022-09-30T21:05:22.490Z',
         'mitreid': 'C0016',
         'tags': ['C0016'],
-        "description": "[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) was a long-standing persistent cyber espionage campaign that targeted multiple industries in Japan, South Korea, the United States, Europe, and several Southeast Asian countries. By 2015, the [Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors shifted from government and defense-related intelligence targets to Japanese companies or Japanese subdivisions of larger foreign organizations supporting Japan's critical infrastructure, including electricity generation, oil and natural gas, finance, transportation, and construction.(Citation: Cylance Dust Storm)\n\n[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors also began to use Android backdoors in their operations by 2015, with all identified victims at the time residing in Japan or South Korea.(Citation: Cylance Dust Storm)",
-        'publications': [{'link': "https://s7d2.scene7.com/is/content/cylance/prod/cylance-web/en-us/resources/knowledge-center/resource-library/reports/Op_Dust_Storm_Report.pdf",
+        "description": "[Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) was a long-standing persistent cyber\
+ espionage campaign that targeted multiple industries in Japan, South Korea, the United States, Europe, and several\
+ Southeast Asian countries. By 2015, the [Operation Dust Storm](https://attack.mitre.org/campaigns/C0016) threat\
+ actors shifted from government and defense-related intelligence targets to Japanese companies or Japanese\
+ subdivisions of larger foreign organizations supporting Japan's critical infrastructure, including\
+ electricity generation, oil and natural gas, finance, transportation, and construction.\n\n[Operation\
+ Dust Storm](https://attack.mitre.org/campaigns/C0016) threat actors also began to use Android\
+ backdoors in their operations by 2015, with all identified victims at the time residing in\
+ Japan or South Korea.",
+        'publications': [{'link': "https://s7d2.scene7.com/is/content/cylance/prod/cylance-web/en-us/resources/knowledge-center/\
+resource-library/reports/Op_Dust_Storm_Report.pdf",
                           'title': 'Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.',
                           'source': 'Cylance Dust Storm',
                           'timestamp': '2016-02-23T00:00:00'}],

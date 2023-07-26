@@ -1,16 +1,9 @@
 args:
-- default: false
-  description: The username of the user to disable.
-  isArray: false
+- description: The username of the user to disable.
   name: username
   required: true
-  secret: false
-- default: false
-  description: Whether to run the command. This is used to prevent unwanted calls to the command.
-  isArray: false
+- description: Whether to run the command. This is used to prevent unwanted calls to the command.
   name: approve_action
-  required: false
-  secret: false
   defaultValue: No
   predefined:
   - Yes
@@ -19,14 +12,12 @@ comment: "This script allows disabling a specified user using one or more of the
 commonfields:
   id: DisableUserWrapper
   version: -1
-enabled: false
 name: DisableUserWrapper
 outputs:
 
   # IdentityIQ outputs
 - contextPath: IdentityIQ.AccountDisable.active
-  description: Indicates the status of account (should be false after request
-        is successfully completed).
+  description: Indicates the status of account (should be false after request is successfully completed).
   type: Boolean
 
   # IAM outputs
@@ -68,13 +59,12 @@ outputs:
   type: String
 
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

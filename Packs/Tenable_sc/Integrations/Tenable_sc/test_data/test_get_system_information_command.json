@@ -1,0 +1,9 @@
+{
+    "test_case_1":{
+        "mock_response": {"error_code":0,"error_msg":"","response":{
+            "debugLoggingFileGenerateState":"-1","debugLoggingFileGenerated":-1,"diagnosticsGenerateState":"-1","diagnosticsGenerated":-1,
+            "migrationFailure":false,"statusDisk":"true","statusJava":"true","statusLastChecked":"1687061400","statusRPM":"true",
+            "statusThresholdDisk":"5%","touchDebuggingEnabled":false},"timestamp":1687097944,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc System information\n|RPMStatus|JavaStatus|DiskStatus|DiskThreshold|LastCheck|\n|---|---|---|---|---|\n| true | true | true | 5% | 2023-06-18T04:10:00Z |\n"
+    }
+}

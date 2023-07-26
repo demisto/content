@@ -11,10 +11,11 @@ ignore=BA101
 ignore=BA101
 
 [file:IAMInitADUser.yml]
-ignore=CJ105
+ignore=CJ105,BA124
 
 [known_words]
-LDAP
-TLS
-userAccountControl
+ldap
+tls
+useraccountcontrol
+zipprotectwithpassword
 

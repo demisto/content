@@ -1,0 +1,17 @@
+{
+    "res_data": {
+        "add_failure": [
+            {
+                "content": {
+                    "IP_addresses": "asdasdasd",
+                    "domain_name": "domain_name",
+                    "order": 2
+                },
+                "error_msg": "Domain not saved. Error: {'domain_name': 'A domain name must be a string that matches the following rules:   A domain-name is a sequence of period separated labels.  A label is a set of characters, numbers, dashes.  The first and last character of a label must be a letter or a number.  The last label cannot be all numbers.  Each label is separated by a period.  Max length of a domain name can be 63 charecters.'}"
+            }
+        ],
+        "add_success": []
+    },
+    "res_message": "Success: 0, Failure: 1",
+    "res_code": 400
+}

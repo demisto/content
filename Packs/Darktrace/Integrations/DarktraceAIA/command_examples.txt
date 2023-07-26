@@ -1,0 +1,6 @@
+!darktrace-get-ai-analyst-incident-event eventId="6b305fc4-da52-4856-8592-2abcd8876dc4"
+!darktrace-get-comments-for-ai-analyst-incident-event eventId="6b305fc4-da52-4856-8592-2abcd8876dc4"
+!darktrace-post-comment-to-ai-analyst-incident-event eventId="6b305fc4-da52-4856-8592-2abcd8876dc4" comment="new comment message"
+!darktrace-acknowledge-ai-analyst-incident-event eventId="bc64f242-ce29-4f35-bc94-230991116564"
+!darktrace-unacknowledge-ai-analyst-incident-event eventId="bc64f242-ce29-4f35-bc94-230991116564"
+!darktrace-get-ai-analyst-incident-group-from-eventId eventId="750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc"

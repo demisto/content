@@ -3,3 +3,6 @@ ignore=PB121
 
 [file:playbook-Recorded_Future_URL_Reputation.yml]
 ignore=PB121
+
+[file:playbook-Recorded_Future_Playbook_Alert.yml]
+ignore=BA110

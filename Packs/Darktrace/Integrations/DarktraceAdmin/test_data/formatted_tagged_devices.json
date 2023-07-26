@@ -1,0 +1,129 @@
+[
+    {
+        "deviceId": 2520,
+        "hostname": "SaaS::Office365: Azure MFA StrongAuthenticationService",
+        "label": "N/A",
+        "credentials": "N/A",
+        "otherTags": [
+          {
+            "tid": 9,
+            "expiry": 0,
+            "thid": 9,
+            "name": "Admin",
+            "restricted": false,
+            "data": {
+              "auto": false,
+              "color": 200,
+              "description": "",
+              "visibility": ""
+            },
+            "isReferenced": true
+          }
+        ]
+    },
+    {
+        "deviceId": 2540,
+        "hostname": "EC2AMAZ-44COMHV",
+        "label": "S1-Lap-Csens",
+        "credentials": [
+          {
+            "credential": "ec2amaz-44comhv\\administrator",
+            "lastSeen": 1674131245000
+          }
+        ],
+        "otherTags": [
+          {
+            "tid": 9,
+            "expiry": 0,
+            "thid": 9,
+            "name": "Admin",
+            "restricted": false,
+            "data": {
+              "auto": false,
+              "color": 200,
+              "description": "",
+              "visibility": ""
+            },
+            "isReferenced": true
+          },
+          {
+            "tid": 139,
+            "expiry": 0,
+            "thid": 139,
+            "name": "Critical Attack Path",
+            "restricted": false,
+            "data": {
+              "auto": false,
+              "color": 61,
+              "description": "A PREVENT/End-to-End tag applied to devices and users on the top 10 most critical attack paths.",
+              "visibility": ""
+            },
+            "isReferenced": true
+          },
+          {
+            "tid": 100,
+            "expiry": 0,
+            "thid": 100,
+            "name": "cSensor",
+            "restricted": true,
+            "data": {
+              "auto": false,
+              "color": 200,
+              "description": ""
+            },
+            "isReferenced": true
+          },
+          {
+            "tid": 125,
+            "expiry": 0,
+            "thid": 125,
+            "name": "CVE Info",
+            "restricted": false,
+            "data": {
+              "color": 60,
+              "description": "The known vulnerability mapped to this device with the highest severity is Info"
+            },
+            "isReferenced": false
+          },
+          {
+            "tid": 62,
+            "expiry": 0,
+            "thid": 62,
+            "name": "External DNS",
+            "restricted": false,
+            "data": {
+              "auto": false,
+              "color": 200,
+              "description": ""
+            },
+            "isReferenced": true
+          },
+          {
+            "tid": 21,
+            "expiry": 0,
+            "thid": 21,
+            "name": "Microsoft Windows",
+            "restricted": false,
+            "data": {
+              "auto": false,
+              "color": 168,
+              "description": "",
+              "visibility": "Public"
+            },
+            "isReferenced": true
+          },
+          {
+            "tid": 145,
+            "expiry": 0,
+            "thid": 145,
+            "name": "SentinelOne",
+            "restricted": false,
+            "data": {
+              "color": 286,
+              "description": "This device is present in SentinelOne"
+            },
+            "isReferenced": false
+          }
+        ]
+    }
+]

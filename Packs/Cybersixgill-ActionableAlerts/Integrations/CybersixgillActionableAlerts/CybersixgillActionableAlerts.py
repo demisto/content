@@ -101,8 +101,15 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
     except Exception as e:
         demisto.error(f"Could not get alert content: {e}")
     incident['details'] = f"{content_item.get('description', '')}\n\n{content_item.get('title', '')}\n" \
-                          f"\n{content_item.get('content', '')}"
-
+                          f"\n{content_item.get('content', '')}\n{content_item.get('Repository Name', '')}" \
+                          f"\n{content_item.get('Customer Keywords', '')}\n{content_item.get('GitURL', '')}" \
+                          f"\n{content_item.get('Actor', '')}\n{content_item.get('BIN', '')}" \
+                          f"\n{content_item.get('Site', '')}\n{content_item.get('Text', '')}" \
+                          f"\n{content_item.get('Detection time', '')}\n{content_item.get('IP addresses', '')}" \
+                          f"\n{content_item.get('Suspicious domain', '')}\n{content_item.get('Triggered domain', '')}" \
+                          f"\n{content_item.get('Already Seen', '')}\n{content_item.get('Breach Date', '')}" \
+                          f"\n{content_item.get('Description', '')}\n{content_item.get('Email', '')}" \
+                          f"\n{content_item.get('Created Time', '')}"
     triggered_assets = []
     for key, value in item_info.get('additional_info', {}).items():
         if 'matched_' in key:
@@ -118,12 +125,13 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
 def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
     # cve alert
     cve_id = item_info.get('additional_info').get('cve_id')
+    es_id = item_info.get('es_id')
     if cve_id:
         content_item['content'] = f'https://portal.cybersixgill.com/#/cve/{cve_id}'
         additional_info = item_info.get("additional_info", {})
         incident['CustomFields']['cve'] = cve_id
-        incident['CustomFields']['cybersixgillcvss31'] = additional_info.get("nvd", {}).get("v3", {}).get("current")
-        incident['CustomFields']['cybersixgillcvss20'] = additional_info.get("nvd", {}).get("v2", {}).get("current")
+        incident['CustomFields']['cybersixgillcvss31'] = additional_info.get("nvd", {}).get("v3", {}).get("current", -1)
+        incident['CustomFields']['cybersixgillcvss20'] = additional_info.get("nvd", {}).get("v2", {}).get("current", -1)
         incident['CustomFields']['cybersixgilldvescore'] = additional_info.get("score", {}).get("current")
         attributes = []
         for attribute in additional_info.get("attributes", []):
@@ -131,6 +139,36 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
                 attributes.append(additional_info.get("description"))
         attributes = '\n\n-----------\n\n'.join(attributes)
         incident['CustomFields']['cybersixgillattributes'] = attributes
+    elif es_id == "Not Applicable":
+        content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
+                                                                     fetch_only_current_item=True)
+        content_items = content.get('items')
+        if content_items:
+            for item in content_items:
+                additional_keywords = item.get('Additional Keywords')  # for Github Alert
+                alert_actor = item.get('Actor')  # For Compromised Alerts
+                alert_detection = item.get('Detection time')  # For Phishing Alerts
+                breach_date = item.get('breach_date')
+                if additional_keywords is not None:
+                    content_item['Repository name'] = "Repository name: " + item.get("Repository name", "")
+                    content_item['Customer Keywords'] = "Customer Keywords: " + item.get("Customer Keywords", "")
+                    content_item['GitURL'] = "GitURL: " + item.get("URL", "")
+                elif alert_actor is not None:
+                    content_item['Actor'] = "Actor: " + alert_actor
+                    content['BIN'] = "BIN: " + item.get("BIN", "")
+                    content_item['Site'] = "Site: " + item.get("Site", "")
+                    content_item['Text'] = "Text: " + item.get("Text", "")
+                elif alert_detection is not None:
+                    content_item['Detection time'] = "Detection time: " + alert_detection
+                    content_item['IP addresses'] = "IP addresses: " + item.get("IP addresses", "")
+                    content_item['Suspicious domain'] = "Suspicious domain: " + item.get("Suspicious domain", "")
+                    content_item['Triggered domain'] = "Triggered domain: " + item.get("Triggered domain", "")
+                elif breach_date is not None:
+                    content_item['Already Seen'] = "Already Seen: " + item.get("already_seen", "")
+                    content_item['Breach Date'] = "Breach Date: " + breach_date
+                    content_item['Description'] = "Description: " + item.get("description", "")
+                    content_item['Email'] = "Email: " + item.get("email", "")
+                    content_item['Created Time'] = "Created Time: " + item.get("create_time", "")
     else:
         aggregate_alert_id = item_info.get('aggregate_alert_id', None)
         if not isinstance(aggregate_alert_id, int):
@@ -147,12 +185,6 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
                     content_item['title'] = es_items.get('title')
                     content_item['content'] = es_items.get('content')
                     content_item['creator'] = es_items.get('creator')
-            else:
-                # github alert
-                content_item['content'] = '\n\n-----------\n\n'.join(
-                    [f'Repository name: {github_item.get("Repository name", "")}\nCustomer Keywords:'
-                     f' {github_item.get("Customer Keywords", "")}\n URL: {github_item.get("URL", "")}'
-                     for github_item in content])
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -198,7 +230,8 @@ def fetch_incidents():
 
     filter_alerts_kwargs = get_incident_init_params()
     items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=max_incidents_to_return, from_date=last_fetch_time,
-                                                             sort_order='asc', **filter_alerts_kwargs)
+                                                             sort_order='asc', **filter_alerts_kwargs,
+                                                             organization_id=demisto.params().get('org_id', None))
     if len(items) > 0:
         demisto.info(f'Found {len(items)} new alerts since {last_fetch_time}')
 

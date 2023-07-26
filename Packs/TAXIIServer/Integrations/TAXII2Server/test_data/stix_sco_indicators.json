@@ -1,0 +1,35 @@
+{
+    "objects":
+    [
+        {
+            "hashes": {
+                "MD5": "e086aa137fa19f67d27b39d0eca18610",
+                "SHA-1": "409629a08b9b3f3be610b8832cc28822f964410f",
+                "SHA-256": "f1412386aa8db2579aff2636cb9511cacc5fd9880ecab60c048508fbe26ee4d9",
+                "SHA-512": "502b6772333c9f8ba18bf4b9cb47c81d1b931660e7a7a51d7b42ccf9179ea34e4d852466e1101249dbc3da32b121bf83427b0237dce1870e5e1a5b04db524cfb"
+            },
+            "type": "file"
+        },
+        {
+            "key": "Computer\\HKEY_LOCAL_MACHINE\\SOFTWARE\\7-Zip",
+            "type": "windows-registry-key",
+            "values": [
+                {
+                    "data": "C:\\7-Zip\\",
+                    "data_type": "REG_SZ",
+                    "name": "Path"
+                },
+                {
+                    "data": "C:\\7-Zip\\",
+                    "data_type": "REG_SZ",
+                    "name": "Path64"
+                }
+            ]
+        },
+        {
+            "number": "15169",
+            "name": "Google",
+            "type": "asn"
+        }
+    ]
+}

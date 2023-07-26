@@ -8,14 +8,13 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3-deb:3.10.9.43863
+dockerimage: demisto/python3-deb:3.10.10.49238
 enabled: true
 name: JsonUnescape
 outputs:
 - contextPath: JsonUnescape
   description: Unescaped JSON Data
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

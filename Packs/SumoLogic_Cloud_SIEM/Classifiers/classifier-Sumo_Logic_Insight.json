@@ -1,0 +1,37 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Classifier for Sumo Logic Insight and Signal",
+	"feed": false,
+	"fromVersion": "6.2.0",
+	"id": "Sumo Logic Insight Classifier",
+	"keyTypeMap": {
+		"INSIGHT": "Sumo Logic Insight",
+		"SIGNAL-": "Sumo Logic Signal"
+	},
+	"name": "Sumo Logic Insight Classifier",
+	"transformer": {
+		"complex": {
+			"root": "readableId",
+			"transformers": [
+				{
+					"args": {
+						"from": {
+							"value": {
+								"simple": "0"
+							}
+						},
+						"to": {
+							"value": {
+								"simple": "7"
+							}
+						}
+					},
+					"operator": "substring"
+				}
+			]
+		}
+	},
+	"type": "classification",
+	"version": -1
+}

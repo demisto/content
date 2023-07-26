@@ -1,31 +1,18 @@
 args:
-- default: false
-  defaultValue: -status:closed
-  description: The query by which to retrieve failed tasks. Optional. The default
-    value is "-status:closed"
-  isArray: false
+- defaultValue: -status:closed
+  description: The query by which to retrieve failed tasks. Optional. The default value is "-status:closed"
   name: query
-  required: false
-  secret: false
-- default: false
-  defaultValue: '300'
+- defaultValue: '300'
   description: Maximum number of incidents to query. Maximum is 1000.
-  isArray: false
   name: max_incidents
-  required: false
-  secret: false
-- default: false
-  description: Rest API instance to use.
-  isArray: false
+- description: Rest API instance to use.
   name: rest_api_instance
-  required: false
-  secret: false
 comment: |-
   Gets failed tasks details for incidents based on a query. Limited to 1000 incidents.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
   id: GetFailedTasks
   version: -1
@@ -33,11 +20,9 @@ enabled: true
 name: GetFailedTasks
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.9.40422
-runonce: false
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - No tests
 fromversion: 6.0.0

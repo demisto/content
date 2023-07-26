@@ -1,0 +1,1352 @@
+id: Securonix - Test
+version: -1
+name: Securonix - Test
+description: Test playbook for Securonix Integration.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 8ac9024e-5d95-47ce-82fa-404de2536731
+    type: start
+    task:
+      id: 8ac9024e-5d95-47ce-82fa-404de2536731
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 9017075a-8bce-4d17-836d-aa206ced09a1
+    type: regular
+    task:
+      id: 9017075a-8bce-4d17-836d-aa206ced09a1
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 4a71f481-4ca9-410b-877d-b013b6ff42ac
+    type: regular
+    task:
+      id: 4a71f481-4ca9-410b-877d-b013b6ff42ac
+      version: -1
+      name: securonix-list-incidents
+      script: '|||securonix-list-incidents'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      from:
+        simple: 1 days
+      max:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 765dc99c-b2ba-4b53-8745-07b9a9f6992b
+    type: condition
+    task:
+      id: 765dc99c-b2ba-4b53-8745-07b9a9f6992b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '42'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.Entity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.Riskscore
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.IncidentStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.WorkflowName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.Watchlisted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.IncidentType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.IncidentID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.Incidents.IsWhitelisted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '40':
+    id: '40'
+    taskid: ced6a52e-5117-431f-842a-cbe19d31456b
+    type: regular
+    task:
+      id: ced6a52e-5117-431f-842a-cbe19d31456b
+      version: -1
+      name: securonix-threats-list
+      script: '|||securonix-threats-list'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments:
+      date_from:
+        simple: 1 day
+      page_size:
+        simple: '1'
+      tenant_name:
+        complex:
+          root: '*'
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: '*'
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ' '
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '41':
+    id: '41'
+    taskid: 1b1a9ba1-1d0c-4650-8eba-d501fcb4c3f7
+    type: condition
+    task:
+      id: 1b1a9ba1-1d0c-4650-8eba-d501fcb4c3f7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Threat.Violator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Threat.EntityID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Threat.ThreatName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Threat.Category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Threat.GenerationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Threat.GenerationTime_Epoch
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '42':
+    id: '42'
+    taskid: fdc78e47-e48b-4d93-8e07-5002c3bb8cd8
+    type: regular
+    task:
+      id: fdc78e47-e48b-4d93-8e07-5002c3bb8cd8
+      version: -1
+      name: securonix-incident-activity-history-get
+      script: '|||securonix-incident-activity-history-get'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '43'
+    scriptarguments:
+      incident_id:
+        complex:
+          root: Securonix.Incidents
+          accessor: IncidentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '43':
+    id: '43'
+    taskid: 2cf655bb-d6a6-4152-8def-18810b7636f6
+    type: condition
+    task:
+      id: 2cf655bb-d6a6-4152-8def-18810b7636f6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '44'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.caseid
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.actiontaken
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.eventTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.currentassignee
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.currWorkflow
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.IncidentHistory.isPlayBookOutAvailable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.IncidentHistory.creator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '44':
+    id: '44'
+    taskid: 84fa018f-ee64-4570-8c28-308a1d044a00
+    type: regular
+    task:
+      id: 84fa018f-ee64-4570-8c28-308a1d044a00
+      version: -1
+      name: securonix-incident-attachment-get
+      script: '|||securonix-incident-attachment-get'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '61'
+    scriptarguments:
+      incident_id:
+        complex:
+          root: Securonix.Incidents
+          accessor: IncidentID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: b1fe6f2e-abf7-4585-8fa8-b08883a361be
+    type: regular
+    task:
+      id: b1fe6f2e-abf7-4585-8fa8-b08883a361be
+      version: -1
+      name: securonix-whitelists-get
+      script: '|||securonix-whitelists-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      execution-timeout:
+        simple: '1200'
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '47':
+    id: '47'
+    taskid: e1551cbe-43ce-41ed-8df4-ded6a01b44d6
+    type: condition
+    task:
+      id: e1551cbe-43ce-41ed-8df4-ded6a01b44d6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '56'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Whitelist.WhitelistName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Whitelist.TenantName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Whitelist.WhitelistType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '48':
+    id: '48'
+    taskid: 6a8ba36c-26cd-48a3-857b-b41d2192b837
+    type: regular
+    task:
+      id: 6a8ba36c-26cd-48a3-857b-b41d2192b837
+      version: -1
+      name: securonix-whitelist-entry-list
+      script: '|||securonix-whitelist-entry-list'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '49'
+    scriptarguments:
+      tenant_name:
+        complex:
+          root: Securonix.Threat
+          accessor: Tenantname
+          transformers:
+          - operator: FirstArrayElement
+      whitelist_name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TEST_XSOAR_WHITELIST_
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '49':
+    id: '49'
+    taskid: 7dee477d-a458-4331-8572-59493d4341e3
+    type: condition
+    task:
+      id: 7dee477d-a458-4331-8572-59493d4341e3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '46'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Whitelist.WhitelistName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Whitelist.TenantName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Whitelist.Entries.Entity/Attribute
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.Whitelist.Entries.ExpiryDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '50':
+    id: '50'
+    taskid: 6b9142e0-c099-4518-8981-cb7a6d059c32
+    type: regular
+    task:
+      id: 6b9142e0-c099-4518-8981-cb7a6d059c32
+      version: -1
+      name: securonix-whitelist-create
+      script: '|||securonix-whitelist-create'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '51'
+    scriptarguments:
+      entity_type:
+        simple: Activityip
+      tenant_name:
+        complex:
+          root: Securonix.Threat
+          accessor: Tenantname
+          transformers:
+          - operator: FirstArrayElement
+      whitelist_name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TEST_XSOAR_WHITELIST_
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '51':
+    id: '51'
+    taskid: db64522f-3413-4bd1-8ada-42fa7d10bad4
+    type: regular
+    task:
+      id: db64522f-3413-4bd1-8ada-42fa7d10bad4
+      version: -1
+      name: securonix-xsoar-state-mapping-get
+      script: '|||securonix-xsoar-state-mapping-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '52'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '52':
+    id: '52'
+    taskid: 2834f936-2ea0-4200-8287-d7a3dc26c7b4
+    type: condition
+    task:
+      id: 2834f936-2ea0-4200-8287-d7a3dc26c7b4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '53'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.StateMapping.ACTIVE.action
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.StateMapping.ACTIVE.status
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.StateMapping.DONE.action
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Securonix.StateMapping.DONE.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '53':
+    id: '53'
+    taskid: 4148aeeb-70a0-4c1c-89db-09d26fe184ea
+    type: regular
+    task:
+      id: 4148aeeb-70a0-4c1c-89db-09d26fe184ea
+      version: -1
+      name: securonix-whitelist-entry-add
+      script: '|||securonix-whitelist-entry-add'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      attribute_name:
+        simple: transactionstring
+      attribute_value:
+        simple: test_string
+      entity_id:
+        simple: 0.0.0.0
+      entity_type:
+        simple: Activityip
+      tenant_name:
+        complex:
+          root: Securonix.Threat
+          accessor: Tenantname
+          transformers:
+          - operator: FirstArrayElement
+      whitelist_name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TEST_XSOAR_WHITELIST_
+              suffix: {}
+      whitelist_type:
+        simple: Global
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '56':
+    id: '56'
+    taskid: 1e08865c-19cd-4def-8e9b-52e799849126
+    type: regular
+    task:
+      id: 1e08865c-19cd-4def-8e9b-52e799849126
+      version: -1
+      name: securonix-whitelist-entry-delete
+      script: '|||securonix-whitelist-entry-delete'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      entity_id:
+        simple: 0.0.0.0
+      tenant_name:
+        complex:
+          root: Securonix.Threat
+          accessor: Tenantname
+          transformers:
+          - operator: FirstArrayElement
+      whitelist_name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TEST_XSOAR_WHITELIST_
+              suffix: {}
+      whitelist_type:
+        simple: Global
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '59':
+    id: '59'
+    taskid: 77ef27dc-ab54-4dc0-8ecb-682639b6c8e5
+    type: title
+    task:
+      id: 77ef27dc-ab54-4dc0-8ecb-682639b6c8e5
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '61':
+    id: '61'
+    taskid: 248bba6f-4b3b-4786-8496-dba59c4f7676
+    type: regular
+    task:
+      id: 248bba6f-4b3b-4786-8496-dba59c4f7676
+      version: -1
+      name: Get Current Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '62':
+    id: '62'
+    taskid: 17b71137-19a0-4a5a-8f3d-5d7c9b7e7d34
+    type: regular
+    task:
+      id: 17b71137-19a0-4a5a-8f3d-5d7c9b7e7d34
+      version: -1
+      name: securonix-lookup-table-create
+      description: Creates a lookup table.
+      script: '|||securonix-lookup-table-create'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '64'
+    scriptarguments:
+      field_names:
+        simple: test1,test2
+      key:
+        simple: test1
+      name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TESTXSOARLOOKUPTABLE
+              suffix: {}
+      scope:
+        simple: Global
+      tenant_name:
+        complex:
+          root: Securonix.Threat
+          accessor: Tenantname
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '63':
+    id: '63'
+    taskid: c4122306-7858-4dee-8fef-f0c700ec87fb
+    type: condition
+    task:
+      id: c4122306-7858-4dee-8fef-f0c700ec87fb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTableEntries.lookupname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTableEntries.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTableEntries.entry.key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTableEntries.entry.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '64':
+    id: '64'
+    taskid: ee317f96-2ef8-4dd1-8238-c1765a5e936f
+    type: regular
+    task:
+      id: ee317f96-2ef8-4dd1-8238-c1765a5e936f
+      version: -1
+      name: securonix-lookup-table-entry-add
+      description: Add entries to the provided lookup table.
+      script: '|||securonix-lookup-table-entry-add'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '65'
+    scriptarguments:
+      json_data:
+        simple: '[{ "test1" : "test_data_1",  "test2": "test_data_2"}]'
+      name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TESTXSOARLOOKUPTABLE
+              suffix: {}
+      tenant_name:
+        complex:
+          root: Securonix.Threat
+          accessor: Tenantname
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '65':
+    id: '65'
+    taskid: 98461d09-7b40-4f5f-8500-d6af285a4077
+    type: regular
+    task:
+      id: 98461d09-7b40-4f5f-8500-d6af285a4077
+      version: -1
+      name: securonix-lookup-table-entries-list
+      description: Retrieves the entries stored in a specified lookup table.
+      script: '|||securonix-lookup-table-entries-list'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '63'
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TESTXSOARLOOKUPTABLE
+              suffix: {}
+      page_num:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '66':
+    id: '66'
+    taskid: 5559cd59-69de-4fcd-8671-94e85b6d6892
+    type: regular
+    task:
+      id: 5559cd59-69de-4fcd-8671-94e85b6d6892
+      version: -1
+      name: securonix-lookup-table-config-and-data-delete
+      description: Deletes the data and configuration of the provided lookup table.
+      script: '|||securonix-lookup-table-config-and-data-delete'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '67'
+    scriptarguments:
+      name:
+        complex:
+          root: TimeNowUnix
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TESTXSOARLOOKUPTABLE
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '67':
+    id: '67'
+    taskid: 01d04be8-a499-4562-8f7d-49d34e33e2f7
+    type: condition
+    task:
+      id: 01d04be8-a499-4562-8f7d-49d34e33e2f7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '68'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTable.lookupTableName
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTable.isDeleted
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '68':
+    id: '68'
+    taskid: 6c226a6a-1fbc-4bd9-844d-feb770872f8d
+    type: regular
+    task:
+      id: 6c226a6a-1fbc-4bd9-844d-feb770872f8d
+      version: -1
+      name: securonix-lookup-tables-list
+      description: Retrieves a list of lookup tables available within the Securonix platform.
+      script: '|||securonix-lookup-tables-list'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - '69'
+    scriptarguments:
+      max:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '69':
+    id: '69'
+    taskid: 0156292c-5c25-4871-8b8e-eb45cd20dc83
+    type: condition
+    task:
+      id: 0156292c-5c25-4871-8b8e-eb45cd20dc83
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '59'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTable.lookupTableName
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTable.totalRecords
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Securonix.LookupTable.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 3bad8dd6-8c3b-415a-82d4-a06d42de5ed0
+    type: regular
+    task:
+      id: 3bad8dd6-8c3b-415a-82d4-a06d42de5ed0
+      version: -1
+      name: securonix-lookup-table-entries-delete
+      description: Deletes the entries from the lookup table.
+      script: '|||securonix-lookup-table-entries-delete'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      lookup_unique_keys:
+        complex:
+          root: Securonix.LookupTableEntries
+          accessor: lookupuniquekey
+          transformers:
+          - operator: FirstArrayElement
+      name:
+        complex:
+          root: Securonix.LookupTableEntries
+          accessor: lookupname
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4935,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- Securonix - Test
+fromversion: 6.5.0

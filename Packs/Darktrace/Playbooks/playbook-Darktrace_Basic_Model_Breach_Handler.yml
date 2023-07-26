@@ -1,0 +1,422 @@
+id: Darktrace Basic Model Breach Handler
+version: -1
+name: Darktrace Basic Model Breach Handler
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f6a09272-88eb-4267-8da8-fd40bc497cac
+    type: start
+    task:
+      id: f6a09272-88eb-4267-8da8-fd40bc497cac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8ca7f072-52ee-4d9e-833b-7331027f017c
+    type: regular
+    task:
+      id: 8ca7f072-52ee-4d9e-833b-7331027f017c
+      version: -1
+      name: Get Model Breach
+      description: Fetch details about a specific Model Breach
+      script: DarktraceMBs|||darktrace-get-model-breach
+      type: regular
+      iscommand: true
+      brand: DarktraceMBs
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 51399b15-231a-47c1-80d1-1b87280aa2bf
+    type: regular
+    task:
+      id: 51399b15-231a-47c1-80d1-1b87280aa2bf
+      version: -1
+      name: Retrieve existing comments on Model Breach
+      description: Fetch all comments for a given model brach
+      script: DarktraceMBs|||darktrace-get-model-breach-comments
+      type: regular
+      iscommand: true
+      brand: DarktraceMBs
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 808f6dad-2e58-490d-86e1-1f07e385bc2f
+    type: regular
+    task:
+      id: 808f6dad-2e58-490d-86e1-1f07e385bc2f
+      version: -1
+      name: Get  Connections involved in Model breach
+      description: Retrieve connections relevant to a specified model breach
+      script: DarktraceMBs|||darktrace-get-model-breach-connections
+      type: regular
+      iscommand: true
+      brand: DarktraceMBs
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4e49dbaf-b5f8-4b56-85fc-887f81ac0c8e
+    type: condition
+    task:
+      id: 4e49dbaf-b5f8-4b56-85fc-887f81ac0c8e
+      version: -1
+      name: Apply a comment on Darktrace?
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 39468e10-9eb0-41d0-85b5-e34d85cdd090
+    type: condition
+    task:
+      id: 39468e10-9eb0-41d0-85b5-e34d85cdd090
+      version: -1
+      name: Acknowledge incident on Darktrace?
+      description: Acknowledge a model breach as specified by Model Breach ID
+      type: condition
+      iscommand: false
+      brand: DarktraceMBs
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e273d48b-236b-4d82-831f-68d6be1acb78
+    type: collection
+    task:
+      id: e273d48b-236b-4d82-831f-68d6be1acb78
+      version: -1
+      name: Specify a comment message
+      description: Post a comment to a model breach
+      type: collection
+      iscommand: false
+      brand: DarktraceMBs
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message:
+        simple: Commented from playbook
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What comment would you like to post to this model breach?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: comment
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7aa776bc-7ebf-479c-8cda-0f55357998b6
+    type: regular
+    task:
+      id: 7aa776bc-7ebf-479c-8cda-0f55357998b6
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 51c2c6c9-4c1b-4a9a-8005-d7eadafa69f7
+    type: regular
+    task:
+      id: 51c2c6c9-4c1b-4a9a-8005-d7eadafa69f7
+      version: -1
+      name: Acknowledge Model Breach
+      description: Acknowledge a model breach as specified by Model Breach ID
+      script: DarktraceMBs|||darktrace-acknowledge-model-breach
+      type: regular
+      iscommand: true
+      brand: DarktraceMBs
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 40b42dc7-a8b4-4c77-886d-3c6756903508
+    type: regular
+    task:
+      id: 40b42dc7-a8b4-4c77-886d-3c6756903508
+      version: -1
+      name: Apply a Comment
+      description: Post a comment to a model breach
+      script: DarktraceMBs|||darktrace-post-comment-to-model-breach
+      type: regular
+      iscommand: true
+      brand: DarktraceMBs
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: ${comment.Answers.0}
+      pbid:
+        simple: ${incident.darktracemodelbreachid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_no": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1805,
+        "width": 780,
+        "x": -40,
+        "y": 60
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: Runs a common Model Breach workflow for fetched Model breach alerts.
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

@@ -1,9 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # type: ignore
+# mypy: ignore-errors
 import json
 import re
 from typing import Dict, Tuple, Callable
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import copy
 
 ''' CONSTANTS'''

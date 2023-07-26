@@ -1,0 +1,147 @@
+ {"api_response":{
+  "entries": [
+    {
+      "protoPayload": {
+        "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+        "authenticationInfo": {
+          "principalEmail": "user@example.com"
+        },
+        "authorizationInfo": [
+          {
+            "granted": true,
+            "permission": "permission",
+            "resource": "resource"
+          }
+        ],
+        "methodName": "methodName",
+        "requestMetadata": {
+          "callerIp": "callerIp",
+          "callerSuppliedUserAgent": "callerSuppliedUserAgent"
+        },
+        "resourceName": "resourceName",
+        "serviceName": "appengine.googleapis.com",
+        "status": {
+          "code": 0
+        }
+      },
+      "insertId": "wwww-wwww-wwww-www",
+      "resource": {
+        "type": "some_type",
+        "labels": {
+          "cluster_name": "some_cluster_name",
+          "project_id": "some_project_id",
+          "location": "some_location"
+        }
+      },
+      "timestamp": "2022-04-04T13:26:12.087281Z",
+      "labels": {
+        "authorization.k8s.io/reason": "authorization.k8s.io/reason",
+        "authorization.k8s.io/decision": "allow"
+      },
+      "logName": "logName",
+      "operation": {
+        "id": "wwww-wwww-wwww-www",
+        "producer": "producer",
+        "first": true,
+        "last": true
+      },
+      "receiveTimestamp": "2022-04-04T13:26:13.150415303Z"
+    },
+    {
+      "protoPayload": {
+        "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+        "authenticationInfo": {
+          "principalEmail": "user@example.com"
+        },
+        "authorizationInfo": [
+          {
+            "granted": true,
+            "permission": "permission",
+            "resource": "resource"
+          }
+        ],
+        "methodName": "methodName",
+        "requestMetadata": {
+          "callerIp": "callerIp",
+          "callerSuppliedUserAgent": "some_callerSuppliedUserAgent"
+        },
+        "resourceName": "resourceName",
+        "serviceName": "appengine.googleapis.com",
+        "status": {
+          "code": 0
+        }
+      },
+      "insertId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx",
+      "resource": {
+        "type": "some_type",
+        "labels": {
+          "cluster_name": "some_cluster_name",
+          "location": "some_location",
+          "project_id": "some_project_id"
+        }
+      },
+      "timestamp": "2025-05-06T12:22:12.112188Z",
+      "labels": {
+        "authorization.k8s.io/reason": "",
+        "authorization.k8s.io/decision": "allow"
+      },
+      "logName": "logName",
+      "operation": {
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx",
+        "producer": "producer",
+        "first": true,
+        "last": true
+      },
+      "receiveTimestamp": "2025-05-06T12:24:11.904282323Z"
+    },
+    {
+      "protoPayload": {
+        "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+        "authenticationInfo": {
+          "principalEmail": "user@example.com"
+        },
+        "authorizationInfo": [
+          {
+            "granted": true,
+            "permission": "permission",
+            "resource": "resource"
+          }
+        ],
+        "methodName": "methodName",
+        "requestMetadata": {
+          "callerIp": "callerIp",
+          "callerSuppliedUserAgent": "some_callerSuppliedUserAgent"
+        },
+        "resourceName": "resourceName",
+        "serviceName": "appengine.googleapis.com",
+        "status": {
+          "code": 0
+        }
+      },
+      "insertId": "xxxx-xxxx-xxxx-xxxx",
+      "resource": {
+        "type": "some_type",
+        "labels": {
+          "cluster_name": "some_cluster_name",
+          "project_id": "some_project_id",
+          "location": "some_location"
+        }
+      },
+      "timestamp": "2027-07-07T12:27:12.112496Z",
+      "labels": {
+        "authorization.k8s.io/reason": "",
+        "authorization.k8s.io/decision": "allow"
+      },
+      "logName": "logName",
+      "operation": {
+        "id": "xxxx-xxxx-xxxx-xxxx",
+        "producer": "producer",
+        "first": true,
+        "last": true
+      },
+      "receiveTimestamp": "2027-07-07T12:27:13.605356490Z"
+    }
+  ],
+  "nextPageToken": "xxxxxx-xxxxxx"
+}
+}

@@ -1,0 +1,306 @@
+id: Code42 Security Alert
+version: -1
+fromversion: "6.8.0"
+name: Code42 Security Alert
+description: 'Retrieves Incydr alert details, assigns the alert to an analyst, and gathers employee and supervisor data from Active Directory, if applicable. Note: this playbook can be used as an alternate default to "Code42 Exfiltration Playbook" when the Code42 Incydr integration is set to "Fetch Incidents".'
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8f3f72ab-756a-4a9c-852d-20b419ac8af0
+    type: start
+    task:
+      id: 8f3f72ab-756a-4a9c-852d-20b419ac8af0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 25ed56a5-7937-4599-85e6-9bfabab2ed41
+    type: regular
+    task:
+      id: 25ed56a5-7937-4599-85e6-9bfabab2ed41
+      version: -1
+      name: Tag Alert as Incydr
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      tags:
+        simple: Incydr
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a10a2553-3be0-4498-845c-c02d1924490a
+    type: regular
+    task:
+      id: a10a2553-3be0-4498-845c-c02d1924490a
+      version: -1
+      name: Assign Analyst
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 410f80ab-66cb-43c8-82ed-9938e691c29e
+    type: regular
+    task:
+      id: 410f80ab-66cb-43c8-82ed-9938e691c29e
+      version: -1
+      name: Investigate Alert
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    sla:
+      minutes: 0
+      hours: 0
+      days: 3
+      weeks: 0
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1dfbec66-c07e-4e72-8b90-893c57b8e276
+    type: regular
+    task:
+      id: 1dfbec66-c07e-4e72-8b90-893c57b8e276
+      version: -1
+      name: Resolve Code42 Alert
+      description: Resolves a Code42 Security alert.
+      script: Code42|||code42-alert-resolve
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id:
+        simple: ${incident.labels.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 063527e0-50a7-4361-8090-0993b909df90
+    type: regular
+    task:
+      id: 063527e0-50a7-4361-8090-0993b909df90
+      version: -1
+      name: Close XSOAR Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: cbdbdf00-6dee-4376-8828-4611285ab9d1
+    type: title
+    task:
+      id: cbdbdf00-6dee-4376-8828-4611285ab9d1
+      version: -1
+      name: Playbook Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c12d9c8f-fd2f-492f-87ae-5a9af43ce557
+    type: playbook
+    task:
+      id: c12d9c8f-fd2f-492f-87ae-5a9af43ce557
+      version: -1
+      name: Get Code42 Employee Information
+      playbookName: Get Code42 Employee Information
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      incidentid:
+        simple: ${incident.id}
+      user:
+        simple: ${incident.code42username}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

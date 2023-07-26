@@ -1,0 +1,24 @@
+{
+  "from": "2023-03-01",
+  "to": "2023-03-30",
+  "page_size": 2,
+  "next_page_token": "next_token",
+  "activity_logs": [
+    {
+      "email": "admin@test.com",
+      "time": "2023-03-29T11:38:50Z",
+      "type": "Sign in",
+      "ip_address": "8.8.8.8",
+      "client_type": "Browser",
+      "version": "-"
+    },
+    {
+      "email": "admin@test.com",
+      "time": "2023-03-29T07:59:46Z",
+      "type": "Sign in",
+      "ip_address": "8.8.8.8",
+      "client_type": "Browser",
+      "version": "-"
+    }
+  ]
+}

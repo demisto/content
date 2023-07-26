@@ -1,2 +1,2 @@
-[file:GoogleBigQuery.yml]
-ignore=IN145
+[known_words]
+BigQuery

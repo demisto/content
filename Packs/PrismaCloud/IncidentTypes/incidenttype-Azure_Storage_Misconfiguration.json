@@ -11,7 +11,7 @@
 	"id": "Azure Storage Misconfiguration",
 	"locked": false,
 	"name": "Azure Storage Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - Azure Storage Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - Azure Storage Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

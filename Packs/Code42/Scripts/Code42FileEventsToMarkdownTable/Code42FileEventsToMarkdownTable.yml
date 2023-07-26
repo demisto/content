@@ -1,0 +1,20 @@
+commonfields:
+  id: Code42FileEventsToMarkdownTable
+  version: -1
+name: Code42FileEventsToMarkdownTable
+type: python
+tags:
+- dynamic-section
+comment: Formats Code42 File Events as a markdown table for display in Code42 Alert Incidents
+enabled: true
+script: ''
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+dependson:
+  must:
+  - '|||code42-file-events-table'
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

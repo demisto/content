@@ -1,0 +1,33 @@
+{
+    "id": "incident_securonixpolicies",
+    "version": -1,
+    "modified": "2023-01-21T13:34:10.169358039+05:30",
+    "name": "Securonix Policies",
+    "ownerOnly": false,
+    "description": "List of policies violated.",
+    "cliName": "securonixpolicies",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "Securonix Threat",
+        "Securonix Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

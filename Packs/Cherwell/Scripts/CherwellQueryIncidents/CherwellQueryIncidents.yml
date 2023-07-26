@@ -1,15 +1,11 @@
 args:
-- default: false
-  description: "The query to run. The query is a list of comma-seperated filters such that each filter should be of the form: [\"field_name\",\"operator\",\"value\"] and operator is one of: 'eq'=equal, 'gt'=greater-than, 'lt'=less-than, 'contains', 'startwith'. Special characters shoud be escaped.\nExample: `[[\"CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTICE: If multiple  filters are received for the same field name, an 'OR' operation between the filters is performed. If the field names are different, an 'AND' operation is performed."
-  isArray: false
+- description: "The query to run. The query is a list of comma-seperated filters such that each filter should be of the form: [\"field_name\",\"operator\",\"value\"] and operator is one of: 'eq'=equal, 'gt'=greater-than, 'lt'=less-than, 'contains', 'startwith'. Special characters shoud be escaped.\nExample: `[[\"CreatedDateTime\":\"gt\":\"4/10/2019 3:10:12 PM\"][\"Priority\",\"eq\",\"1\"]]`. \nNOTICE: If multiple  filters are received for the same field name, an 'OR' operation between the filters is performed. If the field names are different, an 'AND' operation is performed."
   name: query
   required: true
-  secret: false
 comment: This script is an example script of how to query incidents from Cherwell. The script wraps the cherwell-query-business-object command of the cherwell integration. When writing your own script to query  business objects, follow the instructions found in the configuration section of the script, but do not change the execution section.
 commonfields:
   id: CherwellQueryIncidents
   version: -1
-enabled: false
 name: CherwellQueryIncidents
 tags: [Cherwell]
 dependson:
@@ -44,11 +40,12 @@ outputs:
   description: Total tasks for this incident
   type: Number
 script: '-'
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 subtype: python3
 tests:
 - Cherwell Example Scripts - test
 fromversion: 5.0.0
+skipprepare:
+- script-name-incident-to-alert

@@ -1,5 +1,5 @@
-from CommonServerPython import *
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 SCORE_TABLE_FILE = {
     "unknown": Common.DBotScore.NONE,
@@ -114,12 +114,12 @@ class Client(BaseClient):
         self.name = "ThreatVault"
         self.reliability = reliability
 
-    def antivirus_signature_get_request(self, arg: str, value: str) -> dict:
+    def antivirus_signature_get_request(self, arg: str, value: str) -> dict:    # pragma: no cover
 
         suffix = "threats"
         return self._http_request(method="GET", url_suffix=suffix, params={arg: value})
 
-    def release_notes_get_request(self, type_: str, version: str) -> dict:
+    def release_notes_get_request(self, type_: str, version: str) -> dict:  # pragma: no cover
 
         suffix = "release-notes"
         return self._http_request(
@@ -139,6 +139,21 @@ class Client(BaseClient):
 
         suffix = "threats"
         return self._http_request(method="GET", url_suffix=suffix, params=args)
+
+    def atp_batch_report_request(self, args: str, value: list) -> dict:
+
+        params: dict[str, Union[list, str]] = {args: value}
+        params = json.dumps(params)
+        suffix = "atp/reports"
+        return self._http_request(method="POST", url_suffix=suffix, data=params)
+
+    def atp_report_pcap_request(self, args: dict) -> dict:
+
+        suffix = "atp/reports/pcaps"
+
+        pcap_response = self._http_request(method="GET", url_suffix=suffix, params=args, resp_type="response")
+
+        return pcap_response
 
 
 """
@@ -806,6 +821,107 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     return command_results_list
 
 
+def atp_batch_report_command(client: Client, args: Dict) -> List[CommandResults]:  # pragma: no cover
+
+    report_ids = argToList(args.get("report_id"))
+
+    command_results_list: List[CommandResults] = []
+
+    if report_ids:
+        try:
+            response = client.atp_batch_report_request(args='id', value=report_ids)
+        except DemistoException as err:
+            if err.res is not None and err.res.status_code == 404:
+                response = {}
+                readable_output = f"There is no information about the {str(report_ids)}"
+                command_results_list.append(
+                    CommandResults(readable_output=readable_output)
+                )
+            else:
+                raise
+
+        if response:
+
+            report_infos: List[dict] = response.get("data", {}).get("reports", [])
+            for report_info in report_infos:
+
+                readable_output = tableToMarkdown(
+                    name=f"Advanced Threat Prevention Report ID: {report_info.get('report_id')}:",
+                    t=report_info,
+                    removeNull=True,
+                )
+                command_results_list.append(
+                    CommandResults(
+                        outputs_prefix="ThreatVault.ATP.Report",
+                        readable_output=readable_output,
+                        # outputs_key_field="sha256",
+                        outputs=report_info,
+                    )
+                )
+
+    return command_results_list
+
+
+def atp_report_pcap_command(client: Client, args: Dict) -> List[CommandResults]:  # pragma: no cover
+
+    report_id = args.get("report_id")
+
+    if report_id:
+        query = assign_params(
+            id=report_id
+        )
+
+        command_results_list: List[CommandResults] = []
+
+        try:
+            response = client.atp_report_pcap_request(args=query)
+            response_data_headers = json.loads(json.dumps(dict(response.headers)))  # type: ignore
+            response_content = response.content  # type: ignore
+
+        except DemistoException as err:
+            if err.res is not None and err.res.status_code == 404:
+                response = {}
+                readable_output = f"There is no information about the {str(report_id)}"
+                command_results_list.append(
+                    CommandResults(readable_output=readable_output)
+                )
+            else:
+                raise
+
+        # check for octet-stream response for PCAP
+        if response_data_headers.get("Content-Type") == 'application/octet-stream':
+
+            # set the pcap filename to the report_id.pcap
+            pcap_name = report_id + ".pcap"
+
+            # write the file prperties to the context
+            return_results(fileResult(pcap_name, response_content))
+
+            ec = {'ID': report_id, 'Name': pcap_name}
+
+            readable_output = tableToMarkdown(
+                name="Advanced Threat Prevention PCAP Download:",
+                t=ec,
+                removeNull=True,
+            )
+            command_results_list.append(
+                CommandResults(
+                    outputs_prefix="ThreatVault.ATP.PCAP",
+                    readable_output=readable_output,
+                    # outputs_key_field="sha256",
+                    outputs=ec,
+                )
+            )
+        else:
+            return_results({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': f'No PCAP response for ID: {str(report_id)}'
+            })
+
+    return command_results_list
+
+
 """
 FETCH INCIDENT
 """
@@ -900,7 +1016,6 @@ def main():
 
     params = demisto.params()
     """PARAMS"""
-
     base_url = params.get("url", "") + "service/v1/"
     api_key = params.get("credentials", {}).get("password")
     verify = not params.get("insecure", False)
@@ -930,6 +1045,8 @@ def main():
             "threatvault-release-note-get": release_note_get_command,
             "threatvault-threat-batch-search": threat_batch_search_command,
             "threatvault-threat-search": threat_search_command,
+            "threatvault-atp-batch-report-get": atp_batch_report_command,
+            "threatvault-atp-report-pcap-get": atp_report_pcap_command,
         }
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.

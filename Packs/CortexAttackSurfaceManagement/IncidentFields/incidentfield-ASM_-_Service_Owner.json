@@ -55,6 +55,32 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
+        },
+        {
+            "displayName": "Ranking Score",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "rankingscore",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Justification",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "justification",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
         }
     ],
     "content": true,
@@ -66,7 +92,7 @@
     "description": "Potential service owners gathered through playbook",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmserviceowner",
     "isReadOnly": false,
     "locked": false,

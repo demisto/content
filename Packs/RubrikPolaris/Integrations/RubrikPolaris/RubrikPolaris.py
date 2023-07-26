@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Main file for RubrikPolaris Integration."""
 from typing import Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 from rubrik_polaris.rubrik_polaris import PolarisClient
 from rubrik_polaris.exceptions import ProxyException
@@ -29,9 +29,9 @@ DEFAULT_SORT_BY = 'ID'
 DEFAULT_SORT_ORDER = 'ASC'
 DEFAULT_CLUSTER_CONNECTED = True
 DEFAULT_SNAPSHOT_GROUP_BY = "Day"
-
-DEFAULT_EVENT_SORT_BY = "LastUpdated"
-DEFAULT_EVENT_SORT_ORDER = "Desc"
+DEFAULT_MISSED_SNAPSHOT_GROUP_BY = "DAY"
+DEFAULT_EVENT_SORT_BY = "LAST_UPDATED"
+DEFAULT_EVENT_SORT_ORDER = "DESC"
 DEFAULT_SHOW_CLUSTER_SLA_ONLY = "True"
 DEFAULT_SORT_BY_SLA_DOMAIN = "NAME"
 DEFAULT_CLUSTER_SORT_BY = "ClusterName"
@@ -52,7 +52,7 @@ OBJECT_NAME = "Object Name"
 OBJECT_ID = "Object ID"
 DEFAULT_FIRST_FETCH = "3 days"
 MAX_MATCHES_PER_OBJECT = 100
-MAXIMUM_FILE_SIZE = 20000000000
+MAXIMUM_FILE_SIZE = 5000000
 
 MESSAGES = {
     'NO_RECORDS_FOUND': "No {} were found for the given argument(s).",
@@ -1096,7 +1096,7 @@ def validate_ioc_scan_args(args: Dict[str, Any]) -> dict:
             for i in range(len(snapshot_id))]
 
     max_matches_per_snapshot = MAX_MATCHES_PER_OBJECT
-    max_file_size = MAXIMUM_FILE_SIZE
+    max_file_size = arg_to_number(args.get('max_file_size', MAXIMUM_FILE_SIZE), 'max_file_size')
     return {
         "object_ids": object_id,
         "cluster_id": cluster_id,
@@ -1279,9 +1279,9 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> Tupl
         next_run["last_fetch"] = last_run_time
     # removed manual fetch interval as this feature is built in XSOAR 6.0.0 and onwards
 
-    events = client.list_event_series(activity_type="Anomaly",
+    events = client.list_event_series(activity_type="ANOMALY",
                                       start_date=last_run_time,
-                                      sort_order="Asc",
+                                      sort_order="ASC",
                                       first=max_fetch,
                                       after=next_page_token)
 
@@ -1443,7 +1443,7 @@ def sonar_sensitive_hits_command(client: PolarisClient, args: Dict[str, Any]) ->
 
     :return: CommandResult object
     """
-    incident = demisto.incident().get("CustomFields")
+    incident = demisto.incidents("CustomFields")
 
     # objectName is an optional value for the command. When not set,
     # look up the value in the incident custom fields
@@ -1514,8 +1514,8 @@ def rubrik_polaris_object_search_command(client: PolarisClient, args: Dict[str, 
         "has_next_page": page_cursor.get('hasNextPage', '')
     }
     if next_page_context.get('has_next_page'):
-        readable_output = "{}\n {} {}".format(tableToMarkdown(table_name, hr, header, removeNull=True),
-                                              MESSAGES['NEXT_RECORD'], page_cursor.get('endCursor'))
+        readable_output = f"""{tableToMarkdown(table_name, hr, header, removeNull=True)}\n {
+                               MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"""
     else:
         readable_output = tableToMarkdown(table_name, hr, header, removeNull=True)
 
@@ -1716,8 +1716,8 @@ def rubrik_polaris_vm_objects_list_command(client: PolarisClient, args: Dict[str
         "has_next_page": page_cursor.get('hasNextPage', '')
     }
     if next_page_context.get('has_next_page'):
-        readable_output = "{}\n {} {}".format(tableToMarkdown(table_name, hr, header, removeNull=True),
-                                              MESSAGES['NEXT_RECORD'], page_cursor.get('endCursor'))
+        readable_output = f"""{tableToMarkdown(table_name, hr, header, removeNull=True)}\n {
+                               MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"""
     else:
         readable_output = tableToMarkdown(table_name, hr, header, removeNull=True)
 
@@ -1762,7 +1762,7 @@ def rubrik_polaris_vm_object_snapshot_list_command(client: PolarisClient, args: 
         cluster_connected = validate_boolean_argument(cluster_connected, 'cluster_connected')
 
     snapshot_group_by = args.get('snapshot_group_by', DEFAULT_SNAPSHOT_GROUP_BY)
-    missed_snapshot_by = args.get('missed_snapshot_group_by', DEFAULT_SNAPSHOT_GROUP_BY)
+    missed_snapshot_by = args.get('missed_snapshot_group_by', DEFAULT_MISSED_SNAPSHOT_GROUP_BY)
     time_range = {
         "start": start_date,
         "end": end_date
@@ -1991,7 +1991,7 @@ def rubrik_gps_snapshot_files_list_command(client: PolarisClient, args: Dict[str
             next_page_context)
     }
     if page_cursor.get("hasNextPage"):
-        hr += "{} {}".format(MESSAGES['NEXT_RECORD'], page_cursor.get("endCursor"))
+        hr += f"{MESSAGES['NEXT_RECORD']} {page_cursor.get('endCursor')}"
 
     return CommandResults(readable_output=hr,
                           outputs=outputs,
@@ -2245,31 +2245,39 @@ def rubrik_gps_vm_livemount(client: PolarisClient, args: Dict[str, Any]) -> Comm
 
     :return: CommandResult object
     """
-    snapshot_id = validate_required_arg("snapshot_id", args.get("snapshot_id"))
-    host_id = args.get("host_id")
-    vm_name = args.get("vm_name")
+    snappable_id = validate_required_arg("snappable_id", args.get("snappable_id"))
+    should_recover_tags = args.get("should_recover_tags", True)
     power_on = args.get("power_on", True)
     keep_mac_addresses = args.get("keep_mac_addresses", False)
     remove_network_devices = args.get("remove_network_devices", False)
-    disable_network = args.get("disable_network")
-    recover_tags = args.get("recover_tags", True)
-    datastore_name = args.get("datastore_name")
+    host_id = args.get("host_id")
+    cluster_id = args.get("cluster_id")
+    resource_pool_id = args.get("resource_pool_id")
+    snapshot_fid = args.get("snapshot_fid")
+    vm_name = args.get("vm_name")
+    vnic_bindings = args.get("vnic_bindings")
+    recovery_point = args.get("recovery_point")
 
+    if vnic_bindings:
+        try:
+            vnic_bindings = json.loads(args.get("vnic_bindings"))  # type: ignore[arg-type]
+        except json.JSONDecodeError as exception:
+            raise Exception(f'Could not able to parse the provided JSON data. Error: {str(exception)}') from exception
     if power_on:
         power_on = validate_boolean_argument(power_on, "power_on")
     if keep_mac_addresses:
         keep_mac_addresses = validate_boolean_argument(keep_mac_addresses, "keep_mac_addresses")
     if remove_network_devices:
         remove_network_devices = validate_boolean_argument(remove_network_devices, "remove_network_devices")
-    if disable_network:
-        disable_network = validate_boolean_argument(disable_network, "disable_network")
-    if recover_tags:
-        recover_tags = validate_boolean_argument(recover_tags, "recover_tags")
+    if should_recover_tags:
+        should_recover_tags = validate_boolean_argument(should_recover_tags, "should_recover_tags")
 
-    raw_response = client.create_vm_livemount(snapshot_id, host_id, vm_name, disable_network, remove_network_devices,
-                                              power_on, keep_mac_addresses, datastore_name, recover_tags)
+    raw_response = client.create_vm_livemount_v2(snappable_id, should_recover_tags, power_on, keep_mac_addresses,
+                                                 remove_network_devices, host_id, cluster_id,
+                                                 resource_pool_id, snapshot_fid, vm_name, vnic_bindings,
+                                                 recovery_point)
 
-    outputs = raw_response.get("data", {}).get("vsphereVMInitiateLiveMount", {})
+    outputs = raw_response.get("data", {}).get("vsphereVmInitiateLiveMountV2", {})
     outputs = remove_empty_elements(outputs)
     if not outputs or not outputs.get("id"):
         return CommandResults(readable_output=MESSAGES['NO_RESPONSE'])
@@ -2488,7 +2496,7 @@ def rubrik_polaris_object_list_command(client: PolarisClient, args: Dict[str, An
 
     :return: CommandResult object
     """
-    type_filter = args.get("type_filter", "")
+    type_filter = validate_required_arg('type_filter', args.get("type_filter", ""))
     cluster_id = args.get("cluster_id", "")
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     sort_by = args.get('sort_by', DEFAULT_SORT_BY)
@@ -2559,7 +2567,7 @@ def rubrik_polaris_object_snapshot_list_command(client: PolarisClient, args: Dic
         end_date = end_date_ob.strftime(DATE_TIME_FORMAT)
 
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
-    sort_order = args.get('sort_order', camelize_string(DEFAULT_SORT_ORDER))
+    sort_order = args.get('sort_order', DEFAULT_SORT_ORDER)
     next_page_token = args.get('next_page_token')
 
     if not limit or limit <= 0 or limit > 1000:
@@ -2718,7 +2726,7 @@ def rubrik_gps_cluster_list_command(client: PolarisClient, args: Dict[str, Any])
     name = args.get("name", "")
     cluster_type = args.get("type", "")
     sort_by = args.get('sort_by', DEFAULT_CLUSTER_SORT_BY)
-    sort_order = args.get('sort_order', camelize_string(DEFAULT_SORT_ORDER))
+    sort_order = args.get('sort_order', DEFAULT_SORT_ORDER)
     filters = {}
     if cluster_type:
         filters["type"] = argToList(cluster_type)

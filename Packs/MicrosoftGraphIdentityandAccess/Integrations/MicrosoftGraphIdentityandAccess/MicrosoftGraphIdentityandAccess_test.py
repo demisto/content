@@ -1,5 +1,6 @@
 import pytest
 import MicrosoftGraphIdentityandAccess
+from CommonServerPython import DemistoException
 
 ipv4 = {'@odata.type': '#microsoft.graph.iPv4CidrRange', 'cidrAddress': '12.34.221.11/22'}  # noqa
 ipv6 = {'@odata.type': '#microsoft.graph.iPv6CidrRange', 'cidrAddress': '2001:0:9d38:90d6:0:0:0:0/63'}  # noqa
@@ -112,7 +113,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
     params = {
         'managed_identities_client_id': {'password': client_id},
-        'use_managed_identities': 'True'
+        'use_managed_identities': 'True',
+        'credentials': {'password': 'pass'}
     }
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -125,3 +127,22 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+@pytest.mark.parametrize('expected_error', [("Either enc_key or (Certificate Thumbprint and Private Key) must be provided. For "
+                                             "further information see https://xsoar.pan.dev/docs/reference/articles/"
+                                             "microsoft-integrations---authentication")])
+def test_missing_creds_error_thrown(expected_error):
+    """
+        Given:
+        - expected_error
+        When:
+        - Attempting to create a client without key or Certificate Thumbprint and Private Key
+        Then:
+        - Ensure that the right option was returned.
+        - Case 1: Should return param.
+    """
+    from MicrosoftGraphIdentityandAccess import Client
+    with pytest.raises(DemistoException) as e:
+        Client("", False, False)
+    assert str(e.value.message) == expected_error

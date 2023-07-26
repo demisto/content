@@ -1,16 +1,11 @@
-import urllib3
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
+
 
 # disable insecure warnings
 urllib3.disable_warnings()
 
-
-"""
-Constants
----------
-"""
 
 INDICATOR_TO_GALAXY_RELATION_DICT: Dict[str, Any] = {
     ThreatIntel.ObjectsNames.ATTACK_PATTERN: {
@@ -118,14 +113,18 @@ GALAXY_MAP = {
     'misp-galaxy:mitre-course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
 }
 
-""" Client Class """
-
 
 class Client(BaseClient):
 
-    def __init__(self, timeout, base_url, verify, proxy):
+    def __init__(self, base_url: str, authorization: str, timeout: float, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.timeout = timeout
+
+        self._headers = {
+            'Authorization': authorization,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        }
 
     def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -134,18 +133,12 @@ class Client(BaseClient):
             body: Dictionary containing query to filter MISP attributes.
         Returns: bytes representing the response from MISP API
         """
-        headers = {
-            'Authorization': demisto.get(demisto.params(), 'credentials.password'),
-            "Accept": "application/json",
-            'Content-Type': 'application/json'
-        }
-        response = self._http_request('POST',
-                                      full_url=f'{self._base_url}attributes/restSearch',
-                                      resp_type='json',
-                                      headers=headers,
-                                      data=json.dumps(body),
-                                      timeout=self.timeout)
-        return response
+        return self._http_request('POST',
+                                  url_suffix='/attributes/restSearch',
+                                  resp_type='json',
+                                  data=json.dumps(body),
+                                  timeout=self.timeout,
+                                  )
 
 
 """ Helper Functions """
@@ -261,10 +254,7 @@ def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
         ip_attribute: the ip attribute
     Returns: FeedIndicatorType
     """
-    if ':' in ip_attribute['value']:
-        return FeedIndicatorType.IPv6
-    else:
-        return FeedIndicatorType.IP
+    return FeedIndicatorType.ip_to_indicator_type(ip_attribute['value'])
 
 
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:
@@ -355,10 +345,10 @@ def fetch_indicators(client: Client,
                      feed_tags: Optional[List],
                      limit: int = -1,
                      is_fetch: bool = True) -> List[Dict]:
-    if query:
-        params_dict = clean_user_query(query)
-    else:
-        params_dict = build_params_dict(tags, attribute_type)
+    params_dict = clean_user_query(query) if query else build_params_dict(tags, attribute_type)
+
+    if limit and limit not in params_dict:
+        params_dict['limit'] = limit
 
     response = client.search_query(params_dict)
     indicators_iterator = build_indicators_iterator(response, url)
@@ -472,7 +462,7 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
     timestamp = raw_json_value.get('timestamp', None)
     category = raw_json_value.get('category', None)
     comment = raw_json_value.get('comment', None)
-    tags = raw_json_value.get('Tag', None)
+    tags = raw_json_value.get('Tag', []) or []
 
     if first_seen:
         indicator_obj['fields']['First Seen By Source'] = first_seen
@@ -492,7 +482,7 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
     if tlp_color:
         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
-    if tags:
+    if tags or feed_tags:
         handle_tags_fields(indicator_obj, tags, feed_tags)
 
     if 'md5' in raw_type or 'sha1' in raw_type or 'sha256' in raw_type:
@@ -504,23 +494,17 @@ Command Functions
 """
 
 
-def test_module(client: Client, params: Dict[str, str]) -> str:
-    """Builds the iterator to check that the feed is accessible.
+def test_module(client: Client) -> str:
+    """
+    Fetch a single feed item to assure configuration is valid.
+
     Args:
         client: Client object.
+
     Returns:
         ok if feed is accessible
     """
-    tags = argToList(params.get('attribute_tags', ''))
-    attribute_types = argToList(params.get('attribute_types', ''))
-    query = params.get('query', None)
-
-    if query:
-        params_dict = clean_user_query(query)
-    else:
-        params_dict = build_params_dict(tags, attribute_types)
-
-    client.search_query(params_dict)
+    client.search_query(body={"limit": 1})
     return 'ok'
 
 
@@ -584,13 +568,9 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
 
 
 def main():
-    """
-    main function, parses params and runs command functions
-    """
-
     params = demisto.params()
-    base_url = urljoin(params.get('url').rstrip('/'), '/')
-    timeout = arg_to_number(params.get('timeout', 60))
+    base_url = params.get('url').rstrip('/')
+    timeout = arg_to_number(params.get('timeout')) or 60
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -598,10 +578,16 @@ def main():
 
     demisto.debug(f'Command being called is {command}')
     try:
-        client = Client(base_url=base_url, verify=insecure, proxy=proxy, timeout=timeout)
+        client = Client(
+            base_url=base_url,
+            authorization=params['credentials']['password'],
+            verify=insecure,
+            proxy=proxy,
+            timeout=timeout
+        )
 
         if command == 'test-module':
-            return_results(test_module(client, params))
+            return_results(test_module(client))
         elif command == 'misp-feed-get-indicators':
             return_results(get_attributes_command(client, args, params))
         elif command == 'fetch-indicators':
@@ -615,5 +601,5 @@ def main():
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:  # pragma: no cover
+if __name__ in ('__main__', 'builtin', 'builtins'):  # pragma: no cover
     main()

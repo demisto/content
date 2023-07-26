@@ -1,0 +1,168 @@
+{
+    "agents": [
+        {
+            "active": true,
+            "address": null,
+            "auto_assign_status_changed_at": "agents[0]_auto_assign_status_changed_at",
+            "auto_assign_tickets": true,
+            "background_information": null,
+            "can_see_all_tickets_from_associated_departments": false,
+            "created_at": "agents[0]_created_at",
+            "custom_fields": {},
+            "department_ids": [],
+            "department_names": null,
+            "email": "agents[0]_email",
+            "external_id": null,
+            "first_name": "Beni",
+            "has_logged_in": true,
+            "id": 1,
+            "job_title": null,
+            "language": "en",
+            "last_active_at": "agents[0]_last_active_at",
+            "last_login_at": "agents[0]_last_login_at",
+            "last_name": "Manela",
+            "location_id": null,
+            "location_name": null,
+            "mobile_phone_number": null,
+            "occasional": false,
+            "reporting_manager_id": null,
+            "role_ids": [
+                21000388918,
+                21000388920,
+                21000388932,
+                21000388931
+            ],
+            "roles": [
+                {
+                    "role_id": 21000388918,
+                    "assignment_scope": "entire_helpdesk",
+                    "groups": [],
+                    "workspace_id": 1
+                },
+                {
+                    "role_id": 21000388920,
+                    "assignment_scope": "entire_helpdesk",
+                    "groups": [],
+                    "workspace_id": 2
+                },
+                {
+                    "role_id": 21000388931,
+                    "assignment_scope": "entire_helpdesk",
+                    "groups": [],
+                    "workspace_id": 3
+                },
+                {
+                    "role_id": 21000388932,
+                    "assignment_scope": "entire_helpdesk",
+                    "groups": [],
+                    "workspace_id": 3
+                }
+            ],
+            "scopes": {},
+            "signature": "<p><br></p>\n",
+            "time_format": "12h",
+            "time_zone": "Athens",
+            "updated_at": "agents[0]_updated_at",
+            "vip_user": false,
+            "work_phone_number": null,
+            "workspace_ids": [
+                2,
+                3
+            ],
+            "group_ids": [],
+            "member_of": [],
+            "observer_of": []
+        },
+        {
+            "active": false,
+            "address": null,
+            "auto_assign_status_changed_at": null,
+            "auto_assign_tickets": true,
+            "background_information": null,
+            "can_see_all_tickets_from_associated_departments": false,
+            "created_at": "agents[1]_created_at",
+            "custom_fields": {},
+            "department_ids": [],
+            "department_names": null,
+            "email": "agents[1]_email",
+            "external_id": null,
+            "first_name": "Rachel",
+            "has_logged_in": false,
+            "id": 21001397561,
+            "job_title": null,
+            "language": "en",
+            "last_active_at": null,
+            "last_login_at": null,
+            "last_name": null,
+            "location_id": null,
+            "location_name": null,
+            "mobile_phone_number": null,
+            "occasional": false,
+            "reporting_manager_id": null,
+            "role_ids": [],
+            "roles": [],
+            "scopes": {},
+            "signature": null,
+            "time_format": "12h",
+            "time_zone": "Eastern Time (US & Canada)",
+            "updated_at": "agents[1]_updated_at",
+            "vip_user": false,
+            "work_phone_number": null,
+            "workspace_ids": [],
+            "group_ids": [],
+            "member_of": [],
+            "observer_of": []
+        },
+        {
+            "active": true,
+            "address": null,
+            "auto_assign_status_changed_at": null,
+            "auto_assign_tickets": true,
+            "background_information": null,
+            "can_see_all_tickets_from_associated_departments": false,
+            "created_at": "agents[2]_created_at",
+            "custom_fields": {},
+            "department_ids": [],
+            "department_names": null,
+            "email": "agents[2]_email",
+            "external_id": null,
+            "first_name": "Tal",
+            "has_logged_in": true,
+            "id": 21001523008,
+            "job_title": null,
+            "language": "en",
+            "last_active_at": "agents[2]_last_active_at",
+            "last_login_at": null,
+            "last_name": "Gumi",
+            "location_id": null,
+            "location_name": null,
+            "mobile_phone_number": null,
+            "occasional": true,
+            "reporting_manager_id": null,
+            "role_ids": [
+                21000388918
+            ],
+            "roles": [
+                {
+                    "role_id": 21000388918,
+                    "assignment_scope": "entire_helpdesk",
+                    "groups": [],
+                    "workspace_id": 2
+                }
+            ],
+            "scopes": {},
+            "signature": "",
+            "time_format": "12h",
+            "time_zone": "Eastern Time (US & Canada)",
+            "updated_at": "agents[2]_updated_at",
+            "vip_user": false,
+            "work_phone_number": null,
+            "workspace_ids": [
+                2
+            ],
+            "group_ids": [],
+            "member_of": [],
+            "observer_of": []
+        }
+    ]
+}

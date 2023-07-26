@@ -1,3 +1,5 @@
+import defusedxml.ElementTree as defused_ET
+
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -67,7 +69,7 @@ class Client(BaseClient):
                 if resp_type == 'content':
                     return res.content
                 if resp_type == 'xml':
-                    ET.parse(res.text)
+                    defused_ET.parse(res.text)
                 return res
 
             except ValueError:

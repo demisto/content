@@ -1,0 +1,13 @@
+[INGEST:vendor="ivanti", product="vtm", target_dataset="ivanti_vtm_raw", no_hit=keep]
+// Support only date time of format: dd/MMM/yyyy:hh:mm:ss [+|-]nnnn. For example: "18/Jul/2021:10:00:00 +0000".
+filter _raw_log ~= "\[\d+\/\w+\/\d+:\d+:\d+:\d+\s+[+-]\d+\]"
+| alter
+    tmp_extract_timestamp = arraystring(regextract(_raw_log, "\[(\d+\/\w+\/\d+:\d+:\d+:\d+\s+[+-]\d+)\]"), "")
+| alter
+    tmp_date = arraystring(regextract(tmp_extract_timestamp, "(\d+\/\w+\/\d+):\d+:\d+:\d+\s+[+-]\d+"), ""),
+    tmp_time = arraystring(regextract(tmp_extract_timestamp, "\d+\/\w+\/\d+:(\d+:\d+:\d+\s+[+-]\d+)"), "")
+| alter
+    tmp_datetime = arraystring(arraycreate(tmp_date, tmp_time), " ")
+| alter
+    _time = parse_timestamp("%d/%b/%Y %H:%M:%S %z", tmp_datetime)
+| fields -tmp_extract_timestamp, tmp_date, tmp_time, tmp_datetime;
