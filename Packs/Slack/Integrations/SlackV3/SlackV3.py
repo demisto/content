@@ -2539,6 +2539,7 @@ def pin_message():
     except SlackApiError as slack_error:
         return_error(f"{slack_error}")
 
+
 def list_channels():
     """
     List the conversations in the workspace
@@ -2546,15 +2547,15 @@ def list_channels():
     channel_types = demisto.args().get('channel_types')
     # Default for the SDK is public channels, but users can specify "public_channel", "private_channel", "mpim", and "im"
     # Multiple values can be passed for this argument as a comma separated list
-    if channel_types == None:
+    if channel_types is None:
         channel_types = 'public_channel'
     # By default archived channels are NOT included by the SDK. Explicitly set this if not set from the CLI or set to False
     exclude_archived = demisto.args().get('exclude_archived')
-    if exclude_archived == None:
+    if exclude_archived is None:
         exclude_archived = 'true'
 
     limit = demisto.args().get('limit')
-    if limit == None:
+    if limit is None:
         limit = 100
 
     body = {

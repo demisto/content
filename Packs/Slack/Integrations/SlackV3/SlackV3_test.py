@@ -4866,3 +4866,18 @@ def test_conversation_history(mocker):
        "text": "Hopa this is a test. ",
        "bot_id": "BMWFS6KSA"
     }
+    conversation_history()
+
+
+def test_list_channels_all_args():
+    from SlackV3 import list_channels
+    demisto.args.return_value = {
+        'channel_types': 'public_channel,private_channel',
+        'exclude_archived': 'false',
+        'limit': '50',
+        'cursor': 'dGVhbTpDMUJFNzY5NzQxMjIwNjYyNzY=',
+        'name_filter': 'test'
+    }
+    list_channels()
+    assert demisto.results.call_count == 1
+    assert demisto.results.call_args[0][0]['Contents'] is not None
