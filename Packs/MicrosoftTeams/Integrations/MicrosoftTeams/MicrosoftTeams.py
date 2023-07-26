@@ -808,7 +808,7 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify endorsements')
         return False
 
-    public_key: str | RSAPrivateKey | RSAPublicKey = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key: RSAPublicKey = RSAAlgorithm.from_jwk(json.dumps(key_object))
     options = {
         'verify_aud': False,
         'verify_exp': True,
