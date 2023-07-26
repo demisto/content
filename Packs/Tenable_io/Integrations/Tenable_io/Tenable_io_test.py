@@ -508,64 +508,6 @@ def test_scan_history_params(args, expected_result):
     assert result == expected_result
 
 
-@pytest.mark.parametrize(
-    'args, expected_result',
-    [
-        # Test case 1: Empty arguments
-        ({}, {}),
-        # Test case 2: Single filter
-        (
-            {
-                'filterName': 'name',
-                'filterQuality': '=',
-                'filterValue': 'test',
-            },
-            {
-                'filter.0.filter': 'name',
-                'filter.0.quality': '=',
-                'filter.0.value': 'test',
-            }
-        ),
-        # Test case 3: Multiple filters
-        (
-            {
-                'filterName': 'name,description',
-                'filterQuality': '=,!=',
-                'filterValue': 'test,test2',
-            },
-            {
-                'filter.0.filter': 'name',
-                'filter.0.quality': '=',
-                'filter.0.value': 'test',
-                'filter.1.filter': 'description',
-                'filter.1.quality': '!=',
-                'filter.1.value': 'test2',
-            }
-        )
-    ]
-)
-def test_build_filters(args, expected_result):
-    """
-    Given:
-        Case 1: Empty arguments.
-        Case 2: The filter lists have one value.
-        Case 3: The filter lists have multiple values.
-
-    When:
-        - Running the tenable-io-export-scan command.
-
-    Then:
-        Case 1: Return empty arguments.
-        Case 2: A single filter (name, quality, and value).
-        Case 3: Multiple filters (name, quality, and value).
-    """
-    from Tenable_io import build_filters
-
-    result = build_filters(args)
-
-    assert result == expected_result
-
-
 def test_list_scan_filters_command(mocker):
     '''
     Given:

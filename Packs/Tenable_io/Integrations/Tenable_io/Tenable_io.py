@@ -1333,11 +1333,11 @@ def get_scan_history_command(*args) -> CommandResults:
         readable_output=scan_history_readable(history))
 
 
-def build_filter(filter: str | None, name: str) -> dict:
+def build_filter(filter_list: str | None, name: str) -> dict:
     return {
         f'filter.{i}.{name}': value
         for i, value
-        in enumerate(argToList(filter))
+        in enumerate(argToList(filter_list))
     }
 
 
