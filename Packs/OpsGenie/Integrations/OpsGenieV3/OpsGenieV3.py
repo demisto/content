@@ -77,8 +77,10 @@ class Client(BaseClient):
 
     def create_alert(self, args: dict):
         args['responders'] = argToList(args.get('responders'))
-        args['details'] = {key_value.split('=')[0]:key_value.split('=')[1]
-                           for key_value in args.get('details').split(',')}
+        if not isinstance(args.get('details'), dict):
+            args['details'] = {key_value.split('=')[0]:key_value.split('=')[1]
+                               for key_value in args.get('details').split(',')}
+
         args.update(Client.responders_to_json(args.get('responders', []), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
