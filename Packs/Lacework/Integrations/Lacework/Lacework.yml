@@ -858,11 +858,18 @@ script:
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
-    - description: The machine id (mid) to filter the results on.
-      name: mid
-      required: true
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
+    - description: Filter results by source machine id
+      name: src_mid
+    - description: Filter results by destination machine id
+      name: dst_mid
     description: Search connections table by machine id
     name: lw-get-activities-connections
     outputs:
@@ -920,12 +927,17 @@ script:
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
     - description: Filter results by machine id (mid)
       name: mid
-      required: true
-    description: Search DNS dns summaries by machine id
+    description: Search DNS dns summaries
     name: lw-get-activities-dns
     outputs:
     - contextPath: Lacework.Activities.Dns.createdTime
@@ -949,8 +961,14 @@ script:
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
     - description: Filter results by machine id (mid)
       name: mid
     - description: Filter results by username
@@ -960,34 +978,52 @@ script:
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
     - description: Filter results by hostname
       name: hostname
-    - description: Filter results by ip
-      name: ip
+    - description: Filter results by internal ip
+      name: internal_ip
+    - description: Filter results by external ip
+      name: external_ip
     - description: Filter results by machine id
       name: mid
-    description: Search machines by hostname, ip, or machine id
+    description: Search machines
     name: lw-get-entities-machines
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
     - description: Filter results by machine id
       name: mid
-      required: true
     description: Search machine details by machine id
     name: lw-get-entities-machinedetails
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
     - description: Filter results by machine id
       name: mid
-      required: true
     - description: Filter results by process id
       name: pid
     - description: Filter results by parent process id
@@ -997,21 +1033,31 @@ script:
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
     - description: Filter results on cmdLineHash
       name: cmdlineHash
-      required: true
     description: Search command lines by cmdLineHash (from processes table)
     name: lw-get-entities-commandlines
   - arguments:
     - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to begin from. (ex. "2020-01-01T01:10:00Z")
       name: start_time
-    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end on. (ex. "2020-01-01T01:10:00Z")
+    - description: A "%Y-%m-%dT%H:%M:%SZ" structured timestamp to end at. (ex. "2020-01-01T01:10:00Z")
       name: end_time
+    - description: An array of objects to add information to refine your search results.
+      name: filters
+    - description: An array of strings to specify which top-level fields of the response schema you want to receive.
+      name: returns
+    - description: An integer representing a limit on the number or results to return.
+      name: limit
     - description: Filter results by machine id.
       name: mid
-      required: true
     description: Search changed files by machine id.
     name: lw-get-activities-changedfiles
     outputs:

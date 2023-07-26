@@ -461,59 +461,119 @@ def fetch_incidents():
 
 def get_activities_changedfiles():
     """
-    Search for changed files by machine id
+    Search activities / changed files endpoint
     """
-    mid = demisto.args().get('mid')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters": []}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    mid = demisto.args().get('mid', None)
 
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
     if mid:
-        search['filters'].append({
-            "field": "mid",
-            "expression": "eq",
-            "value": mid
-        })
+        filters.append({ "field" : "mid", "expression": "eq", "value": mid })
+    if len(filters) < 1:
+        filters = None
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    response = lacework_client.activities.changed_files.search(json=search)
-    for r in response:
-        response = r['data']
+    try:
+        response = lw_client.activities.changed_files.search(
+            json=json_request
+        )
 
-    return create_entry("Changed files machine id: " + str(mid),
-                        response,
-                        None)
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Activities/ChangedFiles search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Activities/paths/~1api~1v2~1Activities~1ChangedFiles~1search/post'
+        )
+
+    # ec = {"Lacework.Activities.ChangedFiles(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Activities.ChangedFiles()": response_data}
+    return create_entry("Lacework changed files from activities data",
+                        response_data,
+                        ec)
 
 
 def get_activities_connections():
     """
-    Search connections by machine mid
+    Search activities / connections endpoint
     """
-    mid = demisto.args().get('mid')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters": [{
-        "field": "srcEntityId.mid",
-        "expression": "eq",
-        "value": mid
-    }]}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    src_mid = demisto.args().get('src_mid', None)
+    dst_mid = demisto.args().get('dst_mid', None)
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
+    if src_mid:
+        filters.append({ "field" : "srcEntityId.mid", "expression": "eq", "value": src_mid })
+    if dst_mid:
+        filters.append({ "field" : "dstEntityId.mid", "expression": "eq", "value": dst_mid })
+    if len(filters) < 1:
+        filters = None
 
-    response = lacework_client.activities.connections.search(json=search)
-    for r in response:
-        response = r['data']
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
+
+    try:
+        response = lw_client.activities.connections.search(
+            json=json_request
+        )
+
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Activities/Connections search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Activities/paths/~1api~1v2~1Activities~1Connections~1search/post'
+        )
+
+    # ec = {"Lacework.Activities.Connections(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Activities.Connections()": response_data}
+    return create_entry("Lacework connections from activities data",
+                        response_data,
+                        ec)
+
+
 
     return create_entry("Connections by machine id: " + mid,
                         response,
@@ -524,220 +584,354 @@ def get_activities_dns():
     """
     Search DNS summaries by mid
     """
-    mid = demisto.args().get('mid')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters": [{
-        "field": "mid",
-        "expression": "eq",
-        "value": mid
-    }]}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    mid = demisto.args().get('mid', None)
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
+    if mid:
+        filters.append({ "field" : "mid", "expression": "eq", "value": mid })
+    if len(filters) < 1:
+        filters = None
 
-    response = lacework_client.activities.dns.search(json=search)
-    for r in response:
-        response = r['data']
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    return create_entry("DNS by machine id: " + mid,
-                        response,
-                        None)
+    try:
+        response = lw_client.activities.dns.search(
+            json=json_request
+        )
+
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Activities/DNSs search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Activities/paths/~1api~1v2~1Activities~1DNSs~1search/post'
+        )
+
+    # ec = {"Lacework.Activities.DNSs(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Activities.DNSs()": response_data}
+    return create_entry("Lacework DNS data",
+                        response_data,
+                        ec)
 
 
 def get_activities_userlogins():
     """
     Search user logins by machine id or username
     """
-    mid = demisto.args().get('mid')
-    username = demisto.args().get('username')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters":[]}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    mid = demisto.args().get('mid', None)
+    username = demisto.args().get('username', None)
 
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
     if mid:
-        search['filters'].append({
-            "field": "mid",
-            "expression": "eq",
-            "value": mid
-        })
-
+        filters.append({ "field" : "mid", "expression": "eq", "value": mid })
     if username:
-        search['filters'].append({
-            "field": "username",
-            "expression": "eq",
-            "value": username
-        })
+        filters.append({ "field" : "username", "expression": "eq", "value": username })
+    if len(filters) < 1:
+        filters = None
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    response = lacework_client.activities.user_logins.search(json=search)
-    for r in response:
-        response = r['data']
+    try:
+        response = lw_client.activities.user_logins.search(
+            json=json_request
+        )
 
-    return create_entry("Logins by machine id: {0} username: {1}".format(mid, username),
-                        response,
-                        None)
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Activities/UserLogins search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Activities/paths/~1api~1v2~1Activities~1UserLogins~1search/post'
+        )
+
+    # ec = {"Lacework.Activities.DNSs(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Activities.UserLogins()": response_data}
+    return create_entry("Lacework user login data",
+                        response_data,
+                        ec)
 
 
 def get_entities_machines():
     """
     Search machines by hostname, ip, or machine id
     """
-    mid = demisto.args().get('mid')
-    hostname = demisto.args().get('hostname')
-    ip = demisto.args().get('ip')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters":[]}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    mid = demisto.args().get('mid', None)
+    hostname = demisto.args().get('hostname', None)
+    internal_ip = demisto.args().get('internal_ip', None)
+    external_ip = demisto.args().get('external_ip', None)
 
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
     if mid:
-        search['filters'].append({
-            "field": "mid",
-            "expression": "eq",
-            "value": mid
-        })
-
+        filters.append({ "field" : "mid", "expression": "eq", "value": mid })
     if hostname:
-        search['filters'].append({
-            "field": "hostname",
-            "expression": "eq",
-            "value": hostname
-        })
+        filters.append({ "field" : "hostname", "expression": "eq", "value": hostname })
+    if internal_ip:
+        filters.append({ "field" : "machineTags.InternalIp", "expression": "eq", "value": internal_ip })
+    if external_ip:
+        filters.append({ "field" : "machineTags.ExternalIp", "expression": "eq", "value": external_ip })
+    if len(filters) < 1:
+        filters = None
 
-    if ip:
-        search['filters'].append({
-            "field": "primaryIpAddr",
-            "expression": "eq",
-            "value": ip
-        })
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    try:
+        response = lw_client.entities.machines.search(
+            json=json_request
+        )
 
-    response = lacework_client.entities.machines.search(json=search)
-    for r in response:
-        response = r['data']
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Entities/Machines search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Entities/paths/~1api~1v2~1Entities~1Machines~1search/post'
+        )
 
-    return create_entry("Machine details",
-                        response,
-                        None)
+    # ec = {"Lacework.Activities.DNSs(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Entities.Machines()": response_data}
+    return create_entry("Lacework machine data",
+                        response_data,
+                        ec)
 
 
 def get_entities_machinedetails():
     """
     Search machine details by mid
     """
-    mid = demisto.args().get('mid')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters": [{
-        "field": "mid",
-        "expression": "eq",
-        "value": mid
-    }]}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    mid = demisto.args().get('mid', None)
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
+    if mid:
+        filters.append({ "field" : "mid", "expression": "eq", "value": mid })
+    if len(filters) < 1:
+        filters = None
 
-    response = lacework_client.entities.machine_details.search(json=search)
-    for r in response:
-        response = r['data']
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    return create_entry("Machine details",
-                        response,
-                        None)
+    try:
+        response = lw_client.entities.machine_details.search(
+            json=json_request
+        )
+
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Entities/MachineDetails search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Entities/paths/~1api~1v2~1Entities~1MachineDetails~1search/post'
+        )
+
+    # ec = {"Lacework.Activities.DNSs(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Entities.MachineDetails()": response_data}
+    return create_entry("Lacework machine details data",
+                        response_data,
+                        ec)
 
 
 def get_entities_processes():
     """
     Search active processes by mid
     """
-    mid = demisto.args().get('mid')
-    pid = demisto.args().get('pid')
-    ppid = demisto.args().get('ppid')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters": [{
-        "field": "mid",
-        "expression": "eq",
-        "value": mid
-    }]}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    mid = demisto.args().get('mid', None)
+    pid = demisto.args().get('pid', None)
+    ppid = demisto.args().get('ppid', None)
 
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
+    if mid:
+        filters.append({ "field" : "mid", "expression": "eq", "value": mid })
     if pid:
-        search['filters'].append({
-            "field": "pid",
-            "expression": "eq",
-            "value": pid
-        })
-
+        filters.append({ "field" : "pid", "expression": "eq", "value": pid })
     if ppid:
-        search['filters'].append({
-            "field": "ppid",
-            "expression": "eq",
-            "value": ppid
-        })
+        filters.append({ "field" : "ppid", "expression": "eq", "value": ppid })
+    if len(filters) < 1:
+        filters = None
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    response = lacework_client.entities.processes.search(json=search)
-    for r in response:
-        response = r['data']
+    try:
+        response = lw_client.entities.processes.search(
+            json=json_request
+        )
 
-    return create_entry("Activite processes on machine id: " + mid,
-                        response,
-                        None)
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Entities/Processes search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Entities/paths/~1api~1v2~1Entities~1Processes~1search/post'
+        )
+
+    # ec = {"Lacework.Activities.DNSs(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Entities.Processes()": response_data}
+    return create_entry("Lacework process data",
+                        response_data,
+                        ec)
 
 
 def get_entities_commandlines():
     """
     Search active command lines by cmdLineHasH
     """
-    cmdline_hash = demisto.args().get('cmdlineHash')
-    start_time = demisto.args().get('start_time')
-    end_time = demisto.args().get('end_time')
 
-    search = {"filters": [{
-        "field": "cmdlineHash",
-        "expression": "eq",
-        "value": cmdline_hash
-    }]}
+    start_time = demisto.args().get('start_time', None)
+    end_time = demisto.args().get('end_time', None)
+    filters = demisto.args().get('filters', [])
+    returns = demisto.args().get('returns', None)
+    limit = int(demisto.args().get('limit', LACEWORK_ROW_LIMIT))
+    cmdline_hash = demisto.args().get('cmdlineHash', None)
 
-    if start_time and end_time:
-        search['timeFilter'] = {
-            "startTime": start_time,
-            "endTime": end_time
-        }
+    if filters:
+        filters = ast.literal_eval(filters)
+    if returns:
+        returns = ast.literal_eval(returns)
+    if cmdline_hash:
+        filters.append({ "field" : "cmdlineHash", "expression": "eq", "value": cmdline_hash })
+    if len(filters) < 1:
+        filters = None
 
-    response = lacework_client.entities.command_lines.search(json=search)
-    for r in response:
-        response = r['data']
+    json_request = create_search_json(
+        start_time=start_time,
+        end_time=end_time,
+        filters=filters,
+        returns=returns
+    )
 
-    return create_entry("Command line details",
-                        response,
-                        None)
+    try:
+        response = lw_client.entities.command_lines.search(
+            json=json_request
+        )
+
+        response_data = []
+        current_rows = 0
+        for page in response:
+            take = limit - current_rows
+            response_data += page['data'][:take]
+            current_rows = len(response_data)
+            if current_rows >= limit:
+                break
+    except ApiError as e:
+        raise Exception(
+            'Error: {}'.format(e),
+            'The Entities/CommandLines search parameters must follow the '
+            'structure outlined in the Lacework API documentation: '
+            'https://yourlacework.lacework.net/api/v2/docs/#tag/Entities/paths/~1api~1v2~1Entities~1CommandLines~1search/post'
+        )
+
+    # ec = {"Lacework.Activities.DNSs(val.vulnHash === obj.vulnHash)": response_data}
+    ec = {"Lacework.Entities.CommandLines()": response_data}
+    return create_entry("Lacework command line data",
+                        response_data,
+                        ec)
 
 
 ''' EXECUTION CODE '''
