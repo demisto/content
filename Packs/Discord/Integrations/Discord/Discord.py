@@ -59,7 +59,7 @@ def test_module(api_key):
         'Content-Type': 'application/json'
     }
     response = requests.get(url, headers=headers)
-    if response.json()['http_code'] == 200:
+    if response.status_code == 200:
         return 'ok'
     else:
         return "Please check your API key or connection"

@@ -13,7 +13,7 @@ configuration:
   name: channel_id
   required: true
   type: 0
-description: This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet
+description: This is the Discord integration for sending Messages from XSOAR to Discord  server made by Trustnet
 display: Discord
 name: Discord
 script:

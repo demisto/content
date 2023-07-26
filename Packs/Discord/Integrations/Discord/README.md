@@ -1,4 +1,4 @@
-This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet
+This is the Discord integration for sending Messages from XSOAR to Discord  server made by Trustnet
 ## Configure Discord on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
