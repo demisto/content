@@ -387,27 +387,27 @@ script:
       name: severity
     - description: Comma separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.
       name: tags
-    - name: status
+    - description: Comma-separated list of strings of the alert status.
+      name: status
       auto: PREDEFINED
       predefined:
-        - new
-        - under_investigation
-        - resolved_-_no_longer_observed
-        - resolved_-_no_risk
-        - resolved_-_risk_accepted
-        - resolved_-_contested_asset
-        - resolved_-_remediated_automatically
-        - resolved
-      description: Comma-separated list of strings of the alert status.
-    - name: business_units_list
-      description: Comma-separated list of strings of the business units
+      - new
+      - under_investigation
+      - resolved_-_no_longer_observed
+      - resolved_-_no_risk
+      - resolved_-_risk_accepted
+      - resolved_-_contested_asset
+      - resolved_-_remediated_automatically
+      - resolved
+    - description: Comma-separated list of strings of the business units
+      name: business_units_list
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
       name: gte_creation_time
-    - auto: PREDEFINED
-      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
+    - description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
       name: sort_by_creation_time
+      auto: PREDEFINED
       predefined:
       - asc
       - desc
@@ -464,8 +464,7 @@ script:
     - name: category
       description: Comma separated list of strings attack surface rule categories.
     - name: priority
-      description: Comma separated list of strings attack surface rule priorities.
-        Options include Low, Medium, High, and Critical.
+      description: Comma separated list of strings attack surface rule priorities. Options include Low, Medium, High, and Critical.
     - name: attack_surface_rule_id
       description: Comma-separated list of strings attack surface rule IDs.
     - name: limit
@@ -523,8 +522,7 @@ script:
   - name: asm-list-incidents
     arguments:
     - name: incident_id_list
-      description: 'Incident IDs to filter on. Note: Incident IDs may also be references
-        as "Case IDs'' elsewhere in the API.'
+      description: 'Incident IDs to filter on. Note: Incident IDs may also be references as "Case IDs'' elsewhere in the API.'
     - name: description
       description: String to search for within the incident description field.
     - name: status
@@ -535,21 +533,17 @@ script:
       - resolved
       description: Status to search incidents for.
     - name: lte_creation_time
-      description: A date in the format 2019-12-31T23:59:00. Only incidents that were
-        created on or before the specified date/time will be retrieved.
+      description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
     - name: gte_creation_time
-      description: A date in the format 2019-12-31T23:59:00. Only incidents that were
-        created on or after the specified date/time will be retrieved.
+      description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
     - name: sort_by_creation_time
-      description: Sorts returned incidents by the date/time that the incident was
-        created ("asc" - ascending, "desc" - descending).
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
     - name: sort_by_severity
       description: Sorts returned incidents by the severity of the incident.
     - name: page
       description: Page number (for pagination). The default is 0 (the first page).
     - name: limit
-      description: Maximum number of incidents to return per page. The default and
-        maximum is 100.
+      description: Maximum number of incidents to return per page. The default and maximum is 100.
     outputs:
     - contextPath: ASM.Incident.alert_count
       description: Number of alerts included in the incident.
@@ -626,9 +620,7 @@ script:
     - contextPath: ASM.Incident.xpanse_risk_score
       description: Risk score of the incident.
       type: Unknown
-    description: 'Fetches ASM incidents that match provided filters. Incidents are
-      an aggregation of related alerts. Note: Incident IDs may also be references
-      as "Case IDs'' elsewhere in the API.'
+    description: 'Fetches ASM incidents that match provided filters. Incidents are an aggregation of related alerts. Note: Incident IDs may also be references as "Case IDs'' elsewhere in the API.'
   - name: asm-update-incident
     arguments:
     - name: incident_id
@@ -637,16 +629,15 @@ script:
     - name: alert_id
       description: Used for scoping updates such as comments to the alert level.
     - name: assigned_user_mail
-      description: Email address of the user to assign incident to. This user must
-        exist within your Expander instance.
+      description: Email address of the user to assign incident to. This user must exist within your Expander instance.
     - name: manual_severity
       description: Administrator-defined severity for the incident.
       auto: PREDEFINED
       predefined:
-        - Low
-        - Medium
-        - High
-        - Critical
+      - Low
+      - Medium
+      - High
+      - Critical
     - name: status
       auto: PREDEFINED
       predefined:
@@ -662,14 +653,12 @@ script:
     - name: resolve_comment
       description: Optional resolution comment when resolving the incident.
     - name: comment
-      description: A comment to add to the incident. If an alert_id is supplied it
-        will be prefixed to the comment.
+      description: A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment.
     outputs:
     - contextPath: ASM.IncidentUpdate
       description: Whether the incident update was successful.
-    description: Updates a given incident. Can be used to modify the status, severity,
-      assignee, or add comments.
-  dockerimage: demisto/python3:3.10.12.65389
+    description: Updates a given incident. Can be used to modify the status, severity, assignee, or add comments.
+  dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   isfetch: true
   script: ''
