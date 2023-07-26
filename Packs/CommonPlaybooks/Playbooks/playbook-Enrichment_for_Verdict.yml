@@ -415,6 +415,9 @@ tasks:
       ResolveIP:
         complex:
           root: inputs.ResolveIP
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
@@ -578,6 +581,7 @@ tasks:
         * SSL verification for URLs
         * Threat information
         * Providing of URL screenshots
+        * URL Reputation using !url
       playbookName: URL Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -591,6 +595,9 @@ tasks:
       URL:
         complex:
           root: inputs.URL
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
       VerifyURL:
         simple: "False"
     separatecontext: true
@@ -992,6 +999,7 @@ tasks:
         Enrich domains using one or more integrations.
         Domain enrichment includes:
         * Threat information
+        * Domain reputation using !domain command
       playbookName: Domain Enrichment - Generic v2
       type: playbook
       iscommand: false
@@ -1003,6 +1011,9 @@ tasks:
       Domain:
         complex:
           root: inputs.Domain
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
@@ -1461,6 +1472,12 @@ inputs:
   value: {}
   required: false
   description: The registry value to run prevalence check. The input registry key must be provided as well.
+  playbookInputQuery:
+- key: UseReputationCommand
+  value:
+    simple: "True"
+  required: false
+  description: Set 'True' to use the reputation commands (!ip, !domain, !url) to enrich the IP, URL, and domain.
   playbookInputQuery:
 outputs:
 - contextPath: PreviousVerdict
