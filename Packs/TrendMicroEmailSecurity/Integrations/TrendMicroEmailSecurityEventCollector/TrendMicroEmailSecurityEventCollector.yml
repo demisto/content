@@ -12,7 +12,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- display: USER NAME
+- display: User name
   name: credentials
   required: true
   type: 9

@@ -1,8 +1,8 @@
 Palo Alto Networks Trend Micro Email Security Event Collector integration for XSIAM.
 
-## Configure Trend Micro Email Security Event Collector on Cortex XSOAR
+## Configure Trend Micro Email Security Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
 2. Search for Trend Micro Email Security Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -18,7 +18,7 @@ Palo Alto Networks Trend Micro Email Security Event Collector integration for XS
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-**Note**: There are three types of fetches that the integration fetches, when the max fetch parameter is set to 1000 then 1000 logs will be retrieved from each type so that a total of 3000 logs can be retrieved.
+**Note**: There are three types of fetches that the integration fetches, When the max fetch parameter is set to 1000 then 1000 logs will be retrieved from each type so that a total of 3000 logs can be retrieved.
 
 ## Commands
 

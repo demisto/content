@@ -4,7 +4,7 @@ You can also use the ***trend-micro-get-events*** command to manually collect ev
 
 In order to use this integration, you need to enter your Trend Micro Email Security credentials in the relevant integration instance parameters.
 
-### For the service URL parameter, attention to the following table:
+### For the service URL parameter:
 
 The value of service URL varies according to your location:
 | **Location** | **Service Root URL** |
@@ -17,16 +17,16 @@ The value of service URL varies according to your location:
 | India | api.tmes-in.trendmicro.com |
 
 
-### For API Key parameter, attention to the following:
+### For API Key parameter:
 
-1. Go to Administration > Service Integration.
-2. On the API Access tab, click Add to generate a key.
+1. Go to **Administration** > **Service Integration**.
+2. On the API Access tab, click **Add** to generate a key.
 The API Key is the global unique identifier for your application to authenticate its access to Trend Micro Email Security. It must be used together with the administrator account that created it. A new API Key is enabled by default.
 
-For more information about API Key see [here](https://docs.trendmicro.com/en-us/enterprise/trend-micro-email-security-online-help/configuring-administ/service-integration/api-access/obtaining-an-api-key.aspx)
+For more information about API Keys see [here](https://docs.trendmicro.com/en-us/enterprise/trend-micro-email-security-online-help/configuring-administ/service-integration/api-access/obtaining-an-api-key.aspx)
 
 
 
 ### Max Fetch
-Note: During an integration fetch, there are three types of fetches available, with the maximum fetch parameter set to 1000, 1000 logs will be retrieved for each type, resulting in a total of 3000 logs.
+Note: During an integration fetch, there are three types of fetches available, When the maximum fetch parameter is set to 1000, 1000 logs will be retrieved for each type, resulting in a total of 3000 logs.
 
