@@ -500,6 +500,8 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
 def define_position(args: dict, is_panorama: bool) -> str:
     """
     This function is used to define the position of the rule in Panorama query.
+    because we have access to panorama instance only from version 10.2.0 and above,
+    we will apply this function only for version 10.2.0 and above.
     Args:
         args: Demisto arguments
         is_panorama: True if the instance is Panorama, False if the instance is a firewall
