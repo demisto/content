@@ -1,17 +1,27 @@
 args:
 - description: Name of the playbook to analyze
   name: playbook
-- description: Limit incidents to the most recent since "N days ago" to match playbook implementation
-  name: occurred
   required: true
-comment: ""
+- description: Sub-playbook for analysis versus the parent playbook
+  name: subplaybook
+- description: 'First day to find incident occurrences using the playbook. Example: "2023-03-01"'
+  name: firstday
+  required: true
+- description: 'Last day to find incident occurrences using the playbook: Example: "2023-03-31"'
+  name: lastday
+  required: true
+- description: Maximum number of incidents to analyze
+  name: maxinc
+  required: true
+comment: |
+  Profiles execution time of tasks in a playbook or sub-playbook (if specified).  Provides minimum, maximum, and average task execution times in milliseconds as well as the state of each task: completed, error, notexecuted, started, and waiting.
 commonfields:
   id: UnitTestPlaybookAnalyzer
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.66339
 enabled: true
 name: UnitTestPlaybookAnalyzer
 runas: DBotWeakRole
@@ -24,3 +34,4 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+runonce: false

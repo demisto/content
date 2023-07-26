@@ -8,10 +8,9 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.66339
 enabled: true
 name: UnitTestLoadContextList
-comment: ""
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
@@ -21,3 +20,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+runonce: false

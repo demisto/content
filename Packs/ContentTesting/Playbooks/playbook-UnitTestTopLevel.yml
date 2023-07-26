@@ -88,7 +88,6 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
       id: d0a8c3fa-23a9-41fd-8d2d-2fd82cd71d2c
       iscommand: false
@@ -317,4 +316,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: ''
