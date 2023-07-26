@@ -6064,7 +6064,7 @@
                 "memory_threshold": 105
             },
             "demisto/googleapi-python3": {
-                "memory_threshold": 200
+                "memory_threshold": 300
             },
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85
