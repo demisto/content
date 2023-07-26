@@ -28,7 +28,7 @@ alter
     xdm.target.url = if(_is_policy_event = True, _policy_events_urls, _mail_tracking_events_urls),
     xdm.alert.subcategory = eventSubtype,
     xdm.alert.category = eventType,
-    xdm.event.type = if(_is_policy_event = True, coalesce(eventType , logType)),
+    xdm.event.type = coalesce(eventType , logType),
     xdm.email.recipients = arraymap(headerTo -> [], trim("@element", "\"")),
     xdm.alert.original_alert_id = mailID,
     xdm.email.message_id = messageID,
@@ -42,6 +42,6 @@ alter
     xdm.network.tls.protocol_version = tlsInfo,
     xdm.intermediate.host.fqdn = _fqdn,
     xdm.intermediate.host.hostname = arrayindex(regextract(_fqdn, "^([^\.]+)"), 0),
-    xdm.intermediate.port = arrayindex(regextract(deliveredTo, "\]\:(\d{2,5})$"), 0),
+    xdm.intermediate.port = to_integer(arrayindex(regextract(deliveredTo, "\]\:(\d{2,5})$"), 0)),
     xdm.intermediate.ipv4 = arrayindex(regextract(deliveredTo, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0),
     xdm.email.delivery_timestamp = deliveryTime;
