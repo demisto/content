@@ -235,6 +235,7 @@ def options_handler():
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
     parser.add_argument('--unremovable_packs', help='List of packs that cant be removed.')
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
+    parser.add_argument('--build_type', help='Build type. Upload or regular.', action='store_true')
 
     options = parser.parse_args()
 
@@ -253,7 +254,8 @@ def main():
 
     api_key, _, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(options.cloud_machine,
                                                                            options.cloud_servers_path,
-                                                                           options.cloud_servers_api_keys)
+                                                                           options.cloud_servers_api_keys,
+                                                                           options.build_type)
 
     client = demisto_client.configure(base_url=base_url,
                                       verify_ssl=False,
