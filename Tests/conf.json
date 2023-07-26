@@ -78,8 +78,7 @@
         },
         {
             "integrations": "RSANetWitnessv115",
-            "playbookID": "RSANetWitnessv115-Test",
-            "is_mockable": false
+            "playbookID": "RSANetWitnessv115-Test"
 
         },
         {
@@ -5485,7 +5484,7 @@
         }
     ],
     "skipped_tests": {
-        "RSANetWitnessv115": "mocking error CIAC-7576",
+        "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
