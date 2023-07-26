@@ -340,7 +340,7 @@ def set_first_fetch(start_time: str = None) -> str:
     """
     set the start time of the first time of the fetch
     """
-    if first_fetch := arg_to_datetime(start_time or "72 hours"):
+    if first_fetch := arg_to_datetime(start_time or "1 hours"):
         return first_fetch.strftime(DATE_FORMAT_EVENT)
     raise ValueError("Failed to convert `str` to `datetime` object")
 
