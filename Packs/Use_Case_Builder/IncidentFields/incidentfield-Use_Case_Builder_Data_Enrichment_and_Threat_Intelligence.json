@@ -20,6 +20,7 @@
     "required": false,
     "sla": 0,
     "system": false,
+    "template": "# Data Enrichment\n## Threat Intelligence\n## Top Use Cases:\n\n- Enriching information about different IOC types:\n- Upload object for scan and get the scan results. (If there's a possibility to upload private/public, default should be set to private).\n- Search for former scan results about an object (This way you can get information about a sample without uploading it yourself).\n- Enrich information and scoring for the object.\n- Add/Search for indicators in the system.\n- Add indicators to allow list / block list.\n- Calculate DBot Score for indicators.\n\n## Data Enrichment\n Threat Intelligence Integration Example: [VirusTotal](https://xsoar.pan.dev/docs/reference/integrations/virus-total)\n",
     "threshold": 72,
     "type": "markdown",
     "unmapped": false,
