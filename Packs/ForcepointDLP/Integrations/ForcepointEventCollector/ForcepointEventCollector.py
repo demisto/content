@@ -11,8 +11,8 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-VENDOR = "forcepoint-dlp"
-PRODUCT = "forcepoint-dlp"
+VENDOR = "forcepoint"
+PRODUCT = "forcepoint_dlp"
 DEFAULT_MAX_FETCH = 10000
 API_DEFAULT_LIMIT = 10000
 MAX_GET_IDS_CHUNK_SIZE = 1000
