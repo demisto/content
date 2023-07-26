@@ -1,5 +1,4 @@
 import pytest
-import io
 
 from requests import Response
 
@@ -9,7 +8,7 @@ from unittest import mock
 
 
 def util_load_json(path, wrap_in_response=False):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         jsonres = json.loads(f.read())
         if wrap_in_response:
             res = Response()

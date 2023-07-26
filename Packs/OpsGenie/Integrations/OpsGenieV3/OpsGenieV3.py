@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import Response
 import urllib3
-from typing import Callable, Tuple
+from collections.abc import Callable
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
@@ -248,12 +248,12 @@ class Client(BaseClient):
             priority = argToList(args.get("priority", [ALL_TYPE]))
             if ALL_TYPE not in priority:
                 query += ' AND ' if query else ''
-                priority_parsed = ' OR '.join([p for p in priority])
+                priority_parsed = ' OR '.join(list(priority))
                 query += f'priority: ({priority_parsed})'
             tags = argToList(args.get("tags", []))
             if tags:
                 query += ' AND ' if query else ''
-                tag_parsed = ' OR '.join([t for t in tags])
+                tag_parsed = ' OR '.join(list(tags))
                 query += f'tag: ({tag_parsed})'
         return query
 
@@ -920,7 +920,7 @@ def fetch_incidents_by_type(client: Client,
         time_query = f'createdAt>{timestamp_last_run} AND createdAt<={timestamp_now}'
         params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
         params['limit'] = limit
-        params['is_fetch_query'] = True if query else False
+        params['is_fetch_query'] = bool(query)
         params['status'] = status
         params["priority"] = priority
         params["tags"] = tags
@@ -948,7 +948,7 @@ def _get_utc_now():
 
 def fetch_incidents_command(client: Client,
                             params: Dict[str, Any],
-                            last_run: Optional[Dict] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+                            last_run: Optional[Dict] = None) -> tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
