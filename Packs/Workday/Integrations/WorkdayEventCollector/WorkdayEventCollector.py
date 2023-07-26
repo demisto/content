@@ -4,7 +4,6 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 import math
-from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -58,6 +57,7 @@ class Client(BaseClient):
                                                 auth=(self.client_id, self.client_secret))
         if workday_resp_token:
             return workday_resp_token.get("access_token")
+        return None
 
     def http_request(self,
                      method: str,
@@ -180,7 +180,7 @@ def remove_milliseconds_from_time_of_logging(activity_logging: dict):
 
 
 def get_activity_logging_command(client: Client, from_date: str, to_date: str, limit: Optional[int],
-                                 offset: Optional[int]) -> Tuple[list, CommandResults]:
+                                 offset: Optional[int]) -> tuple[list, CommandResults]:
     """
 
     Args:
