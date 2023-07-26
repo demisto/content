@@ -268,7 +268,8 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
 
             if params.get('incident_name') and params.get('incident_name') not in headers:
                 msg += f'Invalid Incident Name, *{params.get("incident_name")}* does not exist in the table. '
-
+    else:
+        client.connection.connect()
     return msg if msg else 'ok', {}, []
 
 
