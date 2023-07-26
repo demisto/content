@@ -78,7 +78,9 @@
         },
         {
             "integrations": "RSANetWitnessv115",
-            "playbookID": "RSANetWitnessv115-Test"
+            "playbookID": "RSANetWitnessv115-Test",
+            "is_mockable": false
+
         },
         {
             "integrations": [
