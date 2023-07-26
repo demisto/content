@@ -297,3 +297,22 @@ Get files shared with 3rd parties
 | Reco.Assets.data_category | String | The data category of the assets the 3rd party has access to | 
 | Reco.Assets.last_access_date | String | The last access date of the asset | 
 | Reco.Assets.domain | String | The domain of the 3rd party | 
+### reco-add-exclusion-filter
+
+***
+Add exclusion filter to Reco Classifier
+
+#### Base Command
+
+`reco-add-exclusion-filter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| values_to_add | Values to add to the exclusion filter. | Required | 
+| key_to_add | key too add to the exclusion filter (e.g. "case_sensitive_terms", "file_ids", "location_case_insensitive_terms", "locations", "owners"). | Required | 
+
+#### Context Output
+
+There is no context output for this command.
