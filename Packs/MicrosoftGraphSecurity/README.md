@@ -1,3 +1,8 @@
+# Microsoft Graph Security
+This pack includes XSIAM content.
+
+* Pay attentiom: Timestamp parsing is available for UTC timezone, using the **yyyy-mm-ssTHH:MM:SS.3msZ** format.
+
 Use the Microsoft Graph integration to fetch and manage alerts from various Microsoft security sources, such as:
 - Microsoft 365 Defender unified alerts API
 - Microsoft Defender for Endpoint
