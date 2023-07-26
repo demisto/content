@@ -1112,7 +1112,7 @@ script:
       type: String
     - contextPath: TenableIO.ScanFilter.group_name
       description: The group name associated with the scan filter.
-      type: Unknown
+      type: String
   - arguments:
     - name: scanId
       description: The ID of the scan of which to get the runs.

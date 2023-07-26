@@ -1371,8 +1371,8 @@ Lists the filtering, sorting, and pagination capabilities available for scan rec
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+---
+There are no inputs for this command.
 
 #### Context Output
 
@@ -1384,7 +1384,7 @@ Lists the filtering, sorting, and pagination capabilities available for scan rec
 | TenableIO.ScanFilter.control.regex | String | The regular expression used by the scan filter. | 
 | TenableIO.ScanFilter.control.readable_regex | String | An example expression that the filter's regular expression would match. | 
 | TenableIO.ScanFilter.operators | String | The operators available for the scan filter. | 
-| TenableIO.ScanFilter.group_name | Unknown | The group name associated with the scan filter. | 
+| TenableIO.ScanFilter.group_name | String | The group name associated with the scan filter. | 
 
 #### Command example
 ```!tenable-io-list-scan-filters```
