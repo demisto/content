@@ -1856,4 +1856,14 @@ Lists team routing rules.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.Team.RoutingRules.name | unknown | Name of the routing rule. | 
+| OpsGenie.Team.RoutingRules.order | unknown | Order of the routing rule. | 
+| OpsGenie.Team.RoutingRules.id | unknown | ID of the routing rule. | 
+| OpsGenie.Team.RoutingRules.timezone | unknown | Timezone of the routing rule. | 
+| OpsGenie.Team.RoutingRules.teamId | unknown | Team ID of the routing rule. | 
+| OpsGenie.Team.RoutingRules.customerId | unknown | Customer ID of the routing rule. | 
+| OpsGenie.Team.RoutingRules.notify.id | unknown | Notify ID of the routing rule | 
+| OpsGenie.Team.RoutingRules.notify.name | unknown | Notify Name of the routing rule | 
+| OpsGenie.Team.RoutingRules.notify.type | unknown | Notify Type of the routing rule | 
