@@ -5305,7 +5305,8 @@
                 "GoogleDrive"
             ],
             "playbookID": "GoogleSheets-Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 500
         },
         {
             "integrations": "CloudflareWAF",
