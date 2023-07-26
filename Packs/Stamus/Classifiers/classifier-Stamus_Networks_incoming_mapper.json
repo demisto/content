@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Stamus Networks incoming mapper",
     "mapping": {
-        "Stamus Networks": {
+        "Stamus Networks DoC": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "StamusFamily": {
@@ -45,11 +45,8 @@
                 "StamusTimestamp": {
                     "simple": "timestamp"
                 },
-                "Stamusthreat": {
+                "StamusThreat": {
                     "simple": "threat"
-                },
-                "Stamusthreatid": {
-                    "simple": "threat_id"
                 }
             }
         },
