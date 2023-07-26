@@ -1,0 +1,25 @@
+!reversinglabs-titaniumcloud-advanced-search query="av-count:5 available:TRUE" result_limit="2"
+!reversinglabs-titaniumcloud-analyze-url url="http://34.150.1.150/hBQ"
+!reversinglabs-titaniumcloud-av-scanners hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
+!reversinglabs-titaniumcloud-certificate-analytics certificate_thumbprint="86900D438047F6D00ACE379C6E68A9461BA36ACD152C9E82EDDBE87B331F3E4A"
+!reversinglabs-titaniumcloud-expression-search query="threat_level>=3 status=malicious malware_family=CVE-2017-11882" result_limit="2"
+!reversinglabs-titaniumcloud-file-analysis hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
+!reversinglabs-titaniumcloud-file-download hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
+!reversinglabs-titaniumcloud-file-reputation hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
+!reversinglabs-titaniumcloud-file-upload entryId=7612@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59
+!reversinglabs-titaniumcloud-get-dynamic-analysis-results sha1=21841b32c6165b27dddbd4d6eb3a672defe54271
+!reversinglabs-titaniumcloud-imphash-similarity imphash=fb815acbc7109e8c83537d7d9c7020be max_results=2
+!reversinglabs-titaniumcloud-reanalyze-sample hash=21841b32c6165b27dddbd4d6eb3a672defe54271
+!reversinglabs-titaniumcloud-rha1-analytics hash=21841b32c6165b27dddbd4d6eb3a672defe54271
+!reversinglabs-titaniumcloud-rha1-functional-similarity hash=21841b32c6165b27dddbd4d6eb3a672defe54271 result_limit=2
+!reversinglabs-titaniumcloud-submit-for-dynamic-analysis sha1=21841b32c6165b27dddbd4d6eb3a672defe54271 platform=windows10
+!reversinglabs-titaniumcloud-uri-index uri=8.8.4.4 result_limit=2
+!reversinglabs-titaniumcloud-uri-statistics uri=127.0.0.1
+!reversinglabs-titaniumcloud-url-analyses-feed-from-date results_per_page=2 max_results=2 time_format=timestamp start_time=1685976746
+!reversinglabs-titaniumcloud-url-downloaded-files max_results=2 url=https://www.nytimes.com/ extended_results=true results_per_page=2
+!reversinglabs-titaniumcloud-url-latest-analyses-feed results_per_page=2 max_results=2
+!reversinglabs-titaniumcloud-url-report url="http://classicairjordanshoes.com/classic-air-jordan-9-c-7.html?zenid=egbmmbi039iqms5ho5dt2qnunm0mettt"
+!reversinglabs-titaniumcloud-yara-matches-feed time_format=timestamp time_value=1686149726
+!reversinglabs-titaniumcloud-yara-retro-hunt-actions yara_retro_action="CHECK STATUS" ruleset_name=SuperHunt
+!reversinglabs-titaniumcloud-yara-retro-matches-feed time_format=timestamp time_value=1686063146
+!reversinglabs-titaniumcloud-yara-ruleset-actions ruleset_name=SuperHunt yara_action="GET RULESET INFO"

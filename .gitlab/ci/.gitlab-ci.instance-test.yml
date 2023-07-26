@@ -1,0 +1,22 @@
+.instance-test-rule:
+  rules:
+    - if: '$INSTANCE_TESTS'
+
+test_instances:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .instance-test-rule
+  needs: [ "xsoar-prepare-testing-bucket" ]
+  stage: run-instances
+  dependencies:
+    - xsoar-prepare-testing-bucket
+  script:
+    - EXIT_CODE=0
+    - !reference [.download-demisto-conf]
+    - !reference [.ssh-config-setup]
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/scripts/instance_test.sh || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - exit "$EXIT_CODE"
