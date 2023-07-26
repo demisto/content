@@ -2744,6 +2744,19 @@ def slack_get_integration_context_statistics():
     return context_statistics, integration_context
 
 
+def user_session_reset():
+    user_id = demisto.args().get('user_id')
+    body = {
+        'user_id': user_id,
+    }
+    try:
+        send_slack_request_sync(CLIENT, 'admin.users.session.reset', body=body)
+        return_results('The session was reset successfully.')
+
+    except SlackApiError as slack_error:
+        return_error(f"{slack_error}")
+
+
 def fetch_samples():
     """
     The integration fetches incidents in the long-running-execution command. Fetch incidents is called
@@ -2775,7 +2788,8 @@ def main() -> None:
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
-        'slack-pin-message': pin_message
+        'slack-pin-message': pin_message,
+        'slack-user-session-reset': user_session_reset
     }
 
     command_name: str = demisto.command()
