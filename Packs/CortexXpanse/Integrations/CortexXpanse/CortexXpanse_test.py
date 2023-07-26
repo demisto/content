@@ -38,11 +38,11 @@ def test_list_external_service_command(requests_mock):
 
     from test_data.raw_response import EXTERNAL_SERVICES_RESPONSE
     from test_data.expected_results import EXTERNAL_SERVICES_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/get_external_services/',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_external_services/',
                        json=EXTERNAL_SERVICES_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -77,11 +77,11 @@ def test_get_external_service_command(requests_mock):
 
     from test_data.raw_response import EXTERNAL_SERVICE_RESPONSE
     from test_data.expected_results import EXTERNAL_SERVICE_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/get_external_service',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_external_service',
                        json=EXTERNAL_SERVICE_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -116,11 +116,11 @@ def test_list_external_ip_address_range_command(requests_mock):
 
     from test_data.raw_response import EXTERNAL_RANGES_RESPONSE
     from test_data.expected_results import EXTERNAL_RANGES_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/get_external_ip_address_ranges/',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_external_ip_address_ranges/',
                        json=EXTERNAL_RANGES_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -152,11 +152,11 @@ def test_get_external_ip_address_range_command(requests_mock):
 
     from test_data.raw_response import EXTERNAL_RANGE_RESPONSE
     from test_data.expected_results import EXTERNAL_RANGE_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/get_external_ip_address_range/',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_external_ip_address_range/',
                        json=EXTERNAL_RANGE_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -190,11 +190,11 @@ def test_list_asset_internet_exposure_command(requests_mock):
 
     from test_data.raw_response import EXTERNAL_EXPOSURES_RESPONSE
     from test_data.expected_results import EXTERNAL_EXPOSURES_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/get_assets_internet_exposure/',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=EXTERNAL_EXPOSURES_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -228,11 +228,11 @@ def test_get_asset_internet_exposure_command(requests_mock):
 
     from test_data.raw_response import EXTERNAL_EXPOSURE_RESPONSE
     from test_data.expected_results import EXTERNAL_EXPOSURE_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/assets/get_asset_internet_exposure/',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_asset_internet_exposure/',
                        json=EXTERNAL_EXPOSURE_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -266,11 +266,11 @@ def test_list_alerts_command(requests_mock):
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
     from test_data.expected_results import LIST_ALERTS_RESULTS
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts/',
+    requests_mock.post('https://test.com/public_api/v2/alerts/get_alerts_multi_events/',
                        json=LIST_ALERTS_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -291,6 +291,313 @@ def test_list_alerts_command(requests_mock):
     assert response.outputs_key_field == 'alert_id'
 
 
+def test_list_attack_surface_rules_command(requests_mock):
+    """Tests list_attack_surface_rules_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate list_attack_surface_rules_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'list_attack_surface_rules_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, list_attack_surface_rules_command
+
+    from test_data.raw_response import ATTACK_SURFACE_RULES_RAW
+    from test_data.expected_results import ATTACK_SURFACE_RULES_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/get_attack_surface_rules/',
+                       json=ATTACK_SURFACE_RULES_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'enabled_status': 'on',
+        'severity': 'high',
+        'limit': 2
+    }
+
+    response = list_attack_surface_rules_command(client, args)
+
+    assert response.outputs == ATTACK_SURFACE_RULES_RESULTS
+    assert response.outputs_prefix == 'ASM.AttackSurfaceRules'
+    assert response.outputs_key_field == 'attack_surface_rule_id'
+
+
+def test_assign_tag_to_assets_command(requests_mock):
+    """Tests assign_tag_to_assets_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate assign_tag_to_assets_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'assign_tag_to_assets_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, assign_tag_to_assets_command
+
+    from test_data.raw_response import TAG_APPLY_RAW
+    from test_data.expected_results import TAG_APPLY_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/assets_internet_exposure/assign/',
+                       json=TAG_APPLY_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = assign_tag_to_assets_command(client, args)
+
+    assert response.outputs == TAG_APPLY_RESULTS
+    assert response.outputs_prefix == 'ASM.TagAssignment'
+
+
+def test_remove_tag_to_assets_command(requests_mock):
+    """Tests remove_tag_to_assets_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate remove_tag_to_assets_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'assign_tag_to_assets_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, remove_tag_to_assets_command
+
+    from test_data.raw_response import TAG_REMOVE_RAW
+    from test_data.expected_results import TAG_REMOVE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/assets_internet_exposure/remove/',
+                       json=TAG_REMOVE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'asm_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = remove_tag_to_assets_command(client, args)
+
+    assert response.outputs == TAG_REMOVE_RESULTS
+    assert response.outputs_prefix == 'ASM.TagRemoval'
+
+
+def test_assign_tag_to_ranges_command(requests_mock):
+    """Tests assign_tag_to_ranges_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate assign_tag_to_ranges_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'assign_tag_to_ranges_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, assign_tag_to_ranges_command
+
+    from test_data.raw_response import TAG_APPLY_RAW
+    from test_data.expected_results import TAG_APPLY_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/assign/',
+                       json=TAG_APPLY_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'range_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = assign_tag_to_ranges_command(client, args)
+
+    assert response.outputs == TAG_APPLY_RESULTS
+    assert response.outputs_prefix == 'ASM.TagAssignment'
+
+
+def test_remove_tag_to_ranges_command(requests_mock):
+    """Tests remove_tag_to_ranges_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate remove_tag_to_assets_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'remove_tag_to_ranges_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, remove_tag_to_ranges_command
+
+    from test_data.raw_response import TAG_REMOVE_RAW
+    from test_data.expected_results import TAG_REMOVE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/tags/external_ip_address_ranges/remove/',
+                       json=TAG_REMOVE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'range_id_list': '11111111-1111-1111-1111-111111111111',
+        'tags': 'Test'
+    }
+
+    response = remove_tag_to_ranges_command(client, args)
+
+    assert response.outputs == TAG_REMOVE_RESULTS
+    assert response.outputs_prefix == 'ASM.TagRemoval'
+
+
+def test_list_incidents_command(requests_mock):
+    """Tests list_incidents_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate list_incidents_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'list_incidents_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, list_incidents_command
+
+    from test_data.raw_response import LIST_INCIDENTS_RAW
+    from test_data.expected_results import LIST_INCIDENTS_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/incidents/get_incidents/',
+                       json=LIST_INCIDENTS_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'limit': 1,
+        'status': 'new'
+    }
+
+    response = list_incidents_command(client, args)
+
+    assert response.outputs == LIST_INCIDENTS_RESULTS
+    assert response.outputs_prefix == 'ASM.Incident'
+    assert response.outputs_key_field == 'incident_id'
+
+
+def test_update_incident_command(requests_mock):
+    """Tests update_incident_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate update_incident_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'update_incident_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, update_incident_command
+
+    from test_data.raw_response import INCIDENT_UPDATE_RAW
+    from test_data.expected_results import INCIDENT_UPDATE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/incidents/update_incident/',
+                       json=INCIDENT_UPDATE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'incident_id': 1,
+        'status': 'new'
+    }
+
+    response = update_incident_command(client, args)
+
+    assert response.outputs == INCIDENT_UPDATE_RESULTS
+    assert response.outputs_prefix == 'ASM.IncidentUpdate'
+
+
+def test_update_alert_command(requests_mock):
+    """Tests update_alert_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate update_alert_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'update_alert_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, update_alert_command
+
+    from test_data.raw_response import ALERT_UPDATE_RAW
+    from test_data.expected_results import ALERT_UPDATE_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/alerts/update_alerts/',
+                       json=ALERT_UPDATE_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'alert_id_list': 602,
+        'status': 'new'
+    }
+
+    response = update_alert_command(client, args)
+
+    assert response.outputs == ALERT_UPDATE_RESULTS
+    assert response.outputs_prefix == 'ASM.UpdatedAlerts'
+
+
 def test_fetch_incidents(requests_mock, mocker):
     """Tests fetch_incidents function.
 
@@ -306,11 +613,11 @@ def test_fetch_incidents(requests_mock, mocker):
     import json
 
     from test_data.raw_response import LIST_ALERTS_RESPONSE
-    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts/',
+    requests_mock.post('https://test.com/public_api/v2/alerts/get_alerts_multi_events/',
                        json=LIST_ALERTS_RESPONSE)
 
     client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1',
+        base_url='https://test.com',
         verify=True,
         headers={
             "HOST": "test.com",
@@ -325,7 +632,9 @@ def test_fetch_incidents(requests_mock, mocker):
         max_fetch=2,
         last_run=last_run,
         first_fetch_time=1658452708759,
-        severity=None)
+        severity=None,
+        status=None,
+        tags=None)
 
     assert len(incidents) == 2
     assert incidents[0]['name'] == "Networking Infrastructure"
