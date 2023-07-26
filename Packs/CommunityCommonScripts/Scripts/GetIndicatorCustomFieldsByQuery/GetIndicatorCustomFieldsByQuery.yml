@@ -1,0 +1,68 @@
+commonfields:
+  id: GetIndicatorCustomFieldsByQuery
+  version: -1
+name: GetIndicatorCustomFieldsByQuery
+script: |
+  register_module_line('GetIndicatorCustomFieldsByQuery', 'start', __line__())
+
+
+
+  """
+  Searches the TIM DB for device indicators based on the provided query string and returns along with their custom fields.
+  """
+
+
+  def search_indicators(query, max_size):
+      result = []
+      indicators = demisto.searchIndicators(
+          query=query,
+          size=max_size, page=0
+      )
+
+      for indicator in indicators.get("iocs"):
+          indicator_dict = {
+              "value": indicator.get("value"),
+              "type": indicator.get("indicator_type")
+          }
+
+          if (indicator.get("CustomFields")):
+              indicator_dict = {**indicator_dict, **indicator.get("CustomFields")}
+              result.append(indicator_dict)
+
+      return result
+
+
+  def main():
+      query = demisto.args().get("query", "")
+      max_size = arg_to_number(demisto.args().get("max", 1000))
+      outputs = search_indicators(query, max_size)
+      return_results(
+          CommandResults(
+              outputs_prefix="GetIndicatorCustomFieldsByQuery",
+              outputs=outputs,
+              readable_output=tableToMarkdown("Indicator Query Result", outputs)
+          ))
+
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      main()
+
+  register_module_line('GetIndicatorCustomFieldsByQuery', 'end', __line__())
+type: python
+tags: []
+comment: Returns indicator custom fields into the context by the given query.
+enabled: true
+args:
+- name: query
+  description: The complete XSOAR indicator query.
+outputs:
+- contextPath: GetIndicatorFieldsByQuery
+  description: The matched indicator value, type, and custom fields.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.65389
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
