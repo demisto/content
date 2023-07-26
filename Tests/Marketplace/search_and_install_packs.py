@@ -34,34 +34,32 @@ PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH
 SUCCESS_FLAG = True
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
+GITLAB_URL = os.getenv('CI_SERVER_URL')
+GITLAB_API_TOKEN = os.getenv('GITLAB_API_READ_TOKEN')
+GITLAB_SESSION = Session()
+GITLAB_PACK_METADATA_URL = '{gitlab_url}/api/v4/projects/2596/repository/files/Packs%2F{pack_id}%2Fpack_metadata.json'
 
+
+@lru_cache
 def get_env_var(var_name: str) -> str:
     """
-    Get an environment variable's value, raise an error if it's not set.
+    Get an environment variable.
+    This method adds a cache layer to the 'os.getenv' method, and raises an error if the variable is not set.
 
     Args:
         var_name (str): Name of the environment variable to get.
 
     Returns:
-        str: The value of the environment variable.
-
-    Raises:
-        ValueError: If the environment variable is not set.
+        str: Value of the environment variable.
     """
-    if value := os.getenv(var_name):
-        return value
+    var_value = os.getenv(var_name)
+    if not var_value:
+        raise ValueError(f"Environment variable '{var_name}' is not set.")
 
-    raise ValueError(f"Required environment variable '{var_name}' is not set.")
-
-
-MASTER_COMMIT_HASH = get_env_var("LAST_UPLOAD_COMMIT")
-GITLAB_API_TOKEN = get_env_var('GITLAB_API_READ_TOKEN')
-GITLAB_SESSION = Session()
-GITLAB_SESSION.headers.update({'PRIVATE-TOKEN': GITLAB_API_TOKEN})
-GITLAB_PACK_METADATA_URL = 'https://code.pan.run/api/v4/projects/2596/repository/files/Packs%2F{pack_id}%2Fpack_metadata.json'  # noqa: E501
+    return var_value
 
 
-@lru_cache
+@lru_cache(maxsize=128)
 def fetch_pack_metadata_from_gitlab(pack_id: str, commit_hash: str) -> dict:
     """
     Fetch pack metadata from master (a commit hash of the master branch when the build was triggered) using GitLab's API.
@@ -73,15 +71,17 @@ def fetch_pack_metadata_from_gitlab(pack_id: str, commit_hash: str) -> dict:
     Returns:
         dict: A dictionary containing pack's metadata.
     """
-    api_url = GITLAB_PACK_METADATA_URL.format(pack_id=pack_id)
-    response = GITLAB_SESSION.get(api_url, params={'ref': commit_hash})
+    api_url = GITLAB_PACK_METADATA_URL.format(gitlab_url=get_env_var('CI_SERVER_URL'), pack_id=pack_id)
+    logging.debug(f"Fetching 'pack_metadata.json' file from GitLab for pack '{pack_id}'...")
+    response = GITLAB_SESSION.get(api_url,
+                                  headers={'PRIVATE-TOKEN': get_env_var('GITLAB_API_READ_TOKEN')},
+                                  params={'ref': commit_hash})
 
     if response.status_code != 200:
         logging.error(f"Failed to fetch pack metadata from GitLab for pack '{pack_id}'.\n"
                       f"Response code: {response.status_code}\nResponse body: {response.text}")
         response.raise_for_status()
 
-    logging.debug(f"Successfully fetched 'pack_metadata.json' file from GitLab for pack '{pack_id}'.")
     file_data_b64 = response.json()['content']
     file_data = base64.b64decode(file_data_b64).decode('utf-8')
 
@@ -89,7 +89,7 @@ def fetch_pack_metadata_from_gitlab(pack_id: str, commit_hash: str) -> dict:
 
 
 def is_pack_deprecated(pack_id: str, check_locally: bool = True,
-                       master_commit_hash: str | None = None, pack_api_data: dict | None = None) -> bool:
+                       commit_hash: str | None = None, pack_api_data: dict | None = None) -> bool:
     """
     Check whether a pack is deprecated or not.
     If an error is encountered, and status can't be checked properly,
@@ -98,13 +98,13 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True,
     Note:
         If 'check_locally' is False, one of 'master_commit_hash' or 'pack_api_data' must be provided in order to determine
         whether the pack is deprecated or not.
-        'master_commit_hash' is used to fetch pack's metadata from the master branch,
+        'commit_hash' is used to fetch pack's metadata from a specific commit hash (usually 'master'),
         'pack_api_data' is the API data of a specific pack item (and not the complete response with a list of packs).
 
     Args:
         pack_id (str): ID of the pack to check.
         check_locally (bool): Whether to check locally ('pack_metadata.json' file) or not.
-        master_commit_hash (str, optional): Commit hash of the master branch to use if 'check_locally' is False.
+        commit_hash (str, optional): Commit hash of the master branch to use if 'check_locally' is False.
             If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
         pack_api_data (dict | None, optional): Marketplace API data to use if 'check_locally' is False.
             Needs to be the API data of a specific pack item (and not the complete response with a list of packs).
@@ -133,10 +133,10 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True,
 
     else:
         if pack_api_data:
-            return pack_api_data['extras']['pack']['deprecated']
+            return pack_api_data['extras']['pack'].get('deprecated', False)
 
-        elif master_commit_hash:
-            return fetch_pack_metadata_from_gitlab(pack_id=pack_id, commit_hash=master_commit_hash).get('hidden', False)
+        elif commit_hash:
+            return fetch_pack_metadata_from_gitlab(pack_id=pack_id, commit_hash=commit_hash).get('hidden', False)
 
         else:
             raise ValueError("If not checking locally, either 'master_commit_hash' or 'pack_api_data' must be provided.")
@@ -425,6 +425,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      lock: Lock,
                                      collected_dependencies: list,
                                      is_post_update: bool,
+                                     commit_hash: str,
                                      multithreading: bool = True,
                                      batch_packs_install_request_body: list | None = None,
                                      ):
@@ -441,6 +442,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
         lock (Lock): A lock object.
         collected_dependencies (list): list of packs that are already in the list to install
         is_post_update (bool): Whether the installation is done in post-update or not (pre-update otherwise).
+        commit_hash (str): Commit hash to use for checking pack's deprecations status if GitLab's API is used.
+            If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
         multithreading (bool): Whether to install packs in parallel or not.
             If false - install all packs in one batch.
         batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
@@ -450,13 +453,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
     # Marketplace API data because the pack is not uploaded in to the bucket, resulting in API responses of "item not found".
     # To solve that, we fetch the 'pack_metadata.json' file from the master branch using GitLab's API.
     if not is_post_update:  # (pre-update)
-        master_commit_hash = os.getenv("LAST_UPLOAD_COMMIT")
-
-        if not master_commit_hash:
-            raise ValueError("'LAST_UPLOAD_COMMIT' environment variable is not set.")
-
         try:
-            is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=False, master_commit_hash=master_commit_hash)
+            is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=False, commit_hash=commit_hash)
 
         except Exception as ex:
             logging.error(f"Failed to check deprecation status of pack '{pack_id}' using GitLab's API.\n"
@@ -742,6 +740,10 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     batch_packs_install_request_body: list = []  # List of lists of packs to install if not using multithreading .
     # Each list contain one pack and its dependencies.
     collected_dependencies: list = []  # List of packs that are already in the list to install.
+    master_commit_hash = os.getenv("LAST_UPLOAD_COMMIT")
+
+    if not master_commit_hash:
+        raise ValueError("Required 'LAST_UPLOAD_COMMIT' environment variable is missing.")
 
     lock = Lock()
 
@@ -754,6 +756,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         'is_post_update': is_post_update,
         'multithreading': multithreading,
         'batch_packs_install_request_body': batch_packs_install_request_body,
+        'commit_hash': master_commit_hash,
     }
 
     if is_post_update:
