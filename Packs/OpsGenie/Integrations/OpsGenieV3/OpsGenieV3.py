@@ -878,10 +878,11 @@ def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def get_team_routing_rules(client: Client, args: Dict[str, Any]) -> CommandResults:
     result = client.get_team_routing_rules(args)
+    data = result.get("data")
     return CommandResults(
         outputs_prefix="OpsGenie.Team.RoutingRules",
-        outputs=result.get("data"),
-        readable_output=tableToMarkdown("OpsGenie Team Routing Rules", result.get("data")),
+        outputs=data,
+        readable_output=tableToMarkdown("OpsGenie Team Routing Rules", data),
         raw_response=result
     )
 
