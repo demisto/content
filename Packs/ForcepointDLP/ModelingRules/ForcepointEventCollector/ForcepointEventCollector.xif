@@ -1,62 +1,45 @@
-[MODEL: dataset=netskope_netskope_raw, model=Network]
-alter XDM.Network.original_event_type=action,
-      XDM.Network.Destination.host.os_family=device,
-      XDM.Network.Destination.host.hostname=coalesce(dsthost, hostname),
-      XDM.Network.Destination.ipv4=dstip,
-      XDM.Network.Destination.port=dstport,
-      XDM.Network.ip_protocol=ip_protocol,
-      XDM.Network.Source.host.os=os,
-      XDM.Network.protocol_layers=arraycreate(protocol),
-      XDM.Network.duration=session_duration,
-      XDM.Network.Source.ipv4=srcip,
-      XDM.Network.Source.port=srcport,
-      XDM.Network.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
-      XDM.Network.Source.packets=total_packets,
-      XDM.Network.Destination.user.username=user,
-      XDM.Network.Destination.user.identifier=userkey,
-      XDM.Network.http.user_agent = useragent;
-
-[MODEL: dataset=netskope_netskope_raw, model=Audit]
-alter XDM.Audit.threat.severity=severity_level,
-      XDM.Audit.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
-      XDM.Audit.TriggeredBy.identity.name=user,
-      XDM.Audit.original_event_description=audit_log_event,
-      XDM.Audit.original_event_type=type
-| filter activity not in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
-| alter XDM.Audit.original_event_type=activity,
-        XDM.Audit.reason=alert,
-        XDM.Audit.threat.original_alert_id=to_string(incident_id),
-        XDM.Audit.TriggeredBy.location.country=src_country,
-        XDM.Audit.TriggeredBy.location.city=src_location,
-        XDM.Audit.TriggeredBy.location.region=src_region,
-        XDM.Audit.TriggeredBy.ipv4=coalesce(srcip, userip),
-        XDM.Audit.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
-        XDM.Audit.TriggeredBy.identity.name=user,
-        XDM.Audit.threat.severity=severity,
-        XDM.Audit.original_event_description=if(json_extract_scalar(supporting_data, "$.data_type") = "reason", json_extract_scalar(supporting_data, "$.data_values[0]"), ""),
-        //XDM.Audit.TriggeredBy.identity.name=if(json_extract_scalar(supporting_data, "$.data_type") = "user", if(array_length(json_extract_array(supporting_data, "$.data_values"))=1, json_extract_scalar(supporting_data, "$.data_values[0]"), json_extract_scalar(supporting_data, "$.data_values[1]"))),
-        XDM.Audit.TriggeredBy.location.geo=concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
-        XDM.Audit.TriggeredBy.user_agent = useragent;
-
-[MODEL: dataset=netskope_netskope_raw, model=Auth]
-filter activity in ("SignInEvent","Logout","Login Attempt","Login Successful","Login Failed")
-| alter XDM.Auth.auth_method=access_method,
-        XDM.Auth.original_event_type=activity,
-        XDM.Auth.Target.application.name=coalesce(app, managed_app),
-        XDM.Auth.Client.host.hostname=device,
-        XDM.Auth.Client.location.country=dst_country,
-        XDM.Auth.Client.location.region=dst_region,
-        XDM.Auth.Client.location.geo=concat("lat: ", to_string(src_latitude), " lon: ", to_string(dst_longitude)),
-        XDM.Auth.Client.process.executable.file_type=file_type,
-        XDM.Auth.Server.host.hostname=hostname,
-        XDM.Auth.Client.process.executable.md5=md5,
-        XDM.Auth.Client.host.os=os,
-        XDM.Auth.event_timestamp=to_timestamp(to_integer(timestamp), "SECONDS"),
-        XDM.Auth.Target.url=url,
-        XDM.Auth.Target.user.username=user,
-        XDM.Auth.Client.host.ipv4_addresses=arraycreate(userip),
-        XDM.Auth.reason=action,
-        XDM.Auth.threat.severity=severity,
-        XDM.Auth.Client.process.executable.sha256=coalesce(_sha256, sha256),
-        XDM.Auth.kerberos.padata_type=data_type,
-        XDM.Auth.Client.user_agent = useragent;
+[MODEL:dataset="forcepoint_dlp_raw"]
+alter   xdm.observer.action=action
+        xdm.event.outcome = if(action in ("AUTHORIZED", "RELEASED", "AUDITED", "ENDPOINT_CONFIRM_CONTINUE"), XDM_CONST.OUTCOME_SUCCESS, action in ("QUARANTINED", "BLOCKED", "ENDPOINT_CONFIRM_ABORT"), XDM_CONST.OUTCOME_FAILED)
+        xdm.observer.name=analyzed_by
+        xdm.event.type=channel
+        xdm.target.host.device_category = if(channel ~= "PRINT", "PRINTER", null)
+        xdm.email.recipients=if(channel = "EMAIL", split(destination, ";"), null)
+        xdm.target.host.hostname = if(channel = "ENDPOINT_PRINTING", destination)
+        xdm.target.url = if(channel ~= "HTTP|FTP", destination)
+        xdm.target.application.name = if(channel ~= "ENDPOINT_APPLICATION", destination)
+        xdm.target.ipv4 = arrayindex(regextract(destination, "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"), 0)
+        xdm.target.port = arrayindex(regextract(destination, "\w+:(\d{1,5})"), 0)
+        xdm.email.subject = if(channel = "EMAIL", details)
+        xdm.event.description=details
+        observer_type = arrayindex(regextract(detected_by, "(.+?)\s+on"), 0)
+| alter xdm.observer.type = coalesce(observer_type, detected_by)
+        xdm.source.host.device_category=endpoint_type
+        xdm.event.id=to_integer(event_id)
+        file_name_array = arraymap(regextract(file_name, "(.+?)\s+\-\s+\d+[\.\d]*\s+[KMGTP]*B;?"), trim("@element"))
+| alter file_type_array = arraymap(file_name_array, if("@element" ~= "\.[\w]+$", arrayindex(regextract("@element", ".+?\.(\w+)$"), 0), ""))
+| alter xdm.target.file.filename = arraystring(file_name_array, ";")
+        xdm.target.file.file_type = arraystring(file_type_array, ";")
+        xdm.email.attachment.filename = if(channel ~= "EMAIL", file_name_array)
+        xdm.email.attachment.file_type =  if(channel ~= "EMAIL", file_type_array)
+        xdm.target.file.path = if(channel = "ENDPOINT_LAN", destination)
+        xdm.alert.original_alert_id=id
+        xdm.network.rule=policies
+        xdm.alert.severity=severity
+        xdm.source.user.groups = split(json_extract_scalar(source, "$.business_unit"), ",")
+        xdm.source.user.ou=json_extract_scalar(source, "$.department")
+        xdm.email.sender=json_extract_scalar(source, "$.email_address")
+        xdm.source.host.hostname=json_extract_scalar(source, "$.host_name")
+        ip_address = json_extract_scalar(source,  "$.ip_address"),
+| alter xdm.source.ipv6 = if(ip_address ~= "\:[a-fA-F\d]{1,4}|[a-fA-F\d]{1,4}\:", ip_address, null),
+        xdm.source.ipv4 = if(ip_address ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", ip_address, null)
+        username = json_extract_scalar(source,  "$.login_name"),
+        nt_domain = json_extract_scalar(source,  "$.nt_domain")
+        email_address = json_extract_scalar(source,  "$.email_address")
+| alter xdm.source.user.username=coalesce(username, email_address)
+        user_domain = arrayindex(regextract(username, "([^\\]+)\\"), 0)
+| alter xdm.source.user.domain = coalesce(nt_domain, user_domain)
+        xdm.event.is_completed = if(uppercase(status) ~= "CLOSE|FALSE.POSITIVE", true, false)
+        xdm.event.tags = arraycreate(tag)
+        xdm.target.file.size=to_integer(transaction_size)
+        xdm.source.sent_packets=to_integer(violation_triggers)
