@@ -7,7 +7,6 @@ from functools import partial
 import enum
 import html
 
-
 import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
@@ -335,9 +334,9 @@ def http_request(uri: str, method: str, headers: dict = {},
 
             # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
-                json_result['response']['msg']['line'].find('job') != -1 and \
-                (json_result['response']['msg']['line'].find('not found') != -1
-                 or json_result['response']['msg']['line'].find('No such query job')) != -1:
+                    json_result['response']['msg']['line'].find('job') != -1 and \
+                    (json_result['response']['msg']['line'].find('not found') != -1
+                     or json_result['response']['msg']['line'].find('No such query job')) != -1:
                 raise Exception('Invalid Job ID error: ' + json_result['response']['msg']['line'])
 
             # catch already at the top/bottom error for rules and return this as an entry.note
@@ -428,10 +427,10 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
 
 
 def do_pagination(
-    entries: list,
-    page: Optional[int] = None,
-    page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
-    limit: int = DEFAULT_LIMIT_PAGE_SIZE
+        entries: list,
+        page: Optional[int] = None,
+        page_size: int = DEFAULT_LIMIT_PAGE_SIZE,
+        limit: int = DEFAULT_LIMIT_PAGE_SIZE
 ):
     if isinstance(entries, list) and page is not None:
         if page <= 0:
@@ -459,15 +458,15 @@ def extract_objects_info_by_key(_entry, _key):
 
 
 def build_body_request_to_edit_pan_os_object(
-    behavior,
-    object_name,
-    element_value,
-    is_listable,
-    xpath='',
-    should_contain_entries=True,
-    is_entry=False,
-    is_empty_tag=False,
-    is_commit_required=True
+        behavior,
+        object_name,
+        element_value,
+        is_listable,
+        xpath='',
+        should_contain_entries=True,
+        is_entry=False,
+        is_empty_tag=False,
+        is_commit_required=True
 ):
     """
     This function builds up a general body-request (element) to add/remove/replace an existing pan-os object by
@@ -601,7 +600,7 @@ def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = Fals
 def add_argument_target(arg: Optional[str], field_name: str) -> str:
     if arg:
         return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + \
-            field_name + '>'
+               field_name + '>'
     else:
         return ''
 
@@ -651,23 +650,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         'key': API_KEY,
         'where': where,  # default where will be bottom for BC purposes
         'element': add_argument_open(action, 'action', False)
-        + add_argument_target(target, 'target')
-        + add_argument_open(description, 'description', False)
-        + add_argument_list(source, 'source', True, True)
-        + add_argument_list(destination, 'destination', True, True)
-        + add_argument_list(application, 'application', True)
-        + add_argument_list(category, 'category', True)
-        + add_argument_list(source_user, 'source-user', True)
-        + add_argument_list(from_, 'from', True, True)  # default from will always be any
-        + add_argument_list(to, 'to', True, True)  # default to will always be any
-        + add_argument_list(service, 'service', True, True)
-        + add_argument_yes_no(negate_source, 'negate-source')
-        + add_argument_yes_no(negate_destination, 'negate-destination')
-        + add_argument_yes_no(disable, 'disabled')
-        + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-        + add_argument(log_forwarding, 'log-setting', False)
-        + add_argument_list(tags, 'tag', True)
-        + add_argument_profile_setting(profile_setting, 'profile-setting')
+                   + add_argument_target(target, 'target')
+                   + add_argument_open(description, 'description', False)
+                   + add_argument_list(source, 'source', True, True)
+                   + add_argument_list(destination, 'destination', True, True)
+                   + add_argument_list(application, 'application', True)
+                   + add_argument_list(category, 'category', True)
+                   + add_argument_list(source_user, 'source-user', True)
+                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                   + add_argument_list(to, 'to', True, True)  # default to will always be any
+                   + add_argument_list(service, 'service', True, True)
+                   + add_argument_yes_no(negate_source, 'negate-source')
+                   + add_argument_yes_no(negate_destination, 'negate-destination')
+                   + add_argument_yes_no(disable, 'disabled')
+                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+                   + add_argument(log_forwarding, 'log-setting', False)
+                   + add_argument_list(tags, 'tag', True)
+                   + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if dst:
         if where not in ('before', 'after'):
@@ -712,7 +711,8 @@ def get_pan_os_major_version() -> int:
     return major_version
 
 
-def build_xpath_filter(name_match: str | None = None, name_contains: str | None = None, filters: dict | None = None) -> str:
+def build_xpath_filter(name_match: str | None = None, name_contains: str | None = None,
+                       filters: dict | None = None) -> str:
     xpath_prefix = ''
     if name_match:
         xpath_prefix = f"@name='{name_match}'"
@@ -989,7 +989,8 @@ def panorama_commit_command(args: dict):
                 readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
             )
         else:  # nothing to commit in pan-os, hence even if polling=true, no reason to poll anymore.
-            commit_output = result.get('response', {}).get('msg') or 'There are no changes to commit.'  # type: ignore[assignment]
+            commit_output = result.get('response', {}).get(
+                'msg') or 'There are no changes to commit.'  # type: ignore[assignment]
             continue_to_poll = False
 
         return PollResult(
@@ -1599,7 +1600,7 @@ def panorama_create_address_command(args: dict):
     # make sure only one of fqdn/ip_netmask/ip_range/ip_wildcard was provided.
 
     if sum(
-        map(bool, [(fqdn is not None), (ip_netmask is not None), (ip_range is not None), (ip_wildcard is not None)])
+            map(bool, [(fqdn is not None), (ip_netmask is not None), (ip_range is not None), (ip_wildcard is not None)])
     ) != 1:
         raise DemistoException(
             f'Please specify exactly one of the following arguments: fqdn, ip_netmask, ip_range, ip_wildcard.'
@@ -1853,9 +1854,9 @@ def panorama_create_static_address_group(address_group_name: str, addresses: lis
               'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
               'key': API_KEY,
               'element': (
-                  "<static>" + add_argument_list(addresses, 'member', True)
-                  + "</static>" + add_argument(description, 'description', False)
-                  + add_argument_list(tags, 'tag', True)
+                      "<static>" + add_argument_list(addresses, 'member', True)
+                      + "</static>" + add_argument(description, 'description', False)
+                      + add_argument_list(tags, 'tag', True)
               )}
 
     result = http_request(
@@ -3013,12 +3014,12 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
 
 
 def panorama_get_url_category_command(
-    url_cmd: str,
-    url: str,
-    additional_suspicious: list,
-    additional_malicious: list,
-    reliability: str,
-    target: Optional[str] = None
+        url_cmd: str,
+        url: str,
+        additional_suspicious: list,
+        additional_malicious: list,
+        reliability: str,
+        target: Optional[str] = None
 ):
     """
     Get the url category from Palo Alto URL Filtering
@@ -3237,9 +3238,9 @@ def create_url_filter_params(
         override_block_list: Optional[str] = None,
         description: Optional[str] = None):
     element = add_argument_list(url_category_list, action, True) + \
-        add_argument_list(override_allow_list, 'allow-list', True) + \
-        add_argument_list(override_block_list, 'block-list', True) + \
-        add_argument(description, 'description', False)
+              add_argument_list(override_allow_list, 'allow-list', True) + \
+              add_argument_list(override_block_list, 'block-list', True) + \
+              add_argument(description, 'description', False)
     major_version = get_pan_os_major_version()
     if major_version <= 8:  # up to version 8.X included, the action xml tag needs to be added
         element += "<action>block</action>"
@@ -3356,7 +3357,8 @@ def panorama_edit_url_filter(url_filter_name: str, element_to_change: str, eleme
     allow_name, block_name = set_edit_url_filter_xpaths(major_version)
 
     if element_to_change == 'description':
-        params['xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
+        params[
+            'xpath'] = f"{XPATH_OBJECTS}profiles/url-filtering/entry[@name=\'{url_filter_name}\']/{element_to_change}"
         params['element'] = add_argument_open(element_value, 'description', False)
         result = http_request(URL, 'POST', body=params)
         url_filter_output['Description'] = element_value
@@ -3527,7 +3529,8 @@ def prettify_rule(rule: dict):
             'LogAtSessionStart': rule.get('log-start', ''),
             'LogForwarding': rule.get('log-setting', ''),
             'Schedule': rule.get('schedule', ''),
-            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()), None),  # pylint: disable=E1124
+            'QoSMarking': next(iter(rule_get(['qos', 'marking'], return_type=dict, default_return_value={}).keys()),
+                               None),  # pylint: disable=E1124
             'DisableServerResponseInspection': rule_get(['option', 'disable-server-response-inspection']),
         }
     }
@@ -3810,7 +3813,8 @@ def panorama_get_current_element(element_to_change: str, xpath: str, is_commit_r
 
 @logger
 def panorama_edit_rule_items(rulename: str, element_to_change: str, element_value: List[str], behaviour: str):
-    listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag', 'profile-setting']
+    listable_elements = ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag',
+                         'profile-setting']
     if element_to_change not in listable_elements:
         raise Exception(f'Adding objects is only available for the following Objects types:{listable_elements}')
     if element_to_change == 'target' and not DEVICE_GROUP:
@@ -3840,7 +3844,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     else:
         params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
-        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
+        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'],
+                                                             is_commit_required=False)
         if behaviour == 'add':
             values = list((set(current_objects_items)).union(set(element_value)))  # type: ignore[arg-type]
         else:  # remove
@@ -3854,7 +3859,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
                 else:
                     raise Exception(f'The object: {element_to_change} must have at least one item.')
 
-        params['element'] = add_argument_list(values, element_to_change, True) if 'element' not in params else params['element']
+        params['element'] = add_argument_list(values, element_to_change, True) if 'element' not in params else params[
+            'element']
         result = http_request(URL, 'POST', body=params)
 
     rule_output = {
@@ -3877,7 +3883,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
 
 
 def build_audit_comment_params(
-    name: str, audit_comment: str, pre_post: str, policy_type='security'
+        name: str, audit_comment: str, pre_post: str, policy_type='security'
 ) -> dict:
     """
     Builds up the params needed to update the audit comment of a policy rule.
@@ -5414,7 +5420,8 @@ def panorama_query_logs_command(args: dict):
                 readable_output = tableToMarkdown(
                     f'Query {log_type} Logs:',
                     pretty_logs,
-                    ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule', 'URLOrFilename'],
+                    ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule',
+                     'URLOrFilename'],
                     removeNull=True
                 )
 
@@ -5608,7 +5615,7 @@ def panorama_get_logs_command(args: dict):
         else:  # FIN
             query_logs_output['Status'] = 'Completed'
             if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response'][
-                    'result'] \
+                'result'] \
                     or 'logs' not in result['response']['result']['log']:
                 raise Exception('Missing logs in response.')
 
@@ -5799,7 +5806,8 @@ def readable_security_policy_match_outputs(context_list):
             table_name = 'Matching Security Policies:'
 
         readable_list.append(tableToMarkdown(table_name, context['Rules'], removeNull=True,
-                                             headers=['Name', 'Action', 'From', 'Source', 'To', 'Destination', 'Application'],
+                                             headers=['Name', 'Action', 'From', 'Source', 'To', 'Destination',
+                                                      'Application'],
                                              headerTransform=format_readable_security_policy_match_headers))
 
     return '\n'.join(readable_list)
@@ -5819,7 +5827,8 @@ def panorama_security_policy_match_command(args: dict):
     context_list = []
     raw_list = []
     for target, vsys in devices(targets=argToList(args.get('target')), vsys_s=argToList(args.get('vsys'))):
-        matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
+        matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_,
+                                                        to_,
                                                         protocol, source, source_user, target, vsys)
         if matching_rules:
 
@@ -8825,7 +8834,7 @@ class Topology:
             yield firewall
 
     def all(
-        self, filter_string: Optional[str] = None, target: Optional[str] = None
+            self, filter_string: Optional[str] = None, target: Optional[str] = None
     ) -> Iterator[Union[Firewall, Panorama]]:
         """
         Returns an iterable for all devices in the topology
@@ -8867,7 +8876,7 @@ class Topology:
 
     @classmethod
     def build_from_string(
-        cls, hostnames: str, username: str, password: str, port: Optional[int] = None, api_key: Optional[str] = None
+            cls, hostnames: str, username: str, password: str, port: Optional[int] = None, api_key: Optional[str] = None
     ):
         """
         Splits a csv list of hostnames and builds the topology based on it. This allows you to pass a series of PanOS hostnames
@@ -8952,10 +8961,10 @@ class Topology:
         )
 
     def get_all_object_containers(
-        self,
-        device_filter_string: Optional[str] = None,
-        container_name: Optional[str] = None,
-        top_level_devices_only: Optional[bool] = False,
+            self,
+            device_filter_string: Optional[str] = None,
+            container_name: Optional[str] = None,
+            top_level_devices_only: Optional[bool] = False,
     ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
         """
         Given a device, returns all the possible configuration containers that can contain objects -
@@ -9820,7 +9829,8 @@ class HygieneRemediation:
 
     @staticmethod
     def fix_log_forwarding_profile_enhanced_logging(topology: Topology,
-                                                    issues: List[ConfigurationHygieneIssue]) -> List[ConfigurationHygieneFix]:
+                                                    issues: List[ConfigurationHygieneIssue]) -> List[
+        ConfigurationHygieneFix]:
         """
         Given a list of hygiene issues, sourced by `pan-os-hygiene-check-log-forwarding`, enables enhanced application logging to
         fix that issue.
@@ -9829,8 +9839,8 @@ class HygieneRemediation:
         result = []
         for issue in issues:
             for device, container in topology.get_all_object_containers(
-                issue.hostid,
-                container_name=issue.container_name
+                    issue.hostid,
+                    container_name=issue.container_name
             ):
                 log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(
                     container)
@@ -9850,9 +9860,9 @@ class HygieneRemediation:
 
     @staticmethod
     def fix_security_zone_no_log_setting(
-        topology: Topology,
-        issues: List[ConfigurationHygieneIssue],
-        log_forwarding_profile: str
+            topology: Topology,
+            issues: List[ConfigurationHygieneIssue],
+            log_forwarding_profile: str
     ) -> List[ConfigurationHygieneFix]:
         """
         Given a list of Configuration Hygiene Issues, referencing security zones that do not have any log forwarding settings,
@@ -9863,8 +9873,8 @@ class HygieneRemediation:
         result = []
         for issue in issues:
             for device, container in topology.get_all_object_containers(
-                issue.hostid,
-                container_name=issue.container_name,
+                    issue.hostid,
+                    container_name=issue.container_name,
             ):
                 security_zones: List[Zone] = Zone.refreshall(container)
                 for security_zone in security_zones:
@@ -9927,8 +9937,8 @@ class HygieneRemediation:
         result = []
         for issue in issues:
             for device, container in topology.get_all_object_containers(
-                issue.hostid,
-                container_name=issue.container_name
+                    issue.hostid,
+                    container_name=issue.container_name
             ):
                 security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
                 for security_rule in security_rules:
@@ -9960,8 +9970,8 @@ class HygieneRemediation:
         result = []
         for issue in issues:
             for device, container in topology.get_all_object_containers(
-                issue.hostid,
-                container_name=issue.container_name
+                    issue.hostid,
+                    container_name=issue.container_name
             ):
                 security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
                 for security_rule in security_rules:
@@ -9997,12 +10007,12 @@ class ObjectGetter:
 
     @staticmethod
     def get_object_reference(
-        topology: Topology,
-        object_type: str,
-        device_filter_string: Optional[str] = None,
-        container_filter: Optional[str] = None,
-        object_name: Optional[str] = None,
-        use_regex: Optional[str] = None
+            topology: Topology,
+            object_type: str,
+            device_filter_string: Optional[str] = None,
+            container_filter: Optional[str] = None,
+            object_name: Optional[str] = None,
+            use_regex: Optional[str] = None
     ) -> List[PanosObjectReference]:
         """
         Given a string object type, returns all the matching objects by reference. The object type matches a pan-os-python
@@ -10023,8 +10033,8 @@ class ObjectGetter:
 
         object_references = []
         for device, container in topology.get_all_object_containers(
-            device_filter_string,
-            container_name=container_filter
+                device_filter_string,
+                container_name=container_filter
         ):
             unfiltered_objects = []
             # If the object class is a security rule we need to handle it specially
@@ -10150,8 +10160,8 @@ class HygieneLookups:
 
     @staticmethod
     def check_log_forwarding_profiles(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
     ):
         """
         Evaluates the log forwarding profiles configured througout the environment to validate at least one is present with the
@@ -10233,9 +10243,9 @@ class HygieneLookups:
 
     @staticmethod
     def get_conforming_threat_profiles(
-        profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]],
-        minimum_block_severities: List[str],
-        minimum_alert_severities: List[str]
+            profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]],
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str]
     ) -> Union[List[VulnerabilityProfile], List[AntiSpywareProfile]]:
         """
         Given a list of threat (vulnerability or spyware) profiles, return any that conform to best practices.
@@ -10277,10 +10287,10 @@ class HygieneLookups:
 
     @staticmethod
     def check_vulnerability_profiles(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
-        minimum_block_severities: Optional[List[str]] = None,
-        minimum_alert_severities: Optional[List[str]] = None
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
+            minimum_block_severities: Optional[List[str]] = None,
+            minimum_alert_severities: Optional[List[str]] = None
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
@@ -10332,10 +10342,10 @@ class HygieneLookups:
 
     @staticmethod
     def check_spyware_profiles(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
-        minimum_block_severities: Optional[List[str]] = None,
-        minimum_alert_severities: Optional[List[str]] = None
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
+            minimum_block_severities: Optional[List[str]] = None,
+            minimum_alert_severities: Optional[List[str]] = None
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
@@ -10424,10 +10434,10 @@ class HygieneLookups:
 
     @staticmethod
     def get_all_conforming_spyware_profiles(
-        topology: Topology,
-        minimum_block_severities: List[str],
-        minimum_alert_severities: List[str],
-        device_filter_str: Optional[str] = None,
+            topology: Topology,
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str],
+            device_filter_str: Optional[str] = None,
     ) -> List[PanosObjectReference]:
         """
         Searches the configuration for all spyware profiles that conform to best practices using the given minimum severities.
@@ -10458,10 +10468,10 @@ class HygieneLookups:
 
     @staticmethod
     def get_all_conforming_vulnerability_profiles(
-        topology: Topology,
-        minimum_block_severities: List[str],
-        minimum_alert_severities: List[str],
-        device_filter_str: Optional[str] = None,
+            topology: Topology,
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str],
+            device_filter_str: Optional[str] = None,
     ) -> List[PanosObjectReference]:
         """
         Searches the configuration for all vulnerability profiles that conform to PAN best practices using the given minimum
@@ -10529,7 +10539,8 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_zones(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    def check_security_zones(topology: Topology,
+                             device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
         """
         Check all security zones are configured with Log Forwarding profiles.
         :param device_filter_str: Filter checks to a specific device or devices
@@ -10541,8 +10552,8 @@ class HygieneLookups:
         # This is temporary only look at panorama because PAN-OS-PYTHON doesn't let us tell if a config
         # is template pushed yet
         for device, container in topology.get_all_object_containers(
-            device_filter_str,
-            top_level_devices_only=True
+                device_filter_str,
+                top_level_devices_only=True
         ):
             security_zones: List[Zone] = Zone.refreshall(container)
             for security_zone in security_zones:
@@ -10564,7 +10575,8 @@ class HygieneLookups:
         )
 
     @staticmethod
-    def check_security_rules(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    def check_security_rules(topology: Topology,
+                             device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
         """
         Check all security rules, in all rulebases, are configured with Log Forwarding and threat profiles.
         :param device_filter_str: Filter checks to a specific device or devices
@@ -10641,8 +10653,8 @@ class PanoramaCommand:
 
     @staticmethod
     def get_device_groups(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
     ) -> List[DeviceGroupInformation]:
         """
         Get all the device groups from Panorama and their associated devices.
@@ -10666,8 +10678,8 @@ class PanoramaCommand:
 
     @staticmethod
     def get_template_stacks(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
     ) -> List[TemplateStackInformation]:
         """
         Get all the template-stacks from Panorama and their associated devices.
@@ -10691,7 +10703,8 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def push_style(topology: Topology, device: Union[Firewall, Panorama], style: str, filter: Optional[List[str]] = None):
+    def push_style(topology: Topology, device: Union[Firewall, Panorama], style: str,
+                   filter: Optional[List[str]] = None):
         """
         Given a pan-os-python push style, a device and the topology object, work out what DGs and templates we need to push,
         then push them.
@@ -10709,7 +10722,8 @@ class PanoramaCommand:
             commit_groups = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
             commit_group_names = set([x.name for x in commit_groups])
         else:
-            raise DemistoException(f"Provided push style {style} is invalid. Please specify `device group` or `template stack`")
+            raise DemistoException(
+                f"Provided push style {style} is invalid. Please specify `device group` or `template stack`")
 
         if filter:
             commit_group_names = set([x for x in commit_group_names if x in filter])
@@ -10740,9 +10754,9 @@ class UniversalCommand:
 
     @staticmethod
     def get_system_info(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
-        target: Optional[str] = None
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
+            target: Optional[str] = None
     ) -> ShowSystemInfoCommandResult:
         """
         Get the running system information
@@ -10763,9 +10777,9 @@ class UniversalCommand:
 
     @staticmethod
     def get_available_software(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
-        target: Optional[str] = None
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
+            target: Optional[str] = None
     ) -> SoftwareVersionCommandResult:
         """
         Get all available software updates
@@ -10782,11 +10796,11 @@ class UniversalCommand:
 
     @staticmethod
     def download_software(
-        topology: Topology,
-        version: str,
-        sync: bool = False,
-        device_filter_str: Optional[str] = None,
-        target: Optional[str] = None
+            topology: Topology,
+            version: str,
+            sync: bool = False,
+            device_filter_str: Optional[str] = None,
+            target: Optional[str] = None
     ) -> DownloadSoftwareCommandResult:
         """
         Download the given software version to the device. This is an async command, and returns
@@ -10808,10 +10822,10 @@ class UniversalCommand:
 
     @staticmethod
     def install_software(
-        topology: Topology, version: str,
-        sync: Optional[bool] = False,
-        device_filter_str: Optional[str] = None,
-        target: Optional[str] = None
+            topology: Topology, version: str,
+            sync: Optional[bool] = False,
+            device_filter_str: Optional[str] = None,
+            target: Optional[str] = None
     ) -> InstallSoftwareCommandResult:
         """
         Start the installation process for the given software version.
@@ -10877,12 +10891,12 @@ class UniversalCommand:
 
     @staticmethod
     def show_jobs(
-        topology: Topology,
-        device_filter_str: Optional[str] = None,
-        job_type: Optional[str] = None,
-        status=None,
-        id: Optional[int] = None,
-        target: Optional[str] = None
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
+            job_type: Optional[str] = None,
+            status=None,
+            id: Optional[int] = None,
+            target: Optional[str] = None
     ) -> List[ShowJobsAllResultData]:
         """
         Returns all jobs running on the system.
@@ -10926,7 +10940,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_arp_table(
-        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowArpCommandResult:
         """
         Gets the ARP (Address Resolution Protocol) table
@@ -10950,7 +10964,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_counter_global(
-        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowCounterGlobalCommmandResult:
         """
         Gets the global counter details
@@ -10973,7 +10987,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_routing_summary(
-        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRouteSummaryCommandResult:
         """
         Gets the routing summary table
@@ -10994,7 +11008,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_bgp_peers(
-        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRoutingProtocolBGPCommandResult:
         """
         Gets all BGP peers
@@ -11033,7 +11047,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_ha_status(
-        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> List[ShowHAState] | ShowHAState:
         """
         Gets the HA status of the device. If HA is not enabled, assumes the device is active.
@@ -11109,7 +11123,7 @@ class FirewallCommand:
 
     @staticmethod
     def get_routes(
-        topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
+            topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
     ) -> ShowRoutingRouteCommandResult:
         """
         Gets the entire routing table.
@@ -11159,7 +11173,7 @@ def test_topology_connectivity(topology: Topology):
 
 
 def get_arp_tables(
-    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+        topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
 ) -> ShowArpCommandResult:
     """
     Gets all arp tables from all firewalls in the topology.
@@ -11171,7 +11185,7 @@ def get_arp_tables(
 
 
 def get_route_summaries(
-    topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
+        topology: Topology, device_filter_string: Optional[str] = None, target: Optional[str] = None
 ) -> ShowRouteSummaryCommandResult:
     """
     Pulls all route summary information from the topology
@@ -11195,9 +11209,9 @@ def get_routes(topology: Topology,
 
 
 def get_system_info(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    target: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
 ) -> ShowSystemInfoCommandResult:
     """
     Gets information from all PAN-OS systems in the topology.
@@ -11209,8 +11223,8 @@ def get_system_info(
 
 
 def get_device_groups(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
 ) -> List[DeviceGroupInformation]:
     """
     Gets the operational information of the device groups in the topology.
@@ -11221,8 +11235,8 @@ def get_device_groups(
 
 
 def get_template_stacks(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
 ) -> List[TemplateStackInformation]:
     """
     Gets the operational information of the template-stacks in the topology.
@@ -11233,9 +11247,9 @@ def get_template_stacks(
 
 
 def get_global_counters(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    target: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
 ) -> ShowCounterGlobalCommmandResult:
     """
     Gets global counter information from all the PAN-OS firewalls in the topology
@@ -11247,9 +11261,9 @@ def get_global_counters(
 
 
 def get_bgp_peers(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    target: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
 ) -> ShowRoutingProtocolBGPCommandResult:
     """
     Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
@@ -11261,9 +11275,9 @@ def get_bgp_peers(
 
 
 def get_available_software(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    target: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
 ) -> SoftwareVersionCommandResult:
     """
     Check the devices for software that is available to be installed.
@@ -11275,9 +11289,9 @@ def get_available_software(
 
 
 def get_ha_state(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    target: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        target: Optional[str] = None
 ) -> List[ShowHAState] | ShowHAState:
     """
     Get the HA state and associated details from the given device and any other details.
@@ -11290,12 +11304,12 @@ def get_ha_state(
 
 
 def get_jobs(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    status: Optional[str] = None,
-    job_type: Optional[str] = None,
-    id: Optional[str] = None,
-    target: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        status: Optional[str] = None,
+        job_type: Optional[str] = None,
+        id: Optional[str] = None,
+        target: Optional[str] = None
 ) -> List[ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
@@ -11321,11 +11335,11 @@ def get_jobs(
 
 
 def download_software(
-    topology: Topology,
-    version: str,
-    device_filter_string: Optional[str] = None,
-    sync: Optional[bool] = False,
-    target: Optional[str] = None
+        topology: Topology,
+        version: str,
+        device_filter_string: Optional[str] = None,
+        sync: Optional[bool] = False,
+        target: Optional[str] = None
 ) -> DownloadSoftwareCommandResult:
     """
     Download The provided software version onto the device.
@@ -11340,11 +11354,11 @@ def download_software(
 
 
 def install_software(
-    topology: Topology,
-    version: str,
-    device_filter_string: Optional[str] = None,
-    sync: Optional[bool] = False,
-    target: Optional[str] = None
+        topology: Topology,
+        version: str,
+        device_filter_string: Optional[str] = None,
+        sync: Optional[bool] = False,
+        target: Optional[str] = None
 ) -> InstallSoftwareCommandResult:
     """
     Install the given software version onto the device. Download the software first with
@@ -11394,8 +11408,8 @@ def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabi
 
 
 def check_log_forwarding(
-    topology: Topology,
-    device_filter_string: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks all log forwarding profiles to confirm at least one meets PAN best practices.  This will validate profiles
@@ -11408,10 +11422,10 @@ def check_log_forwarding(
 
 
 def check_vulnerability_profiles(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    minimum_block_severities: str = "critical,high",
-    minimum_alert_severities: str = "medium,low"
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Vulnerability profiles to ensure at least one meets best practices. This will validate profiles
@@ -11431,10 +11445,10 @@ def check_vulnerability_profiles(
 
 
 def check_spyware_profiles(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    minimum_block_severities: str = "critical,high",
-    minimum_alert_severities: str = "medium,low"
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
@@ -11453,8 +11467,8 @@ def check_spyware_profiles(
 
 
 def check_url_filtering_profiles(
-    topology: Topology,
-    device_filter_string: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured URL Filtering profiles to ensure at least one meets best practices.
@@ -11469,8 +11483,8 @@ def check_url_filtering_profiles(
 
 
 def get_conforming_url_filtering_profiles(
-    topology: Topology,
-    device_filter_string: Optional[str] = None
+        topology: Topology,
+        device_filter_string: Optional[str] = None
 ) -> List[PanosObjectReference]:
     """
     Returns a list of existing PANOS URL filtering objects that conform to best practices.
@@ -11485,10 +11499,10 @@ def get_conforming_url_filtering_profiles(
 
 
 def get_conforming_spyware_profiles(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    minimum_block_severities: str = "critical,high",
-    minimum_alert_severities: str = "medium,low"
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
 ) -> List[PanosObjectReference]:
     """
     Returns all Anti-spyware profiles that conform to best practices.
@@ -11507,10 +11521,10 @@ def get_conforming_spyware_profiles(
 
 
 def get_conforming_vulnerability_profiles(
-    topology: Topology,
-    device_filter_string: Optional[str] = None,
-    minimum_block_severities: str = "critical,high",
-    minimum_alert_severities: str = "medium,low"
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
 ) -> List[PanosObjectReference]:
     """
     Returns all Vulnerability profiles that conform to best practices.
@@ -11528,7 +11542,8 @@ def get_conforming_vulnerability_profiles(
     )
 
 
-def check_security_zones(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+def check_security_zones(topology: Topology,
+                         device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
     Check configured security zones have correct settings.
 
@@ -11538,7 +11553,8 @@ def check_security_zones(topology: Topology, device_filter_string: Optional[str]
     return HygieneLookups.check_security_zones(topology, device_filter_str=device_filter_string)
 
 
-def check_security_rules(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+def check_security_rules(topology: Topology,
+                         device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
     """
     Check security rules are configured correctly.
 
@@ -11581,13 +11597,14 @@ def fix_log_forwarding(topology: Topology, issue: List) -> List[ConfigurationHyg
     :param topology: `Topology` instance !no-auto-argument
     :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
     """
-    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology, issues=hygiene_issue_dict_to_object(issue))
+    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology,
+                                                                          issues=hygiene_issue_dict_to_object(issue))
 
 
 def fix_security_zone_log_setting(
-    topology: Topology,
-    issue: List,
-    log_forwarding_profile_name: str
+        topology: Topology,
+        issue: List,
+        log_forwarding_profile_name: str
 ) -> List[ConfigurationHygieneFix]:
     """
     Fixes security zones that are configured without a valid log forwarding profile.
@@ -11603,9 +11620,9 @@ def fix_security_zone_log_setting(
 
 
 def fix_security_rule_log_setting(
-    topology: Topology,
-    issue: List,
-    log_forwarding_profile_name: str
+        topology: Topology,
+        issue: List,
+        log_forwarding_profile_name: str
 ) -> List[ConfigurationHygieneFix]:
     """
     Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
@@ -11622,9 +11639,9 @@ def fix_security_rule_log_setting(
 
 
 def fix_security_rule_security_profile_group(
-    topology: Topology,
-    issue: List,
-    security_profile_group_name: str
+        topology: Topology,
+        issue: List,
+        security_profile_group_name: str
 ) -> List[ConfigurationHygieneFix]:
     """
     Fixed security rules that have no configured SPG by setting one.
@@ -11652,12 +11669,12 @@ class ObjectTypeEnum(enum.Enum):
 
 
 def get_object(
-    topology: Topology,
-    object_type: ObjectTypeEnum,
-    device_filter_string: Optional[str] = None,
-    object_name: Optional[str] = None,
-    parent: Optional[str] = None,
-    use_regex: Optional[str] = None
+        topology: Topology,
+        object_type: ObjectTypeEnum,
+        device_filter_string: Optional[str] = None,
+        object_name: Optional[str] = None,
+        parent: Optional[str] = None,
+        use_regex: Optional[str] = None
 ) -> List[PanosObjectReference]:
     """Searches and returns a reference for the given object type and name. If no name is provided, all
     objects of the given type are returned. Note this only returns a reference, and not the complete object
@@ -11716,10 +11733,10 @@ def get_topology() -> Topology:
 
 
 def dataclasses_to_command_results(
-    result: Any,
-    empty_result_message: str = "No results.",
-    override_table_name: Optional[str] = "",
-    override_table_headers: Optional[List[str]] = None
+        result: Any,
+        empty_result_message: str = "No results.",
+        override_table_name: Optional[str] = "",
+        override_table_headers: Optional[List[str]] = None
 ):
     """
     Given a dataclass or list of dataclasses, convert it into a tabular format and finally return CommandResults to demisto.
@@ -11941,7 +11958,8 @@ def get_pan_os_nat_rules(show_uncommited: bool, name: Optional[str] = None, pre_
         'action': 'get' if show_uncommited else 'show',
         'key': API_KEY,
         # rulebase is for firewall instance.
-        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)  # type: ignore[arg-type]
+        'xpath': build_nat_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)
+        # type: ignore[arg-type]
     }
 
     return http_request(URL, 'POST', params=params)
@@ -12215,7 +12233,7 @@ def pan_os_delete_nat_rule_command(args):
 
 
 def pan_os_edit_nat_rule(
-    rule_name, pre_post, behavior, element_to_change, element_value, object_name, is_listable=True
+        rule_name, pre_post, behavior, element_to_change, element_value, object_name, is_listable=True
 ):
     xpath = build_nat_xpath(name=rule_name, pre_post='rulebase' if VSYS else pre_post, element=element_to_change)
 
@@ -12424,7 +12442,7 @@ def pan_os_list_virtual_routers_command(args):
 
 
 def build_redistribution_profile_xpath(
-    virtual_router_name: Optional[str], redistribution_profile_name: Optional[str], element: Optional[str] = None
+        virtual_router_name: Optional[str], redistribution_profile_name: Optional[str], element: Optional[str] = None
 ):
     _xpath = f"{build_virtual_routers_xpath(virtual_router_name)}/protocol/redist-profile"
     if redistribution_profile_name:
@@ -12439,7 +12457,8 @@ def pan_os_list_redistribution_profile(virtual_router_name: Optional[str], redis
         'type': 'config',
         'action': 'get',
         'key': API_KEY,
-        'xpath': build_redistribution_profile_xpath(virtual_router_name, redistribution_profile_name)  # type: ignore[arg-type]
+        'xpath': build_redistribution_profile_xpath(virtual_router_name, redistribution_profile_name)
+        # type: ignore[arg-type]
     }
 
     return http_request(URL, 'POST', params=params)
@@ -12516,7 +12535,8 @@ def pan_os_create_redistribution_profile(args):
         def _set_up_ospf_filter_body_request():
             _ospf_filter_body_request = {}
             if filter_ospf_path_type := args.get('filter_ospf_path_type'):
-                _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('path-type', filter_ospf_path_type))
+                _ospf_filter_body_request.update(
+                    prepare_pan_os_objects_body_request('path-type', filter_ospf_path_type))
             if filter_ospf_area := args.get('filter_ospf_area'):
                 _ospf_filter_body_request.update(prepare_pan_os_objects_body_request('area', filter_ospf_area))
             if filter_ospf_tag := args.get('filter_ospf_tag'):
@@ -12545,7 +12565,8 @@ def pan_os_create_redistribution_profile(args):
 
             for argument, pan_os_object_path in _arguments_to_pan_os_paths.items():
                 if argument_value := args.get(argument):
-                    _general_filters_body_request.update(prepare_pan_os_objects_body_request(pan_os_object_path, argument_value))
+                    _general_filters_body_request.update(
+                        prepare_pan_os_objects_body_request(pan_os_object_path, argument_value))
 
             return _general_filters_body_request
 
@@ -12591,13 +12612,13 @@ def pan_os_create_redistribution_profile_command(args):
 
 
 def pan_os_edit_redistribution_profile(
-    virtual_router_name,
-    redistribution_profile_name,
-    element_to_change,
-    element_value,
-    object_name,
-    is_listable,
-    behavior
+        virtual_router_name,
+        redistribution_profile_name,
+        element_to_change,
+        element_value,
+        object_name,
+        is_listable,
+        behavior
 ):
     xpath = build_redistribution_profile_xpath(
         virtual_router_name, redistribution_profile_name, element=element_to_change
@@ -12709,7 +12730,8 @@ def pan_os_list_pbf_rules(name, pre_post, show_uncommitted, filters, query):
         'action': 'get' if show_uncommitted else 'show',
         'key': API_KEY,
         # rulebase is for firewall instance.
-        'xpath': build_pbf_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)  # type: ignore[arg-type]
+        'xpath': build_pbf_xpath(name, 'rulebase' if VSYS else pre_post, filters=filters, query=query)
+        # type: ignore[arg-type]
     }
 
     return http_request(URL, 'GET', params=params)
@@ -12901,7 +12923,7 @@ def pan_os_create_pbf_rule_command(args):
 
 
 def pan_os_edit_pbf_rule(
-    rule_name, element_value, pre_post, element_to_change, object_name, is_listable, behavior
+        rule_name, element_value, pre_post, element_to_change, object_name, is_listable, behavior
 ):
     xpath = build_pbf_xpath(
         name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
@@ -13329,10 +13351,10 @@ def pan_os_list_tag_command(args: dict) -> CommandResults:
 
 
 def pan_os_create_tag(
-    tag_name: str,
-    disable_override: bool,
-    is_shared: bool,
-    comment: str
+        tag_name: str,
+        disable_override: bool,
+        is_shared: bool,
+        comment: str
 ) -> dict:
     """builds the params and sends the request to create the tag.
 
@@ -13382,11 +13404,11 @@ def pan_os_create_tag_command(args: dict) -> CommandResults:
 
 
 def pan_os_edit_tag(
-    tag_name: str,
-    new_tag_name: str,
-    disable_override: bool,
-    comment: str,
-    color: Optional[str]
+        tag_name: str,
+        new_tag_name: str,
+        disable_override: bool,
+        comment: str,
+        color: Optional[str]
 ) -> dict:
     """builds the params and sends the request to edit the tag.
 
@@ -13523,7 +13545,8 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     Returns:
         job_id (str): returns the Job ID associated with the given query
     """
-    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch, dir='forward')
+    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch,
+                           dir='forward')
     demisto.debug(f'{query=}')
     response = http_request(URL, 'GET', params=params)
     return response.get('response', {}).get('result', {}).get('job')
@@ -13669,8 +13692,9 @@ def create_max_fetch_dict(queries_dict: Dict[str, str], configured_max_fetch: in
     return {key: configured_max_fetch for key in queries_dict}
 
 
-def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, int], last_fetch_dict: Dict[str, str]) -> Dict[
-        str, int]:
+def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, int], last_fetch_dict: Dict[str, str]) -> \
+Dict[
+    str, int]:
     """ This function updates the max fetch value for each log type according to the last fetch timestamp.
     Args:
         configured_max_fetch (int): the max fetch value for the first fetch cycle
@@ -13695,7 +13719,7 @@ def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: Dict[str, i
 
 def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
                             max_fetch_dict: Dict, fetch_start_datetime_dict: Dict[str, datetime]) -> Dict[
-        str, List[Dict[str, Any]]]:
+    str, List[Dict[str, Any]]]:
     """get raw entires of incidents according to provided queries, log types and max_fetch parameters.
 
     Args:
@@ -13718,7 +13742,7 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
 
 
 def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[
-        Dict[str, str] | None, datetime | None, List[Dict[str, Any]]]:
+    Dict[str, str] | None, datetime | None, List[Dict[str, Any]]]:
     """parses raw incident entries of a specific log type query into basic context incidents.
 
     Args:
@@ -13892,7 +13916,8 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     # remove duplicated incidents from incident_entries_dict
     unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict)
 
-    parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)
+    parsed_incident_entries_dict = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict,
+                                                               last_id_dict)
 
     # flatten incident_entries_dict to a single list of dictionaries representing context entries
     parsed_incident_entries_list = [incident for incident_list in parsed_incident_entries_dict.values()
@@ -13917,7 +13942,8 @@ def test_fetch_incidents_parameters(fetch_params):
                     f"{log_type} Log Type Query parameter cannot contain 'seqno' filter. Please remove it from the query.")
 
     else:
-        raise DemistoException("fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
+        raise DemistoException(
+            "fetch incidents is checked but no Log Types were selected to fetch from the dropdown menu.")
 
 
 def main():  # pragma: no cover
