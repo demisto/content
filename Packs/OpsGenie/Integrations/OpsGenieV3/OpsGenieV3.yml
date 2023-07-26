@@ -117,7 +117,7 @@ script:
     - description: Additional alert note.
       name: note
     - name: details
-      description: Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation.
+      description: Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples: details="account=pa,hostname=computer01".
       type: keyValue
     description: Create an alert in Opsgenie.
     name: opsgenie-create-alert
