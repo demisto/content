@@ -302,8 +302,8 @@ class Client(BaseClient):
         uri = "users"
         query_params = assign_params(
             limit=limit,
-            q=None if advanced_search else encode_string_results(term),
-            search=encode_string_results(advanced_search) if advanced_search else None
+            q=encode_string_results(term),
+            search=encode_string_results(advanced_search)
         )
         return self._http_request(
             method='GET',
@@ -1326,6 +1326,7 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
+    demisto.info(f"The configured URL is: {demisto.params()['url'] or 'No URL configured'}")
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
     apitoken = demisto.params().get("credentials", {}).get("password", '') or demisto.params().get('apitoken', '')
 
