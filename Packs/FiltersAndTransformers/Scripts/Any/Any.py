@@ -53,8 +53,8 @@ def main():
 
     #left_list = convert_all_inputs_to_list_of_strings(leftArg)
     #right_list = convert_all_inputs_to_list_of_strings(rightArg)
-    left_list = argToList(leftArg)
-    right_list = argToList(rightArg)
+    left_list = argToList(str(leftArg))
+    right_list = argToList(str(rightArg))
 
     #res = common_elements(leftArg, rightArg)
 
