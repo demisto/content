@@ -1268,6 +1268,25 @@ script:
     - name: team_id
       description: The ID of the team from Opsgenie.
       required: true
+    outputs:
+    - contextPath: OpsGenie.Team.RoutingRules.name
+      description: Name of the routing rule.
+    - contextPath: OpsGenie.Team.RoutingRules.order
+      description: Order of the routing rule.
+    - contextPath: OpsGenie.Team.RoutingRules.id
+      description: ID of the routing rule.
+    - contextPath: OpsGenie.Team.RoutingRules.timezone
+      description: Timezone of the routing rule.
+    - contextPath: OpsGenie.Team.RoutingRules.teamId
+      description: Team ID of the routing rule.
+    - contextPath: OpsGenie.Team.RoutingRules.customerId
+      description: Customer ID of the routing rule.
+    - contextPath: OpsGenie.Team.RoutingRules.notify.id
+      description: Notify ID of the routing rule
+    - contextPath: OpsGenie.Team.RoutingRules.notify.name
+      description: Notify Name of the routing rule
+    - contextPath: OpsGenie.Team.RoutingRules.notify.type
+      description: Notify Type of the routing rule
 
   dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
