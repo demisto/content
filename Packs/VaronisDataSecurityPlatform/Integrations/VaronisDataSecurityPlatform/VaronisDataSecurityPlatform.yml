@@ -6,10 +6,12 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   defaultvalue: Varonis DSP Incident
+  required: false
 - display: The FQDN/IP the integration should connect to
   name: url
   required: true
@@ -21,18 +23,22 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum value is 50
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: 1 week
   display: First fetch time
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: severity
@@ -41,10 +47,12 @@ configuration:
   - Medium
   - High
   type: 15
+  required: false
 - display: Varonis threat model name
   additionalinfo: Comma-separated list of threat model names of alerts to fetch
   name: threat_model
   type: 0
+  required: false
 - defaultvalue: Open
   display: Varonis alert status
   name: status
@@ -53,6 +61,7 @@ configuration:
   - Under Investigation
   - Closed
   type: 15
+  required: false
 description: Streamline alerts and related forensic information from Varonis DSP
 display: Varonis Data Security Platform
 name: VaronisDataSecurityPlatform

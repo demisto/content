@@ -26,6 +26,8 @@ demistomock.ps1
 Tests/filter_file.txt
 Tests/filter_file_old.txt
 Tests/id_set.json
+Tests/tests_end_to_end_xsiam/test_cloud_api_keys.json
+Tests/tests_end_to_end_xsiam/test_cloud_server_path.json
 .mypy_cache
 Scripts/*/*_unified.yml
 Integrations/*/*_unified.yml
@@ -41,6 +43,7 @@ Integrations/**/__init__.py
 Packs/**/__init__.py
 requirements.txt
 **/collect_tests.log
+temp/*
 
 # Environment and reports
 .demisto-sdk-conf
@@ -49,6 +52,10 @@ requirements.txt
 .env
 .envrc
 Packs/**/report_pytest.json
+Packs/**/Integrations/**/Pipfile
+Packs/**/Integrations/**/Pipfile.lock
+Packs/**/Scripts/**/Pipfile.lock
+Packs/**/Scripts/**/Pipfile
 
 # coverage related
 /coverage_report
@@ -81,6 +88,7 @@ Packs/**/Integrations/**/.pytest.ini
 Packs/**/Scripts/**/.pytest.ini
 pytest_report.json
 test_runner.sh
+.sourcery_tmp.yaml
 
 # log files
 demisto_sdk_debug.log

@@ -16,12 +16,15 @@ configuration:
   type: 9
   hiddenusername: true
   displaypassword: 2FA Token
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
