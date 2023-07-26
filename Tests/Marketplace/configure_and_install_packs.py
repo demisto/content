@@ -37,21 +37,18 @@ def options_handler():
 def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketplace_tag_name, hostname=''):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
-    This method is called during the post-update phase of the build (with branch changed applied).
 
     Args:
+        hostname:
         pack_ids: the pack IDs to install.
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
-    use_multithreading = marketplace_tag_name != XSIAM_MP
+    install_packs_one_by_one: bool = marketplace_tag_name == XSIAM_MP
 
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
-        _, success = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
-                                                                     client=server.client,
-                                                                     hostname=hostname,
-                                                                     multithreading=use_multithreading,
-                                                                     is_post_update=True)
+        _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
+                                                                     install_packs_one_by_one)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 
@@ -85,20 +82,20 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     if not content_path:
         raise Exception('Could not find content path')
 
-    # Create a list of all packs that should be installed
+    # all packs that should be installed
     packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
-    logging.info(f'Packs to install before filtering by minServerVersion: {packs_to_install}')
+    logging.info(f'packs to install before filtering by minServerVersion {packs_to_install}')
 
-    # Get packs with 'minServerVersion' that's higher than server's version
+    # get packs that their minServerVersion is higher than the server version
     packs_with_higher_server_version = get_packs_with_higher_min_version(
         packs_names=packs_to_install,
         server_numeric_version=server_version
     )
-    logging.info(f'Packs with minServerVersion that is higher than server version: {packs_with_higher_server_version}')
+    logging.info(f'packs with minServerVersion that is higher than server version {packs_with_higher_server_version}')
 
-    # Remove packs that 'minServerVersion' that's higher than server's version.
+    # remove all the packs that that their minServerVersion is higher than the server version.
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
-    logging.info(f'Installing content packs: {pack_ids_with_valid_min_server_version}')
+    logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
 
     for b in batch(list(pack_ids_with_valid_min_server_version), batch_size=20):
         logging.info(f'installing packs in batch: {b}')
@@ -106,7 +103,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
                                                          pack_ids=b,
                                                          marketplace_tag_name=XSOAR_MP)
     logging.success(
-        f'Finished content packs: {pack_ids_with_valid_min_server_version} in {[server.internal_ip for server in servers]}'
+        f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
+        f'in {[server.internal_ip for server in servers]}'
     )
 
 
