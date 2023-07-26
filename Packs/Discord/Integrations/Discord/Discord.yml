@@ -1,0 +1,50 @@
+category: Utilities
+commonfields:
+  id: Discord
+  version: -1
+configuration:
+- additionalinfo: You'll find your api key in BOT section -> Reset Token
+  display: Api Key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: You'll find your channel id by click on your channle then "Copy Channel ID"
+  display: Channel ID
+  name: channel_id
+  required: true
+  type: 0
+description: This is the ClickSend integration for make a phonecall from XSOAR  made by Trustnet
+display: Discord
+name: Discord
+script:
+  commands:
+  - arguments:
+    - description: Enter your text
+      name: text
+      required: true
+    description: Send message to your channel
+    name: discord-send-message
+    outputs:
+    - contextPath: Discord.Message.id
+      description: Message ID
+    - contextPath: Discord.Message.content
+      description: Content
+    - contextPath: Discord.Message.channel_id
+      description: Channel ID
+  - arguments:
+    - description: Right click on message then "Copy Message ID"
+      name: message_id
+      required: true
+    description: Get message details
+    name: discord-get-message
+    outputs:
+    - contextPath: Discord.Details
+      description: Message Details
+  dockerimage: demisto/python3:3.10.12.66339
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

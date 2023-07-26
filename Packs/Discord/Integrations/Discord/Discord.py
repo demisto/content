@@ -1,0 +1,86 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import requests
+import json
+import base64
+
+
+def send_message(api_key, channel_id, text):
+    url = f'https://discord.com/api/v9/channels/{channel_id}/messages'
+    headers = {
+        'Authorization': 'Bot ' + api_key,
+        'Content-Type': 'application/json'
+    }
+    payload = {
+        "content": "Your message content here",
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(payload))
+    message_id = response.json()['id']
+    content = response.json()['content']
+    channel_id = response.json()['channel_id']
+    alerts = [
+        {
+            'id': message_id,
+            'content': content,
+            'channel_id': channel_id
+        },
+    ]
+    command_results = CommandResults(
+        outputs_prefix='Discord.Message',
+        outputs_key_field='id',
+        outputs=alerts
+    )
+    return_results(command_results)
+
+
+def get_message(api_key, channel_id, message_id):
+    url = f"https://discord.com/api/v9/channels/{channel_id}/messages/{message_id}"
+
+    headers = {
+        'Authorization': 'Bot ' + api_key,
+        'Content-Type': 'application/json'
+    }
+    response = requests.get(url, headers=headers)
+    details = response.json()
+    command_results = CommandResults(
+        outputs_prefix='Discord.Details',
+        outputs_key_field='id',
+        outputs=details
+    )
+    return_results(command_results)
+
+
+def test_module(api_key):
+    url = 'https://discord.com/api/v9/users/@me'
+    # Combine the username and the API key with a colon
+
+    headers = {
+        'Authorization': 'Bot ' + api_key,
+        'Content-Type': 'application/json'
+    }
+    response = requests.get(url, headers=headers)
+    if response.json()['http_code'] == 200:
+        return 'ok'
+    else:
+        return "Please check your API key or connection"
+
+
+def main():
+    params = demisto.params()
+    api_key = params.get('api_key')
+    channel_id = params.get('channel_id')
+    try:
+        if demisto.command() == 'discord-send-message':
+            text = demisto.args()['text']
+            send_message(api_key, channel_id, text)
+        elif demisto.command() == 'discord-get-message':
+            message_id = demisto.args()['message_id']
+            get_message(api_key, channel_id, message_id)
+        elif demisto.command() == 'test-module':
+            return_results(test_module(api_key))
+    except Exception as err:
+        return_error(str(err))
+
+
+if __name__ in ["__builtin__", "builtins", '__main__']:
+    main()
