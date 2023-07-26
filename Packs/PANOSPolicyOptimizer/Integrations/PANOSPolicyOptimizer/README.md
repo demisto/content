@@ -34,7 +34,7 @@ Gets the Policy Optimizer statistics.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| position | Whether to get pre-rules statistics, post-rules statistics. 'pre' for pre rules, 'post' for post-rules, only for panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
+| position | Whether to get pre-rules statistics or post-rules statistics. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
 
 #### Context Output
 
@@ -91,7 +91,7 @@ Shows all security policies with no apps specified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| position | Whether to get pre-rules with no apps or post-rules with no apps. 'pre' for pre rules, 'post' for post-rules, only for panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
+| position | Whether to get pre-rules with no apps or post-rules with no apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
 
 #### Context Output
 
@@ -200,7 +200,7 @@ Gets the unused apps.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| position | Whether to get pre-rules unused apps, or post-rules unused apps. 'pre' for pre rules, 'post' for post-rules, only for panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
+| position | Whether to get pre-rules unused apps or post-rules unused apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
 
 #### Context Output
 

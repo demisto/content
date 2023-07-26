@@ -41,7 +41,7 @@ script:
     name: pan-os-po-get-stats
     arguments:
     - auto: PREDEFINED
-      description: Whether to get pre-rules statistics, post-rules statistics. 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
+      description: Whether to get pre-rules statistics or post-rules statistics. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances.
       name: position
       defaultValue: 'pre'
       predefined:
@@ -67,7 +67,7 @@ script:
     name: pan-os-po-no-apps
     arguments:
     - auto: PREDEFINED
-      description: Whether to get pre-rules with no apps or post-rules with no apps, 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
+      description: Whether to get pre-rules with no apps or post-rules with no apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances.
       name: position
       defaultValue: 'pre'
       predefined:
@@ -81,7 +81,7 @@ script:
     name: pan-os-po-unused-apps
     arguments:
     - auto: PREDEFINED
-      description: Whether to get pre-rules unused apps, or post-rules unused apps. 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
+      description: Whether to get pre-rules unused apps or post-rules unused apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances.
       name: position
       defaultValue: 'pre'
       predefined:
