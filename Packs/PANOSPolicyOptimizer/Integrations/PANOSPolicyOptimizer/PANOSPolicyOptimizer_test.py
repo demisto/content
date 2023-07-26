@@ -1,17 +1,18 @@
 import pytest
 from CommonServerPython import *
 from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position,\
-    get_policy_optimizer_statistics_command, policy_optimizer_no_apps_command, policy_optimizer_get_unused_apps_command
+    get_policy_optimizer_statistics_command, policy_optimizer_no_apps_command, policy_optimizer_get_unused_apps_command,\
+    is_cms_selected
 
 BASE_URL = 'https://test.com'
 
 
 def get_firewall_instance_client():
-    return Client(url=BASE_URL, username='test', password='test', vsys='test', device_group='', verify=False, tid=0)
+    return Client(url=BASE_URL, username='test', password='test', vsys='test', device_group='', verify=False, tid=0, version='8')
 
 
 def get_panorama_instance_client():
-    return Client(url=BASE_URL, username='test', password='test', vsys='', device_group='test', verify=False, tid=0)
+    return Client(url=BASE_URL, username='test', password='test', vsys='', device_group='test', verify=False, tid=0, version='8')
 
 
 def read_json_file(path):
@@ -91,8 +92,8 @@ def test_body_request_is_valid_when_querying_rules(mocker, client, position):
     }
 
 
-@pytest.mark.parametrize("client, position, VERSION, excepted_position", QUERYING_RULES_PARAMS_WITH_VERSION)
-def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker, client, position, VERSION, excepted_position):
+@pytest.mark.parametrize("client, position, version, excepted_position", QUERYING_RULES_PARAMS_WITH_VERSION)
+def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker, client, position, version, excepted_position):
     """
     Given
         - a client.
@@ -105,12 +106,12 @@ def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker,
         case2: Panorama 10.2.0 should will return pre, the given position argument.
         case3: Panorama 9.0.0 should always return main.
     """
+    client.version = version
     mocker.patch.object(client, 'token_generator', return_value='123')
     response = requests.Response()
     response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
 
     response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
-    mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
 
     client.session_metadata["headers"] = 'test'
     get_policy_optimizer_statistics_command(
@@ -124,10 +125,10 @@ def test_body_request_is_valid_when_querying_policy_optimizer_statistics(mocker,
                                                         'type': 'rpc', 'tid': 1}
 
 
-@pytest.mark.parametrize("client, position, VERSION, excepted_position, flag, expected_flag",
+@pytest.mark.parametrize("client, position, version, excepted_position, flag, expected_flag",
                          QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG)
 def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, client, position,
-                                                                      VERSION, excepted_position, flag, expected_flag):
+                                                                      version, excepted_position, flag, expected_flag):
     """
     Given
         - a client.
@@ -140,12 +141,12 @@ def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, cl
         case2: Panorama 10.2.0 should will return pre, the given position argument, and the isCmsSelected flag should be True.
         case3: Panorama 9.0.0 should always return main, and the isCmsSelected flag should be False due to the given vresion.
     """
+    client.version = version
     mocker.patch.object(client, 'token_generator', return_value='123')
     response = requests.Response()
     response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
 
     response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
-    mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
 
     client.session_metadata["headers"] = 'test'
     policy_optimizer_no_apps_command(
@@ -166,10 +167,10 @@ def test_body_request_is_valid_when_querying_policy_optimizer_no_apps(mocker, cl
                                                                    'direction': 'DESC'}]], 'type': 'rpc', 'tid': 1}
 
 
-@pytest.mark.parametrize("client, position, VERSION, excepted_position, flag, expected_flag",
+@pytest.mark.parametrize("client, position, version, excepted_position, flag, expected_flag",
                          QUERYING_RULES_PARAMS_WITH_VERSION_AND_FLAG)
 def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker, client, position,
-                                                                          VERSION, excepted_position, flag, expected_flag):
+                                                                          version, excepted_position, flag, expected_flag):
     """
     Given
         - a client.
@@ -182,11 +183,11 @@ def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker
         case2: Panorama 10.2.0 should will return pre, the given position argument, and the isCmsSelected flag should be True.
         case3: Panorama 9.0.0 should always return main, and the isCmsSelected flag should be False due to the given vresion.
     """
+    client.version = version
     mocker.patch.object(client, 'token_generator', return_value='123')
     response = requests.Response()
     response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
     response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
-    mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
 
     client.session_metadata["headers"] = 'test'
     client.session_metadata["dit"] = 0
@@ -277,8 +278,8 @@ def test_token_generator(mocker, version, output):
         case 1: PAN-OS 9.0.0 should return a token generated with md5.
         case 2: PAN-OS 10.2.1 should return a token generated with sha256.
     """
-    mocker.patch('PANOSPolicyOptimizer.VERSION', version)
     client = get_firewall_instance_client()
+    client.version = version
     client.session_metadata['cookie_key'] = 'test'
     assert client.token_generator() == output
 
@@ -323,9 +324,9 @@ def test_get_unused_rules(mocker, position, num_of_rules):
     assert len(rules) == num_of_rules
 
 
-@pytest.mark.parametrize("VERSION, position , is_panorama, res",
+@pytest.mark.parametrize("version, position , is_panorama, res",
                          [('8', "post", True, "main"), ('9', "post", False, "main"), ('10.3', "post", True, "post")])
-def test_define_position(mocker, VERSION, position, is_panorama, res):
+def test_define_position(mocker, version, position, is_panorama, res):
     """
     Given:
         - version of PAN-OS.
@@ -339,5 +340,22 @@ def test_define_position(mocker, VERSION, position, is_panorama, res):
         case 2: PAN-OS 9 should always return main.
         case 3: PAN-OS 10.3 should return post as its input.
     """
-    mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
-    assert define_position(args={"position": position}, is_panorama=is_panorama) == res
+    assert define_position(version=version, args={"position": position}, is_panorama=is_panorama) == res
+
+
+@pytest.mark.parametrize("version, is_panorama, res",
+                         [('8', True, False), ('9', False, False), ('10.3', True, True)])
+def test_isCmsSelected(version, is_panorama, res):
+    """
+    Given:
+        - version of PAN-OS.
+        - is_panorama flag.
+    When:
+        - running is_cms_selected.
+    Then:
+        - return the correct flag.
+        case 1: PAN-OS 8 should always return False.
+        case 2: PAN-OS 9 should always return False.
+        case 3: PAN-OS 10.3 should return True.
+    """
+    assert is_cms_selected(version=version, is_panorama=is_panorama) == res
