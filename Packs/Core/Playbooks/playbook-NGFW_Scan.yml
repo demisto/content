@@ -1283,7 +1283,7 @@ tasks:
       version: -1
       name: Set Incident Severity to High
       description: commands.local.cmd.set.parent.incident.field
-      script: Builtin|||setParentIncidentField
+      script: Builtin|||setParentIncidentFields
       type: regular
       iscommand: true
       brand: Builtin
@@ -1291,9 +1291,7 @@ tasks:
       '#none#':
       - "58"
     scriptarguments:
-      key:
-        simple: manual_severity
-      value:
+      manual_severity:
         simple: high
     separatecontext: false
     continueonerrortype: ""

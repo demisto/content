@@ -69,7 +69,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: okta-get-events
-  dockerimage: demisto/fastapi:1.0.0.63688
+  dockerimage: demisto/fastapi:1.0.0.65888
   isfetchevents: true
   subtype: python3
 marketplaces:

@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import json
 from datetime import datetime
-from typing import Any, Generator, Iterable, Optional, Tuple, Union
+from typing import Any
+from collections.abc import Generator, Iterable
 from pathlib import Path
 
 from git import Repo
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
+CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
 
+CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
+CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 # override print so we have a timestamp with each print
 org_print = print
-CallArgs = Iterable[Union[Tuple[Any], Tuple[Any, dict]]]
+CallArgs = Iterable[tuple[Any] | tuple[Any, dict]]
 
 
 def load_json(file_path: str) -> dict:
@@ -27,7 +32,7 @@ def load_json(file_path: str) -> dict:
     """
     try:
         if file_path and os.path.exists(file_path):
-            with open(file_path, 'r') as json_file:
+            with open(file_path) as json_file:
                 result = json.load(json_file)
         else:
             result = {}
@@ -56,7 +61,7 @@ def iter_flatten_call_args(
             raise ValueError("Unexpected call arg type")
 
 
-def flatten_call_args(call_args: CallArgs) -> Tuple[Any, ...]:
+def flatten_call_args(call_args: CallArgs) -> tuple[Any, ...]:
     return tuple(iter_flatten_call_args(call_args))
 
 
@@ -65,7 +70,7 @@ class EnvVariableError(Exception):
         super().__init__(f'{env_var_name} env variable not set or empty')
 
 
-def get_env_var(env_var_name: str, default_val: Optional[str] = None) -> str:
+def get_env_var(env_var_name: str, default_val: str | None = None) -> str:
     """Thin wrapper around 'os.getenv'
 
     Raises:
@@ -93,7 +98,7 @@ class Checkout:  # pragma: no cover
     previously current branch.
     """
 
-    def __init__(self, repo: Repo, branch_to_checkout: str, fork_owner: Optional[str] = None, repo_name: str = 'content'):
+    def __init__(self, repo: Repo, branch_to_checkout: str, fork_owner: str | None = None, repo_name: str = 'content'):
         """Initializes instance attributes.
         Arguments:
             repo: git repo object
@@ -164,3 +169,37 @@ class ChangeCWD:
 
     def __exit__(self, *args):
         os.chdir(self.current)
+
+
+def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str]:
+    """
+    Retrieve the content reviewers from the JSON file
+
+    Args:
+        - `content_roles` (``dict[str, Any]``): The current content team roles and members.
+
+    Return:
+        - `list[str]` of content reviewers GitHub usernames.
+        - `str` of security reviewer GitHub username.
+    """
+
+    try:
+        contribution_reviewers: list[str] = content_roles[CONTRIBUTION_REVIEWERS_KEY]
+        security_reviewer: str = content_roles[CONTRIBUTION_SECURITY_REVIEWER_KEY]
+
+        if not isinstance(contribution_reviewers, list):
+            print(f"'{CONTRIBUTION_REVIEWERS_KEY}' is not an array. Terminating...")
+            sys.exit(1)
+
+        if not isinstance(security_reviewer, str) or not security_reviewer:
+            print(f"'{CONTRIBUTION_SECURITY_REVIEWER_KEY}' is not a string. Terminating...")
+            sys.exit(1)
+
+        if not contribution_reviewers or not security_reviewer:
+            print("No contribution or  reviewers")
+            sys.exit(1)
+
+        return contribution_reviewers, security_reviewer
+    except KeyError as ke:
+        print(f"Error parsing reviewers: {str(ke)}.")
+        sys.exit(1)
