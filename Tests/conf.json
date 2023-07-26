@@ -126,14 +126,15 @@
             "instance_names": "ms_teams_management_device_code",
             "is_mockable": false,
             "timeout": 700,
-            "memory_threshold": 500
+            "memory_threshold": 900
         },
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 500
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -5663,7 +5664,11 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430"
+        "EWS_O365_test": "Issue CIAC-6753",
+        "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
+        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",

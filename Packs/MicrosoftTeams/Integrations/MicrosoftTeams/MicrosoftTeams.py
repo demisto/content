@@ -17,6 +17,7 @@ from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
