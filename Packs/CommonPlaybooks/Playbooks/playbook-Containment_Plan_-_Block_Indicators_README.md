@@ -1,5 +1,17 @@
-This playbook is one of the sub-playbooks in the containment plan. 
-The playbook executes actions to block indicators, which is a crucial step in the containment process.
+---
+
+## Containment Plan - Block Indicators
+
+This playbook is a sub-playbook within the containment plan playbook.
+
+### Indicator Blocking
+
+The playbook block indicators by two methods:
+
+1. It adds the malicious hashes into the XSIAM hash block list
+2. It utilizes the sub-playbook "Block Indicators - Generic v3"
+
+---
 
 ## Dependencies
 
@@ -19,8 +31,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* core-blocklist-files
 * setParentIncidentContext
+* core-blocklist-files
 
 ## Playbook Inputs
 

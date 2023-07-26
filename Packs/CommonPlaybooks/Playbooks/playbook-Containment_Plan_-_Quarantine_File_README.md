@@ -1,5 +1,11 @@
-This playbook is one of the sub-playbooks in the containment plan.
-The playbook executes actions to quarantine files, which is a crucial step in the containment process.
+---
+
+## Containment Plan - Quarantine File
+
+This playbook is a sub-playbook within the containment plan playbook.
+The playbook quarantines files using core commands.
+
+---
 
 ## Dependencies
 
@@ -15,14 +21,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* PrintErrorEntry
 * Set
+* PrintErrorEntry
 
 ### Commands
 
-* core-get-quarantine-status
 * core-quarantine-files
 * setParentIncidentContext
+* core-get-quarantine-status
 
 ## Playbook Inputs
 

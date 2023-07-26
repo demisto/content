@@ -1,5 +1,11 @@
-This playbook is one of the sub-playbooks in the containment plan. 
-The playbook executes actions to disable the user account, which is a crucial step in the containment process.
+---
+
+## Containment Plan - Disable Account
+
+This playbook is a sub-playbook within the containment plan playbook.
+The playbook disables users by utilizing the sub-playbook "Block Account - Generic v2"
+
+---
 
 ## Dependencies
 

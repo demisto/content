@@ -1,7 +1,15 @@
 id: Containment Plan - Clear User Sessions
 version: -1
 name: Containment Plan - Clear User Sessions
-description: "This playbook is one of the sub-playbooks in the containment plan. \nThe playbook executes actions to clear the users' sessions, which is a crucial step in the containment process. (currently, the playbook supports only Okta)\n"
+description: |
+  ---
+
+  ## Containment Plan - Clear User Sessions
+
+  This playbook is a sub-playbook within the containment plan playbook.
+  The playbook clears the users' sessions using Okta integration. (currently, the playbook supports only Okta)
+
+  ---
 starttaskid: "0"
 tasks:
   "0":
