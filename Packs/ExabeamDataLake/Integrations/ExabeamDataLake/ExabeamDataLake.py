@@ -114,12 +114,12 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
         """
         source: dict = entry.get("_source", {})
         return {
-            "id": entry.get("_id"),
+            "ID": entry.get("_id"),
             "Vendor": source.get("Vendor"),
-            "time": source.get("time"),
+            "Time": source.get("time"),
             "Product": source.get("Product"),
-            "event name": source.get("event_name"),
-            "action": source.get("action"),
+            "Event Name": source.get("event_name"),
+            "Action": source.get("action"),
         }
 
     query = args["query"]
