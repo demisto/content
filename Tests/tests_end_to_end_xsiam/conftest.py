@@ -11,6 +11,7 @@ def pytest_addoption(parser):
     parser.addoption("--cloud_machine", action="store")
     parser.addoption("--cloud_servers_path", action="store")
     parser.addoption("--cloud_servers_api_keys", action="store")
+    parser.addoption("--build_type", action="store")
 
 
 @pytest.fixture(scope='module')

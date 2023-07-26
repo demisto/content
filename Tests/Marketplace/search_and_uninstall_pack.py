@@ -235,7 +235,7 @@ def options_handler():
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
     parser.add_argument('--unremovable_packs', help='List of packs that cant be removed.')
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
-    parser.add_argument('--build_type', help='Build type. Upload or regular.', action='store_true')
+    parser.add_argument('--build_type', help='Build type. Upload or regular.')
 
     options = parser.parse_args()
 
