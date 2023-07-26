@@ -238,7 +238,8 @@ def test_module(client: Client, first_fetch_time: str) -> str:
 
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
                     first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str], mirror_playbook_id: bool = False) -> Tuple[Dict[str, str], List[dict]]:
+                    mirror_tag: List[str], mirror_playbook_id: bool = False,
+                    reset_mirror: bool = False) -> Tuple[Dict[str, str], List[dict]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -270,6 +271,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         When set to false, mirrored incidents will have a blank playbookId value,
          causing the receiving machine to run the default playbook of the incident type.
 
+    :type reset_mirror: `bool`
+    :param reset_mirror:
+        When set to True, all incidents fetched will be added to a context data list
+        which will be used in  get_remote_data_command
+
     :type mirror_tag: ``List[str]``
     :param mirror_tag:
         The tags that you will mirror out of the incident.
@@ -284,9 +290,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     """
 
     last_fetch = last_run.get('last_fetch')
-    XSOARMirror_is_fetch_reset = False
     if not last_fetch:
-        XSOARMirror_is_fetch_reset = True
         last_fetch = first_fetch_time  # type: ignore
     else:
         demisto.debug('Trying to convert the last_fetch to int, and convert it to date string if succeed. '
@@ -311,7 +315,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         start_time=last_fetch
     )
 
-    if XSOARMirror_is_fetch_reset:
+    if reset_mirror:
         integration_context, version = get_integration_context_with_version()
         incident_mirror_reset: str = ','.join([incident['id'] for incident in incidents])
         demisto.debug(f'Adding incidents id to mirror reset set:{incident_mirror_reset}')
@@ -818,6 +822,7 @@ def main() -> None:
                     mirror_direction=demisto.params().get('mirror_direction'),
                     mirror_tag=list(mirror_tags),
                     mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
+                    reset_mirror=demisto.params().get('reset_mirror', False),
                 )
 
             return_results(test_module(client, first_fetch_time))
@@ -832,6 +837,7 @@ def main() -> None:
                 mirror_direction=demisto.params().get('mirror_direction'),
                 mirror_tag=list(mirror_tags),
                 mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
+                reset_mirror=demisto.params().get('reset_mirror', False),
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
