@@ -24,10 +24,12 @@ configuration:
   name: proxy
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - display: API Key
   name: api_key
   type: 4
@@ -36,25 +38,31 @@ configuration:
   name: fetch_offset
   defaultvalue: "0"
   type: 0
+  required: false
 - display: Total Incident per fetching using lumu endpoint
   name: total_items_per_lumu_fetch
   defaultvalue: "30"
   type: 0
+  required: false
 - display: Max time in seconds per fetching using lumu endpoint
   name: max_time_fetching_lumu_incident
   defaultvalue: "4"
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   defaultvalue: Lumu
   name: incidentType
   type: 13
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
+  required: false
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: None

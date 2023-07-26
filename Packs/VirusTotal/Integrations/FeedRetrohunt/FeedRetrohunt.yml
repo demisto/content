@@ -18,6 +18,7 @@ configuration:
   name: feed
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Indicator Reputation
   name: feedReputation
   defaultvalue: feedInstanceReputationNotSet
@@ -54,10 +55,12 @@ configuration:
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "30"
   type: 19
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8

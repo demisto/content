@@ -69,10 +69,12 @@ configuration:
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13

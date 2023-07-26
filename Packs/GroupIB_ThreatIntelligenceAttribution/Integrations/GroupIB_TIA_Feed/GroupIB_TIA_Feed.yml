@@ -121,6 +121,7 @@ configuration:
 - display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 description: Use Group-IB Threat Intelligence & Attribution Feed integration to fetch IOCs from various Group-IB collections.
 display: Group-IB Threat Intelligence & Attribution Feed
 name: Group-IB Threat Intelligence & Attribution Feed

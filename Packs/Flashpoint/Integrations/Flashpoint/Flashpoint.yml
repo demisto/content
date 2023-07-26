@@ -49,9 +49,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships

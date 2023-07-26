@@ -22,6 +22,7 @@ configuration:
   name: timeout
   defaultvalue: "10"
   type: 0
+  required: false
 - additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA-256", "IP", "Registry Key", and "URL". The default is "ALL".'
   display: Type
   name: type

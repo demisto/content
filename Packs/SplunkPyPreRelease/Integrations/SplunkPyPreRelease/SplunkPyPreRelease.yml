@@ -137,6 +137,7 @@ configuration:
 - display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
   name: extensive_logs
   type: 8
+  required: false
 - display: 'Advanced: Fetch backwards window for the events occurrence time'
   name: occurrence_look_behind
   defaultvalue: "15"

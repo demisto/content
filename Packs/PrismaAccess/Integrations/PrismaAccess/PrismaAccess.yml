@@ -16,6 +16,7 @@ configuration:
   name: port
   defaultvalue: '443'
   type: 0
+  required: false
 - display: API Key
   name: key
   type: 4
@@ -27,21 +28,27 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   type: 0
+  required: false
 - display: Vsys - Firewall instances only
   name: vsys
   type: 0
+  required: false
 - display: SSH Port
   name: sshport
   type: 0
+  required: false
 - display: SSH Credentials for CLI
   name: Username
   type: 9
+  required: false
 script:
   script: ''
   type: python

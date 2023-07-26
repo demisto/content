@@ -10,18 +10,22 @@ configuration:
   name: roleArn
   defaultvalue: ""
   type: 0
+  required: false
 - display: Role Session Name
   name: roleSessionName
   defaultvalue: ""
   type: 0
+  required: false
 - display: AWS Default Region
   name: defaultRegion
   defaultvalue: ""
   type: 0
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   defaultvalue: ""
   type: 0
+  required: false
 - display: Access Key
   name: credentials
   type: 9
@@ -39,9 +43,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: python

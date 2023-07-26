@@ -47,6 +47,7 @@ configuration:
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: alarm_fetch_time
   type: 0
+  required: false
 - defaultvalue: '0'
   display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert 3)
   name: timezone

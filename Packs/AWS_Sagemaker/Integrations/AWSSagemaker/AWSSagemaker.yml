@@ -24,6 +24,7 @@ configuration:
   name: AWSRegion
   defaultvalue: "us-east-2"
   type: 0
+  required: false
 - display: Endpoint Name
   name: EndpointName
   type: 0
@@ -32,6 +33,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: python

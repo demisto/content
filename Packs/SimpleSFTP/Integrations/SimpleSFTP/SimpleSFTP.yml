@@ -13,6 +13,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Username
   name: authentication
   type: 9

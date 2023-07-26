@@ -65,10 +65,12 @@ configuration:
   name: alarm_rule_name_filter
   defaultvalue: ''
   type: 0
+  required: false
 - display: Case tags filter
   name: case_tags_filter
   defaultvalue: ''
   type: 0
+  required: false
 - display: Case status filter
   name: case_status_filter
   type: 15
@@ -93,9 +95,11 @@ configuration:
 - name: proxy
   display: Use system proxy settings
   type: 8
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
+  required: false
 script:
   script: ''
   type: python

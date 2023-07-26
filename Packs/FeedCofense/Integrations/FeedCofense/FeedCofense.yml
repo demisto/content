@@ -55,6 +55,7 @@ configuration:
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
+  required: false
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval

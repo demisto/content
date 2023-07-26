@@ -7,6 +7,7 @@ configuration:
   display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: 'Intel 471 Watcher Alert'
   display: Incident type
   name: incidentType

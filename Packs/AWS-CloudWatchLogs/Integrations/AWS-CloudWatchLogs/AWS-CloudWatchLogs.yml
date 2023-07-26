@@ -15,14 +15,17 @@ configuration:
   name: roleArn
   defaultvalue: ""
   type: 0
+  required: false
 - display: Role Session Name
   name: roleSessionName
   defaultvalue: ""
   type: 0
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   defaultvalue: ""
   type: 0
+  required: false
 - display: Access Key
   name: credentials
   type: 9

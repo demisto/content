@@ -11,6 +11,7 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
+  required: false
 - display: 'Trust any certificate (not secure)'
   name: unsecure
   type: 8

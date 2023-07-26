@@ -32,6 +32,7 @@ configuration:
   name: ngfw_tls_verify
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Customer Support Portal (CSP) API Key
   name: csp_api_key
   defaultvalue: default-csp-api-key

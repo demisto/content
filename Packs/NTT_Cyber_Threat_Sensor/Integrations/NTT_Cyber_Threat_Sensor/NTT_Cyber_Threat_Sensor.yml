@@ -34,9 +34,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: The base URL for the backend to consume from
   name: BASEURL
   defaultvalue: https://cts.eu1.nttsecurity.io/v1

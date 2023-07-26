@@ -16,6 +16,7 @@ configuration:
   defaultvalue: 'true'
   display: Fetch indicators
   type: 8
+  required: false
 - name: feedReputation
   display: Indicator Reputation
   type: 18
@@ -48,9 +49,11 @@ configuration:
 - name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
+  required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8

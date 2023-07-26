@@ -19,9 +19,11 @@ configuration:
   name: marketplace_url
   defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/content/packs/
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Demisto Server API Key
   name: apikey
   type: 4
@@ -29,10 +31,12 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Use tenant
   additionalinfo: Whether API calls should be made to the current tenant instead of the master tenant.
   name: use_tenant
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

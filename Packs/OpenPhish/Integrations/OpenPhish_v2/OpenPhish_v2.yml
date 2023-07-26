@@ -11,12 +11,15 @@ configuration:
   name: fetchIntervalHours
   defaultvalue: 1
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability

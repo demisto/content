@@ -10,6 +10,7 @@ configuration:
   name: url
   defaultvalue: https://ws.isitphishing.org
   type: 0
+  required: false
 - display: Customer's name
   name: name
   defaultvalue: ""
@@ -23,9 +24,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability

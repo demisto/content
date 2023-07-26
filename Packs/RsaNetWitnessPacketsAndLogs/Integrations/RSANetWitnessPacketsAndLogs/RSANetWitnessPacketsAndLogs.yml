@@ -34,10 +34,12 @@ configuration:
   name: secure
   defaultvalue: 'true'
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
+  required: false
 - defaultvalue: ''
   display: Expiration time
   name: expiry

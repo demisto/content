@@ -30,6 +30,7 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy

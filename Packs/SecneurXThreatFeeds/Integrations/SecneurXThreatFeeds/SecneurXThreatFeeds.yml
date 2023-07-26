@@ -71,6 +71,7 @@ configuration:
 - name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8

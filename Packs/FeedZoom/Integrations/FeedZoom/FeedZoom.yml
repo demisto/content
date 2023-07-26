@@ -11,6 +11,7 @@ configuration:
   name: feed
   defaultvalue: "true"
   type: 8
+  required: false
 - additionalinfo: Zoom clients for certificate validation
   defaultvalue: 'crl3.digicert.com,crl4.digicert.com,ocsp.digicert.com,certificates.godaddy.com,crl.godaddy.com,ocsp.godaddy.com,certificates.starfieldtech.com,crl.starfieldtech.com,ocsp.starfieldtech.com'
   display: Firewall rules for certificate validation
@@ -79,6 +80,7 @@ configuration:
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: '240'
@@ -97,9 +99,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: python

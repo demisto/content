@@ -9,9 +9,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: API URL
   name: api_url
   defaultvalue: https://api.mnemonic.no

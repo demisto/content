@@ -38,10 +38,12 @@ configuration:
   name: proxy
   defaultvalue: 'false'
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: 'false'
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -55,6 +57,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 description: Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development.
 display: Trend Micro Vision One V3.
 defaultmapperin: Trend Micro Vision One V3 XDR - Incoming Mapper
