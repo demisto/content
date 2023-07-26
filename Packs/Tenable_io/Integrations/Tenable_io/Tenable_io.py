@@ -22,36 +22,60 @@ def paginate(
         api_limit=None,
         keys_to_pages=None,
         page_start=1):
+    """
+    Decorator for paginating an API in a request function.
 
+    :param limit_arg_name: The argument name in demisto.args() that specifies the number of results requested by the user.
+                           Will be ignored if both "page" and "page_size" are defined. Default is 'limit'.
+    :type limit_arg_name: str
+
+    :param page_arg_name: The argument name in demisto.args() that specifies the current page number. Default is 'page'.
+    :type page_arg_name: str
+
+    :param page_size_arg_name: The argument name in demisto.args() that specifies the size of each page. Default is 'page_size'.
+    :type page_size_arg_name: str
+
+    :param api_limit: The maximum limit supported by the API for a single request. Used only with "limit" when "page" and "page_size"
+                      are not defined. Use None if there is no API limit. Default is None.
+    :type api_limit: int | None
+
+    :param keys_to_pages: Key(s) to access the paginated data within the response dictionary. When the data is nested in multiple
+                          dictionaries, use a list of keys as a path to the data. The function will return the combined pages
+                          without surrounding dictionaries. Default is None.
+    :type keys_to_pages: Iterable | str | None
+
+    :param page_start: The starting page index. Default is 1.
+    :type page_start: int
+    """
     def dec(func):
         def inner(args, *arguments, **kwargs):
             """
+            Inserts the keys "limit" and "offset" to args according to the page, page_size and limit in args.
+
             Args:
-                args (dict): command arguments (demisto.args()).
-                *arguments: any additional arguments to the command function.
-                **kwargs: additional keyword arguments to the command function.
+                args (dict): Command arguments (demisto.args()).
+                *arguments: Any additional arguments to the request function.
+                **kwargs: Additional keyword arguments to the request function.
             """
-            # support for class functions
 
             keys = (
                 [keys_to_pages]
                 if isinstance(keys_to_pages, str)
-                # could be None or list/tuple
+                # Could be None or list/tuple
                 else keys_to_pages or [])
 
             def get_page(**page_args):
-                demisto.debug(f'{page_args=}')
                 return dict_safe_get(
                     func(args | page_args, *arguments, **kwargs),
                     keys, return_type=list)
+
             pages: list[Any] = []
 
             try:
                 page, page_size = map(int, map(args.get, (page_arg_name, page_size_arg_name)))
                 limit, offset = page_size, (page - page_start) * page_size
 
-            except (ValueError, TypeError):  # from conversion to int
-
+            except (ValueError, TypeError):  # From conversion to int
                 limit, offset = int(args[limit_arg_name]), 0
 
                 if api_limit:
@@ -77,6 +101,7 @@ def paginate(
         return inner
 
     return dec
+
 
 
 FIELD_NAMES_MAP = {
