@@ -658,7 +658,6 @@ Updates the indicator in ThreatConnect.
 | size | The size of the file of the updated indicator. | Optional | 
 | dnsActive | Whether the DNS indicator is active (only for hosts). Possible values are: True, False. | Optional | 
 | whoisActive | Whether the indicator is active (only for hosts). Possible values are: True, False. | Optional | 
-| falsePositive | Whether the updated indicator is a false positive. Possible values are: True, False. | Optional | 
 | securityLabel | The security label applied to the incident. Possible values are: TLP:RED, TLP:GREEN, TLP:AMBER, TLP:WHITE. | Optional | 
 | tags | A comma-separated list of tags. | Optional | 
 

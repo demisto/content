@@ -22,25 +22,24 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: 'First Incidient Fetch: Time Range'
   additionalinfo: 'Limit incidents to include in the first fetch by time range. Input format: "NN hours" or "NN days". E.g., input "5 days" to fetch all incidents created in the last 5 days.'
   defaultvalue: 24 hours
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: 'Playbook Alerts: Fetched Categories'
   name: pa_categories
-  required: false
   additionalinfo: 'Some listed Playbook alert Categories might be unavailable due to limitations in the current Recorded Future subscription'
   type: 16
   defaultvalue: All Available
@@ -49,14 +48,14 @@ configuration:
   - Domain Abuse
   - Vulnerability
   - Code Repo Leakage
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "50"
-  required: false
   type: 0
+  required: false
 - display: 'Playbook Alerts: Fetched Statuses'
   name: pa_statuses
-  required: false
   type: 16
   defaultvalue: New
   options:
@@ -64,9 +63,9 @@ configuration:
   - In Progress
   - Dismissed
   - Resolved
+  required: false
 - display: 'Playbook Alerts: Fetched Priorities Threshold'
   name: pa_priorities
-  required: false
   type: 15
   additionalinfo: 'Returns alerts with this selected priority or higher. High > Moderate > Informational'
   defaultvalue: Moderate
@@ -74,16 +73,17 @@ configuration:
   - High
   - Moderate
   - Informational
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   defaultvalue: Recorded Future Playbook Alert
   type: 13
+  required: false
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   commands:
   - name: recordedfuture-playbook-alerts-details
     description: Get Playbook alert details by id.
@@ -92,7 +92,6 @@ script:
       required: true
       description: Ids of the playbook alert that should be fetched
     - name: detail_sections
-      required: false
       description: What evidence sections to include in the fetch, fetches all available if not specified
       auto: PREDEFINED
       predefined:
@@ -531,7 +530,6 @@ script:
     description: Search playbook alerts based on filters
     arguments:
     - name: category
-      required: false
       description: filter what playbook alert categories that is wanted. (default = all available)
       auto: PREDEFINED
       predefined:
@@ -540,13 +538,10 @@ script:
       - vulnerability
       - code_repo_leakage
     - name: limit
-      required: false
       description: Limits the number of alerts to fetch.
     - name: time_since_update
-      required: false
       description: Time between now and e.g. "2 hours" or "7 days" ago
     - name: playbook_alert_status
-      required: false
       auto: PREDEFINED
       predefined:
       - new
@@ -555,7 +550,6 @@ script:
       - resolved
       description: Filter what statuses are fetched, defaults to only new status if not specified.
     - name: priority
-      required: false
       auto: PREDEFINED
       predefined:
       - high
@@ -563,7 +557,6 @@ script:
       - informational
       description: Actions pritority assigned in Recorded Future
     - name: order_search_by
-      required: false
       auto: PREDEFINED
       predefined:
       - updated
@@ -609,7 +602,6 @@ script:
       description: Name of the enterprise that owns the alert
       type: String
   isfetch: true
-  runonce: false
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

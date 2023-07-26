@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import random
 import string
 import subprocess
@@ -7,8 +9,6 @@ from xml.sax import SAXParseException
 import dateparser
 import chardet
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import sys

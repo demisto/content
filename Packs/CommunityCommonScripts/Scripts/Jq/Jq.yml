@@ -22,7 +22,6 @@ outputs:
   type: unknown
   description: Result of jq-query
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

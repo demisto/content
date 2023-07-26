@@ -1,7 +1,7 @@
-from time import sleep
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from time import sleep
+
 
 res = []
 dArgs = demisto.args()

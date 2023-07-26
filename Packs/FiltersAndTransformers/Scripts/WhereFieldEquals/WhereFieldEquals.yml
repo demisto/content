@@ -1,30 +1,18 @@
 args:
 - default: true
   description: The list to apply the transformer to.
-  isArray: false
   name: value
   required: true
-  secret: false
-- default: false
-  description: The attribute in the collection items to check equality against `equalTo`.
-  isArray: false
+- description: The attribute in the collection items to check equality against `equalTo`.
   name: field
   required: true
-  secret: false
-- default: false
-  description: The value to filter all items by in the collection.
-  isArray: false
+- description: The value to filter all items by in the collection.
   name: equalTo
   required: true
-  secret: false
-- default: false
-  description: The field to extract from each item (Optional).
-  isArray: false
+- description: The field to extract from each item (Optional).
   name: getField
   predefined:
   - ''
-  required: false
-  secret: false
 - name: stringify
   auto: PREDEFINED
   predefined:
@@ -32,14 +20,7 @@ args:
   - "false"
   description: Whether the argument should be saved as a string (Optional).
   defaultValue: "true"
-  required: false
-  secret: false
-comment: "Return all items from the list where their given 'field' attribute is equal\
-  \ to 'equalTo' argument\n\nE.g. !WhereFieldEquals with the following arguments:\n\
-  \ - value=[{ \"name\": \"192.1,0.82\", \"type\": \"IP\" }, { \"name\": \"myFile.txt\"\
-  , \"type\": \"File\" }, { \"name\": \"172.0.0.2\", \"type\": \"IP\" }]\n - field='type'\n\
-  \ - equalTo='IP'\n - getField='name' \n\nWill return all items names where field\
-  \ 'type' equals 'IP' - ['192.1,0.82', '172.0.0.2']"
+comment: "Return all items from the list where their given 'field' attribute is equal to 'equalTo' argument\n\nE.g. !WhereFieldEquals with the following arguments:\n - value=[{ \"name\": \"192.1,0.82\", \"type\": \"IP\" }, { \"name\": \"myFile.txt\", \"type\": \"File\" }, { \"name\": \"172.0.0.2\", \"type\": \"IP\" }]\n - field='type'\n - equalTo='IP'\n - getField='name' \n\nWill return all items names where field 'type' equals 'IP' - ['192.1,0.82', '172.0.0.2']"
 commonfields:
   id: WhereFieldEquals
   version: -1
@@ -48,14 +29,12 @@ name: WhereFieldEquals
 fromversion: 5.5.0
 script: '-'
 subtype: python3
-system: false
 tags:
 - transformer
 - general
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
-runonce: false
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Email Address Enrichment - Generic v2.1 - Test

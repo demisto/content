@@ -165,5 +165,4 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
     description: Get specific indicator reputation
-  runonce: false
 fromversion: 5.0.0

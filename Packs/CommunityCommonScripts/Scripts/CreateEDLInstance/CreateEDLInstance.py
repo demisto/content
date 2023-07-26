@@ -1,7 +1,7 @@
-import random
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import random
+
 
 edl_instance_name = demisto.args().get('InstanceName')
 edl_port_list_name = demisto.args().get('PortListName')

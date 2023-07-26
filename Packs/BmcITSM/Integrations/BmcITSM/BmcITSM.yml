@@ -21,19 +21,18 @@ configuration:
   displaypassword: Password
 - name: max_fetch
   display: Maximum Number of Incidents per Fetch
-  required: false
   defaultvalue: "50"
   type: 0
   additionalinfo: Default is 50. Maximum is 200.
+  required: false
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
-  required: false
   defaultvalue: 7 days
   type: 0
   additionalinfo: ""
+  required: false
 - name: ticket_type
   display: Ticket Type
-  required: false
   defaultvalue: All
   type: 16
   additionalinfo: The type of the tickets to fetch.
@@ -45,9 +44,9 @@ configuration:
   - problem investigation
   - known error
   - All
+  required: false
 - name: ticket_status
   display: Ticket Status
-  required: false
   defaultvalue: All
   type: 16
   additionalinfo: The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s).
@@ -85,9 +84,9 @@ configuration:
   - No Action Planned
   - Corrected
   - All
+  required: false
 - name: ticket_impact
   display: Ticket Impact
-  required: false
   defaultvalue: All
   type: 16
   additionalinfo: The impact of the tickets to fetch.
@@ -97,9 +96,9 @@ configuration:
   - 3-Moderate/Limited
   - 4-Minor/Localized
   - All
+  required: false
 - name: ticket_urgency
   display: Ticket Urgency
-  required: false
   defaultvalue: All
   type: 16
   additionalinfo: The urgency of the tickets to fetch.
@@ -109,12 +108,13 @@ configuration:
   - 3-Medium
   - 4-Low
   - All
+  required: false
 - name: query
   display: Fetch by Query
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: 'Search query to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing parameters. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
+  required: false
 - additionalinfo: "Choose the direction to mirror the incident: Incoming (from BMC Helix ITSM to Cortex XSOAR), Outgoing (from Cortex XSOAR to BMC Helix ITSM), or Incoming and Outgoing (from/to Cortex XSOAR and BMC Helix ITSM)."
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -124,51 +124,51 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
   hidden:
   - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
   defaultvalue: "false"
   display: Close Mirrored XSOAR Incident
   name: close_incident
-  required: false
   type: 8
   hidden:
   - marketplacev2
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
   defaultvalue: "false"
   display: Close Mirrored BMC Helix ITSM Ticket
   name: close_ticket
-  required: false
   type: 8
   hidden:
   - marketplacev2
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
@@ -185,71 +185,52 @@ script:
     arguments:
     - name: user_ids
       description: A comma-separated list of user IDs. Used as a filtering argument.
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
       - ""
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of records to retrieve.
-      required: false
-      isArray: false
       defaultValue: "50"
       predefined:
       - ""
     - name: page_size
       description: The maximum number of records to retrieve per page.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: first_name
       description: The user first name. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
       description: The user first name. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company
       description: The user company name. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: department
       description: The user department name. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: organization
       description: The user organization name. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -268,50 +249,37 @@ script:
     arguments:
     - name: company_ids
       description: A comma-separated list of company ID. Filtering argument.
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
       - ""
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of records to retrieve.
-      required: false
-      isArray: false
       defaultValue: "50"
       predefined:
       - ""
     - name: page_size
       description: The maximum number of records to retrieve per page.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company
       description: The user company name. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company_type
       description: The user company type. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -330,55 +298,41 @@ script:
     arguments:
     - name: srd_ids
       description: A comma-separated list of service request definition IDs. Used as a filtering argument.
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
       - ""
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of records to retrieve.
-      required: false
-      isArray: false
       defaultValue: "50"
       predefined:
       - ""
     - name: page_size
       description: The maximum number of records to retrieve per page.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: description
       description: The service request ticket definition description. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
   - name: bmc-itsm-ticket-list
     description: Retrieves a list of BMC Helix ITSM tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    deprecated: false
     arguments:
     - name: ticket_type
       description: The type of tickets to search for.
       required: true
-      isArray: false
-      default: false
       auto: PREDEFINED
       predefined:
       - service request
@@ -389,43 +343,32 @@ script:
       - known error
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of records to retrieve.
-      required: false
-      isArray: false
       defaultValue: "50"
       predefined:
       - ""
     - name: page_size
       description: The maximum number of records to retrieve per page.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: ticket_ids
       description: A comma-separated list of ticket request IDs. Used as a filtering argument.
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
       - ""
     - name: status
       description: The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s).
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -463,8 +406,6 @@ script:
       - Corrected
     - name: impact
       description: The ticket impact. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -474,8 +415,6 @@ script:
       - 4-Minor/Localized
     - name: urgency
       description: The ticket urgency. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -485,8 +424,6 @@ script:
       - 4-Low
     - name: priority
       description: The ticket priority. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -496,8 +433,6 @@ script:
       - Low
     - name: risk_level
       description: The ticket risk level. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -507,8 +442,6 @@ script:
       - Risk Level 4
     - name: change_type
       description: The ticket change type level. Relevant only for ticket type change requests. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -522,8 +455,6 @@ script:
       - Asset Maintenance
     - name: summary
       description: The ticket summary. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -592,42 +523,31 @@ script:
     - name: srd_instance_id
       description: "The instance ID of the service request ticket. It can be retrieved by executing bmc-itsm-service-request-definition-list command. "
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: first_name
       description: The requester first name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
       description: "The requester last name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: login_id
       description: The requester login ID. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: summary
       description: The service request ticket summary.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status
       description: "The service request ticket status. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -645,8 +565,6 @@ script:
       - Closed
     - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -656,8 +574,6 @@ script:
       - 4-Low
     - name: impact
       description: The ticket impact. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -667,8 +583,6 @@ script:
       - 4-Minor/Localized
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -688,28 +602,21 @@ script:
     - name: ticket_request_id
       description: The unique identifier of the service request ticket to update.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: customer_first_name
       description: "The customer first name. By default it is determined by the logged in user. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: customer_last_name
       description: "The customer last name. By default it is determined by the logged in user. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status
       description: "The service request ticket status. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -727,8 +634,6 @@ script:
       - Closed
     - name: urgency
       description: The ticket request urgency. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -738,8 +643,6 @@ script:
       - 4-Low
     - name: impact
       description: Incident Request impact. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -749,8 +652,6 @@ script:
       - 4-Minor/Localized
     - name: status_reason
       description: "The reason for updating the status. Required only if status argument is provided. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -768,83 +669,61 @@ script:
       - Reopen By User
     - name: location_company
       description: The company associated with the service request process.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: region
       description: The region associated with the company location.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site_group
       description: The site group associated with the region.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site
       description: The site associated with the site group.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee
       description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     outputs: []
   - name: bmc-itsm-incident-update
     description: "Update incident ticket. "
-    deprecated: false
     arguments:
     - name: ticket_request_id
       description: The ID of the incident ticket to update.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: first_name
       description: The customer first name the incident ticket is for.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
       description: The customer last name the incident ticket is for.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: summary
       description: The incident ticket summary.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: service_type
       description: "The type of the incident ticket. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -855,8 +734,6 @@ script:
       - Security Incident
     - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -866,8 +743,6 @@ script:
       - 4-Low
     - name: impact
       description: The ticket impact. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -877,8 +752,6 @@ script:
       - 4-Minor/Localized
     - name: status
       description: The incident ticket status.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -891,8 +764,6 @@ script:
       - Cancelled
     - name: reported_source
       description: "The incident ticket reported source. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -909,85 +780,61 @@ script:
       - BMC Impact Manager Event
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee, or any other custom field.'
     - name: detailed_description
       description: The incident ticket summary.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company
       description: The company associated with the requester. By default it is determined by the logged in user.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_company
       description: The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_group
       description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee
       description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee_login_id
       description: The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: region
       description: The region, which makes up the second tier of the customer’s business organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site_group
       description: The site group associated with the region.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site
       description: The site associated with the site group.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status_reason
       description: The reason for updating the ticket status. Required when status is provided.
-      required: false
-      isArray: false
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -1014,13 +861,10 @@ script:
       - Resolved by Causal Incident
     - name: resolution
       description: The ticket resolution description. Required when status is provided.
-      required: false
-      isArray: false
       defaultValue: ""
     outputs: []
   - name: bmc-itsm-ticket-delete
     description: Deletes a ticket by its request ID. Only admin users can perform this command.
-    deprecated: false
     arguments:
     - name: ticket_ids
       description: A comma-separated list of ticket request IDs to delete.
@@ -1032,7 +876,6 @@ script:
     - name: ticket_type
       description: The type of the tickets to delete.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - incident
@@ -1043,40 +886,31 @@ script:
     outputs: []
   - name: bmc-itsm-incident-create
     description: "Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service. "
-    deprecated: false
     arguments:
     - name: first_name
       description: The customer first name the incident ticket is for.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
       description: The customer last name the incident ticket is for.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: template_instance_id
       description: The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing the bmc-itsm-incident-template-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: summary
       description: The incident ticket summary. Required when the template_instance_id argument is not provided.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: service_type
       description: The type of the incident ticket. Required when the template_instance_id argument is not provided.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1088,7 +922,6 @@ script:
     - name: urgency
       description: The ticket urgency. Required when the ticket creation is without a template.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1099,7 +932,6 @@ script:
     - name: impact
       description: The ticket impact. Required when the creation is without a template.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1110,7 +942,6 @@ script:
     - name: status
       description: Incident status
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1123,8 +954,6 @@ script:
       - Cancelled
     - name: reported_source
       description: The incident ticket reported source.  Required when the template_instance_id argument is not provided.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1141,78 +970,56 @@ script:
       - BMC Impact Manager Event
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee, or any other custom field.'
     - name: details
       description: The incident ticket detailed description.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company
       description: The company associated with the requester. By default it is determined by the logged in user.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_company
       description: The company for the assignee’s support organization. It makes up the first tier of the assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the assignee’s support organization. It makes up the second tier of the assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_group
       description: The group for the assignee’s support organization.  It makes up the third tier of the assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee
       description: The full name of the employee the ticket will be assigned to. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee_login_id
       description: The login ID of the assignee. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: region
       description: The region associated with the company.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site_group
       description: The site group associated with the region.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site
       description: The site associated with the site group.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -1228,54 +1035,41 @@ script:
       type: Date
   - name: bmc-itsm-change-request-create
     description: Creates a change request ticket in BMC Helix ITSM. The ticket is created by using a template or from scratch.
-    deprecated: false
     arguments:
     - name: first_name
       description: The requester first name.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
       description: The requester last name.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: customer_first_name
       description: "The customer first name. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: customer_last_name
       description: The customer last name.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: summary
       description: The change request ticket title. Required when the template ID argument is not provided.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: template_id
       description: "The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The ID can be retrieved by executing the bmc-itsm-change-request-template-list command."
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: change_type
       description: The change request ticket type. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1289,8 +1083,6 @@ script:
       - Asset Maintenance
     - name: change_timing
       description: "The class of the change request ticket which best describes your scenario."
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1302,8 +1094,6 @@ script:
       - Standard
     - name: impact
       description: The change request ticket impact. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1313,8 +1103,6 @@ script:
       - 4-Minor/Localized
     - name: urgency
       description: The change request ticket urgency. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1324,8 +1112,6 @@ script:
       - 4-Low
     - name: risk_level
       description: The change request ticket risk level. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1336,8 +1122,6 @@ script:
       - Risk Level 5
     - name: status
       description: The change request ticket status. Required when the ticket creation is without a template.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1355,15 +1139,11 @@ script:
       - Cancelled
     - name: location_company
       description: The company associated with the change request process. Required when template ID argument is not provided.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -1379,36 +1159,27 @@ script:
       type: Date
   - name: bmc-itsm-change-request-update
     description: Updates the details of change request ticket for the specified request ID.
-    deprecated: false
     arguments:
     - name: ticket_request_id
       description: The ID of the change request ticket to update.
       required: true
     - name: first_name
       description: "The customer first name the change request ticket is for. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
       description: "The customer last name the change request ticket is for. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: summary
       description: The change request ticket summary.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: change_type
       description: "The change request ticket type. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1422,8 +1193,6 @@ script:
       - Asset Maintenance
     - name: change_timing
       description: "The class of the change request ticket which best describes your scenario."
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1435,8 +1204,6 @@ script:
       - Standard
     - name: impact
       description: "The change request ticket impact."
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1446,8 +1213,6 @@ script:
       - 4-Minor/Localized
     - name: urgency
       description: "The change request ticket urgency."
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1457,8 +1222,6 @@ script:
       - 4-Low
     - name: risk_level
       description: The change request ticket risk level.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1469,8 +1232,6 @@ script:
       - Risk Level 5
     - name: status
       description: "The change request ticket status."
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1488,78 +1249,56 @@ script:
       - Cancelled
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee, or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company
       description: The company associated with the requester. By default it is determined by the logged in user.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: organization
       description: The organization associated with the requester.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: department
       description: The department associated with the requester.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: location_company
       description: The company associated with the change request process.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: region
       description: The region associated with the company location.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site_group
       description: The site group associated with the region.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site
       description: The site associated with the site group.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_organization
       description: The second tier of the change manager’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_group_name
       description: The third tier of the change manager’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status_reason
       description: "The reason for updating the ticket status. Required when status is provided. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1596,41 +1335,33 @@ script:
       - On Hold
     - name: details
       description: The change request ticket details.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     outputs: []
   - name: bmc-itsm-task-create
     description: "Creates a new task ticket. By splitting cases into individual tasks (assignments), you can focus on one assignment at a time to resolve cases more efficiently. Task ticket type can be attached only to the following ticket types: change request, incident, problem investigation, and known error."
-    deprecated: false
     arguments:
     - name: template_id
       description: The instance ID of the template to use. The ID can be retrieved by executing the bmc-itsm-task-template-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: summary
       description: The task ticket summary.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: details
       description: The task ticket detailed description.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: root_ticket_type
       description: The parent ticket type.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1641,21 +1372,16 @@ script:
     - name: root_request_id
       description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. "
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: root_request_name
       description: "The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: root_request_mode
       description: "The parent ticket request mode. "
-      required: false
-      isArray: false
       defaultValue: Real
       auto: PREDEFINED
       predefined:
@@ -1664,7 +1390,6 @@ script:
     - name: status
       description: The task status.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1677,8 +1402,6 @@ script:
       - Bypassed
     - name: task_type
       description: Whether the task is manual or automatic.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1686,15 +1409,12 @@ script:
       - Manual
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
     - name: priority
       description: The task ticket priority.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1705,35 +1425,26 @@ script:
     - name: location_company
       description: The company associated with the task process.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_company
       description: The technical support team associated with the company.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: assigned_support_group
       description: The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: impact
       description: The task ticket impact.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1743,8 +1454,6 @@ script:
       - 4-Minor/Localized
     - name: urgency
       description: The task ticket urgency.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1754,22 +1463,16 @@ script:
       - 4-Low
     - name: assignee
       description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: scedulded_start_date
       description: The task ticket scheduled future start date. For example, in 12 hours, in 7 days.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: scedulded_end_date
       description: The task ticket scheduled future end date. For example, in 12 hours, in 7 days.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -1785,32 +1488,24 @@ script:
       type: Date
   - name: bmc-itsm-task-update
     description: "Updates the task ticket. "
-    deprecated: false
     arguments:
     - name: ticket_request_id
       description: The ID of the task ticket to update.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: summary
       description: The task ticket summary.
-      required: false
-      isArray: false
       predefined:
       - ""
     - name: details
       description: The task ticket detailed description.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: priority
       description: The task ticket priority.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1820,8 +1515,6 @@ script:
       - Low
     - name: status
       description: The task ticket status.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1834,8 +1527,6 @@ script:
       - Bypassed
     - name: status_reason
       description: "The reason for changing the ticket status. Required when the status is changed. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1852,50 +1543,36 @@ script:
       - Error
     - name: company
       description: The company associated with the requester. By default it is determined by the logged in user.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: location_company
       description: The company associated with the task process.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_company
       description: The technical support team associated with the company.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee
       description: The full name of the employee the ticket is assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: assigned_group
       description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: task_type
       description: "The task ticket type. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1903,48 +1580,38 @@ script:
       - Manual
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
     - name: scedulded_start_date
       description: The task ticket scheduled future start date. For example, in 12 hours, in 7 days.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: scedulded_end_date
       description: The task ticket scheduled future end date. For example, in 12 hours, in 7 days.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     outputs: []
   - name: bmc-itsm-problem-investigation-create
     description: "Creates a problem investigation ticket. "
-    deprecated: false
     arguments:
     - name: first_name
       description: The customer first name the ticket request is for.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
       description: The customer last name the ticket request is for.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status
       description: The problem investigation ticket status.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1961,7 +1628,6 @@ script:
     - name: investigation_driver
       description: "The problem investigation ticket driver. "
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1972,21 +1638,17 @@ script:
     - name: summary
       description: The problem investigation ticket summary.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: details
       description: The detailed description on the problem investigation ticket.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: impact
       description: The problem investigation ticket impact.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1997,7 +1659,6 @@ script:
     - name: urgency
       description: The problem investigation ticket urgency.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2007,120 +1668,86 @@ script:
       - 4-Low
     - name: target_resolution_date
       description: The future resolution date. For example, in 12 hours, in 7 days.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company
       description: The company associated with the requester. By default it is determined by the logged in user.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: region
       description: The region of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site_group
       description: The site group of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site
       description: The site of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee
       description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee_pbm_mgr
       description: The full name of the employee the ticket will be assigned to as the problem coordinator. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_group_pbm_mgr
       description: The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_company_pbm_mgr
       description: The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_organization_pbm_mgr
       description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_company
       description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together."
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: assigned_group
       description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: investigation_justification
       description: The justification for the ticket creation.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: temporary_workaround
       description: The problem workaround.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: resolution
       description: The ticket resolution.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -2140,14 +1767,11 @@ script:
     - name: ticket_request_id
       description: The problem investigation ticket request ID.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status
       description: The problem investigation ticket status.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2163,8 +1787,6 @@ script:
       - Cancelled
     - name: investigation_driver
       description: "The problem investigation ticket driver. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2174,15 +1796,11 @@ script:
       - Other
     - name: summary
       description: The problem investigation ticket summary.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: impact
       description: The problem investigation ticket impact.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2192,8 +1810,6 @@ script:
       - 4-Minor/Localized
     - name: urgency
       description: The problem investigation ticket urgency.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2203,120 +1819,86 @@ script:
       - 4-Low
     - name: target_resolution_date
       description: The problem investigation ticket target resolution date. For example, in 12 hours, in 7 days.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: details
       description: The problem investigation ticket detailed description.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: company
       description: The company associated with the requester. By default it is determined by the logged in user.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: region
       description: The region of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site_group
       description: The site group of the problem investigation location. The arguments region, site_group, and site should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: site
       description: The site of the problem investigation location.The arguments region, site_group, and site should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_to
       description: "The technical support person the ticket is assigned to."
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_group_pbm_mgr
       description: The group for the problem coordinator’s support organization, which makes up the third tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_company_pbm_mgr
       description: The company for the problem coordinator’s support organization, which makes up the first tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_organization_pbm_mgr
       description: The organization for the problem coordinator’s support organization, which makes up the second tier of the problem coordinator’s support organization data structure. The arguments support_organization_pbm_mgr, assigned_group_pbm_mgr, and support_company_pbm_mgr should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_company
       description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together."
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure. The arguments assigned_support_organization, assigned_group, and assigned_support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: assigned_group
       description: The group for the problem assignee's support organization.  It makes up the third tier of the problem assignee's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: investigation_justification
       description: The justification for the ticket creation.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: temporary_workaround
       description: The problem workaround.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: resolution
       description: The ticket resolution.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status_reason
       description: The reason for changing the status. Required when the status argument is provided.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2326,12 +1908,10 @@ script:
     outputs: []
   - name: bmc-itsm-known-error-create
     description: "Create known error ticket. "
-    deprecated: false
     arguments:
     - name: status
       description: The known error ticket status.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2345,21 +1925,18 @@ script:
     - name: summary
       description: The known error ticket summary.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: details
       description: The known error ticket Detailed description.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: impact
       description: The known error ticket impact.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2370,7 +1947,6 @@ script:
     - name: urgency
       description: The known error ticket urgency.
       required: true
-      isArray: false
       auto: PREDEFINED
       defaultValue: ""
       predefined:
@@ -2381,7 +1957,6 @@ script:
     - name: view_access
       description: Whether if the ticket is for internal view or public view.
       required: true
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2390,98 +1965,72 @@ script:
     - name: company
       description: Company associated with the Requester.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: target_resolution_date
       description: Known error resolution date. Future resolution date. For example, in 12 hours, in 7 days.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: resolution
       description: Ticket resolution.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_group_pbm_mgr
       description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_company_pbm_mgr
       description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_organization_pbm_mgr
       description: It makes up the second tier of the Problem Coordinator’s Support Organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_company
       description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure."
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: assigned_group
       description: The group for the problem assignee’s support organization. It makes up the third tier of the problem assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: investigation_justification
       description: The justification for the ticket creation.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee
       description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee_pbm_mgr
       description: The full name of the staff member to whom the ticket will be assign to as the problem coordinator. It can be retrieved by using the 'bmc-itsm-user-list' command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: temporary_workaround
       description: Error workaround.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -2497,19 +2046,15 @@ script:
       type: Date
   - name: bmc-itsm-known-error-update
     description: "Update Known Error ticket type. "
-    deprecated: false
     arguments:
     - name: ticket_request_id
       description: The known error ticket request ID.
       required: true
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status
       description: The known error ticket status.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2522,22 +2067,16 @@ script:
       - Cancelled
     - name: summary
       description: The known error ticket summary.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: details
       description: The known error ticket detailed description.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: impact
       description: The known error ticket impact.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2547,8 +2086,6 @@ script:
       - 4-Minor/Localized
     - name: urgency
       description: The known error ticket urgency.
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2558,8 +2095,6 @@ script:
       - 4-Low
     - name: view_access
       description: "The known error ticket internal access. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2567,78 +2102,56 @@ script:
       - Internal
     - name: company
       description: Company associated with the Requester. By default is determined by the logged in user.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: target_resolution_date
       description: Known error resolution date. Future resolution date. For example, in 12 hours, in 7 days.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: resolution
       description: Ticket resolution.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_group_pbm_mgr
       description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_company_pbm_mgr
       description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. "
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: support_organization_pbm_mgr
       description: It makes up the second tier of the Problem Coordinator’s Support Organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_company
       description: "The company for the problem assignee’s support organization. It makes up the first tier of the problem assignee’s support organization data structure."
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assigned_support_organization
       description: The organization for the problem assignee’s support organization. It makes up the second tier of the problem assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue:
       predefined:
       - ""
     - name: assigned_group
       description: The group for the problem assignee’s support organization. It makes up the third tier of the problem assignee’s support organization data structure.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: temporary_workaround
       description: Error workaround.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: status_reason
       description: "The reason for changing the status. Required when the status is provided. "
-      required: false
-      isArray: false
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2650,69 +2163,51 @@ script:
       - Pending Third Party Vendor
     - name: assignee
       description: The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: assignee_pbm_mgr
       description: The full name of the employee the ticket will be assign to as the problem coordinator. It can be retrieved by using the bmc-itsm-user-list command.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: additional_fields
       description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     outputs: []
   - name: bmc-itsm-change-request-template-list
     description: Lists all change requests ticket templates. Useful for creating change request tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    deprecated: false
     arguments:
     - name: template_ids
       description: A comma-separated list of change request template IDs. Used as a filtering argument.
-      required: false
       isArray: true
       defaultValue: ""
       predefined:
       - ""
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of records to retrieve.
-      required: false
-      isArray: false
       defaultValue: "50"
       predefined:
       - ""
     - name: page_size
       description: The maximum number of records to retrieve per page.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: description
       description: The change request ticket description. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -2728,47 +2223,34 @@ script:
       description: The change request ticket template instance ID. Useful for creating change request tickets.
   - name: bmc-itsm-incident-template-list
     description: Lists all incident requests ticket templates. Useful for create incident tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    deprecated: false
     arguments:
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of records to retrieve.
-      required: false
-      isArray: false
       defaultValue: "50"
       predefined:
       - ""
     - name: page_size
       description: The maximum number of records to retrieve per page.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: description
       description: The incident ticket template description. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: template_ids
       description: A comma-separated list of incident template IDs. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -2784,47 +2266,34 @@ script:
       description: The incident ticket template ID. Useful for creating change request tickets.
   - name: bmc-itsm-task-template-list
     description: Lists all task ticket templates. Useful for creating task tickets. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
-    deprecated: false
     arguments:
     - name: query
       description: 'The query to search by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query is used in addition to the existing arguments. See the BMC documentation for See the BMC documentation for [building search qualifications](https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html).'
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: limit
       description: The maximum number of records to retrieve.
-      required: false
-      isArray: false
       defaultValue: "50"
       predefined:
       - ""
     - name: page_size
       description: The maximum number of records to retrieve per page.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: page
       description: The page number of the results to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: template_ids
       description: A comma-separated list of task template IDs. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
     - name: task_name
       description: The task ticket template name. Used as a filtering argument.
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - ""
@@ -2855,7 +2324,6 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  feed: false
   isfetch: true
   ismappable: true
   isremotesyncin: true

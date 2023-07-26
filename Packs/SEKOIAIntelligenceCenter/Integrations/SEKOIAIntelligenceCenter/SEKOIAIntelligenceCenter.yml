@@ -21,12 +21,12 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - name: integrationReliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -40,24 +40,17 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 script:
   commands:
   - arguments:
-    - default: false
-      description: Indicator value
-      isArray: false
+    - description: Indicator value
       name: value
       required: true
-      secret: false
-    - default: false
-      description: Indicator type
-      isArray: false
+    - description: Indicator type
       name: type
       required: true
-      secret: false
-    deprecated: false
     description: 'Query SEKOIA.IO Intelligence Center for information about this observable. '
-    execution: false
     name: GetObservable
     outputs:
     - contextPath: GetObservable.Output
@@ -94,21 +87,13 @@ script:
       description: Unique identifier of the item
       type: String
   - arguments:
-    - default: false
-      description: Indicator value
-      isArray: false
+    - description: Indicator value
       name: value
       required: true
-      secret: false
-    - default: false
-      description: Indicator type
-      isArray: false
+    - description: Indicator type
       name: type
       required: true
-      secret: false
-    deprecated: false
     description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC).
-    execution: false
     name: GetIndicator
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.has_more
@@ -186,10 +171,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-    execution: false
     name: ip
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
@@ -366,10 +348,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-    execution: false
     name: url
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
@@ -548,10 +527,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-    execution: false
     name: domain
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
@@ -728,10 +704,7 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-    execution: false
     name: file
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
@@ -917,10 +890,7 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC).
-    execution: false
     name: email
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
@@ -1093,21 +1063,13 @@ script:
       type: String
 
   - arguments:
-    - default: false
-      description: Indicator value
-      isArray: false
+    - description: Indicator value
       name: value
       required: true
-      secret: false
-    - default: false
-      description: Indicator type
-      isArray: false
+    - description: Indicator type
       name: type
       required: true
-      secret: false
-    deprecated: false
     description: Query SEKOIA.IO Intelligence Center for context around this indicator
-    execution: false
     name: GetIndicatorContext
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
@@ -1290,12 +1252,11 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.64013
+  dockerimage: demisto/py3-tools:1.0.0.66127
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

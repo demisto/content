@@ -30,13 +30,13 @@ configuration:
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - additionalinfo: Timestamp in ISO format or <number> <time unit>, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
   display: First fetch timestamp.
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Default is 50. Maximum is 100.
   display: Maximum incidents per fetch
   defaultvalue: 50
@@ -51,17 +51,17 @@ configuration:
   - Phishing
   - BrandSecurity
   - ExploitableData
-  - VIP
-  required: false
+  - vip
   type: 16
+  required: false
 - display: Minimum Alert Severity Level
   name: alert_severity
   options:
   - Low
   - Medium
   - High
-  required: false
   type: 15
+  required: false
 - display: Source types to filter alerts by
   name: source_types
   options:
@@ -71,42 +71,42 @@ configuration:
   - SocialMedia
   - PasteSites
   - Others
-  required: false
   type: 16
+  required: false
 - defaultvalue: 'false'
   display: Fetch closed alerts
   name: fetch_closed_incidents
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Include CSV files of alerts
   name: fetch_csv
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Include attachments of alerts
   name: fetch_attachments
-  required: false
   type: 8
   additionalinfo: MSSP accounts must provide a sub-account ID to perform this action.
+  required: false
 - display: "Sub-account ID (for MSSP accounts)."
   name: mssp_sub_account
   type: 0
   required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Rapid7 Insight - Threat Command allows managing alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
 display: Rapid7 - Threat Command (IntSights)
 name: rapid7_threat_command
@@ -114,9 +114,7 @@ script:
   commands:
   - arguments:
     - description: Filter by free text, which can be the cyber term name or ID.
-      isArray: false
       name: search
-      required: false
     - auto: PREDEFINED
       description: "A comma-separated list of cyber term types by which to filter the results. For example: ThreatActor,Campaign."
       isArray: true
@@ -125,7 +123,6 @@ script:
       - Threat Actor
       - Malware
       - Campaign
-      required: false
     - auto: PREDEFINED
       description: "A comma-separated list of cyber term severities by which to filter the results. For example: High,Low."
       isArray: true
@@ -134,48 +131,31 @@ script:
       - High
       - Medium
       - Low
-      required: false
     - description: "A comma-separated list of targeted sectors by which to filter the results. For example: Education,Government."
       isArray: true
       name: sectors
-      required: false
     - description: "A comma-separated list of targeted countries by which to filter the results. For example: Albania,Algeria."
       isArray: true
       name: countries
-      required: false
     - description: "A comma-separated list of nationalities by which to filter the results. For example: Egypt,Iraq."
       isArray: true
       name: origins
-      required: false
     - description: "A comma-separated list of TTPs by which to filter the results. For example: Malware,Backdoor"
       isArray: true
       name: ttps
-      required: false
     - description: "Filter for results whose last update date is greater than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z. Default value: Last year."
-      isArray: false
       name: last_update_from
-      required: false
     - description: "Filter for results whose last update date is less than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: last_update_to
-      required: false
     - defaultValue: '1'
       description: The page number of the results to retrieve (1-based).
-      isArray: false
       name: page
-      required: false
     - description: The number of objects per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List cyber terms by filter.
-    execution: false
     name: threat-command-cyber-term-list
     outputs:
     - contextPath: ThreatCommand.CyberTerm.id
@@ -237,26 +217,19 @@ script:
       type: String
   - arguments:
     - description: "Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs)."
-      isArray: false
       name: cyber_term_id
       required: true
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: List cyber term CVEs by cyber term ID.
-    execution: false
     name: threat-command-cyber-term-cve-list
     outputs:
     - contextPath: ThreatCommand.CVE.id
@@ -270,12 +243,10 @@ script:
       type: Number
   - arguments:
     - description: "Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs)."
-      isArray: false
       name: cyber_term_id
       required: true
     - auto: PREDEFINED
       description: IOC types to include.
-      isArray: false
       name: ioc_type
       predefined:
       - Ip Addresses
@@ -283,24 +254,15 @@ script:
       - Domains
       - Hashes
       - Emails
-      required: false
     - description: The page number of the results to retrieve (1-based).
       defaultValue: '1'
-      isArray: false
       name: page
-      required: false
     - description: The number of objects per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List cyber term IOCs by cyber term ID.
-    execution: false
     name: threat-command-cyber-term-ioc-list
     outputs:
     - contextPath: ThreatCommand.IOC.value
@@ -327,21 +289,15 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: Gets lists of IOC document sources.
-    execution: false
     name: threat-command-source-list
     outputs:
     - contextPath: ThreatCommand.Source.id
@@ -361,16 +317,13 @@ script:
       type: String
   - arguments:
     - description: Source name.
-      isArray: false
       name: name
       required: true
     - description: Source description.
-      isArray: false
       name: description
       required: true
     - auto: PREDEFINED
       description: Source confidence level.
-      isArray: false
       name: confidence_level
       predefined:
       - '1'
@@ -379,48 +332,36 @@ script:
       required: true
     - auto: PREDEFINED
       description: Whether to share this source with all tenants (available for MSSP users only).
-      isArray: false
       name: share
       predefined:
       - 'true'
       - 'false'
-      required: false
     - auto: PREDEFINED
       description: Source severity level.
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
-      required: false
     - description: "Comma-separated list of user tags for the document."
       isArray: true
       name: tags
-      required: false
     - description: "Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com"
       isArray: true
       name: domains
-      required: false
     - description: "Comma-separated list of URL IOC values to add. For example: \"http://securitywap.com/path\""
       isArray: true
       name: urls
-      required: false
     - description: "Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4."
       isArray: true
       name: ips
-      required: false
     - description: "Comma-separated list of hash IOC values to add. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7."
       isArray: true
       name: hashes
-      required: false
     - description: "Comma-separated list of email IOC values to add. For example: test@test.com."
       isArray: true
       name: emails
-      required: false
-    deprecated: false
     description: Adds a new IOC source document. At least one IOC is required.
-    execution: false
     name: threat-command-source-document-create
     outputs:
     - contextPath: ThreatCommand.Source.Files.id
@@ -431,112 +372,73 @@ script:
       type: String
   - arguments:
     - description: "The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type=\"Files\" to get all the document source IDs)."
-      isArray: false
       name: source_id
       required: true
-    deprecated: false
     description: Deletes an existing IOC source document.
-    execution: false
     name: threat-command-source-document-delete
   - arguments:
     - description: "The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type=\"Files\" to get all the document source IDs)."
-      isArray: false
       name: source_id
       required: true
     - description: "Comma-separated list of domain IOC values to create. For example: securitywap.com,test.com."
       isArray: true
       name: domains
-      required: false
     - description: 'Comma-separated list of URL IOC values to create. For example: "http://securitywap.com/path".'
       isArray: true
       name: urls
-      required: false
     - description: 'Comma-separated list of IP IOC values to create. For example: 8.8.8.8,1.2.3.4.'
       isArray: true
       name: ips
-      required: false
     - description: 'Comma-separated list of hash IOC values to create. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
       isArray: true
       name: hashes
-      required: false
     - description: "Comma-separated list of email IOC values to create. For example: test@test.com."
       isArray: true
       name: emails
-      required: false
-    deprecated: false
     description: Create new IOCs to existing IOC source documents. At least one IOC is required.
-    execution: false
     name: threat-command-source-document-ioc-create
   - arguments:
     - description: "IOC value. Required when last_updated_from is not selected. Not supported for email addresses. While using this argument, all the other filtering arguments are not relevant. "
-      isArray: false
       name: ioc_value
-      required: false
     - description: The page number of the results to retrieve (1-based).
       defaultValue: '1'
-      isArray: false
       name: page
-      required: false
     - description: The number of objects per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: "Enrichment flag. Use True to enrich the data about the IOC. Supported IOC types are: Domains, URLs, IP addresses and file hashes. While using this argument, all the other filtering arguments are not relevant (except ioc_value). "
-      isArray: false
       name: enrichment
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: The interval in seconds between each poll. Relevant while enrichment=true.
-      isArray: false
       name: interval_in_seconds
-      required: false
       defaultValue: '30'
     - description: The timeout in seconds until polling ends. Relevant while enrichment=true.
-      isArray: false
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
     - description: "Filter by last update date (IOC update date is greater than). For example:  2022-12-25T08:38:06Z. Required when ioc_value is not selected."
-      isArray: false
       name: last_updated_from
-      required: false
     - description: "Filter by last update date (IOC update date is less than). For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: last_updated_to
-      required: false
     - description: "Filter by last seen date (IOC last seen date is greater than). For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: last_seen_from
-      required: false
     - description: "Filter by last seen date (IOC last seen date is less than). For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: last_seen_to
-      required: false
     - description: "Filter by first seen date (IOC first seen date is greater than). For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: first_seen_from
-      required: false
     - description: "Filter by first seen date (IOC first seen date is less than). For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: first_seen_to
-      required: false
     - auto: PREDEFINED
       description: Filter by IOC status.
-      isArray: false
       name: status
       predefined:
       - Active
       - Retired
-      required: false
     - auto: PREDEFINED
       description: "Comma-separated list of IOC types to filter. For example: Urls,Domains."
       isArray: true
@@ -547,7 +449,6 @@ script:
       - Domains
       - Hashes
       - Emails
-      required: false
     - auto: PREDEFINED
       description: "Comma-separated list of IOC severities to filter. For example: Low,Medium."
       isArray: true
@@ -556,19 +457,15 @@ script:
       - High
       - Medium
       - Low
-      required: false
     - auto: PREDEFINED
       description: Filter by whitelist status.
-      isArray: false
       name: whitelisted
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: "Comma-separated list of source IDs (dependencies - use threat-command-source-document-ioc-get command to get all the document source IDs)."
       isArray: true
       name: source_ids
-      required: false
     - auto: PREDEFINED
       description: "Comma-separated list of the phase of the Lockheed-Martin kills chain. For example: Delivery,Exploitation."
       isArray: true
@@ -581,10 +478,7 @@ script:
       - Installation
       - Command and Control
       - Actions on Objective
-      required: false
-    deprecated: false
     description: "Gets IOC details by value or IOC’s full enrichment data. While using the enrichment flag, the command is scheduled and allows us to get full enrichment data. Note that enrichment has a quota. You can get the quota by using threat-command-quotas-usage-get."
-    execution: false
     name: threat-command-ioc-search
     polling: true
     outputs:
@@ -759,122 +653,85 @@ script:
       isArray: true
       name: tag_values
       required: true
-    deprecated: false
     description: "Adds user tags to IOCs. This enables you to classify IOCs and later search for all IOCs with a specific tag. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC."
-    execution: false
     name: threat-command-ioc-tags-add
   - arguments:
     - auto: PREDEFINED
       description: "The whitelist status for the IOCs. Add to the user whitelist - The IOCs will not be passed to integrated devices. Do not whitelist - The IOCs will be passed to integrated devices, even if the IOCs are on the system whitelist. "
-      isArray: false
       name: is_whitelisted
       predefined:
       - Add to the user whitelist
       - Do not whitelist
       required: true
     - description: 'Comma-separated list of domain IOC values to apply is_whitelisted to. For example: securitywap.com,test.com.'
-      isArray: false
       name: domains
-      required: false
     - description: 'Comma-separated list of URL IOC values to apply is_whitelisted to. For example: "http://securitywap.com/path".'
-      isArray: false
       name: urls
-      required: false
     - description: 'Comma-separated list of IP IOC values to apply is_whitelisted to. For example: 8.8.8.8,1.2.3.4.'
-      isArray: false
       name: ips
-      required: false
     - description: 'Comma-separated list of hash IOC values to apply is_whitelisted to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
-      isArray: false
       name: hashes
-      required: false
     - description: 'Comma-separated list of email IOC values to apply is_whitelisted to. For example: test@test.com.'
-      isArray: false
       name: emails
-      required: false
-    deprecated: false
     description: "You can add an IOC to your user whitelist (even if it is already on the system whitelist). If you change your mind, you can then revert that decision to rely again on the system designation using the threat-command-account-whitelist-remove command. When an IOC is whitelisted, it will not be sent to integrated security to block. When an IOC is not whitelisted, it will be sent to integrated security devices to block. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required. "
-    execution: false
     name: threat-command-account-whitelist-update
   - arguments:
     - description: 'Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: securitywap.com,test.com.'
       isArray: true
       name: domains
-      required: false
     - description: "Comma-separated list of URL IOC values to be reverted back to the system whitelist default. For example: \"http://securitywap.com/path\"."
       isArray: true
       name: urls
-      required: false
     - description: 'Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8.8.8.8,1.2.3.4.'
       isArray: true
       name: ips
-      required: false
     - description: 'Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
       isArray: true
       name: hashes
-      required: false
     - description: "Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: test@test.com."
       isArray: true
       name: emails
-      required: false
-    deprecated: false
     description: "Reverts IOC values to the system-default whitelist status. The ETP Suite automatically whitelists certain IOCs, such as company assets. You can override this designation or ensure that certain IOCs will not be system whitelisted using the threat-command-account-whitelist-update command. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required."
-    execution: false
     name: threat-command-account-whitelist-remove
   - arguments:
     - description: 'Comma-separated list of domain IOC values to add to the Remediation blocklist. For example: securitywap.com,test.com.'
       isArray: true
       name: domains
-      required: false
     - description: 'Comma-separated list of URL IOC values to add to the Remediation blocklist. For example: "http://securitywap.com/path".'
       isArray: true
       name: urls
-      required: false
     - description: 'Comma-separated list of IP IOC valuesto add to the Remediation blocklist. For example: 8.8.8.8,1.2.3.4.'
       isArray: true
       name: ips
-      required: false
     - description: 'Comma-separated list of hash IOC values to add to the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
       isArray: true
       name: hashes
-      required: false
     - description: "Comma-separated list of email IOC values to add to the Remediation blocklist. For example: test@test.com."
       isArray: true
       name: emails
-      required: false
-    deprecated: false
     description: "Adds an IOC to an internal Remediation Blocklist. By sending the blocklist to security devices, you can block the IOCs. At least one IOC is required."
-    execution: false
     name: threat-command-ioc-blocklist-add
   - arguments:
     - description: 'Comma-separated list of domain IOC values to remove from the Remediation blocklist. For example: securitywap.com,test.com.'
       isArray: true
       name: domains
-      required: false
     - description: 'Comma-separated list of URL IOC values to remove from the Remediation blocklist. For example: "http://securitywap.com/path".'
       isArray: true
       name: urls
-      required: false
     - description: "Comma-separated list of IP IOC values to remove from the Remediation blocklist. For example: 8.8.8.8,1.2.3.4."
       isArray: true
       name: ips
-      required: false
     - description: 'Comma-separated list of hash IOC values to remove from the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
       isArray: true
       name: hashes
-      required: false
     - description: "Comma-separated list of email IOC values to remove from the Remediation blocklist. For example: test@test.com."
       isArray: true
       name: emails
-      required: false
-    deprecated: false
     description: Removes IOC values from the Remediation blocklist. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required.
-    execution: false
     name: threat-command-ioc-blocklist-remove
   - arguments:
     - auto: PREDEFINED
       description: The severity of the IOCs.
-      isArray: false
       name: severity
       predefined:
       - High
@@ -884,93 +741,64 @@ script:
     - description: 'Comma-separated list of domain IOC values to update the severity. For example: securitywap.com,test.com.'
       isArray: true
       name: domains
-      required: false
     - description: 'Comma-separated list of URL IOC values to update the severity. For example: "http://securitywap.com/path".'
       isArray: true
       name: urls
-      required: false
     - description: 'Comma-separated list of IP IOC values to update the severity. For example: 8.8.8.8,1.2.3.4.'
       isArray: true
       name: ips
-      required: false
     - description: 'Comma-separated list of hash IOC values to update the severity. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
       isArray: true
       name: hashes
-      required: false
     - description: "Comma-separated list of email IOC values to update the severity. For example: test@test.com."
       isArray: true
       name: emails
-      required: false
-    deprecated: false
     description: Changes the severity of existing IOCs for the requester account (overrides the system severity). At least one IOC is required.
-    execution: false
     name: threat-command-ioc-severity-update
   - arguments:
     - description: The comment to add.
-      isArray: false
       name: comment
       required: true
     - description: "Comma-separated list of domain IOC values to add the comment to. For example: securitywap.com,test.com."
       isArray: true
       name: domains
-      required: false
     - description: 'Comma-separated list of URL IOC values to add the comment to. For example: "http://securitywap.com/path".'
       isArray: true
       name: urls
-      required: false
     - description: 'Comma-separated list of IP IOC values to add the comment to. For example: 8.8.8.8,1.2.3.4.'
       isArray: true
       name: ips
-      required: false
     - description: 'Comma-separated list of hash IOC values to add the comment to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7.'
       isArray: true
       name: hashes
-      required: false
     - description: "Comma-separated list of email IOC values to add the comment to. For example: test@test.com."
       isArray: true
       name: emails
-      required: false
-    deprecated: false
     description: Adds comments to IOCs. At least one IOC is required.
-    execution: false
     name: threat-command-ioc-comment-add
-  - deprecated: false
-    description: Gets the current API enrichment credits ("quota") usage for the requester account.
-    execution: false
+  - description: Gets the current API enrichment credits ("quota") usage for the requester account.
     name: threat-command-enrichment-quota-usage
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
-      required: false
     - description: The page number of the results to retrieve (1-based).
       defaultValue: '1'
-      isArray: false
       name: page
-      required: false
     - description: The number of objects per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Retrieve alert IDs only. Set to False in order to get the alerts with complete data details, and set to True in order to get a list of alerts.
-      isArray: false
       name: retrieve_ids_only
       predefined:
       - 'true'
       - 'false'
-      required: false
     - defaultValue: '1970-01-01T00:00:00.000Z'
       description: "Start date to fetch from. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: last_updated_from
-      required: false
     - auto: PREDEFINED
       description: Alert's type.
       isArray: true
@@ -982,7 +810,6 @@ script:
       - Brand Security
       - Exploitable Data
       - vip
-      required: false
     - auto: PREDEFINED
       description: Comma-separated list of alert severities. For example:High,Medium.
       isArray: true
@@ -991,7 +818,6 @@ script:
       - High
       - Medium
       - Low
-      required: false
     - auto: PREDEFINED
       description: "Comma-separated list of alert source types. For example:Others,Markets."
       isArray: true
@@ -1003,7 +829,6 @@ script:
       - Social Media
       - Paste Sites
       - Others
-      required: false
     - auto: PREDEFINED
       description: "Comma-separated list of alert network types. For example:Clear Web,Dark Web."
       isArray: true
@@ -1011,67 +836,45 @@ script:
       predefined:
       - Clear Web
       - Dark Web
-      required: false
     - description: "Comma-separated list of alert matched assets."
       isArray: true
       name: matched_asset_value
-      required: false
     - description: "End date to fetch to. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: last_updated_to
-      required: false
     - description: "Start date to fetch from. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: source_date_from
-      required: false
     - description: "End date to fetch to. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: source_date_to
-      required: false
     - description: "Start date to fetch from. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: found_date_from
-      required: false
     - description: "End date to fetch to. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: found_date_to
-      required: false
     - auto: PREDEFINED
       description: Show assigned/unassigned alerts.
-      isArray: false
       name: assigned
       predefined:
       - 'true'
       - 'false'
-      required: false
     - auto: PREDEFINED
       description: Show flagged/unflagged alerts.
-      isArray: false
       name: is_flagged
       predefined:
       - 'true'
       - 'false'
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show closed/open alerts.
-      isArray: false
       name: is_closed
       predefined:
       - 'true'
       - 'false'
-      required: false
     - auto: PREDEFINED
       description: Show alerts with IOC results.
-      isArray: false
       name: has_ioc
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: Get a list of alerts with all details.
-    execution: false
     name: threat-command-alert-list
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1151,39 +954,29 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - auto: PREDEFINED
       defaultValue: Domain
       description: Takedown target. Available for phishing scenarios only. If you have evidence of malicious activity associated with this domain, select Domain.
-      isArray: false
       name: target
       predefined:
       - Domain
       - Website
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Whether to close the alert after successful remediation.
-      isArray: false
       name: close_alert_after_success
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: Send a takedown request for the selected alert (Request that Threat Command will contact the host to request a takedown of a malicious domain, website, or mobile application).
-    execution: false
     name: threat-command-alert-takedown-request
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: Get the alert's takedown status.
-    execution: false
     name: threat-command-alert-takedown-request-status-get
     outputs:
     - contextPath: ThreatCommand.Alert.takedown_status
@@ -1191,20 +984,15 @@ script:
       type: String
   - arguments:
     - description: "Alert's found date. For example:  2022-12-25T08:38:06Z. The defaut value is the current time."
-      isArray: false
       name: found_date
-      required: false
     - description: Alert's title.
-      isArray: false
       name: title
       required: true
     - description: Alert's description.
-      isArray: false
       name: description
       required: true
     - auto: PREDEFINED
       description: "Alert's type (dependencies - use threat-command-alert-type-list command to get all the alert types). Required while scenario not inserted."
-      isArray: false
       name: type
       predefined:
       - Attack Indication
@@ -1213,14 +1001,10 @@ script:
       - Brand Security
       - Exploitable Data
       - vip
-      required: false
     - description: "Alert subtype (dependencies - use threat-command-alert-type-list command to get all the alert subtypes). Required while scenario not inserted."
-      isArray: false
       name: sub_type
-      required: false
     - auto: PREDEFINED
       description: Alert's severity.
-      isArray: false
       name: severity
       predefined:
       - High
@@ -1228,36 +1012,25 @@ script:
       - Low
       required: true
     - description: "Alert source type (dependencies - use threat-command-alert-source-type-list command to get all the alert source types)."
-      isArray: false
       name: source_type
       required: true
     - auto: PREDEFINED
       description: Source network type.
-      isArray: false
       name: source_network_type
       predefined:
       - Clear Web
       - Dark Web
       required: true
     - description: "The source URL of the alert. "
-      isArray: false
       name: source_url
-      required: false
     - description: "Alert's source date. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: source_date
-      required: false
     - description: "Comma-separated list of image entry IDs to attach to the alert. Allowed image types: gif,jpeg"
       isArray: true
       name: image_entry_ids
-      required: false
     - description: "If provided, the related values will override any type and sub_type parameters (dependencies - use the threat-command-alert-scenario-list command to get all the alert scenarios)."
-      isArray: false
       name: scenario
-      required: false
-    deprecated: false
     description: Create a new alert. You have to insert scenario or type and sub_type.
-    execution: false
     name: threat-command-alert-create
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1265,12 +1038,10 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - auto: PREDEFINED
       description: Alert's closed reason.
-      isArray: false
       name: reason
       predefined:
       - Problem Solved
@@ -1283,21 +1054,16 @@ script:
       - Other
       required: true
     - description: Alert's comments.
-      isArray: false
       name: comment
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Alerts' hidden status (Delete alert from the account instance only when reason is FalsePositive).
-      isArray: false
       name: is_hidden
       predefined:
       - 'true'
       - 'false'
-      required: false
     - auto: PREDEFINED
       description: "Alert's rate. Rate range: 0-5 (The range not officaly documented)."
-      isArray: false
       name: rate
       predefined:
       - '0'
@@ -1306,10 +1072,7 @@ script:
       - '3'
       - '4'
       - '5'
-      required: false
-    deprecated: false
     description: Close alert.
-    execution: false
     name: threat-command-alert-close
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1320,21 +1083,17 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - auto: PREDEFINED
       description: The desired severity.
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       required: true
-    deprecated: false
     description: "Change the alert's severity. Changing the severity level of alerts can help to prioritize alert management."
-    execution: false
     name: threat-command-alert-severity-update
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1345,12 +1104,9 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: Get alert's blocklist status.
-    execution: false
     name: threat-command-alert-blocklist-get
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1364,71 +1120,54 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: 'Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com'
       isArray: true
       name: domains
-      required: false
     - description: 'Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path"'
       isArray: true
       name: urls
-      required: false
     - description: 'Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4.'
       isArray: true
       name: ips
-      required: false
     - description: 'Comma-separated list of email IOC values to add. For example: test@test.com.'
       isArray: true
       name: emails
-      required: false
     - auto: PREDEFINED
       description: Blocklist status.
-      isArray: false
       name: blocklist_status
       predefined:
       - Sent
       - Not Sent
       required: true
-    deprecated: false
     description: Change selected IOCs blocklist status.
-    execution: false
     name: threat-command-alert-blocklist-update
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: "Comma-separated list of the desired source names (dependencies - use threat-command-source-ioc-get to get all the source names). For example:GoogleWebRisk,PhishTank.Since there are variety of sources that accept different types of IOCs, select only sources that accept the alert IOCs."
       isArray: true
       name: external_sources
       required: true
-    deprecated: false
     description: "Report IOCs to external sources (Report the URLs and domains that are included in an alert to external sources. This can warn others of the potential danger of those IOCs)."
-    execution: false
     name: threat-command-alert-ioc-report
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: "Assigned user ID (dependencies - use threat-command-mssp-user-list or threat-command-account-user-list to get user IDs)."
-      isArray: false
       name: user_id
       required: true
     - auto: PREDEFINED
       defaultValue: false
       description: If the assigned user is an MSSP user or not.
-      isArray: false
       name: is_mssp
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: "Assign an alert to other ETP Suite users. When an alert is assigned, the assignee will receive a notification. Mainly used to assign alerts."
-    execution: false
     name: threat-command-alert-assign
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1439,12 +1178,9 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: Unassign an alert from all users.
-    execution: false
     name: threat-command-alert-unassign
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1455,42 +1191,30 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: Reopen alert.
-    execution: false
     name: threat-command-alert-reopen
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: The new tag string.
-      isArray: false
       name: tag_name
       required: true
-    deprecated: false
     description: "Adds a tag to an alert. This enables you to classify alerts and later search for all alerts with a specific tag."
-    execution: false
     name: threat-command-alert-tag-add
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: "Tag's unique ID to remove (dependencies - use threat-command-alert-list command to get all the tag IDs)."
-      isArray: false
       name: tag_id
       required: true
-    deprecated: false
     description: Removes a tag from the alert.
-    execution: false
     name: threat-command-alert-tag-remove
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: "Comma-separated list of destinaions email addresses."
@@ -1498,34 +1222,24 @@ script:
       name: email_addresses
       required: true
     - description: Content added to the alert details.
-      isArray: false
       name: content
       required: true
-    deprecated: false
     description: Send mail with the alert details and a question.
-    execution: false
     name: threat-command-alert-send-mail
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: Question added to the alert details.
-      isArray: false
       name: question
       required: true
-    deprecated: false
     description: "Send a question to an analyst about the requested alert. Questions can revolve around an alert explanation, a request for more context, recommended remediation steps, or requests for threat actor engagement. In order to get the conversation with the analyst, use the threat-command-alert-analyst-conversation-list command."
-    execution: false
     name: threat-command-alert-analyst-ask
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: Get alert's analyst response
-    execution: false
     name: threat-command-alert-analyst-conversation-list
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -1542,12 +1256,9 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: Get alert activity log.
-    execution: false
     name: threat-command-alert-activity-log-get
     outputs:
     - contextPath: ThreatCommand.Alert.ActivityLog.rate
@@ -1615,65 +1326,42 @@ script:
       type: String
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: Get alert's CSV file in case of credentials leakage or leaked credit cards alerts.
-    execution: false
     name: threat-command-alert-csv-get
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
     - description: Desired note.
-      isArray: false
       name: note
       required: true
     - description: "Comma-separated list of file entry IDs. Allowed types: pdf,csv,doc,docx,png,txt,jpeg,jpg"
       isArray: true
       name: entry_ids
-      required: false
-    deprecated: false
     description: "Add a note to the alert. You can add notes, as text or uploaded files, to an alert that can be seen by internal users. Each note is accompanied by the name of the note creator. Other users can reply to notes. Alert notes remain with the alert, even after it is closed or otherwise remediated."
-    execution: false
     name: threat-command-alert-note-add
   - arguments:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
-      isArray: false
       name: alert_id
       required: true
-    deprecated: false
     description: List alert images by ID.
-    execution: false
     name: threat-command-alert-image-list
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - description: This field is used for pagination. Each request is limited to 1000 results. To get the next page, send the returned "nextOffset" parameter back to the sever as "offset".
-      isArray: false
       name: offset
-      required: false
     - description: "CVE's publish date minimum value. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: publish_date_from
-      required: false
     - description: "CVE's publish date maximum value. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: publish_date_to
-      required: false
     - description: "CVE's update date minimum value. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: update_date_from
-      required: false
     - description: "CVE's update date maximum value. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: update_date_to
-      required: false
     - auto: PREDEFINED
       description: "Comma-separated list of CVE severities."
       isArray: true
@@ -1683,18 +1371,13 @@ script:
       - High
       - Medium
       - Low
-      required: false
     - description: "Comma-separated list of CPEs."
       isArray: true
       name: cpe_list
-      required: false
     - description: "Comma-separated list of specific CVE IDs."
       isArray: true
       name: cve_ids
-      required: false
-    deprecated: false
     description: Get CVE's list from account.
-    execution: false
     name: threat-command-cve-list
     outputs:
     - contextPath: ThreatCommand.CVE.id
@@ -1777,31 +1460,23 @@ script:
       isArray: true
       name: cve_ids
       required: true
-    deprecated: false
     description: Add CVEs to account.
-    execution: false
     name: threat-command-cve-add
   - arguments:
     - description: "Comma-separated list of CVEs unique IDs (dependencies - use threat-command-cve-listto get all the CVE IDs)."
       isArray: true
       name: cve_ids
       required: true
-    deprecated: false
     description: Delete CVEs from account.
-    execution: false
     name: threat-command-cve-delete
   - arguments:
     - description: "The type of asset to add value. For example: asset_type=\"Domains\" asset_value=\"example.com\". (You can get the asset types with threat-command-asset-type-list command)."
-      isArray: false
       name: asset_type
       required: true
     - description: Asset value.
-      isArray: false
       name: asset_value
       required: true
-    deprecated: false
     description: "Add assets by type and value. Assets include any company resource that could lead to a potential security threat."
-    execution: false
     outputs:
     - contextPath: ThreatCommand.Asset.type
       description: The type of the asset.
@@ -1813,25 +1488,18 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: "Comma-separated list of alert source types (dependencies - use threat-command-asset-type-list command to get all the asset types). For example:Domains,CompanyNames. "
       isArray: true
       name: asset_types
-      required: false
-    deprecated: false
     description: Get account assets grouped by asset type.
-    execution: false
     name: threat-command-asset-list
     outputs:
     - contextPath: ThreatCommand.Asset.type
@@ -1843,21 +1511,15 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_results
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: "Get all asset types. Mainly used to add or delete assets."
-    execution: false
     name: threat-command-asset-type-list
     outputs:
     - contextPath: ThreatCommand.AssetType
@@ -1865,20 +1527,14 @@ script:
       type: String
   - arguments:
     - description: "The type of asset to add value. For example: asset_type=\"Domains\" asset_value=\"example.com\". (You can get the asset types with threat-command-asset-type-list command)."
-      isArray: false
       name: asset_type
       required: true
     - description: Asset value.
-      isArray: false
       name: asset_value
       required: true
-    deprecated: false
     description: Delete asset by type and value.
-    execution: false
     name: threat-command-asset-delete
-  - deprecated: false
-    description: List the system modules of your account.
-    execution: false
+  - description: List the system modules of your account.
     name: threat-command-account-system-modules-list
     outputs:
     - contextPath: ThreatCommand.SystemModule.module_name
@@ -1889,21 +1545,15 @@ script:
       type: String
   - arguments:
     - description: "Search using simple keywords (you can choose the search keywords by the outputs keywords), basic operators, search operators, and by document type. Basic operators: Use AND, OR, NOT, and (). For example: Searching for \"bin_number: 1234 AND email_user_name: john_smith\" returns all results that contain this BIN number and that username as the email user name, Searching for \"comment_number: 17 AND author: gyber\" returns all results with 17 comments and the author is Gyber. "
-      isArray: false
       name: search
       required: true
     - description: "Supply time-frame. For example:  2022-12-25T08:38:06Z."
-      isArray: false
       name: report_date
-      required: false
     - defaultValue: '0'
       description: Zero-based page number. 15 results per page.
-      isArray: false
       name: page_number
-      required: false
     - auto: PREDEFINED
       description: A comma-separated list of source types to filter.
-      isArray: false
       name: source_types
       predefined:
       - Social Media
@@ -1913,28 +1563,21 @@ script:
       - Black Market
       - Cyber Security Blog
       - Web Page
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show only mentions from the dark web or not.
-      isArray: false
       name: only_dark_web
       predefined:
       - 'true'
       - 'false'
-      required: false
     - auto: PREDEFINED
       defaultValue: true
       description: Show highlight tags (<em>) in the content or not.
-      isArray: false
       name: highlight_tags
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: Search for strings in the scrapes database.
-    execution: false
     name: threat-command-mention-search
     outputs:
     - contextPath: ThreatCommand.Mentions.author
@@ -1994,21 +1637,15 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_result
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: "Get all Managed Security Service Provider's (MSSP) sub-accounts."
-    execution: false
     name: threat-command-mssp-customer-list
     outputs:
     - contextPath: ThreatCommand.MsspCustomer.id
@@ -2026,21 +1663,15 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_result
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: Get the details of the MSSPs users (In case you are an MSSP account).
-    execution: false
     name: threat-command-mssp-user-list
     outputs:
     - contextPath: ThreatCommand.MsspUser.id
@@ -2058,37 +1689,25 @@ script:
   - arguments:
     - auto: PREDEFINED
       description: Type of the user.
-      isArray: false
       name: user_type
       predefined:
       - Admin
       - Analyst
-      required: false
     - description: Email of the user.
-      isArray: false
       name: user_email
-      required: false
     - description: The ID of the user.
-      isArray: false
       name: user_id
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_result
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: List the users in your account. Mainly used to assign alerts.
-    execution: false
     name: threat-command-account-user-list
     outputs:
     - contextPath: ThreatCommand.AccountUser.id
@@ -2112,21 +1731,15 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_result
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: List alert types and sub-types. They are mainly used to add manual alerts.
-    execution: false
     name: threat-command-alert-type-list
     outputs:
     - contextPath: ThreatCommand.AlertType.type
@@ -2138,21 +1751,15 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_result
       predefined:
       - 'true'
       - 'false'
-      required: false
-    deprecated: false
     description: List alert source types. They are mainly used to add manual alerts.
-    execution: false
     name: threat-command-alert-source-type-list
     outputs:
     - contextPath: ThreatCommand.AlertSourceType
@@ -2161,21 +1768,16 @@ script:
   - arguments:
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - auto: PREDEFINED
       defaultValue: false
       description: Show all results if True.
-      isArray: false
       name: all_result
       predefined:
       - 'true'
       - 'false'
-      required: false
     - auto: PREDEFINED
       description: "Alert type (dependencies - use threat-command-alert-type-list command to get all the alert types)."
-      isArray: false
       name: type
       predefined:
       - Attack Indication
@@ -2184,14 +1786,9 @@ script:
       - Brand Security
       - Exploitable Data
       - vip
-      required: false
     - description: "Alert's sub-type (dependencies - use threat-command-alert-type-list command to get all the alert subtypes)."
-      isArray: false
       name: sub_type
-      required: false
-    deprecated: false
     description: "List alert scenarios. They are mainly used to add manual alerts."
-    execution: false
     name: threat-command-alert-scenario-list
     outputs:
     - contextPath: ThreatCommand.Scenario.type
@@ -2221,14 +1818,10 @@ script:
       description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: true
     - description: The interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
       defaultValue: '30'
     - description: The timeout in seconds until polling ends.
-      isArray: false
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
     outputs:
     - contextPath: File.MD5
@@ -2296,18 +1889,12 @@ script:
       isArray: true
       required: true
     - description: The interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
       defaultValue: '30'
     - description: The timeout in seconds until polling ends.
-      isArray: false
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
     description: Checks the reputation of an IP address.
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -2365,14 +1952,10 @@ script:
       description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
       name: sampleSize
     - description: The interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
       defaultValue: '30'
     - description: The timeout in seconds until polling ends.
-      isArray: false
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
     outputs:
     - contextPath: DBotScore.Indicator
@@ -2415,8 +1998,6 @@ script:
       description: The URL value.
       type: Number
     description: Checks the reputation of a URL.
-    deprecated: false
-    execution: false
   - name: domain
     polling: true
     arguments:
@@ -2431,14 +2012,10 @@ script:
       isArray: true
       required: true
     - description: The interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
       defaultValue: '30'
     - description: The timeout in seconds until polling ends.
-      isArray: false
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
     outputs:
     - contextPath: Domain.domain
@@ -2478,13 +2055,8 @@ script:
       description: Domain updated date.
       type: String
     description: Checks the reputation of a domain.
-    deprecated: false
-    execution: false
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3

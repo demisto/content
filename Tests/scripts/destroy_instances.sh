@@ -19,7 +19,7 @@ else
      else
        PUBLIC_IP=$(cat public_ip)
    fi
-   USER="ec2-user"
+   USER="gcp-user"
 
    # collect log file to artifacts
 

@@ -9,23 +9,23 @@ configuration:
   type: 0
 - display: Customer ID
   name: Customer ID
-  required: false
   type: 0
+  required: false
 - display: Access Key
   name: Access Key
-  required: false
   type: 4
   hidden: true
+  required: false
 - display: Key ID
   hidden: true
   name: Key ID
-  required: false
   type: 4
+  required: false
 - display: Key ID
   displaypassword: Access Key
   name: credentials
-  required: false
   type: 9
+  required: false
 description: Base Integration for Palo Alto IoT third party integrations. This integration communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities and devices.
 display: Palo Alto Networks IoT 3rd Party
 name: Palo Alto Networks IoT 3rd Party
@@ -44,10 +44,8 @@ script:
       name: increment_time
     - description: 'Offset for paging. By default, a Null value will accumulate all results.'
       name: offset
-      required: false
     - description: 'Page size for paging. By default, a Null value will accumulate all results.'
       name: page_length
-      required: false
     description: Returns a list of assets for the specified asset type.
     name: panw-iot-3rd-party-get-asset-list
     outputs:
@@ -150,7 +148,6 @@ script:
     - contextPath: PanwIot3rdParty.DeviceServiceNow
       description: List of upsert ready formatted devices for SN.
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   script: ''
   subtype: python3
   type: python

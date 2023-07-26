@@ -31,10 +31,9 @@ args:
   - Critical
   description: The new value of the field that was changed.
 scripttarget: 0
-runonce: false
 runas: DBotRole
 marketplaces:
 - xsoar
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.12.63474

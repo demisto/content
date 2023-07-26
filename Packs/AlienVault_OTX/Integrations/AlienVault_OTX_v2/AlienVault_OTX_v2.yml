@@ -17,27 +17,28 @@ configuration:
   displaypassword: API Token
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Token
   name: api_token
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: '2'
   display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
   name: default_threshold
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '10'
   display: Maximum number of relationships for indicators
   name: max_indicator_relationships
-  required: false
   type: 0
   additionalinfo: If not provided, no relationships will be added. This field is relevant only for url, file hash and ip / domain indicators.
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -57,22 +58,22 @@ configuration:
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Query Indicators of Compromise in AlienVault OTX.
 display: AlienVault OTX v2
 name: AlienVault OTX v2
@@ -84,16 +85,9 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
-      isArray: false
+    - description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Queries an IP address in AlienVault OTX.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -147,16 +141,9 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      description: If the number of pulses is bigger than the threshold, the domain is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
-      isArray: false
+    - description: If the number of pulses is bigger than the threshold, the domain is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Queries a domain in AlienVault OTX.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -198,19 +185,11 @@ script:
   - arguments:
     - default: true
       description: The IP address to query.
-      isArray: false
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
-      isArray: false
+    - description: If the number of pulses is bigger than the threshold, the IP address is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Queries IPv6 in AlienVault OTX.
-    execution: false
     name: alienvault-search-ipv6
     outputs:
     - contextPath: IP.Address
@@ -237,19 +216,11 @@ script:
   - arguments:
     - default: true
       description: The host name to query.
-      isArray: false
       name: hostname
       required: true
-      secret: false
-    - default: false
-      description: If the number of pulses is bigger than the threshold, the host name is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
-      isArray: false
+    - description: If the number of pulses is bigger than the threshold, the host name is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for a host name in AlienVault OTX.
-    execution: false
     name: alienvault-search-hostname
     outputs:
     - contextPath: Endpoint.Hostname
@@ -282,16 +253,9 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      description: If the number of pulses is bigger than the threshold, the file is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
-      isArray: false
+    - description: If the number of pulses is bigger than the threshold, the file is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Query a file in AlienVault OTX.
-    execution: false
     name: file
     outputs:
     - contextPath: File.MD5
@@ -345,19 +309,11 @@ script:
   - arguments:
     - default: true
       description: The CVE to query.
-      isArray: false
       name: cve_id
       required: true
-      secret: false
-    - default: false
-      description: If the number of pulses is bigger than the threshold, the CVE is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
-      isArray: false
+    - description: If the number of pulses is bigger than the threshold, the CVE is considered as malicious. If the threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
-    execution: false
     name: alienvault-search-cve
     outputs:
     - contextPath: CVE.ID
@@ -389,9 +345,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", "hostname", or "url".'
-      isArray: false
       name: indicator_type
       predefined:
       - IPv4
@@ -400,43 +354,27 @@ script:
       - hostname
       - url
       required: true
-      secret: false
-    - default: false
-      description: The indicator for which to search related URLs.
-      isArray: false
+    - description: The indicator for which to search related URLs.
       name: indicator
       required: true
-      secret: false
-    deprecated: false
     description: Returns related URLs by indicator.
-    execution: false
     name: alienvault-get-related-urls-by-indicator
     outputs:
     - contextPath: AlienVaultOTX.URL.Data
       description: The path of the related URLs.
       type: Unknown
   - arguments:
-    - default: false
-      description: The indicator for which to search for related hashes.
-      isArray: false
+    - description: The indicator for which to search for related hashes.
       name: indicator
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname".'
-      isArray: false
       name: indicator_type
       predefined:
       - IPv4
       - IPv6
       - domain
       - hostname
-      required: false
-      secret: false
-    deprecated: false
     description: Returns related hashes by indicator.
-    execution: false
     name: alienvault-get-related-hashes-by-indicator
     outputs:
     - contextPath: AlienVaultOTX.File.Hash
@@ -444,9 +382,7 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'The indicator type. Can be: "IPv4", "IPv6", "domain", or "hostname".'
-      isArray: false
       name: indicator_type
       predefined:
       - IPv4
@@ -454,16 +390,10 @@ script:
       - domain
       - hostname
       required: true
-      secret: false
-    - default: false
-      description: The indicator for which to search URLs.
-      isArray: false
+    - description: The indicator for which to search URLs.
       name: indicator
       required: true
-      secret: false
-    deprecated: false
     description: Returns passive DNS records by indicator.
-    execution: false
     name: alienvault-get-passive-dns-data-by-indicator
     outputs:
     - contextPath: AlienVaultOTX.PassiveDNS.Hostname
@@ -487,13 +417,9 @@ script:
   - arguments:
     - default: true
       description: The page of the pulse to retrieve.
-      isArray: false
       name: page
       required: true
-      secret: false
-    deprecated: false
     description: Searches for pulses in AlienVault OTX.
-    execution: false
     name: alienvault-search-pulses
     outputs:
     - contextPath: AlienVaultOTX.Pulses.ID
@@ -529,13 +455,9 @@ script:
   - arguments:
     - default: true
       description: The ID of the pulse.
-      isArray: false
       name: pulse_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns pulse details.
-    execution: false
     name: alienvault-get-pulse-details
     outputs:
     - contextPath: AlienVaultOTX.Pulses.Created
@@ -565,16 +487,9 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      description: If the number of pulses is bigger than the threshold, the URL is considered as malicious. If threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
-      isArray: false
+    - description: If the number of pulses is bigger than the threshold, the URL is considered as malicious. If threshold is not specified, the default indicator threshold is used, which is configured in the instance settings.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Queries a URL in AlienVault OTX.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -623,9 +538,6 @@ script:
       description: The type of the destination of the relationship.
       type: string
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

@@ -31,8 +31,7 @@ script:
   type: python
   subtype: python3
   script: '-'
-  dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
+  dockerimage: demisto/python3:3.10.12.65389
   commands:
   - name: cisco-wsa-access-policy-list
     description: |-
@@ -41,23 +40,16 @@ script:
     arguments:
     - name: policy_names
       description: Policy names to retrieve.
-      required: false
       isArray: true
     - name: page
       description: |-
         The page number of the results to retrieve.
         Minimum value is 1.
-      isArray: false
-      required: false
     - name: page_size
       description: The number of results per page. The maximum value is 100.
-      isArray: false
-      required: false
     - name: limit
       defaultValue: 50
       description: The maximum number of records to retrieve.
-      isArray: false
-      required: false
     outputs:
     - type: String
       contextPath: CiscoWSA.AccessPolicy.policy_expiry
@@ -105,27 +97,20 @@ script:
     - name: policy_name
       description: Policy name.
       required: true
-      isArray: false
     - name: policy_status
       description: Policy status.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
       - disable
     - name: policy_description
       description: Policy description
-      required: false
-      isArray: false
     - name: policy_order
       description: Index of the policies in the collection.
       required: true
-      isArray: false
     - name: policy_expiry
       description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z.
-      required: false
-      isArray: false
     - name: identification_profiles
       description: Comma-separated list of valid identification profile name. (Dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles.)
       required: true
@@ -136,43 +121,29 @@ script:
     - name: policy_name
       description: Policy name to update.
       required: true
-      isArray: false
     - name: new_policy_name
       description: New policy name.
-      required: false
-      isArray: false
     - name: policy_status
       description: Policy status.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
       - disable
     - name: policy_order
       description: Index of policies in the collection. Not applicable for global_policy.
-      required: false
-      isArray: false
     - name: policy_expiry
       description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z.
-      required: false
-      isArray: false
     - name: policy_description
       description: Policy description to update.
-      required: false
-      isArray: false
   - name: cisco-wsa-access-policy-protocols-user-agents-update
     description: Update the Protocols and User Agents policy for access policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
       required: true
-      isArray: false
     - name: settings_status
       description: Settings status for the Protocols and User Agents.
       defaultValue: custom
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - custom
@@ -188,7 +159,6 @@ script:
         Internet Explorer version 5.5: "Mozilla/.*compatible; MSIE 5\.5"
         Specific user agent: Mozilla/4.0 (compatible; MSIE 5.5;): "Mozilla/4.0 \(compatible; MSIE 5.5;\)"
         Relevant while settings_status is custom.
-      required: false
       isArray: true
     - name: allow_connect_ports
       description: |-
@@ -199,11 +169,9 @@ script:
         except for SSL ports (specified on Security Services > HTTPS Proxy)
         e.g. 1-65535,20,21.
         Relevant while settings_status is custom.
-      required: false
       isArray: true
     - name: block_protocols
       description: Block network protocols. Relevant while settings_status is custom.
-      required: false
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -215,11 +183,8 @@ script:
     - name: policy_name
       description: Policy name to update.
       required: true
-      isArray: false
     - name: predefined_categories_action
       description: Predefined categories action.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - block
@@ -227,12 +192,9 @@ script:
       - warn
     - name: predefined_categories
       description: Comma-separated list of predefined categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
-      required: false
       isArray: true
     - name: youtube_categories_action
       description: YouTube categories action.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - block
@@ -240,12 +202,9 @@ script:
       - allow
     - name: youtube_categories
       description: Comma-separated list of YouTube categories.
-      required: false
       isArray: true
     - name: custom_categories_action
       description: Custom categories action.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - block
@@ -253,12 +212,9 @@ script:
       - warn
     - name: custom_categories
       description: Comma-separated list of custom categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
-      required: false
       isArray: true
     - name: uncategorized_url
       description: Uncategorized URL action.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - use_global
@@ -277,8 +233,6 @@ script:
         For instance, if category A was set to Block, and category B was set to Warn,
         and the two are merged into category C,
         the most restrictive action will be Block and the least restrictive action will be Warn.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - use_global
@@ -290,16 +244,12 @@ script:
         explicit on sites that support content rating will be denied.
         Supported sites include Flickr, Craigslist and YouTube.
         However, users can still access content on these websites that is not rated as adult oriented or explicit.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
       - disable
     - name: content_rating_action
       description: Action if site setting (content_rating_status) allows adult/explicit content.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - block
@@ -310,16 +260,12 @@ script:
         will be blocked from the search result from the following search engines:
         Dogpile, Yandex, Google, Yahoo, Bing, WebCrawler, DuckDuckGo, Dailymotion and eBay.
         If safe search failed to be enforced on a supported search engine, it will be blocked.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
       - disable
     - name: unsupported_safe_search_engine
       description: Action for search engines that don't support safe search.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - block
@@ -330,12 +276,9 @@ script:
     - name: policy_name
       description: Policy name to update.
       required: true
-      isArray: false
     - name: settings_status
       description: Applications settings status.
       defaultValue: custom
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - custom
@@ -343,7 +286,6 @@ script:
     - name: application
       description: Application type to perform the action on.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Games
@@ -368,7 +310,6 @@ script:
     - name: action
       description: Application action.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - monitor
@@ -383,11 +324,8 @@ script:
     - name: policy_name
       description: Policy name to update.
       required: true
-      isArray: false
     - name: object_type
       description: Object type to perform the action on.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - Executable Code
@@ -403,8 +341,6 @@ script:
       description: |-
         Object action.
         Note: "inspect" and "allow" actions are only valid when the object type is "Inspectable Archives".
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - monitor
@@ -413,32 +349,22 @@ script:
       - inspect
     - name: object_values
       description: Comma-separated list of object values to perform the action on.
-      required: false
       isArray: true
     - name: block_custom_mime_types
       description: Block custom MIME types, e.g., audio/x-mpeg3 or audio/*.
-      required: false
-      isArray: false
     - name: http_or_https_max_object_size_mb
       description: HTTP/HTTPS maximum download size.
-      required: false
-      isArray: false
     - name: ftp_max_object_size_mb
       description: FTP maximum download size.
-      required: false
-      isArray: false
   - name: cisco-wsa-access-policy-anti-malware-update
     description: Update the anti-malware policy for access policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
       required: true
-      isArray: false
     - name: settings_status
       description: Settings status for the anti-malware.
       defaultValue: custom
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - custom
@@ -451,8 +377,6 @@ script:
         If Web Reputation Filtering is disabled in this policy,
         transactions will not be automatically blocked based on low Web Reputation Score.
         Blocking of sites that contain malware or other high-risk content is controlled by the additional arguments.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
@@ -461,8 +385,6 @@ script:
       description: |-
         File Reputation Filters will identify transactions containing known malicious or high-risk files.
         Files that are unknown may be forwarded to the cloud for file analysis.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
@@ -470,8 +392,6 @@ script:
     - name: file_reputation_action
       description: |-
         File Reputation action.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - monitor
@@ -479,8 +399,6 @@ script:
     - name: anti_malware_scanning_status
       description: |-
         Anti-Malware scanning status.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
@@ -490,8 +408,6 @@ script:
         Suspect user agent scanning action.
         Required while anti_malware_scanning_status is enabled.
         Not relevant while anti_malware_scanning_status is disabled.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - block
@@ -499,7 +415,6 @@ script:
       - none
     - name: block_malware_categories
       description: Comma-separated list of malware categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled.
-      required: false
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -520,7 +435,6 @@ script:
       - Worm
     - name: block_other_categories
       description: Comma-separated list of other categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled.
-      required: false
       isArray: true
       auto: PREDEFINED
       predefined:
@@ -541,29 +455,21 @@ script:
     arguments:
     - name: domain_names
       description: Comma-separated list of domain names to retrieve.
-      required: false
       isArray: true
     - name: ip_addresses
       description: |-
         Comma-separated list of IP addresses to search for.
         This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. 
-      required: false
       isArray: true
     - name: page
       description: |-
         The page number of the results to retrieve.
         Minimum value is 1.
-      isArray: false
-      required: false
     - name: page_size
       description: The number of results per page. The maximum value is 100.
-      isArray: false
-      required: false
     - name: limit
       defaultValue: 50
       description: The maximum number of records to retrieve.
-      isArray: false
-      required: false
     outputs:
     - type: String
       contextPath: CiscoWSA.DomainMap.domain_name
@@ -580,11 +486,9 @@ script:
     - name: domain_name
       description: The domain name to create.
       required: true
-      isArray: false
     - name: order
       description: Index of the domain map in the collection.
       required: true
-      isArray: false
     - name: ip_addresses
       description: Comma-separated list of IP addresses to map for the domain.
       required: true
@@ -595,20 +499,14 @@ script:
     - name: domain_name
       description: The domain name to update.
       required: true
-      isArray: false
     - name: new_domain_name
       description: New domain name.
-      required: false
-      isArray: false
     - name: order
       description: Index of the domain map in the collection.
-      required: false
-      isArray: false
     - name: ip_addresses
       description: |-
         Comma-separated list of IP addresses to map for the domain.
         Updating this will overwrite the existing IP addresses.
-      required: false
       isArray: true
   - name: cisco-wsa-domain-map-delete
     description: Delete domain map.
@@ -624,23 +522,16 @@ script:
     arguments:
     - name: profile_names
       description: Comma-separated list of profile names to retrieve.
-      required: false
       isArray: true
     - name: page
       description: |-
         The page number of the results to retrieve.
         Minimum value is 1.
-      isArray: false
-      required: false
     - name: page_size
       description: The number of results per page. The maximum value is 100.
-      isArray: false
-      required: false
     - name: limit
       defaultValue: 50
       description: The maximum number of records to retrieve.
-      isArray: false
-      required: false
     outputs:
     - type: String
       contextPath: CiscoWSA.IdentificationProfile.status
@@ -684,12 +575,9 @@ script:
     - name: profile_name
       description: Profile name to create.
       required: true
-      isArray: false
     - name: status
       description: Status of new identification profile.
       defaultValue: enable
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
@@ -697,17 +585,13 @@ script:
     - name: description
       description: Description of new identification profile.
       required: true
-      isArray: false
     - name: order
       description: |-
         Index of the identification profiles in the collection.
         Not applicable for global_identification_profile.
       defaultValue: 1
-      required: false
-      isArray: false
     - name: protocols
       description: Comma-separated list of network protocols of identification profile.
-      required: false
       defaultValue: HTTPS
       isArray: true
       auto: PREDEFINED
@@ -722,25 +606,21 @@ script:
         For transparent connections, membership by proxy port applies to the port of the destination URL.
         Leave this field blank if membership by connecting proxy port is not needed.
         e.g., 22-1000,3331
-      required: false
       isArray: true
     - name: members_by_subnet
       description: Comma-separated list of members by Subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
-      required: false
       isArray: true
     - name: predefined_url_categories
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
-      required: false
       isArray: true
     - name: custom_url_categories
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
-      required: false
       isArray: true
   - name: cisco-wsa-identification-profiles-update
     description: Update the identification profile. This command rewrites the profile values (does not append). For example, if the proxy_ports is defined as 4000,5000 and you insert proxy_ports=8000, the proxy_ports will be 8000.
@@ -748,32 +628,22 @@ script:
     - name: profile_name
       description: Profile name to update.
       required: true
-      isArray: false
     - name: new_profile_name
       description: New profile name for the identification profile.
-      required: false
-      isArray: false
     - name: status
       description: Updated the status of the identification profile.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - enable
       - disable
     - name: description
       description: Updated description of the identification profile.
-      required: false
-      isArray: false
     - name: order
       description: |-
         Index of the Identification profile in the collection.
         Not applicable for global_identification_profile.
-      required: false
-      isArray: false
     - name: protocols
       description: Comma-separated list of network protocols of the identification profile.
-      required: false
       defaultValue: HTTPS
       isArray: true
       auto: PREDEFINED
@@ -788,25 +658,21 @@ script:
         For transparent connections, membership by proxy port applies to the port of the destination URL.
         Leave this field blank if membership by connecting proxy port is not needed.
         e.g.,  22-1000,3331
-      required: false
       isArray: true
     - name: members_by_subnet
       description: Comma-separated list of members by subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5.
-      required: false
       isArray: true
     - name: predefined_url_categories
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
-      required: false
       isArray: true
     - name: custom_url_categories
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
         (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
-      required: false
       isArray: true
   - name: cisco-wsa-identification-profiles-delete
     description: Delete identification profiles.
@@ -820,12 +686,8 @@ script:
     arguments:
     - name: contain
       description: A string that contains the category to search for.
-      required: false
-      isArray: false
     - name: type
       description: Type of category.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - custom

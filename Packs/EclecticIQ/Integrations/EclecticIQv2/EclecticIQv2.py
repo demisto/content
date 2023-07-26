@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import re
 import traceback
 from typing import Any, Dict, List, Mapping, Tuple
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
 
 """EclecticIQ Integration for Cortex XSOAR."""
 

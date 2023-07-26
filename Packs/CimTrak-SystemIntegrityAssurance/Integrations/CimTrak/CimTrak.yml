@@ -10,12 +10,12 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: API Key
   name: apikey
   required: true
@@ -23,8 +23,8 @@ configuration:
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 127.0.0.1
   display: Repository  URL
   name: Repository URL
@@ -38,54 +38,26 @@ configuration:
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - name: max_fetch
   display: Maximum number of incidents to fetch every time
-  required: false
   type: 0
   defaultvalue: '50'
+  required: false
 description: >-
   The CimTrak integration helps you detect unexpected system/device/config
   modifications and automatically respond/react to threats
-detaileddescription: "# CimTrak Integration to SOAR:\n  The CimTrak integration with
-  Palo Alto XSOAR allows you further vet and respond to emerging threats to your infrastructure.
-  \ CimTrak performs realtime detection of unauthorized modifications to servers and
-  network devices, while also levering CIS Benchmarks to ensure that your key servers
-  and devices are always in a hardened state. In addition, CimTrak can perform advanced
-  remediation actions such as rolling back to a previous version of critical files.
-  By combining CimTrak & Palo Alto XSOAR, via this integration, you now have the power
-  to further analyze certain security events using CimTrak''s rich file assessment
-  engines and/or verify them against a curated allow-list.   In addition, this integration
-  will allow you to leverage CimTrak to integrate your your existing ITSM system such
-  as ServiceNow, BMC Remedy, and Jira.     By unlocking dozens of new capabilities,
-  this integration truly unlocks the orchestration and response capabilities of the
-  Palo Alto SOAR.\n\n1.) Fill in the URL to your App Server\n   - Example URL -- https://192.168.1.1\n
-  \  \n2.) Fill the in API Key with your CimTrak API Key\n   - To create an API Key,
-  right click the top node in the Tree View\n      - Click Properties\n      - Click
-  the \"CimTrak Repo API Keys\" Tab\n      - Generate API Key\n\n3.) Fill in Repository
-  IP relative to the CimTrak AppServer (Management Console)\n   - Typically they are
-  installed on the same machine and you can use 127.0.0.1\n   \n4.) Fill in Repository
-  Port\n   - Default is 3749\n   \n5.) Once configured all unreconciled items from
-  each CimTrak FIM Policies will be brought into XSOAR as an Incident as well as the
-  ability to initiate Compliance Scans manually or based off a playbook as part of
-  the Incident investigation.\n\n# Additional CimTrak Resources & Documentation:\n\nIf
-  you need any help please do not hesitate to reach out to our support team by submitting
-  a ticket at https://www.cimcor.com/support\nYou can also call our support team at
-  1-877-424-6267 or 1-219-736-4400 and then press #2 for support.\n\nYou can find
-  CimTrak Installation Guide and User Guide in your primary download package you received
-  in the CimTrak_Enterprise_Server.zip file.\n\nFor more information and documentation
-  on the CimTrak API navigate to your Management Console with the example link below:\n-
-  Note: Replace 192.168.1.1 with your CimTrak Server IP Address or FQDN\n- https://192.168.1.1/cmc/#/apidoc"
+detaileddescription: "# CimTrak Integration to SOAR:\n  The CimTrak integration with Palo Alto XSOAR allows you further vet and respond to emerging threats to your infrastructure.  CimTrak performs realtime detection of unauthorized modifications to servers and network devices, while also levering CIS Benchmarks to ensure that your key servers and devices are always in a hardened state. In addition, CimTrak can perform advanced remediation actions such as rolling back to a previous version of critical files. By combining CimTrak & Palo Alto XSOAR, via this integration, you now have the power to further analyze certain security events using CimTrak''s rich file assessment engines and/or verify them against a curated allow-list.   In addition, this integration will allow you to leverage CimTrak to integrate your your existing ITSM system such as ServiceNow, BMC Remedy, and Jira.     By unlocking dozens of new capabilities, this integration truly unlocks the orchestration and response capabilities of the Palo Alto SOAR.\n\n1.) Fill in the URL to your App Server\n   - Example URL -- https://192.168.1.1\n   \n2.) Fill the in API Key with your CimTrak API Key\n   - To create an API Key, right click the top node in the Tree View\n      - Click Properties\n      - Click the \"CimTrak Repo API Keys\" Tab\n      - Generate API Key\n\n3.) Fill in Repository IP relative to the CimTrak AppServer (Management Console)\n   - Typically they are installed on the same machine and you can use 127.0.0.1\n   \n4.) Fill in Repository Port\n   - Default is 3749\n   \n5.) Once configured all unreconciled items from each CimTrak FIM Policies will be brought into XSOAR as an Incident as well as the ability to initiate Compliance Scans manually or based off a playbook as part of the Incident investigation.\n\n# Additional CimTrak Resources & Documentation:\n\nIf you need any help please do not hesitate to reach out to our support team by submitting a ticket at https://www.cimcor.com/support\nYou can also call our support team at 1-877-424-6267 or 1-219-736-4400 and then press #2 for support.\n\nYou can find CimTrak Installation Guide and User Guide in your primary download package you received in the CimTrak_Enterprise_Server.zip file.\n\nFor more information and documentation on the CimTrak API navigate to your Management Console with the example link below:\n- Note: Replace 192.168.1.1 with your CimTrak Server IP Address or FQDN\n- https://192.168.1.1/cmc/#/apidoc"
 display: CimTrak - System Integrity Assurance
 name: CimTrak
 script:
@@ -2331,10 +2303,9 @@ script:
     - contextPath: CimTrak.Object.agentObjectId
       description: Agent Object Id
       type: number
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   longRunning: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

@@ -1,5 +1,3 @@
-[file:Pulsedive.yml]
-ignore=IN145
-
 [known_words]
-Pulsedive
+pulsedive
+

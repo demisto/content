@@ -46,8 +46,8 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 script:
   script: '-'
   type: python
@@ -115,9 +115,8 @@ script:
       type: boolean
     description: Collecting blobs, most commonly pcap from an incident
     execution: true
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

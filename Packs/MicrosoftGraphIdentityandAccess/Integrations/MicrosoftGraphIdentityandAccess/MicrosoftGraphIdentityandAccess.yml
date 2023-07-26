@@ -9,62 +9,62 @@ configuration:
 - defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
   display: Application ID (Client ID for Client credentials mode)
   name: app_id
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Tenant ID (required for Client Credentials mode)
   name: tenant_id
-  required: false
   type: 0
   section: Connect
+  required: false
 - displaypassword: Client Secret (required for Client Credentials mode)
   name: credentials
-  required: false
   type: 9
   additionalinfo: "Client Secret. Required for Client Credentials mode)"
   hiddenusername: true
   section: Connect
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
-  required: false
   type: 9
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - name: first_fetch
   display: First Fetch Time Interval
-  required: false
   defaultvalue: 1 days
   type: 0
   additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
   section: Collect
+  required: false
 - defaultvalue: '50'
   display: Max fetch interval
   additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Fetch query
   name: fetch_filter_expression
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -73,74 +73,60 @@ configuration:
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
-  required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
-  required: false
   type: 8
   section: Connect
+  required: false
 - name: isFetch
   display: Fetch incidents
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use the Azure Active Directory Identity And Access integration to manage roles and members.
 display: Azure Active Directory Identity And Access
 name: MicrosoftGraphIdentityandAccess
 script:
   commands:
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the instructions in the command results.
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: msgraph-identity-auth-start
-  - deprecated: false
-    description: |-
+  - description: |-
       Run this command to complete the authorization process.
       Should be used after running the msgraph-identity-auth-start command.
-    execution: false
     name: msgraph-identity-auth-complete
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-identity-auth-reset
-  - deprecated: false
-    description: Tests connectivity to Microsoft.
-    execution: false
+  - description: Tests connectivity to Microsoft.
     name: msgraph-identity-auth-test
-  - deprecated: false
-    description: Lists the roles in the directory.
-    execution: false
+  - description: Lists the roles in the directory.
     name: msgraph-identity-directory-roles-list
     arguments:
     - name: limit
-      default: false
       description: Maximum number of results to fetch.
-      isArray: false
-      required: false
       defaultValue: 10
-      secret: false
     outputs:
     - contextPath: MSGraphIdentity.Role.deletedDateTime
       description: The time when a role was deleted. Displays only if a role was deleted.
@@ -157,17 +143,12 @@ script:
     - contextPath: MSGraphIdentity.Role.roleTemplateId
       description: The ID of the directory role template on which the role is based.
       type: String
-  - deprecated: false
-    description: Activates a role by its template ID.
-    execution: false
+  - description: Activates a role by its template ID.
     name: msgraph-identity-directory-role-activate
     arguments:
     - name: role_template_id
-      default: false
       description: ID of the role template to activate. Can be retrieved using the msgraph-identity-directory-roles-list command.
-      isArray: false
       required: true
-      secret: false
     outputs:
     - contextPath: MSGraphIdentity.Role.deletedDateTime
       description: The time when the role was deleted. Displays only if the role was deleted.
@@ -184,24 +165,15 @@ script:
     - contextPath: MSGraphIdentity.Role.roleTemplateId
       description: The ID of the directory role template on which this role is based.
       type: String
-  - deprecated: false
-    description: Gets all members in a role ID.
-    execution: false
+  - description: Gets all members in a role ID.
     name: msgraph-identity-directory-role-members-list
     arguments:
     - name: role_id
-      default: false
       description: The ID of the application for which to get its role members list. Can be retrieved using the msgraph-identity-directory-roles-list command.
-      isArray: false
       required: true
-      secret: false
     - name: limit
-      default: false
       description: The maximum number of members to fetch.
       defaultValue: 10
-      isArray: false
-      required: false
-      secret: false
     outputs:
     - contextPath: MSGraphIdentity.RoleMember.user_id
       description: The unique identifier of the user in the role.
@@ -209,51 +181,30 @@ script:
     - contextPath: MSGraphIdentity.RoleMember.role_id
       description: The unique identifier of the role specified in the input.
       type: String
-  - deprecated: false
-    description: Adds a user to a role.
-    execution: false
+  - description: Adds a user to a role.
     name: msgraph-identity-directory-role-member-add
     arguments:
     - name: role_id
-      default: false
       description: The ID of the role to add the user to. Can be retrieved using the msgraph-identity-directory-roles-list command.
-      isArray: false
       required: true
-      secret: false
     - name: user_id
-      default: false
       description: The ID of the user to add to the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
-      isArray: false
       required: true
-      secret: false
-  - deprecated: false
-    description: Removes a user from a role.
-    execution: false
+  - description: Removes a user from a role.
     name: msgraph-identity-directory-role-member-remove
     arguments:
     - name: role_id
-      default: false
       description: ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command.
-      isArray: false
       required: true
-      secret: false
     - name: user_id
-      default: false
       description: ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
-      isArray: false
       required: true
-      secret: false
-  - deprecated: false
-    description: Retrieve an ip named location by id.
-    execution: false
+  - description: Retrieve an ip named location by id.
     name: msgraph-identity-ip-named-locations-get
     arguments:
     - name: ip_id
-      default: false
       description: The id of the named ip location to get from the api.
-      isArray: false
       required: true
-      secret: false
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
       description: The time when an ip named location was created.
@@ -273,64 +224,34 @@ script:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
       description: List of ip ranges for the ip named location
       type: Array
-  - deprecated: false
-    description: Retrieve all ip named locations.
-    execution: false
+  - description: Retrieve all ip named locations.
     name: msgraph-identity-ip-named-locations-list
     arguments:
     - name: limit
       description: The limit for results we get from the api.
-      isArray: false
-      required: false
-      secret: false
     - name: page
       description: The page to get the data from.
-      isArray: false
-      required: false
-      secret: false
     - name: odata_query
       description: An odata query to send to the api.
-      isArray: false
-      required: false
-      secret: false
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_named_locations
       description: List of ip named locations.
       type: Array
-  - deprecated: false
-    description: Delete an ip named location by id.
-    execution: false
+  - description: Delete an ip named location by id.
     name: msgraph-identity-ip-named-locations-delete
     arguments:
     - name: ip_id
-      default: false
       description: The id of the named ip location to get from the api.
-      isArray: false
       required: true
-      secret: false
-  - deprecated: false
-    description: Create an ip named location.
-    execution: false
+  - description: Create an ip named location.
     name: msgraph-identity-ip-named-locations-create
     arguments:
     - name: ips
-      default: false
       description: A list of IP addresses to add to the named location, should be a string with the addresses separated by the delimiter ','.
-      isArray: false
-      required: false
-      secret: false
     - name: is_trusted
-      default: false
       description: Boolean that indicates if the ip can be trusted.
-      isArray: false
-      required: false
-      secret: false
     - name: display_name
-      default: false
       description: The disply name for the named ip location.
-      isArray: false
-      required: false
-      secret: false
     outputs:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.time_created
       description: The time when an ip named location was created.
@@ -350,50 +271,25 @@ script:
     - contextPath: MSGraph.conditionalAccess.namedIpLocations.ip_ranges
       description: List of ip ranges for the ip named location
       type: Array
-  - deprecated: false
-    description: update an ip named location by id.
-    execution: false
+  - description: update an ip named location by id.
     name: msgraph-identity-ip-named-locations-update
     arguments:
     - name: ip_id
-      default: false
       description: The id of the named ip location to get from the api.
-      isArray: false
       required: true
-      secret: false
     - name: ips
-      default: false
       description: A list of ip addresses to ad to the named location, it should be a string with the addresses separated by the delimiter ','.
-      isArray: false
-      required: false
-      secret: false
     - name: is_trusted
-      default: false
       description: Boolean that indicates if the ip can be trusted.
-      isArray: false
-      required: false
-      secret: false
     - name: display_name
-      default: false
       description: The disply name for the named ip location.
-      isArray: false
-      required: false
-      secret: false
-  - deprecated: false
-    description: Retrieve all the detected risks.
-    execution: false
+  - description: Retrieve all the detected risks.
     name: msgraph-identity-protection-risks-list
     arguments:
     - name: limit
       description: The limit for results we get from the api.
-      isArray: false
-      required: false
-      secret: false
     - name: odata_query
       description: An odata query to send to the api.
-      isArray: false
-      required: false
-      secret: false
     outputs:
     - contextPath: MSGraph.identityProtection.risks.additionalInfo
       description: dentityProtection.risks.additionalInfo
@@ -470,21 +366,13 @@ script:
     - contextPath: MSGraph.identityProtection.risks.id
       description: Unique ID of the risk detection.
       type: string
-  - deprecated: false
-    description: Retrieve the risky users in active directory.
-    execution: false
+  - description: Retrieve the risky users in active directory.
     name: msgraph-identity-protection-risky-user-list
     arguments:
     - name: limit
       description: The limit for results we get from the api.
-      isArray: false
-      required: false
-      secret: false
     - name: odata_query
       description: An odata query to send to the api.
-      isArray: false
-      required: false
-      secret: false
     outputs:
     - contextPath: MSGraph.identityProtection.risky-users.userPrincipalName
       description: Risky user principal name.
@@ -513,26 +401,16 @@ script:
     - contextPath: MSGraph.identityProtection.risky-users.id
       description: Unique ID of the risky user.
       type: string
-  - deprecated: false
-    description: Retrieve the risky users history in active directory.
-    execution: false
+  - description: Retrieve the risky users history in active directory.
     name: msgraph-identity-protection-risky-user-history-list
     arguments:
     - name: limit
       description: The limit for results we get from the api.
-      isArray: false
-      required: false
-      secret: false
     - name: odata_query
       description: An odata query to send to the api.
-      isArray: false
-      required: false
-      secret: false
     - name: user_id
       description: The id of the user to get the history for.
-      isArray: false
       required: true
-      secret: false
     outputs:
     - contextPath: MSGraph.identityProtection.RiskyUserHistory.userPrincipalName
       description: Risky user principal name.
@@ -561,34 +439,23 @@ script:
     - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
       description: Unique ID of the risky user.
       type: string
-  - deprecated: false
-    description: Delete an ip named location by id.
-    execution: false
+  - description: Delete an ip named location by id.
     name: msgraph-identity-protection-risky-user-confirm-compromised
     arguments:
     - name: user_ids
-      default: false
       description: The ids of the users to compromise seperated be commas.
-      isArray: false
       required: true
-      secret: false
-  - deprecated: false
-    description: Delete an ip named location by id.
-    execution: false
+  - description: Delete an ip named location by id.
     name: msgraph-identity-protection-risky-user-dismiss
     arguments:
     - name: user_ids
-      default: false
       description: The ids of the users to dismiss seperated be commas.
-      isArray: false
       required: true
-      secret: false
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.64970
 fromversion: 5.0.0
 defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
 defaultclassifier: Microsoft Graph Identity and Access Classifier

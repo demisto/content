@@ -9,7 +9,6 @@ configuration:
 - defaultvalue: Worldwide
   display: Azure Cloud
   name: azure_cloud
-  required: false
   type: 15
   options:
   - Worldwide
@@ -22,62 +21,63 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
-- name: creds_tenant_id
   required: false
+- name: creds_tenant_id
   type: 9
   displaypassword: Tenant ID
   hiddenusername: true
   section: Connect
+  required: false
 - display: Tenant ID
   name: tenant_id
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Client ID
   name: credentials
-  required: false
   type: 9
   section: Connect
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
-  required: false
   type: 9
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  required: false
   type: 14
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
   advanced: true
+  required: false
 - display: Default Subscription ID
   name: subscriptionID
   required: true
@@ -97,15 +97,15 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: Informational
   display: The minimum severity of incidents to fetch
   name: min_severity
@@ -114,39 +114,37 @@ configuration:
   - Low
   - Medium
   - High
-  required: false
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Server URL
   name: server_url
-  required: false
   type: 0
   section: Connect
   advanced: true
   defaultvalue: https://management.azure.com
-  hidden: false
   additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Additional info to fetch
   name: fetch_additional_info
-  required: false
   type: 16
   options:
   - Alerts
@@ -158,10 +156,10 @@ configuration:
     Choose what additional info to fetch for each incident.
     Note that this will increase the number of API calls.
   advanced: true
+  required: false
 - defaultvalue: 'None'
   display: Mirroring Direction
   name: mirror_direction
-  required: false
   type: 15
   hidden:
   - marketplacev2
@@ -171,53 +169,41 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  required: false
 - additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
-  required: false
   type: 8
   hidden:
   - marketplacev2
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel.
   defaultvalue: 'false'
   display: Close Mirrored Microsoft Sentinel Ticket
   name: close_ticket
-  required: false
   type: 8
   hidden:
   - marketplacev2
   section: Collect
   advanced: true
+  required: false
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel
 script:
   commands:
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a single incident from Azure Sentinel.
-    execution: false
     name: azure-sentinel-get-incident-by-id
     outputs:
     - contextPath: AzureSentinel.Incident.ID
@@ -290,40 +276,18 @@ script:
       description: The deep-link URL to the incident in the Azure portal.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of incidents to return. The maximum value is 200.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
-      isArray: false
+    - description: 'Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information, see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments.
-      isArray: false
+    - description: A link that specifies a starting point to use for subsequent calls. This argument overrides all of the other command arguments.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of incidents from Azure Sentinel.
-    execution: false
     name: azure-sentinel-list-incidents
     outputs:
     - contextPath: AzureSentinel.Incident.ID
@@ -399,27 +363,13 @@ script:
       description: The Etag of the incident.
       type: String
   - arguments:
-    - default: false
-      description: Alias of the specific watchlist to get.
-      isArray: false
+    - description: Alias of the specific watchlist to get.
       name: watchlist_alias
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of watchlists from Azure Sentinel.
-    execution: false
     name: azure-sentinel-list-watchlists
     outputs:
     - contextPath: AzureSentinel.Watchlist.ID
@@ -465,101 +415,47 @@ script:
       description: Used if an operation returns partial results. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - default: false
-      description: Alias of the watchlist to be deleted.
-      isArray: false
+    - description: Alias of the watchlist to be deleted.
       name: watchlist_alias
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Delete a watchlist from Azure Sentinel.
-    execution: false
     name: azure-sentinel-delete-watchlist
   - arguments:
-    - default: false
-      description: The alias of the new watchlist or the watchlist to update.
-      isArray: false
+    - description: The alias of the new watchlist or the watchlist to update.
       name: watchlist_alias
       required: true
-      secret: false
-    - default: false
-      description: The display name of the watchlist.
-      isArray: false
+    - description: The display name of the watchlist.
       name: watchlist_display_name
       required: true
-      secret: false
-    - default: false
-      description: The description of the watchlist.
-      isArray: false
+    - description: The description of the watchlist.
       name: description
-      required: false
-      secret: false
-    - default: false
-      defaultValue: XSOAR
+    - defaultValue: XSOAR
       description: The provider of the watchlist.
-      isArray: false
       name: provider
-      required: false
-      secret: false
-    - default: false
-      description: The labels of the watchlist.
+    - description: The labels of the watchlist.
       isArray: true
       name: labels
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of lines in the CSV content to skip before the header.
-      isArray: false
       name: lines_to_skip
-      required: false
-      secret: false
-    - default: false
-      description: A file entry with raw content that represents the watchlist items to create.
-      isArray: false
+    - description: A file entry with raw content that represents the watchlist items to create.
       name: file_entry_id
       required: true
-      secret: false
-    - default: false
-      description: The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address.
-      isArray: false
+    - description: The search key is used to optimize query performance when using watchlists for joins with other data. For example, enable a column with IP addresses to be the designated SearchKey field, then use this field as the key field when joining to other event data by IP address.
       name: items_search_key
       required: true
-      secret: false
-    - default: false
-      defaultValue: Text/Csv
+    - defaultValue: Text/Csv
       description: The content type of the raw content. For now, only text/csv is valid.
-      isArray: false
       name: content_type
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Create or update a watchlist in Azure Sentinel.
-    execution: false
     name: azure-sentinel-watchlist-create-update
     outputs:
     - contextPath: AzureSentinel.Watchlist.Name
@@ -599,110 +495,58 @@ script:
       description: The search key is used to optimize query performance when using watchlists for joins with other data.
       type: String
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The incident's title.
-      isArray: false
+    - description: The incident's title.
       name: title
-      required: false
-      secret: false
-    - default: false
-      description: Description of the incident.
-      isArray: false
+    - description: Description of the incident.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The incident severity.
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Informational
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The incident status.
-      isArray: false
       name: status
       predefined:
       - New
       - Active
       - Closed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The reason the incident was closed. Required when updating the status to Closed.
-      isArray: false
       name: classification
       predefined:
       - BenignPositive
       - FalsePositive
       - TruePositive
       - Undetermined
-      required: false
-      secret: false
-    - default: false
-      description: Describes the reason the incident was closed.
-      isArray: false
+    - description: Describes the reason the incident was closed.
       name: classification_comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined.
-      isArray: false
       name: classification_reason
       predefined:
       - InaccurateData
       - IncorrectAlertLogic
       - SuspiciousActivity
       - SuspiciousButExpected
-      required: false
-      secret: false
-    - default: false
-      description: The email address of the incident assignee. It is recommended to update *user_principal_name* instead of this field. Note that the updated API field is `owner.email`.
-      isArray: false
+    - description: The email address of the incident assignee. It is recommended to update *user_principal_name* instead of this field. Note that the updated API field is `owner.email`.
       name: assignee_email
-      required: false
-      secret: false
-    - default: false
-      description: The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.
-      isArray: false
+    - description: The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.
       name: user_principal_name
-      required: false
-      secret: false
-    - default: false
-      description: Incident labels. Note that all labels will be set as labelType='User'.
+    - description: Incident labels. Note that all labels will be set as labelType='User'.
       isArray: true
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Updates a single incident in Azure Sentinel.
-    execution: false
     name: azure-sentinel-update-incident
     outputs:
     - contextPath: AzureSentinel.Incident.ID
@@ -772,63 +616,29 @@ script:
       description: The Etag of the incident.
       type: String
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes a single incident in Azure Sentinel.
-    execution: false
     name: azure-sentinel-delete-incident
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of incident comments to return. The maximum value is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
-      isArray: false
+    - description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the comments of an incident from Azure Sentinel.
-    execution: false
     name: azure-sentinel-list-incident-comments
     outputs:
     - contextPath: AzureSentinel.IncidentComment.ID
@@ -856,33 +666,17 @@ script:
       description: Used if an operation returns a partial result. If a response contains a NextLink element, its value specifies a starting point to use for subsequent calls.
       type: String
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The comment message.
-      isArray: false
+    - description: The comment message.
       name: message
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a comment to an incident in Azure Sentinel.
-    execution: false
     name: azure-sentinel-incident-add-comment
     outputs:
     - contextPath: AzureSentinel.IncidentComment.ID
@@ -904,85 +698,41 @@ script:
       description: The date and time that the incident comment was created.
       type: Date
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The comment ID.
-      isArray: false
+    - description: The comment ID.
       name: comment_id
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes a comment from incident in Azure Sentinel.
-    execution: false
     name: azure-sentinel-incident-delete-comment
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of related entities to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
-      isArray: false
+    - description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.
         The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark.
       isArray: true
       name: entity_kinds
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: 'Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
-      isArray: false
+    - description: 'Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of an incident's related entities from Azure Sentinel.
-    execution: false
     name: azure-sentinel-list-incident-relations
     outputs:
     - contextPath: AzureSentinel.IncidentRelatedResource.ID
@@ -1001,27 +751,14 @@ script:
       description: The incident ID.
       type: String
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of an incident's entities from Azure Sentinel.
-    execution: false
     name: azure-sentinel-list-incident-entities
     outputs:
     - contextPath: AzureSentinel.IncidentEntity.ID
@@ -1037,27 +774,14 @@ script:
       description: The properties of the entity.
       type: Unknown
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of an incident's alerts from Azure Sentinel.
-    execution: false
     name: azure-sentinel-list-incident-alerts
     outputs:
     - contextPath: AzureSentinel.IncidentAlert.ID
@@ -1094,33 +818,16 @@ script:
       description: The name of a component inside the product which generated the alert.
       type: String
   - arguments:
-    - default: false
-      description: The alias of the watchlist.
-      isArray: false
+    - description: The alias of the watchlist.
       name: watchlist_alias
       required: true
-      secret: false
-    - default: false
-      description: The ID of the single watchlist item.
-      isArray: false
+    - description: The ID of the single watchlist item.
       name: watchlist_item_id
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Get a single watchlist item or list of watchlist items.
-    execution: false
     name: azure-sentinel-list-watchlist-items
     outputs:
     - contextPath: AzureSentinel.WatchlistItem.WatchlistAlias
@@ -1145,68 +852,32 @@ script:
       description: Key-value pairs for a watchlist item.
       type: Unknown
   - arguments:
-    - default: false
-      description: The watchlist alias.
-      isArray: false
+    - description: The watchlist alias.
       name: watchlist_alias
       required: true
-      secret: false
-    - default: false
-      description: The watchlist item ID to be deleted.
-      isArray: false
+    - description: The watchlist item ID to be deleted.
       name: watchlist_item_id
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Delete a watchlist item.
-    execution: false
     name: azure-sentinel-delete-watchlist-item
   - arguments:
-    - default: false
-      description: The watchlist alias.
-      isArray: false
+    - description: The watchlist alias.
       name: watchlist_alias
       required: true
-      secret: false
-    - default: false
-      description: The watchlist item ID (GUID) to update.
-      isArray: false
+    - description: The watchlist item ID (GUID) to update.
       name: watchlist_item_id
-      required: false
-      secret: false
-    - default: false
-      description: The JSON for the itemsKeyValue of the item (the key value is different from watchlist to watchlist).
-      isArray: false
+    - description: The JSON for the itemsKeyValue of the item (the key value is different from watchlist to watchlist).
       name: item_key_value
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Create or update a watchlist item.
-    execution: false
     name: azure-sentinel-create-update-watchlist-item
     outputs:
     - contextPath: AzureSentinel.WatchlistItem.WatchlistAlias
@@ -1231,43 +902,21 @@ script:
       description: Key-value pairs for a watchlist item.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the indicator.
-      isArray: false
+    - description: The name of the indicator.
       name: indicator_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A link that specifies a starting point to use for subsequent calls.
         This argument overrides all of the other command arguments.
         There may be no support for pagination.
-      isArray: false
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of threat indicators.
-    execution: false
     name: azure-sentinel-threat-indicator-list
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
@@ -1352,65 +1001,33 @@ script:
       description: The threat types of the indicator.
       type: Unknown
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A link that specifies a starting point to use for subsequent calls.
         This argument overrides all of the other command arguments.
         There may be no support for pagination.
-      isArray: false
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      description: The minimum confidence number for a threat indicator.
-      isArray: false
+    - description: The minimum confidence number for a threat indicator.
       name: min_confidence
-      required: false
-      secret: false
-    - default: false
-      description: The maximum confidence number for a threat indicator.
-      isArray: false
+    - description: The maximum confidence number for a threat indicator.
       name: max_confidence
-      required: false
-      secret: false
-    - default: false
-      description: Minimum valid until value of indicators to query.
-      isArray: false
+    - description: Minimum valid until value of indicators to query.
       name: min_valid_until
-      required: false
-      secret: false
-    - default: false
-      description: Maximum valid until value of indicators to query.
-      isArray: false
+    - description: Maximum valid until value of indicators to query.
       name: max_valid_until
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: If true, the query also returns disabled indicators.
-      isArray: false
       name: include_disabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The sources of the threat indicator.
+    - description: The sources of the threat indicator.
       isArray: true
       name: sources
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The indicator types of the threat indicator.
       isArray: true
       name: indicator_types
@@ -1420,10 +1037,7 @@ script:
       - file
       - url
       - domain
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A comma-separated list of threat types of the threat indicator.
       isArray: true
       name: threat_types
@@ -1435,29 +1049,14 @@ script:
       - malicious-activity
       - compromised
       - unknown
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of keywords.
+    - description: A comma-separated list of keywords.
       isArray: true
       name: keywords
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of threat indicators with specific entities.
-    execution: false
     name: azure-sentinel-threat-indicator-query
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
@@ -1542,28 +1141,16 @@ script:
       description: The threat types of the indicator.
       type: Unknown
   - arguments:
-    - default: false
-      description: The value of the threat indicator.
-      isArray: false
+    - description: The value of the threat indicator.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The display name of the new indicator.
-      isArray: false
+    - description: The display name of the new indicator.
       name: display_name
       required: true
-      secret: false
-    - default: false
-      description: The description of the new indicator.
-      isArray: false
+    - description: The description of the new indicator.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the new indicator.
-      isArray: false
       name: indicator_type
       predefined:
       - ipv4
@@ -1572,27 +1159,17 @@ script:
       - url
       - domain
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The hash type of the new indicator. This argument is mandatory if the indicator type is file.
-      isArray: false
       name: hash_type
       predefined:
       - MD5
       - SHA-1
       - SHA-256
       - SHA-512
-      required: false
-      secret: false
-    - default: false
-      description: The confidence of the new threat indicator. Should be a number between 0-100.
-      isArray: false
+    - description: The confidence of the new threat indicator. Should be a number between 0-100.
       name: confidence
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A comma-separated list of threat types of the threat indicator.
       isArray: true
       name: threat_types
@@ -1605,63 +1182,30 @@ script:
       - compromised
       - unknown
       required: true
-      secret: false
-    - default: false
-      description: The kill chains phases of the indicator.
+    - description: The kill chains phases of the indicator.
       isArray: true
       name: kill_chains
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of tags of the new threat indicator.
+    - description: A comma-separated list of tags of the new threat indicator.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: The date from which the indicator is valid.
-      isArray: false
+    - description: The date from which the indicator is valid.
       name: valid_from
-      required: false
-      secret: false
-    - default: false
-      description: The date until which the indicator is valid.
-      isArray: false
+    - description: The date until which the indicator is valid.
       name: valid_until
-      required: false
-      secret: false
-    - default: false
-      description: The creator of the new indicator.
-      isArray: false
+    - description: The creator of the new indicator.
       name: created_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: If true, the indicator is revoked.
-      isArray: false
       name: revoked
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new threat indicator.
-    execution: false
     name: azure-sentinel-threat-indicator-create
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
@@ -1746,34 +1290,19 @@ script:
       description: The threat types of the indicator.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the indicator.
-      isArray: false
+    - description: The name of the indicator.
       name: indicator_name
       required: true
-      secret: false
-    - default: false
-      description: The value of the indicator.
-      isArray: false
+    - description: The value of the indicator.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: The display name of the indicator.
-      isArray: false
+    - description: The display name of the indicator.
       name: display_name
       required: true
-      secret: false
-    - default: false
-      description: The description of the threat indicator.
-      isArray: false
+    - description: The description of the threat indicator.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the indicator.
-      isArray: false
       name: indicator_type
       predefined:
       - ipv4
@@ -1782,27 +1311,13 @@ script:
       - url
       - domain
       required: true
-      secret: false
-    - default: false
-      description: If indicator_type is a file, this entry is mandatory.
-      isArray: false
+    - description: If indicator_type is a file, this entry is mandatory.
       name: hash_type
-      required: false
-      secret: false
-    - default: false
-      description: Whether the indicator is revoked.
-      isArray: false
+    - description: Whether the indicator is revoked.
       name: revoked
-      required: false
-      secret: false
-    - default: false
-      description: The confidence of the threat indicator. This is a number between 0-100.
-      isArray: false
+    - description: The confidence of the threat indicator. This is a number between 0-100.
       name: confidence
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A comma-separated list of threat types of the threat indicator.
       isArray: true
       name: threat_types
@@ -1814,53 +1329,23 @@ script:
       - malicious-activity
       - compromised
       - unknown
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of  kill chains phases of the indicator.
+    - description: A comma-separated list of  kill chains phases of the indicator.
       isArray: true
       name: kill_chains
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of tags of the threat indicator.
+    - description: A comma-separated list of tags of the threat indicator.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: The date from which the indicator is valid.
-      isArray: false
+    - description: The date from which the indicator is valid.
       name: valid_from
-      required: false
-      secret: false
-    - default: false
-      description: The date until which the indicator is valid.
-      isArray: false
+    - description: The date until which the indicator is valid.
       name: valid_until
-      required: false
-      secret: false
-    - default: false
-      description: The creator of the indicator.
-      isArray: false
+    - description: The creator of the indicator.
       name: created_by
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an existing threat indicator.
-    execution: false
     name: azure-sentinel-threat-indicator-update
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
@@ -1945,56 +1430,29 @@ script:
       description: The threat types of the indicator.
       type: Unknown
   - arguments:
-    - default: false
-      description: A comma-separated list of indicators to delete.
+    - description: A comma-separated list of indicators to delete.
       isArray: true
       name: indicator_names
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes an existing threat indicator.
-    execution: false
     name: azure-sentinel-threat-indicator-delete
   - arguments:
-    - default: false
-      description: The name of the indicator.
-      isArray: false
+    - description: The name of the indicator.
       name: indicator_name
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of tags to append.
+    - description: A comma-separated list of tags to append.
       isArray: true
       name: tags
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Appends new tags to an existing indicator.
-    execution: false
     name: azure-sentinel-threat-indicator-tags-append
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
@@ -2079,33 +1537,18 @@ script:
       description: The threat types of the indicator.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the indicator.
-      isArray: false
+    - description: The name of the indicator.
       name: indicator_name
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of tags to replace.
+    - description: A comma-separated list of tags to replace.
       isArray: true
       name: tags
       required: true
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
-    deprecated: false
     description: Replaces the tags of a given indicator.
-    execution: false
     name: azure-sentinel-threat-indicator-tags-replace
     outputs:
     - contextPath: AzureSentinel.ThreatIndicator.ID
@@ -2190,8 +1633,7 @@ script:
       description: The threat types of the indicator.
       type: Unknown
   - arguments:
-    - default: false
-      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
       required: true
     description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
@@ -2210,30 +1652,15 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
   - arguments:
-    - default: false
-      description: The rule ID. If not given, will return all rules.
-      isArray: false
+    - description: The rule ID. If not given, will return all rules.
       name: rule_id
-      required: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of rules to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
     description: Gets a list of all alert rules.
     name: azure-sentinel-list-alert-rule
     outputs:
@@ -2352,30 +1779,15 @@ script:
       description: The alerts' displayNames on which the cases will be generated
       type: Unknown
   - arguments:
-    - default: false
-      description: The alert rule template ID. If not given, will return all alert rule templates.
-      isArray: false
+    - description: The alert rule template ID. If not given, will return all alert rule templates.
       name: template_id
-      required: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of templates to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
     description: Gets a list of all alert rule templates.
     name: azure-sentinel-list-alert-rule-template
     outputs:
@@ -2443,23 +1855,13 @@ script:
       description: The alerts' productName on which the cases will be generated.
       type: String
   - arguments:
-    - default: false
-      description: The alert rule ID to delete.
-      isArray: false
+    - description: The alert rule ID to delete.
       name: rule_id
       required: true
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
     description: Deletes the specified alert rule.
     name: azure-sentinel-delete-alert-rule
     outputs:
@@ -2470,199 +1872,131 @@ script:
       description: Whether the alert rule was deleted.
       type: Boolean
   - arguments:
-    - default: false
-      description: The alert rule name to create.
-      isArray: false
+    - description: The alert rule name to create.
       name: rule_name
       required: true
     - auto: PREDEFINED
-      default: false
       description: |
         The alert rule kind to create.
         Required for all types.
-      isArray: false
       name: kind
-      required: false
       predefined:
       - fusion
       - microsoft_security_incident_creation
       - scheduled
-    - default: false
-      description: |
+    - description: |
         The name of the alert rule template used to create this rule.
         Required for Fusion, optional for Scheduled rules.
-      isArray: false
       name: template_name
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         Determines whether this alert rule is enabled or disabled.
         Required for all types.
-      isArray: false
       name: enabled
-      required: false
       predefined:
       - yes
       - no
-    - default: false
-      description: ETag of the Azure resource.
-      isArray: false
+    - description: ETag of the Azure resource.
       name: etag
-      required: false
-    - default: false
-      description: |
+    - description: |
         The display name for alerts created by this alert rule.
         Required for MicrosoftSecurityIncidentCreation and scheduled rules.
-      isArray: false
       name: displayName
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         The alerts' productName on which the cases will be generated.
         Required for MicrosoftSecurityIncidentCreation rules.
-      isArray: false
       name: product_filter
-      required: false
       predefined:
       - azure_active_directory_identity_protection
       - azure_advanced_threat_protection
       - azure_security_center
       - azure_security_center_for_iot
       - microsoft_cloud_app_security
-    - default: false
-      description: |
+    - description: |
         The description of the alert rule.
         Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.
-      isArray: false
       name: description
-      required: false
-    - default: false
-      description: |
+    - description: |
         Alerts' displayNames on which the cases will not be generated.
         Relevant for MicrosoftSecurityIncidentCreation rules.
       isArray: true
       name: name_exclude_filter
-      required: false
-    - default: false
-      description: |
+    - description: |
         Alerts' displayNames on which the cases will be generated.
         Relevant for MicrosoftSecurityIncidentCreation rules.
       isArray: true
       name: name_include_filter
-      required: false
-    - default: false
-      description: |
+    - description: |
         Alerts' severities on which the cases will be generated.
         Relevant for MicrosoftSecurityIncidentCreation rules.
       isArray: true
       name: severity_filter
-      required: false
-    - default: false
-      description: |
+    - description: |
         The query that creates alerts for this rule.
         Required for scheduled rules.
-      isArray: false
       name: query
-      required: false
-    - default: false
-      description: |
+    - description: |
         The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
         Required for scheduled rules.
-      isArray: false
       name: query_frequency
-      required: false
-    - default: false
-      description: |
+    - description: |
         The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
         Required for scheduled rules.
-      isArray: false
       name: query_period
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         The severity for alerts created by this alert rule.
         Required for scheduled rules.
-      isArray: false
       name: severity
-      required: false
       predefined:
       - informational
       - low
       - medium
       - high
-    - default: false
-      description: |
+    - description: |
         The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
         Required for scheduled rules.
-      isArray: false
       name: suppression_duration
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         Determines whether the suppression for this alert rule is enabled or disabled.
         Required for scheduled rules.
-      isArray: false
       name: suppression_enabled
-      required: false
       predefined:
       - yes
       - no
     - auto: PREDEFINED
-      default: false
       description: |
         The operation against the threshold that triggers the alert rule.
         Required for scheduled rules.
-      isArray: false
       name: trigger_operator
-      required: false
       predefined:
       - equal
       - greater_than
       - less_than
       - not_equal
-    - default: false
-      description: |
+    - description: |
         The threshold that triggers this alert rule.
         Required for scheduled rules.
-      isArray: false
       name: trigger_threshold
-      required: false
-    - default: false
-      description: |
+    - description: |
         The tactics of the alert rule.
         Relevant for scheduled rules.
       isArray: true
       name: tactics
-      required: false
-    - default: false
-      description: |
+    - description: |
         The techniques of the alert rule.
         Relevant for scheduled rules.
       isArray: true
       name: techniques
-      required: false
-    - default: false
-      description: |
+    - description: |
         Option to insert a configured rule JSON instead of using the arguments.
-      isArray: false
       name: rule_json
-      required: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
     description: Creates a new alert rule.
     name: azure-sentinel-create-alert-rule
     outputs:
@@ -2748,199 +2082,131 @@ script:
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
   - arguments:
-    - default: false
-      description: The alert rule name to update.
-      isArray: false
+    - description: The alert rule name to update.
       name: rule_name
       required: true
     - auto: PREDEFINED
-      default: false
       description: |
         The alert rule kind to update.
         Required for all types.
-      isArray: false
       name: kind
-      required: false
       predefined:
       - fusion
       - microsoft_security_incident_creation
       - scheduled
-    - default: false
-      description: |
+    - description: |
         The name of the alert rule template used to update this rule.
         Required for Fusion, optional for Scheduled rules.
-      isArray: false
       name: template_name
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         Determines whether this alert rule is enabled or disabled.
         Required for all types.
-      isArray: false
       name: enabled
-      required: false
       predefined:
       - yes
       - no
-    - default: false
-      description: ETag of the Azure resource.
-      isArray: false
+    - description: ETag of the Azure resource.
       name: etag
-      required: false
-    - default: false
-      description: |
+    - description: |
         The display name for alerts created by this alert rule.
         Required for MicrosoftSecurityIncidentCreation and scheduled rules.
-      isArray: false
       name: displayName
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         The alerts' productName on which the cases will be generated.
         Required for MicrosoftSecurityIncidentCreation rules.
-      isArray: false
       name: product_filter
-      required: false
       predefined:
       - azure_active_directory_identity_protection
       - azure_advanced_threat_protection
       - azure_security_center
       - azure_security_center_for_iot
       - microsoft_cloud_app_security
-    - default: false
-      description: |
+    - description: |
         The description of the alert rule.
         Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.
-      isArray: false
       name: description
-      required: false
-    - default: false
-      description: |
+    - description: |
         Alerts' displayNames on which the cases will not be generated.
         Relevant for MicrosoftSecurityIncidentCreation rules.
       isArray: true
       name: name_exclude_filter
-      required: false
-    - default: false
-      description: |
+    - description: |
         Alerts' displayNames on which the cases will be generated.
         Relevant for MicrosoftSecurityIncidentCreation rules.
       isArray: true
       name: name_include_filter
-      required: false
-    - default: false
-      description: |
+    - description: |
         Alerts' severities on which the cases will be generated.
         Relevant for MicrosoftSecurityIncidentCreation rules.
       isArray: true
       name: severity_filter
-      required: false
-    - default: false
-      description: |
+    - description: |
         The query that creates alerts for this rule.
         Required for scheduled rules.
-      isArray: false
       name: query
-      required: false
-    - default: false
-      description: |
+    - description: |
         The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
         Required for scheduled rules.
-      isArray: false
       name: query_frequency
-      required: false
-    - default: false
-      description: |
+    - description: |
         The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
         Required for scheduled rules.
-      isArray: false
       name: query_period
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         The severity for alerts created by this alert rule.
         Required for scheduled rules.
-      isArray: false
       name: severity
-      required: false
       predefined:
       - informational
       - low
       - medium
       - high
-    - default: false
-      description: |
+    - description: |
         The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
         Required for scheduled rules.
-      isArray: false
       name: suppression_duration
-      required: false
     - auto: PREDEFINED
-      default: false
       description: |
         Determines whether the suppression for this alert rule is enabled or disabled.
         Required for scheduled rules.
-      isArray: false
       name: suppression_enabled
-      required: false
       predefined:
       - yes
       - no
     - auto: PREDEFINED
-      default: false
       description: |
         The operation against the threshold that triggers the alert rule.
         Required for scheduled rules.
-      isArray: false
       name: trigger_operator
-      required: false
       predefined:
       - equal
       - greater_than
       - less_than
       - not_equal
-    - default: false
-      description: |
+    - description: |
         The threshold that triggers this alert rule.
         Required for scheduled rules.
-      isArray: false
       name: trigger_threshold
-      required: false
-    - default: false
-      description: |
+    - description: |
         The tactics of the alert rule.
         Relevant for scheduled rules.
       isArray: true
       name: tactics
-      required: false
-    - default: false
-      description: |
+    - description: |
         The techniques of the alert rule.
         Relevant for scheduled rules.
       isArray: true
       name: techniques
-      required: false
-    - default: false
-      description: |
+    - description: |
         Option to insert a configured rule JSON instead of using the arguments.
-      isArray: false
       name: rule_json
-      required: false
-    - default: false
-      description: The subscription ID.
-      isArray: false
+    - description: The subscription ID.
       name: subscription_id
-      required: false
-      secret: false
-    - default: false
-      description: The resource group name.
-      isArray: false
+    - description: The resource group name.
       name: resource_group_name
-      required: false
-      secret: false
     description: Updates an alert rule.
     name: azure-sentinel-update-alert-rule
     outputs:
@@ -3025,11 +2291,64 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
+  - name: azure-sentinel-subscriptions-list
+    description: Lists all subscriptions.
+    outputs:
+    - contextPath: AzureSentinel.SubscriptionId
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.displayName
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.authorizationSource
+      description: The authorization source of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.managedByTenants
+      description: The subscriptions that are managed by tenants of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.tenetId
+      description: The tenet ID of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.state
+      description: The state of the resource.
+      type: String
+    - contextPath: AzureSentinel.Subscription.subscriptionPolicies
+      description: The subscription policies of the resource.
+      type: String
+  - name: azure-sentinel-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided."
+      type: String
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+      type: String
+    - name: limit
+      description: The maximum number of resource groups to return.
+      defaultValue: 50
+      type: Number
+    outputs:
+    - contextPath: AzureSentinel.ResourceGroup.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.type
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.location
+      description: The location of the resource group.
+      type: String
+    - contextPath: AzureSentinel.ResourceGroup.tags
+      description: The tags of the resource group.
+      type: Dictionary
+    - contextPath: AzureSentinel.ResourceGroup.properties
+      description: The properties of the resource group.
+      type: dictionary
+  dockerimage: demisto/crypto:1.0.0.65874
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

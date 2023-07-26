@@ -1,5 +1,5 @@
-from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 import copy
 import re
@@ -1725,6 +1725,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
         return int(date.timestamp() * 1000)
     if isinstance(arg, (int, float)):
         return arg
+    return None
 
 
 def create_account_context(endpoints):
@@ -1813,7 +1814,7 @@ def get_endpoints_command(client, args):
     alias_name = argToList(args.get('alias_name'))
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    status = args.get('status')
+    status = argToList(args.get('status'))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -2385,7 +2386,7 @@ def get_process_context(alert, process_type):
     remove_nulls_from_dictionary(process_context)
 
     # If the process contains only 'HostName' , don't create an indicator
-    if len(process_context.keys()) == 1 and 'Hostname' in process_context.keys():
+    if len(process_context.keys()) == 1 and 'Hostname' in process_context:
         return {}
     return process_context
 
@@ -2678,7 +2679,7 @@ def sort_by_key(list_to_sort, main_key, fallback_key):
 
 def drop_field_underscore(section):
     section_copy = section.copy()
-    for field in section_copy.keys():
+    for field in section_copy:
         if '_' in field:
             section[field.replace('_', '')] = section.get(field)
 
@@ -2736,7 +2737,7 @@ def get_distribution_versions_command(client, args):
     versions = client.get_distribution_versions()
 
     readable_output = []
-    for operation_system in versions.keys():
+    for operation_system in versions:
         os_versions = versions[operation_system]
 
         readable_output.append(
@@ -3255,7 +3256,7 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
@@ -3409,7 +3410,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
@@ -3458,7 +3459,7 @@ def create_request_filters(
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status if isinstance(status, list) else [status]
         })
 
     if username:
@@ -3685,11 +3686,12 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
         and e.res.status_code == 500
         and 'was not found' in str(e)
     ):
+        error_message: str = ''
         pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
         if match := re.search(pattern, str(e)):
-            error_message = f'Error: {match[1]} {match[2]} was not found'
+            error_message = f'Error: {match[1]} {match[2]} was not found. '
 
-        return (f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}. '
+        return (f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}'
                 f'Full error message: {e}')
     return None
 
@@ -3754,7 +3756,7 @@ def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Comman
     except DemistoException as e:
         custom_message = None
         if len(group_names) > 1:
-            custom_message = ", Note: If you sent more than one group name, they may not exist either"
+            custom_message = "Note: If you sent more than one group name, they may not exist either. "
 
         if error_message := enrich_error_message_id_group_role(e=e, type_="Group", custom_message=custom_message):
             raise DemistoException(error_message)
@@ -3797,7 +3799,7 @@ def list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResul
     except DemistoException as e:
         custom_message = None
         if len(role_names) > 1:
-            custom_message = ", Note: If you sent more than one Role name, they may not exist either"
+            custom_message = "Note: If you sent more than one Role name, they may not exist either. "
 
         if error_message := enrich_error_message_id_group_role(e=e, type_="Role", custom_message=custom_message):
             raise DemistoException(error_message)

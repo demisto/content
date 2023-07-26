@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN136,IN145,IN124
+ignore=IN126,IN136,IN124
 
 [file:XDR_iocs.yml]
 ignore=BA108,BA109
@@ -47,13 +47,13 @@ ignore=BA113
 ignore=RM108
 
 [known_words]
-XDR
-CoreIRApiModule
-CortexCoreIR
-XQL
-indicatorsValues
-setIndicators
-PrintErrorEntry
+xdr
+coreirapimodule
+cortexcoreir
+xql
+indicatorsvalues
+setindicators
+printerrorentry
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
@@ -66,15 +66,6 @@ ignore=PB121
 
 [file:Cortex_XDR_incident_handling_v3.yml]
 ignore=PB121
-
-[file:playbook-Cortex_XDR_-_Cloud_Cryptomining_-_Set_Verdict.yml]
-ignore=BA101
-
-[file:playbook-Cortex_XDR_-_Cloud_Cryptomining.yml]
-ignore=BA101
-
-[file:layoutscontainer-Cortex_XDR_-_XCLOUD_Cryptomining.json]
-ignore=BA101
 
 [file:Cortex_XDR_incident_handling_v2_README.md]
 ignore=RM106
@@ -104,7 +95,7 @@ ignore=BA124
 ignore=BA124
 
 [file:DBotGroupXDRIncidents.yml]
-ignore=BA124,CJ105,RM109
+ignore=BA124,CJ105
 
 [file:EntryWidgetNumberRegionsXCLOUD.yml]
 ignore=BA124

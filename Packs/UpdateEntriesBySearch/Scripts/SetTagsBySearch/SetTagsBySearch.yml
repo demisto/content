@@ -9,13 +9,11 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Search entries in the war room for the pattern text, and set tags to the
-  entries found.
+comment: Search entries in the war room for the pattern text, and set tags to the entries found.
 enabled: true
 args:
 - name: incident_id
-  description: The incident ID to search entries from. If not given, the current incident
-    is used.
+  description: The incident ID to search entries from. If not given, the current incident is used.
 - name: action
   required: true
   auto: PREDEFINED
@@ -119,7 +117,6 @@ args:
   defaultValue: basic
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 fromversion: 6.0.0

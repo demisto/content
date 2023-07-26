@@ -1,0 +1,41 @@
+{
+  "watchlist_domains": [
+    {
+      "state": "ignored",
+      "domain": "dummyiaa.info",
+      "status": "active",
+      "discovered_date": "2023-01-03T05:31:38.738000+00:00",
+      "changed_date": "2023-01-05T00:48:03.000000+00:00",
+      "risk_score": 98,
+      "risk_score_status": "full",
+      "risk_score_components": {
+        "proximity": 22,
+        "threat_profile": {
+          "phishing": 98,
+          "malware": 58,
+          "spam": 85,
+          "evidence": [
+            "ip address",
+            "registrant",
+            "domain name"
+          ]
+        }
+      },
+      "mx_exists": false,
+      "tld": "info",
+      "id": "pEkRq4Gdba",
+      "escalations": [
+        {
+          "escalation_type": "blocked",
+          "id": "rabdaKAx1q",
+          "created": "2023-01-03T06:17:28.785816+00:00",
+          "created_by": "user@example.com"
+        }
+      ],
+      "monitor_ids": [
+        "rA7bn46jQ3"
+      ]
+    }
+  ],"total_count": 1,
+  "count": 1
+}

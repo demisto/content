@@ -19,30 +19,29 @@ configuration:
   displaypassword: Password
 - name: max_fetch
   display: Maximum incidents per fetch
-  required: false
   defaultvalue: 50
   type: 0
   additionalinfo: Default is 50. Maximum is 100.
+  required: false
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
-  required: false
   defaultvalue: 7 days
   type: 0
   additionalinfo: |-
     Timestamp in ISO format or <number> <time unit>,
     e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
+  required: false
 - name: filter_by
   display: Filter by
-  required: false
   type: 15
   additionalinfo: Message field by which to filter the results.
   options:
   - from_address
   - to_address
   - subject
+  required: false
 - name: filter_operator
   display: Filter operator
-  required: false
   type: 15
   additionalinfo: Operator on the message field.
   options:
@@ -51,14 +50,14 @@ configuration:
   - begins_with
   - ends_with
   - does_not_contain
+  required: false
 - name: filter_value
   display: Filter value
-  required: false
   type: 0
   additionalinfo: The value to search for.
+  required: false
 - name: recipient_filter_operator
   display: Recipient filter operator
-  required: false
   type: 15
   additionalinfo: Recipient operator filter.
   options:
@@ -67,11 +66,12 @@ configuration:
   - begins_with
   - ends_with
   - does_not_contain
+  required: false
 - name: recipient_filter_value
   display: Recipient filter value
-  required: false
   type: 0
   additionalinfo: Recipient filter value to fetch by message field.
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
@@ -84,12 +84,12 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -105,17 +105,13 @@ script:
         Start date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
-      isArray: false
     - name: end_date
       description: |-
         End date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
-      isArray: false
     - name: filter_by
       description: Field by which to filter the results.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - from_address
@@ -123,8 +119,6 @@ script:
       - subject
     - name: filter_operator
       description: Filter operator.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - contains
@@ -134,12 +128,8 @@ script:
       - does_not_contain
     - name: filter_value
       description: The value to search for. This is a user defined value, e.g., filterValue=abc.com.
-      required: false
-      isArray: false
     - name: recipient_filter_operator
       description: Recipient operator filter.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - contains
@@ -149,12 +139,8 @@ script:
       - does_not_contain
     - name: recipient_filter_value
       description: Recipient filter value.
-      required: false
-      isArray: false
     - name: order_by
       description: How the results should be ordered.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - from_address
@@ -163,8 +149,6 @@ script:
       - size
     - name: order_dir
       description: Direction in which the results should be ordered.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - asc
@@ -173,17 +157,11 @@ script:
       description: |-
         Page number of paginated results.
         Minimum value is 1.
-      isArray: false
-      required: false
     - name: page_size
       description: Number of results per page. Maximum value is 100.
-      isArray: false
-      required: false
     - name: limit
       defaultValue: 50
       description: The maximum number of records to retrieve.
-      isArray: false
-      required: false
     outputs:
     - type: String
       contextPath: CiscoSMA.SpamQuarantineMessage.envelopeRecipient
@@ -212,7 +190,6 @@ script:
     - name: message_id
       description: Message ID.
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoSMA.SpamQuarantineMessage.envelopeRecipient
@@ -257,7 +234,6 @@ script:
     - name: entry_type
       description: List entry type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - blocklist
@@ -266,37 +242,25 @@ script:
       description: |-
         Page number of paginated results.
         Minimum value is 1.
-      isArray: false
-      required: false
     - name: page_size
       description: Number of results per page. Maximum value is 100.
-      isArray: false
-      required: false
     - name: limit
       defaultValue: 50
       description: The maximum number of records to retrieve.
-      isArray: false
-      required: false
     - name: order_by
       description: How the results should be ordered.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - recipient
       - sender
     - name: order_dir
       description: Direction in which the results should be ordered.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - asc
       - desc
     - name: view_by
       description: View results by.
-      required: false
-      isArray: false
       defaultValue: recipient
       auto: PREDEFINED
       predefined:
@@ -307,8 +271,6 @@ script:
         Search for recipients or senders in blocklist/safelist with 'contains' operator.
         e.g., test@test.com, test.com
         This is only supported for the argument view_by=recipient.
-      isArray: false
-      required: false
     outputs:
     - type: String
       contextPath: CiscoSMA.ListEntry.Blocklist.senderList
@@ -340,7 +302,6 @@ script:
     - name: entry_type
       description: List entry type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - blocklist
@@ -350,8 +311,6 @@ script:
         Add list entry by recipient/sender.
         When view_by = recipient: recipient_addresses and sender_list are mandatory.
         When view_by = sender: sender_addresses and recipient_list are mandatory.
-      required: false
-      isArray: false
       defaultValue: recipient
       auto: PREDEFINED
       predefined:
@@ -359,19 +318,15 @@ script:
       - sender
     - name: recipient_addresses
       description: A comma-separated list of recipients to add.
-      required: false
       isArray: true
     - name: sender_list
       description: A comma-separated list of senders to add.
-      required: false
       isArray: true
     - name: sender_addresses
       description: A comma-separated list of senders to add.
-      required: false
       isArray: true
     - name: recipient_list
       description: A comma-separated list of recipients to add.
-      required: false
       isArray: true
     outputs: []
   - name: cisco-sma-list-entry-append
@@ -380,7 +335,6 @@ script:
     - name: entry_type
       description: List entry type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - blocklist
@@ -390,8 +344,6 @@ script:
         Append list entry by recipient/sender.
         When view_by = recipient: recipient_addresses and sender_list are mandatory.
         When view_by = sender: sender_addresses and recipient_list are mandatory.
-      required: false
-      isArray: false
       defaultValue: recipient
       auto: PREDEFINED
       predefined:
@@ -399,20 +351,13 @@ script:
       - sender
     - name: recipient_list
       description: A comma-separated list of recipients to append.
-      required: false
       isArray: true
     - name: sender_list
       description: A comma-separated list of senders to append.
-      required: false
-      isArray: false
     - name: recipient_addresses
       description: A comma-separated list of recipients to append.
-      required: false
-      isArray: false
     - name: sender_addresses
       description: A comma-separated list of senders to append.
-      required: false
-      isArray: false
     outputs: []
   - name: cisco-sma-list-entry-edit
     description: Edit the spam quarantine blocklist/safelist entry. Using this command will override the existing value.
@@ -420,7 +365,6 @@ script:
     - name: entry_type
       description: List entry type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - blocklist
@@ -430,8 +374,6 @@ script:
         Edit list entry by recipient/sender.
         When view_by = recipient: recipient_addresses and sender_list are mandatory.
         When view_by = sender: sender_addresses and recipient_list are mandatory.
-      required: false
-      isArray: false
       defaultValue: recipient
       auto: PREDEFINED
       predefined:
@@ -439,20 +381,13 @@ script:
       - sender
     - name: recipient_list
       description: A comma-separated list of recipients to edit.
-      required: false
       isArray: true
     - name: sender_list
       description: A comma-separated list of senders to edit.
-      required: false
-      isArray: false
     - name: recipient_addresses
       description: A comma-separated list of recipients to edit.
-      required: false
-      isArray: false
     - name: sender_addresses
       description: A comma-separated list of senders to edit.
-      required: false
-      isArray: false
     outputs: []
   - name: cisco-sma-list-entry-delete
     description: Delete a spam quarantine blocklist/safelist entry.
@@ -460,7 +395,6 @@ script:
     - name: entry_type
       description: List entry type.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - blocklist
@@ -470,8 +404,6 @@ script:
         Delete list entry by recipient/sender.
         When view_by = recipient: recipient_list is mandatory.
         When view_by = sender: sender_list is mandatory.
-      required: false
-      isArray: false
       defaultValue: recipient
       auto: PREDEFINED
       predefined:
@@ -479,11 +411,9 @@ script:
       - sender
     - name: recipient_list
       description: A comma-separated list of recipients to delete.
-      required: false
       isArray: true
     - name: sender_list
       description: A comma-separated list of senders to delete.
-      required: false
       isArray: true
     outputs: []
   - name: cisco-sma-message-search
@@ -494,32 +424,22 @@ script:
         Start date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
-      isArray: false
     - name: end_date
       description: |-
         End date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
-      isArray: false
     - name: page
       description: |-
         Page number of paginated results.
         Minimum value is 1.
-      isArray: false
-      required: false
     - name: page_size
       description: Number of results per page. Maximum value is 100.
-      isArray: false
-      required: false
     - name: limit
       defaultValue: 50
       description: The maximum number of records to retrieve.
-      isArray: false
-      required: false
     - name: sender_filter_operator
       description: Sender filter operator.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - contains
@@ -527,12 +447,8 @@ script:
       - begins_with
     - name: sender_filter_value
       description: Sender filter value.
-      required: false
-      isArray: false
     - name: recipient_filter_operator
       description: Recipient filter operator.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - contains
@@ -540,12 +456,8 @@ script:
       - begins_with
     - name: recipient_filter_value
       description: Recipient filter value.
-      required: false
-      isArray: false
     - name: subject_filter_operator
       description: Subject filter operator.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - contains
@@ -553,12 +465,8 @@ script:
       - begins_with
     - name: subject_filter_value
       description: Subject filter value.
-      required: false
-      isArray: false
     - name: attachment_name_operator
       description: Attachment name operator.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - contains
@@ -566,26 +474,18 @@ script:
       - begins_with
     - name: attachment_name_value
       description: Attachment name value.
-      required: false
-      isArray: false
     - name: cisco_host
       description: Cisco host.
       defaultValue: All_Hosts
-      required: false
-      isArray: false
     - name: file_sha_256
       description: |-
         SHA256 must be 64 characters long and can contain only "0-9" and "a-f" symbols.
         E.g., e0d123e5f316bef78bfdf5a008837577e0d123e5f316bef78bfdf5a008837577
-      required: false
-      isArray: false
     - name: custom_query
       description: |-
         Custom query for cisco SMA's advanced filters.
         Syntax: <key>=<value>;<key>=<value>;<key>=<value>
         E.g.,  graymail=True;message_delivered=True
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoSMA.Message.hostName
@@ -665,19 +565,14 @@ script:
     - name: serial_number
       description: Email gateway serial number.
       required: true
-      isArray: false
     - name: message_ids
       description: Message ID list.
       required: true
       isArray: true
     - name: injection_connection_id
       description: Injection connection ID.
-      required: false
-      isArray: false
     - name: delivery_connection_id
       description: Delivery connection ID.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoSMA.Message.sdrAge
@@ -778,7 +673,6 @@ script:
     - name: serial_number
       description: Email gateway serial number.
       required: true
-      isArray: false
     - name: message_ids
       description: Message ID list.
       required: true
@@ -859,7 +753,6 @@ script:
     - name: serial_number
       description: Email gateway serial number.
       required: true
-      isArray: false
     - name: message_ids
       description: Message ID list.
       required: true
@@ -949,7 +842,6 @@ script:
     - name: serial_number
       description: Email gateway serial number.
       required: true
-      isArray: false
     - name: message_ids
       description: Message ID list.
       required: true
@@ -1030,8 +922,6 @@ script:
     arguments:
     - name: report_type
       description: Report Type.
-      required: false
-      isArray: false
       defaultValue: mail_incoming_traffic_summary
       auto: PREDEFINED
       predefined:
@@ -1044,57 +934,37 @@ script:
       description: |-
         Custom report type.
         Specify this argument in order to get a report that does not exist in the report_type argument.
-      required: false
-      isArray: false
     - name: start_date
       description: |-
         Start date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
-      isArray: false
     - name: end_date
       description: |-
         End date in ISO format or <number> <time unit>,
         e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now.
       required: true
-      isArray: false
     - name: device_group_name
       description: The device group name.
-      required: false
-      isArray: false
       defaultValue: Hosted_Cluster
     - name: device_name
       description: The device name.
-      required: false
-      isArray: false
     - name: order_by
       description: Specify the attribute by which to order the data in the response. For example, orderBy=total_clean_recipients
-      required: false
-      isArray: false
     - name: order_dir
       description: The report order direction. Specify sort direction.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - asc
       - desc
     - name: top
       description: Specify the number of records with the highest values to return.
-      required: false
-      isArray: false
     - name: filter_value
       description: The value to search for.
-      required: false
-      isArray: false
     - name: filter_by
       description: The filter field to use. Filter the data to be retrieved according to the filter property and value.
-      required: false
-      isArray: false
     - name: filter_operator
       description: Filter the response data based on the value specified.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - begins_with

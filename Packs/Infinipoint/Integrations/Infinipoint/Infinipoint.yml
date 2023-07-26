@@ -18,16 +18,16 @@ configuration:
   required: true
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: "Incident type"
   name: incident_type
   defaultvalue: event,alert
   type: 16
-  required: false
   options:
   - event
   - alert
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "10"
@@ -49,8 +49,8 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 script:
   type: python
   commands:
@@ -997,7 +997,6 @@ script:
 
   dockerimage: demisto/pyjwt3:1.0.0.27257
   isfetch: true
-  runonce: false
   script: '-'
   subtype: python3
 fromversion: 5.0.0

@@ -14,26 +14,25 @@ configuration:
   section: Connect
 - display: Client ID
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret
   section: Connect
+  required: false
 - display: Client ID
   name: client_id
-  required: false
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret
   name: secret
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: 'A+ - 3rd party enrichment'
   display: Source Reliability
   name: Reliability
-  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command.
   options:
@@ -46,27 +45,34 @@ configuration:
   - F - Reliability cannot be judged
   section: Collect
   advanced: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
   defaultvalue: '3 days'
   section: Collect
+  required: false
 - display: Max incidents per fetch
   name: incidents_per_fetch
-  required: false
   type: 0
   defaultvalue: '15'
   section: Collect
   advanced: true
-- display: Detections fetch query
-  name: fetch_query
   required: false
+- display: Endpoint Detections fetch query
+  name: fetch_query
   type: 0
   section: Collect
   advanced: true
-- display: Incidents fetch query
+  required: false
+- display: Endpoint Incidents fetch query
   name: incidents_fetch_query
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: IDP Detections fetch query
+  name: idp_detections_fetch_query
   required: false
   type: 0
   section: Collect
@@ -74,17 +80,16 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Mirroring Direction
   name: mirror_direction
-  required: false
   type: 15
   additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
   defaultvalue: None
@@ -94,60 +99,62 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   name: close_in_cs_falcon
-  required: false
   type: 8
   additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
-- additionalinfo: Choose what to fetch - incidents, detections, or both.
-  defaultvalue: 'Detections'
+  required: false
+- additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
+  defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
-  required: false
   type: 16
   options:
-  - Detections
-  - Incidents
+  - IDP Detection
+  - Endpoint Incident
+  - Endpoint Detection
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
-  required: false
   type: 19
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -405,7 +412,6 @@ script:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -423,6 +429,10 @@ script:
       - read
       - write
       - admin
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     - auto: PREDEFINED
       defaultValue: batch
       description: 'The target to run the command for. Possible values are: "single" and "batch".'
@@ -693,7 +703,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -2067,7 +2076,6 @@ script:
       name: ip
     - description: The endpoint hostname.
       name: hostname
-      secret: false
     description: Returns information about an endpoint, does not support regex.
     name: endpoint
     outputs:
@@ -2413,7 +2421,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2445,7 +2452,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2462,7 +2468,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2476,7 +2481,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2495,7 +2499,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2506,7 +2509,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2530,7 +2532,6 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2614,46 +2615,35 @@ script:
   - arguments:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'
       name: filter
-      required: false
     - description: Unique agent identifier (AID) of a sensor.
       name: aid
       isArray: true
-      required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_id
       isArray: true
-      required: false
     - description: "Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE."
       name: cve_severity
       isArray: true
-      required: false
     - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs.
       name: tags
       isArray: true
-      required: false
     - description: "Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired."
       name: status
       isArray: true
-      required: false
     - description: "Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux."
       name: platform_name
-      required: false
     - description: Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs.
       name: host_group
       isArray: true
-      required: false
     - description: Type of host a sensor is running on.
       name: host_type
       isArray: true
-      required: false
     - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10
       name: last_seen_within
-      required: false
     - auto: PREDEFINED
       description: Indicates if the vulnerability is suppressed by a suppression rule.
       name: is_suppressed
       isArray: true
-      required: false
       predefined:
       - 'true'
       - 'false'
@@ -2661,7 +2651,6 @@ script:
       description: Display remediation information type of data to be returned for each vulnerability entity.
       defaultValue: 'True'
       name: display_remediation_info
-      required: false
       predefined:
       - 'True'
       - 'False'
@@ -2669,7 +2658,6 @@ script:
       description: Whether to return logic information type of data for each vulnerability entity.
       defaultValue: 'True'
       name: display_evaluation_logic_info
-      required: false
       predefined:
       - 'True'
       - 'False'
@@ -2677,7 +2665,6 @@ script:
       description: Whether to return host information type of data for each vulnerability entity.
       name: display_host_info
       defaultValue: 'False'
-      required: false
       predefined:
       - 'True'
       - 'False'
@@ -2685,7 +2672,6 @@ script:
       defaultValue: '50'
       type: String
       name: limit
-      required: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
@@ -2831,10 +2817,14 @@ script:
       description: The vulnerability name.
       type: String
   - arguments:
-    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+    - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: true
+      deprecated: true
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve
+      isArray: true
+      default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -2854,7 +2844,6 @@ script:
     - description: Maximum number of items to return (1-5000).
       defaultValue: '50'
       name: limit
-      required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_ids
       isArray: true
@@ -2947,10 +2936,8 @@ script:
       isArray: true
     - description: Comment describing why the exclusions were created.
       name: comment
-      required: false
     - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
       name: groups
-      required: false
       isArray: true
     description: Create an ML exclusion.
     name: cs-falcon-create-ml-exclusion
@@ -3018,13 +3005,10 @@ script:
       required: true
     - description: Value to match for the exclusion (the exclusion pattern).
       name: value
-      required: false
     - description: Comment describing why the exclusions were created.
       name: comment
-      required: false
     - description: A comma-separated list of group ID(s) impacted by the exclusion.
       name: groups
-      required: false
       isArray: true
     description: Updates an ML exclusion. At least one argument is required in addition to the ID argument.
     name: cs-falcon-update-ml-exclusion
@@ -3096,24 +3080,18 @@ script:
   - arguments:
     - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
-      required: false
     - description: The value by which the exclusions should be filtered.
       name: value
-      required: false
     - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value.
       name: ids
-      required: false
       isArray: true
     - description: The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied.
       name: limit
-      required: false
     - description: The offset to start retrieving records from. Applies only if the IDs argument is not supplied.
       name: offset
-      required: false
     - auto: PREDEFINED
       description: How to sort the retrieved exclusions.
       name: sort
-      required: false
       predefined:
       - applied_globally.asc
       - applied_globally.desc
@@ -3193,7 +3171,6 @@ script:
       required: true
     - description: Name of the exclusion pattern.
       name: pattern_name
-      required: false
     - description: ID of the exclusion pattern.
       name: pattern_id
       required: true
@@ -3205,13 +3182,10 @@ script:
       required: true
     - description: Comment describing why the exclusions were created.
       name: comment
-      required: false
     - description: Exclusion description.
       name: description
-      required: false
     - description: JSON formatted detection template.
       name: detection_json
-      required: false
     - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
       name: groups
       required: true
@@ -3291,31 +3265,22 @@ script:
       required: true
     - description: Name of the exclusion.
       name: exclusion_name
-      required: false
     - description: ID of the exclusion pattern to update.
       name: pattern_id
-      required: false
     - description: Name of the exclusion pattern.
       name: pattern_name
-      required: false
     - description: Command line regular expression.
       name: cl_regex
-      required: false
     - description: Image file name regular expression.
       name: ifn_regex
-      required: false
     - description: Comment describing why the exclusions was created.
       name: comment
-      required: false
     - description: Exclusion description.
       name: description
-      required: false
     - description: JSON formatted detection template.
       name: detection_json
-      required: false
     - description: A comma-separated list of group ID(s) impacted by the exclusion.
       name: groups
-      required: false
       isArray: true
     description: Updates an IOA exclusion. At least one argument is required in addition to the ID argument.
     name: cs-falcon-update-ioa-exclusion
@@ -3396,20 +3361,15 @@ script:
   - arguments:
     - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
-      required: false
     - description: The name by which the exclusions should be filtered.
       name: name
-      required: false
     - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name.
       name: ids
-      required: false
       isArray: true
     - description: The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied.
       name: limit
-      required: false
     - description: The offset of how many exclusions to skip. Default is 0. Applies only if the IDs argument is not supplied.
       name: offset
-      required: false
     description: Get a list of IOA exclusions by specifying their IDs or a filter.
     name: cs-falcon-search-ioa-exclusion
     outputs:
@@ -3482,36 +3442,27 @@ script:
   - arguments:
     - description: A comma-separated list of quarantined file IDs to retrieve.
       name: ids
-      required: false
       isArray: true
     - description: A custom filter by which the retrieve quarantined file should be filtered.
       name: filter
-      required: false
     - description: A comma-separated list of SHA256 hash of the files to retrieve.
       name: sha256
-      required: false
       isArray: true
     - description: A comma-separated list of the name of the files to retrieve.
       name: filename
-      required: false
       isArray: true
     - description: Filter the retrieved files by state.
       name: state
-      required: false
     - description: A comma-separated list of the hostnames of the files to retrieve.
       name: hostname
-      required: false
       isArray: true
     - description: A comma-separated list of the usernames of the files to retrieve.
       name: username
-      required: false
       isArray: true
     - description: Maximum number of IDs to return. Max 5000. Default 50.
       name: limit
-      required: false
     - description: Starting index of the overall result set from which to return IDs. Default 0.
       name: offset
-      required: false
     description: Get quarantine file metadata by specified IDs or filter.
     name: cs-falcon-list-quarantined-file
     outputs:
@@ -3557,7 +3508,6 @@ script:
   - arguments:
     - description: A comma-separated list of quarantined file IDs to update.
       name: ids
-      required: false
       isArray: true
     - auto: PREDEFINED
       description: Action to perform against the quarantined file.
@@ -3572,25 +3522,19 @@ script:
       required: true
     - description: Update files based on a custom filter.
       name: filter
-      required: false
     - description: A comma-separated list of quarantined files SHA256 to update.
       name: sha256
-      required: false
       isArray: true
     - description: A comma-separated list of quarantined file names to update.
       name: filename
-      required: false
       isArray: true
     - description: Update files based on the state.
       name: state
-      required: false
     - description: A comma-separated list of quarantined file hostnames to update.
       name: hostname
-      required: false
       isArray: true
     - description: A comma-separated list of quarantined files username to update.
       name: username
-      required: false
       isArray: true
     description: Apply action to quarantined file by file IDs or filter.
     name: cs-falcon-apply-quarantine-file-action
@@ -3615,49 +3559,37 @@ script:
       hidden: true
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
-      required: false
     - description: Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments.
       isArray: true
       name: ids
-      required: false
     - description: Comma-separated list of scan initiation sources to filter by.
       isArray: true
       name: initiated_from
-      required: false
     - description: Comma-separated list of scan statuses to filter by.
       isArray: true
       name: status
-      required: false
     - description: Comma-separated list of scan severities to filter by.
       isArray: true
       name: severity
-      required: false
     - description: UTC-format time of scan start to filter by.
       name: scan_started_on
-      required: false
     - description: UTC-format time of the scan completion to filter by.
       name: scan_completed_on
-      required: false
     - description: Starting index of overall result set from which to return IDs.
       name: offset
-      required: false
     - description: Maximum number of resources to return.
       name: limit
-      required: false
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
       defaultValue: '30'
       hidden: true
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
       hidden: true
     - name: hide_polling_output
       hidden: true
       description: ''
-      required: false
       defaultValue: true
     description: Retrieve ODS scan details.
     name: cs-falcon-ods-query-scan
@@ -3777,37 +3709,27 @@ script:
   - arguments:
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
-      required: false
     - description: Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments.
       isArray: true
       name: ids
-      required: false
     - description: Comma-separated list of scan initiation sources to filter by.
       isArray: true
       name: initiated_from
-      required: false
     - description: Comma-separated list of scan statuses to filter by.
       isArray: true
       name: status
-      required: false
     - description: UTC-format time of scan creation to filter by.
       name: created_on
-      required: false
     - description: UTC-format time of scan creator to filter by.
       name: created_by
-      required: false
     - description: UTC-format time of scan start to filter by.
       name: start_timestamp
-      required: false
     - description: Deleted scans only.
       name: deleted
-      required: false
     - description: Starting index of overall result set from which to return IDs.
       name: offset
-      required: false
     - description: Maximum number of resources to return.
       name: limit
-      required: false
     description: Retrieve ODS scheduled scan details.
     name: cs-falcon-ods-query-scheduled-scan
     outputs:
@@ -3895,31 +3817,23 @@ script:
   - arguments:
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
-      required: false
     - description: Comma-separated list of host IDs to filter by.
       isArray: true
       name: host_ids
-      required: false
     - description: Comma-separated list of scan IDs to filter by.
       isArray: true
       name: scan_ids
-      required: false
     - description: Comma-separated list of scan statuses to filter by.
       isArray: true
       name: status
-      required: false
     - description: UTC-format time of scan start to filter by.
       name: started_on
-      required: false
     - description: UTC-format time of scan completion to filter by.
       name: completed_on
-      required: false
     - description: Starting index of overall result set from which to return IDs.
       name: offset
-      required: false
     - description: Maximum number of resources to return.
       name: limit
-      required: false
     description: Retrieve ODS scan host details.
     name: cs-falcon-ods-query-scan-host
     outputs:
@@ -3971,37 +3885,28 @@ script:
   - arguments:
     - description: Valid CS-Falcon-FQL filter to query with.
       name: filter
-      required: false
     - description: Comma-separated list of malicious file IDs to retrieve details about. If set, will override all other arguments.
       isArray: true
       name: file_ids
-      required: false
     - description: Comma-separated list of host IDs to filter by.
       isArray: true
       name: host_ids
-      required: false
     - description: Comma-separated list of scan IDs to filter by.
       isArray: true
       name: scan_ids
-      required: false
     - description: Comma-separated list of file paths to filter by.
       isArray: true
       name: file_paths
-      required: false
     - description: Comma-separated list of file names to filter by.
       isArray: true
       name: file_names
-      required: false
     - description: Comma-separated list of hashes to filter by.
       isArray: true
       name: hash
-      required: false
     - description: Starting index of overall result set from which to return IDs.
       name: offset
-      required: false
     - description: Maximum number of resources to return.
       name: limit
-      required: false
     description: Retrieve ODS malicious file details.
     name: cs-falcon-ods-query-malicious-files
     outputs:
@@ -4045,28 +3950,22 @@ script:
     - description: List of hosts to be scanned. "hosts" OR "host_groups" must be set.
       isArray: true
       name: hosts
-      required: false
     - description: List of host groups to be scanned. "hosts" OR "host_groups" must be set.
       isArray: true
       name: host_groups
-      required: false
     - description: List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set.
       isArray: true
       name: file_paths
-      required: false
     - description: List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set.
       isArray: true
       name: scan_inclusions
     - description: List of excluded files or locations for this scan.
       isArray: true
       name: scan_exclusions
-      required: false
     - description: Scan origin.
       name: initiated_from
-      required: false
     - description: Set the scan CPU priority.
       name: cpu_priority
-      required: false
       auto: PREDEFINED
       defaultValue: Low
       predefined:
@@ -4077,37 +3976,27 @@ script:
       - Lowest
     - description: Scan description.
       name: description
-      required: false
     - description: Flag indicating if identified threats should be quarantined.
       name: quarantine
-      required: false
     - description: Amount of time (in hours) for scan pauses.
       name: pause_duration
-      required: false
       defaultValue: '2'
     - description: Sensor ML detection level.
       name: sensor_ml_level_detection
-      required: false
     - description: Sensor ML prevention level.
       name: sensor_ml_level_prevention
-      required: false
     - description: Cloud ML detection level for the scan.
       name: cloud_ml_level_detection
-      required: false
     - description: Cloud ML prevention level for the scan.
       name: cloud_ml_level_prevention
-      required: false
     - description: Maximum time (in hours) the scan is allowed to execute.
       name: max_duration
-      required: false
       defaultValue: '2'
     - description: The interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
       defaultValue: '30'
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
     description: Create an ODS scan and wait for results.
     name: cs-falcon-ods-create-scan
@@ -4232,20 +4121,16 @@ script:
     - description: List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set.
       isArray: true
       name: file_paths
-      required: false
     - description: List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set.
       isArray: true
       name: scan_inclusions
     - description: List of excluded files or locations for this scan.
       isArray: true
       name: scan_exclusions
-      required: false
     - description: Scan origin.
       name: initiated_from
-      required: false
     - description: Set the scan CPU priority.
       name: cpu_priority
-      required: false
       auto: PREDEFINED
       defaultValue: Low
       predefined:
@@ -4256,29 +4141,21 @@ script:
       - Lowest
     - description: Scan description.
       name: description
-      required: false
     - description: Flag indicating if identified threats should be quarantined.
       name: quarantine
-      required: false
     - description: Amount of time (in hours) for scan pauses.
       name: pause_duration
-      required: false
       defaultValue: '2'
     - description: Sensor ML detection level.
       name: sensor_ml_level_detection
-      required: false
     - description: Sensor ML prevention level.
       name: sensor_ml_level_prevention
-      required: false
     - description: Cloud ML detection level for the scan.
       name: cloud_ml_level_detection
-      required: false
     - description: Cloud ML prevention level for the scan.
       name: cloud_ml_level_prevention
-      required: false
     - description: Maximum time (in hours) the scan is allowed to execute.
       name: max_duration
-      required: false
       defaultValue: '2'
     - description: When to start the first scan. Supports english expressions such as "tommorow" or "in an hour".
       name: schedule_start_timestamp
@@ -4382,19 +4259,113 @@ script:
     - description: Comma-separated list of scheduled scan IDs to delete.
       isArray: true
       name: ids
-      required: false
     - description: Valid CS-Falcon-FQL filter to delete scans by.
       name: filter
-      required: false
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
     outputs: []
-  dockerimage: demisto/python3:3.10.12.63474
+  - arguments:
+    - description: API type.
+      name: type
+      required: true
+      predefined:
+      - 'USER'
+      - 'ENDPOINT'
+      auto: PREDEFINED
+    - description: The key to sort by.
+      name: sort_key
+      predefined:
+      - RISK_SCORE
+      - PRIMARY_DISPLAY_NAME
+      - SECONDARY_DISPLAY_NAME
+      - MOST_RECENT_ACTIVITY
+      - ENTITY_ID
+      auto: PREDEFINED
+    - description: The sort order.
+      name: sort_order
+      predefined:
+      - 'DESCENDING'
+      - 'ASCENDING'
+      auto: PREDEFINED
+      defaultValue: ASCENDING
+    - description: Comma separated list of entity IDs to look for.
+      name: entity_id
+      isArray: true
+    - description: Primary display name to filter by.
+      name: primary_display_name
+      isArray: true
+    - description: Secondary display name to filter by.
+      name: secondary_display_name
+      isArray: true
+    - description: The maximum risk score severity to filter by.
+      name: max_risk_score_severity
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: The minimum risk score severity to filter by.
+      name: min_risk_score_severity
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: Whether to get only enabled or disabled identity entities.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - description: Filter by email.
+      name: email
+    - description: The hash for the next page.
+      name: next_token
+    - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
+      name: page_size
+      defaultValue: 50
+    - description: The page number. Default is 1.
+      name: page
+    - description: The maximum number of identity entities to list.
+      name: limit
+    description: List identity entities.
+    name: cs-falcon-list-identity-entities
+    outputs:
+      - contextPath: CrowdStrike.IDPEntity.IsHuman
+        description: Whether the identity entity is human made.
+        type: Boolean
+      - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+        description: Whether the identity entity is programmatic made.
+        type: Boolean
+      - contextPath: CrowdStrike.IDPEntity.IsAdmin
+        description: Whether the identity entity is admin made.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+        description: The identity entity primary display name.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+        description: The identity entity risk factor type.
+        type: Unknown
+      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+        description: The identity entity risk factor severity.
+        type: Unknown
+      - contextPath: CrowdStrike.IDPEntity.RiskScore
+        description: The identity entity risk score.
+        type: Number
+      - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+        description: The identity entity risk score severity.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+        description: The identity entity secondary display name.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+        description: The identity entity email address.
+        type: String
+  dockerimage: demisto/py3-tools:1.0.0.66062
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python

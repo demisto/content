@@ -17,19 +17,19 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
+  required: false
 - display: Fetch events
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - defaultvalue: Activities, Threats, Alerts
   display: Event types
   name: event_type
@@ -37,22 +37,22 @@ configuration:
   - Activities
   - Threats
   - Alerts
-  required: false
   type: 16
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 1000
   display: The maximum number of events per fetch should be between 1-1000
   additionalinfo: The limit is per event type. For example, if you choose 3 event types (ACTIVITIES, THREATS, ALERTS) with a limit of 100, the actually limit will be 300.
   name: fetch_limit
-  required: false
   type: 0
   section: Collect
+  required: false
 description: This integration fetches activities, threats, and alerts from SentinelOne.
 display: SentinelOne Event Collector
 name: SentinelOneEventCollector
@@ -62,25 +62,17 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If true, the command will create events, otherwise it will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      defaultValue: 1000
+    - defaultValue: 1000
       description: Maximum number of results to return. Value should be between 1 - 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Gets events from SentinelOne.
-    execution: false
     name: sentinelone-get-events
   dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python
