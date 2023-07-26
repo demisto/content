@@ -133,7 +133,7 @@ class Client:
 
     def policy_optimizer_no_apps(self, position: str) -> dict:
         # in panorama this parameter Should be True, in firewall it is False. this should be probably fixed in all versions,
-        # but for now we'll just fix it for version 10.2.0 and above since thats the version we have access to.
+        # but for now we'll just fix it for version 10.2.0 and above since that's the version we have access to.
         isCmsSelected = self.is_cms_selected if LooseVersion(VERSION) >= LooseVersion('10.2.0') else False
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
@@ -169,7 +169,7 @@ class Client:
 
     def policy_optimizer_get_unused_apps(self, position: str) -> dict:
         # in panorama this parameter Should be True, in firewall it is False. this should be probably fixed in all versions,
-        # but for now we'll just fix it for version 10.2.0 and above since thats the version we have access to.
+        # but for now we'll just fix it for version 10.2.0 and above since that's the version we have access to.
         isCmsSelected = self.is_cms_selected if LooseVersion(VERSION) >= LooseVersion('10.2.0') else False
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
@@ -311,7 +311,7 @@ def get_policy_optimizer_statistics_command(client: Client, args: dict) -> Comma
     outputs_stats = {}
     # panorama instance has multiple positions, firewall instance has only main position
     # this should be probably fixed in all versions, but for now we'll just fix it for version 10.2.0 and above
-    # since thats the version we have access to.
+    # since that's the version we have access to.
     position = define_position(args=args, is_panorama=client.is_cms_selected)
 
     raw_response = client.get_policy_optimizer_statistics(position)
@@ -343,7 +343,7 @@ def policy_optimizer_no_apps_command(client: Client, args: dict) -> CommandResul
     """
     # panorama instance has multiple positions, firewall instance has only main position
     # this should be probably fixed in all versions, but for now we'll just fix it for version 10.2.0 and above
-    # since thats the version we have access to.
+    # since that's the version we have access to.
     position = define_position(args=args, is_panorama=client.is_cms_selected)
 
     raw_response = client.policy_optimizer_no_apps(position=position)
@@ -382,7 +382,7 @@ def policy_optimizer_get_unused_apps_command(client: Client, args: dict) -> Comm
     """
     # panorama instance has multiple positions, firewall instance has only main position
     # this should be probably fixed in all versions, but for now we'll just fix it for version 10.2.0 and above
-    # since thats the version we have access to.
+    # since that's the version we have access to.
     position = define_position(args=args, is_panorama=client.is_cms_selected)
 
     raw_response = client.policy_optimizer_get_unused_apps(position=position)
