@@ -670,10 +670,10 @@ filter _raw_log contains "Call-Home"
 // UPDATE:
 filter _raw_log ~= "\-\d+\:\sUPDATE\:"
 | call cisco_asa_main_fields_extraction
-| alter new_img_version = arrayindex(regextract(_raw_log ,"Image\sversion\sis\s(\S+)"),0)
+/*| alter new_img_version = arrayindex(regextract(_raw_log ,"Image\sversion\sis\s(\S+)"),0),
+    asa_img = arrayindex(regextract(_raw_log ,"ASA\simage\s\'([^\']+)\'"),0)*/
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.observer.name = observer_name,
-    //xdm.event.outcome_reason = outcome_reason,
     xdm.observer.version = new_img_version;
