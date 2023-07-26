@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 ALL_INCIDENTS = 'All'
 CAMPAIGN_EMAIL_TO_FIELD = 'campaignemailto'
 

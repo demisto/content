@@ -24,6 +24,7 @@ configuration:
     Mapping of Cofense Vision threat level to XSOAR DbotScore.
     For 'Good', DbotScore will be 1 and default threat level value is 'low'.
     Comma separated values are supported.
+  required: false
 - name: threat_levels_suspicious
   display: Threat levels to be marked as Suspicious
   defaultvalue:
@@ -32,6 +33,7 @@ configuration:
     Mapping of Cofense Vision threat level to XSOAR DbotScore.
     For 'Suspicious', DbotScore will be 2 and default threat level values are 'suspicious', 'moderate', 'substantial'.
     Comma separated values are supported.
+  required: false
 - name: threat_levels_bad
   display: Threat levels to be marked as Bad
   defaultvalue:
@@ -40,16 +42,19 @@ configuration:
     Mapping of Cofense Vision threat level to XSOAR DbotScore.
     For 'Bad', DbotScore will be 3 and default threat level values are 'malicious', 'severe', 'critical', 'high'.
     Comma separated values are supported.
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
   additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
   additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
+  required: false
 description: The Cofense Vision integration provides commands to initiate advanced search jobs to hunt suspicious emails matching IOCs. It also contains commands to quarantine emails, download messages and their attachments, and aids to manage IOCs in the local repository to keep up with upcoming emerging threats.
 display: Cofense Vision
 name: Cofense Vision
@@ -2377,7 +2382,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.59070
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

@@ -10,21 +10,25 @@ configuration:
   type: 9
   displaypassword: Access Token
   hiddenusername: true
+  required: false
 - display: Access Token
   name: access_token
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: If set to false, iam-create-user command will be skipped, and user will not be created.
   defaultvalue: 'true'
   display: Allow creating users
@@ -32,30 +36,35 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create_if_not_exists
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
@@ -347,7 +356,7 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Reason why the API failed.
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

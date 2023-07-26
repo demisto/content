@@ -1,11 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import datetime
+from datetime import datetime
 
 
 def set_time():
 
-    now = datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S+00:00')
+    now = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S+00:00')
 
     fieldName = demisto.args()['fieldName']
 
