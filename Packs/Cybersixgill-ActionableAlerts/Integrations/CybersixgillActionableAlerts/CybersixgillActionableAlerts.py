@@ -141,7 +141,8 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         incident['CustomFields']['cybersixgillattributes'] = attributes
     elif es_id == "Not Applicable":
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
-                                                                     fetch_only_current_item=True)
+                                                                     fetch_only_current_item=True,
+                                                                     organization_id=demisto.params().get('org_id', None))
         content_items = content.get('items')
         if content_items:
             for item in content_items:
@@ -175,7 +176,8 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
             aggregate_alert_id = None
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
                                                                      aggregate_alert_id=aggregate_alert_id,
-                                                                     fetch_only_current_item=True)
+                                                                     fetch_only_current_item=True,
+                                                                     organization_id=demisto.params().get('org_id', None))
         # get item full content
         content = content.get('items', None)
         if content:
@@ -240,7 +242,8 @@ def fetch_incidents():
         incidents = []
         for item in items:
             try:
-                item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'))
+                item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'),
+                                                                       organization_id=demisto.params().get('org_id', None))
                 item_info['date'] = item.get('date')
                 new_incidents = item_to_incidents(item_info, sixgill_alerts_client)
                 incidents.extend(new_incidents)
@@ -289,7 +292,8 @@ def update_alert_status():
                                                          verify=VERIFY)
 
     res = sixgill_alerts_client.update_actionable_alert(actionable_alert_id=alert_id, json_body=alert_body,
-                                                        sub_alert_indexes=aggregate_alert_id)
+                                                        sub_alert_indexes=aggregate_alert_id,
+                                                        organization_id=demisto.params().get('org_id', None))
 
     if res.get('status') == 200:
         demisto.results("Actionable alert status updated")
