@@ -21,7 +21,7 @@ outputs:
 - contextPath: SimilarityScore
   description: Similarity score - a value between 1.0 if the sequences are identical, and 0.0 if they have nothing in common.
 scripttarget: 0
-dockerimage: demisto/python3:3.10.12.65389
+dockerimage: demisto/python3:3.10.12.66339
 subtype: python3
 runonce: false
 runas: DBotWeakRole
