@@ -605,6 +605,7 @@ def fetch_incidents(client):
     else:
         return demisto.getIntegrationContext().get('fetched_incidents_list', [])
 
+
 def parse_limit_and_offset_values(limit: str, offset: str = "0") -> tuple[int, int]:
     """
     Parse the offset and limit parameters to integers and verify that the offset/limit are valid.
