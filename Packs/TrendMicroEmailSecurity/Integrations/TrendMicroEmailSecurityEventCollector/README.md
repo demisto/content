@@ -18,7 +18,7 @@ Palo Alto Networks Trend Micro Email Security Event Collector integration for XS
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-**Note**: There are three types of fetches that the integration fetches, When the max fetch parameter is set to 1000 then 1000 logs will be retrieved from each type so that a total of 3000 logs can be retrieved.
+**Note**: There are three types of events that the integration fetches, When the max fetch parameter is set to 1000 then 1000 logs will be retrieved from each type so that a total of 3000 logs can be retrieved.
 
 ## Commands
 
