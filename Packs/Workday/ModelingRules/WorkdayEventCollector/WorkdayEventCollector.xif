@@ -1,4 +1,4 @@
-[MODEL: dataset=workday_workday_raw]
+[MODEL: dataset=workday_activity_raw]
 alter
     src_ip_v4 = if(ipAddress !~= ":", ipAddress, null),
     src_ip_v6 = if(ipAddress ~= ":", ipAddress, null)
