@@ -30,17 +30,17 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     if parent_email_file:
         md += f"### Containing email: {parent_email_file}\n"
 
-    md += "* {}:\t{}\n".format('From', email_data.get('From') or "")
-    md += "* {}:\t{}\n".format('To', email_data.get('To') or "")
-    md += "* {}:\t{}\n".format('CC', email_data.get('CC') or "")
-    md += "* {}:\t{}\n".format('Subject', email_data.get('Subject') or "")
+    md += f"""* From:\t{email_data.get('From') or ""}\n"""
+    md += f"""* To:\t{email_data.get('To') or ""}\n"""
+    md += f"""* CC:\t{email_data.get('CC') or ""}\n"""
+    md += f"""* Subject:\t{email_data.get('Subject') or ""}\n"""
     if email_data.get('Text'):
         text = email_data['Text'].replace('<', '[').replace('>', ']')
-        md += "* {}:\t{}\n".format('Body/Text', text or "")
+        md += f'* Body/Text:\t{text or ""}\n'
     if email_data.get('HTML'):
-        md += "* {}:\t{}\n".format('Body/HTML', email_data['HTML'] or "")
+        md += f"""* Body/HTML:\t{email_data['HTML'] or ""}\n"""
 
-    md += "* {}:\t{}\n".format('Attachments', email_data.get('Attachments') or "")
+    md += f"""* Attachments:\t{email_data.get('Attachments') or ""}\n"""
     md += "\n\n" + tableToMarkdown('HeadersMap', email_data.get('HeadersMap'))
     return md
 
