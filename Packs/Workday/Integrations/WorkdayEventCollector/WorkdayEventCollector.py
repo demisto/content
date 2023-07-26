@@ -42,7 +42,7 @@ class Client(BaseClient):
         self.max_fetch = max_fetch
         self.access_token = self.get_access_token()
 
-    def get_access_token(self):  # pragma: no branch
+    def get_access_token(self):  # pragma: no cover
         """
          Getting access token from Workday API.
         """
