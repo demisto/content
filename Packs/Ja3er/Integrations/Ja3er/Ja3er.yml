@@ -5,8 +5,8 @@ commonfields:
 configuration:
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Query the ja3er API for MD5 hashes of JA3 fingerprints.
 display: Ja3er
 name: Ja3er
@@ -29,7 +29,7 @@ script:
     - contextPath: JA3.User-Agent
       description: 'User-Agent'
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

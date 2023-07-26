@@ -14,7 +14,7 @@
     },
     "user_id": {
       "type": "int",
-      "is_array": true
+      "is_array": false
     },
     "ipaddr": {
       "type": "string",

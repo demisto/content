@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import email.utils
 from time import mktime
 
 import feedparser
 from feedparser.util import FeedParserDict
 from markdownify import markdownify
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 class Client(BaseClient):

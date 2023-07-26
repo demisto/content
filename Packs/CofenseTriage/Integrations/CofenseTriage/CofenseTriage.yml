@@ -62,8 +62,8 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 script:
   script: '-'
   type: python
@@ -239,7 +239,6 @@ script:
     description: 'Retrieves a report by the report ID number. '
   dockerimage: demisto/python3:3.8.3.8715
   isfetch: true
-  runonce: false
 tests:
 - No test
 fromversion: 5.0.0

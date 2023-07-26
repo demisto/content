@@ -29,10 +29,8 @@ args:
   default: true
   description: The list we want to expose to the context
 - name: contextKey
-  default: false
   description: The key we want to expose the list to. Default is lists.listName.
 - name: query
-  default: false
   description: The optional Demisto Query we would like to apply on the list
 outputs:
 - contextPath: lists

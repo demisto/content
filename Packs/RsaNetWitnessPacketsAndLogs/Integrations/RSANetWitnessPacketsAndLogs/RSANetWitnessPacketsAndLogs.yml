@@ -8,47 +8,45 @@ description: RSA NetWitness Logs and Packets decoders are responsible for the re
 configuration:
 - display: Server URL (e.g. http(s)://192.168.0.1)
   name: url
-  defaultvalue: ""
   type: 0
   required: true
-- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) / Broker (50103)
+- display: Appliance Port - Logs(50102) / Packets(50104) / Concentrator (50105) /
+    Broker (50103)
   name: port
-  defaultvalue: ""
   type: 0
   required: true
 - display: Username
   name: username
   defaultvalue: admin
   type: 0
-  required: false
   hidden: true
+  required: false
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: Username
   name: user_creds
   type: 9
-  required: false
   displaypassword: Password
+  required: false
 - display: Validate server certificate
   name: secure
-  defaultvalue: 'true'
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: 'false'
+  defaultvalue: "false"
   type: 8
   required: false
 - defaultvalue: ''
   display: Expiration time
   name: expiry
-  required: false
   type: 0
-
+  required: false
 script:
   script: ''
   type: javascript
@@ -71,7 +69,21 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     outputs:
     - contextPath: NetWitness.SearchHits.hit
       description: all search hits in netwitness
@@ -91,7 +103,21 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator address
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     outputs:
     - contextPath: NetWitness.SearchHits
       description: all search hits in netwitness
@@ -117,7 +143,21 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator address
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     outputs:
     - contextPath: NetWitness.Events.ipSrc
       description: Source IP
@@ -132,11 +172,11 @@ script:
     - contextPath: NetWitness.Events.userDst
       description: Destination user
     - contextPath: NetWitness.Events.username
-      description: Field includes any username meta available – both source and destination – as defined by the user. This is an optional field that will only appear if configured by the end user.
+      description: Field includes any username meta available - both source and destination - as defined by the user. This is an optional field that will only appear if configured by the end user.
     - contextPath: NetWitness.Events.service
       description: Field describes the service that created the session (if available)
     - contextPath: NetWitness.Events.sessionid
-      description: NW Specific field that contains a NW specific ‘serial number’ of the Session. Allows a user to specify a session to retrieve from a Concentrator.
+      description: NW specific field that contains a NW specific 'serial number' of the session. Allows a user to specify a session to retrieve from a concentrator.
     - contextPath: NetWitness.Events.deviceType
       description: Field describes the type of system that generated a log message (ex. SQUID / Windows / rhlinux)
     - contextPath: NetWitness.Events.direction
@@ -171,9 +211,40 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator address
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     - name: render
-      description: <string> The render type - pcap, logs, logs (csv), logs (xml) or logs (json)
+      auto: PREDEFINED
+      predefined:
+      - text/plain
+      - text/csv
+      - text/xml
+      - application/json
+      - application/octet-stream
+      description: The render type - pcap, logs, logs (csv), logs (xml) or logs (json)
+    - name: renderToContext
+      defaultValue: "false"
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If renderToContext is set to True and the render type is set to logs (json), the command will not create a file with the output. It will output to the context data.
+    outputs:
+    - contextPath: NetWitness.Packets
+      description: Raw logs. This output is only available if the renderToContext option is set to true.
     description: Stream packets back based on the input parameters provided
   - name: nw-sdk-session
     arguments:
@@ -186,14 +257,42 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     description: Retrieves the meta id range for the session range
   - name: nw-sdk-content
     arguments:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     - name: session
       required: true
       description: <uint64> The session id that will be returned in the response.
@@ -244,7 +343,21 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     description: Retrieves summary information from the databases
   - name: nw-sdk-values
     arguments:
@@ -275,7 +388,21 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     outputs:
     - contextPath: NetWitness.Values.ipSrc
       description: Source IP
@@ -290,11 +417,11 @@ script:
     - contextPath: NetWitness.Values.userDst
       description: Destination user
     - contextPath: NetWitness.Values.username
-      description: Field includes any username meta available – both source and destination – as defined by the user. This is an optional field that will only appear if configured by the end user.
+      description: Field includes any username meta available - both source and destination - as defined by the user. This is an optional field that will only appear if configured by the end user.
     - contextPath: NetWitness.Values.service
       description: Field describes the service that created the session (if available)
     - contextPath: NetWitness.Values.sessionid
-      description: NW Specific field that contains a NW specific ‘serial number’ of the Session. Allows a user to specify a session to retrieve from a Concentrator.
+      description: NW specific field that contains a NW specific 'serial number' of the session. Allows a user to specify a session to retrieve from a concentrator.
     - contextPath: NetWitness.Values.deviceType
       description: Field describes the type of system that generated a log message (ex. SQUID / Windows / rhlinux)
     - contextPath: NetWitness.Values.direction
@@ -321,7 +448,21 @@ script:
     - name: concentratorIP
       description: <string> Use the instance that is mapped to this concentrator IP
     - name: concentratorPort
-      description: <uint32> Port to use with concentratorIP, 50105 for Non SSL and 56105 for SSL
+      auto: PREDEFINED
+      predefined:
+      - "50102"
+      - "50103"
+      - "50104"
+      - "50105"
+      description: Port to use with concentratorIP, usually 50105 but that can be changed by setting the /rest/config/port parameter.
+      defaultValue: "50105"
+    - name: useSSL
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Send request using SSL. To enable it in your RSA appliance, go to the setting in /sys/config/ssl.
+      defaultValue: "true"
     description: Dumps information out of the database in nwd formatted files
 fromversion: 5.0.0
 tests:

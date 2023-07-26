@@ -30,12 +30,12 @@ configuration:
   additionalinfo: These domains will be given a DbotScore of good.
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Deprecated. Vendor has declared end of life for this product. No available replacement.
 deprecated: true
 display: Alexa Rank Indicator (Deprecated)
@@ -45,13 +45,9 @@ script:
   - arguments:
     - default: true
       description: Domain to search.
-      isArray: false
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Provides an Alexa ranking of the Domain in question.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -81,7 +77,6 @@ script:
     - contextPath: Alexa.Domain.Rank
       description: Alexa rank as determined by Amazon
       type: string
-  isfetch: false
   runonce: false
   script: ''
   type: python

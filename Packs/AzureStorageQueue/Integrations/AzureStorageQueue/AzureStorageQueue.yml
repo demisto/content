@@ -6,146 +6,103 @@ configuration:
 - display: Storage account name
   displaypassword: Account SAS Token
   name: credentials
-  required: false
   type: 9
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - additionalinfo: Default is 10. Maximum is 32 (due to an API limit).
   defaultvalue: '10'
   display: Maximum incidents for one fetch.
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: The name of the queue from which the messages will be retrieved.
   display: Queue name
   name: queue_name
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 description: Create and Manage Azure Storage Queues and Messages.
 display: Azure Storage Queue
 name: Azure Storage Queue
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Number of queues to retrieve. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Filters the results to return only queues with names that begin with the specified prefix.
-      isArray: false
+    - description: Filters the results to return only queues with names that begin with the specified prefix.
       name: prefix
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: List queues in storage account.
-    execution: false
     name: azure-storage-queue-list
     outputs:
     - contextPath: AzureStorageQueue.Queue.name
       description: Queue name.
       type: String
   - arguments:
-    - default: false
-      description: 'The name of the Queue to create.  Rules for naming queues can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-queues-and-metadata'
-      isArray: false
+    - description: 'The name of the Queue to create.  Rules for naming queues can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/naming-queues-and-metadata'
       name: queue_name
       required: true
-      secret: false
-    deprecated: false
     description: Create new queue in storage account.
-    execution: false
     name: azure-storage-queue-create
   - arguments:
-    - default: false
-      description: The name of the Queue to delete.
-      isArray: false
+    - description: The name of the Queue to delete.
       name: queue_name
       required: true
-      secret: false
-    deprecated: false
     description: Delete queue from storage account.
     execution: true
     name: azure-storage-queue-delete
   - arguments:
-    - default: false
-      description: The text content of the new message.
-      isArray: false
+    - description: The text content of the new message.
       name: message_content
       required: true
-      secret: false
-    - default: false
-      description: The name of the Queue.
-      isArray: false
+    - description: The name of the Queue.
       name: queue_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Indicates whether the message should be encoded or not. Default is 'False'.
-      isArray: false
       name: base64_encoding
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specifies the new visibility timeout value, in seconds, relative to server time. Must be larger than or equal to 0, and cannot be larger than 7 days. The visibility timeout of a message cannot be set to a value later than the expiry time.
         Default is 0.
-      isArray: false
       name: visibility_time_out
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specifies the time-to-live (expiration) interval for the message, in seconds.
         the maximum time-to-live can be any positive number, as well as -1 indicating that the message does not expire.
         Default expiration time is 7 days.
-      isArray: false
       name: expiration
-      required: false
-      secret: false
-    deprecated: false
     description: Add a new message to the back of the queue.
-    execution: false
     name: azure-storage-queue-message-create
     outputs:
     - contextPath: AzureStorageQueue.Queue.Message.MessageId
@@ -167,30 +124,17 @@ script:
       description: Queue name.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of messages to retrieve. Default is 1, maximum is 32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Queue.
-      isArray: false
+    - description: The name of the Queue.
       name: queue_name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specifies the new visibility timeout value, in seconds, relative to server time. The default value is 30 seconds.
         A specified value must be larger than or equal to 1.
-      isArray: false
       name: visibility_time_out
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves messages from the front of the queue. Retrieved messages will move to the end of the queue,and will be visible after 'TimeNextVisible' param.
-    execution: false
     name: azure-storage-queue-message-get
     outputs:
     - contextPath: AzureStorageQueue.Queue.Message.MessageId
@@ -218,22 +162,13 @@ script:
       description: Indicates how many times a message has been retrieved.
       type: Number
   - arguments:
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of messages to retrieve. Default is 1, maximum is 32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Queue.
-      isArray: false
+    - description: The name of the Queue.
       name: queue_name
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves messages from the front of the queue. The command does not alter the visibility of the message.
-    execution: false
     name: azure-storage-queue-message-peek
     outputs:
     - contextPath: AzureStorageQueue.Queue.Message.MessageId
@@ -255,104 +190,60 @@ script:
       description: Indicates how many times a message has been retrieved.
       type: Number
   - arguments:
-    - default: false
-      description: The name of the Queue.
-      isArray: false
+    - description: The name of the Queue.
       name: queue_name
       required: true
-      secret: false
-    deprecated: false
     description: Dequeue a message from the front of the queue.
-    execution: false
     name: azure-storage-queue-message-dequeue
   - arguments:
-    - default: false
-      description: The name of the Queue.
-      isArray: false
+    - description: The name of the Queue.
       name: queue_name
       required: true
-      secret: false
-    - default: false
-      description: New message content.
-      isArray: false
+    - description: New message content.
       name: message_content
       required: true
-      secret: false
-    - default: false
-      description: The ID of the message to update.
-      isArray: false
+    - description: The ID of the message to update.
       name: message_id
       required: true
-      secret: false
-    - default: false
-      description: Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
-      isArray: false
+    - description: Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
       name: pop_receipt
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Indicates whether the message content should be encoded or not. Default is 'False'.
-      isArray: false
       name: base64_encoding
       predefined:
       - 'False'
       - 'True'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Specifies the new visibility timeout value of the message. The new value must be larger than or equal to 0, and cannot be larger than 7 days. The visibility timeout of a message cannot be set to a value later than the expiry time. Default is 0.
-      isArray: false
       name: visibility_time_out
       predefined:
       - ''
-      required: false
-      secret: false
-    deprecated: false
     description: Update message content in the  queue.
-    execution: false
     name: azure-storage-queue-message-update
   - arguments:
-    - default: false
-      description: The ID of the message to delete.
-      isArray: false
+    - description: The ID of the message to delete.
       name: message_id
       required: true
-      secret: false
-    - default: false
-      description: Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
-      isArray: false
+    - description: Message PopReceipt parameter. This value changes each time the message is retrieved or updated and used to ensure that message has not been dequeued by another user before deleting or updating the message.
       name: pop_receipt
       required: true
-      secret: false
-    - default: false
-      description: The name of the Queue.
-      isArray: false
+    - description: The name of the Queue.
       name: queue_name
       required: true
-      secret: false
-    deprecated: false
     description: Delete message from a Queue.
     execution: true
     name: azure-storage-queue-message-delete
   - arguments:
-    - default: false
-      description: The name of the queue.
-      isArray: false
+    - description: The name of the queue.
       name: queue_name
       required: true
-      secret: false
-    deprecated: false
     description: Delete all messages from the specified Queue.
     execution: true
     name: azure-storage-queue-message-clear
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

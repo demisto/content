@@ -17,29 +17,29 @@ configuration:
   type: 4
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Override default fetch query
   name: fetchQuery
-  required: false
   type: 0
+  required: false
 - defaultvalue: '100'
   display: Limit the maximum incidents amount per fetch
   name: fetchLimit
-  required: false
   type: 0
+  required: false
 description: Deprecated. Use Sumo Logic Cloud SIEM instead. Freeing the analyst with autonomous decisions.
 display: Jask (Deprecated)
 name: Jask
@@ -48,13 +48,9 @@ script:
   - arguments:
     - default: true
       description: The insight to retrieve details for
-      isArray: false
       name: insight-id
       required: true
-      secret: false
-    deprecated: false
     description: Get Insight details for a specific Insight ID. Insight details command references SmartAlerts, which are the highest level abstractions in JASK SIEM consisting of multiple signals, and records and relating to one or more assets.
-    execution: false
     name: jask-get-insight-details
     outputs:
     - contextPath: Jask.Insight.Id
@@ -138,13 +134,9 @@ script:
   - arguments:
     - default: true
       description: 'The insight ID for which to retrieve comments. '
-      isArray: false
       name: insight-id
       required: true
-      secret: false
-    deprecated: false
     description: Get comments for a specific Insight ID. (Users can post and update comments on the JASK SIEM portal for any Insight ID.)
-    execution: false
     name: jask-get-insight-comments
     outputs:
     - contextPath: Jask.InsightCommentList.id
@@ -168,13 +160,9 @@ script:
   - arguments:
     - default: true
       description: The signal to retrieve details for
-      isArray: false
       name: signal-id
       required: true
-      secret: false
-    deprecated: false
     description: Get Signal details for a specific Signal ID. Signal details command references signals in JASK which are created when records exhibit suspicious properties and mate with patterns or other detection logic.
-    execution: false
     name: jask-get-signal-details
     outputs:
     - contextPath: Jask.Signal.Id
@@ -213,13 +201,9 @@ script:
   - arguments:
     - default: true
       description: The entity to retrieve details for
-      isArray: false
       name: entity-id
       required: true
-      secret: false
-    deprecated: false
     description: Get entity details for a specific entity ID
-    execution: false
     name: jask-get-entity-details
     outputs:
     - contextPath: Jask.Entity.Id
@@ -258,13 +242,9 @@ script:
   - arguments:
     - default: true
       description: 'The entity ID for which the related entities are retrieved. '
-      isArray: false
       name: entity-id
       required: true
-      secret: false
-    deprecated: false
     description: Get entities related to a specific entity ID.
-    execution: false
     name: jask-get-related-entities
     outputs:
     - contextPath: Jask.RelatedEntityList.Id
@@ -315,9 +295,7 @@ script:
     - contextPath: Jask.RelatedEntityList.RiskScore
       description: The risk score of the entity
       type: number
-  - deprecated: false
-    description: Get the entities on allow list.
-    execution: false
+  - description: Get the entities on allow list.
     name: jask-get-whitelisted-entities
     outputs:
     - contextPath: Jask.Whitelisted.EntityList.Id
@@ -340,78 +318,36 @@ script:
       type: number
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: When the insight was last seen. Defaults to 'All time' if no time arguments are specified.
-      isArray: false
       name: last-seen
       predefined:
       - All time
       - Last week
       - Last 48 hours
       - Last 24 hours
-      required: false
-      secret: false
-    - default: false
-      description: comma separated list of values between 1-5 inclusive
-      isArray: false
+    - description: comma separated list of values between 1-5 inclusive
       name: rating
-      required: false
-      secret: false
-    - default: false
-      defaultValue: new,inprogress
+    - defaultValue: new,inprogress
       description: 'comma separated list of values from the options: new, inprogress, closed'
-      isArray: false
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: comma separated list of values
-      isArray: false
+    - description: comma separated list of values
       name: assigned-team
-      required: false
-      secret: false
-    - default: false
-      description: comma separated list of values
-      isArray: false
+    - description: comma separated list of values
       name: assigned-user
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page offset for the results
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: How many results to retrieve
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: timestamp:desc
+    - defaultValue: timestamp:desc
       description: What to sort the results by
-      isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: The start time for the search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: The start time for the search in the following string format -  MM/DD/YYYY
       name: time-from
-      required: false
-      secret: false
-    - default: false
-      description: The end time for the search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: The end time for the search in the following string format -  MM/DD/YYYY
       name: time-to
-      required: false
-      secret: false
-    deprecated: false
     description: Search insights using the given filters.
-    execution: false
     name: jask-search-insights
     outputs:
     - contextPath: Jask.Insight.Id
@@ -449,65 +385,31 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: When the insight was last seen. Defaults to 'All time' if no time arguments are specified.
-      isArray: false
       name: last-seen
       predefined:
       - All time
       - Last week
       - Last 48 hours
       - Last 24 hours
-      required: false
-      secret: false
-    - default: false
-      description: 'comma separated list of values from options: threatintel, rule, anomaly'
-      isArray: false
+    - description: 'comma separated list of values from options: threatintel, rule, anomaly'
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: 'comma separated list of values form options: Attack Stage, C2, Defense Evasion,  Discovery, Exfiltration, Exploitation, External Recon, Internal Recon, Lateral Movement, Threat Intelligence, Traffic Anomaly'
-      isArray: false
+    - description: 'comma separated list of values form options: Attack Stage, C2, Defense Evasion,  Discovery, Exfiltration, Exploitation, External Recon, Internal Recon, Lateral Movement, Threat Intelligence, Traffic Anomaly'
       name: category
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page offset for the results
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The maximum number of signals retrieved
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: score:desc
+    - defaultValue: score:desc
       description: How to sort the results
-      isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: The start time for the search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: The start time for the search in the following string format -  MM/DD/YYYY
       name: time-from
-      required: false
-      secret: false
-    - default: false
-      description: The end time for the search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: The end time for the search in the following string format -  MM/DD/YYYY
       name: time-to
-      required: false
-      secret: false
-    deprecated: false
     description: Search signals using the given filters.
-    execution: false
     name: jask-search-signals
     outputs:
     - contextPath: Jask.Signal.Id
@@ -539,59 +441,29 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: When the insight was last seen. Defaults to 'All time' if no time arguments are specified.
-      isArray: false
       name: last-seen
       predefined:
       - All time
       - Last week
       - Last 48 hours
       - Last 24 hours
-      required: false
-      secret: false
-    - default: false
-      description: 'comma separated list of values from the options: username, hostname, ip'
-      isArray: false
+    - description: 'comma separated list of values from the options: username, hostname, ip'
       name: entity-type
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page offset for the results
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: How many results to retrieve
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: risk_score:desc
+    - defaultValue: risk_score:desc
       description: What to sort by
-      isArray: false
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: The start time for the search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: The start time for the search in the following string format -  MM/DD/YYYY
       name: time-from
-      required: false
-      secret: false
-    - default: false
-      description: The end time for the search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: The end time for the search in the following string format -  MM/DD/YYYY
       name: time-to
-      required: false
-      secret: false
-    deprecated: false
     description: Search entities using the given filters.
-    execution: false
     name: jask-search-entities
     outputs:
     - contextPath: Jask.Entity.Id
@@ -631,7 +503,6 @@ script:
       description: The IP address of the entity
       type: string
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python2

@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from calendar import timegm
 from datetime import datetime, timedelta, tzinfo
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 EPOCH_AS_FILETIME = 116444736000000000  # January 1, 1970 as MS file time
 HUNDREDS_OF_NANOSECONDS = 10000000

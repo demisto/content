@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - defaultvalue: https://ais2.cisa.dhs.gov/taxii2/
   display: Discovery Service URL (e.g., https://ais2.cisa.dhs.gov/taxii2/)
   name: url
@@ -28,13 +28,13 @@ configuration:
   defaultvalue: 'public'
   display: Default API Root to use
   name: default_api_root
-  required: false
   type: 0
+  required: false
 - additionalinfo: Indicators will be fetched from this collection. Run the "dhs-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service.
   display: Collection Name To Fetch Indicators From
   name: collection_to_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
@@ -44,8 +44,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -67,8 +67,8 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -77,29 +77,28 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: 'The time interval for the first fetch (retroactive) in the following format: <number> <time unit> of type minute/hour/day. For example, 1 minute, 12 hours. Limited to 48 hours.'
   defaultvalue: 24 hours
   display: First Fetch Time
   name: initial_interval
-  required: false
   type: 0
+  required: false
 - additionalinfo: 'The objects to fetch, most likely indicators. Specifying the types of objects to fetch may slow down the fetch time.'
   display: STIX Objects To Fetch
   name: objects_to_fetch
   type: 16
-  required: false
   options:
   - indicator
   - relationship
@@ -125,30 +124,31 @@ configuration:
   - identity
   - location
   - vulnerability
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - additionalinfo: The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched.
   display: Max Indicators Per Fetch
   name: limit
-  required: false
   type: 0
+  required: false
 - additionalinfo: Set the number of STIX objects that will be requested with each TAXII poll (http request). A single fetch is made of several TAXII polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the requested limit.
   defaultvalue: '1000'
   display: Max STIX Objects Per Poll
   name: limit_per_request
-  required: false
   type: 0
+  required: false
 - additionalinfo: Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". For example, `[ IP = 'b' ] AND [ URL = 'd' ]`
   defaultvalue: Skip indicators with more than a single observation
   display: Complex Observation Mode
@@ -156,20 +156,20 @@ configuration:
   options:
   - Create indicator for each observation
   - Skip indicators with more than a single observation
-  required: false
   type: 15
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental Feed
   hidden: true
   name: feedIncremental
-  required: false
   type: 8
+  required: false
 description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
 display: DHS Feed v2
 name: DHS Feed v2
@@ -212,9 +212,6 @@ script:
       type: String
   dockerimage: demisto/taxii2:1.0.0.63768
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

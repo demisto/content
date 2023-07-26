@@ -3590,8 +3590,9 @@ def main() -> None:
         context = context.get("context")
     username = params.get("credentials", {}).get("identifier", "")
     password = params.get("credentials", {}).get("password", "")
-    client_id = params.get("client_id") or context.get("client_id")
-    client_secret = params.get("client_secret") or context.get("client_secret")
+    client_id = params.get("credentials_client", {}).get("identifier") or params.get("client_id") or context.get("client_id")
+    client_secret = params.get("credentials_client", {}).get(
+        "password") or params.get("client_secret") or context.get("client_secret")
     access_token = params.get("access_token") or context.get("access_token")
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")

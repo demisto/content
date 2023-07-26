@@ -10,7 +10,7 @@ comment: |-
 commonfields:
   id: Cyren-Find-Similar-Incidents
   version: -1
-dockerimage: demisto/python3:3.10.11.58677
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: Cyren-Find-Similar-Incidents
 outputs:
@@ -32,7 +32,6 @@ outputs:
 - contextPath: cyrenSimilarIncidentCsv
   description: comma separated raw ids
   type: Unknown
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

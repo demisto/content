@@ -12,17 +12,31 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: SUSPICIOUS
   display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: email_dbot_score
-  required: false
   type: 0
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 description: This integration allows you to check if your personal information such as your email, username, or password is being compromised.
 display: DeHashed
 name: DeHashed
@@ -30,9 +44,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: If you select the "all fields" option, the search is performed on all fields with the specified value entered in the "value" argument, and you don't have to pass the "operation" argument.
-      isArray: false
       name: asset_type
       predefined:
       - email
@@ -45,45 +57,24 @@ script:
       - phone
       - all_fields
       required: true
-      secret: false
-    - default: false
-      description: The searched value.
-      isArray: false
+    - description: The searched value.
       name: value
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Search operator. Can be "is", "contains", or "regex".
-      isArray: false
       name: operation
       predefined:
       - is
       - contains
       - regex
       required: true
-      secret: false
-    - default: false
-      description: The number of page to return. Each page contains a maximum of 5,000 results. entries.
-      isArray: false
+    - description: The number of page to return. Each page contains a maximum of 5,000 results. entries.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Starting result number to display. Default is 0. Dehashed response can include more than 5,000 results.
-      isArray: false
+    - description: Starting result number to display. Default is 0. Dehashed response can include more than 5,000 results.
       name: results_from
-      required: false
-      secret: false
-    - default: false
-      description: Ending result number to display. Default is 100. Dehashed response can include more than 5,000 results.
-      isArray: false
+    - description: Ending result number to display. Default is 100. Dehashed response can include more than 5,000 results.
       name: results_to
-      required: false
-      secret: false
-    deprecated: false
     description: Performs a search to check if information is compromised.
-    execution: false
     name: dehashed-search
     outputs:
     - contextPath: DeHashed.Search.Id
@@ -137,10 +128,7 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Checks if an email address was compromised.
-    execution: false
     name: email
     outputs:
     - contextPath: DeHashed.Search.Id
@@ -188,11 +176,10 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3

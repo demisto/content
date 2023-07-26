@@ -19,32 +19,32 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 3 days
   display: The initial time to fetch from
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: ALL
   display: Fetch only incidents with forensics
   name: has_forensics
@@ -61,27 +61,14 @@ name: IllusiveNetworks
 script:
   commands:
   - arguments:
-    - default: false
-      description: The desired incident ID
-      isArray: false
+    - description: The desired incident ID
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The starting date of the forensics timeline.
-      isArray: false
+    - description: The starting date of the forensics timeline.
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: The last date of the forensics timeline.
-      isArray: false
+    - description: The last date of the forensics timeline.
       name: end_date
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve forensics timeline for a specific incident
-    execution: false
     name: illusive-get-forensics-timeline
     outputs:
     - contextPath: Illusive.Forensics.Evidence.details
@@ -115,15 +102,10 @@ script:
       description: The forensics evidence date
       type: Date
   - arguments:
-    - default: false
-      description: The hostname or IP address of the desired host
-      isArray: false
+    - description: The hostname or IP address of the desired host
       name: hostnameOrIp
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve the specified host insights from Attack Surface Manager
-    execution: false
     name: illusive-get-asm-host-insight
     outputs:
     - contextPath: Illusive.AttackSurfaceInsightsHost.DomainName
@@ -150,9 +132,7 @@ script:
     - contextPath: Illusive.AttackSurfaceInsightsHost.SourceConnectivityExposure
       description: The host Source Connectivity Exposure to crown jewels and domain user credentials
       type: Number
-  - deprecated: false
-    description: Retrieve Crown-Jewels insights from Attack Surface Manager
-    execution: false
+  - description: Retrieve Crown-Jewels insights from Attack Surface Manager
     name: illusive-get-asm-cj-insight
     outputs:
     - contextPath: Illusive.AttackSurfaceInsightsCrownJewel.data
@@ -172,20 +152,14 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: ALL
       description: The status of the desired deceptive users (APPROVED, SUGGESTED, ALL)
-      isArray: false
       name: type
       predefined:
       - ALL
       - SUGGESTED
       - APPROVED
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of all deceptive users
-    execution: false
     name: illusive-get-deceptive-users
     outputs:
     - contextPath: Illusive.DeceptiveUser.userName
@@ -211,20 +185,14 @@ script:
       type: Boolean
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: ALL
       description: The status of the desired deceptive servers (APPROVED, SUGGESTED, ALL)
-      isArray: false
       name: type
       predefined:
       - ALL
       - SUGGESTED
       - APPROVED
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of all deceptive servers
-    execution: false
     name: illusive-get-deceptive-servers
     outputs:
     - contextPath: Illusive.DeceptiveServer.host
@@ -243,15 +211,10 @@ script:
       description: The deception services the deceptive server is assigned to
       type: String
   - arguments:
-    - default: false
-      description: The username to be verified
-      isArray: false
+    - description: The username to be verified
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve whether a specified user is deceptive
-    execution: false
     name: illusive-is-deceptive-user
     outputs:
     - contextPath: Illusive.IsDeceptive.Username
@@ -261,15 +224,10 @@ script:
       description: Is the specified user conducted as a deceptive user
       type: Boolean
   - arguments:
-    - default: false
-      description: The server hostname to be verified
-      isArray: false
+    - description: The server hostname to be verified
       name: hostname
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve whether a specified server is deceptive
-    execution: false
     name: illusive-is-deceptive-server
     outputs:
     - contextPath: Illusive.IsDeceptive.IsDeceptiveServer
@@ -279,174 +237,99 @@ script:
       description: The checked server hostname
       type: String
   - arguments:
-    - default: false
-      description: The deceptive user domain
-      isArray: false
+    - description: The deceptive user domain
       name: domain_name
       required: true
-      secret: false
-    - default: false
-      description: The deceptive user password
-      isArray: false
+    - description: The deceptive user password
       name: password
       required: true
-      secret: false
-    - default: false
-      description: The deception policies to be assigned to the new deceptive user
+    - description: The deception policies to be assigned to the new deceptive user
       isArray: true
       name: policy_names
-      required: false
-      secret: false
-    - default: false
-      description: The deceptive user name
-      isArray: false
+    - description: The deceptive user name
       name: username
       required: true
-      secret: false
-    deprecated: false
     description: Add or approve deceptive users
-    execution: false
     name: illusive-add-deceptive-users
   - arguments:
-    - default: false
-      description: The deceptive server hostname
-      isArray: false
+    - description: The deceptive server hostname
       name: host
       required: true
-      secret: false
-    - default: false
-      description: The deception policies to be assigned to the new deceptive server
+    - description: The deception policies to be assigned to the new deceptive server
       isArray: true
       name: policy_names
-      required: false
-      secret: false
-    - default: false
-      description: The deception services to be assigned to the new deceptive server
+    - description: The deception services to be assigned to the new deceptive server
       isArray: true
       name: service_types
       required: true
-      secret: false
-    deprecated: false
     description: Add or approve deceptive servers
-    execution: false
     name: illusive-add-deceptive-servers
   - arguments:
-    - default: false
-      description: The list of deceptive users to delete
+    - description: The list of deceptive users to delete
       isArray: true
       name: deceptive_users
       required: true
-      secret: false
-    deprecated: false
     description: Delete deceptive users
-    execution: false
     name: illusive-delete-deceptive-users
   - arguments:
-    - default: false
-      description: The list of deceptive servers to delete
+    - description: The list of deceptive servers to delete
       isArray: true
       name: deceptive_hosts
       required: true
-      secret: false
-    deprecated: false
     description: Delete deceptive servers
-    execution: false
     name: illusive-delete-deceptive-servers
   - arguments:
-    - default: false
-      description: Policy name to assign
-      isArray: false
+    - description: Policy name to assign
       name: policy_name
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         List of hosts to assign, in the following format: machine@domain.
         Maximum number of hosts is 1000.
-      isArray: false
       name: hosts
       required: true
-      secret: false
-    deprecated: false
     description: Assign a deception policy to domain hosts
-    execution: false
     name: illusive-assign-host-to-policy
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         List of hosts to remove policy assignment from, in the following format: machine@domain.
         Maximum number of hosts is 1000
-      isArray: false
       name: hosts
       required: true
-      secret: false
-    deprecated: false
     description: Remove deception policy assignment from domain hosts
-    execution: false
     name: illusive-remove-host-from-policy
   - arguments:
-    - default: false
-      description: The host fqdn or IP address on which to collect forensics
-      isArray: false
+    - description: The host fqdn or IP address on which to collect forensics
       name: fqdn_or_ip
       required: true
-      secret: false
-    deprecated: false
     description: Collect forensics on a specified host and retrieve the forensics timeline
-    execution: false
     name: illusive-run-forensics-on-demand
     outputs:
     - contextPath: Illusive.Event.eventId
       description: 'The created event ID of the operation '
       type: Number
   - arguments:
-    - default: false
-      description: |
+    - description: |
         The desired incident ID to retrieve.
         If specified - other arguments are ignored and only a single incident can be retrieved
-      isArray: false
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: The list of hostnames to retrieve incidents
+    - description: The list of hostnames to retrieve incidents
       isArray: true
       name: hostnames
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to retrieve incidents with forensics only
-      isArray: false
       name: has_forensics
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Use offset and limit for pagination.
         The maximum limit is 100.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Use offset and limit for pagination.
-      isArray: false
+    - description: Use offset and limit for pagination.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: start date
-      isArray: false
+    - description: start date
       name: start_date
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve incidents
-    execution: false
     name: illusive-get-incidents
     outputs:
     - contextPath: Illusive.Incident.closed
@@ -501,15 +384,11 @@ script:
       description: The analyst's comments
       type: String
   - arguments:
-    - default: false
-      description: The Event id
+    - description: The Event id
       isArray: true
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve the incident ID of an event
-    execution: false
     name: illusive-get-event-incident-id
     outputs:
     - contextPath: Illusive.Event.incidentId
@@ -522,27 +401,14 @@ script:
       description: The status command ( Done, InProgress)
       type: String
   - arguments:
-    - default: false
-      description: The incident ID on which to retrieve the associated events
-      isArray: false
+    - description: The incident ID on which to retrieve the associated events
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of events to retrieve
-      isArray: false
+    - description: The maximum number of events to retrieve
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Use offset and limit for pagination
-      isArray: false
+    - description: Use offset and limit for pagination
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve all the events that are associated with an incident
-    execution: false
     name: illusive-get-incident-events
     outputs:
     - contextPath: Illusive.Incident.incidentId
@@ -561,15 +427,10 @@ script:
       description: Whether the event has forensics
       type: Boolean
   - arguments:
-    - default: false
-      description: The event ID to retrieve the forensics analyzers from
-      isArray: false
+    - description: The event ID to retrieve the forensics analyzers from
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve Illusive's forensics analyzers on a certain event
-    execution: false
     name: illusive-get-forensics-analyzers
     outputs:
     - contextPath: Illusive.Event.incidentId
@@ -585,15 +446,10 @@ script:
       description: The forensics analyzer description
       type: String
   - arguments:
-    - default: false
-      description: The event ID to retrieve the triggering process information from
-      isArray: false
+    - description: The event ID to retrieve the triggering process information from
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve the triggering process information from Illusive's forensics
-    execution: false
     name: illusive-get-forensics-triggering-process-info
     outputs:
     - contextPath: Illusive.Event.incidentId
@@ -627,31 +483,20 @@ script:
       description: The triggering process start time
       type: Date
   - arguments:
-    - default: false
-      description: The event ID to retrieve the forensics artifacts from
-      isArray: false
+    - description: The event ID to retrieve the forensics artifacts from
       name: event_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: DESKTOP_SCREENSHOTS
       description: 'The type of forensics artifact to retrieve'
-      isArray: false
       name: artifact_type
       predefined:
       - DESKTOP_SCREENSHOTS
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve forensics artifacts from Illusive's forensics
-    execution: false
     name: illusive-get-forensics-artifacts
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """EmailRepIO Integration for Cortex XSOAR"""
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +24,7 @@ INTEGRATION_NAME = 'EmailRepIO'
 class Client(BaseClient):
     """Client class to interact with the EmailRepIO service API"""
 
-    def get_email_address_reputation(self, email: str) -> Dict[str, Any]:
+    def get_email_address_reputation(self, email: str) -> dict[str, Any]:
         """Get email reputation using the '/{email}' API endpoint"""
 
         return self._http_request(
@@ -32,10 +32,10 @@ class Client(BaseClient):
             url_suffix=f"/{email}"
         )
 
-    def post_email_address_report(self, email: str, tags: List[str], description: Optional[str],
-                                  timestamp: Optional[int], expires: Optional[int]) -> Dict[str, Any]:
+    def post_email_address_report(self, email: str, tags: list[str], description: str | None,
+                                  timestamp: int | None, expires: int | None) -> dict[str, Any]:
         """Report email reputation using the '/report' API endpoint"""
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
         request_params["email"] = email
         request_params["tags"] = tags
 
@@ -70,7 +70,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def email_command(client: Client, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     """Get email address reputation from EmailRepIO and calculate DBotScore.
 
     DBot score:
@@ -109,7 +109,8 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             indicator_type=DBotScoreType.ACCOUNT,
             integration_name=INTEGRATION_NAME,
             score=score,
-            malicious_description=description
+            malicious_description=description,
+            reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         )
 
         account_context = Common.Account(
@@ -132,7 +133,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return emails_results
 
 
-def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def email_reputation_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get email address reputation from EmailRepIO"""
 
     emails = argToList(args.get('email_address'))
@@ -152,7 +153,7 @@ def email_reputation_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def report_email_address_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def report_email_address_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Report email address to EmailRepIO"""
 
     email_address = args.get('email_address')
@@ -195,15 +196,16 @@ def report_email_address_command(client: Client, args: Dict[str, Any]) -> Comman
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
-
-    api_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
+    demisto_params = demisto.params()
+    api_key = demisto_params.get('credentials', {}).get('password') or demisto_params.get('apikey')
 
     # get the service API url
-    base_url = demisto.params()['url']
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    base_url = demisto_params.get('url', '')
+    verify_certificate = not demisto_params.get('insecure', False)
+    proxy = demisto_params.get('proxy', False)
+    reliability = demisto_params.get('integration_reliability', '')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -221,7 +223,7 @@ def main() -> None:
             return_results(email_reputation_command(client, demisto.args()))
 
         elif demisto.command() == 'email':
-            return_results(email_command(client, demisto.args()))
+            return_results(email_command(client, demisto.args(), reliability))
 
         elif demisto.command() == 'emailrepio-email-address-report':
             return_results(report_email_address_command(client, demisto.args()))
@@ -229,6 +231,9 @@ def main() -> None:
         elif demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
+
+        else:
+            raise NotImplementedError(f"Command {demisto.command()} was not found in {INTEGRATION_NAME} commands")
 
     # Log exceptions and return errors
     except Exception as e:
@@ -238,5 +243,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

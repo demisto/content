@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Dict, Iterator
 
-import demistomock as demisto
-from CommonServerPython import *
 
 INTERNAL_MODULES_BRANDS = ['Scripts', 'Builtin', 'testmodule']
 

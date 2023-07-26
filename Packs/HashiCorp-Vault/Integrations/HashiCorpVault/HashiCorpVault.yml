@@ -25,13 +25,13 @@ configuration:
   name: token
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
-- displaypassword: Authentication token
-  name:  credentials_token
   required: false
+- displaypassword: Authentication token
+  name: credentials_token
   hiddenusername: true
   type: 9
+  required: false
 - display: Vault enterprise namespace
   name: namespace
   defaultvalue: ""
@@ -59,8 +59,8 @@ configuration:
 - display: Concat username to credential object name
   name: concat_username_to_cred_name
   type: 8
-  required: false
   additionalinfo: Should be used in case there are several secrets under the same folder in order to make the credential object unique.
+  required: false
 script:
   script: ''
   type: python
@@ -338,8 +338,7 @@ script:
       description: Authentication lease duration in seconds, 0 if indefinitely.
       type: number
     description: Creates a new authentication token.
-  dockerimage: demisto/hashicorp:1.0.0.63699
-  runonce: false
+  dockerimage: demisto/hashicorp:1.0.0.65633
 tests:
 - hashicorp_test
 fromversion: 5.0.0

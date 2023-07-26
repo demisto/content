@@ -1,2 +1,3 @@
 [file:AWS-AccessAnalyzer.yml]
-ignore=BA108,BA109,IN126,IN145,IN124
+ignore=BA108,BA109,IN126,IN124
+

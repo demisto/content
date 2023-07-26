@@ -1,4 +1,3 @@
-
 [file:incidentfields_Armis_Alert_Desctiption.json]
 ignore=IF100
 
@@ -14,18 +13,16 @@ ignore=IF100,BA113
 [file:incidentfields_Armis_Alert_Type.json]
 ignore=IF100
 
-[file:Armis.yml]
-ignore=IN145
-
 [file:Armis_image.png]
 ignore=IM111
 
 [known_words]
 pv
-Classifiers
-Mappers
-Mapper
+classifiers
+mappers
+mapper
 p
-AQL
-UUIDs
-UNHANDLED
+aql
+uuids
+unhandled
+

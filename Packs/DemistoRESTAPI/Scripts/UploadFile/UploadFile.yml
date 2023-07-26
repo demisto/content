@@ -6,28 +6,17 @@ name: UploadFile
 fromversion: 6.5.0
 script: '-'
 args:
-- default: false
-  description: File entry ID
-  isArray: false
+- description: File entry ID
   name: entryID
   predefined:
   - ''
   required: true
-  secret: false
-- default: false
-  description: Incident ID to upload the file to
-  isArray: false
+- description: Incident ID to upload the file to
   name: incID
   required: true
-  secret: false
-- default: false
-  description: Request body
-  isArray: false
+- description: Request body
   name: body
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'war room entry'
   description: |-
     Where to upload the file
@@ -35,22 +24,17 @@ args:
     - `war room entry`: the file will be uploaded as war room entry.
     - `incident attachment`: the file will be uploaded as incident attachment.
     - default are `war room entry`
-  isArray: false
   name: target
   predefined:
   - 'war room entry'
   - 'incident attachment'
-  required: false
-  secret: false
 comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.10.11.54132
-system: false
+dockerimage: demisto/python3:3.10.12.63474
 tags:
 - DemistoAPI
 timeout: '0'
 type: python
-runonce: false
 dependson:
   must:
   - demisto-api-multipart

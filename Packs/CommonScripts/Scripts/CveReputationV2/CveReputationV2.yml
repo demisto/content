@@ -1,0 +1,27 @@
+commonfields:
+  id: cveReputationV2
+  version: -1
+name: cveReputationV2
+type: python
+subtype: python3
+script: ''
+tags:
+- cve
+- reputation
+comment: Provides the severity of the CVE based on the CVSS score where available.
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: CVE ID
+scripttarget: 0
+dependson:
+  must:
+  - cve
+timeout: 2.4µs
+dockerimage: demisto/python3:3.10.12.63474
+runonce: false
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

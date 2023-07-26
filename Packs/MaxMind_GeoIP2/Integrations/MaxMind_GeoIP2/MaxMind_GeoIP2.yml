@@ -50,8 +50,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -60,13 +60,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 script:
   script: ''
   type: python
@@ -149,7 +149,7 @@ script:
       type: String
     description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds
   runonce: false
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - MaxMind Test
 fromversion: 5.0.0

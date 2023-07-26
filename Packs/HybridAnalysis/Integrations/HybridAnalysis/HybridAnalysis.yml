@@ -431,7 +431,6 @@ script:
       type: string
     description: Returns the scan results of the given URL ID.
     deprecated: true
-  runonce: false
 tests:
 - No tests (deprecated)
 deprecated: true

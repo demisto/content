@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Dict, Any, List
 import traceback
 import urllib.parse
-import demistomock as demisto
-from CommonServerPython import *
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 ''' STANDALONE FUNCTION '''

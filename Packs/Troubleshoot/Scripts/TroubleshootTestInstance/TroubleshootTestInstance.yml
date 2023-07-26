@@ -1,16 +1,9 @@
 args:
-- default: false
-  description: Instance parameters. Can be acquired from the GetInstanceParameter command.
-  isArray: false
+- description: Instance parameters. Can be acquired from the GetInstanceParameter command.
   name: parameters
   required: true
-  secret: false
-- default: false
-  description: Keys to check the negative result of the Test button.
-  isArray: false
+- description: Keys to check the negative result of the Test button.
   name: keys
-  required: false
-  secret: false
 comment: Click the "Test" button and return if the test failed.
 commonfields:
   id: TroubleshootTestInstance
@@ -30,13 +23,12 @@ outputs:
   description: Whether the test passed.
   type: Boolean
 script: '-'
-system: false
 tags:
 - troubleshoot
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 dependson:
   must:

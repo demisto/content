@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """ListUsedDockerImages Script for Cortex XSOAR (aka Demisto)
 
 This is a script that list all the dockers images that are in ues in the integrations and automations
 
 """
 
-import demistomock as demisto
-from CommonServerPython import *
 import json
 from typing import Dict
 

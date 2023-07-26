@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import ast
 import copy
 import json
@@ -7,9 +9,7 @@ import urllib.parse
 from typing import Any, List, Tuple
 from datetime import datetime
 
-import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 from lxml import etree
 

@@ -1,0 +1,26 @@
+args:
+- description: Limit output to the top limit ranked strings.
+  name: limit
+- description: Limit output to strings with score >= min-score.
+  name: min_score
+- description: The file name. Mandatory when entring the data as string_text.
+  name: file_name
+- description: The text to analyze with StringSifter.
+  name: string_text
+- description: The file to process.
+  name: entryID
+comment: This script runs the StringSifter ML tool for malware analysis and ranking of words. You can enter an entryID or string_text as input.
+commonfields:
+  id: StringSifter
+  version: -1
+name: StringSifter
+outputs:
+- contextPath: Stringsifter.FileName
+  description: The name of the file StringSifter operated on.
+- contextPath: Stringsifter.Results
+  description: The results from StringSifter.
+script: ''
+type: python
+subtype: python3
+dockerimage: demisto/stringsifter:3.20230711.65151
+fromversion: 6.1.0

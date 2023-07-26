@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import tempfile
 from typing import Dict, Optional
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''

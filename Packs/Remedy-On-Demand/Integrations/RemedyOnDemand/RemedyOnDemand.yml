@@ -38,8 +38,8 @@ configuration:
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 script:
   script: ''
   type: javascript
@@ -267,7 +267,6 @@ script:
       description: Ticket service type
     description: Update exiting incident
   isfetch: true
-  runonce: false
 fromversion: 5.0.0
 tests:
 - Remedy-On-Demand-Test

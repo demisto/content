@@ -14,9 +14,8 @@ comment: |-
   Will check if malop was already fetched, and will then update the existing incident, otherwise will create a new incident.
 enabled: true
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - Cybereason Pre Processing Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
