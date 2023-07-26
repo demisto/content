@@ -1,4 +1,6 @@
 IRIS is a collaborative platform aiming to help incident responders to share technical details during investigations. It's free and open-source.
+This integration was integrated and tested with version 1.0.0 of IRIS DFIR
+
 ## Configure IRIS DFIR on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -37,20 +39,20 @@ IRIS Command to get the last case information
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IRIS.case_soc_id | unknown |  | 
-| IRIS.case_id | number |  | 
-| IRIS.case_description | unknown |  | 
-| IRIS.opened_by | unknown |  | 
-| IRIS.owner | unknown |  | 
-| IRIS.classification_id | number |  | 
-| IRIS.state_name | unknown |  | 
-| IRIS.case_open_date | unknown |  | 
-| IRIS.case_name | unknown |  | 
-| IRIS.client_name | unknown |  | 
-| IRIS.classification | unknown |  | 
-| IRIS.case_uuid | unknown |  | 
-| IRIS.state_id | unknown |  | 
-| IRIS.access_level | unknown |  | 
+| IRIS.case_soc_id | unknown | SOC ID ticket case | 
+| IRIS.case_id | number | case ID ticket number | 
+| IRIS.case_description | unknown | case description | 
+| IRIS.opened_by | unknown | case opened by | 
+| IRIS.owner | unknown | case owner | 
+| IRIS.classification_id | number | case classification ID | 
+| IRIS.state_name | unknown | case state name | 
+| IRIS.case_open_date | unknown | case open date | 
+| IRIS.case_name | unknown | case name | 
+| IRIS.client_name | unknown | case client name | 
+| IRIS.classification | unknown | case classification | 
+| IRIS.case_uuid | unknown | case uuid | 
+| IRIS.state_id | unknown | case state ID | 
+| IRIS.access_level | unknown | case access level | 
 
 ### iris-get-all-cases
 
@@ -68,4 +70,19 @@ Return a list of all IRIS DFIR cases
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| IRIS.case_soc_id | unknown | SOC ID ticket case | 
+| IRIS.case_id | number | case ID ticket number | 
+| IRIS.case_description | unknown | case description | 
+| IRIS.opened_by | unknown | case opened by | 
+| IRIS.owner | unknown | case owner | 
+| IRIS.classification_id | number | case classification ID | 
+| IRIS.state_name | unknown | case state name | 
+| IRIS.case_open_date | unknown | case open date | 
+| IRIS.case_name | unknown | case name | 
+| IRIS.client_name | unknown | case client name | 
+| IRIS.classification | unknown | case classification | 
+| IRIS.case_uuid | unknown | case uuid | 
+| IRIS.state_id | unknown | case state ID | 
+| IRIS.access_level | unknown | case access level | 

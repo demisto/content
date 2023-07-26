@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 import requests
 import urllib3
-import os
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -87,11 +86,30 @@ def test_module(dfir_iris):
             raise e
 
 
-def process_incidents(results_str, args: Dict[str, Any]) -> CommandResults:
+def process_iris_get_last_case_id(dfir_iris, args: Dict[str, Any]) -> CommandResults:
+
+    results_str = dfir_iris.get_last_case_id()
+
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
 
     return CommandResults(
         outputs_prefix='IRIS',
         outputs_key_field='',
+        readable_output=readable_output,
+        outputs=results_str,
+    )
+
+
+def process_get_all_cases(dfir_iris, args: Dict[str, Any]) -> CommandResults:
+
+    results_str = dfir_iris.get_all_cases()
+
+    readable_output = tableToMarkdown('Command successfully sent to IRIS DFIR"', results_str, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='IRIS',
+        outputs_key_field='',
+        readable_output=readable_output,
         outputs=results_str,
     )
 
@@ -109,8 +127,6 @@ def main():
         # initialized Authentication client
         api_key = params.get('api_key', {}).get('password', '')
         api_endpoint = params.get('host')
-        #  ignore proxy
-        os.environ['NO_PROXY'] = api_endpoint.split("https://")[1]
         dfir_iris = DFIRIrisAPI(api_endpoint, api_key)
 
         if command == 'test-module':
@@ -118,13 +134,11 @@ def main():
             result = test_module(dfir_iris)
             return_results(result)
         elif command == 'iris-get-last-case-id':
-            results_str = dfir_iris.get_last_case_id()
+            return_results(process_iris_get_last_case_id(dfir_iris, demisto.args()))
         elif command == 'iris-get-all-cases':
-            results_str = dfir_iris.get_all_cases()
+            return_results(process_get_all_cases(dfir_iris, demisto.args()))
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
-
-        return return_results(process_incidents(results_str, demisto.args()))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

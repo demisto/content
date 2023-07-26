@@ -69,7 +69,38 @@ script:
   - arguments: []
     description: Return a list of all IRIS DFIR cases
     name: iris-get-all-cases
-  dockerimage: demisto/python3:3.10.12.65389
+    outputs:
+    - contextPath: IRIS.case_soc_id
+      description: "SOC ID ticket case"
+    - contextPath: IRIS.case_id
+      description: "case ID ticket number"
+      type: number
+    - contextPath: IRIS.case_description
+      description: "case description"
+    - contextPath: IRIS.opened_by
+      description: "case opened by"
+    - contextPath: IRIS.owner
+      description: "case owner"
+    - contextPath: IRIS.classification_id
+      description: "case classification ID"
+      type: number
+    - contextPath: IRIS.state_name
+      description: "case state name"
+    - contextPath: IRIS.case_open_date
+      description: "case open date"
+    - contextPath: IRIS.case_name
+      description: "case name"
+    - contextPath: IRIS.client_name
+      description: "case client name"
+    - contextPath: IRIS.classification
+      description: "case classification"
+    - contextPath: IRIS.case_uuid
+      description: "case uuid"
+    - contextPath: IRIS.state_id
+      description: "case state ID"
+    - contextPath: IRIS.access_level
+      description: "case access level"
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: ''
   subtype: python3
