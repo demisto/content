@@ -1852,7 +1852,7 @@ Lists team routing rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | The ID of the team from Opsgenie. | Optional | 
+| team_id | The ID of the team from Opsgenie. | Required | 
 
 #### Context Output
 
