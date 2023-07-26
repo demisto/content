@@ -444,7 +444,7 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
         (
             {
                 'sortFields': '',
-                'sortOrder': '',
+                'sortOrder': 'asc',
                 'excludeRollover': False,
                 'limit': 10,
                 'offset': 0
@@ -488,12 +488,18 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
 )
 def test_scan_history_params(args, expected_result):
     """
-    Test the scan_history_params function with various scenarios using pytest.mark.parametrize.
+    Given:
+        Case 1: Only sortOrder is defined (Default).
+        Case 2: The sortFields has multiple values and sortOrder only one.
+        Case 3: Both sort lists have multiple values.
 
-    Test cases:
-    1. Test with basic input, no sorting, and include limit and offset.
-    2. Test with sorting by a single field in ascending order.
-    3. Test with sorting by multiple fields in different orders.
+    When:
+        - Running the tenable-io-get-scan-history command.
+
+    Then:
+        Case 1: Return empty sort.
+        Case 2: Sort all sortFields by sortOrder.
+        Case 3: Match sortFields and sortOrder's values by index.
     """
     from Tenable_io import scan_history_params
 
