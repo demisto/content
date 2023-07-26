@@ -80,9 +80,6 @@
                 },
                 "RSA Alerts": {
                     "simple": "alerts"
-                },
-                "RSA Alerts ID": {
-                    "simple": "alerts_ids"
                 }
             }
         },
