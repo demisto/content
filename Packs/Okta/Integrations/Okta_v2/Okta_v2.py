@@ -1326,7 +1326,6 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
-    demisto.info(f"The configured URL is: {demisto.params()['url'] or 'No URL configured'}")
     base_url = urljoin(demisto.params()['url'].strip('/'), '/api/v1/')
     apitoken = demisto.params().get("credentials", {}).get("password", '') or demisto.params().get('apitoken', '')
 
