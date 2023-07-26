@@ -19,7 +19,6 @@ def GetTasks(incid: str, playbookname: str) -> dict:
                             if state == "Completed":
                                 completed = 1
                         if task['task']['name'] not in tasks:
-
                             newtask = {'name': task['task']['name'], 'completed': completed, 'count': 1}
                             tasks[task['task']['name']] = newtask
                         else:

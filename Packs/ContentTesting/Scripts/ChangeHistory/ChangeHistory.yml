@@ -7,6 +7,7 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.10.12.66339
 enabled: true
 name: ChangeHistory
+comment: ""
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
@@ -16,5 +17,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-timeout: 2.4µs
-runonce: false
+timeout: 600ns
