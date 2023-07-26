@@ -1281,8 +1281,8 @@ def scan_history_params(args: dict) -> dict:
             for field, order
             in zip(
                 argToList(args.get('sortFields')),
-                argToList(args.get('sortOrder')) * 3
-            )),
+                # * 3 makes it apply to all sortFields even if it has only one value
+                argToList(args.get('sortOrder')) * 3)),
         'exclude_rollover': args['excludeRollover'],
     } | sub_dict(args, 'limit', 'offset')
 

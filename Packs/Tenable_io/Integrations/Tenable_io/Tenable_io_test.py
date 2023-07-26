@@ -4,7 +4,7 @@ from freezegun import freeze_time
 from CommonServerPython import *
 import json
 from Tenable_io import Client, HEADERS
-# type: ignore=operator
+# mypy: disable-error-code="operator"
 
 MOCK_PARAMS = {
     'access-key': 'fake_access_key',
@@ -52,19 +52,6 @@ MOCK_CLIENT = Client(
     ok_codes=(200,),
     headers=HEADERS
 )
-
-class MockResponse:
-
-    def __init__(self, json_data, status_code=200, content=None):
-        self.json_data = json_data
-        self.status_code = status_code
-        self.content = content
-
-    def json(self):
-        return self.json_data
-
-    def raise_for_status(self):
-        pass
 
 
 def load_json(filename):
@@ -453,6 +440,71 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
 @pytest.mark.parametrize(
     'args, expected_result',
     [
+        # Test case 1: Basic input with limit and offset
+        (
+            {
+                'sortFields': '',
+                'sortOrder': '',
+                'excludeRollover': False,
+                'limit': 10,
+                'offset': 0
+            },
+            {
+                'sort': '',
+                'exclude_rollover': False,
+                'limit': 10,
+                'offset': 0,
+            }
+        ),
+        # Test case 2: Sorting by a multiple fields in ascending order
+        (
+            {
+                'sortFields': 'name,date,status',
+                'sortOrder': 'asc',
+                'excludeRollover': False,
+            },
+            {
+                'sort': 'name:asc,date:asc,status:asc',
+                'exclude_rollover': False,
+                'limit': None,
+                'offset': None
+            }
+        ),
+        # Test case 3: Sorting by multiple fields in different orders
+        (
+            {
+                'sortFields': 'name,date,status',
+                'sortOrder': 'asc,desc,asc',
+                'excludeRollover': False,
+            },
+            {
+                'sort': 'name:asc,date:desc,status:asc',
+                'exclude_rollover': False,
+                'limit': None,
+                'offset': None
+            }
+        )
+    ]
+)
+def test_scan_history_params(args, expected_result):
+    """
+    Test the scan_history_params function with various scenarios using pytest.mark.parametrize.
+
+    Test cases:
+    1. Test with basic input, no sorting, and include limit and offset.
+    2. Test with sorting by a single field in ascending order.
+    3. Test with sorting by multiple fields in different orders.
+    """
+    from Tenable_io import scan_history_params
+
+    result = scan_history_params(args)
+
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    'args, expected_result',
+    [
         # Test case 1: Empty arguments
         ({}, {}),
         # Test case 2: Single filter
@@ -623,7 +675,8 @@ def test_download_export_scan(mocker):
 @pytest.mark.parametrize(
     'args, response_json, message',
     [
-        ({'scanId': '', 'format': 'HTML', 'filterSearchType': ''}, {}, 'The "chapters" field must be provided for PDF or HTML formats.'),
+        ({'scanId': '', 'format': 'HTML', 'filterSearchType': ''}, {},
+         'The "chapters" field must be provided for PDF or HTML formats.'),
         ({'scanId': '', 'format': '', 'filterSearchType': ''}, {'status': 'error'},
          'Tenable IO encountered an error while exporting the scan report file.')
     ]
