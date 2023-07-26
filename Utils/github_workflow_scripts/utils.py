@@ -4,7 +4,7 @@ import os
 import sys
 import json
 from datetime import datetime
-from typing import Any, Union
+from typing import Any
 from collections.abc import Generator, Iterable
 from pathlib import Path
 
@@ -17,7 +17,7 @@ CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 # override print so we have a timestamp with each print
 org_print = print
-CallArgs = Iterable[Union[tuple[Any], tuple[Any, dict]]]
+CallArgs = Iterable[tuple[Any] | tuple[Any, dict]]
 
 
 def load_json(file_path: str) -> dict:
