@@ -1267,6 +1267,7 @@ script:
     arguments:
     - name: team_id
       description: The ID of the team from Opsgenie.
+      required: true
 
   dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
