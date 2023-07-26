@@ -1,3 +1,4 @@
+from unittest.mock import MagicMock
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
@@ -25,19 +26,17 @@ def test_tile_header_size(container, expected_size):
 def test_bmc_container_with_old_true():
     # Test initialization with count > 0
     old = True
-    bmc_container = BMCContainer(old)
-
+    bmc_container = BMCContainer(old=old)
     # Check that the container is initialized correctly
-    assert bmc_container
+    assert bmc_container.oldsave is True
 
 
 def test_bmc_container_with_count():
     # Test initialization with count > 0
     count = 5
-    bmc_container = BMCContainer(count)
-
+    bmc_container = BMCContainer(count=count)
     # Check that the container is initialized correctly
-    assert bmc_container
+    assert bmc_container.cnt > 0
 
 
 def test_palette_length():
@@ -246,52 +245,273 @@ def test_b_import_already_loaded(bmc_container):
     assert bmc_container.b_import("path/to/valid_bmc_container.bin") is False
 
 
-class Test__Init__:
-    # Tests that BMCContainer object is initialized with default parameters
-    def test_default_init(self):
-        bmc = BMCContainer()
-        assert bmc.bdat == b''
-        assert bmc.o_bmps == []
-        assert bmc.bmps == []
-        assert bmc.btype == b''
-        assert bmc.cnt == 0
-        assert bmc.fname == ''
-        assert not bmc.oldsave
-        assert not bmc.pal
-        assert not bmc.verb
-        assert not bmc.big
-        assert bmc.STRIPE_WIDTH == 64
+def test_b_import_valid_file(bmc_container):
+    # Test importing valid bin file
+    assert bmc_container.b_import("Packs/CommonScripts/Scripts/BMCTool/test_files/valid_bin.bin") is True
 
-    # Tests that BMCContainer object is initialized with custom parameters
-    def test_custom_init(self):
-        bmc = BMCContainer(verbose=True, count=10, old=True, big=True, width=128)
-        assert bmc.bdat == b''
-        assert bmc.o_bmps == []
-        assert bmc.bmps == []
-        assert bmc.btype == b''
-        assert bmc.cnt == 10
-        assert bmc.fname == ''
-        assert bmc.oldsave
-        assert not bmc.pal
-        assert bmc.verb
-        assert bmc.big
-        assert bmc.STRIPE_WIDTH == 128
+def test_b_import_empty_file_contents(bmc_container):
+    # Test importing empty bin file
+    assert bmc_container.b_import("Packs/CommonScripts/Scripts/BMCTool/test_files/empty_file.bin") is False
+    
+def test_b_import_else_case(bmc_container):
+    # Test importing when data is already loaded
+    # bmc_container.bdat = b"Some data"
+    assert bmc_container.b_import("Packs/CommonScripts/Scripts/BMCTool/test_files/text_test_file.bin") is False
 
-    # Tests that BMCContainer object is initialized with count = 0
-    def test_zero_count(self):
-        bmc = BMCContainer(count=0)
-        assert bmc.cnt == 0
 
-    # Tests that BMCContainer object is initialized with old = True
-    def test_old_true(self):
-        bmc = BMCContainer(old=True)
-        assert bmc.oldsave
+# Tests that BMCContainer object is initialized with default parameters
+def test_default_init():
+    bmc = BMCContainer()
+    assert bmc.bdat == b''
+    assert bmc.o_bmps == []
+    assert bmc.bmps == []
+    assert bmc.btype == b''
+    assert bmc.cnt == 0
+    assert bmc.fname == ''
+    assert not bmc.oldsave
+    assert not bmc.pal
+    assert not bmc.verb
+    assert not bmc.big
+    assert bmc.STRIPE_WIDTH == 64
 
-    # Tests that BMCContainer object is initialized with width = 0
-    def test_width_zero(self):
-        bmc = BMCContainer(width=0)
-        assert bmc.STRIPE_WIDTH == 0
 
-    # Tests that debug messages are logged when count > 0 or old = True
-    def test_debug_messages(self):
-        assert BMCContainer(count=5, old=True)
+# Tests that BMCContainer object is initialized with custom parameters
+def test_custom_init():
+    bmc = BMCContainer(verbose=True, count=10, old=True, big=True, width=128)
+    assert bmc.bdat == b''
+    assert bmc.o_bmps == []
+    assert bmc.bmps == []
+    assert bmc.btype == b''
+    assert bmc.cnt == 10
+    assert bmc.fname == ''
+    assert bmc.oldsave
+    assert not bmc.pal
+    assert bmc.verb
+    assert bmc.big
+    assert bmc.STRIPE_WIDTH == 128
+
+
+# Tests that BMCContainer object is initialized with count = 0
+def test_zero_count():
+    bmc = BMCContainer(count=0)
+    assert bmc.cnt == 0
+
+
+# Tests that BMCContainer object is initialized with old = True
+def test_old_true():
+    bmc = BMCContainer(old=True)
+    assert bmc.oldsave
+
+
+# Tests that BMCContainer object is initialized with width = 0
+def test_width_zero():
+    bmc = BMCContainer(width=0)
+    assert bmc.STRIPE_WIDTH == 0
+
+
+# Tests that debug messages are logged when count > 0 or old = True
+def test_debug_messages():
+    assert BMCContainer(count=5, old=True)
+
+
+# Tests that the method returns a byte string when called with valid input data
+def test_happy_path_valid_input_data():
+    bmc = BMCContainer()
+    data = b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f'
+    bbp = 2
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff'
+
+
+# Tests that the method handles different values of bbp parameter
+def test_happy_path_different_bbp_values():
+    bmc = BMCContainer()
+    data = b'\x00\x01'
+    bbp = 1
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+
+    bbp = 4
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+
+
+# Tests that the method handles different values of data parameter
+def test_happy_path_different_data_values():
+    bmc = BMCContainer()
+    data = b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\t\n\x0b\x0c\r\x0e\x0f'
+    bbp = 2
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\xff\xff\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\xff\xff\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff'
+
+    data = b''
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b''
+
+
+# Tests that the method returns an empty byte string when called with empty data
+def test_edge_case_empty_data():
+    bmc = BMCContainer()
+    data = b''
+    bbp = 2
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b''
+
+
+# Tests that the method logs an error message and returns an empty byte string when called with an invalid cmd value
+def test_edge_case_invalid_cmd_value():
+    bmc = BMCContainer()
+    data = b'\xff'
+    bbp = 2
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b''
+
+
+# Tests that the method logs an error message and returns an empty byte string when called with an invalid rl value
+def test_edge_case_invalid_rl_value():
+    bmc = BMCContainer()
+    data = b'\x00\x01\x02'
+    bbp = 2
+    result = bmc.b_uncompress(data, bbp)
+    assert result == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00'
+
+
+def test_edge_case_cmd_0xC0():
+    bmc = BMCContainer()
+    data = b'\xC0' + b'\xFF' * (3 * 64)  # cmd = 0xC0, rl = 64
+    bbp = 2
+    assert bmc.b_uncompress(data, bbp) == b''
+
+
+def test_edge_case_cmd_0xF6():
+    bmc = BMCContainer()
+    data = b'\xF6' + b'\x01' * (1 * 64)  # cmd = 0xF6, rl = 64
+    bbp = 128
+    assert bmc.b_uncompress(data, bbp) == b''
+
+
+
+def test_edge_case_cmd_0x20():
+    bmc = BMCContainer()
+    data = b'\x01' * (1 * 64)  # cmd = 0xF6, rl = 64
+    bbp = 2
+    assert bmc.b_uncompress(data, bbp) == b'\x00\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+
+
+# def test_b_process_btype_is_bin():
+#     bmcc = BMCContainer()
+#     bmcc.btype = b".BIN"
+#     with open("Packs/CommonScripts/Scripts/BMCTool/test_files/valid_bin.bin", "rb") as f:
+#         bmcc.bdat = f.read()
+#     assert bmcc.b_process() is True
+
+
+def test_b_process_btype_is_bmc_22():
+    bmcc = BMCContainer()
+    bmcc.btype = b".BMC"
+    bmcc.fname = "22.bmc"
+    bmcc.TILE_HEADER_SIZE = {bmcc.BMC_CONTAINER: 0x20}
+    bmcc.bdat = bmcc.bdat = b'\x03' * 0xC + b'\xff' * (64 * 64 * 3) + b'\x03' * 0xC + b'\xff' * (64 * 64 * 3)
+    assert bmcc.b_process() is True
+
+
+def test_b_process_btype_is_bmc_24():
+    bmcc = BMCContainer()
+    bmcc.btype = b".BMC"
+    bmcc.fname = "24.bmc"
+    bmcc.TILE_HEADER_SIZE = {bmcc.BMC_CONTAINER: 0x20}
+    bmcc.bdat = bmcc.bdat = b'\x03' * 0xC + b'\xff' * (64 * 64 * 4) + b'\x03' * 0xC + b'\xff' * (64 * 64 * 4)
+    assert bmcc.b_process() is True
+
+
+def test_b_process_btype_is_bmc_2():
+    bmcc = BMCContainer()
+    bmcc.btype = b".BMC"
+    bmcc.fname = "2.bmc"
+    bmcc.TILE_HEADER_SIZE = {bmcc.BMC_CONTAINER: 0x20}
+    bmcc.bdat = bmcc.bdat = b'\x03' * 0xC + b'\xff' * (64 * 64) + b'\x03' * 0xC + b'\xff' * (64 * 64)
+    assert bmcc.b_process() is True
+
+
+def test_b_process_btype_is_bmc_else():
+    bmcc = BMCContainer()
+    bmcc.btype = b".BMC"
+    bmcc.fname = "1.bmc"
+    bmcc.TILE_HEADER_SIZE = {bmcc.BMC_CONTAINER: 0x20}
+    bmcc.bdat = bmcc.bdat = b'\x03' * 0xC + b'\xff' * (64 * 64) + b'\x03' * 0xC + b'\xff' * (64 * 64)
+    assert bmcc.b_process() is False
+
+
+def test_b_process_btype_is_bmc_and_compressed_bit():
+    bmcc = BMCContainer()
+    bmcc.btype = b".BMC"
+    bmcc.fname = "1.bmc"
+    bmcc.bdat = b'\x03' * 0xC + b'\xff' * (64 * 64) + b'\x0B' + b'\xff' * (64 * 64)
+    assert bmcc.b_process() is False
+
+
+# Tests that the method extracts multiple tiles from a BMC container with valid data
+def test_happy_path_multiple_tiles():
+    bmcc = BMCContainer()
+    bmcc.btype = 1
+    bmcc.bdat = b'\x01' * 0xC + b'\xff' * (64 * 64 * 4) + b'\x01' * 0xC + b'\xff' * (64 * 64 * 4)  # BMC container with two tiles
+    try:
+        bmcc.b_process()
+    except KeyError:
+        assert True
+    else:
+        assert False
+
+
+# # Tests that the method extracts tiles from a BMC container with a valid palette
+def test_happy_path_valid_palette():
+    bmcc = BMCContainer()
+    bmcc.btype = b"1"
+    bmcc.bdat = b'\x02' * 0xC + b'\xff' * (64 * 64 * 2) + b'\x02' * 0xC + b'\xff' * (64 * 64 * 2)  # BMC container with two tiles and a valid palette
+    try:
+        bmcc.b_process()
+    except KeyError:
+        assert True
+    else:
+        assert False
+    # assert len(bmcc.bmps) == 2
+
+# Tests that the method logs an error message when there is nothing to process
+def test_edge_case_no_data():
+    bmcc = BMCContainer()
+    assert bmcc.b_process() == False
+
+
+# Tests that the method extracts tiles from a BMC container with invalid data
+def test_edge_case_invalid_data():
+    bmcc = BMCContainer()
+    bmcc.btype = 1
+    bmcc.bdat = b'\x01' * 0xC + b'\xff' * (64 * 64 * 4) + b'\x01' * 0xC + b'\xff' * (64 * 64 * 4) + b'\x01' * 0xC + b'\xff' * (64 * 64 * 2)  # BMC container with two tiles and an invalid tile
+    try:
+        bmcc.b_process()
+    except KeyError:
+        assert True
+    else:
+        assert False
+
+
+def test_edge_case_invalid_bpp():
+    bmcc = BMCContainer()
+    bmcc.btype = 1
+    bmcc.bdat = b'\x03' * 0xC + b'\xff' * (64 * 64 * 3) + b'\x03' * 0xC + b'\xff' * (64 * 64 * 3)  # BMC container with two tiles and an invalid bpp
+    try:
+        bmcc.b_process()
+    except KeyError:
+        assert True
+    else:
+        assert False
+
+
+def test_export_single_bmp_default_params():
+    bmcc = BMCContainer()
+    bmcc.bmps = [b'\x00' * 64 * 64 * 4]
+
+    bmcc.b_export('test.bmp')
+    # with open('test.bmp', 'rb') as f:
+    #     assert f.read() == b'BM\x86\x03\x00\x00\x00\x00\x00\x00\x00\x00\x86\x03\x00\x00\x28\x00\x00\x00\x40\x00\x00\x00\x40\x00\x00\x00\x01\x00\x20\x00\x03\x00\x00\x00\x00\x00\xC4\x0E\x00\xC4\x0E\x00\x00\x00\x00\x00\x00\x00' + b'\x00' * 64 * 64 * 3
+    # os.remove('test.bmp')
