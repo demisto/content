@@ -1398,7 +1398,7 @@ def get_image_descriptions(images_scans: List[dict]) -> List[dict]:
     """
     return [
         {
-            "Image": (image_scan.get("instances")or [{}])[0].get("image"),
+            "Image": (image_scan.get("instances") or [{}])[0].get("image"),
             "ID": image_scan.get("_id"),
             "OS Distribution": image_scan.get("distro"),
             "Vulnerabilities Count": image_scan.get("vulnerabilitiesCount"),
