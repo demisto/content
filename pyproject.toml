@@ -390,7 +390,7 @@ select = [
     "UP004", # useless-object-inheritance
     "UP005", # deprecated-unittest-alias
     "UP006", # non-pep585-annotation
-    # "UP007", # non-pep604-annotation
+    "UP007", # non-pep604-annotation
     "UP008", # super-call-with-parameters
     "UP009", # utf8-encoding-declaration
     "UP010", # unnecessary-future-import
