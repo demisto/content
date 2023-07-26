@@ -405,6 +405,8 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
         dictionary (dict): The entry that the pan-os objects is in.
         keys_to_remove (list): keys which should be removed from the pan-os api response
     """
+    if not dictionary:
+        return
     for key in keys_to_remove:
         if key in dictionary:
             del dictionary[key]
@@ -7023,7 +7025,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
 
     # Keeping the existing profile types
     for p_type in profile_types:
-        if p_type in profile_types_result:
+        if profile_types_result and p_type in profile_types_result:
             p_name = profile_types_result.get(p_type, {}).get('member')
             rule_profiles += f"<{p_type}><member>{p_name}</member></{p_type}>"
 
@@ -13208,8 +13210,7 @@ def build_tag_element(disable_override: bool, comment: str, new_name: str = None
     if DEVICE_GROUP:
         if api_disable_override := 'yes' if disable_override else 'no':
             element = f'<disable-override>{api_disable_override}</disable-override>'
-    if comment:
-        element += f'<comments>{comment}</comments>'
+    element += f'<comments>{comment}</comments>'
     if color:
         element += f'<color>{color}</color>'
     if new_name:

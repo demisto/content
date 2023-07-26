@@ -2347,7 +2347,7 @@ script:
     - contextPath: AzureSentinel.ResourceGroup.properties
       description: The properties of the resource group.
       type: dictionary
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.65874
   isfetch: true
   runonce: false
   script: '-'
