@@ -3,7 +3,8 @@ import os
 import pytest
 import sqlalchemy
 import pyodbc
-import cx_Oracle
+# import cx_Oracle
+from sqlalchemy import Row
 
 from test_data import input_data
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
@@ -15,6 +16,12 @@ class ResultMock:
 
     def fetchall(self):
         return []
+
+
+class RowMock:
+    def __init__(self, row):
+        self.row = row
+        self._mapping = dict(row)
 
 
 ARGS1 = {
@@ -35,10 +42,8 @@ ARGS3 = {
     'skip': 0
 }
 
-
-RAW1 = [{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}]
-
-RAW2 = [{'Host': '%',
+RAW1 = RowMock([{'Name': 'Kabul'}, {'Name': 'Qandahar'}, {'Name': 'Herat'}, {'Name': 'Mazar-e-Sharif'}])
+RAW2 = RowMock([{'Host': '%',
          'User': 'admin',
          'Select_priv': 'Y',
          'Insert_priv': 'Y',
@@ -88,7 +93,7 @@ RAW2 = [{'Host': '%',
          'Password_reuse_history': None,
          'Password_reuse_time': None,
          'Password_require_current': None,
-         'User_attributes': None}]
+         'User_attributes': None}])
 
 HEADER1 = ['Name']
 
@@ -203,7 +208,8 @@ def test_sql_queries(command, args, response, expected_result, header, mocker):
     - validate the expected_result and the created context
     """
     # needed in order not to make a connection in tests
-    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
     mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, header))
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = command(client, args)
@@ -222,7 +228,8 @@ def test_sql_queries_with_empty_table(mocker):
     - create the context
     - validate the expected_result and the created context
     """
-    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, '_create_engine_and_connect',
+                        return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     mocker.patch.object(client.connection, 'execute', return_value=ResultMock())
     result = sql_query_execute(client, ARGS3)
@@ -244,7 +251,8 @@ def test_mysql_integration():
     if not host:
         pytest.skip('Skipping mysql integration test as MYSQL_HOST is not set')
     dialect = 'MySQL'
-    client = Client(dialect, host, 'root', 'password', generate_default_port_by_dialect(dialect), 'mysql', "", False, True)
+    client = Client(dialect, host, 'root', 'password', generate_default_port_by_dialect(dialect), 'mysql', "", False,
+                    True)
     res = client.sql_query_execute_request('show processlist', {})
     assert len(res) >= 1
 
