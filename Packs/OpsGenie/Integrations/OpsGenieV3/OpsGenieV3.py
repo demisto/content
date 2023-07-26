@@ -215,7 +215,7 @@ class Client(BaseClient):
                                   )
 
     def get_on_call(self, args: dict):
-        return self._http_request(method='GET', url_suffix=f"/v2/{SCHEDULE_SUFFIX}/" f"{args.get('schedule')}/on-calls",
+        return self._http_request(method='GET', url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{args.get('schedule')}/on-calls",
                                   params={"scheduleIdentifierType": args.get('scheduleIdentifierType')})
 
     def create_incident(self, args: dict):
