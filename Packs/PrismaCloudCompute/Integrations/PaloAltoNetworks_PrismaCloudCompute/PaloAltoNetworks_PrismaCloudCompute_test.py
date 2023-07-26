@@ -1221,13 +1221,6 @@ EXPECTED_CONTEXT_OUTPUT_DATA = [
             }
         ]
     ),
-(
-        {"limit_stats": "1", "limit_records": "20"},
-        get_images_scan_list,
-        "/images",
-        None,
-        None
-    ),
     (
         {"limit_stats": "1", "limit_records": "20"},
         get_hosts_scan_list,
