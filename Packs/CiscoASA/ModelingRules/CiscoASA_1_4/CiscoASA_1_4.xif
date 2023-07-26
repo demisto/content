@@ -606,10 +606,10 @@ filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
 
 // new !!---------------------------------------------------------------------------------------------------//
 // %ASA-x-xxxxx: (...)
-| filter _raw_log ~= "\d+\-\d+\:\s\([\w\-\_]+\)"
+filter _raw_log ~= "\d+\-\d+\:\s\([\w\-\_]+\)"
 | call cisco_asa_main_fields_extraction
 | alter reason_code = to_integer(arrayindex(regextract(_raw_log ,"\(reason\scode\s\=\s(\d+)\)"),0)),
-    ,dst_interface = arrayindex(regextract(_raw_log ,"[on|Testing]{2,}\s[i|I]nterface\s(\S+)"),0),
+    dst_interface = arrayindex(regextract(_raw_log ,"[on|Testing]{2,}\s[i|I]nterface\s(\S+)"),0),
     command_line = arrayindex(regextract(_raw_log ,"command\:\s\'([^\']+)\'"),0)
 | alter xdm.event.outcome_reason = coalesce(
         // for event if 103001
@@ -632,7 +632,7 @@ filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
     xdm.target.process.command_line = command_line;
 
 //722003 -  %ASA-x-xxxx: IP <src_ip>
-| filter _raw_log ~= "\d+\-\d+\:\sIP\s\<\d+\.\d+\.\d+\.\d+\>"
+filter _raw_log ~= "\d+\-\d+\:\sIP\s\<\d+\.\d+\.\d+\.\d+\>"
 | call cisco_asa_main_fields_extraction
 | alter src_ipv4 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\sIP\s\<(\d+\.\d+\.\d+\.\d+)\>"),0)
 | alter xdm.source.ipv4 = src_ipv4,
@@ -642,7 +642,7 @@ filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
     xdm.observer.name = observer_name;
 
 //106016: from (<source_ip>) to <dest_ip>
-| filter _raw_log ~= "from\s\(\d+\.\d+\.\d+\.\d+\)\sto\s\d+\.\d+\.\d+\.\d+"
+filter _raw_log ~= "from\s\(\d+\.\d+\.\d+\.\d+\)\sto\s\d+\.\d+\.\d+\.\d+"
 | call cisco_asa_main_fields_extraction
 | alter src_ip = arrayindex(regextract(_raw_log ,"from\s\((\d+\.\d+\.\d+\.\d+)\)\sto\s\d+\.\d+\.\d+\.\d+"),0),
     action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:\s([\w\s\-]+)\s"),0),
@@ -660,7 +660,7 @@ filter _raw_log ~= "\d+\:\sTeardown\slocal-host"
 // Call-Home
 filter _raw_log contains "Call-Home"
 | call cisco_asa_main_fields_extraction
-| alter outcome_reason = arrayindex(regextract(_raw_log, "Reason\:\s+(\S+)"),0),
+| alter outcome_reason = arrayindex(regextract(_raw_log, "Reason\:\s+(\S+)"),0)
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
@@ -668,11 +668,12 @@ filter _raw_log contains "Call-Home"
     xdm.event.outcome_reason = outcome_reason;
 
 // UPDATE:
-| filter _raw_log ~= "\-\d+\:\sUPDATE\:"
+filter _raw_log ~= "\-\d+\:\sUPDATE\:"
 | call cisco_asa_main_fields_extraction
-| alter new_img_version = arrayindex(regextract(_raw_log ,"Image\sversion\sis\s(\S+)"),0)\
+| alter new_img_version = arrayindex(regextract(_raw_log ,"Image\sversion\sis\s(\S+)"),0)
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.observer.name = observer_name,
-    xdm.event.outcome_reason = outcome_reason;
+    //xdm.event.outcome_reason = outcome_reason,
+    xdm.observer.version = new_img_version;
