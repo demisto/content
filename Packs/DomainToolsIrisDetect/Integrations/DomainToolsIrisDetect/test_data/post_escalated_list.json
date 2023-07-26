@@ -1,0 +1,12 @@
+{
+  "escalations": [
+    {
+      "watchlist_domain_id": "8WDDvblGxW",
+      "escalation_type": "google_safe",
+      "id": "kzbwa0DEy2",
+      "created_date": "2023-01-08T09:59:46.450041+00:00",
+      "updated_date": "2023-01-08T09:59:46.450041+00:00",
+      "created_by": "user@example.com"
+    }
+  ]
+}

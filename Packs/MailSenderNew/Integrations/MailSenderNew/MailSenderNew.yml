@@ -14,8 +14,8 @@ configuration:
   type: 0
 - display: Credentials
   name: credentials
-  required: false
   type: 9
+  required: false
 - defaultvalue: Cortex XSOAR <noreply@demisto.com>
   display: Sender address
   name: from
@@ -24,23 +24,23 @@ configuration:
   additionalinfo: Sender address can be specified as 'user@host.com' or 'Full Name <user@host.com>'
 - display: Fully Qualified Domain Name (FQDN) - used in EHLO
   name: fqdn
-  required: false
   type: 0
+  required: false
 - display: Connection Security
   additionalinfo: The connection security. The `SSL/TLS` first establishes a secure `SSL/TLS` connection and conducts SMTP over that connection, and STARTTLS starts with unencrypted SMTP and then switches to SSL/TLS to ensure security.
   name: tls
   defaultvalue: "None"
   type: 15
-  required: false
   options:
   - None
   - STARTTLS
   - SSL/TLS
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Send emails implemented in Python with embedded image support
 display: Mail Sender (New)
 name: Mail Sender (New)
@@ -51,131 +51,65 @@ script:
       description: Email addresses for the 'To' field
       isArray: true
       name: to
-      required: false
-      secret: false
-    - default: false
-      description: Email addresses for the 'Cc' field
+    - description: Email addresses for the 'Cc' field
       isArray: true
       name: cc
-      required: false
-      secret: false
-    - default: false
-      description: Email addresses for the 'Bcc' field
+    - description: Email addresses for the 'Bcc' field
       isArray: true
       name: bcc
-      required: false
-      secret: false
-    - default: false
-      description: Subject for the email to be sent
-      isArray: false
+    - description: Subject for the email to be sent
       name: subject
-      required: false
-      secret: false
-    - default: false
-      description: The contents (body) of the email to be sent in plain text
-      isArray: false
+    - description: The contents (body) of the email to be sent in plain text
       name: body
-      required: false
-      secret: false
-    - default: false
-      description: The contents (body) of the email to be sent in HTML format
-      isArray: false
+    - description: The contents (body) of the email to be sent in HTML format
       name: htmlBody
-      required: false
-      secret: false
-    - default: false
-      description: Address that should be used to reply to the message
-      isArray: false
+    - description: Address that should be used to reply to the message
       name: replyTo
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of IDs of war room entries that contain the files that should be attached to the email
+    - description: A comma-separated list of IDs of war room entries that contain the files that should be attached to the email
       isArray: true
       name: attachIDs
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3)
+    - description: A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3)
       isArray: true
       name: attachNames
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of CIDs to embed attachments inside the email itself
+    - description: A comma-separated list of CIDs to embed attachments inside the email itself
       isArray: true
       name: attachCIDs
-      required: false
-      secret: false
-    - default: false
-      description: Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+    - description: Desired name for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
       name: transientFile
-      required: false
-      secret: false
-    - default: false
-      description: Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+    - description: Content for attached file. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
       name: transientFileContent
-      required: false
-      secret: false
-    - default: false
-      description: CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+    - description: CID for attached file if we want it inline. Multiple files are supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
       isArray: true
       name: transientFileCID
-      required: false
-      secret: false
-    - default: false
-      description: 'Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not.'
-      isArray: false
+    - description: 'Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not.'
       name: templateParams
-      required: false
-      secret: false
-    - default: false
-      description: 'A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
+    - description: 'A CSV list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
-      required: false
-      secret: false
-    - default: false
-      description: Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored.
-      isArray: false
+    - description: Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored.
       name: raw_message
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Text
       description: Whether message response body type is text or HTML.
-      isArray: false
       name: bodyType
       predefined:
       - HTML
       - Text
-      required: false
-      secret: false
-    - default: false
-      description: Indicates whether to render the email body
-      isArray: false
+    - description: Indicates whether to render the email body
       name: renderBody
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Send an email
-    execution: false
     name: send-mail
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 tests:
 - Mail Sender (New) Test
 fromversion: 5.0.0

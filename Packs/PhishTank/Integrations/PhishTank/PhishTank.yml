@@ -59,7 +59,6 @@ script:
   - name: phishtank-status
     arguments: []
     description: Show PhishTank database status
-  runonce: false
 tests:
 - PhishTank Testing
 deprecated: true

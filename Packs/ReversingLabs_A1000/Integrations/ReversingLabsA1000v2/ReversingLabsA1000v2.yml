@@ -15,8 +15,8 @@ configuration:
 - defaultvalue: 'true'
   display: Verify host certificates
   name: verify
-  required: false
   type: 8
+  required: false
 - defaultvalue: C - Fairly reliable
   display: Reliability
   name: reliability
@@ -28,18 +28,18 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: '2'
   display: Wait time between report fetching retries (seconds). Deafult is 2 seconds.
   name: wait_time_seconds
-  required: false
   type: 0
+  required: false
 - defaultvalue: '30'
   display: Number of report fetching retries. Default is 30.
   name: num_of_retries
-  required: false
   type: 0
+  required: false
 description: ReversingLabs A1000 advanced Malware Analysis Platform.
 display: ReversingLabs A1000 v2
 name: ReversingLabs A1000 v2
@@ -48,13 +48,9 @@ script:
   - arguments:
     - default: true
       description: file hash
-      isArray: false
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve sample analysis results
-    execution: false
     name: reversinglabs-a1000-get-results
     outputs:
     - contextPath: File.SHA256
@@ -99,23 +95,12 @@ script:
   - arguments:
     - default: true
       description: The file entry to upload
-      isArray: false
       name: entryId
       required: true
-      secret: false
-    - default: false
-      description: A comment to add to the file
-      isArray: false
+    - description: A comment to add to the file
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: List of tags for the file
-      isArray: false
+    - description: List of tags for the file
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: Upload sample to A1000 for analysis
     execution: true
     name: reversinglabs-a1000-upload-sample
@@ -126,25 +111,13 @@ script:
   - arguments:
     - default: true
       description: The file entry to upload
-      isArray: false
       name: entryId
       required: true
-      secret: false
-    - default: false
-      description: A comment to add to the file
-      isArray: false
+    - description: A comment to add to the file
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: List of tags for the file
-      isArray: false
+    - description: List of tags for the file
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: Upload sample to A1000 and retrieve analysis results
-    execution: false
     name: reversinglabs-a1000-upload-sample-and-get-results
     outputs:
     - contextPath: File.SHA256
@@ -189,11 +162,8 @@ script:
   - arguments:
     - default: true
       description: The hash to delete
-      isArray: false
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Delete an uploaded sample from A1000
     execution: true
     name: reversinglabs-a1000-delete-sample
@@ -204,13 +174,9 @@ script:
   - arguments:
     - default: true
       description: The sample hash
-      isArray: false
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: List files extracted from a sample
-    execution: false
     name: reversinglabs-a1000-list-extracted-files
     outputs:
     - contextPath: ReversingLabs.a1000_list_extracted_report
@@ -219,24 +185,16 @@ script:
   - arguments:
     - default: true
       description: Sample hash to download
-      isArray: false
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Download sample from A1000
-    execution: false
     name: reversinglabs-a1000-download-sample
   - arguments:
     - default: true
       description: The hash of an already uploaded sample
-      isArray: false
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Re-analyze sample on A1000
-    execution: false
     name: reversinglabs-a1000-reanalyze
     outputs:
     - contextPath: ReversingLabs.a1000_reanalyze_report
@@ -245,31 +203,18 @@ script:
   - arguments:
     - default: true
       description: The sample hash we want unpacked samples for
-      isArray: false
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Download samples obtained through the unpacking process
-    execution: false
     name: reversinglabs-a1000-download-extracted-files
   - arguments:
-    - default: false
-      description: The hash of a desired sample
-      isArray: false
+    - description: The hash of a desired sample
       name: hash
       required: true
-      secret: false
-    - default: false
-      defaultValue: 'False'
+    - defaultValue: 'False'
       description: Return only local classification data for the sample, without falling back to querying TitaniumCloud.
-      isArray: false
       name: localOnly
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve classification report for a sample
-    execution: false
     name: reversinglabs-a1000-get-classification
     outputs:
     - contextPath: File.SHA256
@@ -312,43 +257,125 @@ script:
       description: A1000 classification report
       type: Unknown
   - arguments:
-    - default: false
-      description: Advanced search query
-      isArray: false
+    - description: Advanced search query
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show only cloud results. If omitted, the response will show only local results.
-      isArray: false
       name: ticloud
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      defaultValue: '5000'
+    - defaultValue: '5000'
       description: Maximum number of results.
-      isArray: false
       name: result_limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search for hashes on A1000 using multi-part search criteria.
-    execution: false
     name: reversinglabs-a1000-advanced-search
     outputs:
     - contextPath: ReversingLabs.a1000_advanced_search_report
       description: A1000 classification report
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.44887
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - name: reversinglabs-a1000-url-report
+    description: Get a report for the submitted URL.
+    arguments:
+    - name: url
+      description: URL string
+      default: true
+      required: true
+    outputs:
+    - contextPath: ReversingLabs.a1000_url_report
+      description: A1000 URL report
+      type: Unknown
+  - name: reversinglabs-a1000-domain-report
+    description: Get a report for the submitted domain.
+    arguments:
+    - name: domain
+      description: Domain string
+      default: true
+      required: true
+    outputs:
+    - contextPath: ReversingLabs.a1000_domain_report
+      description: A1000 domain report
+      type: Unknown
+  - name: reversinglabs-a1000-ip-address-report
+    description: Get a report for the submitted IP address.
+    arguments:
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
+    outputs:
+    - contextPath: ReversingLabs.a1000_ip_address_report
+      description: A1000 IP address report
+      type: Unknown
+  - name: reversinglabs-a1000-ip-downloaded-files
+    description: Get a list of files downloaded from an IP address.
+    arguments:
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
+    - name: extended_results
+      description: Return extended results
+      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: classification
+      description: Return only results with this classification
+      auto: PREDEFINED
+      predefined:
+      - 'MALICIOUS'
+      - 'SUSPICIOUS'
+      - 'GOODWARE'
+      - 'UNKNOWN'
+    - name: page_size
+      description: Number of results per query page
+      defaultValue: 500
+    - name: max_results
+      description: Maximum number of returned results
+      defaultValue: 5000
+    outputs:
+    - contextPath: ReversingLabs.a1000_ip_address_downloaded_files
+      description: A1000 Files downloaded from IP address
+      type: Unknown
+  - name: reversinglabs-a1000-ip-domain-resolutions
+    description: Get a list of IP-to-domain resolutions.
+    arguments:
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
+    - name: page_size
+      description: Number of results per query page
+      defaultValue: 500
+    - name: max_results
+      description: Maximum number of returned results
+      defaultValue: 5000
+    outputs:
+    - contextPath: ReversingLabs.a1000_ip_domain_resolutions
+      description: A1000 IP-to-domain resolutions
+      type: Unknown
+  - name: reversinglabs-a1000-ip-urls
+    description: Get a list of URLs hosted on the requested IP address.
+    arguments:
+    - name: ip_address
+      description: IP address string
+      default: true
+      required: true
+    - name: page_size
+      description: Number of results per query page
+      defaultValue: 500
+    - name: max_results
+      description: Maximum number of returned results
+      defaultValue: 5000
+    outputs:
+    - contextPath: ReversingLabs.a1000_ip_urls
+      description: A1000 URL-s hosted on an IP address
+      type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.64132
   runonce: false
   script: '-'
   subtype: python3

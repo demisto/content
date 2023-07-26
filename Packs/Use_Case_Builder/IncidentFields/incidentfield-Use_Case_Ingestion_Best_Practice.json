@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecaseingestionbestpractice",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecaseingestionbestpractice",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Ingestion Best Practice",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "template": "# Performance Optimization and Avoiding Common Pitfalls\n### Classification and Mapping\nWhen creating incidents in XSOAR it is important to use **unique incident types** for each specific type of alert that is created/ingested. Do not create one incident type for a variety of alerts since that will cause performance issues and will make playbook development overly complex. Utilize Classifiers and Mappers wherever necessary to make your playbooks more efficient.\n\n### Database\nToo much data indexing of investigation tasks or entries can cause major database issues. Ensure the proper configurations are set (investigation.task.partial.index = 7). See the general troubleshooting guide for more details on checking the value. If no value is set, you are running the default recommended standard.\n\n### Pre-Processing Rules\nPre-processing rules enable you to perform certain actions on incidents as they are ingested into Cortex XSOAR. You can, for example, link an incoming incident to an existing incident, or under certain conditions, drop the incoming incident altogether.\n\n## Alert Filtering and Deduplication: [Pre-Processing Rules](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-Pre-Process-Rules-for-Incidents)\n## Performance Tuning For XSOAR: [General Troubleshooting](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Performance-Tuning-for-Cortex-XSOAR)\n## Classification and Mapping: [Best Practice](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.9/Cortex-XSOAR-Administrator-Guide/Classification-and-Mapping)\n\n",
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

@@ -9,10 +9,10 @@ configuration:
 - defaultvalue: 6b071e63-f701-454b-9e54-ede4c96483e6
   display: Application ID
   name: app_id
-  required: false
   type: 0
   additionalinfo:
   section: Connect
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -21,30 +21,29 @@ configuration:
   - https://login.microsoftonline.us
   - https://login.microsoftonline.de
   - https://login.chinacloudapi.cn
-  required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   defaultvalue: 'false'
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   defaultvalue: "false"
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - name: authentication_type
   display: Authentication Type
-  required: false
   defaultvalue: Device Code
   type: 15
   additionalinfo: Type of authentication - could be Client Credentials Authorization Flow (recommended) or Device Flow
@@ -54,71 +53,58 @@ configuration:
   - Azure Managed Identities
   section: Connect
   advanced: true
+  required: false
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: ""
   section: Connect
   advanced: true
+  required: false
 - name: credentials
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
   display: Client Secret (for Client Credentials mode)
-  required: false
   defaultvalue:
   type: 9
   additionalinfo: ""
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 description: Use the Azure Active Directory Applications integration to manage authorized applications.
 display: Azure Active Directory Applications
 name: MicrosoftGraphApplications
 script:
   commands:
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the instructions in the command results.
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: msgraph-apps-auth-start
     arguments: []
     outputs: []
-  - deprecated: false
-    description: Run this command to complete the authorization process. Should be used after running the msgraph-apps-auth-start command.
-    execution: false
+  - description: Run this command to complete the authorization process. Should be used after running the msgraph-apps-auth-start command.
     name: msgraph-apps-auth-complete
     arguments: []
     outputs: []
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-apps-auth-reset
     arguments: []
     outputs: []
-  - deprecated: false
-    description: Tests connectivity to Microsoft.
-    execution: false
+  - description: Tests connectivity to Microsoft.
     name: msgraph-apps-auth-test
     arguments: []
     outputs: []
-  - deprecated: false
-    description: Retrieves a list of applications.
-    execution: false
+  - description: Retrieves a list of applications.
     name: msgraph-apps-service-principal-list
     arguments:
     - name: limit
-      default: false
       description: Maximum results to fetch. A value of 0 fetches all results.
-      isArray: false
-      required: false
       defaultValue: 10
-      secret: false
     outputs:
     - contextPath: MSGraphApplication.keyCredentials.keyId
       description: The unique identifier (GUID) for the key.
@@ -264,24 +250,18 @@ script:
     - contextPath: MSGraphApplication.verifiedPublisher.verifiedPublisherId
       description: The ID of the verified publisher from the application publisher's Partner Center account.
       type: String
-  - deprecated: false
-    description: Removes an application from the directory.
-    execution: false
+  - description: Removes an application from the directory.
     name: msgraph-apps-service-principal-remove
     arguments:
     - name: id
-      default: false
       description: The ID of the application to remove. Can be retrieved via the msgraph-apps-service-principal-remove command.
-      isArray: false
       required: true
-      secret: false
     outputs: []
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.63672
+  dockerimage: demisto/crypto:1.0.0.64970
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test

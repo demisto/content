@@ -1,8 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
-
-from typing import Tuple
 
 urllib3.disable_warnings()
 
@@ -35,18 +33,19 @@ def prepare_query_params(params: dict) -> dict:
 
 
 class Client(BaseClient):
-    def test(self, params: dict) -> dict:
-        query_params = prepare_query_params(params)
-        return self.get_logs(query_params)[0]
-
-    def get_logs(self, query_params: dict) -> Tuple:
-        raw_response = self._http_request(method='GET', url_suffix='logs', params=query_params)
+    def get_logs(self, query_params: dict) -> tuple[dict, list, str | None]:
+        raw_response = self._http_request(
+            method='GET',
+            url_suffix='logs',
+            params=query_params,
+            retries=2,
+        )
         events = raw_response.get('entries', [])
         cursor = raw_response.get('response_metadata', {}).get('next_cursor')
 
         return raw_response, events, cursor
 
-    def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> Tuple:
+    def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> tuple[list, str | None]:
         """
         Makes the first logs API call in the current fetch run.
         If `first_id` exists in the lastRun obj, finds it in the response and
@@ -62,7 +61,7 @@ class Client(BaseClient):
             last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
         return events, cursor
 
-    def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> List[dict]:
+    def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> list[dict]:
         """
         Aggregates logs using cursor-based pagination, until one of the following occurs:
         1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
@@ -77,7 +76,7 @@ class Client(BaseClient):
            In this case, stores the last cursor used in the lastRun obj
            and returns the events that have been accumulated so far.
         """
-        aggregated_logs: List[dict] = []
+        aggregated_logs: list[dict] = []
 
         user_defined_limit = query_params.pop('limit')
         query_params['limit'] = 200  # recommended limit value by Slack
@@ -90,7 +89,7 @@ class Client(BaseClient):
                         cursor = None
                         break
 
-                    elif len(aggregated_logs) == user_defined_limit:
+                    if len(aggregated_logs) == user_defined_limit:
                         demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
                         last_run['first_id'] = event.get('id')
                         cursor = query_params['cursor']
@@ -133,11 +132,11 @@ def test_module_command(client: Client, params: dict) -> str:
     Returns:
         (str) 'ok' if success.
     """
-    client.test(params)
+    fetch_events_command(client, params, last_run={})
     return 'ok'
 
 
-def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
+def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
     """
     Gets log events from Slack.
     Args:
@@ -162,7 +161,7 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
     return events, results
 
 
-def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[list, dict]:
+def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[list, dict]:
     """
     Collects log events from Slack using pagination.
     Args:

@@ -42,8 +42,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -52,13 +52,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 script:
   script: ''
   type: python
@@ -746,51 +746,35 @@ script:
     description: Creates Intel in CTIX platform.
     arguments:
     - name: title
-      required: false
       description: Title of ioc.
-      isArray: false
     - name: description
-      required: false
       description: Description of ioc.
-      isArray: false
     - name: tlp
-      required: false
       description: tlp of ioc.
-      isArray: false
     - name: confidence
-      required: false
       description: confidence of ioc.
-      isArray: false
     - name: ips
-      required: false
       description: comma-separated list of IPs.
       isArray: true
     - name: urls
-      required: false
       description: comma-separated list of URLs.
       isArray: true
     - name: domains
-      required: false
       description: comma-separated list of domains.
       isArray: true
     - name: files
-      required: false
       description: comma-separated list of files.
       isArray: true
     - name: emails
-      required: false
       description: comma-separated list of emails.
       isArray: true
     - name: malwares
-      required: false
       description: comma-separated list of malwares.
       isArray: true
     - name: threat_actors
-      required: false
       description: comma-separated list of threat_actors.
       isArray: true
     - name: attack_patterns
-      required: false
       description: comma-separated list of attack_patterns.
       isArray: true
     outputs:
@@ -801,7 +785,6 @@ script:
       description: Status code returned from the api.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  runonce: false
   subtype: python3
 tests:
 - No tests

@@ -1,5 +1,5 @@
 Use the Azure Key Vault integration to safeguard and manage cryptographic keys and secrets used by cloud applications and services.
-This integration was integrated and tested with version 2019-09-01 of AzureKeyVault.
+This integration was integrated and tested with version 2022-07-01 of AzureKeyVault.
 
 ## Configure Azure Key Vault on Cortex XSOAR
 
@@ -17,8 +17,8 @@ This integration was integrated and tested with version 2019-09-01 of AzureKeyVa
     | Private Key                                                                 | False        |
     | Use Azure Managed Identities                                                | False        |
     | Azure Managed Identities Client ID                                          | False        |
-    | Subscription ID                                                             | True         |
-    | Resource Group Name                                                         | True         |
+    | Default Subscription ID                                                     | True         |
+    | Default Resource Group Name                                                 | True         |
     | Fetches credentials                                                         | False        |
     | Key Vault names - comma-separated list of Key Vaults to fetch secrets from. | False        |
     | Secret names - comma-separated list of secrets to fetch.                    | False        |
@@ -72,7 +72,10 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 | bypass | Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. For example, use 'AzureServices' if you wish to give azure services access to key vault, although the default action is 'Deny' or the access for a specific IP address. Network acl property. Default value is 'AzureServices'. Possible values are: AzureServices, None. | Optional | 
 | vnet_subnet_id | Allow accessibility of a vault from a specific virtual network. This argument must be the full resource ID of a virtual network subnet. For example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1", you allow access to the Key Vault from subnet1. Network acl property. | Optional | 
 | ignore_missing_vnet_service_endpoint | Specifies whether the Network Resource Provider will ignore the check if parent subnet has serviceEndpoints configured.  This allows the configuration for the Key Vault to complete without error before the configuration to the virtual network's subnet is complete. Once the subnet configuration is complete, the Cosmos account will then be accessible through the configured subnet. Network Acl property. Possible values are: . Default is True. | Optional | 
-| ip_rules | The list of IP address rules. Each rule governing the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property. | Optional | 
+| ip_rules | The list of IP address rules. Each rule defines the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property. |
+|subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.| Optional|
+resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
+
 
 
 #### Context Output
@@ -202,6 +205,8 @@ Delete the specified key vault.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vault_name | Key Vault name to delete. | Required | 
+|subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional
+|resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
 
 
 #### Context Output
@@ -231,6 +236,8 @@ Get the specified key vault.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vault_name | Key Vault name. | Required | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -370,6 +377,7 @@ The List operation gets information about the vaults associated with the subscri
 | --- | --- | --- |
 | limit | Limit on the number of keys vaults to return. Default value is 50. | Optional | 
 | offset | First index to retrieve from. Default value is 0. | Optional | 
+|subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
 
 
 #### Context Output
@@ -513,7 +521,9 @@ Update access policies in a key vault in the specified subscription. The update 
 | keys | Permissions to keys. Possible values are: encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, purge. | Optional | 
 | secrets | Permissions to secrets. Possible values are: get, list, set, delete, backup, restore, recover, purge. | Optional | 
 | certificates | Permissions to certificates. Possible values are: get, list, delete, create, import, update, managecontacts, getissuers, listissuers, setissuers, deleteissuers, manageissuers, recover, purge. | Optional | 
-| storage | Permissions to storage accounts. Possible values are: get, list, delete, set, update, regeneratekey, getsas, listsas, deletesas, setsas, recover, backup, restore, purge. | Optional | 
+| storage | Permissions to storage accounts. Possible values are: get, list, delete, set, update, regeneratekey, getsas, listsas, deletesas, setsas, recover, backup, restore, purge. | Optional |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional
+|resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
 
 
 #### Context Output
@@ -1348,3 +1358,53 @@ Get the policy of the specified certificate.This operation requires the certific
 >|---|---|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1/policy> | exportable: true<br/>kty: RSA<br/>key_size: 2048<br/>reuse_key: false | contentType: application/x-pkcs12 | subject: CN=test<br/>sans: {"dns_names": []}<br/>ekus: 1.3.6.1.5.5.7.3.1,<br/>1.3.6.1.5.5.7.3.2<br/>key_usage: digitalSignature,<br/>keyEncipherment<br/>validity_months: 12<br/>basic_constraints: {"ca": false} | name: Self | enabled: true<br/>created: 2021-08-11T12:05:31<br/>updated: 2021-08-11T12:05:31 |
 
+### azure-key-vault-subscriptions-list
+
+***
+List all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-key-vault-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureKeyVault.Subscription.id | String | Subscription ID. | 
+| AzureKeyVault.Subscription.displayName | String | Subscription display name. | 
+| AzureKeyVault.Subscription.state | String | Subscription state. | 
+| AzureKeyVault.Subscription.subscriptionPolicies | Unknown | Subscription policies. | 
+| AzureKeyVault.Subscription.authorizationSource | String | Authorization source. | 
+| AzureKeyVault.Subscription.managedByTenants | Unknown | Managed by tenants. | 
+| AzureKeyVault.Subscription.tenantId | String | Tenant ID. | 
+### azure-key-vault-resource-group-list
+
+***
+List all resource groups for a subscription.
+
+#### Base Command
+
+`azure-key-vault-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureKeyVault.ResourceGroup.id | String | Resource group ID. | 
+| AzureKeyVault.ResourceGroup.name | String | Resource group name. | 
+| AzureKeyVault.ResourceGroup.location | String | Resource group location. | 
+| AzureKeyVault.ResourceGroup.tags | Unknown | Resource group tags. | 
+| AzureKeyVault.ResourceGroup.properties.provisioningState | unknown | Resource group provisioning state. | 

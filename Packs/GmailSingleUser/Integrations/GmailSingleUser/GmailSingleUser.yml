@@ -16,21 +16,20 @@ configuration:
   section: Connect
 - display: Send as
   name: send_as
-  required: false
   type: 0
   defaultvalue:
   additionalinfo: Allows you to specify the e-mail address from which to send e-mails from.
   section: Connect
   advanced: true
+  required: false
 - display: "Client ID"
   name: credentials
-  required: false
   type: 9
   section: Connect
   displaypassword: "Client Secret"
+  required: false
 - display: "Client ID"
   name: client_id
-  required: false
   type: 0
   defaultvalue:
   additionalinfo: "Required. Not relevant for deprecated GSuite Apps setup - see Help section"
@@ -38,227 +37,161 @@ configuration:
   section: Connect
   advanced: true
 
+  required: false
 - display: "Client Secret"
   name: client_secret
-  required: false
   type: 4
   defaultvalue:
   additionalinfo: "Required. Not relevant for deprecated GSuite Apps setup - see Help section"
   hidden: true
   section: Connect
+  required: false
 - display: "Auth Redirect URI"
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
   defaultvalue: https://oproxy.demisto.ninja/authcode
   additionalinfo: "Requited. Not relevant for deprecated GSuite Apps setup - see Help section"
+  required: false
 - display: ''
   name: auth_code_creds
-  required: false
   type: 9
   displaypassword: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
   hiddenusername: true
   section: Connect
+  required: false
 - display: "Auth Code (run the !gmail-auth-link command to start the auth flow - see Help section)"
   name: code
-  required: false
   type: 4
   hidden: true
   defaultvalue:
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: First fetch timestamp, in days.
   name: fetch_time
-  required: false
   type: 0
   defaultvalue: 1 days
   additionalinfo:
   section: Collect
+  required: false
 - defaultvalue:
   display: Events query (e.g., "from:example@demisto.com")
   additionalinfo:
   name: query
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
-  required: false
   type: 0
   additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). Default is 50.
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
   additionalinfo:
   section: Connect
   advanced: true
+  required: false
 description: Gmail API using OAuth 2.0.
 display: Gmail Single User
 name: Gmail Single User
 script:
   commands:
   - arguments:
-    - default: false
-      description: A comma-separated list of email addresses of the recipients.
+    - description: A comma-separated list of email addresses of the recipients.
       isArray: true
       name: to
       required: true
-      secret: false
-    - default: false
-      description: Email address of the sender.
-      isArray: false
+    - description: Email address of the sender.
       name: from
-      required: false
-      secret: false
-    - default: false
-      description: The contents (body) of the email to be sent in plain text.
-      isArray: false
+    - description: The contents (body) of the email to be sent in plain text.
       name: body
-      required: false
-      secret: false
-    - default: false
-      description: Subject of the email to be sent. Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation.
-      isArray: false
+    - description: Subject of the email to be sent. Should be the same as the subject of the email you are replying to in order for the reply to be a part of the same conversation.
       name: subject
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of message IDs to reply to.
+    - description: A comma-separated list of message IDs to reply to.
       isArray: true
       name: inReplyTo
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of message IDs to refer to.
+    - description: A comma-separated list of message IDs to refer to.
       isArray: true
       name: references
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of IDs of War Room entries that contain the files that need to be attached to the email.
+    - description: A comma-separated list of IDs of War Room entries that contain the files that need to be attached to the email.
       isArray: true
       name: attachIDs
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of additional recipient email addresses (CC).
+    - description: A comma-separated list of additional recipient email addresses (CC).
       isArray: true
       name: cc
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of additional recipient email addresses (BCC).
+    - description: A comma-separated list of additional recipient email addresses (BCC).
       isArray: true
       name: bcc
-      required: false
-      secret: false
-    - default: false
-      description: The contents (body) of the email to be sent in HTML format.
-      isArray: false
+    - description: The contents (body) of the email to be sent in HTML format.
       name: htmlBody
-      required: false
-      secret: false
-    - default: false
-      description: Address that needs to be used to reply to the message.
-      isArray: false
+    - description: Address that needs to be used to reply to the message.
       name: replyTo
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.
                 Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3
                 To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5
       isArray: true
       name: attachNames
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of CID images to embed as attachments inside the email.
+    - description: A comma-separated list of CID images to embed as attachments inside the email.
       isArray: true
       name: attachCIDs
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
       isArray: true
       name: transientFile
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
       isArray: true
       name: transientFileContent
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
       isArray: true
       name: transientFileCID
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
+    - description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         'Replaces {varname} variables with values from this parameter. Expected values are in the form of a JSON document. For example, {"varname" :{"value" "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value. Note that only context data is accessible for this argument, while incident fields are not.'
-      isArray: false
       name: templateParams
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Text
       description: Whether message response body type is text or HTML.
-      isArray: false
       name: bodyType
       predefined:
       - HTML
       - Text
-      required: false
-      secret: false
-    - default: false
-      description: Indicates whether to render the email body
-      isArray: false
+    - description: Indicates whether to render the email body
       name: renderBody
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Replies to a mail using Gmail.
-    execution: false
     name: reply-mail
     outputs:
     - contextPath: Gmail.SentMail.ID
@@ -292,56 +225,29 @@ script:
       description: The mailbox from which the mail was sent.
       type: String
   - arguments:
-    - default: false
-      description: Email addresses of the receiver.
+    - description: Email addresses of the receiver.
       isArray: true
       name: to
       required: true
-      secret: false
-    - default: false
-      description: The contents (body) of the email to be sent in plain text.
-      isArray: false
+    - description: The contents (body) of the email to be sent in plain text.
       name: body
-      required: false
-      secret: false
-    - default: false
-      description: Subject of the email to be sent.
-      isArray: false
+    - description: Subject of the email to be sent.
       name: subject
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of IDs of War Room entries that contain files, which need be attached to the email.
+    - description: A comma-separated list of IDs of War Room entries that contain files, which need be attached to the email.
       isArray: true
       name: attachIDs
-      required: false
-      secret: false
-    - default: false
-      description: The additional recipient email address (CC).
+    - description: The additional recipient email address (CC).
       isArray: true
       name: cc
-      required: false
-      secret: false
-    - default: false
-      description: The additional recipient email address (BCC).
+    - description: The additional recipient email address (BCC).
       isArray: true
       name: bcc
-      required: false
-      secret: false
-    - default: false
-      description: The contents (body) of the email to be sent in HTML format.
-      isArray: false
+    - description: The contents (body) of the email to be sent in HTML format.
       name: htmlBody
-      required: false
-      secret: false
-    - default: false
-      description: The email address used to reply to the message.
-      isArray: false
+    - description: The email address used to reply to the message.
       name: replyTo
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         A comma-separated list of new names to rename for existing
         attachments, which relates to the order that they were attached to
         the email.
@@ -349,16 +255,10 @@ script:
                 To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5
       isArray: true
       name: attachNames
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of CID images to embed attachments in to the email.
+    - description: A comma-separated list of CID images to embed attachments in to the email.
       isArray: true
       name: attachCIDs
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         The textual name for an attached file. Multiple files are supported
         as a
                 comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt"
@@ -366,35 +266,23 @@ script:
                 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFile
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         The content for the attached file. Multiple files are supported as a
         comma-separated
                 list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
                 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileContent
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The CID image for an attached file to include within the email body. Multiple files are
                 supported as comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt"
                 transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileCID
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example, "headerName1=headerValue1,headerName2=headerValue2".'
+    - description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example, "headerName1=headerValue1,headerName2=headerValue2".'
       isArray: true
       name: additionalHeader
-      required: false
-      secret: false
-    - default: false
-      description: >-
+    - description: >-
         'Replaces {varname} variables with values from this parameter.
         Expected
                values are in the form of a JSON document. For example, {"varname"
@@ -402,30 +290,17 @@ script:
                value", "key": "context key"}}. Each var name can either be provided
         with
                the value or a context key to retrieve the value.'
-      isArray: false
       name: templateParams
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Text
       description: Whether message response body type is text or HTML.
-      isArray: false
       name: bodyType
       predefined:
       - HTML
       - Text
-      required: false
-      secret: false
-    - default: false
-      description: Indicates whether to render the email body
-      isArray: false
+    - description: Indicates whether to render the email body
       name: renderBody
-      required: false
-      secret: false
-    deprecated: false
     description: Sends an email using Gmail.
-    execution: false
     name: send-mail
     outputs:
     - contextPath: Gmail.SentMail.ID
@@ -470,20 +345,13 @@ script:
     description: Tests that Gmail auth is configured properly. Use this command after completing the OAuth2 authentication process.
     outputs: []
   - arguments:
-    - default: false
-      description: The ID of the message to retrieve.
-      isArray: false
+    - description: The ID of the message to retrieve.
       name: message-id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves attachments from a sent Gmail message.
-    execution: false
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.58017
+  dockerimage: demisto/google-api-py3:1.0.0.64100
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

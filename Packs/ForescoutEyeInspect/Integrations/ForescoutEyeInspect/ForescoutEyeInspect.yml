@@ -18,99 +18,69 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Default is 50. Maximum is 200.
   defaultvalue: 50
   display: Maximum incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, like 12 hours, 7 days).
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 description: Delivers flexible and scalable OT/ICS asset visibility.
 display: Forescout EyeInspect
 name: ForescoutEyeInspect
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the last seen timestamp greater than or equal to the provided parameter.
-      isArray: false
+    - description: List only records with the last seen timestamp greater than or equal to the provided parameter.
       name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: Retrieve hosts that are equal to or greater than the specified ID.
-      isArray: false
+    - description: Retrieve hosts that are equal to or greater than the specified ID.
       name: id_min
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of IP addresses. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of IP addresses. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of VLAN IDs. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of VLAN IDs. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: vlan_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of MAC addresses. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of MAC addresses. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: mac_address
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of sensor IDs. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of sensor IDs. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: sensor_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List records and sort them based on the specified field, as well as by ID. Also, the command will filter the results from the returned page.
-      isArray: false
       name: sort_field
       predefined:
       - ip_reuse_domain_id
@@ -164,19 +134,13 @@ script:
       - security_risk
       - operational_risk
       - alert_count
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: false
       description: Indicates whether the result list should be sorted in ascending or descending order.
-      isArray: false
       name: sort_ascending
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     description: Retrieves information about the hosts in the eyeInspect CC database.
     name: forescout-ei-host-list
     outputs:
@@ -220,60 +184,26 @@ script:
       description: The ISO-formatted timestamp of when the host was last seen.
       type: String
   - arguments:
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the src_host_id property set to the specified value.
-      isArray: false
+    - description: List only records with the src_host_id property set to the specified value.
       name: src_host_id
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the dst_host_id property set to the specified value.
-      isArray: false
+    - description: List only records with the dst_host_id property set to the specified value.
       name: dst_host_id
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the proto field containing the specified value.
-      isArray: false
+    - description: List only records with the proto field containing the specified value.
       name: proto
-      required: false
-      secret: false
-    - default: false
-      description: List only records with one of the values of the port property equal to the specified parameter.
-      isArray: false
+    - description: List only records with one of the values of the port property equal to the specified parameter.
       name: port
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the last_seen timestamp greater than or equal to the provided parameter.
-      isArray: false
+    - description: List only records with the last_seen timestamp greater than or equal to the provided parameter.
       name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: Retrieve links that are equal to or greater than the specified ID.
-      isArray: false
+    - description: Retrieve links that are equal to or greater than the specified ID.
       name: id_min
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List records and sort them based on a specific field, as well as on ID.
-      isArray: false
       name: sort_field
       predefined:
       - src_host_id
@@ -284,19 +214,13 @@ script:
       - rx_bytes
       - first_seen
       - last_seen
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: false
       description: Indicates whether the result list should be sorted in ascending or descending order.
-      isArray: false
       name: sort_ascending
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     description: Retrieves information about the links in the eyeInspect CC database.
     name: forescout-ei-link-list
     outputs:
@@ -328,12 +252,9 @@ script:
       description: TCP or UDP ports used in the link.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the vulnerability information record to be retrieved. The CVE ID can be retrieved from public vulnerability databases, such as NVD, or from the "CVEs and IoCs" page inside Forescout EyeInspect.
-      isArray: false
+    - description: The unique ID of the vulnerability information record to be retrieved. The CVE ID can be retrieved from public vulnerability databases, such as NVD, or from the "CVEs and IoCs" page inside Forescout EyeInspect.
       name: cve_id
       required: true
-      secret: false
     description: Retrieves information about a specific vulnerability stored in the eyeInspect CC database.
     name: forescout-ei-vulnerability-info-get
     outputs:
@@ -404,88 +325,41 @@ script:
       description: Description of the proposed vulnerability solution (including to what version to update the software/firmware).
       type: String
   - arguments:
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the timestamp property greater than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
-      isArray: false
+    - description: List only records with the timestamp property greater than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
       name: start_timestamp
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the timestamp property less than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
-      isArray: false
+    - description: List only records with the timestamp property less than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
       name: end_timestamp
-      required: false
-      secret: false
-    - default: false
-      description: List records that have the event_type_id property containing the specified parameter.
-      isArray: false
+    - description: List records that have the event_type_id property containing the specified parameter.
       name: event_type_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: List records that have the l4_proto property equal to the specified parameter.
-      isArray: false
       name: l4_proto
       predefined:
       - TCP
       - UDP
       - ICMP
       - UNDEFINED
-      required: false
-      secret: false
-    - default: false
-      description: List records that have the l7_proto property equal to the specified parameter.
-      isArray: false
+    - description: List records that have the l7_proto property equal to the specified parameter.
       name: l7_proto
-      required: false
-      secret: false
-    - default: false
-      description: List records that have the src_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
-      isArray: false
+    - description: List records that have the src_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
       name: src_ip
-      required: false
-      secret: false
-    - default: false
-      description: List records that have the dst_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
-      isArray: false
+    - description: List records that have the dst_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
       name: dst_ip
-      required: false
-      secret: false
-    - default: false
-      description: List records that have either the src_ip or the dst_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
-      isArray: false
+    - description: List records that have either the src_ip or the dst_ip property equal to the specified parameter, or contained in the given CIDR-defined network.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of severities. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of severities. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of VLAN IDs. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of VLAN IDs. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: vlan_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A comma-separated list of statuses. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: status
@@ -498,38 +372,17 @@ script:
       - Not relevant
       - Unknown
       - Trimmed
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of sensor names. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of sensor names. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: sensor_name
-      required: false
-      secret: false
-    - default: false
-      description: Fetch records that have the dst_port property equal to the specified parameter.
-      isArray: false
+    - description: Fetch records that have the dst_port property equal to the specified parameter.
       name: dst_port
-      required: false
-      secret: false
-    - default: false
-      description: List records that have the src_ip or src_mac property equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
-      isArray: false
+    - description: List records that have the src_ip or src_mac property equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
       name: src_host_id
-      required: false
-      secret: false
-    - default: false
-      description: List records that have the dst_ip or dst_mac property equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
-      isArray: false
+    - description: List records that have the dst_ip or dst_mac property equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
       name: dst_host_id
-      required: false
-      secret: false
-    - default: false
-      description: List records that have either the src_ip, src_mac or dst_ip, dst_mac equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
-      isArray: false
+    - description: List records that have either the src_ip, src_mac or dst_ip, dst_mac equal to the IP address or MAC address of the host with the ID equal to the specified parameter.
       name: host_id
-      required: false
-      secret: false
     description: Retrieves information about the alerts inside eyeInspect CC.
     name: forescout-ei-alert-list
     outputs:
@@ -606,12 +459,9 @@ script:
       description: The status of the alert.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the alert to get the PCAP of.
-      isArray: false
+    - description: The unique ID of the alert to get the PCAP of.
       name: alert_id
       required: true
-      secret: false
     description: Retrieves the PCAP file associated to a given alert.
     name: forescout-ei-alert-pcap-get
     outputs:
@@ -634,59 +484,35 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: false
       description: Whether to retrieve all the sensors (ICS Patrol and passive) or only the passive ones.
-      isArray: false
       name: all_sensors
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of sensor names. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of sensor names. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of IP addresses or domain names. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of IP addresses or domain names. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: address
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of listening ports. The command will filter the results from the returned page according to the provided values.
+    - description: A comma-separated list of listening ports. The command will filter the results from the returned page according to the provided values.
       isArray: true
       name: port
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: A comma-separated list of sensor types. The command will filter the results according to the provided values.
       isArray: true
       name: type
       predefined:
       - PASSIVE
       - PATROL
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: A comma-separated list of sensor states. The command will filter the results from the returned page according to the provided values.
       isArray: true
@@ -698,8 +524,6 @@ script:
       - LICENSE_EXPIRED
       - LICENSE_INVALID
       - UNKNOWN
-      required: false
-      secret: false
     description: Retrieves information about the sensors associated to the eyeInspect CC.
     name: forescout-ei-sensor-list
     outputs:
@@ -728,26 +552,15 @@ script:
       description: Current health status of the sensor.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the sensor to query for modules.
-      isArray: false
+    - description: The unique ID of the sensor to query for modules.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     description: Retrieves information about the modules of the specified sensor.
     name: forescout-ei-sensor-module-list
     outputs:
@@ -779,50 +592,28 @@ script:
       description: Timestamp in ISO format of when the module was last updated.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the sensor that has the module to update.
-      isArray: false
+    - description: The unique ID of the sensor that has the module to update.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      description: The unique ID of the module to update.
-      isArray: false
+    - description: The unique ID of the module to update.
       name: module_id
       required: true
-      secret: false
-    - default: false
-      description: Name of the module.
-      isArray: false
+    - description: Name of the module.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: Description of the module.
-      isArray: false
+    - description: Description of the module.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If set to true, the module will be started. If set to false, the module will be paused.
-      isArray: false
       name: started
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Changes the operational mode of the module to the specified value.
-      isArray: false
       name: operational_mode
       predefined:
       - Learning
       - Detecting
-      required: false
-      secret: false
     description: Changes the specified properties of the specified module.
     name: forescout-ei-sensor-module-update
     outputs:
@@ -854,42 +645,25 @@ script:
       description: Timestamp in ISO format of when the module was last updated.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the sensor of the module to delete.
-      isArray: false
+    - description: The unique ID of the sensor of the module to delete.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      description: The unique ID of the module to delete.
-      isArray: false
+    - description: The unique ID of the module to delete.
       name: module_id
       required: true
-      secret: false
     description: Deletes the specified module from the specified sensor and from the eyeInspect CC database.
     name: forescout-ei-sensor-module-delete
     outputs: []
   - arguments:
-    - default: false
-      description: The unique ID of the sensor for which to retrieve the IP blacklist.
-      isArray: false
+    - description: The unique ID of the sensor for which to retrieve the IP blacklist.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     description: Retrieves the IP blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ip-blacklist-get
     outputs:
@@ -900,48 +674,27 @@ script:
       description: A comment provided by the user. The comment might be empty.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the sensor for which to update the IP blacklist.
-      isArray: false
+    - description: The unique ID of the sensor for which to update the IP blacklist.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      description: The IP address to add to the blacklist.
-      isArray: false
+    - description: The IP address to add to the blacklist.
       name: address
       required: true
-      secret: false
-    - default: false
-      description: A comment about the blacklisted IP address.
-      isArray: false
+    - description: A comment about the blacklisted IP address.
       name: comment
-      required: false
-      secret: false
     description: Adds a new entry to the IP blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ip-blacklist-add
     outputs: []
   - arguments:
-    - default: false
-      description: The unique ID of the sensor that contains the domain blacklist.
-      isArray: false
+    - description: The unique ID of the sensor that contains the domain blacklist.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     description: Retrieves the domain name blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-domain-blacklist-get
     outputs:
@@ -952,49 +705,28 @@ script:
       description: A comment provided by the user. The comment might be empty.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the sensor of the domain to be updated.
-      isArray: false
+    - description: The unique ID of the sensor of the domain to be updated.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      description: The domain name to add to the blacklist.
-      isArray: false
+    - description: The domain name to add to the blacklist.
       name: domain_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: Command and Control server
+    - defaultValue: Command and Control server
       description: A comment about the domain name.
-      isArray: false
       name: comment
-      required: false
-      secret: false
     description: Adds a new entry to the domain name blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-domain-blacklist-add
     outputs: []
   - arguments:
-    - default: false
-      description: The unique ID of the sensor for which to retrieve the SSL client blacklist.
-      isArray: false
+    - description: The unique ID of the sensor for which to retrieve the SSL client blacklist.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     description: Retrieves the SSL client application blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ssl-client-blacklist-get
     outputs:
@@ -1011,54 +743,30 @@ script:
       description: A comment provided by the user. The comment might be empty.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the sensor of the SSL client.
-      isArray: false
+    - description: The unique ID of the sensor of the SSL client.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      description: The related application name to add to the blacklist.
-      isArray: false
+    - description: The related application name to add to the blacklist.
       name: application_name
       required: true
-      secret: false
-    - default: false
-      description: The JA3 hash of a blacklisted client application.
-      isArray: false
+    - description: The JA3 hash of a blacklisted client application.
       name: ja3_hash
       required: true
-      secret: false
-    - default: false
-      description: Comment about the SSL client application.
-      isArray: false
+    - description: Comment about the SSL client application.
       name: comment
-      required: false
-      secret: false
     description: Adds a new entry to the SSL client application blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-ssl-client-blacklist-add
     outputs: []
   - arguments:
-    - default: false
-      description: The unique ID of the sensor for which to retrieve the file operation blacklist.
-      isArray: false
+    - description: The unique ID of the sensor for which to retrieve the file operation blacklist.
       name: sensor_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     description: Retrieves the file operation blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-file-operation-blacklist-get
     outputs:
@@ -1075,16 +783,11 @@ script:
       description: A comment provided by the user. The comment might be empty.
       type: String
   - arguments:
-    - default: false
-      description: The unique ID of the sensor for which to update the file operation blacklist.
-      isArray: false
+    - description: The unique ID of the sensor for which to update the file operation blacklist.
       name: sensor_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The way the file or folder should be matched.
-      isArray: false
       name: matching_type
       predefined:
       - CONTAINS
@@ -1093,29 +796,18 @@ script:
       - MATCHES
       - REGEX
       required: true
-      secret: false
-    - default: false
-      description: The name of the file or folder the entry applies to.
-      isArray: false
+    - description: The name of the file or folder the entry applies to.
       name: file_or_folder
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The name of the file operation.
-      isArray: false
       name: operation
       predefined:
       - WRITE
       - READWRITE
       required: true
-      secret: false
-    - default: false
-      description: A comment provided by the user.
-      isArray: false
+    - description: A comment provided by the user.
       name: comment
-      required: false
-      secret: false
     description: Adds entries to the file operation blacklist from the Industrial Threat Library of the specified sensor.
     name: forescout-ei-file-operation-blacklist-add
     outputs: []
@@ -1140,22 +832,14 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: true
       description: Whether to include Command Center diagnostic logs inside the downloaded zip, in addition to sensors logs. If this value is false, the downloaded zip won't contain the general server logs, but only the logs about the sensors.
-      isArray: false
       name: cc_info
       predefined:
       - "true"
       - "false"
-      required: false
-      secret: false
-    - default: false
-      description: Include logs from a specific sensor by its ID, or all sensors (by specifying All).
-      isArray: false
+    - description: Include logs from a specific sensor by its ID, or all sensors (by specifying All).
       name: sensor_id
-      required: false
-      secret: false
     description: Download the ZIP file that contains diagnostic logs of the Command Center.
     name: forescout-ei-diagnostic-logs-get
     outputs:
@@ -1178,20 +862,12 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     description: Get all group policies.
     name: forescout-ei-group-policy-list
     outputs:
@@ -1208,24 +884,16 @@ script:
       description: List of constraints of the policy.
       type: Unknown
   - arguments:
-    - default: false
-      description: The name of the group policy.
-      isArray: false
+    - description: The name of the group policy.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The description of the group policy.
-      isArray: false
+    - description: The description of the group policy.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]. "
+    - description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]. "
       isArray: true
       name: constraints
       required: true
-      secret: false
     description: Create a new group policy.
     name: forescout-ei-group-policy-create
     outputs:
@@ -1242,30 +910,19 @@ script:
       description: List of constraints of the policy.
       type: Unknown
   - arguments:
-    - default: false
-      description: The unique ID of the policy to be updated.
-      isArray: false
+    - description: The unique ID of the policy to be updated.
       name: policy_id
       required: true
-      secret: false
-    - default: false
-      description: The name of the group policy.
-      isArray: false
+    - description: The name of the group policy.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The description of the group policy.
-      isArray: false
+    - description: The description of the group policy.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]."
+    - description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]."
       isArray: true
       name: constraints
       required: true
-      secret: false
     description: "Update a group policy. Note: Since the entire policy will be overridden, all fields are required."
     name: forescout-ei-group-policy-update
     outputs:
@@ -1282,26 +939,18 @@ script:
       description: List of constraints of the policy.
       type: Unknown
   - arguments:
-    - default: false
-      description: The unique ID of the policy for which the hosts will be added to.
-      isArray: false
+    - description: The unique ID of the policy for which the hosts will be added to.
       name: policy_id
       required: true
-      secret: false
     description: Delete a group policy.
     name: forescout-ei-group-policy-delete
     outputs: []
   - arguments:
-    - default: false
-      description: The unique ID of the policy for which the hosts will be added to.
-      isArray: false
+    - description: The unique ID of the policy for which the hosts will be added to.
       name: policy_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the filter.
-      isArray: false
       name: filter_type
       predefined:
       - address
@@ -1311,27 +960,18 @@ script:
       - firmware_version
       - ip_reuse_domain
       required: true
-      secret: false
-    - default: false
-      description: The value of the filter.
-      isArray: false
+    - description: The value of the filter.
       name: filter_value
       required: true
-      secret: false
     description: Add all hosts not assigned to any policy (individual or group) matching the filter to the group policy.
     name: forescout-ei-group-policy-hosts-assign
     outputs: []
   - arguments:
-    - default: false
-      description: The unique ID of the policy for which the hosts will be removed.
-      isArray: false
+    - description: The unique ID of the policy for which the hosts will be removed.
       name: policy_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the filter.
-      isArray: false
       name: filter_type
       predefined:
       - address
@@ -1341,31 +981,19 @@ script:
       - firmware_version
       - ip_reuse_domain
       required: true
-      secret: false
-    - default: false
-      description: The value of the filter.
-      isArray: false
+    - description: The value of the filter.
       name: filter_value
       required: true
-      secret: false
     description: Unassign all hosts assigned to the group policy matching the filter.
     name: forescout-ei-group-policy-hosts-unassign
     outputs: []
   - arguments:
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     description: Get all IP reuse domains.
     name: forescout-ei-ip-reuse-domain-list
     outputs:
@@ -1388,44 +1016,20 @@ script:
       description: VLAN IDs of the IP reuse domain.
       type: String
   - arguments:
-    - default: false
-      defaultValue: 1
+    - defaultValue: 1
       description: The page number of the results to retrieve (minimum is 1).
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the host_id property equal to the provided parameter.
-      isArray: false
+    - description: List only records with the host_id property equal to the provided parameter.
       name: host_id
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the timestamp property greater than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
-      isArray: false
+    - description: List only records with the timestamp property greater than or equal to the specified value. For example, 2020-05-26T15:00:00.000Z+01:00.
       name: start_timestamp
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the timestamp property less than or equal to the specified value. 2020-05-26T15:00:00.000Z+01:00.
-      isArray: false
+    - description: List only records with the timestamp property less than or equal to the specified value. 2020-05-26T15:00:00.000Z+01:00.
       name: end_timestamp
-      required: false
-      secret: false
-    - default: false
-      description: List only records with the event_type_id property equal to the specified value.
-      isArray: false
+    - description: List only records with the event_type_id property equal to the specified value.
       name: event_type_id
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - hostcl_new_host
@@ -1451,12 +1055,8 @@ script:
       - hostcl_changed_module_name
       - hostcl_changed_module_type
       - hostcl_changed_module_vendor
-    - default: false
-      description: List only records with the event_type_id property equal to the specified value.
-      isArray: false
+    - description: List only records with the event_type_id property equal to the specified value.
       name: event_category
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - PROPERTIES
@@ -1513,11 +1113,8 @@ script:
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_mac_addresses
       description: The MAC addresses associated to the host.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3

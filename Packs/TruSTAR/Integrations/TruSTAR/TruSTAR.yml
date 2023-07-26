@@ -680,6 +680,5 @@ script:
       type: string
     description: Get phishing indicators that match the given criteria.
   dockerimage: demisto/trustar:20.1.0.8039
-  runonce: false
   subtype: python2
 fromversion: 5.0.0

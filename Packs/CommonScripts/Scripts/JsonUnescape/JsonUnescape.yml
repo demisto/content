@@ -15,7 +15,6 @@ outputs:
 - contextPath: JsonUnescape
   description: Unescaped JSON Data
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

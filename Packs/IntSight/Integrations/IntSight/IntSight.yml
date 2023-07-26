@@ -4,7 +4,7 @@ commonfields:
 sectionOrder:
 - Connect
 - Collect
-name: IntSights (Deprecated)
+name: IntSights
 display: IntSights (Deprecated)
 category: Data Enrichment & Threat Intelligence
 description: Deprecated. Use Rapid7 Threat Command instead.
@@ -24,58 +24,58 @@ configuration:
 - display: 'Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP"'
   name: type
   type: 0
-  required: false
   section: Collect
   advanced: true
+  required: false
 - display: 'Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)'
   name: severity_level
   defaultvalue: All
   type: 0
-  required: false
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
   section: Collect
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   defaultvalue: 1 day
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Max fetch
   defaultvalue: '50'
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Sub Account ID (MSSP accounts only)
   name: mssp_sub_account_id
   type: 0
-  required: false
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -929,7 +929,6 @@ script:
       related: ""
     description: Request and receive enrichment of an IOC.
   isfetch: true
-  runonce: false
   subtype: python3
   dockerimage: demisto/python3:3.10.10.51930
 fromversion: 5.0.0

@@ -13,11 +13,10 @@ contentitemexportablefields:
     fromServerVersion: ""
 dependson:
   must: []
-dockerimage: demisto/python3:3.10.9.44472
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: DeleteIncidentsByQuery
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

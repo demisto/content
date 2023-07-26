@@ -2,8 +2,9 @@ import demistomock as demisto
 from CommonServerPython import *
 import requests
 import os
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def get_response(url: str, use_head: str, verify_ssl: bool) -> requests.Response:

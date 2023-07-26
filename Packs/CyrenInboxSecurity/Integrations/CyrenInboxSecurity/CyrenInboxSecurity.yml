@@ -3,20 +3,17 @@ commonfields:
   id: Cyren Inbox Security
   version: -1
 configuration:
-- additionalinfo: The endpoint  provided by your Cyren Representative. (use "sample"
-    to test)
+- additionalinfo: The endpoint  provided by your Cyren Representative. (use "sample" to test)
   display: Server URL
   name: url
   required: true
   type: 0
-- additionalinfo: The client iD provided by your Cyren Representative. (use "sample"
-    to test)
+- additionalinfo: The client iD provided by your Cyren Representative. (use "sample" to test)
   display: Client ID
   name: client_id
   required: true
   type: 0
-- additionalinfo: The client secret provided by your Cyren Representative. (use "sample"
-    to test)
+- additionalinfo: The client secret provided by your Cyren Representative. (use "sample" to test)
   display: Client Secret
   name: client_secret
   required: true
@@ -25,25 +22,22 @@ configuration:
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: "10"
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
-description: Cyren Inbox Security is an innovative solution that safeguards Office
-  365 mailboxes in your organization against evasive phishing, business email compromise
-  (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into
-  XSOAR, and includes a playbook for incident resolution.
+  required: false
+description: Cyren Inbox Security is an innovative solution that safeguards Office 365 mailboxes in your organization against evasive phishing, business email compromise (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into XSOAR, and includes a playbook for incident resolution.
 display: Cyren Inbox Security
 name: Cyren Inbox Security
 script:
@@ -89,9 +83,8 @@ script:
     - contextPath: Cyren.data.status
       description: status of actions performed
       type: string
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

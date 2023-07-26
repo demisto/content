@@ -328,7 +328,6 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
-  runonce: false
 tests:
 - No tests - no instance
 fromversion: 5.0.0

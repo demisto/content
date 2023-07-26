@@ -24,17 +24,17 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Provides commands for interaction with Prisma SASE API.
 display: Palo Alto Networks - Prisma SASE
 name: Palo Alto Networks - Prisma SASE
@@ -42,10 +42,8 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -54,25 +52,18 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
     - auto: PREDEFINED
-      default: false
       defaultValue: pre
       description: Rule position.
-      isArray: false
       name: position
       predefined:
       - pre
       - post
-    - default: false
-      description: The name of the security rule.
-      isArray: false
+    - description: The name of the security rule.
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       description: Rule action.
-      isArray: false
       name: action
       predefined:
       - deny
@@ -82,104 +73,61 @@ script:
       - reset-server
       - reset-both
       required: true
-    - default: false
-      description: The security rule's description.
-      isArray: false
+    - description: The security rule's description.
       name: description
-      required: false
-    - default: false
-      description: Rule log setting.
-      isArray: false
+    - description: Rule log setting.
       name: log_setting
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: A comma-separated list of applications.
       isArray: true
       name: application
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: A comma-separated list of categories. You can get category values by running the prisma-sase-custom-url-category-list command.
       isArray: true
       name: category
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: A comma-separated list of destination networks.
       isArray: true
       name: destination
-      required: false
-    - default: false
-      description: A comma-separated list of destination HIPs.
+    - description: A comma-separated list of destination HIPs.
       isArray: true
       name: destination_hip
-      required: false
-    - default: false
-      description: Security profiles to apply to the traffic.
-      isArray: false
+    - description: Security profiles to apply to the traffic.
       name: profile_setting
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: Services the rule applies to.
       name: service
-      isArray: false
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: A comma-separated list of source networks.
       isArray: true
       name: source
-      required: false
-    - default: false
-      description: A comma-separated list of source HIPs.
+    - description: A comma-separated list of source HIPs.
       isArray: true
       name: source_hip
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: A semi-colon (;) separated list of source users or groups.
       isArray: true
       name: source_user
-      required: false
-    - default: false
-      description: A comma-separated list of rule tags.
+    - description: A comma-separated list of rule tags.
       isArray: true
       name: tag
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: A comma-separated list of source zones.
       isArray: true
       name: from
-      required: false
-    - default: false
-      defaultValue: any
+    - defaultValue: any
       description: A comma-separated list of destination zones.
       isArray: true
       name: to
-      required: false
-    - default: false
-      description: Whether the rule is disabled.
-      isArray: false
+    - description: Whether the rule is disabled.
       name: disabled
-      required: false
-    - default: false
-      description: Negate the source.
-      isArray: false
+    - description: Negate the source.
       name: negate_source
-      required: false
-    - default: false
-      description: Negate the destination.
-      isArray: false
+    - description: Negate the destination.
       name: negate_destination
-      required: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Create a new security rule.
-    execution: false
     name: prisma-sase-security-rule-create
     outputs:
     - contextPath: PrismaSase.SecurityRule
@@ -234,10 +182,8 @@ script:
     - description: The name of the object to use as a filter.
       name: name
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -246,39 +192,25 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
     - defaultValue: 'pre'
       description: Security rule position.
-      isArray: false
       name: position
       auto: PREDEFINED
-      default: false
       predefined:
       - pre
       - post
-    - isArray: false
-      name: limit
+    - name: limit
       description: The maximum number of results to return.
       defaultValue: '50'
-      required: false
-    - default: false
-      isArray: false
-      name: page
+    - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    - default: false
-      description: Number of results per page to display.
-      isArray: false
+    - description: Number of results per page to display.
       name: page_size
     - description: A specific security rule to return. If not specified, all security rules will be returned.
       name: rule_id
-      default: false
-      isArray: false
-      required: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Lists all security rules.
-    execution: false
     name: prisma-sase-security-rule-list
     outputs:
     - contextPath: PrismaSase.SecurityRule
@@ -336,40 +268,25 @@ script:
       description: Security rule negate destination.
       type: Boolean
   - arguments:
-    - default: false
-      description: Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections).
-      isArray: false
+    - description: Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections).
       name: folders
       required: true
-    - default: false
-      description: Configuration push job description.
-      isArray: false
+    - description: Configuration push job description.
       name: description
-      required: false
-    - default: false
-      description: interval for polling command. Default is 30.
+    - description: interval for polling command. Default is 30.
       name: interval_in_seconds
-      required: false
     - description: Polling timeout in seconds.
       name: polling_timeout_in_seconds
       defaultValue: '600'
-    - default: false
-      description: For polling use - the job id of the push job.
-      isArray: false
+    - description: For polling use - the job id of the push job.
       name: job_id
-      required: false
       deprecated: true
-    - default: false
-      description: For polling use - wether the paret process finished and child processes were creted.
-      isArray: false
+    - description: For polling use - wether the paret process finished and child processes were creted.
       name: parent_finished
-      required: false
       deprecated: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Push the candidate configuration.
-    execution: false
     name: prisma-sase-candidate-config-push
     polling: true
     outputs:
@@ -383,16 +300,12 @@ script:
       description: The configuration push details.
       type: String
   - arguments:
-    - default: false
-      description: ID of the rule to be changed.
-      isArray: false
+    - description: ID of the rule to be changed.
       name: rule_id
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -401,20 +314,15 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
     - auto: PREDEFINED
-      default: false
       defaultValue: pre
       description: Security rule position.
-      isArray: false
       name: position
       predefined:
       - pre
       - post
     - auto: PREDEFINED
-      default: false
       description: Rule action.
-      isArray: false
       name: action
       predefined:
       - deny
@@ -423,105 +331,59 @@ script:
       - reset-client
       - reset-server
       - reset-both
-    - default: false
-      description: The security rule's description.
-      isArray: false
+    - description: The security rule's description.
       name: description
-      required: false
-    - default: false
-      description: Rule log setting.
-      isArray: false
+    - description: Rule log setting.
       name: log_setting
-      required: false
-    - default: false
-      description: A comma-separated list of applications.
+    - description: A comma-separated list of applications.
       isArray: true
       name: application
-      required: false
-    - default: false
-      description: A comma-separated list of categories.
+    - description: A comma-separated list of categories.
       isArray: true
       name: category
-      required: false
-    - default: false
-      description: A comma-separated list of destination networks.
+    - description: A comma-separated list of destination networks.
       isArray: true
       name: destination
-      required: false
-    - default: false
-      description: A comma-separated list of destination HIPs.
+    - description: A comma-separated list of destination HIPs.
       isArray: true
       name: destination_hip
-      required: false
-    - default: false
-      description: Security profiles to apply to the traffic.
-      isArray: false
+    - description: Security profiles to apply to the traffic.
       name: profile_setting
-      required: false
-    - default: false
-      description: Services the rule applies to.
-      isArray: false
+    - description: Services the rule applies to.
       name: service
-      required: false
-    - default: false
-      description: A comma-separated list of source networks.
+    - description: A comma-separated list of source networks.
       isArray: true
       name: source
-      required: false
-    - default: false
-      description: A comma-separated list of source HIPs.
+    - description: A comma-separated list of source HIPs.
       isArray: true
       name: source_hip
-      required: false
-    - default: false
-      description: A semi-colon (;) separated list of source user(s).
-      isArray: false
+    - description: A semi-colon (;) separated list of source user(s).
       name: source_user
-      required: false
-    - default: false
-      description: A comma-separated list of rule tags.
+    - description: A comma-separated list of rule tags.
       isArray: true
       name: tag
-      required: false
-    - default: false
-      description: A comma-separated list of source zones.
+    - description: A comma-separated list of source zones.
       isArray: true
       name: from
-      required: false
-    - default: false
-      description: A comma-separated list of destination zones.
+    - description: A comma-separated list of destination zones.
       isArray: true
       name: to
-      required: false
-    - default: false
-      description: Whether the rule is disabled.
-      isArray: false
+    - description: Whether the rule is disabled.
       name: disabled
-      required: false
-    - default: false
-      description: Negate source
-      isArray: false
+    - description: Negate source
       name: negate_source
-      required: false
-    - default: false
-      description: Negate the destination.
-      isArray: false
+    - description: Negate the destination.
       name: negate_destination
-      required: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to overwrite the original rule values.
-      isArray: false
       name: overwrite
       predefined:
       - 'true'
       - 'false'
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Update an existing security rule.
-    execution: false
     name: prisma-sase-security-rule-update
     outputs:
     - contextPath: PrismaSase.SecurityRule
@@ -570,16 +432,12 @@ script:
       description: Security rule to field (destination zone(s)).
       type: String
   - arguments:
-    - default: false
-      description: ID of the address object to edit.
-      isArray: false
+    - description: ID of the address object to edit.
       name: object_id
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -588,38 +446,25 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      description: The address object's description.
-      isArray: false
+    - description: The address object's description.
       name: description
-      required: false
     - auto: PREDEFINED
-      default: false
       description: "The type of the address. \nThe optional types are: \nIP Netmask: IP address or a network using the slash notation - ip_address/mask.\nIP Range: Range of IP addresses using the notation ip_address-ip_address.\nIP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask.\nFQDN: Domain Name."
-      isArray: false
       name: type
       predefined:
       - ip_netmask
       - ip_range
       - ip_wildcard
       - fqdn
-      required: false
-    - default: false
-      description: The address value (should match the type)
-      isArray: false
+    - description: The address value (should match the type)
       name: address_value
       required: true
-    - default: false
-      description: A comma-separated list of address object tags.
+    - description: A comma-separated list of address object tags.
       isArray: true
       name: tag
-      required: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Update an existing address object.
-    execution: false
     name: prisma-sase-address-object-update
     outputs:
     - contextPath: PrismaSase.Address.description
@@ -641,30 +486,18 @@ script:
       description: Address name.
       type: String
   - arguments:
-    - default: false
-      description: A specific config job to return. If not specified, all config jobs will be returned.
-      isArray: false
+    - description: A specific config job to return. If not specified, all config jobs will be returned.
       name: job_id
-      required: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-    - default: false
-      isArray: false
-      name: page
+    - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    - default: false
-      isArray: false
-      name: page_size
+    - name: page_size
       description: Number of results per page to display.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Lists all configuration jobs.
-    execution: false
     name: prisma-sase-config-job-list
     outputs:
     - contextPath: PrismaSase.ConfigJob.description
@@ -710,23 +543,17 @@ script:
       description: Configuration job uname.
       type: String
   - arguments:
-    - default: false
-      description: Rule ID of the rule to be deleted.
-      isArray: false
+    - description: Rule ID of the rule to be deleted.
       name: rule_id
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Delete a specific security rule.
-    execution: false
     name: prisma-sase-security-rule-delete
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -735,21 +562,13 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      description: The name of the address object.
-      isArray: false
+    - description: The name of the address object.
       name: name
       required: true
-    - default: false
-      description: The address object's description.
-      isArray: false
+    - description: The address object's description.
       name: description
-      required: false
     - auto: PREDEFINED
-      default: false
       description: "The type of the address. \nThe optional types are: \nIP Netmask: IP address or a network using the slash notation - ip_address/mask.\nIP Range: Range of IP addresses using the notation ip_address-ip_address.\nIP Wildcard: IP wildcard address in the format of an IPv4 address followed by a slash and a mask.\nFQDN: Domain Name."
-      isArray: false
       name: type
       predefined:
       - ip_netmask
@@ -757,21 +576,15 @@ script:
       - ip_wildcard
       - fqdn
       required: true
-    - default: false
-      description: A comma-separated list of address object tags.
+    - description: A comma-separated list of address object tags.
       isArray: true
       name: tag
-      required: false
-    - default: false
-      description: The address value (should match the type)
-      isArray: false
+    - description: The address value (should match the type)
       name: address_value
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Create a new address object.
-    execution: false
     name: prisma-sase-address-object-create
     outputs:
     - contextPath: PrismaSase.Address
@@ -798,28 +611,19 @@ script:
   - arguments:
     - description: ID of the address object to delete.
       name: object_id
-      default: false
-      isArray: false
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Delete a specific address object.
-    execution: false
     name: prisma-sase-address-object-delete
   - arguments:
     - description: The name of the object to use as a filter.
       name: name
-    - default: false
-      description: The specific address object to return. If not specified, all addresses will be returned.
-      isArray: false
+    - description: The specific address object to return. If not specified, all addresses will be returned.
       name: object_id
-      required: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -828,27 +632,17 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
     - auto: PREDEFINED
-      default: false
       defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-    - default: false
-      isArray: false
-      name: page
+    - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-    - default: false
-      isArray: false
-      name: page_size
+    - name: page_size
       description: Number of results per page to display.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Lists all addresses objects.
-    execution: false
     name: prisma-sase-address-object-list
     outputs:
     - contextPath: PrismaSase.Address.description
@@ -872,18 +666,12 @@ script:
   - arguments:
     - description: The name of the object to use as a filter.
       name: name
-    - default: false
-      description: A specific tag to return. If not specified, all tags will be returned.
-      isArray: false
+    - description: A specific tag to return. If not specified, all tags will be returned.
       name: tag_id
-      required: false
     - defaultValue: 'Shared'
       description: The configuration folder group setting.
-      isArray: false
       name: folder
-      required: false
       auto: PREDEFINED
-      default: false
       predefined:
       - Shared
       - Mobile Users
@@ -891,24 +679,16 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-    - isArray: false
-      name: limit
+    - name: limit
       description: The maximum number of results to return.
       defaultValue: '50'
-      required: false
-    - default: false
-      isArray: false
-      name: page
+    - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - description: Number of results per page to display.
       name: page_size
-      default: false
-      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Lists all tags.
-    execution: false
     name: prisma-sase-tag-list
     outputs:
     - contextPath: PrismaSase.Tag.id
@@ -928,10 +708,8 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -940,16 +718,11 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      description: The tag unique name.
-      isArray: false
+    - description: The tag unique name.
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       description: Tag color.
-      isArray: false
       name: color
       predefined:
       - Red
@@ -993,17 +766,11 @@ script:
       - Mahogany
       - Burnt Sienna
       - Chestnut
-      required: false
-    - default: false
-      description: Tag comments.
-      isArray: false
+    - description: Tag comments.
       name: comments
-      required: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Create a new tag.
-    execution: false
     name: prisma-sase-tag-create
     outputs:
     - contextPath: PrismaSase.Tag.id
@@ -1024,9 +791,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       description: The configuration folder group setting.
-      default: false
       defaultValue: Shared
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1035,16 +800,11 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      description: The tag ID.
-      isArray: false
+    - description: The tag ID.
       name: tag_id
       required: true
     - auto: PREDEFINED
-      default: false
       description: Tag color.
-      isArray: false
       name: color
       predefined:
       - Red
@@ -1088,17 +848,11 @@ script:
       - Mahogany
       - Burnt Sienna
       - Chestnut
-      required: false
-    - default: false
-      description: Tag comments.
-      isArray: false
+    - description: Tag comments.
       name: comments
-      required: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Update an existing tag.
-    execution: false
     name: prisma-sase-tag-update
     outputs:
     - contextPath: PrismaSase.Tag.id
@@ -1117,28 +871,19 @@ script:
       description: The tag comments.
       type: String
   - arguments:
-    - default: false
-      description: The specific tag to delete
-      isArray: false
+    - description: The specific tag to delete
       name: tag_id
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
     description: Delete a specific tag.
-    execution: false
     name: prisma-sase-tag-delete
   - arguments:
     - description: The name of the object to use as a filter.
       name: name
-    - default: false
-      description: A specific address group to return. If not specified, all address groups will be returned.
-      isArray: false
+    - description: A specific address group to return. If not specified, all address groups will be returned.
       name: group_id
-      required: false
-    - default: false
-      isArray: false
-      name: folder
+    - name: folder
       description: The configuration folder group setting.
       auto: PREDEFINED
       defaultValue: Shared
@@ -1149,23 +894,14 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      isArray: false
-      name: limit
+    - name: limit
       description: The maximum number of results to return.
-    - default: false
-      isArray: false
-      name: page
+    - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - description: Number of results per page to display.
       name: page_size
-      default: false
-      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Lists all address groups.
     name: prisma-sase-address-group-list
     outputs:
@@ -1186,10 +922,8 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1198,40 +932,24 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
     - auto: PREDEFINED
-      default: false
-      isArray: false
       description: The address group type.
       name: type
       predefined:
       - static
       - dynamic
       required: true
-    - default: false
-      description: Static addresses for the address group. If the type is static, a value must be provided.
-      isArray: false
+    - description: Static addresses for the address group. If the type is static, a value must be provided.
       name: static_addresses
-      required: false
-    - default: false
-      description: Dynamic filter for the address group. If the type is dynamic, a value must be provided.
-      isArray: false
+    - description: Dynamic filter for the address group. If the type is dynamic, a value must be provided.
       name: dynamic_filter
-      required: false
-    - default: false
-      isArray: false
-      name: description
+    - name: description
       description: The address group's description.
-      required: false
-    - default: false
-      isArray: false
-      name: name
+    - name: name
       required: true
       description: The name of the address group.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Create a new address group.
     name: prisma-sase-address-group-create
     outputs:
@@ -1254,16 +972,12 @@ script:
       description: The address group filter.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: group_id
+    - name: group_id
       description: The ID of the address group.
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1272,32 +986,20 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      isArray: false
-      name: static_addresses
+    - name: static_addresses
       description: Static addresses for the address group. If the type is static, a value must be provided.
-    - default: false
-      isArray: false
-      name: dynamic_filter
+    - name: dynamic_filter
       description: Dynamic filter for the address group. If the type is dynamic, a value must be provided.
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       description: Rather to overwrite existing data.
       name: overwrite
       predefined:
       - 'true'
       - 'false'
-      required: false
-    - default: false
-      isArray: false
-      name: description
+    - name: description
       description: The address group's description.
     - auto: PREDEFINED
-      default: false
-      isArray: false
       name: type
       predefined:
       - dynamic
@@ -1305,8 +1007,6 @@ script:
       description: The address group type.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Update an existing address group.
     name: prisma-sase-address-group-update
     outputs:
@@ -1329,28 +1029,19 @@ script:
       description: The address group filter.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: group_id
+    - name: group_id
       description: The name of the address group.
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Delete a specific address group.
     name: prisma-sase-address-group-delete
   - arguments:
     - description: The name of the object to use as a filter.
       name: name
-    - default: false
-      description: A specific URL category to return. If not specified, all URL categories will be returned.
-      isArray: false
+    - description: A specific URL category to return. If not specified, all URL categories will be returned.
       name: id
-      required: false
-    - default: false
-      isArray: false
-      name: folder
+    - name: folder
       description: The configuration folder group setting.
       auto: PREDEFINED
       defaultValue: Shared
@@ -1361,23 +1052,14 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      isArray: false
-      name: limit
+    - name: limit
       description: The maximum number of results to return.
-    - default: false
-      isArray: false
-      name: page
+    - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - description: Number of results per page to display.
       name: page_size
-      default: false
-      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Lists all custom URL categories.
     name: prisma-sase-custom-url-category-list
     outputs:
@@ -1401,10 +1083,8 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1413,35 +1093,24 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
     - auto: PREDEFINED
-      default: false
-      isArray: false
       description: The custom URL category's type.
       name: type
       predefined:
       - URL List
       - Category Match
       required: true
-    - default: false
-      description: If the type is URL List, the value will be a comma-separated array of URL addresses. If the type is Category Match, the value will be a comma-separated array of category names. You can get the names by running the prisma-sase-url-access-profile-list command.
+    - description: If the type is URL List, the value will be a comma-separated array of URL addresses. If the type is Category Match, the value will be a comma-separated array of category names. You can get the names by running the prisma-sase-url-access-profile-list command.
       isArray: true
       name: value
       required: true
-    - default: false
-      isArray: false
-      name: description
+    - name: description
       description: The custom URL category's description.
-      required: false
-    - default: false
-      isArray: false
-      name: name
+    - name: name
       required: true
       description: The name of the custom URL category.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Create a new URL category.
     name: prisma-sase-custom-url-category-create
     outputs:
@@ -1464,16 +1133,12 @@ script:
       description: The URL category description.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: id
+    - name: id
       required: true
       description: The custom URL category ID.
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1482,37 +1147,25 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      isArray: false
-      name: value
-      required: false
+    - name: value
       description: The custom URL category's value.
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       name: overwrite
       predefined:
       - 'true'
       - 'false'
       description: Whether to overwrite the original custom URL category values.
-    - default: false
-      isArray: false
-      name: description
+    - name: description
       description: The custom URL category's description.
     - auto: PREDEFINED
       description: The custom URL category's type.
-      isArray: false
       name: type
       predefined:
       - URL List
       - Category Match
-      required: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Update an existing url category.
     name: prisma-sase-custom-url-category-update
     outputs:
@@ -1535,28 +1188,19 @@ script:
       description: The URL category description.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: id
+    - name: id
       required: true
       description: The custom URL category ID.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Delete a specific URL category.
     name: prisma-sase-custom-url-category-delete
   - arguments:
     - description: The name of the object to use as a filter.
       name: name
-    - default: false
-      description: A specific external dynamic list to return. If not specified, all external dynamic lists will be returned.
-      isArray: false
+    - description: A specific external dynamic list to return. If not specified, all external dynamic lists will be returned.
       name: id
-      required: false
-    - default: false
-      isArray: false
-      name: folder
+    - name: folder
       description: The configuration folder group setting.
       auto: PREDEFINED
       defaultValue: Shared
@@ -1567,23 +1211,14 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      isArray: false
-      name: limit
+    - name: limit
       description: The maximum number of results to return.
-    - default: false
-      isArray: false
-      name: page
+    - name: page
       description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
     - description: Number of results per page to display.
       name: page_size
-      default: false
-      isArray: false
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Lists all external dynamic lists.
     name: prisma-sase-external-dynamic-list-list
     outputs:
@@ -1609,16 +1244,12 @@ script:
       description: The external dynamic list frequency.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: name
+    - name: name
       required: true
       description: The external dynamic list name.
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1627,14 +1258,10 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
-    - default: false
-      isArray: false
-      name: description
+    - name: description
       description: The dynamic list's description.
     - auto: PREDEFINED
       required: true
-      isArray: false
       name: type
       predefined:
       - predefined_ip
@@ -1644,9 +1271,7 @@ script:
       - url
       description: The dynamic list's type.
     - auto: PREDEFINED
-      isArray: false
       name: predefined_ip_list
-      required: false
       predefined:
       - panw-torexit-ip-list
       - panw-bulletproof-ip-list
@@ -1654,20 +1279,14 @@ script:
       - panw-known-ip-list
       description: The predefined IP list. If the type is predefined_ip, a value must be provided.
     - auto: PREDEFINED
-      isArray: false
       name: predefined_url_list
-      required: false
       description: The predefined URL list. If the type is predefined_url, a value must be provided.
       predefined:
       - panw–auth-portal-exclude-list
-    - default: false
-      isArray: false
-      name: source_url
+    - name: source_url
       description: The source URL. If the type is ip, url or domain, a value must be provided.
     - auto: PREDEFINED
-      isArray: false
       name: frequency
-      required: false
       description: Frequency to check for updates. The default value is five minutes.
       predefined:
       - five_minute
@@ -1675,14 +1294,10 @@ script:
       - daily
       - weekly
       - monthly
-    - default: false
-      isArray: false
-      name: frequency_hour
+    - name: frequency_hour
       description: The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23.
     - auto: PREDEFINED
-      isArray: false
       name: day_of_week
-      required: false
       description: The day of the week. If the frequency argument is weekly or monthly, value must be provided.
       predefined:
       - monday
@@ -1692,18 +1307,12 @@ script:
       - friday
       - saturday
       - sunday
-    - default: false
-      isArray: false
-      name: day_of_month
+    - name: day_of_month
       description: The day of the month. If the frequency argument is monthly, value must be provided. Possible values are between 1 and 31.
-    - default: false
-      isArray: false
-      name: exception_list
+    - name: exception_list
       description: The user can exclude certain addresses from the list depending on the type of list.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Create a new dynamic list.
     name: prisma-sase-external-dynamic-list-create
     outputs:
@@ -1729,16 +1338,12 @@ script:
       description: The external dynamic list frequency.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: id
+    - name: id
       required: true
       description: The external dynamic list ID.
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1747,23 +1352,16 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-      required: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      isArray: false
       name: overwrite
       predefined:
       - 'true'
       - 'false'
       description: Whether to overwrite the original external dynamic list values.
-    - default: false
-      isArray: false
-      name: description
+    - name: description
       description: The dynamic list's description.
     - auto: PREDEFINED
-      default: false
-      isArray: false
       name: type
       predefined:
       - predefined_ip
@@ -1773,9 +1371,7 @@ script:
       - url
       description: The dynamic list's type.
     - auto: PREDEFINED
-      isArray: false
       name: predefined_ip_list
-      required: false
       predefined:
       - panw-torexit-ip-list
       - panw-bulletproof-ip-list
@@ -1783,20 +1379,14 @@ script:
       - panw-known-ip-list
       description: The predefined ip list. If the type is predefined_ip, a value must be provided.
     - auto: PREDEFINED
-      isArray: false
       name: predefined_url_list
-      required: false
       description: The predefined URL list. If the type is predefined_url, a value must be provided.
       predefined:
       - panw–auth-portal-exclude-list
-    - default: false
-      isArray: false
-      name: source_url
+    - name: source_url
       description: The source URL. If the type is ip, url or domain, a value must be provided.
     - auto: PREDEFINED
-      isArray: false
       name: frequency
-      required: false
       description: Frequency to check for updates.
       predefined:
       - five_minute
@@ -1804,14 +1394,10 @@ script:
       - daily
       - weekly
       - monthly
-    - default: false
-      isArray: false
-      name: frequency_hour
+    - name: frequency_hour
       description: The frequency hour. If the frequency argument is daily, weekly or monthly, value must be provided. Possible values are 00-23.
     - auto: PREDEFINED
-      isArray: false
       name: day_of_week
-      required: false
       description: The day of the week. If the frequency argument is weekly or monthly, a value must be provided.
       predefined:
       - monday
@@ -1821,18 +1407,12 @@ script:
       - friday
       - saturday
       - sunday
-    - default: false
-      isArray: false
-      name: day_of_month
+    - name: day_of_month
       description: The day of the month. If the frequency argument is monthly, a value must be provided. Possible values are between 1 and 31.
-    - default: false
-      isArray: false
-      name: exception_list
+    - name: exception_list
       description: The user can exclude certain addresses from the list depending on the type of list.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Update an existing dynamic list.
     name: prisma-sase-external-dynamic-list-update
     outputs:
@@ -1858,23 +1438,17 @@ script:
       description: The external dynamic list frequency.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-      name: id
+    - name: id
       required: true
       description: The external dynamic list ID.
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Delete a specific dynamic list.
     name: prisma-sase-external-dynamic-list-delete
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: Shared
       description: The configuration folder group setting.
-      isArray: false
       name: folder
       predefined:
       - Shared
@@ -1885,15 +1459,9 @@ script:
       - Mobile Users Explicit Proxy
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    deprecated: false
-    execution: false
     description: Get all predefined URL categories.
     name: prisma-sase-url-category-list
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

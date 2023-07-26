@@ -12,83 +12,46 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: With Google Cloud Logging, users can centralize all their logs in a single location, making it easier to troubleshoot issues and gain insights from their data.
 display: Google Cloud Logging
 name: GoogleCloudLogging
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
-      isArray: false
+    - description: 'A comma-separated list of projects names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       name: project_name
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
-      isArray: false
+    - description: 'A comma-separated list of organizations names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       name: organization_name
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
-      isArray: false
+    - description: 'A comma-separated list of billing accounts names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       name: billing_account_name
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
-      isArray: false
+    - description: 'A comma-separated list of folders names of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.'
       name: folder_name
-      required: false
-      secret: false
-    - default: false
-      description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name"
-      isArray: false
+    - description: When specified, the results returned are limited to log entries that match the filter. Referencing a parent resource that is not listed in resourceNames will cause the filter to return no results. The maximum length of a filter is 20,000 characters. E.g., "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name"
       name: filter
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: timestamp asc
       description: How the results should be sorted.
-      isArray: false
       name: order_by
       predefined:
       - timestamp asc
       - timestamp desc
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of objects to return.
-      isArray: false
+    - description: The maximum number of objects to return.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected.
-      isArray: false
+    - description: The maximum number of results to return from this request. Default is 50. If the value is negative or exceeds 1000, the request is rejected.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.
-      isArray: false
+    - description: If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response.
       name: next_token
-      required: false
-      secret: false
-    deprecated: false
     description: Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account.
-    execution: false
     name: gcp-logging-log-entries-list
     outputs:
     - contextPath: GoogleCloudLogging.LogsEntry.logName
@@ -220,12 +183,11 @@ script:
     - contextPath: GoogleCloudLogging.nextPageToken
       description: If there might be more results than those appearing in this response, then nextPageToken is included.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/google-api-py3:1.0.0.64100
+  dockerimage: demisto/google-api-py3:1.0.0.65791
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

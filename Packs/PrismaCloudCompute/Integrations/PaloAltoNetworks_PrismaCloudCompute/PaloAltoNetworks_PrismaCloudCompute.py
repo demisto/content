@@ -1,9 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib.parse
 from collections import defaultdict
 
-
-import demistomock as demisto
-from CommonServerPython import *
 
 ''' IMPORTS '''
 import urllib3

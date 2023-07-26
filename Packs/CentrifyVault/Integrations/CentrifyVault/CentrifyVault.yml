@@ -22,16 +22,16 @@ configuration:
 - additionalinfo: Entity which defines the endpoint(s) that a client may access
   display: Scope of the Centrify OAuth App
   name: scope
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Leverage the Centrify Vault integration to create and manage Secrets.
 display: Centrify Vault
 name: Centrify Vault
@@ -273,7 +273,7 @@ script:
       required: true
     description: Delete set from the Centrify Vault
     name: centrify-delete-set
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

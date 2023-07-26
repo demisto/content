@@ -11,8 +11,7 @@ configuration:
   defaultvalue: my-firewall.example.tld
   type: 0
   required: true
-  additionalinfo: Do not include http:// or https:// or any trailing slash (/) on
-    the end
+  additionalinfo: Do not include http:// or https:// or any trailing slash (/) on the end
 - display: Firewall Management TCP Port
   name: ngfw_port
   defaultvalue: "443"
@@ -50,20 +49,20 @@ configuration:
   name: csp_tls_verify
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: Verify Palo Alto Networks Customer Support Portal (CSP) TLS Certificate
+  required: false
 - display: XSOAR System Proxy
   name: system_proxy
   defaultvalue: "false"
   type: 8
-  required: false
   additionalinfo: Use the configured system proxy for XSOAR to route requests
+  required: false
 - display: Enable Verbose Output
   name: system_debug
   defaultvalue: "false"
   type: 8
-  required: false
   additionalinfo: Enable Verbose (Debug) Output - Do NOT enable unless needed!
+  required: false
 - display: Customer Account Name
   name: slr_account_name
   defaultvalue: ACME Inc
@@ -131,8 +130,7 @@ configuration:
   - Utilities
   - Waste Management
   - Wholesale & Retail
-  additionalinfo: Tailors certain portions of the output to the relevant industry
-    chosen
+  additionalinfo: Tailors certain portions of the output to the relevant industry chosen
 - display: Language
   name: slr_language
   defaultvalue: English
@@ -190,8 +188,7 @@ script:
     - contextPath: AutoSLR.generate.job_status
       description: Returns true when completed, false is an error occured
       type: boolean
-    description: Checks the status of the stats_dump.tar.gz generation job, returns
-      true when completed
+    description: Checks the status of the stats_dump.tar.gz generation job, returns true when completed
   - name: autoslr-ngfw-download
     arguments:
     - name: job_id
@@ -299,11 +296,9 @@ script:
     - contextPath: AutoSLR.params.system_verbose
       description: Enable/Disable Verbose Log Output
       type: boolean
-    description: This command will dump all the non-sensitive parameters to the context,
-      useful for debugging purposes
+    description: This command will dump all the non-sensitive parameters to the context, useful for debugging purposes
     execution: true
   dockerimage: demisto/xml-feed:1.0.0.29458
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 # Std imports
 from datetime import datetime, timezone
@@ -10,8 +12,6 @@ import urllib3
 from akamai.edgegrid import EdgeGridAuth
 
 # Local imports
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 """GLOBALS/PARAMS
