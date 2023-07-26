@@ -1028,6 +1028,7 @@ def test_invite_user(mocker):
 
 def test_get_team_routing_rules(mocker):
     mock_client = OpsGenieV3.Client(base_url="")
-    mocker.patch.object(mock_client, 'get_team_routing_rules', return_value=util_load_json('test_data/get_team_routing_rules.json'))
+    mocker.patch.object(mock_client, 'get_team_routing_rules',
+                        return_value=util_load_json('test_data/get_team_routing_rules.json'))
     res = OpsGenieV3.get_team_routing_rules(mock_client, {'team_id': " a6604a9f-b152-54c-b31-1b9741c109"})
     assert (res.raw_response == util_load_json('test_data/get_team_routing_rules.json'))
