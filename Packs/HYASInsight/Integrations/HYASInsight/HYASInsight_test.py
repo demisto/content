@@ -37,9 +37,9 @@ OPEN_SOURCE_RESPONSE = util_load_json('test_data/open_source_response.json')
 SINKHOLE_RESPONSE = util_load_json('test_data/sinkhole_response.json')
 MALWARE_INFO_RESPONSE = util_load_json('test_data/malware_info_response.json')
 ASSOCIATED_IPS_INPUT = [{'ipv4': '8.8.8.8'}]
-ASSOCIATED_DOMAINS_INPUT = [{'domain': 'butterfly.bigmoney.biz'}]
+ASSOCIATED_DOMAINS_INPUT = [{'domain': 'google.com'}]
 ASSOCIATED_IPS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d', 'ips': ['8.8.8.8']}
-ASSOCIATED_DOMAINS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d', 'domains': ['butterfly.bigmoney.biz']}
+ASSOCIATED_DOMAINS = {'md5': '1d0a97c41afe5540edd0a8c1fb9a0f2d', 'domains': ['google.com']}
 
 
 @pytest.mark.parametrize('raw_response, expected', [(PASSIVE_DNS_RESPONSE, PASSIVE_DNS_RESPONSE)])
@@ -79,7 +79,7 @@ def test_get_dynamic_dns_records_by_indicator(mocker, raw_response, expected):
                                                                        'indicator_value': '4.4.4.4',
                                                                        'limit': 1})
     command_results_domain = get_dynamic_dns_records_by_indicator(client, {'indicator_type': 'domain',
-                                                                           'indicator_value': 'fluber12.duckdns.org',
+                                                                           'indicator_value': 'google.com',
                                                                            'limit': 1})
 
     command_results_email = get_dynamic_dns_records_by_indicator(client, {'indicator_type': 'email',
@@ -164,7 +164,7 @@ def test_get_malware_samples_records_by_indicator(mocker, raw_response, expected
                                                                              'limit': 1})
 
     command_results_domain = get_malware_samples_records_by_indicator(client, {'indicator_type': 'domain',
-                                                                               'indicator_value': 'butterfly.bigmoney.biz',
+                                                                               'indicator_value': 'google.com',
                                                                                'limit': 1})
 
     command_results_md5 = get_malware_samples_records_by_indicator(client, {'indicator_type': 'md5',
@@ -280,7 +280,7 @@ def test_get_passive_hash_by_indicator(mocker, raw_response, expected):
 
     command_results_ipv4 = get_passive_hash_records_by_indicator(client, {
         'indicator_type': 'ipv4',
-        'indicator_value': '103.14.120.241',
+        'indicator_value': '4.4.4.4',
         'limit': 1})
 
     command_results_domain = get_passive_hash_records_by_indicator(client, {
@@ -358,7 +358,7 @@ def test_get_device_geo_record_by_ip_address(mocker, raw_response, expected):
     mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
 
     command_results_ipv4 =\
-        get_device_geo_records_by_ip_address(client, {'indicator_type': 'ipv4', 'indicator_value': '103.14.120.241', 'limit': 1})
+        get_device_geo_records_by_ip_address(client, {'indicator_type': 'ipv4', 'indicator_value': '4.4.4.4', 'limit': 1})
 
     context_ip = command_results_ipv4.to_context()['Contents']
     assert context_ip == expected
@@ -376,7 +376,7 @@ def test_get_device_geo_record_by_ip_address(mocker, raw_response, expected):
 def test_get_sinkhole_record_by_ipv4_address(mocker, raw_response, expected):
     mocker.patch.object(client, 'query', side_effect=[raw_response] * 5)
 
-    command_results_ipv4 = get_sinkhole_records_by_ipv4_address(client, {'ipv4': '88.218.16.156', 'limit': 1})
+    command_results_ipv4 = get_sinkhole_records_by_ipv4_address(client, {'ipv4': '4.4.4.4', 'limit': 1})
 
     context_ip = command_results_ipv4.to_context()['Contents']
     assert context_ip == expected
