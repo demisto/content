@@ -1839,3 +1839,21 @@ Removed the following commands in this version:
   * *OpsGenieV2.CloseAlert.status* - replaced by *OpsGenie.ClosedAlert.status*.
   * *OpsGenieV2.CloseAlert.success* - replaced by *OpsGenie.ClosedAlert.success*.
   
+### opsgenie-get-team-routing-rules
+
+***
+Lists team routing rules.
+
+#### Base Command
+
+`opsgenie-get-team-routing-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| team_id | The ID of the team from Opsgenie. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
