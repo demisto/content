@@ -185,11 +185,11 @@ def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker
     mocker.patch.object(client, 'token_generator', return_value='123')
     response = requests.Response()
     response._content = b'{"result":{"result":{"entry":[{"@name":"test","text":"test"}]}}}'
-
     response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
     mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
 
     client.session_metadata["headers"] = 'test'
+    client.session_metadata["dit"] = 0
     policy_optimizer_get_unused_apps_command(
         client=client, args={
             'position': position
@@ -205,7 +205,7 @@ def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker
                                                                                        'application/member': 'unused',
                                                                                        'action': 'allow'},
                                                                    'pageContext': 'app_usage', 'field': '$.bytes',
-                                                                   'direction': 'DESC'}]], 'type': 'rpc', 'tid': 1}
+                                                                   'direction': 'DESC'}]], 'type': 'rpc', 'tid': 2}
 
 
 CLIENTS = [
