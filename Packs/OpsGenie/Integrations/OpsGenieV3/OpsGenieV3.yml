@@ -116,6 +116,9 @@ script:
       name: source
     - description: Additional alert note.
       name: note
+    - name: details
+      description: Map of key-value pairs to use as custom properties of the alert.
+      type: keyValue
     description: Create an alert in Opsgenie.
     name: opsgenie-create-alert
     polling: true
