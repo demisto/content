@@ -11,7 +11,6 @@ configuration:
   defaultvalue: Worldwide
   display: Endpoint Type
   name: endpoint_type
-  required: false
   type: 15
   section: Connect
   options:
@@ -24,6 +23,7 @@ configuration:
   - DoD
   - Custom
   advanced: true
+  required: false
 - display: Tenant ID
   name: tenant_id
   required: true
@@ -45,89 +45,76 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '30'
   additionalinfo: The time limit in seconds for fetch alerts to run. Leave this empty to cancel the timeout limit.
   display: Fetch alerts timeout
   name: fetch_timeout
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '1000'
   display: Number of alerts for each fetch.
   name: limit
-  required: false
   type: 0
   additionalinfo: Due to API limitations, the maximum is 10,000.
   section: Collect
+  required: false
 - display: Fetch events
   name: isFetchEvents
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
-  required: false
   type: 0
   section: Connect
   advanced: true
-  hidden: false
   additionalinfo: |-
     More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-365-defender-event-collector
+  required: false
 - display: Verify SSL Certificate
   name: verify
-  required: false
   type: 8
   section: Connect
   advanced: true
   defaultvalue: 'true'
-  hidden: false
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Microsoft 365 Defender Event Collector integration.
 display: Microsoft Defender for Endpoint Event Collector
 name: Microsoft 365 Defender Event Collector
 script:
   commands:
-  - deprecated: false
-    description: Returns a list of alerts.
-    execution: false
+  - description: Returns a list of alerts.
     name: microsoft-365-defender-get-events
     arguments:
     - description: The maximum number of alerts per fetch.
       defaultValue: '1000'
       isArray: true
       name: limit
-      required: false
-      secret: false
     - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
       defaultValue: 3 days
       isArray: true
       name: first_fetch
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: 'false'
       description: Whether to push the fetched event to XSIAM or not.
-      isArray: false
       name: push_to_xsiam
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-  isfetch: false
   isfetchevents: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

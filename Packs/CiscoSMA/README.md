@@ -10,6 +10,13 @@ The Cisco Security Management Appliance (SMA) is used to centralize services fro
 - Centralized Reporting - get Cisco SMA's statistics reports.
 - Fetch quarantine messages as incidents.
 
+## Configuration on Server Side
+Please follow the steps described [here](https://www.cisco.com/c/en/us/td/docs/security/security_management/sma/sma14-0/b_sma_admin_guide_14_0/b_NGSMA_Admin_Guide_chapter_01100.html#con_1062565)
+
+*Note:
+The logs will receive the correct timezone only when the UTC timezone is set.*
+
+
 This pack contains an integration, whose main purpose is to centralize services from Cisco Email Security Appliances (ESAs) in Cisco Security Management Appliance services.
 
 ### Broker VM

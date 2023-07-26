@@ -15,30 +15,30 @@ configuration:
   name: email
   defaultvalue: ""
   type: 0
-  required: false
   hidden: true
+  required: false
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: Email
   name: credentials_login
-  required: false
   type: 9
   displaypassword: Password
   section: Connect
+  required: false
 - display: API Token
   name: token
   type: 4
-  required: false
   hidden: true
-- displaypassword: API Token
-  name:  credentials_api_token
   required: false
+- displaypassword: API Token
+  name: credentials_api_token
   hiddenusername: true
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -89,15 +89,13 @@ script:
     arguments:
     - name: sensorId
       default: true
-      description: The ID of the individual sensor. If empty, will query all available
-        sensors.
+      description: The ID of the individual sensor. If empty, will query all available sensors.
     description: Returns the specified, or all available sensors.
   - name: protectwise-show-sensors
     arguments:
     - name: sensorId
       default: true
-      description: The ID of the individual sensor. If empty, will query all available
-        sensors.
+      description: The ID of the individual sensor. If empty, will query all available sensors.
     outputs:
     - contextPath: Protectwise.Sensor.id
       description: The ID of the sensor.
@@ -117,25 +115,18 @@ script:
     arguments:
     - name: start
       required: true
-      description: 'The timestamp of the start time of the event. For example, 1401451200000,
-        or 2015-03-25T12:00:00.'
+      description: 'The timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'The timestamp of the end of the event. For example, 1401451500000,
-        or 2015-03-25T12:00:00.'
+      description: 'The timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00.'
     - name: eventType
-      description: 'Filter by one or more event types. Can be: "MaliciousFlow", "KillChainEscalation",
-        or "MaliciousConversation".'
+      description: 'Filter by one or more event types. Can be: "MaliciousFlow", "KillChainEscalation", or "MaliciousConversation".'
     - name: killChainStage
-      description: 'Filter by killchain stage. Can be: "Methodology", "Recon", "Delivery",
-        "Exploit", "Beacon", "CnC", "Fortification", or Data_Theft".'
+      description: 'Filter by killchain stage. Can be: "Methodology", "Recon", "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or Data_Theft".'
     - name: threatLevel
-      description: 'Filter by the threat level. Can be: "NONE", "LOW", "MEDIUM", or
-        "HIGH".'
+      description: 'Filter by the threat level. Can be: "NONE", "LOW", "MEDIUM", or "HIGH".'
     - name: threatCategory
-      description: 'Filter by the threat category. Can be: "ExploitsAndAttacks", "DenialOfService",
-        "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost",
-        "APT", "Misc", or "Unknown".'
+      description: 'Filter by the threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: observationStage
       description: 'Filter by the observation stage. Can be: "Realtime" or "Retrospective".'
     - name: ip
@@ -145,36 +136,26 @@ script:
     - name: maxLimit
       description: The maximum number of results to return per page.
     - name: reverseOrder
-      description: Whether to sort results by descending timestamp. If "true", results
-        are returned in descending timestamp order. If "false", results are returned
-        in ascending timestamp order. Default is "true".
+      description: Whether to sort results by descending timestamp. If "true", results are returned in descending timestamp order. If "false", results are returned in ascending timestamp order. Default is "true".
     - name: nextPage
       description: An identifier to fetch the next page in the result set.
-    description: Searches for events. Events are resources that describe a threat
-      and contain a collection of observations.
+    description: Searches for events. Events are resources that describe a threat and contain a collection of observations.
   - name: protectwise-search-events
     arguments:
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event. For example, 1401451200000,
-        or 2015-03-25T12:00:00.'
+      description: 'Timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: Timestamp of the end of the event. For example, 1401451500000,
-        or 2015-03-25T12:00:00.
+      description: Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00.
     - name: eventType
-      description: 'Filters by one or more event types. Can be: "MaliciousFlow:, "KillChainEscalation",
-        or "MaliciousConversation".'
+      description: 'Filters by one or more event types. Can be: "MaliciousFlow:, "KillChainEscalation", or "MaliciousConversation".'
     - name: killChainStage
-      description: 'Filters by the killchain stage. Can be: "Methodology", "Recon",
-        "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or "Data_Theft".'
+      description: 'Filters by the killchain stage. Can be: "Methodology", "Recon", "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or "Data_Theft".'
     - name: threatLevel
-      description: 'Filters by Low, Medium, or High threats. Can be: "NONE", "LOW",
-        "MEDIUM", or "HIGH".'
+      description: 'Filters by Low, Medium, or High threats. Can be: "NONE", "LOW", "MEDIUM", or "HIGH".'
     - name: threatCategory
-      description: 'Filters by threat category. Can be: "ExploitsAndAttacks", "DenialOfService",
-        "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost",
-        "APT", "Misc", or "Unknown".'
+      description: 'Filters by threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: observationStage
       description: Filters by Realtime or Retrospective.
     - name: ip
@@ -214,9 +195,7 @@ script:
       description: The number of netflows related to this event.
     - contextPath: Protectwise.Event.observedStage
       description: The observed stage (Realtime or Retrospective).
-    description: Searches for events. Events are resources that describe a threat
-      and contains a collection of observations. Deprecated - use the protectwise-search-events
-      command.
+    description: Searches for events. Events are resources that describe a threat and contains a collection of observations. Deprecated - use the protectwise-search-events command.
   - name: pw-event-get
     deprecated: true
     arguments:
@@ -294,8 +273,7 @@ script:
       description: The ID of the related Netflow for this observation.
     - contextPath: Protectwise.Event.Observations.observedStage
       description: The observed stage of the observation.
-    description: Searches for a single event in ProtectWise. Deprecated - use the
-      protectwise-event-info command.
+    description: Searches for a single event in ProtectWise. Deprecated - use the protectwise-event-info command.
   - name: observation-search
     deprecated: true
     arguments:
@@ -304,15 +282,12 @@ script:
       description: The sensor ID or a comma-separated list of sensor IDs.
     - name: start
       required: true
-      description: 'The timestamp of the start time of the event. For example, 1401451200000,
-        or 2015-03-25T12:00:00'
+      description: 'The timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00'
     - name: end
       required: true
-      description: 'The timestamp of the end of the event. For example, 1401451500000,
-        or 2015-03-25T12:00:00'
+      description: 'The timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00'
     - name: type
-      description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep",
-        "protocol" or "file".'
+      description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol" or "file".'
     - name: hasKillChain
       description: Search for observations in every kill chain stage (true false)
     - name: killChainStage
@@ -324,8 +299,7 @@ script:
     - name: threatCategory
       description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
     - name: signatureId
-      description: 'Filter by threat signature (find observations of the same type
-        of threat) -  Example: 69020504'
+      description: 'Filter by threat signature (find observations of the same type of threat) -  Example: 69020504'
     - name: minLimit
       description: Try to return at least this many results per page
     - name: maxLimit
@@ -339,37 +313,27 @@ script:
     arguments:
     - name: sensorId
       required: true
-      description: The ID of the individual sensor or a comma-separated list of Sensor
-        IDs.
+      description: The ID of the individual sensor or a comma-separated list of Sensor IDs.
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event. For example, 1401451200000,
-        or 2015-03-25T12:00:00.'
+      description: 'Timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event. For example, 1401451500000,
-        or 2015-03-25T12:00:00'
+      description: 'Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00'
     - name: type
-      description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep",
-        "protocol", or "file".'
+      description: 'Filter by observation type. Can be: "ids", "http", "iprep", "urlrep", "protocol", or "file".'
     - name: hasKillChain
-      description: 'Searches for observations in every kill chain stage. Can be: "true"
-        or "false".'
+      description: 'Searches for observations in every kill chain stage. Can be: "true" or "false".'
     - name: killChainStage
-      description: 'Filter by killchain stage. Can be: "Methodology", "Recon", "Delivery",
-        "Exploit", "Beacon", "CnC", "Fortification", or "Data_Theft".'
+      description: 'Filter by killchain stage. Can be: "Methodology", "Recon", "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or "Data_Theft".'
     - name: ip
       description: Filter observations by IP address in the src/dst fields.
     - name: threatLevel
-      description: 'Filter by Low, Medium, or High threats. Can be: "NONE", "LOW",
-        "MEDIUM", or "HIGH".'
+      description: 'Filter by Low, Medium, or High threats. Can be: "NONE", "LOW", "MEDIUM", or "HIGH".'
     - name: threatCategory
-      description: 'Filter by threat category. Can be: "ExploitsAndAttacks", "DenialOfService",
-        "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost",
-        "APT", "Misc", or "Unknown".'
+      description: 'Filter by threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: signatureId
-      description: 'Filter by threat signature. Finds observations of the same type
-        of threat). For example, 69020504.'
+      description: 'Filter by threat signature. Finds observations of the same type of threat). For example, 69020504.'
     - name: minLimit
       description: Minimum number of results per page.
     - name: maxLimit
@@ -403,8 +367,7 @@ script:
       description: The ID of the Netflow attached to this observation.
     - contextPath: Protectwise.Observation.observedStage
       description: The attack stage reflected by the observation.
-    description: Searches for observations in ProtectWise. Deprecated - use the protectwise-search-observations
-      command.
+    description: Searches for observations in ProtectWise. Deprecated - use the protectwise-search-observations command.
   - name: pw-observation-get
     deprecated: true
     arguments:
@@ -413,8 +376,7 @@ script:
       description: The ID of the observation.
     - name: sensorId
       required: true
-      description: The ID of an individual sensor or a comma-separated list of sensor
-        IDs.
+      description: The ID of an individual sensor or a comma-separated list of sensor IDs.
     description: Searches for a single observation in ProtectWise.
   - name: protectwise-observation-info
     arguments:
@@ -449,8 +411,7 @@ script:
       description: The ID of the Netflow tied to this observation.
     - contextPath: Protectwise.Observation.observedStage
       description: The attack stage reflected by the observation.
-    description: Lookup a single observation for ProtectWise. Deprecated - use the
-      protectwise-event-pcap-download command.
+    description: Lookup a single observation for ProtectWise. Deprecated - use the protectwise-event-pcap-download command.
   - name: event-pcap-download
     deprecated: true
     arguments:
@@ -469,8 +430,7 @@ script:
       description: The ID of the event.
     - name: filename
       description: The filename for the download.
-    description: Event Pcap Download. Deprecated - use the protectwise-event-pcap-info
-      command.
+    description: Event Pcap Download. Deprecated - use the protectwise-event-pcap-info command.
   - name: event-pcap-info
     deprecated: true
     arguments:
@@ -490,8 +450,7 @@ script:
       description: The ID of the Event.
     - contextPath: Protectwise.Event.PCAPSize
       description: Estimated PCAP size in bytes.
-    description: Get ProtectWise Event Pcap info. Deprecated - use the protectwise-observation-pcap-download
-      command.
+    description: Get ProtectWise Event Pcap info. Deprecated - use the protectwise-observation-pcap-download command.
   - name: observation-pcap-download
     deprecated: true
     arguments:
@@ -516,8 +475,7 @@ script:
       description: The ID of the sensor.
     - name: filename
       description: The filename for the download.
-    description: Downloads the Observation PCAP file. Deprecated - use the protectwise-observation-pcap-info
-      command.
+    description: Downloads the Observation PCAP file. Deprecated - use the protectwise-observation-pcap-info command.
   - name: observation-pcap-info
     deprecated: true
     arguments:

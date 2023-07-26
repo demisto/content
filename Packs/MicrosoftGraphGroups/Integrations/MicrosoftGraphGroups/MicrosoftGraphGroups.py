@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Dict, Tuple, Optional, Any
-import demistomock as demisto
 import urllib3
-from CommonServerPython import *
 
 # Disable insecure warnings
 

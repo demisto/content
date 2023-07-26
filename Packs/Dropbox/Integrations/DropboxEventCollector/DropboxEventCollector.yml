@@ -22,89 +22,63 @@ configuration:
 - defaultvalue: 7 days
   display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_from
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 500
   display: The maximum number of events per fetch.
   additionalinfo: If you're encountering timeouts, consider decreasing this value.
   name: limit
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Collect events from Dropbox's logs.
 display: Dropbox Event Collector
 name: DropboxEventsCollector
 script:
   commands:
-  - deprecated: false
-    description: Starts the authentication.
-    execution: false
+  - description: Starts the authentication.
     name: dropbox-auth-start
   - arguments:
-    - default: false
-      description: The code that returns from Dropbox.
-      isArray: false
+    - description: The code that returns from Dropbox.
       name: code
       required: true
-      secret: false
-    deprecated: false
     description: Completes the authentication.
-    execution: false
     name: dropbox-auth-complete
-  - deprecated: false
-    description: Tests the authentication.
-    execution: false
+  - description: Tests the authentication.
     name: dropbox-auth-test
-  - deprecated: false
-    description: Resets the authentication.
-    execution: false
+  - description: Resets the authentication.
     name: dropbox-auth-reset
   - arguments:
-    - default: false
-      description: The maximum events to fetch.
-      isArray: false
+    - description: The maximum events to fetch.
       name: limit
       defaultValue: 500
-      required: false
-      secret: false
     - description: Set this argument to true to create events, otherwise the command only displays them.
       auto: PREDEFINED
       defaultValue: 'false'
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
       - 'false'
       required: true
-    - default: false
-      description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days).
-      isArray: false
+    - description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days).
       name: from
       defaultValue: 3 days
-      required: false
-      secret: false
-    deprecated: false
     description: Get events.
-    execution: false
     name: dropbox-get-events
   dockerimage: demisto/fastapi:1.0.0.64153
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

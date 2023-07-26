@@ -2,7 +2,7 @@
     "name": "Microsoft AD FS Collection",
     "description": "Microsoft Active Directory Federation Services",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,16 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "dependencies": {
-        "MicrosoftCore": {
-            "mandatory": true,
-            "display_name": "Microsoft Logs Base"
-        },
-        "MicrosoftWindowsEvents": {
-            "mandatory": false,
-            "display_name": "Microsoft Windows Event Logs"
-        }
-    },
     "marketplaces": [
         "marketplacev2"
     ]

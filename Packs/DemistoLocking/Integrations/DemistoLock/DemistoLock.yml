@@ -20,10 +20,10 @@ configuration:
   name: sync
   defaultvalue: "false"
   type: 8
-  required: false
   additionalinfo: Whether to sync the integration cache with the database (Available from Cortex XSOAR 6.2.0).
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: javascript
@@ -53,7 +53,6 @@ script:
   - name: demisto-lock-release-all
     arguments: []
     description: Release all locks
-  runonce: false
 marketplaces:
 - xsoar
 fromversion: 5.0.0

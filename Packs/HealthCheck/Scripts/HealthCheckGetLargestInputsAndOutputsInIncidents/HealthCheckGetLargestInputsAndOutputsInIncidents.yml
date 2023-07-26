@@ -16,7 +16,6 @@ dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckGetLargestInputsAndOutputsInIncidents
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
@@ -26,4 +25,4 @@ fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 marketplaces:
-  - xsoar
+- xsoar

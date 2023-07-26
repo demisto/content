@@ -497,7 +497,6 @@ script:
       description: Host operation system
     description: Gets host information from McAfee Active Response
   dockerimage: demisto/dxl:1.0.0.63890
-  runonce: false
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

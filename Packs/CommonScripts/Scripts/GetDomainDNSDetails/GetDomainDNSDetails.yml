@@ -1,31 +1,18 @@
 args:
-- default: false
-  description: The domain to query
-  isArray: false
+- description: The domain to query
   name: domain
   required: true
-  secret: false
-- default: false
-  description: "IP of the DNS Server to use (default: system settings)"
-  isArray: false
+- description: "IP of the DNS Server to use (default: system settings)"
   name: server
-  required: false
-  secret: false
-- default: false
-  description: "Use TCP for the query (default: false)"
-  isArray: false
+- description: "Use TCP for the query (default: false)"
   name: use_tcp
-  secret: false
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
   defaultValue: 'false'
-- default: false
-  description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)"
-  isArray: false
+- description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)"
   name: qtype
-  secret: false
   defaultValue: CNAME,NS,A,AAAA
 comment: Returns DNS details for a domain
 commonfields:
@@ -52,7 +39,6 @@ outputs:
   description: Name server that returned the result.
   type: String
 script: '-'
-system: false
 tags: []
 timeout: '0'
 type: python

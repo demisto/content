@@ -6,7 +6,6 @@ dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckNumberOfEngines
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

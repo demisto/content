@@ -7,30 +7,30 @@ commonfields:
   version: -1
 configuration:
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Token
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Token
   name: token
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Provides data enrichment for domains and IP addresses.
 display: JsonWhoIs
 name: JsonWhoIs
@@ -39,13 +39,9 @@ script:
   - arguments:
     - default: true
       description: URL, IP, or domain to enrich.
-      isArray: false
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Provides data enrichment for domains, URLs, and IP addresses.
-    execution: false
     name: whois
     outputs:
     - contextPath: Domain.WHOIS.DomainStatus
@@ -94,9 +90,6 @@ script:
       description: Admin phone number.
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

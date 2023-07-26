@@ -5,20 +5,20 @@ commonfields:
 configuration:
 - display: QSentry API URL (optional)
   name: remote
-  required: false
   type: 0
+  required: false
 - display: Qintel Token
   name: token
   required: true
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -31,8 +31,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -41,18 +41,14 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
-description: 'QSentry queries help measure the likelihood that a user is masking their
-  identity using publicly or privately available proxy or VPN services.  The returns
-  also flag any known fraud associations.  QSentry aggregates data from Qintel’s proprietary
-  Deep and DarkWeb research, as well as from commercially available anonymization
-  services.'
+  required: false
+description: 'QSentry queries help measure the likelihood that a user is masking their identity using publicly or privately available proxy or VPN services.  The returns also flag any known fraud associations.  QSentry aggregates data from Qintel’s proprietary Deep and DarkWeb research, as well as from commercially available anonymization services.'
 display: Qintel QSentry
 name: QintelQSentry
 script:
@@ -63,10 +59,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Queries Qintel for IP reputation data
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -108,7 +101,6 @@ script:
     - contextPath: Qintel.IP.LastObserved
       description: Last observed time
       type: string
-  isfetch: false
   runonce: false
   script: '-'
   type: python

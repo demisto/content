@@ -39,7 +39,8 @@ def test_storage_account_list(client, mocker):
     """
     api_response = util_load_json('./test_data/storage_account_list_response.json')
     mocker.patch.object(ASClient, "storage_account_list_request", return_value=api_response)
-    result = storage_account_list(client=client, args={})
+    result = storage_account_list(client=client, args={}, params={'subscription_id': subscription_id,
+                                                                  'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Account List\n' \
                   '|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|\n' \
                   '|---|---|---|---|---|---|---|\n' \
@@ -65,7 +66,9 @@ def test_storage_account_single(client, mocker):
     """
     api_response = util_load_json('test_data/storage_account_single_response.json')
     mocker.patch.object(ASClient, "storage_account_list_request", return_value=api_response)
-    result = storage_account_list(client=client, args={'account_name': 'account_name'})
+    result = storage_account_list(client=client, args={'account_name': 'account_name'},
+                                  params={'subscription_id': subscription_id,
+                                          'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Account List\n' \
                   '|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|\n' \
                   '|---|---|---|---|---|---|---|\n| ' \
@@ -92,7 +95,9 @@ def test_storage_account_create_update(client, mocker):
     response._content = json.dumps(api_response).encode('utf-8')
     mocker.patch.object(ASClient, "storage_account_create_update_request", return_value=response)
     result = storage_account_create_update(client=client, args={'account_name': 'account_name', "sku": "Standard_GRS",
-                                                                "kind": "Storage", "location": "eastus"})
+                                                                "kind": "Storage", "location": "eastus"},
+                                           params={'subscription_id': subscription_id,
+                                                   'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Account\n' \
                   '|Account Name|Subscription ID|Resource Group|Kind|Status Primary|Status Secondary|Location|\n' \
                   '|---|---|---|---|---|---|---|\n' \
@@ -117,7 +122,9 @@ def test_storage_blob_service_properties_get(client, mocker):
     """
     api_response = util_load_json('test_data/blob_service_properties_get_response.json')
     mocker.patch.object(ASClient, "storage_blob_service_properties_get_request", return_value=api_response)
-    result = storage_blob_service_properties_get(client=client, args={'account_name': 'account_name'})
+    result = storage_blob_service_properties_get(client=client, args={'account_name': 'account_name'},
+                                                 params={'subscription_id': subscription_id,
+                                                         'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Blob Service Properties\n' \
                   '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n'\
                   '|---|---|---|---|---|---|---|\n' \
@@ -142,7 +149,9 @@ def test_storage_blob_service_properties_set(client, mocker):
     """
     api_response = util_load_json('test_data/blob_service_properties_set_response.json')
     mocker.patch.object(ASClient, "storage_blob_service_properties_set_request", return_value=api_response)
-    result = storage_blob_service_properties_set(client=client, args={'account_name': 'account_name'})
+    result = storage_blob_service_properties_set(client=client, args={'account_name': 'account_name'},
+                                                 params={'subscription_id': subscription_id,
+                                                         'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Blob Service Properties\n' \
                   '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n' \
                   '|---|---|---|---|---|---|---|\n' \
@@ -170,7 +179,9 @@ def test_storage_blob_containers_create(client, mocker):
     mocker.patch.object(ASClient, "storage_blob_containers_create_update_request", return_value=api_response)
 
     result = storage_blob_containers_create(client=client, args={'account_name': 'account_name',
-                                                                 'container_name': 'test'})
+                                                                 'container_name': 'test'},
+                                            params={'subscription_id': subscription_id,
+                                                    'resource_group_name': resource_group_name})
 
     expected_hr = '### Azure Storage Blob Containers Properties\n' \
                   '|Name|Account Name|Subscription ID|Resource Group|\n' \
@@ -199,7 +210,9 @@ def test_storage_blob_containers_update(client, mocker):
     mocker.patch.object(ASClient, "storage_blob_containers_create_update_request", return_value=api_response)
 
     result = storage_blob_containers_update(client=client, args={'account_name': 'account_name',
-                                                                 'container_name': 'test'})
+                                                                 'container_name': 'test'},
+                                            params={'subscription_id': subscription_id,
+                                                    'resource_group_name': resource_group_name})
 
     expected_hr = '### Azure Storage Blob Containers Properties\n' \
                   '|Name|Account Name|Subscription ID|Resource Group|Public Access|\n' \
@@ -227,7 +240,9 @@ def test_storage_blob_containers_list(client, mocker):
 
     mocker.patch.object(ASClient, "storage_blob_containers_list_request", return_value=api_response)
 
-    result = storage_blob_containers_list(client=client, args={'account_name': 'account_name'})
+    result = storage_blob_containers_list(client=client, args={'account_name': 'account_name'},
+                                          params={'subscription_id': subscription_id,
+                                                  'resource_group_name': resource_group_name})
 
     expected_hr = '### Azure Storage Blob Containers list\n' \
                   '|Container Name|Account Name|Subscription ID|Resource Group|Public ' \
@@ -260,7 +275,9 @@ def test_storage_blob_containers_single(client, mocker):
     mocker.patch.object(ASClient, "storage_blob_containers_list_request", return_value=api_response)
 
     result = storage_blob_containers_list(client=client, args={'account_name': 'account_name',
-                                                               'container_name': 'test'})
+                                                               'container_name': 'test'},
+                                          params={'subscription_id': subscription_id,
+                                                  'resource_group_name': resource_group_name})
 
     expected_hr = '### Azure Storage Blob Containers list\n' \
                   '|Container Name|Account Name|Subscription ID|Resource Group|Public ' \

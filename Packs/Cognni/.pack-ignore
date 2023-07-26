@@ -1,5 +1,3 @@
 [file:README.md]
 ignore=RM104
 
-[file:Cognni.yml]
-ignore=IN145

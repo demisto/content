@@ -12,70 +12,62 @@ configuration:
   name: apikey
   required: true
   type: 4
-- additionalinfo: Set this to determine the RST Threat Feed score that will determine
-    if an IP is malicious (0-100)
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine if an IP is malicious (0-100)
   defaultvalue: '55'
   display: Score threshold for IP reputation command
   name: threshold_ip
   required: true
   type: 0
-- additionalinfo: Set this to determine the RST Threat Feed score that will determine
-    if a domain is malicious (0-100)
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine if a domain is malicious (0-100)
   defaultvalue: '45'
   display: Score threshold for domain reputation command
   name: threshold_domain
   required: true
   type: 0
-- additionalinfo: Set this to determine the RST Threat Feed score that will determine
-    if a url is malicious (0-100)
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine if a url is malicious (0-100)
   defaultvalue: '35'
   display: Score threshold for url reputation command
   name: threshold_url
   required: true
   type: 0
-- additionalinfo: Set this to determine the RST Threat Feed score that will determine
-    if a hash is malicious (0-100)
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine if a hash is malicious (0-100)
   defaultvalue: '10'
   display: Score threshold for hash reputation command
   name: threshold_hash
-  required: false
   type: 0
-- additionalinfo: Mark IP indicators older than indicator_expiration_ip value in days
-    as Suspicious ignoring the last available score
+  required: false
+- additionalinfo: Mark IP indicators older than indicator_expiration_ip value in days as Suspicious ignoring the last available score
   defaultvalue: '7'
   display: IP Indicator Expiration (days)
   name: indicator_expiration_ip
   required: true
   type: 0
-- additionalinfo: Mark domain indicators older than indicator_expiration_domain value
-    in days as Suspicious ignoring the last available score
+- additionalinfo: Mark domain indicators older than indicator_expiration_domain value in days as Suspicious ignoring the last available score
   defaultvalue: '14'
   display: Domain Indicator Expiration (days)
   name: indicator_expiration_domain
   required: true
   type: 0
-- additionalinfo: Mark URL indicators older than indicator_expiration_url value in
-    days as Suspicious ignoring the last available score
+- additionalinfo: Mark URL indicators older than indicator_expiration_url value in days as Suspicious ignoring the last available score
   defaultvalue: '30'
   display: URL Indicator Expiration (days)
   name: indicator_expiration_url
   required: true
   type: 0
-- additionalinfo: Mark File indicators older than indicator_expiration_hash value
-    in days as Suspicious ignoring the last available score
+- additionalinfo: Mark File indicators older than indicator_expiration_hash value in days as Suspicious ignoring the last available score
   defaultvalue: '365'
   display: File Hash Indicator Expiration (days)
   name: indicator_expiration_hash
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -88,8 +80,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -98,13 +90,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 description: This is the RST Threat Feed integration for interacting with API
 display: RST Cloud - Threat Feed API
 name: RST Cloud - Threat Feed API
@@ -116,19 +108,10 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      defaultValue: '45'
-      description: If the IP has reputation above the threshold then the IP defined
-        as malicious. If threshold not set, then threshold from instance configuration
-        is used.
-      isArray: false
+    - defaultValue: '45'
+      description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Returns IP information and reputation.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -180,8 +163,7 @@ script:
       description: The organisation name for the autonomous system name for the IP address.
       type: String
     - contextPath: RST.IP.ISP
-      description: The Internet Service Provider name for the autonomous system name
-        for the IP address.
+      description: The Internet Service Provider name for the autonomous system name for the IP address.
       type: String
     - contextPath: RST.IP.CloudHosting
       description: The Cloud Provider name for the IP address.
@@ -234,19 +216,10 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      defaultValue: '45'
-      description: If the domain has reputation above the threshold then the domain
-        defined as malicious. If threshold not set, then threshold from instance configuration
-        is used.
-      isArray: false
+    - defaultValue: '45'
+      description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Returns Domain information and reputation.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -342,19 +315,10 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: If the URL has reputation above the threshold then the domain defined
-        as malicious. If threshold not set, then threshold from instance configuration
-        is used
-      isArray: false
+    - defaultValue: '30'
+      description: If the URL has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Returns URL information and reputation.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -435,11 +399,8 @@ script:
       description: List of File Hashes
       isArray: true
       name: file
-    - default: false
-      defaultValue: "10"
-      description: If the Hash has reputation above the threshold then the domain
-        defined as malicious. If threshold not set, then threshold from instance configuration
-        is used
+    - defaultValue: "10"
+      description: If the Hash has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used
       name: threshold
     name: file
     description: Returns File information and reputation.
@@ -534,16 +495,10 @@ script:
       isArray: true
       name: ioc
       required: true
-      secret: false
-    - default: false
-      description: Any context to pass to RST Cloud
+    - description: Any context to pass to RST Cloud
       isArray: true
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Submits an indicator to RST Threat Feed.
-    execution: false
     name: rst-submit-new
   - arguments:
     - default: true
@@ -551,22 +506,12 @@ script:
       isArray: true
       name: ioc
       required: true
-      secret: false
-    - default: false
-      description: Any context to pass to RST Cloud
+    - description: Any context to pass to RST Cloud
       isArray: true
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Submits a potential False Positive to RST Threat Feed.
-    execution: false
     name: rst-submit-fp
-  dockerimage: demisto/python3:3.10.5.31928
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

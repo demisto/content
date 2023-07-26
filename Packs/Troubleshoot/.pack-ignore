@@ -2,23 +2,23 @@
 ignore=RM106
 
 [file:TroubleshootExecuteCommand.yml]
-ignore=BA124,CJ105,RM109
+ignore=BA124
 
 [file:TroubleshootGetInstanceParameters.yml]
-ignore=BA124,CJ105
+ignore=BA124
 
 [file:TroubleshootInstanceField.yml]
 ignore=BA124
 
 [file:TroubleshootAggregateResults.yml]
-ignore=BA124,CJ105,RM109
+ignore=BA124
 
 [file:TroubleshootGetCommandandArgs.yml]
-ignore=BA124,CJ105,RM109
+ignore=BA124
 
 [file:TroubleshootTestInstance.yml]
-ignore=BA124,CJ105
+ignore=BA124
 
 [file:TroubleshootIsDockerImageExists.yml]
-ignore=BA124,CJ105
+ignore=BA124
 

@@ -19,9 +19,9 @@ configuration:
   required: false
 - name: max_fetch
   display: Maximum number of indicators per fetch, max is 1000.
-  required: false
   type: 0
   defaultvalue: '50'
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -37,25 +37,21 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Deep Instinct is a prevention-first approach to stopping ransomware and other malware using the world's first purpose-built, deep learning cybersecurity framework.
 display: DeepInstinct v3
 name: DeepInstinct v3
 script:
   commands:
   - arguments:
-    - default: false
-      description: Get device information from its ID
-      isArray: false
+    - description: Get device information from its ID
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Get device information from its ID
     name: deepinstinctv3-get-device
     outputs:
@@ -150,14 +146,10 @@ script:
       description: Device tenant ID
       type: number
   - arguments:
-    - default: false
-      description: Get all events. Max events in response is 50, use first_event_id parameter to define first event id to get.
-      isArray: false
+    - description: Get all events. Max events in response is 50, use first_event_id parameter to define first event id to get.
       name: first_event_id
       required: true
-      secret: false
       defaultValue: '0'
-    deprecated: false
     description: Get all events after given event ID
     name: deepinstinctv3-get-events
     outputs:
@@ -251,14 +243,10 @@ script:
       description: event sandbox status
       type: string
   - arguments:
-    - default: false
-      description: Get all suspicious events. Max events in response is 50, use first_event_id parameter to define first event id to get.
-      isArray: false
+    - description: Get all suspicious events. Max events in response is 50, use first_event_id parameter to define first event id to get.
       name: first_event_id
       required: true
-      secret: false
       defaultValue: '0'
-    deprecated: false
     description: Get all suspicious events after given event ID
     name: deepinstinctv3-get-suspicious-events
     outputs:
@@ -322,8 +310,7 @@ script:
     - contextPath: deepinstinctv3.Suspicious-Events.events.path
       description: event file path
       type: unknown
-  - deprecated: false
-    name: deepinstinctv3-get-all-groups
+  - name: deepinstinctv3-get-all-groups
     outputs:
     - contextPath: deepinstinctv3.Groups.ID
       description: group id
@@ -344,8 +331,7 @@ script:
       description: group policy ID
       type: number
     description: Get all groups
-  - deprecated: false
-    name: deepinstinctv3-get-all-policies
+  - name: deepinstinctv3-get-all-policies
     outputs:
     - contextPath: deepinstinctv3.Policies.ID
       description: policy ID
@@ -367,215 +353,125 @@ script:
       type: string
     description: Get list of all policies
   - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policy_id
       required: true
-      secret: false
-    - default: false
-      description: file hash
-      isArray: false
+    - description: file hash
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      isArray: false
-      name: comment
+    - name: comment
       description: comment to hash field
-      required: false
-      secret: false
-    deprecated: false
     description: Add file hash to Deny List
     name: deepinstinctv3-add-hash-to-deny-list
   - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policy_id
       required: true
-      secret: false
-    - default: false
-      description: file hash
-      isArray: false
+    - description: file hash
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      isArray: false
-      name: comment
+    - name: comment
       description: comment to hash field
-      required: false
-      secret: false
-    deprecated: false
     description: Add file hash to Allow List
     name: deepinstinctv3-add-hash-to-allow-list
   - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policy_id
       required: true
-      secret: false
-    - default: false
-      description: file hash
-      isArray: false
+    - description: file hash
       name: file_hash
       required: true
-      secret: false
-    deprecated: false
     description: Remove hash from Deny List
     name: deepinstinctv3-remove-hash-from-deny-list
   - arguments:
-    - default: false
-      description: Policy ID
-      isArray: false
+    - description: Policy ID
       name: policy_id
       required: true
-      secret: false
-    - default: false
-      description: file hash
-      isArray: false
+    - description: file hash
       name: file_hash
       required: true
-      secret: false
-    deprecated: false
     description: Remove hash from Allow List
     name: deepinstinctv3-remove-hash-from-allow-list
   - arguments:
-    - default: false
-      description: group ID
-      isArray: false
+    - description: group ID
       name: group_id
       required: true
-      secret: false
-    - default: false
-      description: comma seperated list of device ids to address
-      isArray: false
+    - description: comma seperated list of device ids to address
       name: device_ids
       required: true
-      secret: false
-    deprecated: false
     description: Add multiple devices to a group
     name: deepinstinctv3-add-devices-to-group
   - arguments:
-    - default: false
-      description: Group ID to remove from
-      isArray: false
+    - description: Group ID to remove from
       name: group_id
       required: true
-      secret: false
-    - default: false
-      description: Comma seperated list of device ids to remove
-      isArray: false
+    - description: Comma seperated list of device ids to remove
       name: device_ids
       required: true
-      secret: false
     description: Remove list of devices from groups
     name: deepinstinctv3-remove-devices-from-group
   - arguments:
-    - default: false
-      description: comma separated list of event ids
-      isArray: false
+    - description: comma separated list of event ids
       name: event_ids
       required: true
-      secret: false
-    deprecated: false
     description: Delete multiple files remotely
     name: deepinstinctv3-delete-files-remotely
   - arguments:
-    - default: false
-      description: comma separated list of event ids
-      isArray: false
+    - description: comma separated list of event ids
       name: event_ids
       required: true
-      secret: false
-    deprecated: false
     description: Terminate list of processes
     name: deepinstinctv3-terminate-processes
   - arguments:
-    - default: false
-      description: comma separated list of event ids
-      isArray: false
+    - description: comma separated list of event ids
       name: event_ids
       required: true
-      secret: false
-    deprecated: false
     description: Close list of events
     name: deepinstinctv3-close-events
   - arguments:
-    - default: false
-      description: single device id
-      isArray: false
+    - description: single device id
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Disable device at next check-in
     name: deepinstinctv3-disable-device
   - arguments:
-    - default: false
-      description: single device id
-      isArray: false
+    - description: single device id
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Enable device at next check-in
     name: deepinstinctv3-enable-device
   - arguments:
-    - default: false
-      description: comma separated list of device ids
-      isArray: false
+    - description: comma separated list of device ids
       name: device_ids
       required: true
-      secret: false
-    deprecated: false
     description: Isolate device(s) from Network
     name: deepinstinctv3-isolate-from-network
   - arguments:
-    - default: false
-      description: comma separated list of device ids
-      isArray: false
+    - description: comma separated list of device ids
       name: device_ids
       required: true
-      secret: false
-    deprecated: false
     description: Release device(s) from isolation
     name: deepinstinctv3-release-from-isolation
   - arguments:
-    - default: false
-      isArray: false
-      name: event_id
+    - name: event_id
       required: true
-      secret: false
       description: the event id
-    deprecated: false
     description: Upload file associated with given event id at next check-in
     name: deepinstinctv3-remote-file-upload
   - arguments:
-    - default: false
-      isArray: false
-      description: single device id
+    - description: single device id
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Upload device logs from given device at next check-in
     name: deepinstinctv3-upload-logs
   - arguments:
-    - default: false
-      isArray: false
-      description: single device id
+    - description: single device id
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Remove agent from device at next check-in
     name: deepinstinctv3-remove-device
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

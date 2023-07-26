@@ -39,7 +39,6 @@ outputs:
 - contextPath: TimeNow
   description: current time in ISO format
 scripttarget: 0
-runonce: false
 tests:
 - GetTime-Test
 - GetTime-ObjectVsStringTest

@@ -5,25 +5,25 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 - display: The raw JSON string to use as the sample data
   name: JSON
   required: true
   type: 12
 - display: The incident name to give to the created incident
   name: name
-  required: false
   type: 0
+  required: false
 description: |-
   A utility for testing incident fetching with mock JSON data.
 display: JSON Sample Incident Generator
@@ -39,7 +39,6 @@ script:
     name: json-sample-incident-generator-command
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

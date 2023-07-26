@@ -1,0 +1,264 @@
+.sdk-nightly-schedule-rule:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
+
+# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
+.sdk-nightly-schedule-rule-always:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
+      when: always
+
+.change-file-ids: &change-file-ids
+  - python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json name
+
+.upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
+  - section_start "Upload Entities to Cortex XSOAR" --collapsed
+  - demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
+  - section_end "Upload Entities to Cortex XSOAR"
+
+demisto-sdk-nightly:run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+    - .sdk-nightly-schedule-rule
+
+demisto-sdk-nightly:run-validations:
+  extends:
+    - .run-validations
+    - .sdk-nightly-schedule-rule
+
+demisto_sdk_nightly:check_idset_dependent_commands:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  stage: unittests-and-validations
+  needs: []
+  inherit:
+    variables: true
+  variables:
+    IS_NIGHTLY: "false"
+    KUBERNETES_CPU_REQUEST: 1000m
+  script:
+    - section_start "Secrets Detection" --collapsed
+    - demisto-sdk secrets --post-commit --ignore-entropy
+    - section_end "Secrets Detection"
+    - section_start "Update Conf" --collapsed
+    - cp ./Tests/conf.json $ARTIFACTS_FOLDER
+    - section_end "Update Conf"
+    - !reference [.create-id-set]
+    - section_start "Activate GCloud Service Account" --collapsed
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - echo "successfully activated google cloud service account"
+    - section_end "Activate GCloud Service Account"
+    - section_start "Download private ID set" --collapsed
+    - gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+    - echo "successfully downloaded private ID set"
+    - section_end "Download private ID set"
+    - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - section_start "Merge public and private ID sets" --collapsed
+    - demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
+    - echo "successfully merged public and private ID sets"
+    - section_end "Merge public and private ID sets"
+    - section_start "Build Content Descriptor" --collapsed
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
+    - section_end "Build Content Descriptor"
+    - section_start "Common Server Documentation" --collapsed
+    - ./Documentation/commonServerDocs.sh
+    - section_end "Common Server Documentation"
+    - section_start "Collect Test List and Content Packs" --collapsed
+    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY
+    - section_end "Collect Test List and Content Packs"
+    - section_start "Calculate Packs Dependencies" --collapsed
+    - demisto-sdk find-dependencies -idp $ARTIFACTS_FOLDER/id_set.json --output-path $ARTIFACTS_FOLDER/packs_dependencies.json --all-packs-dependencies
+    - section_end "Calculate Packs Dependencies"
+    - job-done
+
+demisto-sdk-nightly:xsoar-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
+    MARKETPLACE_VERSION: "xsoar"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
+
+  cache:
+    policy: pull-push
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
+    - job-done
+
+demisto-sdk-nightly:mpv2-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    MARKETPLACE_VERSION: "marketplacev2"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
+    PRODUCTNAME: "Cortex XSIAM"
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
+  cache:
+    policy: pull-push
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
+    - job-done
+
+demisto-sdk-nightly:xpanse-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCTNAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
+  cache:
+    policy: pull-push
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
+    - job-done
+
+demisto-sdk-nightly:test-upload-flow:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  variables:
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+  needs: []
+  stage: unittests-and-validations
+  script:
+    - !reference [test-upload-flow, script]
+
+demisto-sdk-nightly:run-commands-against-instance:
+  tags:
+    - gce # can't run docker in docker on gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  services: # needed for running lint
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    INSTANCE_ROLE: "Server Master"
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
+  stage: run-instances
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
+  script:
+    - !reference [.ssh-config-setup]
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - !reference [.download-demisto-conf]
+    - |
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      echo "Server URL: $DEMISTO_BASE_URL"
+    - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
+    - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
+    - section_end "Unlock HelloWorld Integration and Playbook"
+    - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
+    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
+    - *upload-entities-to-cortex-xsoar
+    - section_end "Create and Upload Entities to XSOAR Instance"
+    - section_start "Download Entities from XSOAR Instance" --collapsed
+    - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
+    - section_end "Download Entities from XSOAR Instance"
+    - section_start "Format Content Items" --collapsed
+    - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
+    - section_end "Format Content Items"
+    - section_start "Run Validate" --collapsed
+    - demisto-sdk validate -i Packs/HelloWorld/
+    - section_end "Run Validate"
+    - section_start "Run Lint" --collapsed
+    - demisto-sdk lint -i Packs/HelloWorld/ -vvv
+    - section_end "Run Lint"
+    - *change-file-ids
+    - *upload-entities-to-cortex-xsoar
+    - section_start "Destroy instances"
+    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - section_end "Destroy instances"
+    - job-done
+
+demisto-sdk-nightly:run-end-to-end-tests:
+  tags:
+    - gce
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  services: # needed for running e2e tests for docker
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    INSTANCE_ROLE: "Server Master"
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
+  stage: run-instances
+  script:
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b master --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git@${SDK_REF} $ARTIFACTS_FOLDER/demisto-sdk
+
+      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      echo "Server URL: $DEMISTO_BASE_URL"
+      unset DEMISTO_API_KEY # a temporary fix 
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - job-done
+    - exit $EXIT_CODE
+
+demisto-sdk-nightly:fan-in:
+  tags:
+    - gke
+  stage: fan-in
+  extends:
+    - .sdk-nightly-schedule-rule-always
+  script:
+    - echo "fan in"
+
+demisto-sdk-nightly:trigger-slack-notify:
+  extends:
+    - .trigger-slack-notification
+    - .sdk-nightly-schedule-rule-always
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: "Demisto SDK Nightly"
+    JOB_NAME: "demisto-sdk-nightly:fan-in"
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: "true"

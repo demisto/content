@@ -16,13 +16,13 @@ configuration:
   name: key
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
-- displaypassword: API Key
-  name:  credentials_api_key
   required: false
+- displaypassword: API Key
+  name: credentials_api_key
   hiddenusername: true
-  type: 9  
+  type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -50,15 +50,11 @@ script:
     - name: middle-name
       description: Middle name or middle initial to search
     - name: raw-name
-      description: Full name to search. Use this parameter if the accurate name parts
-        (first/middle/last) are not available, this parameter will only be used in
-        absence of first-name and last-name
+      description: Full name to search. Use this parameter if the accurate name parts (first/middle/last) are not available, this parameter will only be used in absence of first-name and last-name
     - name: country
       description: A two-letter country code to searchs
     - name: state
-      description: A United States, Canada, Great Britain or Australia state code.
-        If a US state is provided and no country specified, we’ll assume the country
-        to be US.
+      description: A United States, Canada, Great Britain or Australia state code. If a US state is provided and no country specified, we’ll assume the country to be US.
     - name: city
       description: City to search
     - name: zipcode
@@ -68,8 +64,7 @@ script:
     - name: age
       description: Age to search in String, an exact (YY) or approximate (YY-YY) age
     - name: columns
-      description: Order of columns to be displayed in results (comma seperated list
-        of values)
+      description: Order of columns to be displayed in results (comma seperated list of values)
     outputs:
     - contextPath: Account.Email.Address
       description: Email addresses
@@ -103,4 +98,3 @@ script:
     - contextPath: Account.Usernames
       description: Online platforms usernames
     description: Searches for information regarding given email address
-  runonce: false

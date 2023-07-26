@@ -8,17 +8,18 @@ configuration:
   name: url
   required: true
   type: 0
-- name: credentials
+- display: Username
+  name: credentials
   required: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Manages the block and allow lists within Skyhigh Secure Web Gateway.
 display: 'Skyhigh Secure Web Gateway (On Prem)'
 name: Skyhigh Secure Web Gateway (On Prem)
@@ -40,7 +41,6 @@ script:
       description: Filter to be applied on list type.
       name: type
     description: Get all available lists.
-    execution: false
     name: swg-get-available-lists
     outputs:
     - contextPath: SWG.List.ID
@@ -58,7 +58,6 @@ script:
       required: true
       default: true
     description: Retrieve a specific list.
-    execution: false
     name: swg-get-list
     outputs:
     - contextPath: SWG.List.ListEntries.ListID
@@ -94,7 +93,6 @@ script:
       name: entry_pos
       required: true
     description: Retrieve a specific entry from a list.
-    execution: false
     name: swg-get-list-entry
     outputs:
     - contextPath: SWG.List.ID
@@ -122,12 +120,10 @@ script:
       required: true
     - description: Entry description.
       name: description
-      required: false
     - description: Entry name.
       name: name
       required: true
     description: Insert a new entry to a list.
-    execution: false
     name: swg-insert-entry
     outputs:
     - contextPath: SWG.List.ID
@@ -154,7 +150,6 @@ script:
       name: entry_pos
       required: true
     description: Delete entry to from a list.
-    execution: false
     name: swg-delete-entry
   - arguments:
     - description: List ID.
@@ -165,7 +160,6 @@ script:
       name: config
       required: true
     description: Overwrites the complete XML configuration of a list.
-    execution: false
     name: swg-modify-list
     outputs:
     - contextPath: SWG.List.ID
@@ -211,7 +205,6 @@ script:
       name: type
       required: true
     description: Create a new list.
-    execution: false
     name: swg-create-list
     outputs:
     - contextPath: SWG.List.ID
@@ -232,14 +225,12 @@ script:
       default: true
       required: true
     description: Delete a list.
-    execution: false
     name: swg-delete-list
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.8.0
 tests:
 - No tests (auto formatted)

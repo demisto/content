@@ -6,11 +6,10 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: SalesforceCaseStatus
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

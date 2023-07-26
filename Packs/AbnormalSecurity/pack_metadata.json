@@ -2,7 +2,7 @@
     "name": "Abnormal Security",
     "description": "Abnormal Security detects and protects against the whole spectrum of email attacks",
     "support": "partner",
-    "currentVersion": "2.0.20",
+    "currentVersion": "2.0.22",
     "author": "Abnormal Security",
     "url": "",
     "email": "support@abnormalsecurity.com",
@@ -18,7 +18,7 @@
         "phishing"
     ],
     "githubUser": [
-        "dschuan"
+        "fraankwang"
     ],
     "marketplaces": [
         "xsoar",

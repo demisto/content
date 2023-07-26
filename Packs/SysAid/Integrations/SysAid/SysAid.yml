@@ -19,39 +19,39 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: Choose what service record type to fetch - incidents, requests, problems, changes, or all.
   defaultvalue: all
   display: Fetch types
@@ -62,24 +62,24 @@ configuration:
   - problem
   - change
   - all
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: A comma separated list of statuses to return. Default value includes "open classes". You may add/remove statuses according to your needs. The list of status numbers and their values can be retrieved by running the "sysaid-table-list" command with the "list_id=status" argument.
   defaultvalue: 1,2,5,6,8,18,19,22,23,24,25,26,27,30,31,32,33
   display: Included statuses
   name: included_statuses
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Include Archived
   name: include_archived
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 description: SysAid is a robust IT management system designed to meet all of the needs of an IT department.
 display: SysAid
 name: SysAid
@@ -90,8 +90,6 @@ script:
     arguments:
     - name: entity
       description: 'A SysAid entity by which to retrieve the available lists. Defaults to service record. Options are: sr - Service record related lists, asset - Asset related lists, user - User related lists, ci - CI related lists, company - Company related lists, action_item - Action item related lists, project - Service record Sub Tabs lists, task - Task related lists, catalog - Catalog related lists, software - Software related lists, sr_activity - Service Record activity related lists, supplier - Supplier related lists, task_activity - Task activity related lists, user_groups - User Group related lists.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - sr
@@ -110,28 +108,18 @@ script:
       - user_groups
     - name: entity_id
       description: "The entity's ID. For example, in service record Form lists, send the service record ID to populate additional filters on the lists. For example, the responsibility list may be filtered by the admin group of the service record."
-      required: false
-      isArray: false
     - name: entity_type
       description: 'Numeric. For example, in sr entity, send the sr_type ID, for ci entity, send the ci type ID (for retrieving the list of CI sub-types).'
-      required: false
-      isArray: false
     - name: list_id
       description: 'Desired list ID.'
-      required: false
-      isArray: false
     - name: key
       description: 'Relevant for users/groups related fields. Defines whether to use the ID or the name as the key for each value in the result. Available values are "name" or "id". Defaults to "id".'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - id
       - name
     - name: fields
       description: 'A comma separated list of fields to return. Available fields are: id (always returned), caption, and values.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.List.id
@@ -147,20 +135,13 @@ script:
     arguments:
     - name: asset_id
       description: 'The ID of the asset to return.'
-      required: false
-      isArray: false
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=asset" argument. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of assets to return on a page. Default is 100.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Asset.id
@@ -177,19 +158,13 @@ script:
     - name: query
       description: 'The search criteria.'
       required: true
-      isArray: false
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=asset" argument. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: page_size
       description: 'The number of assets to return on a page. Default is 100.'
-      required: false
-      isArray: false
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Asset.id
@@ -206,7 +181,6 @@ script:
     - name: fields
       description: 'Comma separated list of fields to return to context data. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.Filter.id
@@ -226,11 +200,8 @@ script:
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: type
       description: 'The user type to retrieve. Defaults to all user types if not specified.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - admin
@@ -238,12 +209,8 @@ script:
       - manager
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of users to return on a page. Default is 100.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.User.id
@@ -269,15 +236,11 @@ script:
     - name: query
       description: 'The search criteria.'
       required: true
-      isArray: false
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=user" argument. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: type
       description: 'The user types to retrieve. Defaults to all user types if not specified.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - admin
@@ -285,12 +248,8 @@ script:
       - manager
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of users to return on a page. Default is 100.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.User.id
@@ -316,7 +275,6 @@ script:
     - name: type
       description: 'The requested service record type.'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - incident
@@ -327,34 +285,23 @@ script:
     - name: fields
       description: 'Comma separated list of fields to return to context data. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of service records to return on a page. Default is 100.'
-      required: false
-      isArray: false
     - name: ids
       description: 'The list of service records IDs to return, comma separated.'
-      required: false
-      isArray: false
     - name: archive
       description: 'Whether to return archived service records.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - '0'
       - '1'
     - name: custom_fields_keys
       description: "Comma separated list of filters' IDs."
-      required: false
       isArray: true
     - name: custom_fields_values
       description: "Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
-      required: false
       isArray: true
     outputs:
     - type: String
@@ -381,7 +328,6 @@ script:
     - name: type
       description: 'The requested service record type.'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - incident
@@ -392,34 +338,24 @@ script:
     - name: fields
       description: 'Comma separated list of fields to return to context data. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: page_number
       description: 'Index of the page of results to retrieve. Default is 1.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of service records to return on a page. Default is 100.'
-      required: false
-      isArray: false
     - name: query
       description: 'The search criteria.'
       required: true
-      isArray: false
     - name: archive
       description: 'Whether to return archived service records.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - '0'
       - '1'
     - name: custom_fields_keys
       description: "Comma separated list of filters' IDs."
-      required: false
       isArray: true
     - name: custom_fields_values
       description: "Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
-      required: false
       isArray: true
     outputs:
     - type: String
@@ -446,118 +382,63 @@ script:
     - name: id
       description: 'The service record ID.'
       required: true
-      isArray: false
     - name: impact
       description: 'The new impact of the service record.'
-      required: false
-      isArray: false
     - name: priority
       description: 'The new priority of the service record.'
-      required: false
-      isArray: false
     - name: status
       description: 'The new status of the service record.'
-      required: false
-      isArray: false
     - name: description
       description: 'The new description of the service record.'
-      required: false
-      isArray: false
     - name: solution
       description: 'The new solution of the service record.'
-      required: false
-      isArray: false
     - name: problem_type
       description: 'The new problem type of the service record.'
-      required: false
-      isArray: false
     - name: problem_sub_type
       description: 'The new problem sub-type of the service record.'
-      required: false
-      isArray: false
     - name: third_level_category
       description: 'The new third level category of the service record.'
-      required: false
-      isArray: false
     - name: sr_type
       description: 'The new service record type of the service record.'
-      required: false
-      isArray: false
     - name: sub_type
       description: 'The new sub-type of the service record.'
-      required: false
-      isArray: false
     - name: agreement
       description: 'The new agreement of the service record.'
-      required: false
-      isArray: false
     - name: title
       description: 'The new title of the service record.'
-      required: false
-      isArray: false
     - name: followup_user
       description: 'The new follow up user of the service record.'
-      required: false
-      isArray: false
     - name: followup_text
       description: 'The new follow up text of the service record.'
-      required: false
-      isArray: false
     - name: cust_notes
       description: 'The new custom notes of the service record.'
-      required: false
-      isArray: false
     - name: email_account
       description: 'The new email account of the service record.'
-      required: false
-      isArray: false
     - name: responsibility
       description: 'The new responsibility of the service record.'
-      required: false
-      isArray: false
     - name: urgency
       description: 'The new urgency of the service record.'
-      required: false
-      isArray: false
     - name: company
       description: 'The new company of the service record.'
-      required: false
-      isArray: false
     - name: department
       description: 'The new department of the service record.'
-      required: false
-      isArray: false
     - name: computer_id
       description: 'The new computer ID of the service record.'
-      required: false
-      isArray: false
     - name: due_date
       description: 'The new due date of the service record.'
-      required: false
-      isArray: false
     - name: escalation
       description: 'The new escalation of the service record.'
-      required: false
-      isArray: false
     - name: change_category
       description: 'The new change category of the service record.'
-      required: false
-      isArray: false
     - name: assigned_group
       description: 'The new assigned group of the service record.'
-      required: false
-      isArray: false
     - name: location
       description: 'The new location of the service record.'
-      required: false
-      isArray: false
     - name: custom_fields_keys
       description: "Comma separated list of filters' IDs."
-      required: false
       isArray: true
     - name: custom_fields_values
       description: "Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
-      required: false
       isArray: true
   - name: sysaid-service-record-close
     description: 'Close a service record. Sets the service record status to the default Close status, as defined in the Help Desk settings.'
@@ -565,22 +446,17 @@ script:
     - name: id
       description: 'The service record ID.'
       required: true
-      isArray: false
     - name: solution
       description: 'The solution for closing the service record.'
-      required: false
-      isArray: false
   - name: sysaid-service-record-template-get
     description: 'Gets the template of a service record. Cortex XSOAR recommends filtering the results by the desired fields.'
     arguments:
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=sr" argument. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: type
       description: 'The requested service record type.'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - incident
@@ -589,8 +465,6 @@ script:
       - change
     - name: template_id
       description: 'The service record template ID, according to service record type. Defaults to the first/default template.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: SysAid.ServiceRecordTemplate.key
@@ -619,11 +493,9 @@ script:
     - name: fields
       description: 'Comma separated list of fields to return to context data. The valid fields can be retrieved using the "sysaid-table-list" command with the "entity=sr" argument. You can send "all" for debugging purposes.'
       required: true
-      isArray: false
     - name: type
       description: 'The requested service record type.'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - incident
@@ -632,119 +504,65 @@ script:
       - change
     - name: template_id
       description: 'The service record template ID, according to service record type. Defaults to the first/default template.'
-      required: false
-      isArray: false
     - name: description
       description: 'The new description of the service record.'
       required: true
-      isArray: false
     - name: title
       description: 'The new title of the service record.'
       required: true
-      isArray: false
     - name: impact
       description: 'The new impact of the service record.'
-      required: false
-      isArray: false
     - name: priority
       description: 'The new priority of the service record.'
-      required: false
-      isArray: false
     - name: status
       description: 'The new status of the service record.'
-      required: false
-      isArray: false
     - name: solution
       description: 'The new solution of the service record.'
-      required: false
-      isArray: false
     - name: problem_type
       description: 'The new problem type of the service record.'
-      required: false
-      isArray: false
     - name: problem_sub_type
       description: 'The new problem sub-type of the service record.'
-      required: false
-      isArray: false
     - name: third_level_category
       description: 'The new third level category of the service record.'
-      required: false
-      isArray: false
     - name: sr_type
       description: 'The new service record type of the service record.'
-      required: false
-      isArray: false
     - name: sub_type
       description: 'The new sub-type of the service record.'
-      required: false
-      isArray: false
     - name: agreement
       description: 'The new agreement of the service record.'
-      required: false
-      isArray: false
     - name: followup_user
       description: 'The new follow up user of the service record.'
-      required: false
-      isArray: false
     - name: followup_text
       description: 'The new follow up text of the service record.'
-      required: false
-      isArray: false
     - name: cust_notes
       description: 'The new custom notes of the service record.'
-      required: false
-      isArray: false
     - name: email_account
       description: 'The new email account of the service record.'
-      required: false
-      isArray: false
     - name: responsibility
       description: 'The new responsibility of the service record.'
-      required: false
-      isArray: false
     - name: urgency
       description: 'The new urgency of the service record.'
-      required: false
-      isArray: false
     - name: company
       description: 'The new company of the service record.'
-      required: false
-      isArray: false
     - name: department
       description: 'The new department of the service record.'
-      required: false
-      isArray: false
     - name: computer_id
       description: 'The new computer ID of the service record.'
-      required: false
-      isArray: false
     - name: due_date
       description: 'The new due date of the service record.'
-      required: false
-      isArray: false
     - name: escalation
       description: 'The new escalation of the service record.'
-      required: false
-      isArray: false
     - name: change_category
       description: 'The new change category of the service record.'
-      required: false
-      isArray: false
     - name: assigned_group
       description: 'The new assigned group of the service record.'
-      required: false
-      isArray: false
     - name: location
       description: 'The new location of the service record.'
-      required: false
-      isArray: false
     - name: custom_fields_keys
       description: "Comma separated list of filters' IDs."
-      required: false
       isArray: true
     - name: custom_fields_values
       description: "Comma separated list of the values of the filters' IDs. For example, custom_fields_keys:key1,key2, custom_fields_values:value1,value2."
-      required: false
       isArray: true
     outputs:
     - type: String
@@ -771,11 +589,8 @@ script:
     - name: ids
       description: 'The service record ID.'
       required: true
-      isArray: false
     - name: solution
       description: 'The solution for deleting the service record.'
-      required: false
-      isArray: false
   - arguments:
     - description: The service record ID.
       name: id
@@ -826,18 +641,16 @@ script:
     - description: The service record ID
       name: id
       required: true
-      isArray: false
     - description: The note to be added to the Service Record
       name: note
       required: true
     description: Add a note to a Service Record
     name: sysaid-service-record-add-note
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.0.0
 defaultclassifier: SysAid Classifier
 defaultmapperin: SysAid Mapper

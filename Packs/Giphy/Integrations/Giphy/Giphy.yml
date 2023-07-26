@@ -16,14 +16,14 @@ configuration:
   name: apikey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - displaypassword: API Key
   hiddenusername: true
   name: apikey_creds
-  required: false
   type: 9
 
+  required: false
 script:
   script: ''
   type: javascript
