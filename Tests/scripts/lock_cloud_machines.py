@@ -295,9 +295,9 @@ def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_
         list_machines = [lock_machine_name]
     else:
         logging.info('getting all machine names')  # We are looking for a free machine in all the available machines.
-        test_machines_list = list(json.loads(test_machines).keys())
-        logging.info(f'available machines are: {test_machines_list}')
-        random.shuffle(test_machines_list)
+        list_machines = list(json.loads(test_machines).keys())
+        logging.info(f'available machines are: {list_machines}')
+        random.shuffle(list_machines)
 
     if number_machines_to_lock > len(list_machines):
         logging.error(
