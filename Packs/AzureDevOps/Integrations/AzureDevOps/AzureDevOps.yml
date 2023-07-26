@@ -1257,25 +1257,25 @@ script:
         description: Tags related to the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.self.href
-        description: ''
+        description: A collection of related REST reference links.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemUpdates.href
-        description: ''
+        description: Link to the work item updates.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemRevisions.href
-        description: ''
+        description: Link to the work item revisions.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemComments.href
-        description: ''
+        description: Link to the work item comments.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.html.href
-        description: ''
+        description: Link to the work item html.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemType.href
-        description: ''
+        description: Link to the work item type.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.fields.href
-        description: ''
+        description: Link to the work item fields.
       - type: String
         contextPath: AzureDevOps.WorkItem.url
         description: Link to the work item.
@@ -1418,25 +1418,25 @@ script:
         description: Tags related to the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.self.href
-        description: ''
+        description: A collection of related REST reference links.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemUpdates.href
-        description: ''
+        description: Link to the work item updates.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemRevisions.href
-        description: ''
+        description: Link to the work item revisions.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemComments.href
-        description: ''
+        description: Link to the work item comments.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.html.href
-        description: ''
+        description: Link to the work item html.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemType.href
-        description: ''
+        description: Link to the work item type.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.fields.href
-        description: ''
+        description: Link to the work item fields.
       - type: String
         contextPath: AzureDevOps.WorkItem.url
         description: Link to the work item.
@@ -1486,11 +1486,10 @@ script:
         isArray: false
       - auto: PREDEFINED
         predefined:
-          - 1
-          - 2
-          - 3
-          - 4
-        name: priority
+          - '1'
+          - '2'
+          - '3'
+          - '4'        name: priority
         description: A new priority for the work item.
         required: false
         isArray: false
@@ -1636,25 +1635,25 @@ script:
         description: Tags related to the work item.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.self.href
-        description: ''
+        description: A collection of related REST reference links.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemUpdates.href
-        description: ''
+        description: Link to the work item updates.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemRevisions.href
-        description: ''
+        description: Link to the work item revisions.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemComments.href
-        description: ''
+        description: Link to the work item comments.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.html.href
-        description: ''
+        description: Link to the work item html.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.workItemType.href
-        description: ''
+        description: Link to the work item type.
       - type: String
         contextPath: AzureDevOps.WorkItem._links.fields.href
-        description: ''
+        description: Link to the work item fields.
       - type: String
         contextPath: AzureDevOps.WorkItem.url
         description: Link to the work item.
@@ -2949,7 +2948,7 @@ script:
         required: false
         isArray: false
       - name: team_id
-        description: ''
+        description: The name or ID (GUID) of the team .
         required: true
         isArray: false
       - defaultValue: '1'
