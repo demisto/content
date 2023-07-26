@@ -212,7 +212,7 @@ def check_valid_hash_type(hash_type: list, hash_value: str, check_all: bool = Fa
         :param hash_type: hash_type
         :param hash_value: hash_value
         :param check_all: test all the values
-        :return: true if the hash valur is valid
+        :return: true if the hash value is valid
 
         """
     if not check_all:
