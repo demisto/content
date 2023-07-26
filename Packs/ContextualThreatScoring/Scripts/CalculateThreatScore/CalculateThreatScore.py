@@ -21,10 +21,9 @@ RELIABILITY_DICTIONARY = {
 # Helper function to fetch indicator details
 def get_indicator(indicator, keys_to_remove):
     response = demisto.executeCommand("getIndicator", {'value': indicator})
-    if True in [isError(entry) for entry in response]:
-        demisto.results(response)
-        sys.exit(0)
     content = demisto.get(response[0], "Contents")
+    if len(content) == 0:
+        return_error('Error in getIndicator. Please check if this is a valid indicator in XSOAR database.')
 
     if keys_to_remove:
         [content[0].pop(key) for key in keys_to_remove if key in content[0]]
@@ -38,8 +37,7 @@ def get_indicator(indicator, keys_to_remove):
         indicator_content = content
 
     if not indicator_content:
-        demisto.results("Error in getIndicator. Please check if this is a valid indicator in XSOAR database.")
-        sys.exit(0)
+        return_error("Error in getIndicator. Please check if this is a valid indicator in XSOAR database.")
 
     return indicator_content[0]
 
@@ -48,13 +46,12 @@ def get_indicator(indicator, keys_to_remove):
 def get_list_content(list_name: str):
     response = demisto.executeCommand("getList", {"listName": list_name})
     if True in [isError(entry) for entry in response]:
-        demisto.results(response)
-        sys.exit(0)
+        return_error(demisto.get(response[0], "Contents"))
+        
     response_content = demisto.get(response[0], "Contents")
     threat_score_factors = json.loads(response_content)
     if not threat_score_factors:
-        demisto.results("Empty results returned from the list.")
-        sys.exit(0)
+        return_error('Empty results returned from the threat score factors list.')
 
     return threat_score_factors
 
@@ -146,10 +143,8 @@ def calculate_cont(factor_scores, factor_value):
             return factor_scores[str_key]
 
 
-''' MAIN FUNCTION '''
-
-
-def main():
+# Base script to calculate indicator scores
+def base_script():
     threat_score = []
     long_output = []
     weights = []
@@ -261,8 +256,17 @@ def main():
         outputs=raw_results
     )
 
-    return_results(results)
+    return results
 
+
+# Main function to initiate the program flow
+def main():
+    try:
+        # Invoke base command script
+        return_results(base_script())
+    except Exception as ex:
+        demisto.error(traceback.format_exc())
+        return_error(f'Failed to execute script. Error: {str(ex)}')
 
 ''' ENTRY POINT '''
 
