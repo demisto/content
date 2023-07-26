@@ -190,7 +190,7 @@ def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker
     mocker.patch('PANOSPolicyOptimizer.VERSION', VERSION)
 
     client.session_metadata["headers"] = 'test'
-    policy_optimizer_no_apps_command(
+    policy_optimizer_get_unused_apps_command(
         client=client, args={
             'position': position
         }
@@ -198,11 +198,11 @@ def test_body_request_is_valid_when_querying_policy_optimizer_unused_apps(mocker
     assert response_mocker.call_args.kwargs['json'] == {'action': 'PanDirect', 'method': 'run',
                                                         'data': ['123', 'PoliciesDirect.getPoliciesByUsage',
                                                                  [{'type': 'security', 'position': excepted_position,
-                                                                   'vsysName': 'test', 'isCmsSelected': expected_flag,
+                                                                   'vsysName': 'test', 'serialNumber': '',
+                                                                   'isCmsSelected': expected_flag,
                                                                    'isMultiVsys': False, 'showGrouped': False,
                                                                    'usageAttributes': {'timeframeTag': '30',
-                                                                                       'application/member': 'any',
-                                                                                       'apps-seen-count': "geq '1'",
+                                                                                       'application/member': 'unused',
                                                                                        'action': 'allow'},
                                                                    'pageContext': 'app_usage', 'field': '$.bytes',
                                                                    'direction': 'DESC'}]], 'type': 'rpc', 'tid': 1}
