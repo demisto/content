@@ -199,6 +199,7 @@ install-packs-in-server-master:
     INSTANCE_CREATED: "true"
     TIME_TO_LIVE: ""
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+    BUILD_TYPE: "upload"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
@@ -213,7 +214,7 @@ install-packs-in-server-master:
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$BUILD_TYPE"
     - source CloudEnvVariables
     - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
     - section_end "Lock Machine"

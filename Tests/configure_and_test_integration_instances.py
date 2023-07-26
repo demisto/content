@@ -765,7 +765,7 @@ class CloudBuild(Build):
         self.cloud_machine = options.cloud_machine
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
-                                         options.cloud_servers_api_keys)
+                                         options.cloud_servers_api_keys, options.build_type)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.cloud_machine, self.ci_build_number)]
         self.marketplace_tag_name: str = options.marketplace_name
@@ -773,10 +773,10 @@ class CloudBuild(Build):
         self.marketplace_buckets = options.marketplace_buckets
 
     @staticmethod
-    def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path):
+    def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path, build_type):
         logging.info('getting cloud configuration')
 
-        cloud_servers = get_json_file(cloud_servers_path)
+        cloud_servers = get_json_file(cloud_servers_path).get(build_type)
         conf = cloud_servers.get(cloud_machine)
         cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
         api_key = cloud_servers_api_keys.get(cloud_machine)
@@ -920,6 +920,7 @@ def options_handler(args=None):
     parser.add_argument('--marketplace_name', help='the name of the marketplace to use.')
     parser.add_argument('--artifacts_folder', help='the artifacts folder to use.')
     parser.add_argument('--marketplace_buckets', help='the path to the marketplace buckets.')
+    parser.add_argument('--build_type', help='the type of the build, one of build or upload')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
