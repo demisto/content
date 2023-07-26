@@ -118,13 +118,12 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
-def handle_data_export_single_event_type(client: Client, event_type: str, last_run: dict, limit: int, start_time: datetime):
+def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int, start_time: datetime):
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     wait_time = 0
     events = []
     index_name = f'xsoar_collector_{instance_name}_{event_type}'
 
-    operation = last_run.get('v2').get('operation')
     while len(events) < limit:
 
         # If the execution exceeded the timeout we will break
@@ -135,6 +134,9 @@ def handle_data_export_single_event_type(client: Client, event_type: str, last_r
         if wait_time:
             demisto.debug(f'Going to sleep between queries, wait_time is {wait_time} seconds')
             time.sleep(wait_time)
+        else:
+            demisto.debug(f'No wait time received, going to sleep for 1 second')
+            time.sleep(1)
 
         response = client.perform_data_export('events', event_type, index_name, operation)
 
@@ -142,7 +144,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, last_r
         demisto.debug(f'The number of received events - {len(results)}')
         operation = 'next'
 
-        # The API responds with the time we should wait between requests
+        # The API responds with the time we should wait between requests, the server needs this time to prepare the next response.
         # It will be used to sleep in the beginning of the next iteration
         wait_time = arg_to_number(response.get(WAIT_TIME, 5))
         demisto.debug(f'Wait time is {wait_time} seconds')
@@ -155,6 +157,18 @@ def handle_data_export_single_event_type(client: Client, event_type: str, last_r
 
     return events, False
 
+
+def setup_last_run(last_run_dict: dict, first_fetch: str) -> dict:
+    # TODO: Add docs-strings
+    for event_type in ALL_SUPPORTED_EVENT_TYPES:
+        if not last_run_dict.get(event_type, {}).get('operation'):
+            last_run_dict[event_type] = {'operation': first_fetch}
+
+    demisto.debug(f'V2 First Fetch - Initialize last run - {last_run_dict}')
+
+    return last_run_dict
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -163,24 +177,25 @@ def test_module(client: Client, api_version: str, last_run: dict, max_fetch: int
     return 'ok'
 
 
-def get_all_events_v2(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> Tuple[list, dict]:
-    # We add the instance name to the index so several instances could run in parallel without effecting eachother
+def get_all_events(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> Tuple[list, dict]:
+    # We add the instance name to the index so several instances could run in parallel without effecting each other
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
 
     all_types_events_result = []
-
     start_time = datetime.utcnow()
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
+        operation = last_run.get(event_type).get('operation')
 
-        events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type, last_run=last_run,
+        events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type, operation=operation,
                                                                 limit=limit, start_time=start_time)
         all_types_events_result.extend(prepare_events(events, event_type))
+        last_run[event_type] = {'operation': 'next'}
+
         if time_out:
             demisto.warning('Timeout reached, stopped pulling events')
             break
 
-    last_run['v2']['operation'] = 'next'
     return all_types_events_result, last_run
 
 
@@ -189,7 +204,6 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api
     limit = arg_to_number(args.get('limit')) or 50
     events, _ = fetch_events_command(client=client, api_version=api_version, last_run=last_run, max_fetch=limit,
                                      is_command=is_command)
-    # events, _ = get_all_events_v1(client, last_run, api_version=api_version, limit=limit, is_command=is_command)
 
     for event in events:
         event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
@@ -209,8 +223,8 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api
 
 
 def fetch_events_command(client, api_version, last_run, max_fetch, is_command):  # pragma: no cover
-    events, new_last_run = get_all_events_v2(client, last_run=last_run, limit=max_fetch, api_version=api_version,
-                                             is_command=is_command)
+    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch, api_version=api_version,
+                                          is_command=is_command)
     return events, new_last_run
 
 
@@ -244,19 +258,7 @@ def main() -> None:  # pragma: no cover
 
         last_run = demisto.getLastRun()
         demisto.debug(f'Running with the following last_run - {last_run}')
-        if api_version == 'v1':
-            for event_type in ALL_SUPPORTED_EVENT_TYPES:
-                # First Fetch
-                if not last_run.get(event_type):
-                    last_run_id_key = f'{event_type}-ids'
-                    last_run[event_type] = first_fetch
-                    last_run[last_run_id_key] = last_run.get(last_run_id_key, [])
-                    demisto.debug(f'V1 First Fetch - Initialize last run - {last_run}')
-        else:
-            if not last_run.get('v2', {}).get('operation'):
-                last_run['v2'] = {'operation': first_fetch}
-                demisto.debug(f'V2 First Fetch - Initialize last run - {last_run}')
-
+        last_run = setup_last_run(last_run, first_fetch)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, api_version, last_run, max_fetch=MAX_EVENTS_PAGE_SIZE)  # type: ignore[arg-type]
