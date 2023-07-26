@@ -1313,10 +1313,10 @@ script:
         isArray: false
       - auto: PREDEFINED
         predefined:
-          - 1
-          - 2
-          - 3
-          - 4
+          - '1'
+          - '2'
+          - '3'
+          - '4'
         name: priority
         description: Specifies which work the team should do first.
         required: false
@@ -1489,7 +1489,8 @@ script:
           - '1'
           - '2'
           - '3'
-          - '4'        name: priority
+          - '4'
+        name: priority
         description: A new priority for the work item.
         required: false
         isArray: false
