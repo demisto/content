@@ -345,6 +345,8 @@ def main() -> None:
                 arg_name='First fetch time',
                 required=True
             )
+            if first_fetch_time is None:
+                return_error('Invalid first fetch time')
             timestamp = int(first_fetch_time.timestamp())
             last_fetch = demisto.getLastRun().get('timestamp', None)
             timestamp = timestamp if last_fetch is None else int(last_fetch)
