@@ -49,7 +49,7 @@ def get_incident_init_params():
 
 
 def item_to_incidents(item_info, sixgill_alerts_client):
-    incident: Dict[str, Any] = dict()
+    incident: Dict[str, Any] = {}
     incidents = []
     items = []
     # get fields that are shared in case of sub alerts
@@ -180,13 +180,12 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
                                                                      organization_id=demisto.params().get('org_id', None))
         # get item full content
         content = content.get('items', None)
-        if content:
-            if content[0].get('_id'):
-                es_items = content[0].get('_source')
-                if es_items:
-                    content_item['title'] = es_items.get('title')
-                    content_item['content'] = es_items.get('content')
-                    content_item['creator'] = es_items.get('creator')
+        if content and content[0].get('_id'):
+            es_items = content[0].get('_source')
+            if es_items:
+                content_item['title'] = es_items.get('title')
+                content_item['content'] = es_items.get('content')
+                content_item['creator'] = es_items.get('creator')
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -317,4 +316,4 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
             update_alert_status()
 
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")

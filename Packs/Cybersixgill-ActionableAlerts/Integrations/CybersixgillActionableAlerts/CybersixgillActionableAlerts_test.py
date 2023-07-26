@@ -14,7 +14,7 @@ incidents_list = [
         "status": {"name": "in_treatment", "user": "60b604a048ce2cb294629a2d"},
         "threat_level": "imminent",
         "threats": ["Brand Protection", "Data Leak"],
-        "title": "Your organization was potentially targeted " "by a ransomware group",
+        "title": "Your organization was potentially targeted by a ransomware group",
         "user_id": "5d233575f8db38787dbe24b6",
     },
     {
@@ -219,7 +219,7 @@ expected_alert_output_with_custom_fields = {
         "cybersixgillcvss31": -1,
         "cybersixgilldvescore": None,
     },
-    "alert_name": "Your organization was potentially targeted by a ransomware " "group",
+    "alert_name": "Your organization was potentially targeted by a ransomware group",
     "content": "text",
     "date": "2021-11-08 06:01:05",
     "id": "6188bd21017198385e228437",
@@ -235,7 +235,7 @@ expected_alert_output_with_custom_fields = {
 
 expected_alert_output_es_id_na = {
     "CustomFields": {},
-    "alert_name": "Your organization was potentially targeted by a ransomware " "group",
+    "alert_name": "Your organization was potentially targeted by a ransomware group",
     "content": "text",
     "date": "2021-11-08 06:01:05",
     "id": "6188bd21017198385e228437",
@@ -250,10 +250,10 @@ expected_alert_output_es_id_na = {
 }
 
 
-class MockedResponse(object):
+class MockedResponse:
     def __init__(self, status_code):
         self.status_code = status_code
-        self.ok = True if self.status_code == 200 else False
+        self.ok = self.status_code == 200
 
 
 def get_incidents_list():
