@@ -35,8 +35,8 @@ def paginate(
     :param page_size_arg_name: The argument name in demisto.args() that specifies the size of each page. Default is 'page_size'.
     :type page_size_arg_name: str
 
-    :param api_limit: The maximum limit supported by the API for a single request. Used only with "limit" when "page" and "page_size"
-                      are not defined. Use None if there is no API limit. Default is None.
+    :param api_limit: The maximum limit supported by the API for a single request. Used only with "limit" when "page" and
+                      "page_size" are not defined. Use None if there is no API limit. Default is None.
     :type api_limit: int | None
 
     :param keys_to_pages: Key(s) to access the paginated data within the response dictionary. When the data is nested in multiple
@@ -101,7 +101,6 @@ def paginate(
         return inner
 
     return dec
-
 
 
 FIELD_NAMES_MAP = {
