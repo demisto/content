@@ -535,7 +535,7 @@ config case_sensitive = true
 config case_sensitive = true
 | filter _raw_log ~= "from\s\d+\.\d+\.\d+\.\d+\son\sinterface\s[\w\-\_]+" or _raw_log ~= "from\s[\:\da-zA-Z]+\son\sinterface\s[\w\-\_]+"
 | call cisco_asa_main_fields_extraction
-| alter action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:([A-Za-z\s\-]+)\s[A-Za-z]+"),0),
+| alter action = arrayindex(regextract(_raw_log ,"\%ASA\-[session]*\-*\d\-\d+\:\s*([A-Za-z\s\-]+)\s[A-Za-z]+"),0),
     src_interface = arrayindex(regextract(_raw_log ,"from\s[\d+\.\:a-z]+\son\sinterface\s([\w\-\_]+)"),0),
     src_ipv4 = arrayindex(regextract(_raw_log ,"from\s(\d+\.\d+\.\d+\.\d+)\son\sinterface"),0),
     src_ipv6 = arrayindex(regextract(_raw_log ,"from\s([a-z\d\:]+)\son\sinterface"),0),
