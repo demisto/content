@@ -103,7 +103,7 @@ def main():
 
         logging.info(f"Starting to compare metadata files {new_pack_dir}/metadata.json---content_packs/{pack_dir_name}"
                      "/metadata.json")
-        different_keys, different_ignored_keys = get_diff(existing_metadata, new_metadata, options.metadata_2)
+        different_keys, different_ignored_keys = get_diff(existing_metadata, new_metadata, options.content_packs)
 
         if different_keys:
             logging.error(f"Found different values in 'content_packs/{pack_dir_name}/metadata.json' for keys '{different_keys}'")
