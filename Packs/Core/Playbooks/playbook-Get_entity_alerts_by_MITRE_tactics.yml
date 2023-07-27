@@ -1773,7 +1773,7 @@ inputs:
   value:
     simple: hostname
   required: true
-  description: Entity type to search.
+  description: Entity type to search. Entity type can be username, hostname, or any other element that exists in the alert.
   playbookInputQuery:
 - key: EntityID
   value:

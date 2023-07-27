@@ -41,7 +41,7 @@ This playbook does not use any commands.
 | HuntCredentialAccessTechniques | Set to True to hunt for identified alerts with MITRE Credential Access techniques. |  | Optional |
 | timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day<br/>\* 2 minutes<br/>\* 4 hours<br/>\* 8 days | 20 days | Required |
 | RunAll | Whether to run all the sub-tasks for Mitre Tactics. | true | Optional |
-| EntityType | Entity type to search. | hostname | Required |
+| EntityType | Entity type to search. Entity type can be username, hostname, or any other element that exists in the alert. | hostname | Required |
 | EntityID | Entity value. | None | Required |
 
 ## Playbook Outputs
