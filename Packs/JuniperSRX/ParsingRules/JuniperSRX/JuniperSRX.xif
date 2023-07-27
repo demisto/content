@@ -1,6 +1,6 @@
 [INGEST:vendor="juniper", product="srx", target_dataset="juniper_srx_raw", no_hit = keep]
 // Support only date time of format: yyyy-MM-ddThh:mm:%E3S or format: MMM dd hh:mm:ss. For example: "2021-12-08T10:00:00.665" or "Nov 10 10:00:00".
-filter _raw_log ~= "\w+\s+\d+\s+\d+\:\d+\:\d+" and _raw_log ~= "\>\d+\s+\d+\-\d+\-\d+T\d+\:\d+\:\d+\.\d+"
+filter _raw_log ~= "\w+\s+\d+\s+\d+\:\d+\:\d+" or _raw_log ~= "\>\d+\s+\d+\-\d+\-\d+T\d+\:\d+\:\d+\.\d+"
 // Parsing time format 1
 | alter tmp_time1 = arrayindex(regextract(_raw_log , "^(\w+\s+\d+\s+\d+\:\d+\:\d+)"),0),
         tmp_Year = format_timestamp("%Y",_insert_time)
