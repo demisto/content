@@ -444,6 +444,15 @@ def get_name_similarity_index(
     Returns >=1 if there is a blatant match.
     Returns 0 if there is no match at all.
     Returns 0 to 1 if there is a potential match.
+
+    Example:
+        personal_monikers = ["mike@example.com", "Michael Jordan"]
+        constant_name = "mj-test"
+        returns: 1.0
+
+        personal_monikers = ["mike@example.com", "Michael Jordan"]
+        constant_name = "mbj-test"
+        returns: .1
     """
     total_indicators = 0.0
 
