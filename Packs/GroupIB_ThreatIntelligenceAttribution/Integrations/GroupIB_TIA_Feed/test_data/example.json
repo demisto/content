@@ -682,7 +682,7 @@
         "type": "cve"
     },
     "ioc/common":{
-        "id": "6d44a7ed0b826f972e2fb74233c581d80f890552",
+        "id": "1111111111111111111111111111111111111111",
             "type": "network",
             "dateFirstSeen": "2012-10-24T00:00:00Z",
             "dateLastSeen": "2016-10-24T00:00:00Z",
