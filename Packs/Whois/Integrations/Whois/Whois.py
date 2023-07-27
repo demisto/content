@@ -12,7 +12,6 @@ import urllib
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
-RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 
 # flake8: noqa
 
@@ -7159,26 +7158,6 @@ ipwhois_exception_mapping: Dict[Type, str] = {
 }
 
 
-def has_rate_limited_result(cmd_results: List[CommandResults]) -> bool:
-    """
-    Helper function to return whether a rate limited `CommandResult` exists in the list
-
-    Args:
-        - `cmd_results`: (``List[CommandResults]``): List of command results to search in.
-
-    Returns:
-        - `True` if one of the supplied command results has a rate limited reason for failure.
-    """
-
-    for c in cmd_results:
-        if c.entry_type == EntryType.ERROR and c.outputs and 'reason' in c.outputs.keys() and c.outputs['reason'] == "quota_error":  # type: ignore
-            return True
-        else:
-            continue
-
-    return False
-
-
 class WhoisInvalidDomain(Exception):
     pass
 
@@ -8671,7 +8650,6 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             results.append(result)
 
         except Exception as e:
-            # FIXME Figure out why the caught exception is not Whois type (but TypeError/KeyError)
             demisto.error(f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}'")
 
             execution_metrics = increment_metric(
@@ -8774,8 +8752,6 @@ def main():
                 param_key='rate_limit_retry_count', arg_key='rate_limit_retry_count'), arg_name="rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT
             rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(
                 param_key='rate_limit_wait_seconds', arg_key="rate_limit_wait_seconds")) or RATE_LIMIT_WAIT_SECONDS_DEFAULT
-            rate_limit_errors_suppressed: bool = argToBoolean(get_param_or_arg(
-                param_key='rate_limit_errors_suppressed', arg_key='rate_limit_errors_suppressed')) or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
 
             cmd_res = ip_command(
                 ips=ip,
@@ -8784,19 +8760,8 @@ def main():
                 rate_limit_wait_seconds=rate_limit_wait_seconds,
                 should_error=should_error
             )
-            is_rate_limited = has_rate_limited_result(cmd_res)
 
-            # TODO not sure this is the desired behavior
-            # Return an error if rate limiting is not suppressed
-            # and whether one of the requests failed because of rate limiting
-            if not rate_limit_errors_suppressed and is_rate_limited:
-                return_error(
-                    f"Rate limit errors are no suppressed and one or more of the IP queries failed with rate-limiting.",
-                    outputs=cmd_res,
-                    error="quota_error"
-                )
-            else:
-                results.extend(cmd_res)
+            results.extend(cmd_res)
 
         else:
             org_socket = socket.socket

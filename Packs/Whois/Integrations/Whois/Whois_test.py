@@ -9,16 +9,17 @@ import tempfile
 import sys
 from typing import List, Dict, Type, Tuple
 
-from CommonServerPython import DBotScoreReliability, CommandResults, EntryType, ExecutionMetrics, ErrorTypes
-from Whois import has_rate_limited_result, \
-    ipwhois_exception_mapping, \
-    whois_exception_mapping, \
-    increment_metric, \
-    WhoisInvalidDomain, \
-    whois_command, \
-    get_domain_from_query, \
-    ip_command, \
+from CommonServerPython import DBotScoreReliability, EntryType, ExecutionMetrics, ErrorTypes
+from Whois import (
+    ipwhois_exception_mapping,
+    whois_exception_mapping,
+    increment_metric,
+    WhoisInvalidDomain,
+    whois_command,
+    get_domain_from_query,
+    ip_command,
     get_root_server
+)
 import ipwhois
 import socket
 from pytest_mock import MockerFixture
@@ -97,51 +98,6 @@ def test_socks_proxy(mocker, request):
     assert_results_ok()
     tmp.seek(0)
     assert 'connected to' in tmp.read()  # make sure we went through microsocks
-
-
-@pytest.mark.parametrize(
-    "cmd_results,expected",
-    [
-        ([], False),
-        ([CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'})], True),
-        ([
-            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'}),
-            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'})
-        ], True),
-        ([
-            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'service_error'}),
-            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'quota_error'})
-        ], True),
-        ([
-            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'service_error'}),
-            CommandResults(entry_type=EntryType.ERROR, outputs={'reason': 'service_error'})
-        ], False),
-        ([CommandResults(entry_type=EntryType.ERROR)], False),
-
-    ]
-)
-def test_has_rate_limited_result(cmd_results: List[CommandResults], expected: bool):
-    """
-    Given:
-        - A list of `CommandResults` is passed as input
-
-    When:
-        - Case A: An empty list is given as input.
-        - Case B: A list with 2 quota error command results is given as input.
-        - Case C: A list with 1 quota error command results is given as input.
-        - Case D: A list with 0 quota error command results is given as input.
-        - Case E: A list with a command result with no outputs is given as input.
-
-    Then:
-        - Case A: False is expected.
-        - Case B: True is expected.
-        - Case C: True is expected.
-        - Case D: False is expected.
-        - Case E: False is expected.
-    """
-
-    actual = has_rate_limited_result(cmd_results=cmd_results)
-    assert actual == expected
 
 
 TEST_QUERY_RESULT_INPUT = [
