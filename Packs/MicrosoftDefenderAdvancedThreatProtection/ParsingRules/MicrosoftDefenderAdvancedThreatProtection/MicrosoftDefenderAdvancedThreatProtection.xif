@@ -1,5 +1,6 @@
 [INGEST:vendor="Microsoft 365", product="Defender", target_dataset="microsoft_365_defender_raw", no_hit = keep]
-alter tmp_splitStr = split(lastEventTime , ".")
+filter to_string(lastEventTime) ~= "\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d*Z"
+| alter tmp_splitStr = split(lastEventTime , ".")
 | alter tmp_epoch_s = to_epoch(parse_timestamp("%Y-%m-%dT%H:%M:%S", arrayindex(tmp_splitStr ,0)), "millis")
 | alter tmp_epoch_ms = to_integer(arrayindex(regextract(arrayindex(tmp_splitStr, 1),"^(\d{3}).*"),0))
 | alter tmp_cc = add(tmp_epoch_s , tmp_epoch_ms)
