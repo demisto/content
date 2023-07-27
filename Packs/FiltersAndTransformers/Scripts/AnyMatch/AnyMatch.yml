@@ -2,27 +2,27 @@ commonfields:
   id: AnyMatch
   version: -1
 name: AnyMatch
-script: ''
+script: ""
 type: python
 subtype: python3
 tags:
-- filter
-- general
+  - filter
+  - general
 comment: |-
   Returns a list of all elements from the left side that are in the right side, including as a substring. Note: This filter is case insensitive.
   e.g -AnyMatch left=[A,b,c] right=[baby] will return [a,b].
 enabled: true
 args:
-- name: left
-  required: true
-   isArray: true
-  description: Value to check if it exists in the right side. can be a single value or a comma-separated list.
-- name: right
-  required: true
-   isArray: true
-  description: Value to check if it includes string or substrings from the left. can be a single value or a comma-separated list.
+  - name: left
+    required: true
+    isArray: true
+    description: Value to check if it exists in the right side. can be a single value or a comma-separated list.
+  - name: right
+    required: true
+    isArray: true
+    description: Value to check if it includes string or substrings from the left. can be a single value or a comma-separated list.
 scripttarget: 0
 fromversion: 6.9.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 dockerimage: demisto/python3:3.10.12.66339
