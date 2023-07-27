@@ -95,10 +95,10 @@ def main():
     parser.add_argument("-ao", "--artifacts-output", help="Artifacts output directory", required=True)
     parser.add_argument("-do", "--dependencies-output", help="Dependencies output file", required=True)
     parser.add_argument("-po", "--packs-output", help="Packs json output file", required=True)
+    parser.add_argument('-cp', '--content-packs', help=("Content packs to create artifacts"), required=True)
     parser.add_argument(
         "-bu", "--bucket-upload", help="Upload to bucket", type=lambda x: str2bool(x or False), default=False
     )
-    parser.add_argument('-cp', '--content-packs', help=("Content packs to create artifacts"), required=True)
     parser.add_argument("--zip", default=True, action="store_true")
     parser.add_argument("--no-zip", dest="zip", action="store_false")
     args = parser.parse_args()
