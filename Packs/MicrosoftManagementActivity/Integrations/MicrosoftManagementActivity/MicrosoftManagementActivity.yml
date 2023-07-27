@@ -290,7 +290,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ms-management-activity
     arguments: []
-  dockerimage: demisto/pyjwt3:1.0.0.66325
+  dockerimage: demisto/pyjwt3:1.0.0.66845
   isfetch: true
   runonce: false
   script: '-'
