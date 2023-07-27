@@ -7,7 +7,7 @@ def retrieve_epoch() -> int:
     return int(time.time())
 
 
-def main():
+def main():  # pragma: no cover
     epoch = retrieve_epoch()
     demisto.setContext('DateTimeNowEpoch', epoch)
     return_results(epoch)
