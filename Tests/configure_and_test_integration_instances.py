@@ -137,7 +137,7 @@ class XSOARServer(Server):
     def __init__(self, internal_ip, user_name, password, build_number=''):
         super().__init__()
         self.__client = None
-        self.internal_ip = internal_ip
+        self.internal_ip: str = internal_ip
         self.user_name = user_name
         self.password = password
         self.build_number = build_number
@@ -158,7 +158,7 @@ class XSOARServer(Server):
                                                  username=self.user_name,
                                                  password=self.password)
         custom_user_agent = self.get_custom_user_agent()
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        logging.debug(f"Setting user agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -330,26 +330,29 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids=None, install_packs_one_by_one=False):
+    def install_packs(self, pack_ids: list | None = None, multithreading=True, is_post_update: bool = False) -> bool:
         """
-        Install pack_ids or packs from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and their dependencies.
         Args:
-            pack_ids: Packs to install on the server. If no packs provided, installs packs that was provided
-            by previous step of the build.
-            install_packs_one_by_one: Whether to install packs one by one or all together.
+            pack_ids (list | None, optional): Packs to install on the server.
+                If no packs provided, installs packs that were provided by the previous step of the build.
+            multithreading (bool): Whether to install packs in parallel or not.
+            is_post_update (bool): Whether the installation is in post update mode. Defaults to False.
 
         Returns:
-            installed_content_packs_successfully: Whether packs installed successfully
+            bool: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
-        logging.info(f"Packs ids to install: {pack_ids}")
+        logging.info(f"IDs of packs to install: {pack_ids}")
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
-                _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname,
-                                                                          install_packs_one_by_one,
-                                                                          )
+                _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
+                                                                          client=server.client,
+                                                                          hostname=hostname,
+                                                                          multithreading=multithreading,
+                                                                          is_post_update=is_post_update)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -548,7 +551,7 @@ class Build(ABC):
         """
         self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
                                  self.artifacts_folder, self.marketplace_buckets)
-        installed_content_packs_successfully = self.install_packs()
+        installed_content_packs_successfully = self.install_packs(is_post_update=True)
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -599,16 +602,18 @@ class XSOARBuild(Build):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
             configurations = {}
+            configure_types = []
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
                 configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types = ['docker hardening', 'marketplace']
+            configure_types.append('docker hardening')
+            configure_types.append('marketplace')
             configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
+            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
         if manual_restart:
@@ -774,7 +779,6 @@ class CloudBuild(Build):
         logging.info('getting cloud configuration')
 
         cloud_servers = get_json_file(cloud_servers_path)
-        cloud_servers = flatten_cloud_servers(cloud_servers)
         conf = cloud_servers.get(cloud_machine)
         cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
         api_key = cloud_servers_api_keys.get(cloud_machine)
@@ -798,7 +802,7 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        success = self.install_packs(install_packs_one_by_one=True)
+        success = self.install_packs(multithreading=False, is_post_update=False)
         if not success:
             logging.error('Failed to install content packs, aborting.')
             sys.exit(1)
@@ -1576,21 +1580,6 @@ def create_test_pack(packs: list = None):
     test_pack_zip(Build.content_path, Build.test_pack_target, packs)
 
 
-def flatten_cloud_servers(cloud_servers: dict) -> dict:
-    """
-    Args:
-        cloud_servers: json of cloud servers to flatten
-
-    Returns:
-        dictionary of all cloud servers with no seperation of build or upload.
-    """
-    flattened_cloud_servers: dict = {}
-    for value in cloud_servers.values():
-        if isinstance(value, dict):
-            flattened_cloud_servers.update(value)
-    return flattened_cloud_servers
-
-
 def test_files(content_path, packs_to_install: list = None):
     packs_root = f'{content_path}/Packs'
     packs_to_install = packs_to_install or []
@@ -1705,9 +1694,7 @@ def run_git_diff(pack_name: str, build: Build) -> str:
     Returns:
         (str): The git diff output.
     """
-    compare_against = (
-        f"origin/master{'' if build.branch_name != 'master' else '~1'}"
-    )
+    compare_against = 'origin/master{}'.format('' if build.branch_name != 'master' else '~1')
     return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
@@ -1914,7 +1901,7 @@ def main():
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
-        build.install_packs(pack_ids=packs_to_install_in_pre_update)
+        build.install_packs(pack_ids=list(packs_to_install_in_pre_update), is_post_update=False)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,

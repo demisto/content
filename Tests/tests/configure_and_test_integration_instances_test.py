@@ -2,48 +2,26 @@ import os
 import pytest
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
     options_handler, CloudBuild, get_turned_non_hidden_packs, update_integration_lists, \
-    get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names, flatten_cloud_servers
+    get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
 
 XSIAM_SERVERS = {
-    "build": {
-        "qa2-test-111111": {
-            "ui_url": "https://xsiam1.paloaltonetworks.com/",
-            "instance_name": "qa2-test-111111",
-            "api_key": "1234567890",
-            "x-xdr-auth-id": 1,
-            "base_url": "https://api1.paloaltonetworks.com/",
-            "xsiam_version": "3.2.0",
-            "demisto_version": "99.99.98"
-        },
-        "qa2-test-222222": {
-            "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
-            "instance_name": "qa2-test-222222",
-            "api_key": "1234567890",
-            "x-xdr-auth-id": 1,
-            "base_url": "https://api-xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com",
-            "xsiam_version": "3.2.0",
-            "demisto_version": "99.99.98"
-        }
+    "qa2-test-111111": {
+        "ui_url": "https://xsiam1.paloaltonetworks.com/",
+        "instance_name": "qa2-test-111111",
+        "api_key": "1234567890",
+        "x-xdr-auth-id": 1,
+        "base_url": "https://api1.paloaltonetworks.com/",
+        "xsiam_version": "3.2.0",
+        "demisto_version": "99.99.98"
     },
-    "upload": {
-        "qa2-test-333333": {
-            "ui_url": "https://xsiam1.paloaltonetworks.com/",
-            "instance_name": "qa2-test-333333",
-            "api_key": "1234567890",
-            "x-xdr-auth-id": 1,
-            "base_url": "https://api1.paloaltonetworks.com/",
-            "xsiam_version": "3.2.0",
-            "demisto_version": "99.99.98"
-        },
-        "qa2-test-44444": {
-            "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
-            "instance_name": "qa2-test-44444",
-            "api_key": "1234567890",
-            "x-xdr-auth-id": 1,
-            "base_url": "https://api-xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com",
-            "xsiam_version": "3.2.0",
-            "demisto_version": "99.99.98"
-        }
+    "qa2-test-222222": {
+        "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
+        "instance_name": "qa2-test-222222",
+        "api_key": "1234567890",
+        "x-xdr-auth-id": 1,
+        "base_url": "https://api-xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com",
+        "xsiam_version": "3.2.0",
+        "demisto_version": "99.99.98"
     }
 }
 
@@ -120,21 +98,6 @@ def test_create_build(mocker, expected_class, build_object_type):
     """
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
-
-
-def test_flatten_cloud_servers():
-    """
-    Given:
-        - json contains all cloud servers available for cloud build.
-    When:
-        - Running 'get_cloud_configuration' method
-    Then:
-        - Assert there the all machines in a dictionary without seperation.
-    """
-    machines = flatten_cloud_servers(XSIAM_SERVERS)
-
-    assert isinstance(machines, dict)
-    assert len(list(machines.keys())) == 4
 
 
 NON_HIDDEN_PACKS = [
