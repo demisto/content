@@ -225,7 +225,8 @@
         {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": "FireEye Central Management",
@@ -4714,7 +4715,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "GoogleDrive"
-            ]
+            ],
+            "memory_threshold": 300
         },
         {
             "playbookID": "RiskIQDigitalFootprint-Test",
@@ -6066,7 +6068,7 @@
                 "memory_threshold": 105
             },
             "demisto/googleapi-python3": {
-                "memory_threshold": 200
+                "memory_threshold": 300
             },
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85
