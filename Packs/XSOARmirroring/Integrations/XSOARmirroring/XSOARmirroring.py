@@ -773,7 +773,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('apikey')
     if not api_key:
         raise DemistoException('API Key must be provided.')
