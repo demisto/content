@@ -29,9 +29,6 @@ jobs:
       - name: Check if partner-approved label exists
         id: check_label
         env:
-          #CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
-          #EVENT_PAYLOAD: ${{ toJson(github.event) }}
-          #CORTEX_XSOAR_SLACK_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
