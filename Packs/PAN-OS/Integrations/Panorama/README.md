@@ -5684,7 +5684,7 @@ Gets information from all PAN-OS systems in the topology.
 
 ### pan-os-platform-get-device-groups
 ***
-Gets the operational information of the device groups in the topology(only device groups with accosiated devices will be listed by this command).
+Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
 
 
 #### Base Command
