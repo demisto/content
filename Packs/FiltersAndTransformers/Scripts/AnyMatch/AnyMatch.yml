@@ -16,11 +16,11 @@ args:
 - name: left
   required: true
   isarray: true
-  description: Value to check if it exists in the right side. can be a single value or an array.
+  description: Value to check if it exists in the right side. can be a single value or a comma-separated list.
 - name: right
   required: true
   isarray: true
-  description: Value to check if it includes string or substrings from the left. can be a single value or an array.
+  description: Value to check if it includes string or substrings from the left. can be a single value or a comma-separated list.
 scripttarget: 0
 fromversion: 5.0.0
 tests:

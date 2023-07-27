@@ -15,7 +15,7 @@ from AnyMatch import main
     ("a", "ABC", 1, [True]),  # case insensitive
     ("x", "{'alert' {'data': 'x'}}", 1, [True]),
     ("{'a':1},{'b':2}", "{'a':1,'c':2}", 2, [False, False]),     # {'a':1} is not in {'a':1,'c':2}
-    ("{'a':1},{'b':2}", "{a:1}", 2, [False, False]),     # {'a':1} is not in {a:1}}
+    ("{'a':1},{'b':2}", "{a:1}", 2, [False, False]),     # {'a':1} is not in {a:1}
     ("'','", "{'a':1,'c':2}", 2, [False, True]),     # '' is not in {'a':1,'c':2}, ' is in {'a':1,'c':2}
 ])
 def test_main(mocker, left, right, call_count, result):
