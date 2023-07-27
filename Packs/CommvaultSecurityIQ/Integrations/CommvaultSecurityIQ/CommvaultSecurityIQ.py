@@ -404,11 +404,10 @@ class Client(BaseClient):
         Function to make http calls
         """
         try:
-            headers = self.headers if (not headers) else headers
             response = self._http_request(
                 method=method.upper(),
                 url_suffix=endpoint,
-                headers=headers,
+                headers=self.headers if (not headers) else headers,
                 json_data=json_data,
                 params=params,
                 resp_type="response",
@@ -503,20 +502,19 @@ class Client(BaseClient):
         Returns:
             (StreamServer): Server to listen to Syslog messages.
         """
-        if certificate_path and private_key_path:
+        server = StreamServer(
+            ("0.0.0.0", port),
+            self.perform_long_running_execution,  # disable-secrets-detection
+        )
+        """if certificate_path and private_key_path:
             server = StreamServer(
                 ("0.0.0.0", port),  # disable-secrets-detection
                 self.perform_long_running_execution,
                 keyfile=private_key_path,
                 certfile=certificate_path,
             )
-            demisto.debug("Starting HTTPS Server")
-        else:
-            server = StreamServer(
-                ("0.0.0.0", port),
-                self.perform_long_running_execution,  # disable-secrets-detection
-            )
-            demisto.debug("Starting HTTP Server")
+        else:"""
+
         return server
 
     def perform_long_running_execution(self, sock: Any, address: tuple) -> None:
@@ -545,8 +543,6 @@ class Client(BaseClient):
                     demisto.error(
                         f"Error occurred during long running loop. Error was: {error}"
                     )
-                finally:
-                    demisto.debug("Finished reading message")
         finally:
             file_obj.close()
 
@@ -1051,7 +1047,9 @@ class Client(BaseClient):
         import socket
 
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as socket_:
-            return socket_.connect_ex(("localhost", port)) == 0
+            if port > 0:
+                return socket_.connect_ex(("localhost", port)) == 0
+            return False
 
     def disable_data_aging(self) -> dict:
         """
@@ -1111,9 +1109,9 @@ class Client(BaseClient):
         """
         try:
             ssl_args = {}
-            if certificate_path and private_key_path:
+            """if certificate_path and private_key_path:
                 ssl_args["ssl_certfile"] = certificate_path
-                ssl_args["ssl_keyfile"] = private_key_path
+                ssl_args["ssl_keyfile"] = private_key_path"""
             integration_logger = IntegrationLogger()
             integration_logger.buffering = False
             log_config = dict(uvicorn.config.LOGGING_CONFIG)
