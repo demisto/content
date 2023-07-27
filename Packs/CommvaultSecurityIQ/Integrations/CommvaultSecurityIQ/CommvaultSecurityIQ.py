@@ -5,7 +5,6 @@ import time
 from copy import copy
 from dataclasses import dataclass
 from datetime import datetime
-from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from typing import Any
 
@@ -75,8 +74,7 @@ class GenericWebhookAccessFormatter(AccessFormatter):
 
     def formatMessage(self, record: logging.LogRecord) -> str:
         recordcopy = copy(record)
-        scope = recordcopy.__dict__["scope"]
-        user_agent = self.get_user_agent(scope)
+        user_agent = self.get_user_agent(recordcopy.__dict__["scope"])
         recordcopy.__dict__.update({"user_agent": user_agent})
         return super().formatMessage(recordcopy)
 
@@ -90,12 +88,17 @@ async def handle_post(
 ):
     del credentials, token
     global client
-    timestamp = datetime.fromtimestamp((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
     incident_type: str | None = demisto.params().get(
         "incidentType", "Commvault Suspicious File Activity"
     )
     incident_body = handle_post_helper(client, incident, request)
-    client.create_incident(incident_body, timestamp, incident_type, False)  # type: ignore
+    if client:
+        client.create_incident(
+            incident_body,  # type: ignore
+            datetime.fromtimestamp((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()),  # type: ignore
+            incident_type,
+            False,
+        )  # type: ignore
     return "OK"
 
 
@@ -108,10 +111,13 @@ def handle_post_helper(client, incident, request):
         event_time = incident[
             field_mapper(Constants.event_time, Constants.source_webhook)
         ]
-        if (request is None) or (request.client is None) or (request.client.host is None):
-            hostname = ""
-        else:
-            hostname = request.client.host  # type: ignore
+        hostname = (
+            ""
+            if (request is None)  # type: ignore
+            or (request.client is None)
+            or (request.client.host is None)  # type: ignore
+            else request.client.host  # type: ignore
+        )
         incident_body = {
             "facility": Constants.facility,
             "msg": None,
@@ -135,7 +141,6 @@ def handle_post_helper(client, incident, request):
         return incident_body
     except Exception as err:
         logging.error(f"could not print REQUEST: {err}")
-        return {"status": "ERR"}
     return {}
 
 
@@ -187,13 +192,10 @@ def extract_from_regex(
     """
     From the message, extract the strings matching the given patterns
     """
-    try:
-        for pattern in regex_string_args:
-            matches = re.search(pattern, message, re.IGNORECASE)
-            if matches and len(matches.groups()) > 0:
-                return matches.group(1).strip()
-    except Exception as error:
-        logging.error(f"Error occured in extract_from_regex. Exception [{error}]")
+    for pattern in regex_string_args:
+        matches = re.search(pattern, message, re.IGNORECASE)
+        if matches and len(matches.groups()) > 0:
+            return matches.group(1).strip()
     return default_value
 
 
@@ -347,7 +349,20 @@ class Client(BaseClient):
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.qsdk_token = None
-        self.ws_url = base_url
+        if not base_url.endswith("/"):
+            self.ws_url = base_url + "/"
+        else:
+            self.ws_url = base_url
+
+    def set_props(self, params):
+        self.keyvault_url = params.get("AzureKeyVaultUrl", {}).get("password")
+        self.keyvault_tenant_id = params.get("AzureKeyVaultTenantId", {}).get(
+            "password"
+        )
+        self.keyvault_client_id = params.get("AzureKeyVaultClientId")
+        self.keyvault_client_secret = params.get("AzureKeyVaultClientSecret", {}).get(
+            "password"
+        )
 
     def get_host(self):
         if self.ws_url:
@@ -389,9 +404,7 @@ class Client(BaseClient):
         Function to make http calls
         """
         try:
-            demisto.debug(f"Calling {endpoint} ")
-            if not headers:
-                headers = self.headers
+            headers = self.headers if (not headers) else headers
             response = self._http_request(
                 method=method.upper(),
                 url_suffix=endpoint,
@@ -406,7 +419,6 @@ class Client(BaseClient):
             error_msg = HTTP_ERRORS.get(exc.response.status_code)
             if error_msg:
                 raise DemistoException(f"{error_msg}", res=exc.response) from exc
-            raise
         retval = response.json()
 
         return retval
@@ -423,18 +435,18 @@ class Client(BaseClient):
             ).get("accessTokenGenerationTime")
         if self.access_token_last_generation is None:
             demisto.debug("Token is not present, we will create new token.")
-            if not self.generate_access_token(api_token):
-                return False
+            return self.generate_access_token(api_token)
         else:
             current_epoch = int(datetime.now().timestamp())
-            token_expiry_from_last_generation = int((
-                self.access_token_last_generation
-                + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
-            ))
+            token_expiry_from_last_generation = int(
+                (
+                    self.access_token_last_generation
+                    + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
+                )
+            )
             if current_epoch > token_expiry_from_last_generation:
                 demisto.debug("Token is expired, re-generating")
-                if not self.generate_access_token(api_token):
-                    return False
+                return self.generate_access_token(api_token)
             else:
                 self.qsdk_token = f"QSDK {self.access_token}"
         return True
@@ -519,7 +531,6 @@ class Client(BaseClient):
         Returns:
             (None): Reads data, calls   that creates incidents from inputted data.
         """
-        demisto.debug("Starting long running execution")
         file_obj = sock.makefile(mode="rb")
         try:
             while True:
@@ -586,9 +597,7 @@ class Client(BaseClient):
             demisto.createIncidents(incidents)
             # self.define_indicator(extracted_message.get("originating_client"))
 
-    def get_events_list(
-        self, last_run, first_fetch_time, max_fetch
-    ) -> Optional[Any]:
+    def get_events_list(self, last_run, first_fetch_time, max_fetch) -> Optional[Any]:
         """
         Function to get events
         """
@@ -652,11 +661,11 @@ class Client(BaseClient):
             folders_list.append(resp[Constants.path_key])
         return files_list, folders_list
 
-    def define_indicator(self, originating_client: str) -> None:
-        """
+    """def define_indicator(self, originating_client: str) -> None:
+
         Define an indicator
         :param originating_client: client which has generated the event
-        """
+
         indicator_list = []
         indicator_list.append(
             {
@@ -671,7 +680,7 @@ class Client(BaseClient):
                 },
             }
         )
-        demisto.createIndicators(indicator_list)
+        demisto.createIndicators(indicator_list)"""
 
     def parse_incoming_message(self, log_message: bytes) -> dict | None:
         """
@@ -679,50 +688,52 @@ class Client(BaseClient):
         """
         try:
             syslog_message: syslogmp.Message = parse_no_length_limit(log_message)
+            self.validate_session_or_generate_token(self.current_api_token)
+            message = syslog_message.message.decode("utf-8")
+
+            event_time = extract_from_regex(
+                message,
+                "",
+                "#011 {}: (.*?)#011".format(
+                    field_mapper(Constants.event_time, Constants.source_syslog)
+                ),
+            )
+            event_id = extract_from_regex(
+                message,
+                "",
+                "#011 {}: (.*?)#011".format(
+                    field_mapper(Constants.event_id, Constants.source_syslog)
+                ),
+            )
+            incident = {
+                "facility": Constants.facility,
+                "host_name": syslog_message.hostname,
+                "msg": None,
+                "msg_id": None,
+                "process_id": None,
+                "sd": {},
+                "timestamp": syslog_message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+                "occurred": None,
+                "event_time": event_time,
+                "event_id": event_id,
+                "originating_program": extract_from_regex(
+                    message,
+                    "",
+                    r"{}: ([\w]+)+:?".format(
+                        field_mapper(
+                            Constants.originating_program, Constants.source_syslog
+                        )
+                    ),
+                ),
+            }
+
+            incident.update(self.get_incident_details(message))  # type: ignore
+            return incident
         except syslogmp.parser.MessageFormatError as error:
             demisto.debug(
                 f"Could not parse the log message, got MessageFormatError. Error was: {error}"
             )
-            return None
-        self.validate_session_or_generate_token(self.current_api_token)
-        message = syslog_message.message.decode("utf-8")
-
-        event_time = extract_from_regex(
-            message,
-            "",
-            "#011 {}: (.*?)#011".format(
-                field_mapper(Constants.event_time, Constants.source_syslog)
-            ),
-        )
-        event_id = extract_from_regex(
-            message,
-            "",
-            "#011 {}: (.*?)#011".format(
-                field_mapper(Constants.event_id, Constants.source_syslog)
-            ),
-        )
-        incident = {
-            "facility": Constants.facility,
-            "host_name": syslog_message.hostname,
-            "msg": None,
-            "msg_id": None,
-            "process_id": None,
-            "sd": {},
-            "timestamp": syslog_message.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-            "occurred": None,
-            "event_time": event_time,
-            "event_id": event_id,
-            "originating_program": extract_from_regex(
-                message,
-                "",
-                r"{}: ([\w]+)+:?".format(
-                    field_mapper(Constants.originating_program, Constants.source_syslog)
-                ),
-            ),
-        }
-
-        incident.update(self.get_incident_details(message))  # type: ignore
-        return incident
+        return None
 
     def get_incident_details(self, message: str) -> dict | None:
         """
@@ -749,14 +760,10 @@ class Client(BaseClient):
             demisto.info(f"Invalid job [{job_id}]")
             return None
         job_start_time = int(
-            job_details.get("jobs", [{}])[0]
-            .get("jobSummary", {})
-            .get("jobStartTime")
+            job_details.get("jobs", [{}])[0].get("jobSummary", {}).get("jobStartTime")
         )
         job_end_time = int(
-            job_details.get("jobs", [{}])[0]
-            .get("jobSummary", {})
-            .get("jobEndTime")
+            job_details.get("jobs", [{}])[0].get("jobSummary", {}).get("jobEndTime")
         )
         subclient_id = (
             job_details.get("jobs", [{}])[0]
@@ -1031,8 +1038,10 @@ class Client(BaseClient):
         clientname = (
             demisto.incident().get("CustomFields", {}).get("commvaultoriginatingclient")
         )
-        resp = self.http_request("GET", "/GetId?clientname=" + clientname)
-        return str(resp.get("clientId"))
+        if clientname is not None:
+            resp = self.http_request("GET", "/GetId?clientname=" + clientname)
+            return str(resp.get("clientId"))
+        return "0"
 
     def is_port_in_use(self, port: int) -> bool:
         """
@@ -1051,7 +1060,7 @@ class Client(BaseClient):
         clientId = self.get_client_id()
         requestObj = {
             "clientProperties": {
-                "Client": {"ClientEntity": {"clientId": clientId}},
+                "Client": {"ClientEntity": {"clientId": int(clientId)}},
                 "clientProps": {
                     "clientActivityControl": {
                         "activityControlOptions": [
@@ -1100,46 +1109,40 @@ class Client(BaseClient):
         """
         Start uvicorn server
         """
-        while True:
-            try:
-                ssl_args = {}
-
-                if certificate_path and private_key_path:
-
-                    ssl_args["ssl_certfile"] = certificate_path
-
-                    ssl_args["ssl_keyfile"] = private_key_path
-                    demisto.debug("Starting HTTPS Server")
-                else:
-                    demisto.debug("Starting HTTP Server")
-
-                integration_logger = IntegrationLogger()
-                integration_logger.buffering = False
-                log_config = dict(uvicorn.config.LOGGING_CONFIG)
-                log_config["handlers"]["default"]["stream"] = integration_logger
-                log_config["handlers"]["access"]["stream"] = integration_logger
-                log_config["formatters"]["access"] = {
-                    "()": GenericWebhookAccessFormatter,
-                    "fmt": '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"',
-                }
-                uvicorn.run(
-                    app,
-                    host="0.0.0.0",  # disable-secrets-detection
-                    port=port,
-                    log_config=log_config,
-                    **ssl_args,  # type: ignore
-                )
-            except Exception as error:
-                demisto.error(
-                    f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
-                )
-                demisto.updateModuleHealth(f"An error occurred: {str(error)}")
-            finally:
-                if certificate_path:
-                    os.unlink(certificate_path)
-                if private_key_path:
-                    os.unlink(private_key_path)
-                time.sleep(5)
+        try:
+            ssl_args = {}
+            if certificate_path and private_key_path:
+                ssl_args["ssl_certfile"] = certificate_path
+                ssl_args["ssl_keyfile"] = private_key_path
+            integration_logger = IntegrationLogger()
+            integration_logger.buffering = False
+            log_config = dict(uvicorn.config.LOGGING_CONFIG)
+            log_config["handlers"]["default"]["stream"] = integration_logger
+            log_config["handlers"]["access"]["stream"] = integration_logger
+            log_config["formatters"]["access"] = {
+                "()": GenericWebhookAccessFormatter,
+                "fmt": '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"',
+            }
+            if port > 0:
+                while True:
+                    uvicorn.run(
+                        app,
+                        host="0.0.0.0",  # disable-secrets-detection
+                        port=port,
+                        log_config=log_config,
+                        **ssl_args,  # type: ignore
+                    )
+        except Exception as error:
+            demisto.error(
+                f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
+            )
+            demisto.updateModuleHealth(f"An error occurred: {str(error)}")
+        finally:
+            if certificate_path:
+                os.unlink(certificate_path)
+            if private_key_path:
+                os.unlink(private_key_path)
+            time.sleep(5)
 
 
 def fetch_incidents(
@@ -1227,7 +1230,7 @@ def disable_data_aging(client):
 def copy_files_to_war_room():
     files = demisto.incident().get("CustomFields", {}).get("commvaultfileslist")
     out_resp = ""
-    for file_ in files:
+    for file_ in files if (not (files is None)) else []:
         out_resp = out_resp + file_["folder"] + "\\" + file_["filename"] + "\n"
     demisto.results(fileResult("Suspiciousfiles.txt", str(out_resp).encode()))
     return "Copied files to the War Room with the file name Suspiciousfiles.txt"
@@ -1286,6 +1289,61 @@ def get_secret_from_key_vault(client):
     )
 
 
+def get_params(params):
+    return (
+        params.get("first_fetch", "1 day").strip(),
+        params.get("certificate"),
+        params.get("private_key"),
+        params.get("CVWebserviceUrl", ""),
+        params.get("incidentType", "Commvault Suspicious File Activity"),
+        params.get("CommvaultAPIToken", {}).get("password"),
+        params.get("isFetch", False),
+        params.get("longRunning", False),
+    )
+
+
+def validate_inputs(
+    portno, client, is_valid_cv_token, is_fetch, is_long_running, forwarding_rule_type
+):
+    try:
+        if portno > 0 and client.is_port_in_use(portno):
+            raise DemistoException(
+                f"Port [{portno}] is in use, please specify another port"
+            )
+        if not is_valid_cv_token:
+            raise DemistoException(
+                "Invalid Commvault API token. Please check service URL or API token."
+            )
+        if not is_fetch and not is_long_running:
+            raise DemistoException(
+                "Please enable fetch incidents/use forwarding rules."
+            )
+        else:
+            if (
+                forwarding_rule_type
+                in (
+                    Constants.source_syslog,
+                    Constants.source_webhook,
+                )
+                and is_fetch
+            ):
+                raise DemistoException(
+                    "Fetch incidents can not be used with forwarding rule."
+                )
+        if not client.validate_azure_keyvault_configuration():
+            raise DemistoException(
+                "Invalid Azure Keyvault configuration. Please provide correct parameters."
+            )
+
+    except OSError as error:
+        if "Address already in use" in str(error):
+            raise DemistoException(
+                f"Given port: {portno} is already in use. Please either change port or "
+                f"make sure to close the connection in the server using that port."
+            )
+        raise error
+
+
 def main() -> None:
     """
     Main function
@@ -1293,37 +1351,31 @@ def main() -> None:
     global client
     params = demisto.params()
     command = demisto.command()
-
-    first_fetch_time = params.get("first_fetch", "1 day").strip()
-    params.get("message_regex")
-    certificate: str | None = params.get("certificate")
-    private_key: str | None = params.get("private_key")
-    cv_webservice_url: str = params.get("CVWebserviceUrl")
-    incident_type = params.get("incidentType", "Commvault Suspicious File Activity")
-    cv_api_token: str = params.get("CommvaultAPIToken", {}).get("password")
-    is_fetch: list[str] = params.get("isFetch")
-    if not cv_webservice_url.endswith("/"):
-        cv_webservice_url = cv_webservice_url + "/"
+    (
+        first_fetch_time,
+        certificate,
+        private_key,
+        cv_webservice_url,
+        incident_type,
+        cv_api_token,
+        is_fetch,
+        is_long_running,
+    ) = get_params(params)
     client = Client(base_url=cv_webservice_url + "api", verify=False, proxy=False)
     is_valid_cv_token = None
     # Azure Key Vault Parameters
-    client.keyvault_url = params.get("AzureKeyVaultUrl", {}).get("password")
-    client.keyvault_tenant_id = params.get("AzureKeyVaultTenantId", {}).get("password")
-    client.keyvault_client_id = params.get("AzureKeyVaultClientId")
-    client.keyvault_client_secret = params.get("AzureKeyVaultClientSecret", {}).get(
-        "password"
-    )
+    client.set_props(params)
     is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
     forwarding_rule_type: str | None = params.get("forwardingRule")
     port: int = 0
     try:
-        if not is_fetch:
+        if is_long_running and (not is_fetch):
             port = int(params.get("longRunningPort"))
     except (ValueError, TypeError):
         raise DemistoException(
             f"Invalid listen port - {port}. Make sure your port is a number"
         )
-    if not is_fetch and (port < 0 or port > MAX_PORT):
+    if not is_fetch and is_long_running and (port < 0 or port > MAX_PORT):
         raise DemistoException(
             f"Given port: {port} is not valid and must be between 0-{MAX_PORT}"
         )
@@ -1332,43 +1384,14 @@ def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
         if command == "test-module":
-            try:
-                if port > 0 and client.is_port_in_use(port):
-                    raise DemistoException(
-                        f"Port [{port}] is in use, please specify another port"
-                    )
-                if not is_valid_cv_token:
-                    raise DemistoException(
-                        "Invalid Commvault API token. Please check service URL or API token."
-                    )
-                if not is_fetch:
-                    if not (
-                        forwarding_rule_type == Constants.source_syslog
-                        or forwarding_rule_type == Constants.source_webhook
-                    ):
-                        raise DemistoException(
-                            "Please enable fetch incidents or use forwarding rules."
-                        )
-                else:
-                    if forwarding_rule_type in (
-                        Constants.source_syslog,
-                        Constants.source_webhook,
-                    ):
-                        raise DemistoException(
-                            "Fetch incidents can not be used with forwarding rule."
-                        )
-                if client.validate_azure_keyvault_configuration():
-                    raise DemistoException(
-                        "Invalid Azure Keyvault configuration. Please provide correct parameters."
-                    )
-
-            except OSError as error:
-                if "Address already in use" in str(error):
-                    raise DemistoException(
-                        f"Given port: {port} is already in use. Please either change port or "
-                        f"make sure to close the connection in the server using that port."
-                    )
-                raise error
+            validate_inputs(
+                port,
+                client,
+                is_valid_cv_token,
+                is_fetch,
+                is_long_running,
+                forwarding_rule_type,
+            )
             return_results("ok")
         elif command == "fetch-incidents":
             last_fetch, out = fetch_incidents(
@@ -1389,7 +1412,7 @@ def main() -> None:
             demisto.setLastRun(last_fetch)
         elif command == "long-running-execution":
             try:
-                certificate_path = ""
+                """certificate_path = ""
                 private_key_path = ""
                 if certificate and private_key:
                     with NamedTemporaryFile(delete=False) as certificate_file:
@@ -1397,25 +1420,25 @@ def main() -> None:
                         certificate_file.write(bytes(certificate, "utf-8"))
                     with NamedTemporaryFile(delete=False) as private_key_file:
                         private_key_path = private_key_file.name
-                        private_key_file.write(bytes(private_key, "utf-8"))
+                        private_key_file.write(bytes(private_key, "utf-8"))"""
                 if forwarding_rule_type == Constants.source_syslog:
                     server: StreamServer = client.prepare_globals_and_create_server(
-                        port, certificate_path, private_key_path
+                        port, None, None
                     )
                     server.serve_forever()
                 if forwarding_rule_type == Constants.source_webhook:
-                    client.run_uvicorn_server(port, certificate_path, private_key_path)
+                    client.run_uvicorn_server(port, None, None)
             except Exception as error:
                 demisto.error(
                     f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
                 )
                 demisto.updateModuleHealth(f"An error occurred: {str(error)}")
-            finally:
+            """finally:
                 if certificate_path:
                     os.unlink(certificate_path)
                 if private_key_path:
                     os.unlink(private_key_path)
-                time.sleep(5)
+                time.sleep(5)"""
         elif command == "commvault-security-set-disable-data-aging":
             return_results(disable_data_aging(client))
         elif command == "commvault-security-get-generate-token":

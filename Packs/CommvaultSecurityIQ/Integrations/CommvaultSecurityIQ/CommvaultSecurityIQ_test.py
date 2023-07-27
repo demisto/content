@@ -1,6 +1,7 @@
 from typing import Any
 from gevent.server import StreamServer
 import demistomock as demisto
+from datetime import datetime
 from CommvaultSecurityIQ import (
     Client,
     disable_data_aging,
@@ -14,34 +15,21 @@ from CommvaultSecurityIQ import (
     fetch_and_disable_saml_identity_provider,
     disable_user,
     get_secret_from_key_vault,
-    handle_post_helper
+    handle_post_helper,
+    parse_no_length_limit,
+    GenericWebhookAccessFormatter,
+    copy_files_to_war_room,
+    get_params,
+    validate_inputs,
 )
 
 
 class CommvaultClientMock(Client):
-    def __init__(self, base_url: str, verify: bool, proxy: bool):
-        """
-        Constructor to initialize the Commvault client object
-        """
-        self.base_url = base_url
-        self.verify = verify
-        self.proxy = proxy
-        self.qsdk_token = None
-
     def disable_data_aging(self):
         """
         Function to disable DA
         """
         return "Successfully disabled data aging on the client"
-
-    def generate_access_token(self, token):
-        """Dummy function"""
-        del token
-        return True
-
-    def fetch_and_disable_saml_identity_provider(self):
-        """Dummy function"""
-        return True
 
     def http_request(
         self,
@@ -53,35 +41,107 @@ class CommvaultClientMock(Client):
         headers: dict | None = None,
     ):
         """Dummy function"""
-        del method, params, json_data, ignore_empty_response, headers
-
+        del method, params, json_data, ignore_empty_response
+        headers = self.headers
+        del headers
         if endpoint == "/DoBrowse":
-            return {"browseResponses": []}
-        if endpoint == "/Subclient/11351":
+            return {
+                "browseResponses": [
+                    {
+                        "respType": 0,
+                        "browseResult": {
+                            "dataResultSet": [
+                                {
+                                    "path": "C:\\Program Files\\Some file.txt",
+                                    "size": "12023",
+                                    "displayName": "Some file.txt",
+                                }
+                            ]
+                        },
+                    }
+                ]
+            }
+        elif endpoint == "/Subclient/11351":
             return {"subClientProperties": [{"content": []}]}
+        elif endpoint == "/User/":
+            return {"subClientProperties": [{"content": [{"path": "C:\\Folder"}]}]}
+        elif endpoint.startswith("/events"):
+            return {
+                "commservEvents": [
+                    {
+                        "severity": 6,
+                        "eventCode": "234881361",
+                        "jobId": 185314,
+                        "acknowledge": 0,
+                        "eventCodeString": "14:337",
+                        "subsystem": "CvStatAnalysis",
+                        "description": (
+                            "<html>Detected file type classification anomaly in job [185314]"
+                            " for client [dihyperv]. Number of files affected [145]."
+                            "'Please click  <a hre"
+                            "f=\"http://someaddress.commvault.com:80/commandcenter/#/"  # disable-secrets-detection
+                            'fileAnomaly/5185?anomalyTypes=mime"> here</a> for more'
+                            ' details.<span style="display: none">AnomalyType:[2];ClientName:[dihyperv];BackupSetName:'
+                            "[defaultBackupSet];SubclientName:[AnomalySubclient];"
+                            "SuspiciousFileCount:[145];ModifiedFileCount:[0];RenamedFileCount:[0];CreatedFileCount:[0];"
+                            "DeletedFileCount:[0];ApplicationType:[33];"
+                            "BackupSetId:[0];SubclientId:[0];JobId:[185314]</span></html>"
+                        ),
+                        "id": 5196568,
+                        "timeSource": 1690284138,
+                        "type": 0,
+                        "clientEntity": {
+                            "clientId": 5185,
+                            "clientName": "dihyperv",
+                            "displayName": "dihyperv",
+                        },
+                    }
+                ]
+            }
+        elif endpoint.startswith("/User?level=10"):
+            return {
+                "users": [{"email": "dummy@email.com", "userEntity": {"userId": 1}}]
+            }
+        elif endpoint.startswith("/ApiToken/User"):
+            return {"token": "keyvaulturl"}
+        elif endpoint == "/User/1":
+            return {"users": [{"enableUser": True}]}
+        elif endpoint == "/User/1/Disable":
+            return {"response": [{"errorCode": 0}]}
+        elif endpoint.startswith("https://login.microsoftonline.com/"):
+            return {"access_token": "access_token"}
+        elif endpoint.startswith("/IdentityServers"):
+            return {
+                "identityServers": [
+                    {"type": 1, "IdentityServerName": "name1"},
+                    {"type": 1, "IdentityServerName": "name2"},
+                ]
+            }
+        elif endpoint.startswith("/V4/SAML/name1"):
+            return {"errorString": "Some error"}
+        elif endpoint.startswith("/V4/SAML/name2"):
+            return {"enabled": 1}
+        elif endpoint.startswith("Job/"):
+            return {
+                "totalRecordsWithoutPaging": 10,
+                "jobs": [
+                    {
+                        "jobSummary": {
+                            "jobStartTime": 1690283943,
+                            "jobEndTime": 1690283995,
+                            "subclient": {
+                                "subclientId": 11351,
+                                "subclientName": "AnomalySubclient",
+                            },
+                        }
+                    }
+                ],
+            }
         return {}
-
-    def validate_session_or_generate_token(self, token):
-        """Dummy function"""
-        del token
-        return True
-
-    def disable_user(self, user_email: str) -> bool:
-        """Dummy function"""
-        del user_email
-        return True
-
-    def get_secret_from_key_vault(self):
-        """Dummy function"""
-        return "Secret"
-
-    def set_secret_in_key_vault(self, key):
-        """Dummy function"""
-        del key
-        return "Secret"
 
     def get_job_details(self, job_id):
         """Dummy function"""
+        super().get_job_details(job_id)
         return {
             "jobs": [
                 {
@@ -97,39 +157,13 @@ class CommvaultClientMock(Client):
             ]
         }
 
-    def get_events_list(self, last_run, first_fetch_time, max_fetch):
+    def get_secret_from_key_vault(self):
+        return "secret"
+
+    def set_secret_in_key_vault(self, key):
         """Dummy function"""
-        del last_run, first_fetch_time, max_fetch
-        apiresp = [
-            {
-                "severity": 6,
-                "eventCode": "234881361",
-                "jobId": 185314,
-                "acknowledge": 0,
-                "eventCodeString": "14:337",
-                "subsystem": "CvStatAnalysis",
-                "description": (
-                    "<html>Detected file type classification anomaly in job [185314]"
-                    " for client [dihyperv]. Number of files affected [145]."
-                    "'Please click  <a href=\"http://plusonecs.idx.commvault.com:80/commandcenter/#/"
-                    'fileAnomaly/5185?anomalyTypes=mime"> here</a> for more'
-                    ' details.<span style="display: none">AnomalyType:[2];ClientName:[dihyperv];BackupSetName:'
-                    "[defaultBackupSet];SubclientName:[AnomalySubclient];"
-                    "SuspiciousFileCount:[145];ModifiedFileCount:[0];RenamedFileCount:[0];CreatedFileCount:[0];"
-                    "DeletedFileCount:[0];ApplicationType:[33];"
-                    "BackupSetId:[0];SubclientId:[0];JobId:[185314]</span></html>"
-                ),
-                "id": 5196568,
-                "timeSource": 1690284138,
-                "type": 0,
-                "clientEntity": {
-                    "clientId": 5185,
-                    "clientName": "dihyperv",
-                    "displayName": "dihyperv",
-                },
-            }
-        ]
-        return apiresp
+        del key
+        return "Secret"
 
     def perform_long_running_execution(self, sock: Any, address: tuple) -> None:
         """
@@ -165,7 +199,9 @@ class CommvaultClientMock(Client):
 def test_disable_data_aging():
     """Unit test function"""
     client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
+        base_url="https://webservice_url:81",
+        verify=False,
+        proxy=False,  # disable-secrets-detection
     )
     response = disable_data_aging(client)
     expected_resp = {"Response": "Successfully disabled data aging on the client"}
@@ -174,13 +210,16 @@ def test_disable_data_aging():
 
 def test_copy_files_to_war_room():
     """Unit test function"""
+    copy_files_to_war_room()
     assert True
 
 
 def test_generate_access_token():
     """Unit test function"""
     client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
+        base_url="https://webservice_url:81",
+        verify=False,
+        proxy=False,  # disable-secrets-detection
     )
     resp = generate_access_token(client, "")
     expected_resp = {"Response": "Successfully generated access token"}
@@ -190,7 +229,9 @@ def test_generate_access_token():
 def test_fetch_and_disable_saml_identity_provider():
     """Unit test function"""
     client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
+        base_url="https://webservice_url:81",
+        verify=False,
+        proxy=False,  # disable-secrets-detection
     )
     resp = fetch_and_disable_saml_identity_provider(client)
     expected_resp = {"Response": "Successfully disabled SAML identity provider"}
@@ -200,7 +241,9 @@ def test_fetch_and_disable_saml_identity_provider():
 def test_disable_user():
     """Unit test function"""
     client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
+        base_url="https://webservice_url:81",
+        verify=False,
+        proxy=False,  # disable-secrets-detection
     )
     resp = disable_user(client, "dummy@email.com")
     expected_resp = {"Response": "Successfully disabled user"}
@@ -213,16 +256,19 @@ def test_get_access_token_from_keyvault():
         base_url="https://webservice_url:81", verify=False, proxy=False
     )
     resp = get_secret_from_key_vault(client)
-    expected_resp = {"Response": "Secret"}
+    expected_resp = {"Response": "secret"}
     assert resp.raw_response["Response"] == expected_resp["Response"]
 
 
 def test_fetch_incidents():
     """Unit test function"""
     client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
+        base_url="https://webservice_url:81",
+        verify=False,
+        proxy=False,  # disable-secrets-detection
     )
-    _, resp = fetch_incidents(client, 0, 0)
+    _, resp = fetch_incidents(client, {}, "2 Days")
+    _, resp = fetch_incidents(client, {"last_fetch": 0}, "2 Days")
     assert resp[0]["affected_files_count"] == "145"
 
 
@@ -262,7 +308,9 @@ def test_long_running_execution():
     """Unit test function"""
     port = 33333
     client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
+        base_url="https://webservice_url:81",
+        verify=False,
+        proxy=False,  # disable-secrets-detection
     )
     server: StreamServer = client.prepare_globals_and_create_server(port, "", "")
     assert server.address[1] == 33333
@@ -280,8 +328,8 @@ def test_webhook():
         "Client": "dihyperv_fda",
         "Description": (
             "<html>Detected file type classification anomaly in job [171069] for client [dihyperv_fda]. "
-            "Number of files affected [294]. Please click  <a href='http://SEARCHW"
-            "SV11:80/commandcenter/#/fileAnomaly/44180?anomalyTypes=mime'> here</a> for "
+            "Number of files affected [294]. Please click  <a href='http://Someaddress"  # disable-secrets-detection
+            "SV11:80/commandcenter/#/fileAnomaly/44180?anomalyTypes=mime'> here</a> for "  # disable-secrets-detection
             "more details.<span style='display: none'>AnomalyType:[2];ClientName:[dihyperv_fda];"
             "BackupSetName:[defaultBackupSet];SubclientName:[AnomalySubclient];SuspiciousFileCount:[294];ModifiedFileCount:[0]"
             ";RenamedFileCount:[0];CreatedFileCount:[0];DeletedFileCount:[0];ApplicationType:[33];"
@@ -291,8 +339,88 @@ def test_webhook():
     client = CommvaultClientMock(
         base_url="https://webservice_url:81", verify=False, proxy=False
     )
-    obj = handle_post_helper(client, req, None)
-    assert obj["job_id"] == "171069"
+    incident_body = handle_post_helper(client, req, None)
+    client.create_incident(
+        incident_body,
+        datetime.fromtimestamp(
+            (datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()
+        ),
+        "Commvault Suspicious File Activity",
+        False,
+    )
+    client.create_incident(
+        incident_body,
+        datetime.fromtimestamp(
+            (datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()
+        ),
+        "Commvault Suspicious File Activity",
+        True,
+    )
+    assert incident_body["job_id"] == "171069"
 
 
-    
+def test_misc_functions():
+    """Unit test"""
+    string = "<133>Feb 25 14:09:07 webserver syslogd: restart"
+    string = bytes(string, "utf-8")
+    resp = parse_no_length_limit(string)
+    assert resp.message.decode("utf-8") == "syslogd: restart"
+
+    string = (
+        "<133>Jul 25 08:55:19 someaddress.abc.commvault.com Jobid = {185348} Utctimestamp = {1690289280}"
+        "Alertdescription = {  #011 Event ID: 5196807  #011 Event Date: Tue Jul 25 08:47:46 2023     #011"
+        " Program: CvStatAnalysis     #011 Client: dihyperv     #011 Description: <html>Detected"
+        " file type classification anomaly in job [185348] for client [dihyperv]. Number of "
+        "files affected [132]..<span style='display: none'>AnomalyType:[2];ClientName"
+        ":[dihyperv];BackupSetName:[defaultBackupSet];SubclientName:"
+        "[AnomalySubclient];SuspiciousFileCount:[132];ModifiedFileCount:[0];RenamedFileCount:[0]"
+        ";CreatedFileCount:[0];DeletedFileCount:[0];ApplicationType:[33];BackupSetId:[0];"
+        "SubclientId:[0];JobId:[185348]</span></html>     #011}"
+    )
+    string = bytes(string, "utf-8")
+    client = CommvaultClientMock(
+        base_url="https://webservice_url:81", verify=False, proxy=False
+    )
+    client.set_props({"AzureKeyVaultUrl": {"password": "password"}})
+    key = client.get_key_vault_access_token()
+
+    assert key is None
+
+    t = GenericWebhookAccessFormatter()
+    t.get_user_agent({})
+
+    resp = client.parse_incoming_message(string)
+    assert resp["affected_files_count"] == "132"
+
+    resp = client.perform_long_running_loop(string)
+
+    resp = client.fetch_file_details(None, 0)
+    assert resp[0] == []
+
+    resp = client.define_severity("File Activity")
+    assert resp == "Informational"
+
+    resp = client.get_client_id()
+    assert resp == '0'
+
+    resp = client.is_port_in_use(0)
+    assert (not resp)
+
+    client.disable_data_aging()
+    client.run_uvicorn_server(0, "", "")
+
+    resp = get_params({})
+
+    assert resp[0] == "1 day"
+
+    client.ws_url = None
+    resp = client.get_host()
+
+    assert resp is None
+
+
+def test_validate_inputs():
+    client = CommvaultClientMock(
+        base_url="https://webservice_url:81", verify=False, proxy=False
+    )
+    validate_inputs(3333, client, True, False, True, "webhook")
