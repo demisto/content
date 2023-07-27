@@ -1,0 +1,149 @@
+id: DateTimeNowToEpoch_test
+version: -1
+name: DateTimeNowToEpoch_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c05d80ba-0433-4d54-8861-ff37e75afd9a
+    type: start
+    task:
+      id: c05d80ba-0433-4d54-8861-ff37e75afd9a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ec51fe6a-d4b2-4c12-80ac-3eeecb5aab2c
+    type: regular
+    task:
+      id: ec51fe6a-d4b2-4c12-80ac-3eeecb5aab2c
+      version: -1
+      name: Set current date/time epoch to context
+      description: Returns the current datetime as an epoch value for use in timestamp comparisons
+      scriptName: DateTimeNowToEpoch
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: epoch=.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7826087a-c5f6-4e47-8681-b9bc2c107ad0
+    type: regular
+    task:
+      id: 7826087a-c5f6-4e47-8681-b9bc2c107ad0
+      version: -1
+      name: Print current time epoch value
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${epoch}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 85a22547-ecce-4b85-8684-0ef51b52f20d
+    type: title
+    task:
+      id: 85a22547-ecce-4b85-8684-0ef51b52f20d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0
+description: ''
