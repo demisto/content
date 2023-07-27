@@ -8670,7 +8670,6 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             if should_error:
                 results.append(CommandResults(
                     outputs=output,
-                    # FIXME Figure out why the caught exception is not Whois type (but TypeError/KeyError)
                     readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
                     entry_type=EntryType.ERROR,
                     raw_response=str(e)
@@ -8678,7 +8677,6 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             else:
                 results.append(CommandResults(
                     outputs=output,
-                    # FIXME Figure out why the caught exception is not Whois type (but TypeError/KeyError)
                     readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
                     entry_type=EntryType.WARNING,
                     raw_response=str(e)

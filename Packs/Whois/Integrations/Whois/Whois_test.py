@@ -496,8 +496,8 @@ def test_execution_metrics_appended(
 
 
 @pytest.mark.parametrize('args,with_error,entry_type', [
-    ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, True, EntryType.ERROR),
-    ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
+    ({"query": "1.1.1.1", "is_recursive": "true"}, True, EntryType.ERROR),
+    ({"query": "1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
 ])
 def test_error_entry_type(
     args: dict[str, str],
@@ -510,14 +510,15 @@ def test_error_entry_type(
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
-    with capfd.disabled():
+    with capfd.disabled(), pytest.raises(Exception) as exc:
         results = Whois.whois_command(
             reliability=DBotScoreReliability.B,
             query=args['query'],
             is_recursive=False,
             should_error=with_error
         )
-        assert results[2].entry_type == entry_type
+        assert results[0].entry_type == entry_type
+        assert "caught performing whois lookup with domain" in exc.value
 
 
 @pytest.mark.parametrize(
@@ -635,7 +636,7 @@ def test_get_root_server(domain: str, expected: str):
 ])
 def test_get_root_server_invalid_domain(domain: str, capfd: pytest.CaptureFixture):
     """
-    Test to get the root server from the domain when an invalid domain is supplied. 
+    Test to get the root server from the domain when an invalid domain is supplied.
 
     Given: a domain.
 
