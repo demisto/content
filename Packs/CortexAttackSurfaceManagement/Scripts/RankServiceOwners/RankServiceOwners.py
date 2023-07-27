@@ -502,14 +502,21 @@ class OwnerFeaturizationPipeline():
         else:
             self.SOURCES = sources.copy()
 
-        self.FEATURES: list[tuple[str, Callable]] = [
+        # features which only require contents of asmserviceowner as input
+        self.OWNER_FEATURES: list[tuple[str, Callable]] = [
             ("num_reasons", self.get_num_reasons),
             ("num_distinct_sources", self.get_num_distinct_sources),
             ("min_path_length", self.get_min_path_length),
-            ("name_similarity_person_asset", self.get_name_similarity_person_asset),
             ("is_attested_in_cmdb", self.get_in_cmdb),
             ("is_attested_in_recent_logs", self.get_in_logs)
         ]
+
+        # features that require asmsystemid as an additional input
+        self.SYSTEM_ID_FEATURES: list[tuple[str, Callable]] = [
+            ("name_similarity_person_asset", self.get_name_similarity_person_asset),
+        ]
+
+        self.NUM_FEATURES = len(self.SYSTEM_ID_FEATURES) + len(self.OWNER_FEATURES)
 
     @staticmethod
     def _get_sources(owner: dict[str, Any]) -> list[str]:
@@ -588,17 +595,28 @@ class OwnerFeaturizationPipeline():
         """
         Generate a featurized numpy array from `service_identifiers` and `owners`.
         """
-        X = np.zeros((len(owners), len(self.FEATURES)))
+        X = np.zeros((len(owners), self.NUM_FEATURES))
         for sample_idx, owner in enumerate(owners):
-            for feature_idx, (method_name, method) in enumerate(self.FEATURES):
+            # Iterate over features which require both system ID and owner as inputs
+            feature_idx = 0
+            for (method_name, method) in self.SYSTEM_ID_FEATURES:
                 try:
-                    if "similarity" in method_name and "person" in method_name and "asset" in method_name:
-                        X[sample_idx, feature_idx] = method(service_identifiers, owner)
-                    else:
-                        X[sample_idx, feature_idx] = method(owner)
+                    X[sample_idx, feature_idx] = method(service_identifiers, owner)
                 except Exception as e:
                     demisto.info(f"Setting 0 for {method_name} because of processing exception: {e}")
                     X[sample_idx, feature_idx] = 0
+                finally:
+                    feature_idx += 1
+
+            # Iterate over features which only require the owner as input
+            for (method_name, method) in self.OWNER_FEATURES:
+                try:
+                    X[sample_idx, feature_idx] = method(owner)
+                except Exception as e:
+                    demisto.info(f"Setting 0 for {method_name} because of processing exception: {e}")
+                    X[sample_idx, feature_idx] = 0
+                finally:
+                    feature_idx += 1
         return X
 
 

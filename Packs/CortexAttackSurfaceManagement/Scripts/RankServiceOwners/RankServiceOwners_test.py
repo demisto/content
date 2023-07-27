@@ -718,17 +718,17 @@ def test_base_case():
     expected_output = np.array(
         [
             # Columns are:
-            #  idx_num_reasons = 0,
-            #  idx_num_distinct_sources = 1,
+            #  idx_name_similarity_person_asset = 0,
+            #  idx_num_reasons = 1,
+            #  idx_num_distinct_sources = 2,
             #  idx_min_path_length = 2,
-            #  idx_name_similarity_person_asset = 3,
             #  idx_is_attested_in_cmdb = 4,
             #  idx_is_attested_in_recent_logs = 5,
-            [4, 2, 1, 0.0, 0, 0],
-            [4, 2, 1, 0.0, 0, 1],
-            [1, 1, 1, 0.0, 1, 0],
-            [1, 1, 3, 0.0, 0, 0],
-            [2, 2, 1, 1.0, 0, 1],
+            [0.0, 4, 2, 1, 0, 0],
+            [0.0, 4, 2, 1, 0, 1],
+            [0.0, 1, 1, 1, 1, 0],
+            [0.0, 1, 1, 3, 0, 0],
+            [1.0, 2, 2, 1, 0, 1],
         ]
     )
     assert np.allclose(observed_output, expected_output)
@@ -740,3 +740,45 @@ def test_missing_data():
     """
     observed_output = featurize([], [])
     assert np.array_equal(observed_output, np.empty(shape=(0, 6)))
+
+
+def test_featurize_owner_error(mocker):
+    """
+    Verify that if an error is thrown while computing a feature that takes the owner
+    as input, the feature value is set to 0
+    """
+    mocker.patch(
+        'RankServiceOwners.OwnerFeaturizationPipeline.get_num_reasons',
+        side_effect=Exception()
+    )
+
+    # normally would expect 1 reason
+    owners = [
+        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP ', 'Timestamp': '1'},
+    ]
+    asm_system_ids = []
+
+    idx_get_num_reasons = 1
+    output = featurize(asm_system_ids, owners)
+    assert output[0][idx_get_num_reasons] == 0
+
+
+def test_featurize_similarity_error(mocker):
+    """
+    Verify that if an error is thrown while computing a feature that depends on asmsystemids,
+    the feature value is set to 0
+    """
+    mocker.patch(
+        'RankServiceOwners.OwnerFeaturizationPipeline.get_name_similarity_person_asset',
+        side_effect=Exception()
+    )
+
+    owners = [
+        {'Name': 'Amira', 'Email': 'amira@example.com', 'Source': 'GCP ', 'Timestamp': '1'},
+    ]
+    # normally would expect greater-than-zero-similarity
+    asm_system_ids = ['amira-test']
+
+    idx_name_similarity_person_asset = 0
+    output = featurize(asm_system_ids, owners)
+    assert output[0][idx_name_similarity_person_asset] == 0
