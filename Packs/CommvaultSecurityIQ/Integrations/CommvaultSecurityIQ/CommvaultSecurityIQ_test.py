@@ -79,7 +79,7 @@ class CommvaultClientMock(Client):
                             "<html>Detected file type classification anomaly in job [185314]"
                             " for client [dihyperv]. Number of files affected [145]."
                             "'Please click  <a hre"
-                            "f=\"http://someaddress.commvault.com:80/commandcenter/#/"  # disable-secrets-detection
+                            'f="http://someaddress.commvault.com:80/commandcenter/#/'  # disable-secrets-detection
                             'fileAnomaly/5185?anomalyTypes=mime"> here</a> for more'
                             ' details.<span style="display: none">AnomalyType:[2];ClientName:[dihyperv];BackupSetName:'
                             "[defaultBackupSet];SubclientName:[AnomalySubclient];"
@@ -401,10 +401,10 @@ def test_misc_functions():
     assert resp == "Informational"
 
     resp = client.get_client_id()
-    assert resp == '0'
+    assert resp == "0"
 
     resp = client.is_port_in_use(0)
-    assert (not resp)
+    assert not resp
 
     client.disable_data_aging()
     client.run_uvicorn_server(0, "", "")
@@ -423,4 +423,4 @@ def test_validate_inputs():
     client = CommvaultClientMock(
         base_url="https://webservice_url:81", verify=False, proxy=False
     )
-    validate_inputs(3333, client, True, False, True, "webhook")
+    validate_inputs(0, client, True, True, False, "")
