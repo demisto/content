@@ -658,6 +658,34 @@ script:
     - contextPath: ASM.IncidentUpdate
       description: Whether the incident update was successful.
     description: Updates a given incident. Can be used to modify the status, severity, assignee, or add comments.
+  - name: asm-update-alerts
+    arguments:
+    - name: alert_id_list
+      description: Comma-separated list of integers of the alert ID.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - under_investigation
+      - resolved_-_no_longer_observed
+      - resolved_-_no_risk
+      - resolved_-_risk_accepted
+      - resolved_-_contested_asset
+      - resolved_-_remediated_automatically
+      - resolved
+      description: Updated alert status.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - low
+      - medium
+      - high
+      - critical
+      description: The severity of the alert.
+    outputs:
+    - contextPath: ASM.UpdatedAlerts
+      description: IDs of the updated alerts.
+    description: Updates the state of one or more alerts.
   dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   isfetch: true
