@@ -623,10 +623,15 @@ class Client(BaseClient):
         }
         if fields:
             headers['fields'] = fields
+        name = parse.quote(ref_name, safe='')
+        sets = self.http_request(method='GET', url_suffix=f'/reference_data/sets/{name}')
+        if not sets:
+            raise DemistoException(f'Reference set {ref_name} does not exist.')
+        set_id = sets.get('collection_id')
         return self.http_request(
-            method='POST',
-            url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(ref_name, safe="")}',
-            json_data=indicators,
+            method='PATCH',
+            url_suffix='/reference_data_collections/set_entries',
+            json_data=[{"collection_id": set_id, "data": indicator} for indicator in indicators],  # type: ignore[arg-type]
             additional_headers=headers
         )
 
