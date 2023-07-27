@@ -342,7 +342,7 @@
                         "tlp": "amber",
                         "ttl": 30
                     },
-                    "id": "9ea4c62e9e5da6bc86ecb35e9f4da12fd29cfa5e",
+                    "id": "1111111111111111111111111111111111111111",
                     "matchesType": [
                         "readme"
                     ],
@@ -362,7 +362,7 @@
                                 }
                             ],
                             "data": null,
-                            "hash": "21e02c97e2ecdabb272bfefbe29fd3f50032f525",
+                            "hash": "1111111111111111111111111111111111111111",
                             "info": {
                                 "authorEmail": "some@email.com",
                                 "authorName": "TEST",
@@ -375,7 +375,7 @@
                     }
             ],
             "hideForCompanies": [],
-            "id": "21aed9b86d2e6cbb15180d803a84f6d27f673db4",
+            "id": "1111111111111111111111111111111111111111",
             "ignoreForCompanies": [],
             "isFavourite": false,
             "isHidden": false,
