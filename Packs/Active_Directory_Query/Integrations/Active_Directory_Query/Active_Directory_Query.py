@@ -1768,7 +1768,7 @@ def set_password_not_expire(default_base_dn):
 
 def test_credentials(SERVER_IP):
     args = demisto.args()
-    username = demisto.args().get('username')
+    username = args.get('username')
     server = Server(SERVER_IP, get_info='ALL')
     if connection := set_connection(
         server,
