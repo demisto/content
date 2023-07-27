@@ -1,6 +1,6 @@
 import pytest
 import demistomock as demisto
-from Any import main
+from AnyMatch import main
 
 
 @pytest.mark.parametrize('left,right, call_count,result', [

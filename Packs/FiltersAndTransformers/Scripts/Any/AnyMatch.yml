@@ -1,7 +1,7 @@
 commonfields:
-  id: Any
+  id: AnyMatch
   version: -1
-name: Any
+name: AnyMatch
 script: ''
 type: python
 subtype: python3
@@ -9,8 +9,8 @@ tags:
 - filter
 - general
 comment: |-
-  returns a list of all strings from the left side that are contain any of the given strings in the right side, including as a substring. Note: This filter is not case sensitive.
-  e.g -Any left=["A","b"] right=["a","c","all"] will return ["a","all"].
+  Returns a list of all elements from the left side that are in the right side, including as a substring. Note: This filter is case insensitive.
+  e.g -AnyMatch left=[A,b,c] right=[baby] will return [a,b].
 enabled: true
 args:
 - name: left
