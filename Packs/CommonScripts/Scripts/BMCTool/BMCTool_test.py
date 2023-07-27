@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 from BMCTool import BMCContainer, main
 
 
-
 @pytest.mark.parametrize("container, expected_size",
                          [
                              (BMCContainer.BMC_CONTAINER, 0x14),
@@ -227,9 +226,11 @@ def test_b_uncompress(data, bbp, expected_output):
         (10, 10, b"test_data", b"expected_output_with_palette"),
         # Add more test cases as needed
     ])
-    def test_b_export_bmp(self, width, height, data, expected):
+    def test_b_export_bmp(self, width, height, data, expected, mocker):
         container = BMCContainer()
-        actual = container.b_export_bmp(width, height, data)
+        # Mock CommonServerPython.fileResult() to do nothing (avoid creating files on disk)
+        with mocker.patch("CommonServerPython.fileResult"):
+            actual = container.b_export_bmp(width, height, data)
         assert actual == expected
 
 
@@ -516,23 +517,6 @@ def test_edge_case_invalid_bpp():
         raise AssertionError
 
 
-def test_export_single_bmp_default_params():
-    bmcc = BMCContainer()
-    bmcc.bmps = [b'\x00' * 64 * 64 * 4]
-
-    bmcc.b_export('test.bmp')
-
-
-# Tests that the method returns None
-def test_b_write(mocker):
-    mocker.patch.object(demisto, 'results')
-    bmc = BMCContainer()
-    bmc.b_write('test.txt', b'data')
-    result = demisto.results
-
-    assert result
-
-
 def test_b_flush():
     bmcc = BMCContainer()
     bmcc.bdat = b'\x01\x01\x01'
@@ -558,22 +542,9 @@ def test_main(mocker):
         'width': 64,
         'EntryID': ''
     })
-    main()
+    # Mock CommonServerPython.fileResult() to do nothing (avoid creating files on disk)
+    with mocker.patch("BMCTool.BMCContainer.b_write"):
+        main()
+
     result = demisto.results
     assert result
-
-
-def test_remove_files_by_pattern(capfd):
-    pattern = r'^\d{1}_\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$'
-    cwd = os.getcwd()
-    for filename in os.listdir(cwd):
-        if re.match(pattern, filename):
-            filepath = os.path.join(cwd, filename)
-            try:
-                os.remove(filepath)
-                with capfd.disabled():
-                    print(f"Removed {filename}")
-            except OSError as e:
-                with capfd.disabled():
-                    print(f"Error removing {filename}: {e}")
-    assert True
