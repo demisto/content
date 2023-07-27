@@ -13,12 +13,10 @@ set -e
 touch CloudEnvVariables
 
 XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
-echo $1
 
 # Filter out not enabled and unnecessary machines
 TEST_MACHINES_LIST=$(jq --arg flow_type "$1" 'to_entries | map(select(.value.enabled == true and .value.flow_type == $flow_type)) | from_entries' "$XSIAM_SERVERS_PATH")
 
-echo $TEST_MACHINES_LIST
 # Get the number of existing machines
 export NUM_OF_TEST_MACHINES=$(echo "$TEST_MACHINES_LIST" | jq 'length')
 echo "Number of available machines is: $NUM_OF_TEST_MACHINES"
