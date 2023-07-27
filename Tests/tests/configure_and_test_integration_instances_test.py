@@ -5,35 +5,57 @@ from Tests.configure_and_test_integration_instances import XSOARBuild, create_bu
     get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
 
 XSIAM_SERVERS = {
-    "qa2-test-111111": {
-        "ui_url": "https://xsiam1.paloaltonetworks.com/",
-        "instance_name": "qa2-test-111111",
-        "api_key": "1234567890",
-        "x-xdr-auth-id": 1,
-        "base_url": "https://api1.paloaltonetworks.com/",
-        "xsiam_version": "3.2.0",
-        "demisto_version": "99.99.98"
+    "build":{
+        "qa2-test-111111": {
+                "ui_url": "https://xsiam1.paloaltonetworks.com/",
+                "instance_name": "qa2-test-111111",
+                "api_key": "1234567890",
+                "x-xdr-auth-id": 1,
+                "base_url": "https://api1.paloaltonetworks.com/",
+                "xsiam_version": "3.2.0",
+                "demisto_version": "99.99.98"
+        },
+        "qa2-test-222222": {
+            "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
+            "instance_name": "qa2-test-222222",
+            "api_key": "1234567890",
+            "x-xdr-auth-id": 1,
+            "base_url": "https://api-xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com",
+            "xsiam_version": "3.2.0",
+            "demisto_version": "99.99.98"
+        }
     },
-    "qa2-test-222222": {
-        "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
-        "instance_name": "qa2-test-222222",
-        "api_key": "1234567890",
-        "x-xdr-auth-id": 1,
-        "base_url": "https://api-xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com",
-        "xsiam_version": "3.2.0",
-        "demisto_version": "99.99.98"
+    "upload":{
+        "qa2-test-333333": {
+                "ui_url": "https://xsiam1.paloaltonetworks.com/",
+                "instance_name": "qa2-test-333333",
+                "api_key": "1234567890",
+                "x-xdr-auth-id": 1,
+                "base_url": "https://api1.paloaltonetworks.com/",
+                "xsiam_version": "3.2.0",
+                "demisto_version": "99.99.98"
+        },
+        "qa2-test-44444": {
+            "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
+            "instance_name": "qa2-test-44444",
+            "api_key": "1234567890",
+            "x-xdr-auth-id": 1,
+            "base_url": "https://api-xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com",
+            "xsiam_version": "3.2.0",
+            "demisto_version": "99.99.98"
+        }
     }
 }
 
 
-def create_build_object_with_mock(mocker, build_object_type):
+def create_build_object_with_mock(mocker, build_object_type, build_type):
     args = ['-u', "$USERNAME", '-p', "$PASSWORD", '-c', "$CONF_PATH", '-s', "$SECRET_CONF_PATH",
             '--tests_to_run', "$ARTIFACTS_FOLDER/filter_file.txt",
             '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
             '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
             '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--build_object_type', build_object_type,
             '--cloud_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH',
-            '--marketplace_name', 'marketplacev2']
+            '--marketplace_name', 'marketplacev2', '--build_type', build_type]
     options = options_handler(args=args)
     json_data = {
         'tests': [],
@@ -86,8 +108,8 @@ def test_configure_old_and_new_integrations(mocker):
     assert not set(old_modules_instances).intersection(new_modules_instances)
 
 
-@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'XSIAM')])
-def test_create_build(mocker, expected_class, build_object_type):
+@pytest.mark.parametrize('expected_class, build_object_type, build_type', [(XSOARBuild, 'XSOAR', None), (CloudBuild, 'XSIAM', 'build')])
+def test_create_build(mocker, expected_class, build_object_type, build_type):
     """
     Given:
         - server_type of the server we run the build on: XSIAM or XSOAR.
@@ -96,7 +118,7 @@ def test_create_build(mocker, expected_class, build_object_type):
     Then:
         - Assert there the rigth Build object created: CloudBuild or XSOARBuild.
     """
-    build = create_build_object_with_mock(mocker, build_object_type)
+    build = create_build_object_with_mock(mocker, build_object_type, build_type)
     assert isinstance(build, expected_class)
 
 
@@ -138,7 +160,7 @@ def test_get_turned_non_hidden_packs(mocker, diff, the_expected_result):
     Then:
         - Assert the expected result is returned.
     """
-    build = create_build_object_with_mock(mocker, 'XSOAR')
+    build = create_build_object_with_mock(mocker, 'XSOAR', None)
     mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
     turned_non_hidden = get_turned_non_hidden_packs({'test'}, build)
     assert ('test' in turned_non_hidden) is the_expected_result
@@ -257,7 +279,8 @@ def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_resul
     Then:
         - Assert the expected result is returned.
     """
-    build = create_build_object_with_mock(mocker, build_type)
+    server_machines_filter = 'build' if build_type == 'XSIAM' else None
+    build = create_build_object_with_mock(mocker, build_type, server_machines_filter)
     mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
     first_added_to_marketplace = filter_new_to_marketplace_packs(build, {'pack_name'})
     assert the_expected_result == first_added_to_marketplace
