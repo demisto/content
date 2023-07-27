@@ -489,8 +489,8 @@ def test_execution_metrics_appended(
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
+    mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
     with capfd.disabled():
-        # TODO patch response for query
         results = whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
         assert len(results) == expected_entries
 
@@ -509,8 +509,8 @@ def test_error_entry_type(
 
     mocker.patch.object(demisto, 'command', 'whois')
     mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
     with capfd.disabled():
-        # TODO patch response for query
         results = Whois.whois_command(
             reliability=DBotScoreReliability.B,
             query=args['query'],
