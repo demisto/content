@@ -58,7 +58,8 @@ class Client(BaseClient):
         set_integration_context(integration_context)
         return response.get("access_token")
 
-    def get_events(self, token):
+    def get_events(self):
+        token = self.get_token()
         headers = {
             'Authorization': 'Bearer ' + token
         }
@@ -109,10 +110,7 @@ def get_raw_events(client):
     """
     outcome = []
     event_list = []
-    token = client.get_token()
-    events = client.get_events(
-        token=token
-    )
+    events = client.get_events()
     for field_names in events["fields"]:
         outcome.append(field_names['name'])
     for event in events["data"]:
