@@ -1788,4 +1788,4 @@ outputs:
 tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]
-fromversion: 6.9.0
+fromversion: 6.8.0
