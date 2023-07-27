@@ -143,6 +143,8 @@ def main():
             raise DemistoException("A playbook\'s name must be provided.")
         spb = demisto.args()['subplaybook'].strip()
         firstday = demisto.args()['firstday'].strip()
+        if not firstday:
+            raise DemistoException("The date of the first date must be provided.")
         lastday = demisto.args()['lastday'].strip()
         maxinc = demisto.args()['maxinc'].strip()
         if maxinc == "":

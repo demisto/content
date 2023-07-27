@@ -4,9 +4,9 @@ args:
   required: false
 - description: Sub-playbook for analysis versus the parent playbook
   name: subplaybook
-- description: 'First day to find incident occurrences using the playbook. Example: "2023-03-01"'
+- description: 'First day to find incident occurrences using the playbook. A value must be provided, for example: "2023-03-01".'
   name: firstday
-  required: true
+  required: false
 - description: 'Last day to find incident occurrences using the playbook: Example: "2023-03-31"'
   name: lastday
   required: true
