@@ -630,10 +630,7 @@ def http_request(
     Returns:
         Union[dict, list]: The response in list or dict format.
     """
-    if api == 'graph':
-        access_token = get_graph_access_token()
-    else:  # Bot Framework API
-        access_token = get_bot_access_token()
+    access_token = get_graph_access_token() if api == 'graph' else get_bot_access_token()  # Bot Framework API
 
     headers: dict = {
         'Authorization': f'Bearer {access_token}',
@@ -2546,10 +2543,7 @@ def long_running_loop():
             port_mapping: str = PARAMS.get('longRunningPort', '')
             port: int
             if port_mapping:
-                if ':' in port_mapping:
-                    port = int(port_mapping.split(':')[1])
-                else:
-                    port = int(port_mapping)
+                port = int(port_mapping.split(':')[1]) if ':' in port_mapping else int(port_mapping)
             else:
                 raise ValueError('No port mapping was provided')
             Thread(target=channel_mirror_loop, daemon=True).start()
@@ -2582,7 +2576,7 @@ def long_running_loop():
         except SSLError as e:
             ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
             demisto.error(ssl_err_message)
-            raise ValueError(ssl_err_message)
+            raise ValueError(ssl_err_message) from e
         except Exception as e:
             error_message = str(e)
             demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')
