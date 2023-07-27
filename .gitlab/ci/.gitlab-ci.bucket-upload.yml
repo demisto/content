@@ -231,7 +231,7 @@ install-packs-in-server-master:
       fi
 
     - section_start "Clean Machine"
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh "$BUILD_TYPE"
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
     - section_end "Clean Machine"
 
     - section_start "Get Instance Variables"
@@ -240,7 +240,7 @@ install-packs-in-server-master:
     - section_end "Get Instance Variables"
 
     - section_start "Install Packs"
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" "$BUILD_TYPE"|| EXIT_CODE=$?
+    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"|| EXIT_CODE=$?
     - section_end "Install Packs"
 
     - job-done

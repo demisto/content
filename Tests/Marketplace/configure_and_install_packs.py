@@ -28,7 +28,6 @@ def options_handler():
     parser.add_argument('--cloud_servers_path', help='Path to the secret cloud server metadata file.')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
-    parser.add_argument('--build_type', help='Tells if the build is upload or regular')
     options = parser.parse_args()
     # disable-secrets-detection-end
 
@@ -139,8 +138,7 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     api_key, server_numeric_version, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(
         cloud_machine,
         options.cloud_servers_path,
-        options.cloud_servers_api_keys,
-        options.build_type)
+        options.cloud_servers_api_keys)
     # Configure the Server
     server = CloudServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine, build_number)
     CloudBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)

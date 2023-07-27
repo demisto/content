@@ -261,7 +261,7 @@ xpanse-prepare-testing-bucket:
       cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
       cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" "$BUILD_TYPE"|| EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - echo Going to sleep for 15 minutes to allow server finish indexing
     - sleep 900
@@ -443,11 +443,11 @@ slack-notify-nightly-build:
     - section_end "Lock Machine"
 
     - section_start "Clean Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh "$BUILD_TYPE"
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
     - section_end "Clean Machine"
 
     - section_start "Install Packs and run Test-Module"
-    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" "$BUILD_TYPE"|| EXIT_CODE=$?
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - |
       if [[ $EXIT_CODE != 0 ]]
       then

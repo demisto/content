@@ -48,14 +48,14 @@ XSIAM_SERVERS = {
 }
 
 
-def create_build_object_with_mock(mocker, build_object_type, build_type):
+def create_build_object_with_mock(mocker, build_object_type):
     args = ['-u', "$USERNAME", '-p', "$PASSWORD", '-c', "$CONF_PATH", '-s', "$SECRET_CONF_PATH",
             '--tests_to_run', "$ARTIFACTS_FOLDER/filter_file.txt",
             '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
             '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
             '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--build_object_type', build_object_type,
             '--cloud_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH',
-            '--marketplace_name', 'marketplacev2', '--build_type', build_type]
+            '--marketplace_name', 'marketplacev2']
     options = options_handler(args=args)
     json_data = {
         'tests': [],
@@ -108,8 +108,8 @@ def test_configure_old_and_new_integrations(mocker):
     assert not set(old_modules_instances).intersection(new_modules_instances)
 
 
-@pytest.mark.parametrize('expected_class, build_object_type, build_type', [(XSOARBuild, 'XSOAR', None), (CloudBuild, 'XSIAM', 'build')])
-def test_create_build(mocker, expected_class, build_object_type, build_type):
+@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'XSIAM')])
+def test_create_build(mocker, expected_class, build_object_type):
     """
     Given:
         - server_type of the server we run the build on: XSIAM or XSOAR.
@@ -118,7 +118,7 @@ def test_create_build(mocker, expected_class, build_object_type, build_type):
     Then:
         - Assert there the rigth Build object created: CloudBuild or XSOARBuild.
     """
-    build = create_build_object_with_mock(mocker, build_object_type, build_type)
+    build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
 
 

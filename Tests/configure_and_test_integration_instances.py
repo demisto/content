@@ -765,18 +765,20 @@ class CloudBuild(Build):
         self.cloud_machine = options.cloud_machine
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
-                                         options.cloud_servers_api_keys, options.build_type)
+                                         options.cloud_servers_api_keys)
         self.servers = [CloudServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.cloud_machine, self.ci_build_number)]
         self.marketplace_tag_name: str = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
         self.marketplace_buckets = options.marketplace_buckets
 
+
     @staticmethod
-    def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path, build_type):
+    def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path):
         logging.info('getting cloud configuration')
 
-        cloud_servers = get_json_file(cloud_servers_path).get(build_type)
+        cloud_servers = get_json_file(cloud_servers_path)
+        cloud_servers = flatten_cloud_servers(cloud_servers)
         conf = cloud_servers.get(cloud_machine)
         cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
         api_key = cloud_servers_api_keys.get(cloud_machine)
@@ -920,7 +922,6 @@ def options_handler(args=None):
     parser.add_argument('--marketplace_name', help='the name of the marketplace to use.')
     parser.add_argument('--artifacts_folder', help='the artifacts folder to use.')
     parser.add_argument('--marketplace_buckets', help='the path to the marketplace buckets.')
-    parser.add_argument('--build_type', help='the type of the build, one of build or upload')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -1578,6 +1579,19 @@ def create_test_pack(packs: list = None):
     packs = packs or []
     test_pack_zip(Build.content_path, Build.test_pack_target, packs)
 
+def flatten_cloud_servers(cloud_servers: dict) -> dict:
+    """
+    Args:
+        cloud_servers: json of cloud servers to flatten
+
+    Returns:
+        dictionary of all cloud servers with no seperation of build or upload.
+    """
+    flattened_cloud_servers: dict = {}
+    for value in cloud_servers.values():
+        for server in value:
+            flattened_cloud_servers.update(server)
+    return flattened_cloud_servers
 
 def test_files(content_path, packs_to_install: list = None):
     packs_root = f'{content_path}/Packs'
