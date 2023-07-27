@@ -12,12 +12,15 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Long running instance
   name: longRunning
   type: 8
+  required: false
 - display: DLP Regions
   name: dlp_regions
   type: 16
@@ -27,18 +30,22 @@ configuration:
   - AP
   - UK
   defaultvalue: US,EU,AP,UK
+  required: false
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list
   type: 0
   additionalinfo: A comma-separated list of data profile names to request an exemption. Use "*" to allow everything.
+  required: false
 - display: Bot Message
   name: dlp_slack_message
   type: 12
   additionalinfo: The message to send to the user to ask for feedback.
   defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour activity on *$app_name* was blocked due to company policy. The data in this activity contains sensitive information which violates *$data_profile_name* policy.\n\nfilename - *$file_name* \n\n $snippets\n\n
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: Palo Alto Networks Enterprise DLP discovers and protects company data across every data channel and repository. Integrated Enterprise DLP enables data protection and compliance everywhere without complexity.
 display: Palo Alto Networks Enterprise DLP
 name: Palo Alto Networks Enterprise DLP
@@ -142,7 +149,7 @@ script:
   - name: pan-dlp-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   longRunning: true
   script: '-'

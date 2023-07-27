@@ -10,9 +10,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: API Endpoint URL
   name: url
   defaultvalue: https://www.securityadvisor.io/
@@ -22,6 +24,7 @@ configuration:
   name: apikey
   defaultvalue: ""
   type: 4
+  required: false
 script:
   script: ''
   type: python

@@ -24,9 +24,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Automate remediation actions based on Pentera, the Automated Security Validation Platform, proactively exposing high-risk vulnerabilities
 display: Pentera
 name: Pentera

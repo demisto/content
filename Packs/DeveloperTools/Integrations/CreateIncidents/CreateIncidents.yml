@@ -18,19 +18,23 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 description: CreateIncidents fetches custom incidents that are created manually.
 display: Create Test Incidents
 name: CreateIncidents
@@ -47,7 +51,7 @@ script:
       name: attachment_paths
     description: Creates incidents from json files provided, and stores it in the instance context.
     name: create-test-incident-from-file
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
   runonce: false
   script: '-'

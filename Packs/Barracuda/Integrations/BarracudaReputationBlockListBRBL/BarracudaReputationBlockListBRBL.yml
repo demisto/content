@@ -19,6 +19,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -28,10 +29,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 script:
   script: ''
   type: python

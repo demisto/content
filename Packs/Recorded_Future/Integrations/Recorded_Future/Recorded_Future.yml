@@ -16,46 +16,58 @@ configuration:
   display: Suspicious Threshold. Minimum risk score to consider an indicator suspicious.
   name: suspicious_threshold
   type: 0
+  required: false
 - defaultvalue: '65'
   display: File Threshold. Minimum risk score from Recorded Future to consider the file malicious.
   name: file_threshold
   type: 0
+  required: false
 - defaultvalue: '65'
   display: IP Threshold. Minimum risk score from RF to consider the IP malicious.
   name: ip_threshold
   type: 0
+  required: false
 - defaultvalue: '65'
   display: Domain Threshold. Minimum risk score from Recorded Future to consider the domain malicious.
   name: domain_threshold
   type: 0
+  required: false
 - defaultvalue: '65'
   display: URL Threshold. Minimum risk score from Recorded Future to consider the URL malicious.
   name: url_threshold
   type: 0
+  required: false
 - defaultvalue: '65'
   display: Vulnerability Threshold. Minimum risk score from Recorded Future to consider the vulnerability critical.
   name: cve_threshold
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: Global Trends, Trending Vulnerabilities;Global Trends, Trending Attackers
   display: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched
   name: rule_names
   type: 12
+  required: false
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: triggered
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 description: Deprecated. Use Recorded Future v2 from RecordedFuture pack instead. Unique threat intel technology that automatically serves up relevant insights in real time.
 display: Recorded Future (Deprecated)
 name: Recorded Future

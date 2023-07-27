@@ -20,20 +20,24 @@ configuration:
   name: insecure
   type: 8
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days) - within the last 12 months. Recommended time is 3 days.
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '300'
   display: The maximum number of alerts per fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 description: TeamViewer event collector integration for Cortex XSIAM.
 display: TeamViewer Event Collector
 name: TeamViewer Event Collector
@@ -52,7 +56,7 @@ script:
       name: limit
     description: Gets events from TeamViewer.
     name: teamviewer-get-events
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetchevents: true
   script: '-'
   subtype: python3

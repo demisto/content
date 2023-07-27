@@ -2,7 +2,7 @@ commonfields:
   id: Forcepoint
   version: -1
 name: Forcepoint
-display: Forcepoint
+display: Forcepoint Web Security
 category: Network Security
 description: Advanced threat protection with added local management controls.
 configuration:
@@ -19,9 +19,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

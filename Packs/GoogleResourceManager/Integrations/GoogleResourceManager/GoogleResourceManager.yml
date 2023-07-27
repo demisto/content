@@ -11,33 +11,40 @@ configuration:
   name: private_key_id
   type: 4
   hidden: true
+  required: false
 - name: private_key_id_creds
   type: 9
   displaypassword: Private Key ID
   hiddenusername: true
+  required: false
 - defaultvalue: ''
   display: Private Key
   name: private_key
   type: 4
   hidden: true
+  required: false
 - name: private_key_creds
   type: 9
   displaypassword: Private Key
   hiddenusername: true
+  required: false
 - defaultvalue: ''
   display: Client Email
   name: client_email
   type: 0
   hidden: true
+  required: false
 - display: Client ID
   name: client_id
   type: 4
   defaultvalue: ''
   hidden: true
+  required: false
 - display: Client Email
   name: client_email_creds
   type: 9
   displaypassword: Client ID
+  required: false
 - defaultvalue: ''
   display: Client X509 Cert URL
   name: client_x509_cert_url
@@ -46,10 +53,12 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
 
+  required: false
 description: Google Cloud Platform Resource Manager
 display: Google Resource Manager
 name: Google Resource Manager

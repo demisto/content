@@ -18,9 +18,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: "Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints."
 display: Absolute
 name: Absolute

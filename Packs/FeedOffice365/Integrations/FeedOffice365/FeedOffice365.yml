@@ -7,6 +7,7 @@ configuration:
   name: feed
   defaultvalue: 'true'
   type: 8
+  required: false
 - defaultvalue: All
   display: Category
   name: category
@@ -16,6 +17,7 @@ configuration:
   - Allow
   - Default
   type: 16
+  required: false
 - defaultvalue: All
   display: Regions
   name: regions
@@ -33,6 +35,7 @@ configuration:
   name: allow_germany
   defaultvalue: 'false'
   type: 8
+  required: false
 - defaultvalue: All
   display: Services
   name: services
@@ -54,6 +57,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -76,6 +80,7 @@ configuration:
   - WHITE
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 - defaultvalue: suddenDeath
   display: ''
   name: feedExpirationPolicy
@@ -85,29 +90,36 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   defaultvalue: '30'
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'true'
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.
 display: Office 365 Feed
 name: Office 365 Feed

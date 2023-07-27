@@ -7,17 +7,21 @@ configuration:
   name: user_service_account_json
   type: 4
   hidden: true
+  required: false
 - name: user_service_account_json_creds
   type: 9
   displaypassword: User's Service Account JSON
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 description: Google Calendar is a time-management and scheduling calendar service developed by Google. This integration helps you to perform various tasks on the access control list (ACL).
 display: Google Calendar
 name: GoogleCalendar
@@ -169,7 +173,7 @@ script:
     - contextPath: GoogleCalendar.PageToken.Acl.nextSyncToken
       description: Token used at a later point in time to retrieve only the entries that have changed since this result was returned.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.64742
+  dockerimage: demisto/googleapi-python3:1.0.0.65453
   runonce: false
   script: '-'
   subtype: python3

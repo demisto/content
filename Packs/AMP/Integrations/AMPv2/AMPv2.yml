@@ -17,6 +17,7 @@ configuration:
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -35,15 +36,18 @@ configuration:
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Maximum number of incidents per fetch. The maximum is 200.
   defaultvalue: 50
   display: Maximum incidents to fetch.
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: 'false'
   display: Fetch incidents with severity = null
   name: include_null_severities
   type: 8
+  required: false
 - display: Incident severity to fetch.
   name: incident_severities
   options:
@@ -52,21 +56,26 @@ configuration:
   - High
   - Critical
   type: 16
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
   name: first_fetch
   type: 0
+  required: false
 - display: Event types
   name: event_types
   additionalinfo: Comma-separated list of event type IDs. The IDs can be retrieved from the cisco-amp-event-type-list command.
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
 display: Cisco AMP v2
 name: AMPv2
@@ -1738,7 +1747,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
   runonce: false
   script: '-'

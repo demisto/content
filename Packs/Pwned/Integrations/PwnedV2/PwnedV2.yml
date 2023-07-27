@@ -7,28 +7,35 @@ configuration:
   name: api_key
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Key
   name: credentials_api_key
   hiddenusername: true
   type: 9
+  required: false
 - defaultvalue: '30'
   display: Maximum time per request (in seconds)
   name: max_retry_time
   type: 0
+  required: false
 - defaultvalue: SUSPICIOUS
   display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS or MALICIOUS)'
   name: default_dbot_score_email
   type: 0
+  required: false
 - defaultvalue: SUSPICIOUS
   display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS or MALICIOUS)'
   name: default_dbot_score_domain
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -42,6 +49,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -51,10 +59,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 description: Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
 display: Have I Been Pwned? v2
 name: Have I Been Pwned? V2

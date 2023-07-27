@@ -1,5 +1,6 @@
 [MODEL: dataset="aws_guardduty_raw"]
-alter targetIP1 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction.RemoteIpDetails.IpAddressV4"),
+alter 
+    targetIP1 = json_extract_scalar(Service, "$.Action.NetworkConnectionAction.RemoteIpDetails.IpAddressV4"),
     targetIP2 = json_extract_scalar(Service, "$.Action.KubernetesApiCallAction.RemoteIpDetails.IpAddressV4"),
     username1 = trim(json_extract_scalar(Resource,"$.AccessKeyDetails.UserName"), "\""),
     username2 = json_extract_scalar(Resource, "$.KubernetesDetails.KubernetesUserDetails.Username"),

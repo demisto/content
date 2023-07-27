@@ -11,107 +11,126 @@ configuration:
   name: base_url
   type: 0
   section: Connect
+  required: false
 - display: Application ID or Client ID
   additionalinfo: See the Help tab.
   name: auth_id
   type: 4
   section: Connect
   hidden: true
+  required: false
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
   name: credentials_auth_id
   hiddenusername: true
   section: Connect
   type: 9
+  required: false
 - display: Token or Tenant ID
   additionalinfo: See the Help tab.
   name: refresh_token
   type: 4
   section: Connect
   hidden: true
+  required: false
 - displaypassword: Token or Tenant ID
   additionalinfo: See the Help tab.
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - display: Key or Client Secret
   additionalinfo: See the Help tab.
   name: enc_key
   type: 4
   section: Connect
   hidden: true
+  required: false
 - displaypassword: Key or Client Secret
   additionalinfo: See the Help tab.
   name: credentials_enc_key
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
   hidden: true
   section: Connect
+  required: false
 - displaypassword: Certificate Thumbprint
   additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   name: credentials_certificate_thumbprint
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 14
   section: Connect
+  required: false
 - display: Use a self-deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
   advanced: false
+  required: false
 - display: Application redirect URI (for self-deployed mode)
   name: redirect_uri
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: The authentication code you got for the service
   additionalinfo: For instructions on how to receive it, see the Help tab.
   name: auth_code
   type: 4
   section: Connect
   hidden: true
+  required: false
 - displaypassword: The authentication code you got for the service
   additionalinfo: For instructions on how to receive it, see the Help tab.
   name: credentials_auth_code
   hiddenusername: true
   type: 9
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 10 minutes
   display: First fetch time range
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   name: first_fetch_delta
   type: 0
   section: Collect
+  required: false
 - additionalinfo: The default timeout (in seconds) for API calls. Default is 15 seconds.
   defaultvalue: 15
   display: Timeout
@@ -119,6 +138,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Content types to fetch
   name: content_types_to_fetch
   options:
@@ -129,32 +149,38 @@ configuration:
   - DLP.All
   section: Collect
   type: 16
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Record types to fetch
   additionalinfo: A comma-separated list of the record types you want to fetch. Content records with a record type that is not specified will not be fetched. If this field is left empty, all record types will be fetched.
   name: record_types_filter
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Workloads to fetch
   additionalinfo: A comma-separated list of the workloads you want to fetch. Content records with a workload that is not specified will not be fetched. If this field is left empty, all workloads will be fetched.
   name: workloads_filter
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Operations to fetch
   additionalinfo: A comma-separated list of the operations you want to fetch. Content records with an operation that is not specified will not be fetched. If this field is left empty, all operations will be fetched.
   name: operations_filter
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content, and fetch new content as incidents.
 display: Microsoft Management Activity API (O365 Azure Events)
 name: Microsoft Management Activity API (O365 Azure Events)
@@ -260,7 +286,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: ms-management-activity-generate-login-url
     arguments: []
-  dockerimage: demisto/pyjwt3:1.0.0.65022
+  dockerimage: demisto/pyjwt3:1.0.0.66845
   isfetch: true
   runonce: false
   script: '-'
