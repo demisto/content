@@ -4,10 +4,10 @@ import io
 
 
 def main():
+    args = demisto.args()
+    testName = args.get("testName", "")
+    listName = args.get("listName", "")
     try:
-        args = demisto.args()
-        testName = args.get("testName", "")
-        listName = args.get("listName", "")
         if listName != "":
             listlines = demisto.executeCommand("getList", {'listName': listName})[0]['Contents']
             buf = io.StringIO(listlines)
