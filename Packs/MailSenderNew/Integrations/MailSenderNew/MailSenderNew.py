@@ -77,13 +77,13 @@ def handle_file(msg, filename, maintype, subtype, cid, data):
         att = MIMEBase(maintype, subtype)
         att.set_payload(data)
         # Encode the payload using Base64
-        encoders.encode_base64(att)
     # Set the filename parameter
     if cid:
         att.add_header('Content-Disposition', 'inline', filename=filename)
-        att.add_header('Content-ID', '<' + cid + '>')
+        att.add_header('Content-ID', '<' + filename + '>')
     else:
         att.add_header('Content-Disposition', 'attachment', filename=filename)
+    encoders.encode_base64(att)
     msg.attach(att)
 
 
@@ -99,13 +99,13 @@ def handle_html(html_body):
     for i, m in enumerate(
             re.finditer(r'<img.+?src=\"(data:(image/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
         maintype, subtype = m.group(2).split('/', 1)
-        name = 'image%d.%s' % (i, subtype)
+        name = f"image{i}.{subtype}"
         att = {
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
             'name': name,
-            'cid': '%r@%r.%r' % (name, randomword(8), randomword(8))
+            'cid': name
         }
         attachments.append(att)
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + att['cid']
@@ -284,9 +284,9 @@ def create_msg():
             msg = MIMEMultipart()
             msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
             if body:
-                alt = MIMEMultipart('alternative')
-                alt.attach(MIMEText(body, 'plain', UTF_8))
-                alt.attach(MIMEText(html_body, 'html', UTF_8))
+                # alt = MIMEMultipart()
+                # alt.attach(MIMEText(body, 'plain', UTF_8))
+                alt = MIMEText(html_body, 'html', UTF_8)
                 msg.attach(alt)
             else:
                 msg.attach(MIMEText(html_body, 'html', UTF_8))
@@ -294,7 +294,7 @@ def create_msg():
                 handle_file(msg, att['name'], att['maintype'], att['subtype'], att['cid'], att['data'])
         else:
             if body:
-                msg = MIMEMultipart('alternative')
+                msg = MIMEMultipart()
                 msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
                 msg.attach(MIMEText(body, 'plain', UTF_8))
                 msg.attach(MIMEText(html_body, 'html', UTF_8))
