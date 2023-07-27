@@ -1,6 +1,6 @@
 import argparse
 import json5
-from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
+from Tests.scripts.utils.google_secret_manager_handler import GoogleSecreteManagerModule
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
