@@ -2264,6 +2264,8 @@ inputs:
     complex:
       root: alert
       accessor: username
+      transformers:
+      - operator: uniq
   required: false
   description: RDP connection username.
   playbookInputQuery:
@@ -2272,6 +2274,8 @@ inputs:
     complex:
       root: alert
       accessor: localip
+      transformers:
+      - operator: uniq
   required: false
   description: Source external IP address.
   playbookInputQuery:
