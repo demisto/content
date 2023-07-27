@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython impor
+from CommonServerPython import *  # noqa: F401
 
 register_module_line('GetIndicatorCustomFieldsByQuery', 'start', __line__())
 
