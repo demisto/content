@@ -18,47 +18,59 @@ configuration:
   name: technician_key
   type: 4
   hidden: true
+  required: false
 - displaypassword: Technician Key
   name: credentials_technician_key
   hiddenusername: true
   type: 9
+  required: false
 - defaultvalue: https://example.com
   display: On-Premise Server URL
   name: server_url_on_premise
   type: 0
+  required: false
 - display: Client ID
   name: client_id
   type: 4
   hidden: true
+  required: false
 - display: Client Secret
   name: client_secret
   type: 4
   hidden: true
+  required: false
 - display: Client ID
   name: credentials_client
   type: 9
   displaypassword: Client Secret
   section: Connect
+  required: false
 - display: Refresh Token
   name: refresh_token
   type: 4
   hidden: true
+  required: false
 - displaypassword: Refresh Token
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: Open
   display: Incidents status. Supports multi-select.
   name: fetch_status
@@ -69,18 +81,22 @@ configuration:
   - Resolved
   - Canceled
   type: 16
+  required: false
 - additionalinfo: 'Input format: <number> <time unit>, e.g., 1 hour, 30 minutes'
   defaultvalue: 7 days
   display: First fetch time
   name: fetch_time
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit
   type: 0
+  required: false
 - display: Fetch query -  see (?). Overrides the status filter, if given.
   name: fetch_filter
   type: 12
+  required: false
 description: Use this integration to manage on-premises and cloud Service Desk Plus requests. The integration allows you to create, update, and delete requests, assign groups and technicians to requests, and link/unlink requests and modify their resolution.
 display: Service Desk Plus
 name: ServiceDeskPlus
@@ -526,7 +542,7 @@ script:
       required: true
     description: Closes the specified request.
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
   runonce: false
   script: '-'

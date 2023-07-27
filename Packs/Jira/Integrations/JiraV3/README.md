@@ -20,7 +20,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Client Secret |  | True |
     | Query (in JQL) for fetching incidents | The field that was selected in the "Issue Field to fetch by" can't be used. in the query. | False |
     | Issue Field to fetch by | This is how the field \(e.g, created date\) is applied to the query: created &amp;gt;= \{created date in last run\} ORDER BY created ASC | False |
-    | Issue index to start fetching incidents from | This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. | False |
+    | Issue index to start fetching incidents from | This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
@@ -58,9 +58,8 @@ Go to your [Developer console](https://developer.atlassian.com/console/myapps/) 
 
 #### Cloud ID
 
-Go to your [Admin page](https://admin.atlassian.com/), and choose the `Jira Software` product by clicking the three dots and choosing **Manage users**. Your Cloud ID will appear in the URL:
-`https://admin.atlassian.com/s/{Cloud_id}/users`
-(If you do not have it, click **Products** and add the `Jira Software` product to your products list.)
+Go to your [Admin page](https://admin.atlassian.com/), click the **Products** tab on the top banner and choose the appropriate site under **Sites and Products** on the left side bar. Your Cloud ID will appear in the URL:
+`https://admin.atlassian.com/s/{cloud_id}/users`
 
 #### Cloud Scopes
 
@@ -71,10 +70,10 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 * read:jira-work
 * read:jira-user
 * write:jira-work
-* read:jql:jira
 
 #### Granular Scopes
 
+* read:jql:jira
 * read:issue-details:jira
 * write:board-scope:jira-software
 * read:board-scope:jira-software
@@ -547,7 +546,7 @@ Scope: `read:jira-work`
 ### jira-get-id-offset
 
 ***
-Returns the ID offset, which is the id of the first issue that was created in the current Jira project. (you can use its result as the initial id when fetching incidents by the issue id field).
+Returns the ID offset, which is the ID of the first issue that was created in the current Jira instance, or the ID of the first issue with respect to the given query argument if given. You can use its result as the initial ID when fetching incidents by the issue id field.
 
 Scope: `read:jira-work`
 
@@ -557,7 +556,10 @@ Scope: `read:jira-work`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The query that will be used to retrieve the first issue ID in it. | Optional |
+
 
 #### Context Output
 
@@ -567,7 +569,7 @@ There are no input arguments for this command.
 
 #### Command example
 
-```!jira-get-id-offset```
+```!jira-get-id-offset query="status!=done"```
 
 #### Context Example
 

@@ -1,6 +1,2 @@
 [file:README.md]
 ignore=RM104
-
-[file:GoogleKubernetesEngine.yml]
-ignore=IN145
-

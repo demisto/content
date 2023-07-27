@@ -13,9 +13,11 @@ configuration:
 - display: Raise error an empty result
   name: error_on_no_results
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Base URL
   name: base_url
   required: true
@@ -24,6 +26,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Google Maps API.
 display: Google Maps
 name: GoogleMaps

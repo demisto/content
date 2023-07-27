@@ -16,9 +16,11 @@ configuration:
   display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: The Threat Context module provides SOC, Incident Response, and Threat Intelligence teams with continuously updated and intuitive information around threat actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs.
 display: Blueliv ThreatContext
 name: Blueliv ThreatContext

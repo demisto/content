@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from xmlrpc.client import Boolean
 from CommonServerUserPython import *
-from typing import Dict, Any, List
+from typing import Any
 import urllib.parse
 import re
 
@@ -19,9 +19,10 @@ JOB_FIELDS_TO_EXTRACT = {'created_at', 'started_at', 'finished_at', 'duration', 
 
 
 class Client(BaseClient):
-    def __init__(self, project_id, base_url, verify, proxy, headers):
+    def __init__(self, project_id, base_url, verify, proxy, headers, trigger_token=None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
         self.project_id = project_id
+        self.trigger_token = trigger_token
 
     def group_projects_list_request(self, params: dict | None, group_id: str | None) -> dict:
         headers = self._headers
@@ -314,6 +315,19 @@ class Client(BaseClient):
         suffix = f'projects/{project_id}/jobs/{job_id}/artifacts/{artifact_path_suffix}'
         return self._http_request('get', suffix, headers=headers, resp_type='text')
 
+    def gitlab_trigger_pipeline(self, project_id: str, data: dict) -> dict:
+        """Triggers a pipeline on GitLab.
+
+        Args:
+            project_id: Project ID on which to run the pipeline.
+            data: The request body in JSON format.
+
+        Returns:
+            dict: The response in JSON format.
+        """
+        suffix = f'projects/{project_id}/trigger/pipeline'
+        return self._http_request('POST', suffix, data=data)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -339,10 +353,7 @@ def check_args_for_update(args: dict, optional_params: list) -> dict:
 def validate_pagination_values(limit: int, page_number: int) -> tuple[int, int, int]:
     if limit < 0 or page_number < 0:
         raise DemistoException('limit and page arguments must be positive')
-    if limit < 100:
-        per_page = limit
-    else:
-        per_page = 100
+    per_page = limit if limit < 100 else 100
     return limit, per_page, page_number
 
 
@@ -359,7 +370,7 @@ def response_according_pagination(client_function: Any, limit: int, page_number:
     limit, per_page, page_number = validate_pagination_values(limit, page_number)
     params.update({'per_page': per_page, 'page': page_number})
     items_count_total = 0
-    response: List[Dict[str, Any]] = []
+    response: list[dict[str, Any]] = []
     while items_count_total < limit:
         response_temp = client_function(params, suffix_id) if suffix_id else client_function(params)
         if not response_temp:
@@ -386,7 +397,7 @@ def partial_response_fields(object_name: str):
             'protected': None
         }
     if object_name == 'Issue':
-        return{
+        return {
             'id': None,
             'iid': None,
             'title': None,
@@ -401,7 +412,7 @@ def partial_response_fields(object_name: str):
         }
 
     if object_name == 'Merge Request':
-        return{
+        return {
             'id': None,
             'iid': None,
             'title': None,
@@ -414,7 +425,7 @@ def partial_response_fields(object_name: str):
             'target_branch': None
         }
     if object_name == 'Commit':
-        return{
+        return {
             'id': None,
             'short_id': None,
             'title': None,
@@ -424,7 +435,7 @@ def partial_response_fields(object_name: str):
         }
 
     if object_name == 'Issue Note':
-        return{
+        return {
             'id': None,
             'created_at': None,
             'updated_at': None,
@@ -434,7 +445,7 @@ def partial_response_fields(object_name: str):
         }
 
     if object_name == 'Merge Request Note':
-        return{
+        return {
             'id': None,
             'created_at': None,
             'updated_at': None,
@@ -444,7 +455,7 @@ def partial_response_fields(object_name: str):
         }
 
     if object_name == 'Project':
-        return{
+        return {
             'id': None,
             'description': None,
             'name': None,
@@ -461,15 +472,15 @@ def partial_response(response: list, object_type: str):
     input: raw response which is a list of dictionaries, fields for the context data display.
     output: partial dictionary results.
     '''
-    partial_response: List[Dict[str, Any]] = []
+    partial_response: list[dict[str, Any]] = []
     fields = partial_response_fields(object_type)
     for raw_dict in response:
-        partial_dict: Dict[str, Any] = {}
+        partial_dict: dict[str, Any] = {}
         for field_key, field_dict_vals in fields.items():
-            if not(field_dict_vals):
+            if not (field_dict_vals):
                 partial_dict[field_key] = raw_dict.get(field_key, '')
             elif raw_dict.get(field_key):
-                temp_dict_vals: Dict[str, Any] = {}
+                temp_dict_vals: dict[str, Any] = {}
                 for val in field_dict_vals:
                     temp_dict_vals[val] = raw_dict.get(field_key, {}).get(val, '')
                 partial_dict[field_key] = temp_dict_vals
@@ -524,7 +535,7 @@ def test_module(client: Client) -> str:
 ''' INTEGRATION COMMANDS '''
 
 
-def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def group_project_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of projects within a group.
     Args:
@@ -538,7 +549,7 @@ def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     page_number = arg_to_number(args.get('page')) or 1
     limit = arg_to_number(args.get('limit', '50')) or 50
     group_id = args.get('group_id')
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
     response = response_according_pagination(client.group_projects_list_request, limit, page_number, params, group_id)
     for project in response:
         response_to_hr.append({'Id': project.get('id'),
@@ -555,7 +566,7 @@ def group_project_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_project_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of projects.
     Args:
@@ -589,7 +600,7 @@ def get_project_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def issue_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of issues within the project.
     Args:
@@ -637,7 +648,7 @@ def issue_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates an issue.
     Args:
@@ -680,7 +691,7 @@ def create_issue_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def branch_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates new branch.
     Args:
@@ -717,7 +728,7 @@ def branch_create_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
-def branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def branch_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes branch.
     Args:
@@ -741,7 +752,7 @@ def branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResult
     return command_results
 
 
-def merged_branch_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merged_branch_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes branches who had been merged.
     Args:
@@ -760,7 +771,7 @@ def merged_branch_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def get_raw_file_command(client: Client, args: Dict[str, Any]) -> List:
+def get_raw_file_command(client: Client, args: dict[str, Any]) -> list:
     """
     Returns the content of a given file.
     Args:
@@ -791,7 +802,7 @@ def get_raw_file_command(client: Client, args: Dict[str, Any]) -> List:
     return [results, file_]
 
 
-def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def issue_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     updating an issue.
     Args:
@@ -838,7 +849,7 @@ def issue_update_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def version_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets the current version.
     Args:
@@ -863,7 +874,7 @@ def version_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def file_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Allows to receive information about file in repository like name, size, content..
     Args:
@@ -896,7 +907,7 @@ def file_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Allows to create file in repository.
     Args:
@@ -934,7 +945,7 @@ def file_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Updating a file.
     Args:
@@ -979,7 +990,7 @@ def file_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes a file from branch.
     Args:
@@ -1005,7 +1016,7 @@ def file_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def commit_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of commits OR a single commit by commit_id.
     Args:
@@ -1048,7 +1059,7 @@ def commit_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def branch_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of branches OR a single commit by branch_id.
     Args:
@@ -1090,7 +1101,7 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of visible groups for the authenticated user.
     Args:
@@ -1126,7 +1137,7 @@ def group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def issue_note_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def issue_note_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates an issue note.
     Args:
@@ -1154,7 +1165,7 @@ def issue_note_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def issue_note_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def issue_note_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Deletes an issue note.
     Args:
@@ -1174,7 +1185,7 @@ def issue_note_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def issue_note_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Updating an issue note.
     Args:
@@ -1202,7 +1213,7 @@ def issue_note_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def issue_note_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of issue's notes.
     Args:
@@ -1239,7 +1250,7 @@ def issue_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merge_request_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of merge requests .
     Args:
@@ -1294,7 +1305,7 @@ def merge_request_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def merge_request_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merge_request_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates a merge request note.
     Args:
@@ -1336,7 +1347,7 @@ def merge_request_create_command(client: Client, args: Dict[str, Any]) -> Comman
     )
 
 
-def merge_request_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merge_request_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Updating an merge request.
     Args:
@@ -1380,7 +1391,7 @@ def merge_request_update_command(client: Client, args: Dict[str, Any]) -> Comman
     )
 
 
-def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merge_request_note_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a list of merge request's notes.
     Args:
@@ -1419,7 +1430,7 @@ def merge_request_note_list_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merge_request_note_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates a merge request note.
     Args:
@@ -1444,7 +1455,7 @@ def merge_request_note_create_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merge_request_note_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     updating a merge request note.
     Args:
@@ -1472,7 +1483,7 @@ def merge_request_note_update_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def merge_request_note_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def merge_request_note_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     deletes a merge request note.
     Args:
@@ -1492,7 +1503,7 @@ def merge_request_note_delete_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def group_member_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def group_member_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Gets a list of group or project members viewable by the authenticated user.
     Args:
@@ -1523,7 +1534,7 @@ def group_member_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def code_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def code_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a results of code search.
     Args:
@@ -1547,7 +1558,7 @@ def code_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def project_user_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def project_user_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns a results of all the project's users.
     Args:
@@ -1579,7 +1590,7 @@ def project_user_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gitlab_pipelines_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns pipelines corresponding to given arguments.
     Args:
@@ -1608,7 +1619,7 @@ def gitlab_pipelines_list_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def gitlab_pipelines_schedules_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gitlab_pipelines_schedules_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns pipeline schedules corresponding to given arguments.
     Args:
@@ -1635,7 +1646,7 @@ def gitlab_pipelines_schedules_list_command(client: Client, args: Dict[str, Any]
     )
 
 
-def gitlab_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gitlab_jobs_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns pipeline jobs corresponding to given arguments.
     Args:
@@ -1662,7 +1673,7 @@ def gitlab_jobs_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def gitlab_artifact_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns artifact corresponding to given artifact path suffix of the given job ID.
     Args:
@@ -1698,6 +1709,42 @@ def gitlab_artifact_get_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
+def gitlab_trigger_pipeline_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Triggers a GitLab pipeline on a selected project and branch.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (dict) XSOAR arguments:
+            - 'project_id': Project ID on which to run the pipeline.
+            - 'ref_branch': The branch on which to run the pipeline. Default is 'master'
+
+    Returns:
+        (CommandResults).
+    """
+    project_id = args.get('project_id') or client.project_id
+    if not client.trigger_token:
+        return_error("A trigger token is required in the integration instance configuration")
+    data = {
+        'token': client.trigger_token,
+        'ref': args.get('ref_branch', 'master'),
+    }
+    for key, value in json.loads(args.get('trigger_variables', '{}')).items():
+        data[f'variables[{key}]'] = value
+
+    response = client.gitlab_trigger_pipeline(project_id, data)
+
+    outputs = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
+    human_readable = tableToMarkdown('GitLab Pipeline', outputs, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=human_readable
+    )
+
+
 def check_for_html_in_error(e: str):
     """
     Args:
@@ -1723,6 +1770,7 @@ def main() -> None:  # pragma: no cover
     LOG(f'Command being called is {command}')
     server_url = params.get('url', '')
     project_id = arg_to_number(params.get('project_id'), required=True)
+    trigger_token = params.get('trigger_token', {}).get('password')
     commands = {'gitlab-group-project-list': group_project_list_command,
                 'gitlab-issue-create': create_issue_command,
                 'gitlab-branch-create': branch_create_command,
@@ -1758,10 +1806,11 @@ def main() -> None:  # pragma: no cover
                 'gitlab-pipelines-schedules-list': gitlab_pipelines_schedules_list_command,
                 'gitlab-jobs-list': gitlab_jobs_list_command,
                 'gitlab-artifact-get': gitlab_artifact_get_command,
+                'gitlab-trigger-pipeline': gitlab_trigger_pipeline_command,
                 }
 
     try:
-        client = Client(project_id, urljoin(server_url, ""), verify_certificate, proxy, headers=headers)
+        client = Client(project_id, urljoin(server_url, ""), verify_certificate, proxy, headers, trigger_token)
         if project_id and verify_project_id(client, project_id):
             if demisto.command() == 'test-module':
                 return_results(test_module(client))

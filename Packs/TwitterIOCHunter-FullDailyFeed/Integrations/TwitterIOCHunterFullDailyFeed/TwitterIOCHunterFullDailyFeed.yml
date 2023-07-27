@@ -6,9 +6,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -31,22 +33,27 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
@@ -56,10 +63,12 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -69,6 +78,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - additionalinfo: Select type of feed to get. Full for all, Username for filter by username and Hashtag for filtered by the hashtag.
   defaultvalue: Full
   display: Type of Feed
@@ -78,10 +88,12 @@ configuration:
   - Username
   - Hashtag
   type: 15
+  required: false
 - additionalinfo: Input the Username or Hashtag you want to use as a filter
   display: Filter to Use
   name: filtertouse
   type: 0
+  required: false
 description: Fetch the full daily feed from www.tweettioc.com/v1/tweets/daily/full
 display: TwitterIOCHunter Feed
 name: TwitterIOCHunter - Full Daily Feed

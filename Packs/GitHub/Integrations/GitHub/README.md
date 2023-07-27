@@ -2178,6 +2178,7 @@ Creates a release.
 | name | The name of the release. | Optional | 
 | tag_name | The name of the release tag. | Required | 
 | body | Text describing the contents of the tag. | Optional | 
+| ref | The target branch/commit SHA from where to create the release. | Optional | 
 | draft | Set to true to create a draft (unpublished) release, set to false to create a published one. Default is True. | Optional | 
 
 
@@ -2906,6 +2907,7 @@ Triggers a GitHub workflow on a given repository and workflow.
 | repository | The GitHub repository name. | Optional | 
 | branch | The branch to trigger the workflow on. | Optional | 
 | workflow | The name of your workflow file. | Required | 
+| inputs | The inputs for the workflow. | Optional | 
 
 #### Context Output
 

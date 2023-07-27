@@ -30,22 +30,26 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - additionalinfo: First fetch timestamp (<number> <time unit>) e.g., 12 hours, 7 days etc.
   defaultvalue: 7 days
   display: Fetch time
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Max Fetch is limited to 200 incidents per fetch. Choose a value lower than 200.
   defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - additionalinfo: |-
     Filter the incidents fetching by providing a query using Qualys syntax.
     i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
@@ -56,16 +60,19 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Log and track file changes across global IT systems.
 display: Qualys FIM
 name: qualys_fim
@@ -392,7 +399,7 @@ script:
     - contextPath: QualysFIM.Assets.created
       description: Date the asset was created.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
   runonce: false
   script: '-'

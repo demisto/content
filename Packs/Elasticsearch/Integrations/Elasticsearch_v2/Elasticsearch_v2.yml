@@ -17,16 +17,19 @@ configuration:
   name: credentials
   type: 9
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: Elasticsearch
   additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
   display: Client type
@@ -37,27 +40,32 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Index from which to fetch incidents (CSV)
   name: fetch_index
   type: 0
   section: Collect
+  required: false
 - display: Query String
   name: fetch_query
   type: 0
   additionalinfo: The query will be used when fetching incidents. Index time field will be used as a filter in the query.
   section: Collect
   advanced: true
+  required: false
 - display: Index time field (for sorting sort and limiting data)
   name: fetch_time_field
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Raw Query
   name: raw_query
   type: 12
   additionalinfo: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
   section: Collect
   advanced: true
+  required: false
 - display: Time field type
   defaultvalue: 'Simple-Date'
   name: time_method
@@ -68,36 +76,43 @@ configuration:
   - Timestamp-Milliseconds
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '50'
   display: The maximum number of results to return per fetch.
   name: fetch_size
   type: 0
   section: Collect
+  required: false
 - display: Request timeout (in seconds).
   name: timeout
   type: 0
   defaultvalue: '60'
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2

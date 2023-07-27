@@ -1,0 +1,63 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "asmremediationobjectives",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "option",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "option",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Corresponds with remediation option for the main data collection task."
+        },
+        {
+            "displayName": "statement",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "statement",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Summary of the remediation action."
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "Remediation objectives uses to display the remediation actions to the end user",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asmremediationobjectives",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ASM - Remediation Objectives",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+	"fromVersion": "6.5.0"
+}

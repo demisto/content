@@ -17,9 +17,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Integration to pull assets and other ASM related information.
 display: Cortex Attack Surface Management
 name: Cortex Attack Surface Management

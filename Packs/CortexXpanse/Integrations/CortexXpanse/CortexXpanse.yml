@@ -17,28 +17,35 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: The maximum number of alerts per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of alerts per fetch
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: 'The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Alert Severities to Fetch
   name: severity
@@ -49,6 +56,25 @@ configuration:
   - critical
   - informational
   type: 16
+- display: Alert Statuses to fetch
+  name: status
+  type: 16
+  required: false
+  options:
+  - new
+  - under_investigation
+  - resolved_-_no_longer_observed
+  - resolved_-_no_risk
+  - resolved_-_risk_accepted
+  - resolved_-_contested_asset
+  - resolved_-_remediated_automatically
+  - resolved
+  additionalinfo: 'The statuses of the alerts that will be fetched. If no status is provided then alerts of all the statuses will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.'
+- display: Fetch alerts with tags (comma separated string)
+  name: tags
+  type: 0
+  required: false
+  additionalinfo: 'The tags of the alerts that will be fetched. If no tags are provided then no tag filtering will be applied on fetched alerts. These should include the tag prefix, ex. AT:Asset Tag.'
 description: Integration to pull assets and other ASM related information.
 display: Cortex Xpanse
 name: Cortex Xpanse
@@ -359,13 +385,29 @@ script:
       name: alert_id_list
     - description: Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).
       name: severity
+    - description: Comma separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.
+      name: tags
+    - description: Comma-separated list of strings of the alert status.
+      name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - under_investigation
+      - resolved_-_no_longer_observed
+      - resolved_-_no_risk
+      - resolved_-_risk_accepted
+      - resolved_-_contested_asset
+      - resolved_-_remediated_automatically
+      - resolved
+    - description: Comma-separated list of strings of the business units
+      name: business_units_list
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
       name: gte_creation_time
-    - auto: PREDEFINED
-      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
+    - description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
       name: sort_by_creation_time
+      auto: PREDEFINED
       predefined:
       - asc
       - desc
@@ -411,7 +453,212 @@ script:
     - contextPath: ASM.Alert.detection_timestamp
       description: Date the alert was created.
       type: Date
-  dockerimage: demisto/python3:3.10.12.63474
+  - name: asm-list-attack-surface-rules
+    arguments:
+    - name: enabled_status
+      auto: PREDEFINED
+      predefined:
+      - "On"
+      - "Off"
+      description: Enablement status to search rules with.
+    - name: category
+      description: Comma separated list of strings attack surface rule categories.
+    - name: priority
+      description: Comma separated list of strings attack surface rule priorities. Options include Low, Medium, High, and Critical.
+    - name: attack_surface_rule_id
+      description: Comma-separated list of strings attack surface rule IDs.
+    - name: limit
+      description: Maximum number of results to return.
+    outputs:
+    - contextPath: ASM.AttackSurfaceRules.priority
+      description: Priority level for the different rules. Low, Medium, High, Critical.
+    - contextPath: ASM.AttackSurfaceRules.attack_surface_rule_name
+      description: Name of the attack surface rule.
+    - contextPath: ASM.AttackSurfaceRules.attack_surface_rule_id
+      description: ID of the attack surface rule.
+    - contextPath: ASM.AttackSurfaceRules.description
+      description: Description of the attack surface rule.
+    - contextPath: ASM.AttackSurfaceRules.category
+      description: Category of the attack surface rule.
+    - contextPath: ASM.AttackSurfaceRules.remediation_guidance
+      description: Guidance for how to address various ASM risks.
+    - contextPath: ASM.AttackSurfaceRules.enabled_status
+      description: Enablement status of the attack surface rule.
+    - contextPath: ASM.AttackSurfaceRules.created
+      description: Creation date of the attack surface rule.
+    - contextPath: ASM.AttackSurfaceRules.modified
+      description: Last modification of the attack surface rule.
+    description: Fetches attack surface rules related to how Cortex Xpanse does assessment.
+  - name: asm-tag-asset-assign
+    arguments:
+    - name: asm_id_list
+      required: true
+      description: Comma-separated list of asset IDs to add tags to.
+    - name: tags
+      required: true
+      description: The name of the tags to apply to supplied assets.
+    description: Assigns tags to a list of assets.
+  - name: asm-tag-asset-remove
+    arguments:
+    - name: asm_id_list
+      description: Comma-separated list of asset IDs to remove tags from.
+    - name: tags
+      description: The name of the tags to remove from supplied assets.
+    description: Removes tags from a list of assets.
+  - name: asm-tag-range-assign
+    arguments:
+    - name: range_id_list
+      description: Comma-separated list of range IDs to add tags to.
+    - name: tags
+      description: The name of the tags to apply to supplied assets.
+    description: Assigns tags to a list of IP ranges.
+  - name: asm-tag-range-remove
+    arguments:
+    - name: range_id_list
+      description: Comma-separated list of range IDs to remove tags from.
+    - name: tags
+      description: The name of the tags to remove from supplied IP ranges.
+    description: Removes tags from a list of IP ranges.
+  - name: asm-list-incidents
+    arguments:
+    - name: incident_id_list
+      description: 'Incident IDs to filter on. Note: Incident IDs may also be references as "Case IDs'' elsewhere in the API.'
+    - name: description
+      description: String to search for within the incident description field.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - under_investigation
+      - resolved
+      description: Status to search incidents for.
+    - name: lte_creation_time
+      description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
+    - name: gte_creation_time
+      description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
+    - name: sort_by_creation_time
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
+    - name: sort_by_severity
+      description: Sorts returned incidents by the severity of the incident.
+    - name: page
+      description: Page number (for pagination). The default is 0 (the first page).
+    - name: limit
+      description: Maximum number of incidents to return per page. The default and maximum is 100.
+    outputs:
+    - contextPath: ASM.Incident.alert_count
+      description: Number of alerts included in the incident.
+      type: Number
+    - contextPath: ASM.Incident.alerts_grouping_status
+      description: Whether alert grouping is enabled.
+      type: String
+    - contextPath: ASM.Incident.assigned_user_mail
+      description: Email of the assigned user.
+      type: Unknown
+    - contextPath: ASM.Incident.assigned_user_pretty_name
+      description: Friendly name of the assigned user.
+      type: Unknown
+    - contextPath: ASM.Incident.creation_time
+      description: Creation timestamp.
+      type: Date
+    - contextPath: ASM.Incident.critical_severity_alert_count
+      description: Number of critical alerts.
+      type: Number
+    - contextPath: ASM.Incident.description
+      description: Description of the incident.
+      type: String
+    - contextPath: ASM.Incident.high_severity_alert_count
+      description: Number of high alerts.
+      type: Number
+    - contextPath: ASM.Incident.incident_id
+      description: ID of the incident.
+      type: String
+    - contextPath: ASM.Incident.incident_name
+      description: Incident name.
+      type: Unknown
+    - contextPath: ASM.Incident.incident_sources
+      description: Incident source.
+      type: String
+    - contextPath: ASM.Incident.low_severity_alert_count
+      description: Number of low alerts.
+      type: Number
+    - contextPath: ASM.Incident.manual_severity
+      description: Severity override.
+      type: Unknown
+    - contextPath: ASM.Incident.med_severity_alert_count
+      description: Number of medium alerts.
+      type: Number
+    - contextPath: ASM.Incident.modification_time
+      description: Modification timestamp.
+      type: Date
+    - contextPath: ASM.Incident.notes
+      description: Incident notes.
+      type: Unknown
+    - contextPath: ASM.Incident.original_tags
+      description: Tags on the incident at creation time.
+      type: Unknown
+    - contextPath: ASM.Incident.resolve_comment
+      description: Resolution comment (optional).
+      type: Unknown
+    - contextPath: ASM.Incident.resolved_timestamp
+      description: Resolution timestamp.
+      type: Unknown
+    - contextPath: ASM.Incident.severity
+      description: Severity of the incident.
+      type: String
+    - contextPath: ASM.Incident.starred
+      description: Whether the incident has been starred.
+      type: Boolean
+    - contextPath: ASM.Incident.status
+      description: Status of the incident.
+      type: String
+    - contextPath: ASM.Incident.tags
+      description: Tags on the incident.
+      type: String
+    - contextPath: ASM.Incident.xdr_url
+      description: Link to navigate to the incident.
+      type: String
+    - contextPath: ASM.Incident.xpanse_risk_score
+      description: Risk score of the incident.
+      type: Unknown
+    description: 'Fetches ASM incidents that match provided filters. Incidents are an aggregation of related alerts. Note: Incident IDs may also be references as "Case IDs'' elsewhere in the API.'
+  - name: asm-update-incident
+    arguments:
+    - name: incident_id
+      required: true
+      description: ID of the incident to modify.
+    - name: alert_id
+      description: Used for scoping updates such as comments to the alert level.
+    - name: assigned_user_mail
+      description: Email address of the user to assign incident to. This user must exist within your Expander instance.
+    - name: manual_severity
+      description: Administrator-defined severity for the incident.
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - new
+      - under_investigation
+      - resolved_-_no_longer_observed
+      - resolved_-_no_risk
+      - resolved_-_risk_accepted
+      - resolved_-_contested_asset
+      - resolved_-_remediated_automatically
+      - resolved
+      description: Incident status.
+    - name: resolve_comment
+      description: Optional resolution comment when resolving the incident.
+    - name: comment
+      description: A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment.
+    outputs:
+    - contextPath: ASM.IncidentUpdate
+      description: Whether the incident update was successful.
+    description: Updates a given incident. Can be used to modify the status, severity, assignee, or add comments.
+  dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   isfetch: true
   script: ''

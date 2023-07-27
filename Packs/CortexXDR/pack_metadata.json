@@ -2,7 +2,7 @@
     "name": "Cortex XDR by Palo Alto Networks",
     "description": "Automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
     "support": "xsoar",
-    "currentVersion": "4.11.8",
+    "currentVersion": "5.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -70,6 +70,10 @@
         "Jira": {
             "mandatory": false,
             "display_name": "Atlassian Jira"
+        },
+        "CloudIncidentResponse": {
+            "mandatory": false,
+            "display_name": "Cloud Incident Response"
         }
     },
     "marketplaces": [

@@ -42,7 +42,7 @@
       },
       "IP": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "MsgId": {
         "type": "string",
@@ -78,7 +78,7 @@
       },
       "SourceIP": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "ScanResultInfo": {
         "type": "string",
@@ -90,11 +90,11 @@
       },
       "Rcpt": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "Recipient": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "xsiem_classifier": {
         "type": "string",

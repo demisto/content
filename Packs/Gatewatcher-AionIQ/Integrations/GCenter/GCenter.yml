@@ -11,17 +11,21 @@ configuration:
   name: version
   type: 0
   defaultvalue: 2.5.3.102
+  required: false
 - display: GCenter API token
   name: token
   type: 4
   additionalinfo: You must provide either an API token or a username and a password.
+  required: false
 - display: GCenter username
   displaypassword: GCenter password
   name: credentials
   type: 9
+  required: false
 - display: Check the TLS certificate
   name: check_cert
   type: 8
+  required: false
 description: This integration allows, via about twenty commands, to interact with the GCenter appliance via its API.
 display: GCenter
 name: GCenter
@@ -1308,7 +1312,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook

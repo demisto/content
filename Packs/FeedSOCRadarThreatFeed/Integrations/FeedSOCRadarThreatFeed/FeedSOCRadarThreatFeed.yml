@@ -11,9 +11,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Feed Name
   name: collections_to_fetch
   options:
@@ -36,6 +38,7 @@ configuration:
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Good
   display: Indicator Reputation
@@ -46,6 +49,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -67,18 +71,22 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   defaultvalue: GREEN
   display: Traffic Light Protocol Color
@@ -89,16 +97,19 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: 'true'
   type: 8
   hidden: true
+  required: false
 description: Retrieve indicators provided by collections via SOCRadar Threat Intelligence Feeds.
 display: SOCRadar Threat Feed
 name: FeedSOCRadarThreatFeed
@@ -187,7 +198,7 @@ script:
       type: String
   - description: Resets the indicator fetch history.
     name: socradar-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   feed: true
   runonce: false
   script: '-'

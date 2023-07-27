@@ -8,15 +8,18 @@ import hashlib
 import json
 from enum import Enum
 from threading import Timer
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from collections.abc import Callable
+from typing import Any
 import requests
-from dateutil.parser import parse
+from gql import Client, gql
+from gql.transport.requests import RequestsHTTPTransport
 # Disable insecure warnings
 import urllib3
 urllib3.disable_warnings()
-''' GLOBALS/PARAMS '''
 
+''' GLOBALS/PARAMS '''
 INTEGRATION_NAME = 'CrowdStrike Falcon'
+IDP_DETECTION = "IDP detection"
 CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
 SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
@@ -26,17 +29,18 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
 USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-BYTE_CREDS = '{name}:{password}'.format(name=CLIENT_ID, password=SECRET).encode('utf-8')
+BYTE_CREDS = f'{CLIENT_ID}:{SECRET}'.encode()
 # Headers to be sent in requests
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Authorization': 'Basic {}'.format(base64.b64encode(BYTE_CREDS).decode())
+    'Authorization': f'Basic {base64.b64encode(BYTE_CREDS).decode()}'
 }
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+IDP_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 # Remove proxy if not set to true in params
 handle_proxy()
 
@@ -224,6 +228,7 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
 DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
+IDP_DETECTION_STATUS = {'new', 'in_progress', 'closed', 'reopened'}
 
 CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
 
@@ -273,6 +278,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 class IncidentType(Enum):
     INCIDENT = 'inc'
     DETECTION = 'ldt'
+    IDP_DETECTION = ':ind:'
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
@@ -326,7 +332,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     """
     if get_token_flag:
         token = get_token()
-        headers['Authorization'] = 'Bearer {}'.format(token)
+        headers['Authorization'] = f'Bearer {token}'
     url = SERVER + url_suffix
 
     headers['User-Agent'] = 'PANW-XSOAR'
@@ -376,7 +382,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             if res.status_code in (401, 403) and get_token_flag:
                 LOG(err_msg)
                 token = get_token(new_token=True)
-                headers['Authorization'] = 'Bearer {}'.format(token)
+                headers['Authorization'] = f'Bearer {token}'
                 return http_request(
                     method=method,
                     url_suffix=url_suffix,
@@ -400,7 +406,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
 
 
-def create_relationships(cve: dict) -> List:
+def create_relationships(cve: dict) -> list:
     """
         creates relationships between the cve and each actor from 'actors' field
         : args: cve contains the cve id and the actors field if it is exists.
@@ -473,7 +479,7 @@ def build_query_params(query_params: dict) -> str:
 ''' API FUNCTIONS '''
 
 
-def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Union[List[Any], Dict[str, Any]] | None = None,
+def create_entry_object(contents: list[Any] | dict[str, Any] = {}, ec: list[Any] | dict[str, Any] | None = None,
                         hr: str = ''):
     """
         Creates an entry object
@@ -500,7 +506,7 @@ def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Uni
     }
 
 
-def add_mirroring_fields(incident: Dict):
+def add_mirroring_fields(incident: dict):
     """
         Updates the given incident to hold the needed mirroring fields.
     """
@@ -548,6 +554,29 @@ def incident_to_incident_context(incident):
         'name': f'Incident ID: {incident_id}',
         'occurred': str(incident.get('start')),
         'rawJSON': json.dumps(incident)
+    }
+    return incident_context
+
+
+def idp_detection_to_incident_context(idp_detection):
+    """
+            Creates an incident context of an IDP detection.
+
+            :type idp_detection: ``dict``
+            :param idp_detection: Single IDP detection object
+
+            :return: Incident context representation of an IDP detection.
+            :rtype ``dict``
+        """
+    add_mirroring_fields(idp_detection)
+    if status := idp_detection.get('status'):
+        idp_detection['status'] = status
+
+    incident_context = {
+        'name': f'IDP Detection ID: {idp_detection.get("composite_id")}',
+        'occurred': idp_detection.get('start_time'),
+        'last_updated': idp_detection.get('updated_timestamp'),
+        'rawJSON': json.dumps(idp_detection)
     }
     return incident_context
 
@@ -602,7 +631,7 @@ def extract_transformed_dict_with_split(old_dict, transformation_dict_arr):
                 i = trans_dict['Index']
                 new_dict[trans_dict['NewKey']] = val.split(trans_dict['Delim'])[i]
         except Exception as ex:
-            LOG('Error {exception} with: {tdict}'.format(exception=ex, tdict=trans_dict))
+            LOG(f'Error {ex} with: {trans_dict}')
     return new_dict
 
 
@@ -631,16 +660,16 @@ def handle_response_errors(raw_res: dict, err_msg: str | None = None):
 
 def create_json_iocs_list(
         ioc_type: str,
-        iocs_value: List[str],
+        iocs_value: list[str],
         action: str,
-        platforms: List[str],
-        severity: Optional[str] = None,
-        source: Optional[str] = None,
-        description: Optional[str] = None,
-        expiration: Optional[str] = None,
-        applied_globally: Optional[bool] = None,
-        host_groups: Optional[List[str]] = None,
-        tags: Optional[List[str]] = None) -> List[dict]:
+        platforms: list[str],
+        severity: str | None = None,
+        source: str | None = None,
+        description: str | None = None,
+        expiration: str | None = None,
+        applied_globally: bool | None = None,
+        host_groups: list[str] | None = None,
+        tags: list[str] | None = None) -> list[dict]:
     """
     Get a list of iocs values and create a list of Json objects with the iocs data.
     This function is used for uploading multiple indicator with same arguments with different values.
@@ -714,7 +743,7 @@ def init_rtr_batch_session(host_ids: list, offline=False) -> str:
     return response.get('batch_id')
 
 
-def refresh_session(host_id: str) -> Dict:
+def refresh_session(host_id: str) -> dict:
     """
         Refresh a session timeout on a single host.
         :param host_id: Host agent ID to run RTR command on.
@@ -745,7 +774,7 @@ def batch_refresh_session(batch_id: str) -> None:
     demisto.debug('Finished session refresh')
 
 
-def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
+def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> dict:
     """
         Sends RTR command scope with read access
         :param batch_id:  Batch ID to execute the command on.
@@ -769,7 +798,7 @@ def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str, time
 
 
 def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, optional_hosts: list | None = None,
-                        timeout: int = 30) -> Dict:
+                        timeout: int = 30) -> dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -798,7 +827,7 @@ def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str, opt
 
 
 def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30,
-                        optional_hosts: list | None = None) -> Dict:
+                        optional_hosts: list | None = None) -> dict:
     """
         Sends RTR command scope with write access
         :param batch_id:  Batch ID to execute the command on.
@@ -828,7 +857,7 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
 
 
 def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list | None = None, timeout: int | None = None,
-                      timeout_duration: str | None = None, offline: bool = False) -> Dict:
+                      timeout_duration: str | None = None, offline: bool = False) -> dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
@@ -851,7 +880,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list | Non
     return response
 
 
-def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration: str | None = None) -> Dict:
+def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration: str | None = None) -> dict:
     """
         Retrieves the status of the specified batch get command. Will return successful files when they are finished processing.
 
@@ -868,13 +897,14 @@ def status_get_cmd(request_id: str, timeout: int | None = None, timeout_duration
 
 
 def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
-                        timeout: int = 30) -> Dict:
+                        timeout: int = 30) -> dict:
     """
         Sends RTR command scope with read access
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
-        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution
+                              when the host comes online.  # noqa: E501
         :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
@@ -894,13 +924,14 @@ def run_single_read_cmd(host_id: str, command_type: str, full_command: str, queu
 
 
 def run_single_write_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
-                         timeout: int = 30) -> Dict:
+                         timeout: int = 30) -> dict:
     """
         Sends RTR command scope with write access
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
-        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution
+                              when the host comes online.  # noqa: E501
         :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
@@ -919,13 +950,14 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str, que
 
 
 def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, queue_offline: bool,
-                         timeout: int = 30) -> Dict:
+                         timeout: int = 30) -> dict:
     """
         Sends RTR command scope with admin access
         :param host_id: Host agent ID to run RTR command on.
         :param command_type: Active-Responder command type we are going to execute, for example: get or cp.
         :param full_command: Full command string for the command.
-        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.  # noqa: E501
+        :param queue_offline: Whether the command will run against an offline-queued session and be queued for execution
+                              when the host comes online.  # noqa: E501
         :param timeout: The timeout for the request.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
@@ -944,7 +976,7 @@ def run_single_admin_cmd(host_id: str, command_type: str, full_command: str, que
     return response
 
 
-def status_read_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
+def status_read_cmd(request_id: str, sequence_id: int | None) -> dict:
     """
         Get status of an executed command with read access on a single host.
 
@@ -962,7 +994,7 @@ def status_read_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def status_write_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
+def status_write_cmd(request_id: str, sequence_id: int | None) -> dict:
     """
         Get status of an executed command with write access on a single host.
 
@@ -980,7 +1012,7 @@ def status_write_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
+def status_admin_cmd(request_id: str, sequence_id: int | None) -> dict:
     """
         Get status of an executed command with admin access on a single host.
 
@@ -998,7 +1030,7 @@ def status_admin_cmd(request_id: str, sequence_id: Optional[int]) -> Dict:
     return response
 
 
-def list_host_files(host_id: str, session_id: str | None = None) -> Dict:
+def list_host_files(host_id: str, session_id: str | None = None) -> dict:
     """
         Get a list of files for the specified RTR session on a host.
         :param host_id: Host agent ID to run RTR command on.
@@ -1016,7 +1048,7 @@ def list_host_files(host_id: str, session_id: str | None = None) -> Dict:
     return response
 
 
-def upload_script(name: str, permission_type: str, content: str, entry_id: str) -> Dict:
+def upload_script(name: str, permission_type: str, content: str, entry_id: str) -> dict:
     """
         Uploads a script by either given content or file
         :param name: Script name to upload
@@ -1026,7 +1058,7 @@ def upload_script(name: str, permission_type: str, content: str, entry_id: str) 
         :return: Response JSON which contains errors (if exist) and how many resources were affected
     """
     endpoint_url = '/real-time-response/entities/scripts/v1'
-    body: Dict[str, Tuple[Any, Any]] = {
+    body: dict[str, tuple[Any, Any]] = {
         'name': (None, name),
         'permission_type': (None, permission_type)
     }
@@ -1053,7 +1085,7 @@ def upload_script(name: str, permission_type: str, content: str, entry_id: str) 
             temp_file.close()
 
 
-def get_script(script_id: list) -> Dict:
+def get_script(script_id: list) -> dict:
     """
         Retrieves a script given its ID
         :param script_id: ID of script to get
@@ -1067,7 +1099,7 @@ def get_script(script_id: list) -> Dict:
     return response
 
 
-def delete_script(script_id: str) -> Dict:
+def delete_script(script_id: str) -> dict:
     """
         Deletes a script given its ID
         :param script_id: ID of script to delete
@@ -1081,7 +1113,7 @@ def delete_script(script_id: str) -> Dict:
     return response
 
 
-def list_scripts() -> Dict:
+def list_scripts() -> dict:
     """
         Retrieves list of scripts
         :return: Response JSON which contains errors (if exist) and retrieved resources
@@ -1111,7 +1143,7 @@ def get_extracted_file(host_id: str, sha256: str, filename: str | None = None):
     return response
 
 
-def upload_file(entry_id: str, description: str) -> Tuple:
+def upload_file(entry_id: str, description: str) -> tuple:
     """
         Uploads a file given entry ID
         :param entry_id: The entry ID of the file to upload
@@ -1140,7 +1172,7 @@ def upload_file(entry_id: str, description: str) -> Tuple:
             temp_file.close()
 
 
-def delete_file(file_id: str) -> Dict:
+def delete_file(file_id: str) -> dict:
     """
         Delete a put-file based on the ID given
         :param file_id: ID of file to delete
@@ -1154,7 +1186,7 @@ def delete_file(file_id: str) -> Dict:
     return response
 
 
-def get_file(file_id: list) -> Dict:
+def get_file(file_id: list) -> dict:
     """
         Get put-files based on the ID's given
         :param file_id: ID of file to get
@@ -1168,7 +1200,7 @@ def get_file(file_id: list) -> Dict:
     return response
 
 
-def list_files() -> Dict:
+def list_files() -> dict:
     """
         Get a list of put-file ID's that are available to the user for the put command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
@@ -1245,16 +1277,16 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     if filter_arg:
         params['filter'] = filter_arg
     elif behavior_id:
-        params['filter'] = "behaviors.behavior_id:'{0}'".format(behavior_id)
+        params['filter'] = f"behaviors.behavior_id:'{behavior_id}'"
     elif last_behavior_time:
-        params['filter'] = "first_behavior:>'{0}'".format(last_behavior_time)
+        params['filter'] = f"first_behavior:>'{last_behavior_time}'"
 
     response = http_request('GET', endpoint_url, params)
     return response
 
 
 def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None,
-                         has_limit=True):
+                         has_limit=True, limit: int = INCIDENTS_PER_FETCH):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -1268,21 +1300,21 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
         'offset': offset,
     }
     if has_limit:
-        params['limit'] = INCIDENTS_PER_FETCH
+        params['limit'] = limit
 
     if filter_arg:
         params['filter'] = filter_arg
     elif last_created_timestamp:
-        params['filter'] = "created_timestamp:>'{0}'".format(last_created_timestamp)
+        params['filter'] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
-        params['filter'] = "date_updated:>'{0}'".format(last_updated_timestamp)
+        params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
 
     response = http_request('GET', endpoint_url, params)
-
+    demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
     return response
 
 
-def get_detections_entities(detections_ids: List):
+def get_detections_entities(detections_ids: list):
     """
         Sends detection entities request
         :param detections_ids: IDs of the requested detections.
@@ -1299,28 +1331,55 @@ def get_detections_entities(detections_ids: List):
     return detections_ids
 
 
-def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True):
+def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True,
+                      limit=INCIDENTS_PER_FETCH):
     get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
         'sort': 'start.asc',
         'offset': offset,
     }
     if has_limit:
-        params['limit'] = INCIDENTS_PER_FETCH
+        params['limit'] = limit
 
     if filter_arg:
         params['filter'] = filter_arg
     elif last_created_timestamp:
-        params['filter'] = "start:>'{0}'".format(last_created_timestamp)
+        params['filter'] = f"start:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
-        params['filter'] = "modified_timestamp:>'{0}'".format(last_updated_timestamp)
+        params['filter'] = f"modified_timestamp:>'{last_updated_timestamp}'"
 
     response = http_request('GET', get_incidents_endpoint, params)
 
     return response
 
 
-def get_incidents_entities(incidents_ids: List):
+def get_idp_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FETCH):
+    """
+        Send a request to retrieve IDP detections IDs.
+
+        :type filter_arg: ``str``
+        :param filter_arg: The filter to add to the query.
+        :type offset: ``int``
+        :param offset: The offset for the query.
+        :type limit: ``int``
+        :param limit: limit of idp detections to retrieve each request.
+
+        :return: The response.
+        :rtype ``dict``
+    """
+    params = {
+        'sort': 'created_timestamp.asc',
+        'offset': offset,
+        'filter': filter_arg
+    }
+    if limit:
+        params['limit'] = limit
+
+    response = http_request('GET', '/alerts/queries/alerts/v1', params)
+    return response
+
+
+def get_incidents_entities(incidents_ids: list):
     ids_json = {'ids': incidents_ids}
     response = http_request(
         'POST',
@@ -1328,6 +1387,23 @@ def get_incidents_entities(incidents_ids: List):
         data=json.dumps(ids_json)
     )
     return response
+
+
+def get_idp_detection_entities(incidents_ids: list):
+    """
+        Send a request to retrieve IDP detection entities.
+
+        :type incidents_ids: ``list``
+        :param incidents_ids: The list of ids to search their entities.
+
+        :return: The response.
+        :rtype ``dict``
+    """
+    return http_request(
+        'POST',
+        '/alerts/entities/alerts/v1',
+        data=json.dumps({'ids': incidents_ids})
+    )
 
 
 def upload_ioc(ioc_type, value, policy=None, expiration_days=None,
@@ -1434,14 +1510,14 @@ def delete_ioc(ioc_type, value):
 
 
 def search_custom_iocs(
-        types: Optional[Union[list, str]] = None,
-        values: Optional[Union[list, str]] = None,
-        sources: Optional[Union[list, str]] = None,
-        expiration: Optional[str] = None,
+        types: list | str | None = None,
+        values: list | str | None = None,
+        sources: list | str | None = None,
+        expiration: str | None = None,
         limit: str = '50',
-        sort: Optional[str] = None,
-        offset: Optional[str] = None,
-        after: Optional[str] = None,
+        sort: str | None = None,
+        offset: str | None = None,
+        after: str | None = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1484,12 +1560,12 @@ def get_custom_ioc(ioc_id: str) -> dict:
 
 def update_custom_ioc(
         ioc_id: str,
-        action: Optional[str] = None,
-        platforms: Optional[str] = None,
-        severity: Optional[str] = None,
-        source: Optional[str] = None,
-        description: Optional[str] = None,
-        expiration: Optional[str] = None,
+        action: str | None = None,
+        platforms: str | None = None,
+        severity: str | None = None,
+        source: str | None = None,
+        description: str | None = None,
+        expiration: str | None = None,
 ) -> dict:
     """
     Update an IOC
@@ -1582,8 +1658,8 @@ def search_device(filter_operator='AND'):
                 arg_filter = ''
                 for arg_elem in arg:
                     if arg_elem:
-                        first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
-                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
+                        first_arg = f'{arg_filter},{k}' if arg_filter else k
+                        arg_filter = f"{first_arg}:'{arg_elem}'"
                 if arg_filter:
                     url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
                                                                    arg_filter=arg_filter)
@@ -1650,6 +1726,23 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     return http_request('PATCH', '/detects/entities/detects/v2', data=data)
 
 
+def resolve_idp_detection(ids, status):
+    """
+        Send a request to update IDP detection status.
+        :type ids: ``list``
+        :param ids: The list of ids to update.
+        :type status: ``str``
+        :param status: The new status to set.
+        :return: The response.
+        :rtype ``dict``
+    """
+    data = {
+        "action_parameters": [{"name": "update_status", "value": status}],
+        "ids": ids
+    }
+    return http_request('PATCH', '/alerts/entities/alerts/v2', data=json.dumps(data))
+
+
 def contain_host(ids):
     """
         Contains host(s) with matching ids
@@ -1711,11 +1804,11 @@ def timestamp_length_equalization(timestamp1, timestamp2):
 
 
 def change_host_group(is_post: bool,
-                      host_group_id: Optional[str] = None,
-                      name: Optional[str] = None,
-                      group_type: Optional[str] = None,
-                      description: Optional[str] = None,
-                      assignment_rule: Optional[str] = None) -> Dict:
+                      host_group_id: str | None = None,
+                      name: str | None = None,
+                      group_type: str | None = None,
+                      description: str | None = None,
+                      assignment_rule: str | None = None) -> dict:
     method = 'POST' if is_post else 'PATCH'
     data = {'resources': [{
         'id': host_group_id,
@@ -1732,7 +1825,7 @@ def change_host_group(is_post: bool,
 
 def change_host_group_members(action_name: str,
                               host_group_id: str,
-                              host_ids: List[str]) -> Dict:
+                              host_ids: list[str]) -> dict:
     allowed_actions = {'add-hosts', 'remove-hosts'}
     if action_name not in allowed_actions:
         raise DemistoException(f'CrowdStrike Falcon error: action name should be in {allowed_actions}')
@@ -1746,10 +1839,10 @@ def change_host_group_members(action_name: str,
     return response
 
 
-def host_group_members(filter: Optional[str],
-                       host_group_id: Optional[str],
-                       limit: Optional[str],
-                       offset: Optional[str]):
+def host_group_members(filter: str | None,
+                       host_group_id: str | None,
+                       limit: str | None,
+                       offset: str | None):
     params = {'id': host_group_id,
               'filter': filter,
               'offset': offset,
@@ -1760,18 +1853,18 @@ def host_group_members(filter: Optional[str],
     return response
 
 
-def resolve_incident(ids: List[str], status: str):
+def resolve_incident(ids: list[str], status: str):
     if status not in STATUS_TEXT_TO_NUM:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
     return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
 
 
-def update_incident_comment(ids: List[str], comment: str):
+def update_incident_comment(ids: list[str], comment: str):
     return update_incident_request(ids, comment, 'add_comment')
 
 
-def update_incident_request(ids: List[str], value: str, action_name: str):
+def update_incident_request(ids: list[str], value: str, action_name: str):
     data = {
         "action_parameters": [
             {
@@ -1786,14 +1879,30 @@ def update_incident_request(ids: List[str], value: str, action_name: str):
                         json=data)
 
 
-def update_detection_request(ids: List[str], status: str) -> Dict:
+def update_detection_request(ids: list[str], status: str) -> dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None)
 
 
-def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
+def update_idp_detection_request(ids: list[str], status: str) -> dict:
+    """
+        Manage the status to send to update to for IDP detections.
+        :type ids: ``list``
+        :param ids: The list of ids to update.
+        :type status: ``str``
+        :param status: The new status to set.
+        :return: The response.
+        :rtype ``dict``
+    """
+    if status not in IDP_DETECTION_STATUS:
+        raise DemistoException(f'CrowdStrike Falcon Error: '
+                               f'Status given is {status} and it is not in {IDP_DETECTION_STATUS}')
+    return resolve_idp_detection(ids=ids, status=status)
+
+
+def list_host_groups(filter: str | None, limit: str | None, offset: str | None) -> dict:
     params = {'filter': filter,
               'offset': offset,
               'limit': limit}
@@ -1803,7 +1912,7 @@ def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Option
     return response
 
 
-def delete_host_groups(host_group_ids: List[str]) -> Dict:
+def delete_host_groups(host_group_ids: list[str]) -> dict:
     params = {'ids': host_group_ids}
     response = http_request(method='DELETE',
                             url_suffix='/devices/entities/host-groups/v1',
@@ -1811,7 +1920,7 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
     return response
 
 
-def upload_batch_custom_ioc(ioc_batch: List[dict], timeout: float | None = None) -> dict:
+def upload_batch_custom_ioc(ioc_batch: list[dict], timeout: float | None = None) -> dict:
     """
     Upload a list of IOC
     """
@@ -1890,7 +1999,7 @@ def get_exclusions(exclusion_type: str, filter_query: str | None, params: dict) 
                         params=assign_params(filter=filter_query, **params))
 
 
-def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
+def get_exclusion_entities(exclusion_type: str, exclusion_ids: list) -> dict:
     """
         Returns the exclusions based on a list of IDs.
 
@@ -1947,7 +2056,7 @@ def apply_quarantined_files_action(body: dict) -> dict:
 ''' MIRRORING COMMANDS '''
 
 
-def get_remote_data_command(args: Dict[str, Any]):
+def get_remote_data_command(args: dict[str, Any]):
     """
     get-remote-data command: Returns an updated remote incident or detection.
     Args:
@@ -1962,7 +2071,7 @@ def get_remote_data_command(args: Dict[str, Any]):
     remote_incident_id = remote_args.remote_incident_id
 
     mirrored_data = {}
-    entries: List = []
+    entries: list = []
     try:
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
@@ -1979,13 +2088,18 @@ def get_remote_data_command(args: Dict[str, Any]):
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
 
+        elif incident_type == IncidentType.IDP_DETECTION:
+            mirrored_data, updated_object = get_remote_idp_detection_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f'Update IDP detection {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_idp_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
+
         else:
             # this is here as prints can disrupt mirroring
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_incident_id}')
 
         if not updated_object:
             demisto.debug(f'No delta was found for detection {remote_incident_id}.')
-
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
 
     except Exception as e:
@@ -2004,6 +2118,9 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.INCIDENT
     if remote_incident_id[0:3] == IncidentType.DETECTION.value:
         return IncidentType.DETECTION
+    if IncidentType.IDP_DETECTION.value in remote_incident_id:
+        return IncidentType.IDP_DETECTION
+    return None
 
 
 def get_remote_incident_data(remote_incident_id: str):
@@ -2018,7 +2135,7 @@ def get_remote_incident_data(remote_incident_id: str):
     if 'status' in mirrored_data:
         mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
 
-    updated_object: Dict[str, Any] = {'incident_type': 'incident'}
+    updated_object: dict[str, Any] = {'incident_type': 'incident'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
     return mirrored_data, updated_object
 
@@ -2034,12 +2151,35 @@ def get_remote_detection_data(remote_incident_id: str):
 
     mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
 
-    updated_object: Dict[str, Any] = {'incident_type': 'detection'}
+    updated_object: dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
     return mirrored_data, updated_object
 
 
-def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
+def get_remote_idp_detection_data(remote_incident_id):
+    """
+        Gets the relevant IDP detection entity from the remote system (CrowdStrike Falcon).
+
+        :type remote_incident_id: ``str``
+        :param remote_incident_id: The incident id to return its information.
+
+        :return: The IDP detection entity.
+        :rtype ``dict``
+        :return: The object with the updated fields.
+        :rtype ``dict``
+    """
+    mirrored_data_list = get_idp_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
+    mirrored_data = mirrored_data_list[0]
+
+    if 'status' in mirrored_data:
+        mirrored_data['status'] = mirrored_data.get('status')
+
+    updated_object: dict[str, Any] = {'incident_type': IDP_DETECTION}
+    set_updated_object(updated_object, mirrored_data, ['status'])
+    return mirrored_data, updated_object
+
+
+def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
@@ -2047,7 +2187,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
             reopen_in_xsoar(entries, remote_incident_id, 'Incident')
 
 
-def set_xsoar_detection_entries(updated_object: Dict[str, Any], entries: List, remote_detection_id: str):
+def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str):
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
@@ -2055,7 +2195,28 @@ def set_xsoar_detection_entries(updated_object: Dict[str, Any], entries: List, r
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
 
 
-def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+def set_xsoar_idp_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str):
+    """
+        Send the updated object to the relevant status handler
+
+        :type updated_object: ``dict``
+        :param updated_object: The updated object.
+        :type entries: ``list``
+        :param entries: The list of entries to add the new entry into.
+        :type remote_idp_detection_id: ``str``
+        :param remote_idp_detection_id: the remote idp detection id
+
+        :return: The response.
+        :rtype ``dict``
+    """
+    if demisto.params().get('close_incident'):
+        if updated_object.get('status') == 'closed':
+            close_in_xsoar(entries, remote_idp_detection_id, IDP_DETECTION)
+        elif updated_object.get('status') in (set(IDP_DETECTION_STATUS) - {'closed'}):
+            reopen_in_xsoar(entries, remote_idp_detection_id, IDP_DETECTION)
+
+
+def close_in_xsoar(entries: list, remote_incident_id: str, incident_type_name: str):
     demisto.debug(f'{incident_type_name} is closed: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
@@ -2067,7 +2228,7 @@ def close_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: s
     })
 
 
-def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+def reopen_in_xsoar(entries: list, remote_incident_id: str, incident_type_name: str):
     demisto.debug(f'{incident_type_name} is reopened: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
@@ -2078,7 +2239,7 @@ def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: 
     })
 
 
-def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, Any], mirroring_fields: List[str]):
+def set_updated_object(updated_object: dict[str, Any], mirrored_data: dict[str, Any], mirroring_fields: list[str]):
     """
     Sets the updated object (in place) for the incident or detection we want to mirror in, from the mirrored data, according to
     the mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
@@ -2106,12 +2267,11 @@ def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, 
                         updated_object[field] = nested_field.get(field_name_parts[1])
                         # finding the field in the first time it is satisfying
                         break
-            elif isinstance(nested_mirrored_data, dict):
-                if nested_mirrored_data.get(field_name_parts[1]):
-                    updated_object[field] = nested_mirrored_data.get(field_name_parts[1])
+            elif isinstance(nested_mirrored_data, dict) and nested_mirrored_data.get(field_name_parts[1]):
+                updated_object[field] = nested_mirrored_data.get(field_name_parts[1])
 
 
-def get_modified_remote_data_command(args: Dict[str, Any]):
+def get_modified_remote_data_command(args: dict[str, Any]):
     """
     Gets the modified remote incidents and detections IDs.
     Args:
@@ -2128,7 +2288,7 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
-    modified_ids_to_mirror = list()
+    modified_ids_to_mirror = []
 
     raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
     for incident_id in raw_incidents:
@@ -2137,12 +2297,17 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     raw_detections = get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
     for detection_id in raw_detections:
         modified_ids_to_mirror.append(str(detection_id))
+    last_update_timestamp_idp_detections = last_update_utc.strftime(IDP_DATE_FORMAT)
+    raw_idp_detections = get_idp_detections_ids(filter_arg=f"updated_timestamp:>'{last_update_timestamp_idp_detections}'"
+                                                "+product:'idp'").get('resources', [])
+    for raw_idp_detection in raw_idp_detections:
+        modified_ids_to_mirror.append(str(raw_idp_detection))
 
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
-def update_remote_system_command(args: Dict[str, Any]) -> str:
+def update_remote_system_command(args: dict[str, Any]) -> str:
     """
     Mirrors out local changes to the remote system.
     Args:
@@ -2155,7 +2320,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
-    demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
+    demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta} for the following {remote_incident_id=}.')
     if delta:
         demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
 
@@ -2172,6 +2337,11 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
 
+            elif incident_type == IncidentType.IDP_DETECTION:
+                result = update_remote_idp_detection(delta, parsed_args.inc_status, remote_incident_id)
+                if result:
+                    demisto.debug(f'IDP Detection updated successfully. Result: {result}')
+
             else:
                 raise Exception(f'Executed update-remote-system command with undefined id: {remote_incident_id}')
 
@@ -2185,7 +2355,7 @@ def update_remote_system_command(args: Dict[str, Any]) -> str:
     return remote_incident_id
 
 
-def close_in_cs_falcon(delta: Dict[str, Any]) -> bool:
+def close_in_cs_falcon(delta: dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
@@ -2211,7 +2381,30 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
     return ''
 
 
-def update_remote_incident(delta: Dict[str, Any], inc_status: IncidentStatus, incident_id: str) -> str:
+def update_remote_idp_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
+    """
+        Sends the request the request to update the relevant IDP detection entity.
+
+        :type delta: ``dict``
+        :param delta: The modified fields.
+        :type inc_status: ``IncidentStatus``
+        :param inc_status: The IDP detection status.
+        :type detection_id: ``str``
+        :param detection_id: The IDP detection ID to update.
+    """
+    if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
+        demisto.debug(f'Closing IDP detection with remote ID {detection_id} in remote system.')
+        return str(update_idp_detection_request([detection_id], 'closed'))
+
+    # status field in CS Falcon is mapped to State field in XSOAR
+    elif 'status' in delta:
+        demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
+        return str(update_idp_detection_request([detection_id], delta.get('status')))
+
+    return ''
+
+
+def update_remote_incident(delta: dict[str, Any], inc_status: IncidentStatus, incident_id: str) -> str:
     result = ''
     result += update_remote_incident_tags(delta, incident_id)
     result += update_remote_incident_status(delta, inc_status, incident_id)
@@ -2279,17 +2472,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 ''' COMMANDS FUNCTIONS '''
 
 
-def get_fetch_times_and_offset(current_fetch_info: dict):
-    last_fetch_time = current_fetch_info.get('time')
-    offset = current_fetch_info.get('offset', 0)
-    if not last_fetch_time:
-        last_fetch_time, _ = parse_date_range(FETCH_TIME, date_format=DATE_FORMAT)
-    prev_fetch = last_fetch_time
-    last_fetch_timestamp = int(parse(last_fetch_time).timestamp() * 1000)
-    return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
-
-
-def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
+def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
     """This function migrated from old last run object to new last run object
 
     Args:
@@ -2298,148 +2481,159 @@ def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     Returns:
         list[dict]: New last run object.
     """
-    updated_last_run_detections: dict[str, str | None] = {}
-    if (detection_time := last_run.get('first_behavior_detection_time')) and \
-       (detection_time_date := dateparser.parse(detection_time)):
-        updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
-    updated_last_run_detections['offset'] = last_run.get('detection_offset')
+    if isinstance(last_run, list):
+        for last_run_type in last_run:
+            last_run_type.pop("offset", None)
+        return last_run
+    else:
+        updated_last_run_detections: dict[str, str | None] = {}
+        if (detection_time := last_run.get('first_behavior_detection_time')) and \
+                (detection_time_date := dateparser.parse(detection_time)):
+            updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
 
-    updated_last_run_incidents: dict[str, str | None] = {}
-    if (incident_time := last_run.get('first_behavior_incident_time')) and \
-       (incident_time_date := dateparser.parse(incident_time)):
-        updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
-    updated_last_run_incidents['last_fetched_incident'] = last_run.get('last_fetched_incident')
-    updated_last_run_incidents['offset'] = last_run.get('incident_offset')
+        updated_last_run_incidents: dict[str, str | None] = {}
+        if (incident_time := last_run.get('first_behavior_incident_time')) and \
+                (incident_time_date := dateparser.parse(incident_time)):
+            updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
 
-    return [updated_last_run_detections, updated_last_run_incidents]
+        return [updated_last_run_detections, updated_last_run_incidents, {}]
 
 
 def fetch_incidents():
-    incidents = []  # type:List
-    detections = []  # type:List
-
+    incidents: list = []
+    detections: list = []
+    idp_detections: list = []
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
-        last_run = [{}, {}]
-    if not isinstance(last_run, list):
-        last_run = migrate_last_run(last_run)
+        last_run = [{}, {}, {}]
+    last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
-    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
+    current_fetch_info_idp_detections: dict = {} if len(last_run) < 3 else last_run[2]
+    fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', "")
     look_back = int(demisto.params().get('look_back', 0))
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")
-    if 'Detections' in fetch_incidents_or_detections:
+
+    if 'Detections' in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=look_back)
-
+                                                                    look_back=look_back,
+                                                                    date_format=DATE_FORMAT)
+        fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_detections)
-
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
-            fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
-            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, offset=offset), 'resources')
+            fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
+            detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit), 'resources')
         else:
-            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch_time, offset=offset),
+            detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit),
                                          'resources')
 
-        if detections_ids:
-            raw_res = get_detections_entities(detections_ids)
+        raw_res = get_detections_entities(detections_ids)
 
-            if "resources" in raw_res:
-                for detection in demisto.get(raw_res, "resources"):
-                    detection['incident_type'] = incident_type
-                    incident = detection_to_incident(detection)
+        if raw_res is not None and "resources" in raw_res:
+            for detection in demisto.get(raw_res, "resources"):
+                detection['incident_type'] = incident_type
+                demisto.debug(
+                    f"CrowdStrikeFalconMsg: Detection {detection['detection_id']} "
+                    f"was fetched which was created in {detection['created_timestamp']}")
+                incident = detection_to_incident(detection)
 
-                    detections.append(incident)
+                detections.append(incident)
 
-            if len(detections) == INCIDENTS_PER_FETCH:
-                current_fetch_info_detections['offset'] = offset + INCIDENTS_PER_FETCH
-            else:
-                current_fetch_info_detections['offset'] = 0
-            detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
-                                                                  last_run=current_fetch_info_detections,
-                                                                  fetch_limit=fetch_limit, id_field='name')
+        detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
+                                                              last_run=current_fetch_info_detections,
+                                                              fetch_limit=fetch_limit, id_field='name')
 
-            for detection in detections:
-                occurred = dateparser.parse(detection["occurred"])
-                if occurred:
-                    detection["occurred"] = occurred.strftime(DATE_FORMAT)
-            last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
-                                              fetch_limit=fetch_limit,
-                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
-                                              look_back=look_back,
-                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
-            current_fetch_info_detections.update(last_run)
+        for detection in detections:
+            occurred = dateparser.parse(detection["occurred"])
+            if occurred:
+                detection["occurred"] = occurred.strftime(DATE_FORMAT)
+                demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} occurred at {detection['occurred']}")
+        updated_last_run = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
+                                                  fetch_limit=INCIDENTS_PER_FETCH,
+                                                  start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                  look_back=look_back,
+                                                  created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+        demisto.debug(f"updated last run is {updated_last_run}")
+        current_fetch_info_detections = updated_last_run
 
-    if 'Incidents' in fetch_incidents_or_detections:
+    if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=look_back)
+                                                                    look_back=look_back,
+                                                                    date_format=DATE_FORMAT)
+        fetch_limit = current_fetch_info_incidents.get('limit') or INCIDENTS_PER_FETCH
 
         incident_type = 'incident'
-
-        last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(current_fetch_info_incidents)
-        last_incident_fetched = current_fetch_info_incidents.get('last_fetched_incident')
-        new_last_incident_fetched = ''
 
         fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
-            fetch_query = "start:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
-            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, offset=offset), 'resources')
+            fetch_query = f"start:>'{start_fetch_time}'+{fetch_query}"
+            incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, limit=fetch_limit), 'resources')
 
         else:
-            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=last_fetch_time, offset=offset),
+            incidents_ids = demisto.get(get_incidents_ids(last_created_timestamp=start_fetch_time, limit=fetch_limit),
                                         'resources')
-
         if incidents_ids:
             raw_res = get_incidents_entities(incidents_ids)
-            if "resources" in raw_res:
+            if raw_res is not None and "resources" in raw_res:
                 for incident in demisto.get(raw_res, "resources"):
                     incident['incident_type'] = incident_type
                     incident_to_context = incident_to_incident_context(incident)
-                    incident_date = incident_to_context['occurred']
+                    incidents.append(incident_to_context)
 
-                    incident_date_timestamp = int(parse(incident_date).timestamp() * 1000)
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
+                                                             fetch_limit=fetch_limit, id_field='name')
+        for incident in incidents:
+            occurred = dateparser.parse(incident["occurred"])
+            if occurred:
+                incident["occurred"] = occurred.strftime(DATE_FORMAT)
+                demisto.debug(f"CrowdStrikeFalconMsg: Incident {incident['name']} occurred at {incident['occurred']}")
+        updated_last_run = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
+                                                  fetch_limit=INCIDENTS_PER_FETCH,
+                                                  start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                  look_back=look_back,
+                                                  created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+        current_fetch_info_incidents = updated_last_run
 
-                    # Update last run and add incident if the incident is newer than last fetch
-                    if incident_date_timestamp > last_fetch_timestamp:
-                        last_fetch_timestamp = incident_date_timestamp
-                        new_last_incident_fetched = incident.get('incident_id')
+    if "IDP Detection" in fetch_incidents_or_detections:
+        start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_idp_detections,
+                                                                    first_fetch=FETCH_TIME,
+                                                                    look_back=look_back,
+                                                                    date_format=IDP_DATE_FORMAT)
+        fetch_limit = current_fetch_info_idp_detections.get('limit') or INCIDENTS_PER_FETCH
+        fetch_query = demisto.params().get('idp_detections_fetch_query', "")
+        filter = f"product:'idp'+created_timestamp:>'{start_fetch_time}'"
 
-                    if last_incident_fetched != incident.get('incident_id'):
-                        incidents.append(incident_to_context)
+        if fetch_query:
+            filter += f"+{fetch_query}"
+        idp_detections_ids = demisto.get(get_idp_detections_ids(filter_arg=filter, limit=fetch_limit), 'resources')
+        if idp_detections_ids:
+            raw_res = get_idp_detection_entities(idp_detections_ids)
+            if "resources" in raw_res:
+                for idp_detection in demisto.get(raw_res, "resources"):
+                    idp_detection['incident_type'] = IDP_DETECTION
+                    idp_detection_to_context = idp_detection_to_incident_context(idp_detection)
+                    idp_detections.append(idp_detection_to_context)
 
-            if len(incidents) == INCIDENTS_PER_FETCH:
-                current_fetch_info_incidents['offset'] = offset + INCIDENTS_PER_FETCH
-                current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
-            else:
-                current_fetch_info_incidents['offset'] = 0
-                current_fetch_info_incidents['last_fetched_incident'] = new_last_incident_fetched
+            idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
+                                                                      last_run=current_fetch_info_idp_detections,
+                                                                      fetch_limit=fetch_limit, id_field='name')
+            updated_last_run = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
+                                                      fetch_limit=fetch_limit,
+                                                      start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                      look_back=look_back,
+                                                      created_time_field='occurred', id_field='name', date_format=IDP_DATE_FORMAT)
+            current_fetch_info_idp_detections = updated_last_run
+            demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
 
-            incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=current_fetch_info_incidents,
-                                                                 fetch_limit=fetch_limit, id_field='name')
-            for incident in incidents:
-                occurred = dateparser.parse(incident["occurred"])
-                if occurred:
-                    incident["occurred"] = occurred.strftime(DATE_FORMAT)
-
-            last_run = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
-                                              fetch_limit=fetch_limit,
-                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
-                                              look_back=look_back,
-                                              created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
-            current_fetch_info_incidents.update(last_run)
-
-    demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch incidents. Fetched {len(incidents)}")
-
-    demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents])
-    return incidents + detections
+    demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections])
+    return incidents + detections + idp_detections
 
 
 def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
@@ -2537,15 +2731,15 @@ def delete_ioc_command(ioc_type, value):
 
 
 def search_custom_iocs_command(
-        types: Optional[Union[list, str]] = None,
-        values: Optional[Union[list, str]] = None,
-        sources: Optional[Union[list, str]] = None,
-        expiration: Optional[str] = None,
+        types: list | str | None = None,
+        values: list | str | None = None,
+        sources: list | str | None = None,
+        expiration: str | None = None,
         limit: str = '50',
-        sort: Optional[str] = None,
-        offset: Optional[str] = None,
-        next_page_token: Optional[str] = None,
-) -> List[dict]:
+        sort: str | None = None,
+        offset: str | None = None,
+        next_page_token: str | None = None,
+) -> list[dict]:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
     :param values: Comma-separated list of indicator values
@@ -2571,10 +2765,7 @@ def search_custom_iocs_command(
     )
     iocs = raw_res.get('resources')
     meta = raw_res.get('meta')
-    if meta:
-        pagination_token = meta['pagination'].get('after')
-    else:
-        pagination_token = None
+    pagination_token = meta['pagination'].get('after') if meta else None
     if not iocs:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     handle_response_errors(raw_res)
@@ -2594,9 +2785,9 @@ def search_custom_iocs_command(
 
 
 def get_custom_ioc_command(
-        ioc_type: Optional[str] = None,
-        value: Optional[str] = None,
-        ioc_id: Optional[str] = None,
+        ioc_type: str | None = None,
+        value: str | None = None,
+        ioc_id: str | None = None,
 ) -> dict:
     """
     :param ioc_type: IOC type
@@ -2607,13 +2798,7 @@ def get_custom_ioc_command(
     if not ioc_id and not (ioc_type and value):
         raise ValueError('Either ioc_id or ioc_type and value must be provided.')
 
-    if ioc_id:
-        raw_res = get_custom_ioc(ioc_id)
-    else:
-        raw_res = search_custom_iocs(
-            types=argToList(ioc_type),
-            values=argToList(value),
-        )
+    raw_res = get_custom_ioc(ioc_id) if ioc_id else search_custom_iocs(types=argToList(ioc_type), values=argToList(value))
 
     iocs = raw_res.get('resources')
     handle_response_errors(raw_res)
@@ -2632,14 +2817,14 @@ def upload_custom_ioc_command(
         value: str,
         action: str,
         platforms: str,
-        severity: Optional[str] = None,
-        source: Optional[str] = None,
-        description: Optional[str] = None,
-        expiration: Optional[str] = None,
-        applied_globally: Optional[bool] = None,
-        host_groups: Optional[List[str]] = None,
-        tags: Optional[List[str]] = None,
-) -> List[dict]:
+        severity: str | None = None,
+        source: str | None = None,
+        description: str | None = None,
+        expiration: str | None = None,
+        applied_globally: bool | None = None,
+        host_groups: list[str] | None = None,
+        tags: list[str] | None = None,
+) -> list[dict]:
     """
     :param ioc_type: The type of the indicator.
     :param value: The string representation of the indicator.
@@ -2681,12 +2866,12 @@ def upload_custom_ioc_command(
 
 def update_custom_ioc_command(
         ioc_id: str,
-        action: Optional[str] = None,
-        platforms: Optional[str] = None,
-        severity: Optional[str] = None,
-        source: Optional[str] = None,
-        description: Optional[str] = None,
-        expiration: Optional[str] = None,
+        action: str | None = None,
+        platforms: str | None = None,
+        severity: str | None = None,
+        source: str | None = None,
+        description: str | None = None,
+        expiration: str | None = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2835,12 +3020,12 @@ def search_device_by_ip(raw_res, ip_address):
     return raw_res
 
 
-def enrich_groups(all_group_ids) -> Dict[str, Any]:
+def enrich_groups(all_group_ids) -> dict[str, Any]:
     """
         Receives a list of group_ids
         Returns a dict {group_id: group_name}
     """
-    result = dict()
+    result = {}
     params = {'ids': all_group_ids}
     response_json = http_request('GET', '/devices/entities/host-groups/v1', params, status_code=404)
     for resource in response_json['resources']:
@@ -2894,7 +3079,7 @@ def generate_endpoint_by_contex_standard(devices):
 
 def get_endpoint_command():
     args = demisto.args()
-    if 'id' in args.keys():
+    if 'id' in args:
         args['ids'] = args.get('id', '')
 
     if not args.get('ip') and not args.get('id') and not args.get('hostname'):
@@ -2941,7 +3126,7 @@ def get_behavior_command():
         for resource in demisto.get(raw_res, "resources"):
             for behavior in demisto.get(resource, 'behaviors'):
                 entries.append(behavior_to_entry_context(behavior))
-    hr = tableToMarkdown('Behavior ID: {}'.format(behavior_id), entries, headerTransform=pascalToSpace)
+    hr = tableToMarkdown(f'Behavior ID: {behavior_id}', entries, headerTransform=pascalToSpace)
     # no dt since behavior vary by more than their ID
     ec = {'CrowdStrike.Behavior': entries}
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)
@@ -3011,10 +3196,10 @@ def resolve_detection_command():
         raise DemistoException("Please provide at least one argument to resolve the detection with.")
     raw_res = resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment)
     args.pop('ids')
-    hr = "Detection {0} updated\n".format(str(ids)[1:-1])
+    hr = f"Detection {str(ids)[1:-1]} updated\n"
     hr += 'With the following values:\n'
     for k, arg in args.items():
-        hr += '\t{name}:{val}\n'.format(name=k, val=arg)
+        hr += f'\t{k}:{arg}\n'
     return create_entry_object(contents=raw_res, hr=hr)
 
 
@@ -3025,7 +3210,7 @@ def contain_host_command():
     """
     ids = argToList(demisto.args().get('ids'))
     raw_res = contain_host(ids)
-    hr = "Host {} contained".format(str(ids)[1:-1])
+    hr = f"Host {str(ids)[1:-1]} contained"
     return create_entry_object(contents=raw_res, hr=hr)
 
 
@@ -3036,7 +3221,7 @@ def lift_host_containment_command():
     """
     ids = argToList(demisto.args().get('ids'))
     raw_res = lift_host_containment(ids)
-    hr = "Containment has been lift off host {}".format(str(ids)[1:-1])
+    hr = f"Containment has been lift off host {str(ids)[1:-1]}"
     return create_entry_object(contents=raw_res, hr=hr)
 
 
@@ -3572,6 +3757,7 @@ def get_extracted_file_command(args):
         return fileResult(filename, response.content)
 
     return_error('An extracted file is missing in the response')
+    return None
 
 
 def list_host_files_command():
@@ -3615,10 +3801,7 @@ def list_host_files_command():
             'Size': resource.get('size'),
         })
 
-    if files_output:
-        human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output)
-    else:
-        human_readable = 'No result found'
+    human_readable = tableToMarkdown('CrowdStrike Falcon files', files_output) if files_output else 'No result found'
 
     entry_context = {
         'CrowdStrike.Command(val.TaskID === obj.TaskID)': command_output,
@@ -3660,7 +3843,7 @@ def build_error_message(raw_res):
 
 
 def validate_response(raw_res):
-    return 'resources' in raw_res.keys()
+    return 'resources' in raw_res
 
 
 def get_indicator_device_id():
@@ -3724,12 +3907,12 @@ def list_detection_summaries_command():
     if args_ids:
         detections_ids = argToList(args_ids)
     elif fetch_query:
-        fetch_query = "{query}".format(query=fetch_query)
+        fetch_query = f"{fetch_query}"
         detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
     else:
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
-    detections = [resource for resource in detections_response_data.get('resources')]
+    detections = list(detections_response_data.get('resources'))
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
@@ -3762,7 +3945,7 @@ def list_incident_summaries_command():
         ids = argToList(args_ids)
     else:
         if fetch_query:
-            fetch_query = "{query}".format(query=fetch_query)
+            fetch_query = f"{fetch_query}"
             incidents_ids = get_incidents_ids(filter_arg=fetch_query)
         else:
             incidents_ids = get_incidents_ids()
@@ -3771,7 +3954,7 @@ def list_incident_summaries_command():
     if not ids:
         return CommandResults(readable_output='No incidents were found.')
     incidents_response_data = get_incidents_entities(ids)
-    incidents = [resource for resource in incidents_response_data.get('resources')]
+    incidents = list(incidents_response_data.get('resources'))
     incidents_human_readable = incidents_to_human_readable(incidents)
     return CommandResults(
         readable_output=incidents_human_readable,
@@ -3799,9 +3982,9 @@ def create_host_group_command(name: str,
 
 
 def update_host_group_command(host_group_id: str,
-                              name: Optional[str] = None,
-                              description: Optional[str] = None,
-                              assignment_rule: Optional[str] = None) -> CommandResults:
+                              name: str | None = None,
+                              description: str | None = None,
+                              assignment_rule: str | None = None) -> CommandResults:
     response = change_host_group(is_post=False,
                                  host_group_id=host_group_id,
                                  name=name,
@@ -3815,10 +3998,10 @@ def update_host_group_command(host_group_id: str,
                           raw_response=response)
 
 
-def list_host_group_members_command(host_group_id: Optional[str] = None,
-                                    filter: Optional[str] = None,
-                                    offset: Optional[str] = None,
-                                    limit: Optional[str] = None) -> CommandResults:
+def list_host_group_members_command(host_group_id: str | None = None,
+                                    filter: str | None = None,
+                                    offset: str | None = None,
+                                    limit: str | None = None) -> CommandResults:
     response = host_group_members(filter, host_group_id, limit, offset)
     devices = response.get('resources')
     if not devices:
@@ -3835,7 +4018,7 @@ def list_host_group_members_command(host_group_id: Optional[str] = None,
     )
 
 
-def add_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+def add_host_group_members_command(host_group_id: str, host_ids: list[str]) -> CommandResults:
     response = change_host_group_members(action_name='add-hosts',
                                          host_group_id=host_group_id,
                                          host_ids=host_ids)
@@ -3847,7 +4030,7 @@ def add_host_group_members_command(host_group_id: str, host_ids: List[str]) -> C
                           raw_response=response)
 
 
-def remove_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
+def remove_host_group_members_command(host_group_id: str, host_ids: list[str]) -> CommandResults:
     response = change_host_group_members(action_name='remove-hosts',
                                          host_group_id=host_group_id,
                                          host_ids=host_ids)
@@ -3859,19 +4042,19 @@ def remove_host_group_members_command(host_group_id: str, host_ids: List[str]) -
                           raw_response=response)
 
 
-def resolve_incident_command(ids: List[str], status: str):
+def resolve_incident_command(ids: list[str], status: str):
     resolve_incident(ids, status)
     readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
     return CommandResults(readable_output=readable)
 
 
-def update_incident_comment_command(ids: List[str], comment: str):
+def update_incident_comment_command(ids: list[str], comment: str):
     update_incident_comment(ids, comment)
     readable = '\n'.join([f'{incident_id} updated successfully with comment \"{comment}\"' for incident_id in ids])
     return CommandResults(readable_output=readable)
 
 
-def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
+def list_host_groups_command(filter: str | None = None, offset: str | None = None, limit: str | None = None) \
         -> CommandResults:
     response = list_host_groups(filter, limit, offset)
     host_groups = response.get('resources')
@@ -3882,7 +4065,7 @@ def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str]
                           raw_response=response)
 
 
-def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
+def delete_host_groups_command(host_group_ids: list[str]) -> CommandResults:
     response = delete_host_groups(host_group_ids)
     deleted_ids = response.get('resources')
     readable = '\n'.join([f'Host groups {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
@@ -3893,7 +4076,7 @@ def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
 
 def upload_batch_custom_ioc_command(
         multiple_indicators_json: str | None = None, timeout: str = '180',
-) -> List[dict]:
+) -> list[dict]:
     """
     :param multiple_indicators_json: A JSON object with list of CS Falcon indicators to upload.
 
@@ -4042,7 +4225,7 @@ def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command,
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
                                  write_to_context=True, offline=False) -> \
-        List[Union[CommandResults, dict]]:  # type:ignore
+        list[CommandResults | dict]:  # type:ignore
     """
     General function to run RTR commands depending on the given command.
     """
@@ -4178,6 +4361,7 @@ def rtr_polling_retrieve_file_command(args: dict):
             command_results = CommandResults(scheduled_command=scheduled_command,
                                              readable_output="Waiting for the polling execution")
             return command_results
+    return None
 
 
 def rtr_get_extracted_file(args_to_get_files: dict, file_name: str):
@@ -4353,10 +4537,11 @@ def get_cve_command(args: dict) -> list[CommandResults]:
         : args: filter which include params or filter param.
         : return: a list of cve indicators according to the user.
     """
-    if not args.get('cve_id'):
-        raise DemistoException('Please add a filter argument "cve_id".')
+    cve = args.get("cve") or args.get('cve_id')
+    if not cve:
+        raise DemistoException('Please add a filter argument "cve".')
     command_results_list = []
-    http_response = cve_request(args.get('cve_id'))
+    http_response = cve_request(cve)
     raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
     for cve in raw_cve:
         relationships_list = create_relationships(cve)
@@ -5202,10 +5387,133 @@ def cs_falcon_ods_delete_scheduled_scan_command(args: dict) -> CommandResults:
     return command_results
 
 
+def list_identity_entities_command(args: dict) -> CommandResults:
+    """List identity entities
+    Args:
+        args: The demisto.args() dict object.
+    Returns:
+        The command result object.
+    """
+    client = create_gql_client()
+    args_keys_ls = ["sort_key", "sort_order", "max_risk_score_severity", "min_risk_score_severity"]
+    ls_args_keys_ls = ["type", "entity_id", "primary_display_name", "secondary_display_name", "email"]
+    variables = {}
+    for key in args_keys_ls:
+        if key in args:
+            variables[key] = args.get(key)
+    for key in ls_args_keys_ls:
+        if key in args:
+            variables[key] = args.get(key, "").split(",")
+    if "enabled" in args:
+        variables["enabled"] = argToBoolean(args.get("enabled"))
+    idp_query = gql("""
+    query ($sort_key: EntitySortKey, $type: [EntityType!], $sort_order: SortOrder, $entity_id: [UUID!],
+           $primary_display_name: [String!], $secondary_display_name: [String!], $max_risk_score_severity: ScoreSeverity,
+           $min_risk_score_severity: ScoreSeverity, $enabled: Boolean, $email: [String!], $first: Int, $after: Cursor) {
+        entities(types: $type, sortKey: $sort_key, sortOrder: $sort_order, entityIds: $entity_id, enabled: $enabled,
+                 primaryDisplayNames: $primary_display_name, secondaryDisplayNames: $secondary_display_name,
+                 maxRiskScoreSeverity: $max_risk_score_severity, minRiskScoreSeverity: $min_risk_score_severity,
+                 emailAddresses: $email, first: $first, after: $after) {
+            pageInfo{
+                hasNextPage
+                endCursor
+            }
+            nodes{
+                primaryDisplayName
+                secondaryDisplayName
+                isHuman:hasRole(type: HumanUserAccountRole)
+                isProgrammatic:hasRole(type: ProgrammaticUserAccountRole)
+                ...
+                on
+                UserEntity{
+                    emailAddresses
+                }
+                riskScore
+                riskScoreSeverity
+                riskFactors{
+                    type
+                    severity
+                }
+            }
+        }
+    }
+""")
+    identity_entities_ls = []
+    next_token = args.get("next_token", "")
+    limit = arg_to_number(args.get("limit", "50")) or 50
+    page = arg_to_number(args.get("page", "0"))
+    page_size = arg_to_number(args.get("page_size", "50"))
+    res_ls = []
+    has_next_page = True
+    if page:
+        variables["first"] = page_size
+        while has_next_page and page:
+            if next_token:
+                variables["after"] = next_token
+            res = client.execute(idp_query, variable_values=variables)
+            res_ls.append(res)
+            page -= 1
+            pageInfo = res.get("entities", {}).get("pageInfo", {})
+            has_next_page = pageInfo.get("hasNextPage", False)
+            if page == 0:
+                identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
+            if has_next_page:
+                next_token = pageInfo.get("endCursor", "")
+    else:
+        while has_next_page and limit > 0:
+            variables["first"] = min(1000, limit)
+            if next_token:
+                variables["after"] = next_token
+            res = client.execute(idp_query, variable_values=variables)
+            res_ls.append(res)
+            pageInfo = res.get("entities", {}).get("pageInfo", {})
+            has_next_page = pageInfo.get("hasNextPage", False)
+            identity_entities_ls.extend(res.get("entities", {}).get("nodes", []))
+            if has_next_page:
+                next_token = pageInfo.get("endCursor", "")
+            limit -= 1000
+    headers = ["primaryDisplayName", "secondaryDisplayName", "isHuman", "isProgrammatic", "isAdmin", "emailAddresses",
+               "riskScore", "riskScoreSeverity", "riskFactors"]
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IDPEntity',
+        outputs=createContext(response_to_context(identity_entities_ls), removeNull=True),
+        readable_output=tableToMarkdown("Identity entities", identity_entities_ls, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace),
+        raw_response=res_ls,
+    )
+
+
+def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
+    """
+        Creates a gql client to handle the gql requests.
+    Args:
+        url_suffix: The url suffix for the request.
+    Returns:
+        The created client.
+    """
+    url_suffix = url_suffix['url'][1:] if url_suffix.startswith('/') else url_suffix
+    kwargs = {
+        'url': f"{SERVER}/{url_suffix}",
+        'verify': USE_SSL,
+        'retries': 3,
+        'headers': {'Authorization': f'Bearer {get_token()}',
+                    "Accept": "application/json",
+                    "Content-Type": "application/json"}
+    }
+    transport = RequestsHTTPTransport(**kwargs)
+    handle_proxy()
+    client = Client(
+        transport=transport,
+        fetch_schema_from_transport=True,
+    )
+    return client
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-LOG('Command being called is {}'.format(demisto.command()))
+LOG(f'Command being called is {demisto.command()}')
 
 
 def main():
@@ -5408,6 +5716,8 @@ def main():
             return_results(cs_falcon_ods_create_scheduled_scan_command(args))
         elif command == 'cs-falcon-ods-delete-scheduled-scan':
             return_results(cs_falcon_ods_delete_scheduled_scan_command(args))
+        elif command == 'cs-falcon-list-identity-entities':
+            return_results(list_identity_entities_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
