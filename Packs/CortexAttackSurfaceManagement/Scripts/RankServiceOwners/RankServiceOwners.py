@@ -490,23 +490,8 @@ class OwnerFeaturizationPipeline():
     def __init__(self, sources: list | None = None):
         """
         Initialize a featurization pipeline.
-
-        As of May 2023, we use `sources` to parse out which sources are included in the
-        RC-provided owner data. The "parse the sources for a parallel list of known
-        sources" approach is quite fragile (it requires us to release a new model every
-        time RC adds a new source if the model wants to use that new source as a new source);
-        we should work with RC to change the data format so that this approach is less
-        fragile.
         """
         if sources is None:
-            # Hardcoding is true as of May 2023.
-            # To get the fields available as Sources, within the `content` repo, search the path
-            # `Packs/CortexAttackSurfaceManagement`
-            # for `Name,Email,Source,Timestamp`.
-
-            # FIXME (plt 2023.06): work with RC to retain Source System directly from the `owners` metadata
-            # (rather than trying to maintain truth for who the owners can be separately here and in the
-            # playbooks, and then trying to parse it out of `owners` metadata)
             self.SOURCES = ["Azure", "GCP", "AWS", "Tenable", "Rapid7", "Qualys", "SNOW-CMDB", "Splunk", "PrismaCloud"]
         else:
             self.SOURCES = sources.copy()
@@ -544,8 +529,6 @@ class OwnerFeaturizationPipeline():
         """
         Returns the number of distinct sources on `owner`.
         """
-        # FIXME: current implementation is vulnerable to false string matches
-        # solution is for RC to provide a field specifically for "Remote System Sources" that we can count
         distinct_sources = set()
         for src in self.SOURCES:
             if src.lower() in owner.get("Source", "").lower():
