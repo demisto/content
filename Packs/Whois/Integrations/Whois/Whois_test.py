@@ -7,7 +7,6 @@ import subprocess
 import time
 import tempfile
 import sys
-from typing import List, Dict, Type, Tuple
 
 from CommonServerPython import DBotScoreReliability, EntryType, ExecutionMetrics, ErrorTypes
 from Whois import (
@@ -211,9 +210,9 @@ def test_ip_command(mocker: MockerFixture):
     assert result[0].outputs.get('query') == '4.4.4.4'  # type: ignore
     assert result[0].indicator.to_context() == {  # type: ignore
         'IP(val.Address && val.Address == obj.Address)': {
-            'Organization': {'Name': u'LVLT-STATIC-4-4-16'},
-            'FeedRelatedIndicators': [{'type': 'CIDR', 'description': None, 'value': u'4.4.0.0/16'}],
-            'ASN': u'3356',
+            'Organization': {'Name': 'LVLT-STATIC-4-4-16'},
+            'FeedRelatedIndicators': [{'type': 'CIDR', 'description': None, 'value': '4.4.0.0/16'}],
+            'ASN': '3356',
             'Address': '4.4.4.4'},
         'DBotScore('
         'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)':
@@ -275,14 +274,14 @@ def test_ph_tld():
 
 
 def test_parse_raw_whois():
-    with open('test_data/EU domains.text', 'r') as f:
+    with open('test_data/EU domains.text') as f:
         raw_data = f.read()
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['registrar'] == ['IONOS SE']
 
 
 def test_parse_raw_whois_empty_nameserver():
-    with open('test_data/EU domains_empty_nameservers.text', 'r') as f:
+    with open('test_data/EU domains_empty_nameservers.text') as f:
         raw_data = f.read()
     result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
     assert result['nameservers'] == ['ns1060.ui-dns.biz']
@@ -462,7 +461,7 @@ def test_get_param_or_arg(param_key, param_value, arg_key, arg_value, expected_r
     ({"query": "google.com"}, False, 1)
 ])
 def test_execution_metrics_appended(
-    args: Dict[str, str],
+    args: dict[str, str],
     execution_metrics_supported: bool,
     expected_entries: int,
     mocker: MockerFixture,
@@ -501,7 +500,7 @@ def test_execution_metrics_appended(
     ({"query": "google.com,amazon.com,1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
 ])
 def test_error_entry_type(
-    args: Dict[str, str],
+    args: dict[str, str],
     with_error: bool,
     entry_type: EntryType,
     mocker: MockerFixture,
@@ -544,9 +543,9 @@ def test_error_entry_type(
 )
 def test_exception_type_to_metrics(
     em: ExecutionMetrics,
-    mapping: Dict[type, str],
-    exception_caught: Type,
-    expected: Tuple[str, int]
+    mapping: dict[type, str],
+    exception_caught: type,
+    expected: tuple[str, int]
 ):
     """
     Test whether the caught `ipwhois.exception` type results in the expected API execution metric being incremented.
@@ -648,6 +647,5 @@ def test_get_root_server_invalid_domain(domain: str, capfd: pytest.CaptureFixtur
         - `WhoisInvalidDomain` expected
 
     """
-    with capfd.disabled():
-        with pytest.raises(WhoisInvalidDomain):
-            get_root_server(domain)
+    with capfd.disabled(), pytest.raises(WhoisInvalidDomain):
+        get_root_server(domain)
