@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython impor
+
 register_module_line('GetIndicatorCustomFieldsByQuery', 'start', __line__())
 
 
