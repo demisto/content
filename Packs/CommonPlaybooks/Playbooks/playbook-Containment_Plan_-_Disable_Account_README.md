@@ -1,11 +1,7 @@
----
-
 ## Containment Plan - Disable Account
 
 This playbook is a sub-playbook within the containment plan playbook.
 The playbook disables users by utilizing the sub-playbook "Block Account - Generic v2"
-
----
 
 ## Dependencies
 

@@ -1,11 +1,7 @@
----
-
 ## Containment Plan - Quarantine File
 
 This playbook is a sub-playbook within the containment plan playbook.
 The playbook quarantines files using core commands.
-
----
 
 ## Dependencies
 
@@ -26,9 +22,9 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* core-quarantine-files
-* setParentIncidentContext
 * core-get-quarantine-status
+* setParentIncidentContext
+* core-quarantine-files
 
 ## Playbook Inputs
 

@@ -2,14 +2,10 @@ id: Containment Plan - Isolate Device
 version: -1
 name: Containment Plan - Isolate Device
 description: |-
-  ---
-
   ## Containment Plan - Isolate Device
 
   This playbook is a sub-playbook within the containment plan playbook.
   The playbook isolates devices using core commands.
-
-  ---
 starttaskid: "0"
 tasks:
   "0":

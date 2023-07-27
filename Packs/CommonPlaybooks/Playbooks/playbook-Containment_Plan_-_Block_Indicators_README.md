@@ -1,5 +1,3 @@
----
-
 ## Containment Plan - Block Indicators
 
 This playbook is a sub-playbook within the containment plan playbook.
@@ -10,8 +8,6 @@ The playbook block indicators by two methods:
 
 1. It adds the malicious hashes into the XSIAM hash block list
 2. It utilizes the sub-playbook "Block Indicators - Generic v3"
-
----
 
 ## Dependencies
 

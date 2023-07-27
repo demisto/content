@@ -2,14 +2,10 @@ id: Containment Plan - Disable Account
 version: -1
 name: Containment Plan - Disable Account
 description: |-
-  ---
-
   ## Containment Plan - Disable Account
 
   This playbook is a sub-playbook within the containment plan playbook.
   The playbook disables users by utilizing the sub-playbook "Block Account - Generic v2"
-
-  ---
 starttaskid: "0"
 tasks:
   "0":

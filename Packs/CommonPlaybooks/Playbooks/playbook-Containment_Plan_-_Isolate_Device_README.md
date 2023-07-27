@@ -1,11 +1,7 @@
----
-
 ## Containment Plan - Isolate Device
 
 This playbook is a sub-playbook within the containment plan playbook.
 The playbook isolates devices using core commands.
-
----
 
 ## Dependencies
 
@@ -25,9 +21,9 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* setParentIncidentContext
 * core-isolate-endpoint
 * core-get-endpoints
+* setParentIncidentContext
 
 ## Playbook Inputs
 

@@ -1,12 +1,7 @@
----
-
 ## Containment Plan - Clear User Sessions
 
 This playbook is a sub-playbook within the containment plan playbook.
 The playbook clears the users' sessions using Okta integration. (currently, the playbook supports only Okta)
-
----
-
 
 ## Dependencies
 
@@ -28,8 +23,8 @@ This playbook does not use any integrations.
 ### Commands
 
 * okta-get-user
-* setParentIncidentContext
 * okta-clear-user-sessions
+* setParentIncidentContext
 
 ## Playbook Inputs
 

@@ -2,14 +2,10 @@ id: Containment Plan - Quarantine File
 version: -1
 name: Containment Plan - Quarantine File
 description: |-
-  ---
-
   ## Containment Plan - Quarantine File
 
   This playbook is a sub-playbook within the containment plan playbook.
   The playbook quarantines files using core commands.
-
-  ---
 starttaskid: "0"
 tasks:
   "0":
