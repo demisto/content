@@ -11126,7 +11126,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
 
     :type chunk_size: ``int``
-    :param chunk_size: The maximal size of each chunk size we send to API
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API
 
     :return: None
     :rtype: ``None``
