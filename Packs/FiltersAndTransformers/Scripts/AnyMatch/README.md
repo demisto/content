@@ -37,7 +37,7 @@ There are no outputs for this script.
 | 1               | 1,2,3                   | [True]                                   |
 | 1               | 21                      | [True]                                   |
 | 5,1,6,9,65,8    | 1,6                     | [False, True, True, False, False, False] |
-| a               | kfjua                   | [True]                                   |
+| a               | holla                  | [True]                                   |
 | 1               | 1                       | [True]                                   |
 | A               | bca                     | [True]                                   | The filter is case-insensitive.                           |
 | a               | ABC                     | [True]                                   |
