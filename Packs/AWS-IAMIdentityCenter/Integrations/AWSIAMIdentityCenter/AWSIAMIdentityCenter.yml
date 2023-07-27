@@ -1,0 +1,201 @@
+category: IT Services
+commonfields:
+  id: AWS - IAM Identity Center
+  version: -1
+configuration:
+- display: Role Arn
+  name: roleArn
+  required: false
+  section: Connect
+  type: 0
+- display: Role Session Name
+  name: roleSessionName
+  required: false
+  section: Connect
+  type: 0
+- advanced: true
+  display: AWS Default Region
+  name: defaultRegion
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+  required: false
+  section: Collect
+  type: 15
+- advanced: true
+  display: Role Session Duration
+  name: sessionDuration
+  required: false
+  section: Connect
+  type: 0
+- display: Access Key
+  displaypassword: Secret Key
+  name: credentials
+  required: false
+  section: Connect
+  type: 9
+- display: Access Key
+  hidden: true
+  name: access_key
+  required: true
+  section: Connect
+  type: 4
+- display: Secret Key
+  hidden: true
+  name: secret_key
+  required: true
+  section: Connect
+  type: 4
+- additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
+  advanced: true
+  defaultvalue: 60,10
+  display: Timeout
+  name: timeout
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
+  advanced: true
+  defaultvalue: "5"
+  display: Retries
+  name: retries
+  required: false
+  section: Connect
+  type: 0
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- display: Identity Store Id
+  name: IdentityStoreId
+  required: true
+  type: 4
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: fc025940-2fe4-4adc-80c9-9ad7d8eb7bcd
+    packName: AWS - IAM Identity Center Contribution Pack
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Amazon Web Services IAM Identity Center
+display: AWS - IAM Identity Center
+name: AWS - IAM Identity Center
+script:
+  commands:
+  - arguments:
+    - description: The name of the user to create.
+      name: userName
+      required: true
+    - name: familyName
+    - name: givenName
+      required: true
+    - name: userEmailAddress
+      required: true
+    - name: displayName
+      required: true
+    description: Creates a new IAM Identity Center user for your AWS account.
+    name: aws-iam-identitycenter-create-user
+    outputs:
+    - contextPath: AWS.IAMIdentityCenter.Users.UserId
+      description: The date and time, when the user was created.
+      type: date
+  - arguments:
+    - description: The name of the user to get information about.
+      name: userName
+      required: true
+    description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
+    name: aws-iam-identitycenter-get-user
+    outputs:
+    - contextPath: AWS.IAM.IdentityCenter.Users.UserName
+      description: The friendly name identifying the user.
+      type: string
+    - contextPath: AWS.IAM.IdentityCenter.Users.UserId
+      description: The stable and unique string identifying the user.
+      type: string
+  - arguments: []
+    description: Lists the IAM users, returns all users in the AWS account.
+    name: aws-iam-identitycenter-list-users
+    outputs:
+    - contextPath: AWS.IAMIdentityCenter.Users.UserName
+      description: The friendly name identifying the user.
+      type: string
+    - contextPath: AWS.IAMIdentityCenter.Users.UserId
+      description: The stable and unique string identifying the user.
+      type: string
+  - arguments: []
+    description: Lists all the IAM groups in the AWS account
+    name: aws-iam-identitycenter-list-groups
+    outputs:
+    - contextPath: AWS.IAM.Groups.GroupName
+      description: The friendly name that identifies the group.
+      type: string
+    - contextPath: AWS.IAM.Groups.GroupId
+      description: The stable and unique string identifying the group.
+      type: string
+  - arguments:
+    - description: The name of the user to list groups for.
+      name: userName
+      required: true
+    description: Lists the IAM groups that the specified IAM user belongs to.
+    name: aws-iam-identitycenter-list-groups-for-user
+    outputs:
+    - contextPath: AWS.IAM.IdentityCenter.Users.GroupMemeberships.GroupName
+      description: The friendly name that identifies the group.
+      type: string
+    - contextPath: AWS.IAM.IdentityCenter.Users.GroupMemeberships.GroupId
+      description: The stable and unique string identifying the group
+      type: string
+  - arguments:
+    - description: The name of the user to add.
+      name: userName
+      required: true
+    - description: The name of the group to update.
+      name: groupName
+      required: true
+    description: Adds the specified user to the specified group.
+    name: aws-iam-identitycenter-add-user-to-group
+  - arguments:
+    - name: groupName
+      required: true
+    description: The name of the group to search.
+    name: aws-iam-identitycenter-get-group
+  - arguments:
+    - description: Username that will be removed from all groups
+      name: userName
+      required: true
+    description: This will remove the entered user from all groups/memberships
+    name: aws-iam-identitycenter-remove-user-from-all-groups
+  dockerimage: demisto/boto3py3:1.0.0.65194
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: AWS - IAM
