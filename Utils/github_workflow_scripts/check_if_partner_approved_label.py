@@ -6,8 +6,12 @@ import argparse
 import urllib3
 from github.Repository import Repository
 from github.PullRequest import PullRequest
-from utils import timestamped_print
+from utils import timestamped_print, Checkout
 from git import Repo
+import os
+from pathlib import Path
+from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
