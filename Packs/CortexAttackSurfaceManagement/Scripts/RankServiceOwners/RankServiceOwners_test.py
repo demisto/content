@@ -721,7 +721,7 @@ def test_base_case():
             #  idx_name_similarity_person_asset = 0,
             #  idx_num_reasons = 1,
             #  idx_num_distinct_sources = 2,
-            #  idx_min_path_length = 2,
+            #  idx_min_path_length = 3,
             #  idx_is_attested_in_cmdb = 4,
             #  idx_is_attested_in_recent_logs = 5,
             [0.0, 4, 2, 1, 0, 0],
