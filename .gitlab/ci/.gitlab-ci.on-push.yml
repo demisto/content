@@ -144,8 +144,9 @@ validate-content-conf:
 
     - section_end "Create or update content graph"
 
-
-    - section_start "Collect Tests" --collapsed
+    - section_start "Collect Tests and Update Conf" --collapsed
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
         echo "Skipping - not running in INSTANCE_TESTS build"
@@ -153,9 +154,9 @@ validate-content-conf:
         [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
         python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS
       fi
-    - section_end "Collect Tests"
+    - section_end "Collect Tests and Update Conf"
 
-    - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - section_start "Create Content Artifacts" --collapsed
     - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
     - CONTENT_PACKS_TO_UPLOAD=$(paste -sd, "$ARTIFACTS_FOLDER/content_packs_to_upload.txt")
     - |
@@ -168,10 +169,7 @@ validate-content-conf:
         python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD" --content-packs $CONTENT_PACKS_TO_UPLOAD
       fi
 
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
-
-    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    - section_end "Create Content Artifacts and Update Conf"
+    - section_end "Create Content Artifacts"
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
