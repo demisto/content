@@ -237,7 +237,7 @@ install-packs-in-server-master:
     - |
       if [ "$INSTANCE_ROLE" == XSIAM ]; then
         section_start "Run end to end sanity tests"
-        
+
         python3 -m pytest ./Tests/tests_end_to_end_xsiam -v --cloud_machine "$CLOUD_CHOSEN_MACHINE_ID" --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
         section_end "Run end to end sanity tests"
       fi
@@ -287,7 +287,7 @@ install-packs-in-xsiam-ga:
 upload-packs-to-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_8", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_8", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "install-packs-in-server-master"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
