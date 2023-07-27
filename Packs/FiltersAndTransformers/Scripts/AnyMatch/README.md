@@ -10,7 +10,7 @@ Moreover, the comparison treats all inputs as strings. Hence, integers and strin
 | -------------------- | --------------- |
 | Script Type          | python3         |
 | Tags                 | filter          |
-| Cortex XSOAR Version | 5.0.0           |
+| Cortex XSOAR Version | 6.9.0          |
 
 ## Inputs
 
