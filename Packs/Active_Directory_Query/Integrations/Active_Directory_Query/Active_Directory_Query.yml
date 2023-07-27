@@ -55,12 +55,10 @@ configuration:
   - TLS_CLIENT
   type: 15
   section: Connect
-  advanced: true
   required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
-  required: false
   section: Connect
   advanced: true
   required: false

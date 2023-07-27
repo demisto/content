@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
 
-from CommonServerPython import *
 from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef, \
     AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.extend import microsoft

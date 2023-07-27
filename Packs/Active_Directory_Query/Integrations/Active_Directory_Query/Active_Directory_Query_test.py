@@ -807,11 +807,12 @@ def test_search_users_empty_userAccountControl(mocker):
         Active_Directory_Query.search_users('dc', 1)
         mock.assert_called_with(expected_results)
 
+
 def test_test_credentials(mocker):
     from Active_Directory_Query import test_credentials
     credential = {
-        'username': BASE_TEST_PARAMS['credentials']['identifier'],
-        'password': BASE_TEST_PARAMS['credentials']['password']
+        'username': 'username_test_credentials',
+        'password': 'password_test_credentials'
     }
     mocker.patch.object(demisto, 'args', return_value=credential)
     command_results = test_credentials(BASE_TEST_PARAMS['server_ip'])
