@@ -1108,7 +1108,7 @@ class Client(BaseClient):
         Start uvicorn server
         """
         try:
-            ssl_args = {}
+            ssl_args = {}  # type: ignore
             """if certificate_path and private_key_path:
                 ssl_args["ssl_certfile"] = certificate_path
                 ssl_args["ssl_keyfile"] = private_key_path"""
