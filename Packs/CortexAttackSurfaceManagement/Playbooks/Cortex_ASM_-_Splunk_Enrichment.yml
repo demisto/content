@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 527bb054-2b25-4590-8ba8-8d713b28aa5a
+    taskid: e462ad16-1252-45b2-8880-2b0cb2cfff7c
     type: start
     task:
-      id: 527bb054-2b25-4590-8ba8-8d713b28aa5a
+      id: e462ad16-1252-45b2-8880-2b0cb2cfff7c
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 72482b7e-77fc-45e4-8b39-a627ad331449
+    taskid: 60fd001c-c8ab-4f80-889b-78d917580e7c
     type: condition
     task:
-      id: 72482b7e-77fc-45e4-8b39-a627ad331449
+      id: 60fd001c-c8ab-4f80-889b-78d917580e7c
       version: -1
       name: Is Splunk Enabled?
       description: Check if Splunk integration is enabled
@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "17"
       "yes":
       - "12"
     separatecontext: false
@@ -95,10 +95,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ede35b51-d3ae-47e6-847f-673e831f8787
+    taskid: 2d914e90-b28a-411b-87cb-3f453436979b
     type: condition
     task:
-      id: ede35b51-d3ae-47e6-847f-673e831f8787
+      id: 2d914e90-b28a-411b-87cb-3f453436979b
       version: -1
       name: Is there Splunk results?
       description: Checks if there are any splunk results.
@@ -107,7 +107,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "8"
+      - "17"
       "yes":
       - "11"
     separatecontext: false
@@ -140,10 +140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3c99d371-eb96-45d5-80a5-d47285c61be4
+    taskid: 692e5387-417e-4cfd-87db-add70ef9e172
     type: title
     task:
-      id: 3c99d371-eb96-45d5-80a5-d47285c61be4
+      id: 692e5387-417e-4cfd-87db-add70ef9e172
       version: -1
       name: Done
       type: title
@@ -155,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1480
+          "x": 20,
+          "y": 1670
         }
       }
     note: false
@@ -168,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 5fe81f50-f733-4977-83f3-cf940a202bcd
+    taskid: aa61b501-53a8-406f-865b-59ed6c681983
     type: condition
     task:
-      id: 5fe81f50-f733-4977-83f3-cf940a202bcd
+      id: aa61b501-53a8-406f-865b-59ed6c681983
       version: -1
       name: Are there any users in the Splunk results?
       description: Checks if there are any users found in the Splunk results.
@@ -223,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5b18ce60-eeec-49c3-8dd1-4f3361d021cd
+    taskid: eccaedf4-8323-482f-85d1-0e866399eba3
     type: regular
     task:
-      id: 5b18ce60-eeec-49c3-8dd1-4f3361d021cd
+      id: eccaedf4-8323-482f-85d1-0e866399eba3
       version: -1
       name: Splunk search for potential service owners
       description: Searches Splunk for events.
@@ -296,10 +296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ae1d84ae-c010-4238-85f9-1b3b0ed2bf06
+    taskid: 0b503944-02bc-483f-851b-fb23757e93b1
     type: regular
     task:
-      id: ae1d84ae-c010-4238-85f9-1b3b0ed2bf06
+      id: 0b503944-02bc-483f-851b-fb23757e93b1
       version: -1
       name: Set service owner grid field
       description: |-
@@ -311,7 +311,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "8"
+      - "16"
     scriptarguments:
       gridfield:
         simple: asmserviceowner
@@ -333,7 +333,7 @@ tasks:
                   simple: user,email,user_name,user_id,src_user,src_user_name,owner_email,owner,owner_id,username,AD_username
           - operator: uniq
       val2:
-        simple: N/A
+        simple: n/a
       val3:
         simple: Splunk
       val4:
@@ -359,10 +359,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2e9ef418-886a-40b2-8df6-86c039c56d24
+    taskid: 3022aa66-01bf-4cdf-856b-606676954c29
     type: regular
     task:
-      id: 2e9ef418-886a-40b2-8df6-86c039c56d24
+      id: 3022aa66-01bf-4cdf-856b-606676954c29
       version: -1
       name: Get current time
       description: |
@@ -390,21 +390,109 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: dcc30c2a-ba05-477f-8a33-4dabbbc8bd48
+    type: regular
+    task:
+      id: dcc30c2a-ba05-477f-8a33-4dabbbc8bd48
+      version: -1
+      name: Set ASM enrichment status to true
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Splunk
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0b01fa6d-05e8-493e-8d82-c8318f8e16e8
+    type: regular
+    task:
+      id: 0b01fa6d-05e8-493e-8d82-c8318f8e16e8
+      version: -1
+      name: Set ASM enrichment status to false
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Splunk
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "11_15_yes": 0.58,
       "11_8_#default#": 0.39,
       "1_12_yes": 0.57,
-      "1_8_#default#": 0.19,
-      "3_11_yes": 0.59,
-      "3_8_#default#": 0.29
+      "3_11_yes": 0.59
     },
     "paper": {
       "dimensions": {
-        "height": 1495,
-        "width": 670,
-        "x": 170,
+        "height": 1685,
+        "width": 820,
+        "x": 20,
         "y": 50
       }
     }

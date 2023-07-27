@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1e301c5c-56f5-4b69-8d0f-0c5941c3525c
+    taskid: 4b6f60e3-76ef-4ccb-8ea2-8c90b0865e7c
     type: start
     task:
-      id: 1e301c5c-56f5-4b69-8d0f-0c5941c3525c
+      id: 4b6f60e3-76ef-4ccb-8ea2-8c90b0865e7c
       version: -1
       name: ""
       iscommand: false
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 160
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a64fed95-81c3-4ee9-8cb7-6ef110954102
+    taskid: c725c4a6-521e-42a3-8aa2-24a77a345693
     type: playbook
     task:
-      id: a64fed95-81c3-4ee9-8cb7-6ef110954102
+      id: c725c4a6-521e-42a3-8aa2-24a77a345693
       version: -1
       name: Prisma Cloud - Find Public Cloud Resource by Public IP v2
       playbookName: Prisma Cloud - Find Public Cloud Resource by Public IP v2
@@ -68,7 +68,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 240
+          "y": 300
         }
       }
     note: false
@@ -80,10 +80,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2f884b3d-b360-4a3e-845c-ef86441510c6
+    taskid: f53679c5-8481-4e1d-8665-2a813fdbf1fa
     type: title
     task:
-      id: 2f884b3d-b360-4a3e-845c-ef86441510c6
+      id: f53679c5-8481-4e1d-8665-2a813fdbf1fa
       version: -1
       name: Set field
       type: title
@@ -112,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: fafd2f65-03ff-4832-8f57-2c5d9599d8bf
+    taskid: 8973a7e6-feff-430e-8c14-63652703672c
     type: condition
     task:
-      id: fafd2f65-03ff-4832-8f57-2c5d9599d8bf
+      id: 8973a7e6-feff-430e-8c14-63652703672c
       version: -1
       name: Is there instance information?
       description: Determines if there is instance information obtained from Prisma Cloud.
@@ -124,7 +124,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+      - "13"
       "yes":
       - "4"
     separatecontext: false
@@ -142,8 +142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -70,
-          "y": 620
+          "x": -30,
+          "y": 650
         }
       }
     note: false
@@ -155,10 +155,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d3208559-ee92-49d1-82a8-89c030694442
+    taskid: cebbb06b-b66f-40a8-8ffe-64b519d35b2e
     type: title
     task:
-      id: d3208559-ee92-49d1-82a8-89c030694442
+      id: cebbb06b-b66f-40a8-8ffe-64b519d35b2e
       version: -1
       name: System IDs
       type: title
@@ -173,8 +173,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -70,
-          "y": 860
+          "x": 200,
+          "y": 850
         }
       }
     note: false
@@ -186,10 +186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4b19fe08-63ac-4b83-8d73-01cec9f86f4a
+    taskid: 65c34a1a-b100-461f-8051-84c92d4d273c
     type: regular
     task:
-      id: 4b19fe08-63ac-4b83-8d73-01cec9f86f4a
+      id: 65c34a1a-b100-461f-8051-84c92d4d273c
       version: -1
       name: Set Instance IDs grid field
       description: |-
@@ -201,7 +201,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "10"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -220,36 +220,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -70,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 16d22891-c3a5-4c0c-8c31-044c895de242
-    type: title
-    task:
-      id: 16d22891-c3a5-4c0c-8c31-044c895de242
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 1280
+          "x": 200,
+          "y": 990
         }
       }
     note: false
@@ -261,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ae8687d5-2720-4a3b-8a8a-87d4675cfad5
+    taskid: a0eb3fce-5e60-41c6-8354-adac2fd7fefc
     type: condition
     task:
-      id: ae8687d5-2720-4a3b-8a8a-87d4675cfad5
+      id: a0eb3fce-5e60-41c6-8354-adac2fd7fefc
       version: -1
       name: Are there tags information?
       description: Determines if there is tag information obtained from Prisma Cloud.
@@ -273,7 +245,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+      - "13"
       "yes":
       - "8"
     separatecontext: false
@@ -291,8 +263,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 620
+          "x": 860,
+          "y": 650
         }
       }
     note: false
@@ -304,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0b3a698e-0355-4d81-8284-3b451d4840d1
+    taskid: 038c6b2e-881c-49af-89c6-fae19a559c2e
     type: title
     task:
-      id: 0b3a698e-0355-4d81-8284-3b451d4840d1
+      id: 038c6b2e-881c-49af-89c6-fae19a559c2e
       version: -1
       name: Tags
       type: title
@@ -322,8 +294,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 860
+          "x": 630,
+          "y": 850
         }
       }
     note: false
@@ -335,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: e6034bf9-1aa7-4366-8b6b-916c77666224
+    taskid: 0ce1d2ab-60ad-4ce8-8202-b94561685413
     type: regular
     task:
-      id: e6034bf9-1aa7-4366-8b6b-916c77666224
+      id: 0ce1d2ab-60ad-4ce8-8202-b94561685413
       version: -1
       name: Set tags grid field
       description: |-
@@ -350,7 +322,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "10"
     scriptarguments:
       gridfield:
         simple: asmtags
@@ -383,8 +355,205 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 1040
+          "x": 630,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 025d9d62-38c1-4c2c-8d17-fe2621e02777
+    type: regular
+    task:
+      id: 025d9d62-38c1-4c2c-8d17-fe2621e02777
+      version: -1
+      name: Set flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: asm_fields_set_for_rapid7
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4d7919d0-8f76-4114-81f6-c7bba790f784
+    type: title
+    task:
+      id: 4d7919d0-8f76-4114-81f6-c7bba790f784
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d9237a5b-a269-445b-84d1-2c8dc5387946
+    type: regular
+    task:
+      id: d9237a5b-a269-445b-84d1-2c8dc5387946
+      version: -1
+      name: Set ASM enrichment status to true
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Rapid7
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b184ee4a-93c4-42c4-8658-84898e2dbf99
+    type: condition
+    task:
+      id: b184ee4a-93c4-42c4-8658-84898e2dbf99
+      version: -1
+      name: Was enrichment performed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: asm_fields_set_for_rapid7
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 25c918d2-c939-4223-8c9f-52aa9ecadca5
+    type: regular
+    task:
+      id: 25c918d2-c939-4223-8c9f-52aa9ecadca5
+      version: -1
+      name: Set ASM enrichment status to false
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Rapid7
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1640
         }
       }
     note: false
@@ -396,13 +565,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_13_#default#": 0.2,
+      "7_13_#default#": 0.22
+    },
     "paper": {
       "dimensions": {
-        "height": 1295,
-        "width": 1340,
-        "x": -70,
-        "y": 50
+        "height": 1745,
+        "width": 1270,
+        "x": -30,
+        "y": 160
       }
     }
   }

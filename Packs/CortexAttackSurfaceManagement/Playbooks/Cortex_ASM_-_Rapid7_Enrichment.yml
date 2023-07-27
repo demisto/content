@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 806c021a-3cbc-4873-8462-6f0d82ea9589
+    taskid: 235e7bd1-e9cf-4c22-8b99-1782fe2157c5
     type: start
     task:
-      id: 806c021a-3cbc-4873-8462-6f0d82ea9589
+      id: 235e7bd1-e9cf-4c22-8b99-1782fe2157c5
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: aef3b78c-5ad9-499e-8118-95a664ca9967
+    taskid: 0d418542-43fa-425b-82f0-7fd4a186c91a
     type: playbook
     task:
-      id: aef3b78c-5ad9-499e-8118-95a664ca9967
+      id: 0d418542-43fa-425b-82f0-7fd4a186c91a
       version: -1
       name: Rapid7 - Nexpose - Enrichment
       description: Given an IP address, this playbook searches Rapid7 Nexpose assets for an asset with the associated IP address to retrieve asset information and proceeds to return all associated tags with it.
@@ -64,8 +64,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 220
+          "x": 1190,
+          "y": 210
         }
       }
     note: false
@@ -77,10 +77,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 943eee35-18c2-4e9b-8908-8213d129acf7
+    taskid: 12724173-e326-487c-8119-500e1cbf5870
     type: regular
     task:
-      id: 943eee35-18c2-4e9b-8908-8213d129acf7
+      id: 12724173-e326-487c-8119-500e1cbf5870
       version: -1
       name: Set service owner grid field
       description: |-
@@ -92,7 +92,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "19"
+      - "29"
     scriptarguments:
       gridfield:
         simple: asmserviceowner
@@ -117,7 +117,7 @@ tasks:
                 value:
                   simple: Name
       val2:
-        simple: N/A
+        simple: n/a
       val3:
         simple: Rapid7
       val4:
@@ -131,7 +131,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 1085
+          "y": 1125
         }
       }
     note: false
@@ -143,10 +143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: fb1cacd3-25cd-48f2-8a06-01e20a4e794c
+    taskid: 4969c1bc-3b77-41c6-88cc-d96e779a6b6e
     type: regular
     task:
-      id: fb1cacd3-25cd-48f2-8a06-01e20a4e794c
+      id: 4969c1bc-3b77-41c6-88cc-d96e779a6b6e
       version: -1
       name: Get current time
       description: |
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 925
+          "y": 965
         }
       }
     note: false
@@ -176,10 +176,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 8afe4467-0fe7-4cf3-8944-6386c85ed6e1
+    taskid: 7cf9e4eb-c4c5-496e-81df-4057491ada71
     type: title
     task:
-      id: 8afe4467-0fe7-4cf3-8944-6386c85ed6e1
+      id: 7cf9e4eb-c4c5-496e-81df-4057491ada71
       version: -1
       name: Service Owner
       type: title
@@ -195,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 795
+          "y": 815
         }
       }
     note: false
@@ -207,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d32754fc-a96d-4d46-8086-7890c8b26c4c
+    taskid: c51158db-2076-4297-8039-6faecbc440a4
     type: title
     task:
-      id: d32754fc-a96d-4d46-8086-7890c8b26c4c
+      id: c51158db-2076-4297-8039-6faecbc440a4
       version: -1
       name: Set Field
       type: title
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1c8f7c85-e214-4608-8a5a-d3a28172d8b5
+    taskid: e1066c37-eb57-4fe3-80ef-9ce8ddc93908
     type: title
     task:
-      id: 1c8f7c85-e214-4608-8a5a-d3a28172d8b5
+      id: e1066c37-eb57-4fe3-80ef-9ce8ddc93908
       version: -1
       name: System IDs
       type: title
@@ -259,7 +259,7 @@ tasks:
       {
         "position": {
           "x": 1630,
-          "y": 795
+          "y": 815
         }
       }
     note: false
@@ -271,10 +271,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 9af0bceb-433a-435b-8361-9025979378f7
+    taskid: 5e8ae572-2b0f-4eb6-8167-436502977b8c
     type: regular
     task:
-      id: 9af0bceb-433a-435b-8361-9025979378f7
+      id: 5e8ae572-2b0f-4eb6-8167-436502977b8c
       version: -1
       name: Set system IDs grid field (OS)
       description: |-
@@ -299,7 +299,7 @@ tasks:
           root: Nexpose.Asset
           accessor: OperatingSystem
       val3:
-        simple: N/A
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -318,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6b63e611-0406-4043-88e5-641f3f226a5c
+    taskid: 4aa38d4a-f56e-43b1-885f-bc04e5071dbc
     type: title
     task:
-      id: 6b63e611-0406-4043-88e5-641f3f226a5c
+      id: 4aa38d4a-f56e-43b1-885f-bc04e5071dbc
       version: -1
       name: Tags
       type: title
@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 584a50a3-1587-4b81-856e-619f243eb55b
+    taskid: 229042cb-b624-422b-81ef-31e76890df41
     type: condition
     task:
-      id: 584a50a3-1587-4b81-856e-619f243eb55b
+      id: 229042cb-b624-422b-81ef-31e76890df41
       version: -1
       name: Is Rapid7 Nexpose enabled?
       description: Determines if the "Rapid7 Nexpose" integration instance is enabled in order to find assets and asset tags.
@@ -361,7 +361,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "34"
       "yes":
       - "1"
     separatecontext: false
@@ -410,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 07254726-4d56-42b1-8331-0abcb531706d
+    taskid: a9790177-d862-41b9-87d1-45594b80526b
     type: regular
     task:
-      id: 07254726-4d56-42b1-8331-0abcb531706d
+      id: a9790177-d862-41b9-87d1-45594b80526b
       version: -1
       name: Set system IDs grid field (Asset Site)
       description: |-
@@ -438,7 +438,7 @@ tasks:
           root: Nexpose.Asset
           accessor: Site
       val3:
-        simple: N/A
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -457,10 +457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 38626073-3c49-4b3c-8882-23dde4445d88
+    taskid: fc65c5e2-50f0-4106-8f60-ac9a4c292c21
     type: regular
     task:
-      id: 38626073-3c49-4b3c-8882-23dde4445d88
+      id: fc65c5e2-50f0-4106-8f60-ac9a4c292c21
       version: -1
       name: Set system IDs grid field (Asset Name)
       description: |-
@@ -485,7 +485,7 @@ tasks:
           root: Nexpose.Asset
           accessor: Name
       val3:
-        simple: N/A
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -502,40 +502,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: f16d0e4a-b3d1-46cc-89a5-0b4a3f3b9ab7
-    type: title
-    task:
-      id: f16d0e4a-b3d1-46cc-89a5-0b4a3f3b9ab7
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 350,
-          "y": 2360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 27db8980-cfb1-4999-85e1-79efff8acfdf
+    taskid: 7d5a98ed-0f5d-4653-86ed-89a631128ed6
     type: condition
     task:
-      id: 27db8980-cfb1-4999-85e1-79efff8acfdf
+      id: 7d5a98ed-0f5d-4653-86ed-89a631128ed6
       version: -1
       name: Was there an asset from Rapid7?
       description: Checks if the Nexpose Asset object exists.
@@ -544,7 +516,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "34"
       "yes":
       - "9"
     separatecontext: false
@@ -577,10 +549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 43fc0bf2-9356-4cfe-82a1-fbb96fcf3393
+    taskid: ca794b8e-f126-45e3-868c-658f7488e4d9
     type: condition
     task:
-      id: 43fc0bf2-9356-4cfe-82a1-fbb96fcf3393
+      id: ca794b8e-f126-45e3-868c-658f7488e4d9
       version: -1
       name: Was there asset tags from Rapid7?
       description: Checks if the Nexpose AssetTag object exists.
@@ -589,7 +561,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "34"
       "yes":
       - "11"
     separatecontext: false
@@ -630,10 +602,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b971196e-d62d-446c-8b48-dabe3ed2d9ea
+    taskid: ac28a69e-cbb3-487f-870e-8a9e8b2aadb7
     type: condition
     task:
-      id: b971196e-d62d-446c-8b48-dabe3ed2d9ea
+      id: ac28a69e-cbb3-487f-870e-8a9e8b2aadb7
       version: -1
       name: Was there an owner asset tag from Rapid7?
       description: Checks if the Nexpose AssetTag object exists with an "owner" tag.
@@ -642,7 +614,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "34"
       "yes":
       - "7"
     separatecontext: false
@@ -683,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0ee49a95-239a-4839-823d-ff066c9fe6a0
+    taskid: 4aca13c6-3ff5-4d60-8896-d82072074501
     type: regular
     task:
-      id: 0ee49a95-239a-4839-823d-ff066c9fe6a0
+      id: 4aca13c6-3ff5-4d60-8896-d82072074501
       version: -1
       name: Set tags grid field
       description: |-
@@ -698,7 +670,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "19"
+      - "29"
     scriptarguments:
       gridfield:
         simple: asmtags
@@ -738,7 +710,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 945
+          "y": 965
         }
       }
     note: false
@@ -750,10 +722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 812d1c96-14a2-43a9-8355-188826551ef1
+    taskid: b5c9ddaa-16cd-4054-85ef-a726bef25bdd
     type: condition
     task:
-      id: 812d1c96-14a2-43a9-8355-188826551ef1
+      id: b5c9ddaa-16cd-4054-85ef-a726bef25bdd
       version: -1
       name: Is an OS value set for asset?
       description: Checks if the Operating Service is set in the Nexpose Asset object.
@@ -791,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 7d89f6fe-aed3-47c0-8c08-916c29feb8c3
+    taskid: eaf75df8-482f-4efc-8662-b72a0963d32b
     type: condition
     task:
-      id: 7d89f6fe-aed3-47c0-8c08-916c29feb8c3
+      id: eaf75df8-482f-4efc-8662-b72a0963d32b
       version: -1
       name: Is a name value set for asset?
       description: Checks if the Name is set in the Nexpose Asset object.
@@ -836,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 9634f7cd-1be3-44d9-8101-efe484163ff7
+    taskid: d285cb02-ed11-44f1-800b-534abcc8aa5d
     type: condition
     task:
-      id: 9634f7cd-1be3-44d9-8101-efe484163ff7
+      id: d285cb02-ed11-44f1-800b-534abcc8aa5d
       version: -1
       name: Is a site value set for asset?
       description: Checks if the Site is set in the Nexpose Asset object.
@@ -881,10 +853,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 1912ebc6-0a7a-420e-8fd4-e65653509a64
+    taskid: e889c72b-fd8b-4215-8b2e-a459c4212067
     type: regular
     task:
-      id: 1912ebc6-0a7a-420e-8fd4-e65653509a64
+      id: e889c72b-fd8b-4215-8b2e-a459c4212067
       version: -1
       name: Set system IDs grid field (Asset ID)
       description: |-
@@ -896,7 +868,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "19"
+      - "29"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -909,7 +881,7 @@ tasks:
           root: Nexpose.Asset
           accessor: AssetId
       val3:
-        simple: N/A
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -928,10 +900,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: edaad739-cffb-49bf-8b48-b42ee62026e8
+    taskid: 45035ac9-9956-47d0-84ac-e1ff270a5b35
     type: condition
     task:
-      id: edaad739-cffb-49bf-8b48-b42ee62026e8
+      id: 45035ac9-9956-47d0-84ac-e1ff270a5b35
       version: -1
       name: Is a ID value set for asset?
       description: Checks if the Site is set in the Nexpose Asset object.
@@ -939,10 +911,9 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "19"
       "yes":
       - "27"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -971,26 +942,203 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 04f002fd-98af-4114-8a8d-80f40e0d77bc
+    type: regular
+    task:
+      id: 04f002fd-98af-4114-8a8d-80f40e0d77bc
+      version: -1
+      name: Set flag for enrichment status to true
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: asm_enrichment_status_rapid7
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 0696ec2d-d2c8-4c3c-836a-94807def6f39
+    type: title
+    task:
+      id: 0696ec2d-d2c8-4c3c-836a-94807def6f39
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 331c8e5c-14ec-4409-8d10-0d8ee13e1ccb
+    type: title
+    task:
+      id: 331c8e5c-14ec-4409-8d10-0d8ee13e1ccb
+      version: -1
+      name: Closing Steps
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: b78ddebf-5b4e-4e74-8bf2-25b33d87b175
+    type: regular
+    task:
+      id: b78ddebf-5b4e-4e74-8bf2-25b33d87b175
+      version: -1
+      name: Set ASM enrichment status
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Rapid7
+      val2:
+        simple: ${asm_enrichment_status_rapid7}
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a191a20a-6b8c-41cb-8755-528827a64f2a
+    type: regular
+    task:
+      id: a191a20a-6b8c-41cb-8755-528827a64f2a
+      version: -1
+      name: Set flag for enrichment status to false
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: asm_enrichment_status_rapid7
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "14_19_#default#": 0.17,
       "14_1_yes": 0.46,
-      "20_19_#default#": 0.1,
+      "20_34_#default#": 0.1,
       "20_9_yes": 0.46,
       "21_11_yes": 0.54,
-      "21_19_#default#": 0.18,
-      "22_19_#default#": 0.12,
+      "21_34_#default#": 0.1,
+      "22_34_#default#": 0.1,
       "22_7_yes": 0.47,
       "24_10_yes": 0.6,
       "25_18_yes": 0.55,
-      "28_19_#default#": 0.1
+      "28_29_yes": 0.32
     },
     "paper": {
       "dimensions": {
-        "height": 2645,
-        "width": 1910,
-        "x": 350,
+        "height": 3155,
+        "width": 1870,
+        "x": 390,
         "y": -220
       }
     }
