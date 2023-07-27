@@ -34,8 +34,6 @@ PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH
 SUCCESS_FLAG = True
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
-GITLAB_URL = os.getenv('CI_SERVER_URL')
-GITLAB_API_TOKEN = os.getenv('GITLAB_API_READ_TOKEN')
 GITLAB_SESSION = Session()
 GITLAB_PACK_METADATA_URL = '{gitlab_url}/api/v4/projects/2596/repository/files/Packs%2F{pack_id}%2Fpack_metadata.json'
 
