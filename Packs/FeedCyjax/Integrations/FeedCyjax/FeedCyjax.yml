@@ -21,13 +21,16 @@ configuration:
   name: insecure
   defaultvalue: 'false'
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch indicators
   defaultvalue: 'true'
   name: feed
   type: 8
+  required: false
 - display: Indicator Reputation
   additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Suspicious
@@ -38,6 +41,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
@@ -60,15 +64,18 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - name: use_cyjax_tlp
   display: Use Cyjax feed TLP
   additionalinfo: Whether to use TLP set by Cyjax. Will override TLP set above.
   defaultvalue: 'true'
   type: 8
+  required: false
 - name: feedTags
   display: Tags
   additionalinfo: Supports CSV values.
   type: 0
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: never
@@ -78,25 +85,30 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
   display: ""
+  required: false
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: 'true'
   type: 8
   hidden: true
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: |-
     When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - name: feedFetchInterval
   defaultvalue: '60'
   display: Feed Fetch Interval
   type: 19
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: The time interval for the first fetch (retroactive). For example 3 days, 1 hour
@@ -133,7 +145,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.64758
+  dockerimage: demisto/py3-tools:1.0.0.66127
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

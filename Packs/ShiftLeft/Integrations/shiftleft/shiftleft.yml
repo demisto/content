@@ -16,6 +16,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Integrate ShiftLeft CORE code analysis platform with Cortex XSOAR.
 display: ShiftLeft CORE
 name: ShiftLeft CORE

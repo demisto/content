@@ -11,6 +11,7 @@ configuration:
   name: app_id
   type: 0
   section: Connect
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -23,18 +24,21 @@ configuration:
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   defaultvalue: 'false'
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   defaultvalue: "false"
   section: Connect
   advanced: true
+  required: false
 - name: authentication_type
   display: Authentication Type
   defaultvalue: Device Code
@@ -46,6 +50,7 @@ configuration:
   - Azure Managed Identities
   section: Connect
   advanced: true
+  required: false
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)
   defaultvalue:
@@ -53,6 +58,7 @@ configuration:
   additionalinfo: ""
   section: Connect
   advanced: true
+  required: false
 - name: credentials
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
@@ -61,12 +67,14 @@ configuration:
   type: 9
   additionalinfo: ""
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 description: Manage teams and members in Microsoft Teams.
 display: Microsoft Teams Management
 name: Microsoft Teams Management

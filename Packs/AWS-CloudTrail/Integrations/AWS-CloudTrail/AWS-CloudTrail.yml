@@ -25,33 +25,42 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
+  required: false
 - display: Role Arn
   name: roleArn
   type: 0
+  required: false
 - display: Role Session Name
   name: roleSessionName
   type: 0
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   type: 0
+  required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
+  required: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
+  required: false
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Amazon Web Services CloudTrail.
 display: AWS - CloudTrail
 name: AWS - CloudTrail

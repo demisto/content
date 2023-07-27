@@ -51,12 +51,14 @@ variables:
   NATIVE_CANDIDATE_IMAGE: "latest"
   DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"  # change this when the demisto-sdk update-graph command is stable
   DEMISTO_SDK_LOG_FILE_PATH: $ARTIFACTS_FOLDER/logs/demisto_sdk_debug.log
+  OVERRIDE_SDK_REF: ""
+  CONTENT_GITLAB_CI: "true"
 
 include:
-  - local: .gitlab/ci/global.yml
-  - local: .gitlab/ci/on-push.yml
-  - local: .gitlab/ci/bucket-upload.yml
-  - local: .gitlab/ci/instance-test.yml
-  - local: .gitlab/ci/sdk-nightly.yml
-  - local: .gitlab/ci/miscellaneous.yml
-  - local: .gitlab/ci/test-native-candidate.yml
+  - local: .gitlab/ci/.gitlab-ci.global.yml
+  - local: .gitlab/ci/.gitlab-ci.on-push.yml
+  - local: .gitlab/ci/.gitlab-ci.bucket-upload.yml
+  - local: .gitlab/ci/.gitlab-ci.instance-test.yml
+  - local: .gitlab/ci/.gitlab-ci.sdk-nightly.yml
+  - local: .gitlab/ci/.gitlab-ci.miscellaneous.yml
+  - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml

@@ -7,6 +7,7 @@ configuration:
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - display: Server URL
   name: url
   required: true
@@ -15,11 +16,13 @@ configuration:
   display: Username
   name: credentials
   type: 9
+  required: false
 - additionalinfo: If selected, the indicator type will be auto detected for each indicator.
   defaultvalue: 'true'
   display: Auto detect indicator type
   name: auto_detect_type
   type: 8
+  required: false
 - additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored. If the "Custom" option is selected, the Custom Indicator Type parameter must be provided.
   display: Indicator Type
   name: indicator_type
@@ -42,10 +45,12 @@ configuration:
   - Registry Key
   - Custom
   type: 15
+  required: false
 - additionalinfo: The indicator type to be used in case of 'Custom' option chosen in the Indicator Type field.
   display: Custom Indicator Type
   name: custom_indicator_type
   type: 0
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -56,6 +61,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -78,6 +84,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -87,18 +94,22 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 - additionalinfo: Time (in seconds) before HTTP requests timeout
   defaultvalue: '20'
   display: Request Timeout
@@ -109,31 +120,39 @@ configuration:
   display: Ignore Regex
   name: ignore_regex
   type: 0
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Feed name
   name: feed_name
   type: 0
+  required: false
 - additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Indicator extraction pattern
   name: indicator
   type: 12
+  required: false
 - additionalinfo: JSON string of patterns to extract from the text response. See the description for more details.
   display: Fields extraction pattern
   name: fields
   type: 12
+  required: false
 - additionalinfo: CSV list of headers to send in the HTTP request in the format of "header_name:header_value".
   display: Headers
   name: headers
   type: 0
+  required: false
 description: Fetches indicators from a plain text feed.
 display: Plain Text Feed
 name: Plain Text Feed

@@ -8,6 +8,7 @@ configuration:
   hidden: true
   name: longRunning
   type: 8
+  required: false
 - additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
@@ -16,20 +17,25 @@ configuration:
 - display: Username
   name: credentials
   type: 9
+  required: false
 - additionalinfo: Required for HTTPS, if not using server rerouting
   display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
+  required: false
 - additionalinfo: Required for HTTPS, if not using server rerouting
   display: Private Key (Required for HTTPS)
   name: key
   type: 14
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Target API Base Path
   name: api_path
   type: 0
+  required: false
 - defaultvalue: None
   display: API Credential Type
   name: api_credential_type
@@ -39,9 +45,11 @@ configuration:
   - Basic
   - Bearer Token
   type: 15
+  required: false
 - display: API credentials
   name: api_credentials
   type: 9
+  required: false
 - additionalinfo: See example in detailed instructions.
   display: API Permission Definition
   name: api_permissions
@@ -51,10 +59,12 @@ configuration:
   display: Custom Auth Header
   name: custom_auth_header
   type: 0
+  required: false
 - additionalinfo: Works when "API Credential Type" value is set to "Custom Header"
   display: Custom Auth Header value
   name: custom_auth_header_value
   type: 0
+  required: false
 description: Provide a simple API proxy to restrict privileges or minimize the amount of credentials issued at the API.
 display: Simple API Proxy
 name: Simple API Proxy

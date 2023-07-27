@@ -15,16 +15,20 @@ configuration:
   name: token
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Token
   name: credentials_api_token
   hiddenusername: true
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
 display: Trend Micro Apex One
 name: Trend Micro Apex

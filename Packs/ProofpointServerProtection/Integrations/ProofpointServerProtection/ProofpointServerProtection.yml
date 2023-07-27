@@ -20,12 +20,15 @@ configuration:
 - display: Proofpoint Protection Server Version (e.g., 8.14.2)
   name: version
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: python

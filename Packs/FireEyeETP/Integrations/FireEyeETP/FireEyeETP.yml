@@ -17,22 +17,28 @@ configuration:
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Key
   name: credentials_api_key
   hiddenusername: true
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Alerts statuses to import
   additionalinfo: All alerts with a status specified here will be imported as incidents.
   name: message_status
@@ -51,6 +57,7 @@ configuration:
   - quarantined
   - rejected
   - temporary failure
+  required: false
 script:
   script: '-'
   type: python

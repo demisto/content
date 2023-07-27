@@ -1,4 +1,9 @@
+# SafeNet Trusted Access
+
+This pack includes Cortex XSIAM content.
 SafeNet Trusted Access prevents data breaches, helps with compliance with regulations, and supports migration to the cloud in a simple and secure fashion.
+
+* Pay attention: Timestamp parsing is supported for UTC +0000 format- yyyy-MM-ddTHH:mm:ss.fffZ (2019-12-04T21:37:20.2677353Z). 
 
 ## This pack enables you to:
 

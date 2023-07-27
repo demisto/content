@@ -7,7 +7,6 @@ comment: Extract custom content IDs from custom content bundle file and exclude 
 commonfields:
   id: GetIdsFromCustomContent
   version: -1
-enabled: false
 name: GetIdsFromCustomContent
 outputs:
 - contextPath: GetIdsFromCustomContent.included_ids

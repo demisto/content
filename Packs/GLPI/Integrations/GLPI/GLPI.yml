@@ -30,31 +30,38 @@ configuration:
 - name: isFetch
   display: Fetch incidents
   type: 8
+  required: false
 - name: incidentType
   display: Incident type
   type: 13
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
+  required: false
 - name: incidentFetchInterval
   display: Incidents Fetch Interval
   defaultvalue: '1'
   type: 19
   additionalinfo:
+  required: false
 - name: longRunning
   display: Long running instance
   type: 8
   additionalinfo:
+  required: false
 - name: mirror_limit
   display: Maximum number of incidents to mirror each time
   defaultvalue: '50'
   type: 0
   additionalinfo:
+  required: false
 - name: mirror_direction
   display: Incident Mirror Direction
   defaultvalue: None
@@ -65,29 +72,35 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  required: false
 - name: work_notes_tag
   display: Tag used for work note mirroring
   defaultvalue: work_notes
   type: 0
   additionalinfo:
+  required: false
 - name: comment_tag
   display: Tag used for comment mirroring
   defaultvalue: comments
   type: 0
   additionalinfo:
+  required: false
 - name: file_tag
   display: Tag used for file mirroring
   defaultvalue: forGLPI
   type: 0
   additionalinfo:
+  required: false
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   defaultvalue: 7 days
   type: 0
+  required: false
 - name: max_fetch
   display: Max incidents fetch at the same time
   defaultvalue: 50
   type: 0
+  required: false
 script:
   script: ''
   type: python
@@ -686,7 +699,7 @@ script:
     - name: update_fields
       description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
     outputs: []
-  dockerimage: demisto/glpi:1.0.0.63692
+  dockerimage: demisto/glpi:1.0.0.65890
   isfetch: true
   longRunning: true
   subtype: python3
