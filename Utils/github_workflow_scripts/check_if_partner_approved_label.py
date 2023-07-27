@@ -100,6 +100,7 @@ def main():
 
     pr_label_names = [label.name for label in pr.labels]
     pr_files = [file.filename for file in pr.get_files()]
+    print(f'pr files are {pr_files}')
     support_level = get_pack_support_level(pr_files, pr.head.ref)
     print (f'support level is: {support_level}')
     partner_approved = PARTNER_APPROVED_LABEL in pr_label_names
