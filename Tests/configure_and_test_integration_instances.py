@@ -1589,8 +1589,8 @@ def flatten_cloud_servers(cloud_servers: dict) -> dict:
     """
     flattened_cloud_servers: dict = {}
     for value in cloud_servers.values():
-        for server in value:
-            flattened_cloud_servers.update(server)
+        if isinstance(value, dict):
+                flattened_cloud_servers.update(value)
     return flattened_cloud_servers
 
 def test_files(content_path, packs_to_install: list = None):

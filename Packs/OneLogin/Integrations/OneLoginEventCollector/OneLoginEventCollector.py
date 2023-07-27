@@ -24,7 +24,6 @@ def arg_to_strtime(value: Any) -> Optional[str]:
 def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
     """
     Parses the given inputs into OneLogin Events API expected format.
-    test
     """
     query_params = {
         'limit': arg_to_number(params.get('limit', DEFAULT_LIMIT)),

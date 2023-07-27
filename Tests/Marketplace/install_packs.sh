@@ -12,7 +12,6 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
     exit 1
 fi
 
-
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 

@@ -2,7 +2,7 @@ import os
 import pytest
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
     options_handler, CloudBuild, get_turned_non_hidden_packs, update_integration_lists, \
-    get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names
+    get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names, flatten_cloud_servers
 
 XSIAM_SERVERS = {
     "build":{
@@ -121,6 +121,20 @@ def test_create_build(mocker, expected_class, build_object_type):
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
 
+def test_flatten_cloud_servers():
+    """
+    Given:
+        - json contains all cloud servers available for cloud build.
+    When:
+        - Running 'get_cloud_configuration' method
+    Then:
+        - Assert there the all machines in a dictionary without seperation.
+    """
+    machines = flatten_cloud_servers(XSIAM_SERVERS)
+
+    assert isinstance(machines, dict)
+    assert len(list(machines.keys())) == 4
+
 
 NON_HIDDEN_PACKS = [
     ("""
@@ -160,7 +174,7 @@ def test_get_turned_non_hidden_packs(mocker, diff, the_expected_result):
     Then:
         - Assert the expected result is returned.
     """
-    build = create_build_object_with_mock(mocker, 'XSOAR', None)
+    build = create_build_object_with_mock(mocker, 'XSOAR')
     mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
     turned_non_hidden = get_turned_non_hidden_packs({'test'}, build)
     assert ('test' in turned_non_hidden) is the_expected_result
@@ -279,8 +293,7 @@ def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_resul
     Then:
         - Assert the expected result is returned.
     """
-    server_machines_filter = 'build' if build_type == 'XSIAM' else None
-    build = create_build_object_with_mock(mocker, build_type, server_machines_filter)
+    build = create_build_object_with_mock(mocker, build_type)
     mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
     first_added_to_marketplace = filter_new_to_marketplace_packs(build, {'pack_name'})
     assert the_expected_result == first_added_to_marketplace
