@@ -4,6 +4,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
+comment: ''
 dockerimage: demisto/python3:3.10.12.66339
 enabled: true
 name: UnitTestPBATaskMax

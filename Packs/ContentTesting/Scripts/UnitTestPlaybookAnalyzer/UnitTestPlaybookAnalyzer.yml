@@ -1,7 +1,7 @@
 args:
-- description: Name of the playbook to analyze
+- description: Name of the playbook to analyze, a value must be provided.
   name: playbook
-  required: true
+  required: false
 - description: Sub-playbook for analysis versus the parent playbook
   name: subplaybook
 - description: 'First day to find incident occurrences using the playbook. Example: "2023-03-01"'

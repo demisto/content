@@ -139,6 +139,8 @@ def StatsInfoMarkdown(stats: dict) -> str:
 def main():
     try:
         pb = demisto.args()['playbook'].strip()
+        if not pb:
+            raise DemistoException("A playbook\'s name must be provided.")
         spb = demisto.args()['subplaybook'].strip()
         firstday = demisto.args()['firstday'].strip()
         lastday = demisto.args()['lastday'].strip()
