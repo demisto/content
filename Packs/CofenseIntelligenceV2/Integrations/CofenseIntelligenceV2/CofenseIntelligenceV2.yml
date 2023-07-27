@@ -24,8 +24,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - additionalinfo: Threshold for IP related threats' severity.
   defaultvalue: Major
   display: IP Threshold
@@ -35,8 +35,8 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
+  required: false
 - additionalinfo: Threshold for file related threats' severity.
   defaultvalue: Major
   display: File Threshold
@@ -46,8 +46,8 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
+  required: false
 - additionalinfo: Threshold for URL related threats' severity.
   defaultvalue: Major
   display: URL Threshold
@@ -57,8 +57,8 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
+  required: false
 - additionalinfo: Threshold for email related threats' severity.
   defaultvalue: Major
   display: Email Threshold
@@ -68,8 +68,8 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
+  required: false
 - additionalinfo: Threshold for domain related threats' severity.
   defaultvalue: Major
   display: Domain Threshold
@@ -79,15 +79,14 @@ configuration:
   - Minor
   - Moderate
   - Major
-  required: false
   type: 15
-- additionalinfo: The maximum number of days from which to start returning data. 90
-    days is recommended by Cofense.
+  required: false
+- additionalinfo: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
   defaultvalue: '90'
   display: Time limit for collecting data
   name: days_back
-  required: false
   type: 0
+  required: false
 - additionalinfo: |-
     Mapping of Cofense Intelligence indicator rating to XSOAR DBOT Score
     standard rating.
@@ -96,27 +95,24 @@ configuration:
     Note: Cofense Indicator ratings are Major, Minor, Moderate, None.
   defaultvalue: None:0, Minor:1, Moderate:2, Major:3
   display: Score Mapping
-  hidden: false
   name: scoreMapping
-  required: false
   type: 0
+  required: false
 - additionalinfo: Create relationships between indicators as part of Enrichment.
   defaultvalue: 'true'
   display: Create relationships
-  hidden: false
   name: createRelationship
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Use the Cofense Intelligence integration to check the reputation of domains,
-  URLs, IP addresses, file hashes, and email addresses.
+  required: false
+description: Use the Cofense Intelligence integration to check the reputation of domains, URLs, IP addresses, file hashes, and email addresses.
 display: Cofense Intelligence v2
 name: CofenseIntelligenceV2
 script:
@@ -127,25 +123,16 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data.
-        90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: Unknown
     - contextPath: IP.GEO.Location
-      description: 'The geolocation where the IP address is located, in the format
-        of latitude: longitude.'
+      description: 'The geolocation where the IP address is located, in the format of latitude: longitude.'
       type: Unknown
     - contextPath: IP.GEO.Country
       description: The country in which the IP address is located.
@@ -199,8 +186,7 @@ script:
       description: True if you are allowed to submit data to this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.IP.Threats.feeds.permissions.OWNER
-      description: True if you are the original provider of the source data for this
-        feed.
+      description: True if you are the original provider of the source data for this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.IP.Threats.feeds.permissions.READ
       description: True if you are allowed to view data for this feed.
@@ -212,8 +198,7 @@ script:
       description: The name of the malware family.
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.blockSet.malwareFamily.description
-      description: Brief description of the malware family, what it does, or how it
-        works.
+      description: Brief description of the malware family, what it does, or how it works.
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.blockSet.impact
       description: Values borrowed from stixVocabs:ImpactRatingVocab-1.0.
@@ -258,8 +243,7 @@ script:
       description: Total number of instances of each item named.
       type: Number
     - contextPath: CofenseIntelligence.IP.Threats.senderEmailSet.senderEmail
-      description: The possibly spoofed email address used in the delivery of the
-        email.
+      description: The possibly spoofed email address used in the delivery of the email.
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.malwareFamily.familyName
       description: Family name of the malware.
@@ -277,8 +261,7 @@ script:
       description: The file name of any file discovered during a malware infection.
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.type
-      description: Description of the purpose this file serves within the malware
-        infection.
+      description: Description of the purpose this file serves within the malware infection.
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.dateEntered
       description: Date when this file was analyzed by Malcovery.
@@ -362,56 +345,24 @@ script:
       description: If malware, will have value 'malware', otherwise it is empty.
       type: String
   - arguments:
-    - default: false
-      description: String to search.
-      isArray: false
+    - description: String to search.
       name: str
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of strings to search. Default is 10.
-      isArray: false
+    - description: Maximum number of strings to search. Default is 10.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data.
-        90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    - default: false
-      description: The malware family associated with a malware campaign.
-      isArray: false
+    - description: The malware family associated with a malware campaign.
       name: malware_family
-      required: false
-      secret: false
-    - default: false
-      description: The filename associated with a phishing or malware campaign.
-      isArray: false
+    - description: The filename associated with a phishing or malware campaign.
       name: malware_file
-      required: false
-      secret: false
-    - default: false
-      description: Search the message subject associated with malware campaigns.
-      isArray: false
+    - description: Search the message subject associated with malware campaigns.
       name: malware_subject
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A specific url to search for.
 
         Note: This supports exact and partial matching of urls.
-      isArray: false
       name: url
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a specific threat or a list of threats based on the filter
-      values provided in the command arguments.
-    execution: false
+    description: Retrieves a specific threat or a list of threats based on the filter values provided in the command arguments.
     name: cofense-search
     outputs:
     - contextPath: CofenseIntelligence.Threats.id
@@ -424,8 +375,7 @@ script:
       description: True if you are allowed to submit data to this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.Threats.feeds.permissions.OWNER
-      description: True if you are the original provider of the source data for this
-        feed.
+      description: True if you are the original provider of the source data for this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.Threats.feeds.permissions.READ
       description: True if you are allowed to view data for this feed.
@@ -437,8 +387,7 @@ script:
       description: The name of the malware family.
       type: String
     - contextPath: CofenseIntelligence.Threats.blockSet.malwareFamily.description
-      description: Brief description of the malware family, what it does, or how it
-        works.
+      description: Brief description of the malware family, what it does, or how it works.
       type: String
     - contextPath: CofenseIntelligence.Threats.blockSet.impact
       description: Values borrowed from stixVocabs:ImpactRatingVocab-1.0.
@@ -483,8 +432,7 @@ script:
       description: Total number of instances of each item named.
       type: Number
     - contextPath: CofenseIntelligence.Threats.senderEmailSet.senderEmail
-      description: The possibly spoofed email address used in the delivery of the
-        email.
+      description: The possibly spoofed email address used in the delivery of the email.
       type: String
     - contextPath: CofenseIntelligence.Threats.executableSet.malwareFamily.familyName
       description: Family name of malware.
@@ -502,8 +450,7 @@ script:
       description: The file name of any file discovered during a malware infection.
       type: String
     - contextPath: CofenseIntelligence.Threats.executableSet.type
-      description: Description of the purpose this file serves within the malware
-        infection.
+      description: Description of the purpose this file serves within the malware infection.
       type: String
     - contextPath: CofenseIntelligence.Threats.executableSet.dateEntered
       description: Date when this file was analyzed by Malcovery.
@@ -592,17 +539,9 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data.
-        90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a file hash.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Extension
@@ -666,8 +605,7 @@ script:
       description: True if you are allowed to submit data to this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.File.Threats.feeds.permissions.OWNER
-      description: True if you are the original provider of the source data for this
-        feed.
+      description: True if you are the original provider of the source data for this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.File.Threats.feeds.permissions.READ
       description: True if you are allowed to view data for this feed.
@@ -679,8 +617,7 @@ script:
       description: The name of the malware family.
       type: String
     - contextPath: CofenseIntelligence.File.Threats.blockSet.malwareFamily.description
-      description: Brief description of the malware family, what it does, or how it
-        works.
+      description: Brief description of the malware family, what it does, or how it works.
       type: String
     - contextPath: CofenseIntelligence.File.Threats.blockSet.impact
       description: Values borrowed from stixVocabs:ImpactRatingVocab-1.0.
@@ -725,8 +662,7 @@ script:
       description: Total number of instances of each item named.
       type: Number
     - contextPath: CofenseIntelligence.File.Threats.senderEmailSet.senderEmail
-      description: The possibly spoofed email address used in the delivery of the
-        email.
+      description: The possibly spoofed email address used in the delivery of the email.
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.malwareFamily.familyName
       description: Family name of malware.
@@ -744,8 +680,7 @@ script:
       description: The file name of any file discovered during a malware infection.
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.type
-      description: Description of the purpose this file serves within the malware
-        infection.
+      description: Description of the purpose this file serves within the malware infection.
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.dateEntered
       description: Date when this file was analyzed by Malcovery.
@@ -834,17 +769,9 @@ script:
       isArray: true
       name: email
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data.
-        90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an email address.
-    execution: false
     name: email
     outputs:
     - contextPath: DBotScore.Indicator
@@ -890,8 +817,7 @@ script:
       description: True if you are allowed to submit data to this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.Email.Threats.feeds.permissions.OWNER
-      description: True if you are the original provider of the source data for this
-        feed.
+      description: True if you are the original provider of the source data for this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.Email.Threats.feeds.permissions.READ
       description: True if you are allowed to view data for this feed.
@@ -903,8 +829,7 @@ script:
       description: Names and describes the malware families.
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.blockSet.malwareFamily.description
-      description: Brief description of the malware family, what it does, or how it
-        works.
+      description: Brief description of the malware family, what it does, or how it works.
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.blockSet.impact
       description: Values borrowed from stixVocabs:ImpactRatingVocab-1.0.
@@ -949,8 +874,7 @@ script:
       description: Total number of instances of each item named.
       type: Number
     - contextPath: CofenseIntelligence.Email.Threats.senderEmailSet.senderEmail
-      description: The possibly spoofed email address used in the delivery of the
-        email.
+      description: The possibly spoofed email address used in the delivery of the email.
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.executableSet.malwareFamily.familyName
       description: Family name of the malware.
@@ -968,8 +892,7 @@ script:
       description: The file name of any file discovered during a malware infection.
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.executableSet.type
-      description: Description of the purpose this file serves within the malware
-        infection.
+      description: Description of the purpose this file serves within the malware infection.
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.executableSet.dateEntered
       description: Date when this file was analyzed by Malcovery.
@@ -1058,17 +981,9 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data.
-        90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a URL.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1123,8 +1038,7 @@ script:
       description: True if you are allowed to submit data to this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.URL.Threats.feeds.permissions.OWNER
-      description: True if you are the original provider of the source data for this
-        feed.
+      description: True if you are the original provider of the source data for this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.URL.Threats.feeds.permissions.READ
       description: True if you are allowed to view data for this feed.
@@ -1136,8 +1050,7 @@ script:
       description: The name of the malware family.
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.blockSet.malwareFamily.description
-      description: Brief description of the malware family, what it does, or how it
-        works.
+      description: Brief description of the malware family, what it does, or how it works.
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.blockSet.impact
       description: Values borrowed from stixVocabs:ImpactRatingVocab-1.0.
@@ -1182,8 +1095,7 @@ script:
       description: Total number of instances of each item named.
       type: Number
     - contextPath: CofenseIntelligence.URL.Threats.senderEmailSet.senderEmail
-      description: The possibly spoofed email address used in the delivery of the
-        email.
+      description: The possibly spoofed email address used in the delivery of the email.
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.malwareFamily.familyName
       description: Family name of the malware.
@@ -1201,8 +1113,7 @@ script:
       description: The file name of any file discovered during a malware infection.
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.type
-      description: Description of the purpose this file serves within the malware
-        infection.
+      description: Description of the purpose this file serves within the malware infection.
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.dateEntered
       description: Date when this file was analyzed by Malcovery.
@@ -1291,17 +1202,9 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of days from which to start returning data.
-        90 days is recommended by Cofense.
-      isArray: false
+    - description: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
       name: days_back
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of the domain.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1356,8 +1259,7 @@ script:
       description: True if you are allowed to submit data to this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.Domain.Threats.feeds.permissions.OWNER
-      description: True if you are the original provider of the source data for this
-        feed.
+      description: True if you are the original provider of the source data for this feed.
       type: Boolean
     - contextPath: CofenseIntelligence.Domain.Threats.feeds.permissions.READ
       description: True if you are allowed to view data for this feed.
@@ -1369,8 +1271,7 @@ script:
       description: The name of the malware family.
       type: String
     - contextPath: CofenseIntelligence.Domain.Threats.blockSet.malwareFamily.description
-      description: Brief description of the malware family, what it does, or how it
-        works.
+      description: Brief description of the malware family, what it does, or how it works.
       type: String
     - contextPath: CofenseIntelligence.Domain.Threats.blockSet.impact
       description: Values borrowed from stixVocabs:ImpactRatingVocab-1.0.
@@ -1415,8 +1316,7 @@ script:
       description: Total number of instances of each item named.
       type: Number
     - contextPath: CofenseIntelligence.Domain.Threats.senderEmailSet.senderEmail
-      description: The possibly spoofed email address used in the delivery of the
-        email.
+      description: The possibly spoofed email address used in the delivery of the email.
       type: String
     - contextPath: CofenseIntelligence.Domain.Threats.executableSet.malwareFamily.familyName
       description: Family name of the malware.
@@ -1434,8 +1334,7 @@ script:
       description: The file name of any file discovered during a malware infection.
       type: String
     - contextPath: CofenseIntelligence.Domain.Threats.executableSet.type
-      description: Description of the purpose this file serves within the malware
-        infection.
+      description: Description of the purpose this file serves within the malware infection.
       type: String
     - contextPath: CofenseIntelligence.Domain.Threats.executableSet.dateEntered
       description: Date when this file was analyzed by Malcovery.
@@ -1519,29 +1418,20 @@ script:
       description: If malware, will have value 'malware', otherwise it is empty.
       type: String
   - arguments:
-    - default: false
-      description: Unique id to download the specified threat report.
-      isArray: false
+    - description: Unique id to download the specified threat report.
       name: report_id
       required: true
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: html
       description: |-
         Report format to download.
         Allowed types are html and pdf.
-      isArray: false
       name: report_format
       predefined:
       - html
       - pdf
-      required: false
-      secret: false
-    deprecated: false
-    description: Downloads threat report provided by cofense intelligence of an indicator
-      for the given unique report id.
-    execution: false
+    description: Downloads threat report provided by cofense intelligence of an indicator for the given unique report id.
     name: cofense-threat-report-get
     outputs:
     - contextPath: File.Size
@@ -1577,11 +1467,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.10.11.59070
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

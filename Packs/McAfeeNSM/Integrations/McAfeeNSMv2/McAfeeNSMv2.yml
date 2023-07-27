@@ -16,25 +16,25 @@ configuration:
   section: Connect
 - display: Product Version
   name: version
-  required: false
   type: 15
   defaultvalue: V9x
   options:
   - V9x
   - V10x
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: McAfee Network Security Manager gives you real-time visibility and control over all McAfee intrusion prevention systems deployed across your network.
 display: 'McAfee NSM v2'
 name: McAfeeNSMv2
@@ -46,19 +46,12 @@ script:
     - name: domain_id
       required: true
       description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Policy.policyId
@@ -94,11 +87,8 @@ script:
     - name: policy_id
       required: true
       description: The ID of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.
-      isArray: false
     - name: include_rule_objects
-      required: false
       description: Whether to insert the rule objects that are linked to the policy in the context.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -216,15 +206,11 @@ script:
     - name: domain
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: name
       required: true
       description: The policy name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the policy is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -233,11 +219,8 @@ script:
     - name: description
       required: true
       description: The description of the policy.
-      isArray: false
     - name: is_editable
-      required: false
       description: Whether the policy is editable.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -246,7 +229,6 @@ script:
     - name: policy_type
       auto: PREDEFINED
       description: The type of the policy.
-      isArray: false
       predefined:
       - Advanced
       - Classic
@@ -254,11 +236,9 @@ script:
     - name: rule_description
       required: true
       description: The rule description.
-      isArray: false
     - name: response
       auto: PREDEFINED
       description: Action to be performed if the traffic matches this rule.
-      isArray: false
       predefined:
       - Scan
       - Drop
@@ -269,9 +249,7 @@ script:
       - Require Authentication
       required: true
     - name: rule_enabled
-      required: false
       description: Whether the rule is enabled.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -280,20 +258,16 @@ script:
     - name: direction
       auto: PREDEFINED
       description: The direction of the rule.
-      isArray: false
       predefined:
       - Inbound
       - Outbound
       - Either
       required: true
     - name: source_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: source_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -301,15 +275,11 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     - name: destination_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: destination_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -317,7 +287,6 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     outputs:
     - contextPath: NSM.Policy.FirewallPolicyId
       description: The ID of the newly created firewall policy.
@@ -328,32 +297,21 @@ script:
     - name: policy_id
       required: true
       description: The ID of the policy. To get the policy ID, use the !nsm-list-domain-firewall-policy.
-      isArray: false
     - name: domain
-      required: false
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: name
-      required: false
       description: The policy name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the policy is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
       - no
       defaultValue: yes
     - name: description
-      required: false
       description: The description of the policy.
-      isArray: false
     - name: is_editable
-      required: false
       description: Whether the policy is editable.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -361,19 +319,14 @@ script:
     - name: policy_type
       auto: PREDEFINED
       description: The type of the policy.
-      isArray: false
       predefined:
       - Advanced
       - Classic
-      required: false
     - name: rule_description
-      required: false
       description: The rule description.
-      isArray: false
     - name: response
       auto: PREDEFINED
       description: Action to be performed if the traffic matches this rule.
-      isArray: false
       predefined:
       - Scan
       - Drop
@@ -382,11 +335,8 @@ script:
       - Stateless Ignore
       - Stateless Drop
       - Require Authentication
-      required: false
     - name: rule_enabled
-      required: false
       description: Whether the rule is enabled.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
@@ -395,20 +345,15 @@ script:
     - name: direction
       auto: PREDEFINED
       description: The direction of the rule.
-      isArray: false
       predefined:
       - Inbound
       - Outbound
       - Either
-      required: false
     - name: source_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: source_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -416,15 +361,11 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     - name: destination_rule_object_id
-      required: false
       description: The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
-      isArray: false
     - name: destination_rule_object_type
       auto: PREDEFINED
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -432,11 +373,8 @@ script:
       - Endpoint IP V.6
       - Range IP V.6
       - Network IP V.6
-      required: false
     - name: is_overwrite
-      required: false
       description: Whether the new addresses that were provided in the update processes will override the current ones or will be added to them.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -447,18 +385,15 @@ script:
     - name: policy_id
       required: true
       description: The ID of the policy to delete. To get the policy ID, use the !nsm-list-domain-firewall-policy.
-      isArray: false
   - name: nsm-list-domain-rule-object
     description: Gets the list of rule objects defined in a particular domain.
     arguments:
     - name: domain_id
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: type
       auto: PREDEFINED
       description: The type of the rule.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -467,20 +402,13 @@ script:
       - Range IP V.6
       - Network IP V.6
       - All
-      required: false
       defaultValue: All
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Rule.ruleobjId
@@ -576,7 +504,6 @@ script:
     - name: rule_id
       required: true
       description: The ID of the rule object. To get the rule object ID, use the !nsm-list-domain-rule-object.
-      isArray: false
     outputs:
     - contextPath: NSM.Rule.ruleobjId
       description: The ID of the rule object.
@@ -668,11 +595,9 @@ script:
     - name: domain
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: rule_object_type
       auto: PREDEFINED
       description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value, where X is 4 or 6 respectively.
-      isArray: false
       predefined:
       - Endpoint IP V.4
       - Range IP V.4
@@ -684,46 +609,28 @@ script:
     - name: name
       required: true
       description: The rule object name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the rule object is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
       - no
       defaultValue: yes
     - name: description
-      required: false
       description: The description of the rule object.
-      isArray: false
     - name: address_ip_v.4
-      required: false
       description: List of IPv4 Host Address, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.4
-      required: false
       description: Start of the IPv4 range.
-      isArray: false
     - name: to_address_ip_v.4
-      required: false
       description: End of the IPv4 range.
-      isArray: false
     - name: address_ip_v.6
-      required: false
       description: List of IPv6 host addresses, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.6
-      required: false
       description: Start of the IPv6 range.
-      isArray: false
     - name: to_address_ip_v.6
-      required: false
       description: End of the IPv6 range.
-      isArray: false
     - name: state
-      required: false
       description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
       defaultValue: Enabled
       auto: PREDEFINED
@@ -740,62 +647,39 @@ script:
     - name: domain
       required: true
       description: The ID of the domain. To get the domain ID, use the !nsm-get-domains command.
-      isArray: false
     - name: rule_id
       description: The ID of the rule. To get the rule object ID, use the !nsm-list-domain-rule-object.
-      isArray: false
       required: true
     - name: name
-      required: false
       description: The rule object name.
-      isArray: false
     - name: visible_to_child
-      required: false
       description: Whether the rule object is visible to the child domain.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - yes
       - no
       defaultValue: yes
     - name: description
-      required: false
       description: The description of the rule object.
-      isArray: false
     - name: address_ip_v.4
-      required: false
       description: List of IPv4 host addresses, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.4
-      required: false
       description: Start of the IPv4 range.
-      isArray: false
     - name: to_address_ip_v.4
-      required: false
       description: End of the IPv4 range.
-      isArray: false
     - name: address_ip_v.6
-      required: false
       description: List of IPv6 host addresses, separated by a comma.
-      isArray: false
     - name: from_address_ip_v.6
-      required: false
       description: Start of the IPv6 range.
-      isArray: false
     - name: to_address_ip_v.6
-      required: false
       description: End of the IPv6 range.
-      isArray: false
     - name: is_overwrite
-      required: false
       description: Whether the new addresses that were provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added.
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: state
-      required: false
       description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x, and can be used for adding a new address. Existing address states cannot be modified."
       defaultValue: Enabled
       auto: PREDEFINED
@@ -808,22 +692,15 @@ script:
     - name: rule_id
       required: true
       description: The ID of the rule object. To get the rule object ID, use the !nsm-list-domain-rule-object.
-      isArray: false
   - name: nsm-get-alerts
     description: Retrieves the alerts.
     arguments:
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     - name: time_period
       auto: PREDEFINED
@@ -837,17 +714,11 @@ script:
       - LAST_14_DAYS
       - CUSTOM
       description: Time period.
-      required: false
-      isArray: false
       defaultValue: LAST_7_DAYS
     - name: start_time
       description: Start time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: end_time
       description: End time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: state
       auto: PREDEFINED
       predefined:
@@ -856,20 +727,12 @@ script:
       - Unacknowledged
       description: Alert state.
       defaultValue: ANY
-      required: false
-      isArray: false
     - name: search
       description: Search string in alert details.
-      required: false
-      isArray: false
     - name: filter
       description: 'Filter alert by fields. For example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". To use the "name" field in the filter, enter only one name in each command run. Filter on the following columns is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
-      required: false
-      isArray: false
     - name: domain_id
-      required: false
       description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
-      isArray: false
       defaultValue: 0
     outputs:
     - contextPath: NSM.Alerts.ID
@@ -1069,12 +932,10 @@ script:
     arguments:
     - name: alert_id
       required: true
-      isArray: false
       description: Alert ID. In order to get the alert ID, use the command '!nsm-get-alerts' and use the output field “ID”.
     - name: sensor_id
       description: Sensor ID. In order to get the sensor ID, use the command '!nsm-get-alerts' and use the output field “SensorID”.
       required: true
-      isArray: false
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID.
@@ -1332,9 +1193,7 @@ script:
     description: If an attack is given, the command returns the details for the specific attack. Otherwise, gets all available attack definitions in the Manager UI. This command can take a few minutes. If you get a timeout error, increase the timeout by using the parameter "execution-timeout".
     arguments:
     - name: attack_id
-      required: false
       description: The ID of the attack. To get the attack_id, use the !nsm-get-attacks command, without an attack ID.
-      isArray: false
     outputs:
     - contextPath: InfoFile.Name
       description: File name.
@@ -1440,20 +1299,12 @@ script:
     arguments:
     - name: domain_id
       description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
-      required: false
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50.
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Domains.ID
@@ -1470,20 +1321,12 @@ script:
     arguments:
     - name: domain_id
       description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
-      required: false
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.Sensors.ID
@@ -1549,19 +1392,12 @@ script:
     - name: domain_id
       description: Specific domain ID. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
       required: true
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.IPSPolicies.IsEditable
@@ -1585,7 +1421,6 @@ script:
     - name: policy_id
       description: Specific IPS policy ID. To get the policy_id use !nsm-get-ips-policies command.
       required: true
-      isArray: false
     outputs:
     - contextPath: NSM.IPSPolicies.ID
       description: IPS policy ID.
@@ -1628,8 +1463,6 @@ script:
       - Unacknowledged
       description: Alert state.
       defaultValue: ANY
-      required: false
-      isArray: false
     - name: time_period
       auto: PREDEFINED
       predefined:
@@ -1642,35 +1475,23 @@ script:
       - LAST_14_DAYS
       - CUSTOM
       description: Time period.
-      required: false
-      isArray: false
       defaultValue: LAST_7_DAYS
     - name: start_time
       description: Start time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: end_time
       description: End time in "mm/dd/yyyy HH:MM" format. Used for custom time only.
-      required: false
-      isArray: false
     - name: new_state
       auto: PREDEFINED
       predefined:
       - Acknowledged
       - Unacknowledged
       description: The new alert state.
-      required: false
-      isArray: false
     - name: new_assignee
       description: The new assignee.
-      required: false
-      isArray: false
     - name: search
       description: Search string in alert details.
     - name: filter
       description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". To use the "name" field in the filter, enter only one name in each command run. Filter on the following columns is allowed - name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: NSM.Alerts.ID
       description: Alert ID.
@@ -1870,19 +1691,12 @@ script:
     - name: sensor_id
       required: true
       description: The ID of the sensor. To get the sensor_id, use the !nsm-get-sensors command.
-      isArray: false
     - name: limit
-      required: false
-      isArray: false
       description: The maximum number of projects to return.
       defaultValue: 50
     - name: page
-      required: false
-      isArray: false
       description: The specific result page to display. The default is 1.
     - name: page_size
-      required: false
-      isArray: false
       description: The number of records in a page.
     outputs:
     - contextPath: NSM.PcapFile
@@ -1894,11 +1708,9 @@ script:
     - name: sensor_id
       required: true
       description: The ID of the sensor. To get the sensor_id, use the command !nsm-get-sensors.
-      isArray: false
     - name: file_name
       required: true
       description: The name of the wanted file. To get the file_name, use the command !nsm-list-pcap-file.
-      isArray: false
     outputs:
     - contextPath: InfoFile.Name
       description: File name.
@@ -2229,12 +2041,11 @@ script:
       - "false"
     - name: interval_in_seconds
       description: The interval between status checks.
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.5.0
 tests:
 - Test_McAfeeNSMv2_using_v9

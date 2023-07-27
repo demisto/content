@@ -1,42 +1,22 @@
 args:
-- default: false
-  description: Password to protect the certificate.
-  isArray: false
+- description: Password to protect the certificate.
   name: password
   required: true
   secret: true
-- default: false
-  description: Number of days the certificate is available. Default is "365".
-  isArray: false
+- description: Number of days the certificate is available. Default is "365".
   name: days
   required: true
-  secret: false
   defaultValue: '365'
-- default: false
-  description: A friendly name to identify the certificate.
-  isArray: false
+- description: A friendly name to identify the certificate.
   name: friendly_name
-  required: false
-  secret: false
-- default: false
-  description: Country of the certificate issuer.
-  isArray: false
+- description: Country of the certificate issuer.
   name: country
-  required: false
-  secret: false
-- default: false
-  description: State or province of the certificate issuer.
-  isArray: false
+- description: State or province of the certificate issuer.
   name: state_or_province
-  required: false
-  secret: false
-comment: Creates a public key (.cer file), a private key (.pfx) file, and a Base64
-  encoded private key to use to authenticate the EWS Extension Online Powershell v2
-  integration.
+comment: Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encoded private key to use to authenticate the EWS Extension Online Powershell v2 integration.
 commonfields:
   id: CreateCertificate
   version: -1
-enabled: false
 name: CreateCertificate
 outputs:
 - contextPath: Certificate.PublicKey
@@ -49,7 +29,6 @@ outputs:
   description: The private key encoded in Base64 to use in the integration parameter.
   type: String
 script: '-'
-system: false
 tags:
 - basescript
 timeout: '0'

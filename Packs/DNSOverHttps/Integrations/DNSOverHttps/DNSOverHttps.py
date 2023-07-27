@@ -1,7 +1,6 @@
-import ast
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import ast
 
 
 def test_module(client, base_url):

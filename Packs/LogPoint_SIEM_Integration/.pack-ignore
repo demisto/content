@@ -5,11 +5,11 @@ ignore=PA125
 ignore=RM104
 
 [file:LogPoint_SIEM_Integration.yml]
-ignore=BA108,BA109,BA110,IN145
+ignore=BA108,BA109,BA110
 
 [file:Playbook-LogPoint_SIEM_Playbook.yml]
 ignore=BA110
 
-
 [file:LogPoint_SIEM_Integration_image.png]
 ignore=IM111
+

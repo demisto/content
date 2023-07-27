@@ -1,0 +1,267 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FullHunt
+  version: -1
+configuration:
+- defaultvalue: https://fullhunt.io
+  display: Server URL
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  section: Connect
+  type: 8
+  required: false
+- advanced: true
+  defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  section: Connect
+  type: 8
+  required: false
+description: Cortex XSOAR integration with FullHunt.io API
+display: FullHunt
+name: FullHunt
+script:
+  commands:
+  - arguments: []
+    description: Get information about the user account such as credit and usage
+    name: fullhunt-get-account-status
+    outputs:
+    - contextPath: FullHunt.UserInfo.user.company
+      description: Company name
+      type: string
+    - contextPath: FullHunt.UserInfo.user.email
+      description: Company email
+      type: string
+    - contextPath: FullHunt.UserInfo.user.first_name
+      description: First name
+      type: string
+    - contextPath: FullHunt.UserInfo.user.last_name
+      description: Last name
+      type: string
+    - contextPath: FullHunt.UserInfo.user.plan
+      description: Fullhunt plan
+      type: string
+    - contextPath: FullHunt.UserInfo.user_credits.credits_usage
+      description: Credits usage at the time of the request
+      type: number
+    - contextPath: FullHunt.UserInfo.user_credits.max_results_per_request
+      description: Maximum results per request
+      type: number
+    - contextPath: FullHunt.UserInfo.user_credits.remaining_credits
+      description: Remaining credits on the account for the current month
+      type: number
+    - contextPath: FullHunt.UserInfo.user_credits.total_credits_per_month
+      description: Total credits available per month
+      type: number
+  - arguments:
+    - default: true
+      description: List of hosts
+      name: host
+      required: true
+    description: Get host details
+    name: fullhunt-get-host
+    outputs:
+    - contextPath: FullHunt.Host.is_cloud
+      description: Whether the host is based on cloud technology or not
+      type: boolean
+    - contextPath: FullHunt.Host.network_ports
+      description: List of open ports
+      type: array
+    - contextPath: FullHunt.Host.is_live
+      description: Whether the host is live or not
+      type: boolean
+    - contextPath: FullHunt.Host.http_title
+      description: HTTP title
+      type: string
+    - contextPath: FullHunt.Host.http_status_code
+      description: HTTP status code
+      type: number
+    - contextPath: FullHunt.Host.domain
+      description: Domain
+      type: string
+    - contextPath: FullHunt.Host.ip_metadata.postal_code
+      description: Postal code related to the IP
+      type: number
+    - contextPath: FullHunt.Host.ip_metadata.location_longitude
+      description: Longitude coordinate of the IP
+      type: number
+    - contextPath: FullHunt.Host.ip_metadata.isp
+      description: Internet Service Provider of the IP
+      type: string
+    - contextPath: FullHunt.Host.ip_metadata.organization
+      description: Organization of the IP
+      type: string
+    - contextPath: FullHunt.Host.ip_metadata.country_name
+      description: Name of the country of the IP
+      type: string
+    - contextPath: FullHunt.Host.ip_metadata.region
+      description: Region of the IP
+      type: string
+    - contextPath: FullHunt.Host.ip_metadata.country_code
+      description: Two letters country code
+      type: string
+    - contextPath: FullHunt.Host.ip_metadata.location_latitude
+      description: Latitude coordinate of the IP
+      type: number
+    - contextPath: FullHunt.Host.ip_metadata.asn
+      description: Autonomous System Number
+      type: number
+    - contextPath: FullHunt.Host.ip_metadata.city_name
+      description: City name of the IP
+      type: string
+    - contextPath: FullHunt.Host.has_private_ip
+      description: Whether the host has a private IP listed
+      type: boolean
+    - contextPath: FullHunt.Host.is_resolvable
+      description: Whether the host is resolvable
+      type: boolean
+    - contextPath: FullHunt.Host.dns.a
+      description: List of DNS A entries
+      type: array
+    - contextPath: FullHunt.Host.dns.aaaa
+      description: DNS AAAA entry
+      type: string
+    - contextPath: FullHunt.Host.dns.cname
+      description: List of DNS CNAME entries
+      type: array
+    - contextPath: FullHunt.Host.dns.mx
+      description: List of DNS MX entries
+      type: array
+    - contextPath: FullHunt.Host.dns.ns
+      description: List of DNS NS entries
+      type: array
+    - contextPath: FullHunt.Host.dns.ptr
+      description: DNS PTR entry
+      type: string
+    - contextPath: FullHunt.Host.dns.txt
+      description: DNS TXT entry
+      type: string
+    - contextPath: FullHunt.Host.has_ipv6
+      description: Whether the host has an IPv6 listed
+      type: boolean
+    - contextPath: FullHunt.Host.tld
+      description: Top Level Domain
+      type: string
+    - contextPath: FullHunt.Host.cdn
+      description: Content Delivery Network
+      type: string
+    - contextPath: FullHunt.Host.is_cloudflare
+      description: Whether host uses Cloudflare or not
+      type: boolean
+    - contextPath: FullHunt.Host.cloud.provider
+      description: Name of the cloud provider
+      type: string
+    - contextPath: FullHunt.Host.cloud.region
+      description: Region of the cloud provider
+      type: string
+    - contextPath: FullHunt.Host.is_cdn
+      description: Whether host uses CDN
+      type: boolean
+    - contextPath: FullHunt.Host.tags
+      description: Tags of the host
+      type: array
+    - contextPath: FullHunt.Host.ip_address
+      description: IP address of the host
+      type: string
+  - arguments:
+    - default: true
+      description: One domain to check
+      isArray: true
+      name: domain
+      required: true
+    description: Get details about one specified domain
+    name: fullhunt-domain
+    outputs:
+    - contextPath: FullHunt.Domain.domain
+      description: Domain
+      type: string
+    - contextPath: FullHunt.Domain.hosts
+      description: List of hosts with same details as running the command "fullhunt-get-host"
+      type: array
+    - contextPath: FullHunt.Domain.message
+      description: Message
+      type: string
+    - contextPath: FullHunt.Domain.metadata.all_results_count
+      description: Number of results for this API request
+      type: number
+    - contextPath: FullHunt.Domain.metadata.available_results_for_user
+      description: Number of results available for the user performing the API request
+      type: number
+    - contextPath: FullHunt.Domain.metadata.domain
+      description: Domain
+      type: string
+    - contextPath: FullHunt.Domain.metadata.last_scanned
+      description: Epoch timestamp of the domain last scan
+      type: number
+    - contextPath: FullHunt.Domain.metadata.max_results_for_user
+      description: Maximum results for the user
+      type: number
+    - contextPath: FullHunt.Domain.metadata.timestamp
+      description: Epoch timestamp of the API request
+      type: number
+    - contextPath: FullHunt.Domain.metadata.user_plan
+      description: Fullhunt plan
+      type: string
+    - contextPath: FullHunt.Domain.status
+      description: HTTP status code
+      type: number
+  - arguments:
+    - default: true
+      description: Enter the domain from which you want to enumerate subdomains
+      name: domain
+      required: true
+    description: Get all subdomains from a given domain
+    name: fullhunt-get-subdomain
+    outputs:
+    - contextPath: FullHunt.Subdomain.domain
+      description: Domain
+      type: string
+    - contextPath: FullHunt.Subdomain.hosts
+      description: List of subdomains
+      type: array
+    - contextPath: FullHunt.Subdomain.message
+      description: Message
+      type: string
+    - contextPath: FullHunt.Subdomain.metadata.all_results_count
+      description: Number of results for this API request
+      type: number
+    - contextPath: FullHunt.Subdomain.metadata.available_results_for_user
+      description: Number of results available for the user performing the API request
+      type: number
+    - contextPath: FullHunt.Subdomain.metadata.domain
+      description: Domain
+      type: string
+    - contextPath: FullHunt.Subdomain.metadata.last_scanned
+      description: Epoch timestamp of the domain last scan
+      type: number
+    - contextPath: FullHunt.Subdomain.metadata.max_results_for_user
+      description: Maximum results for the user
+      type: number
+    - contextPath: FullHunt.Subdomain.metadata.timestamp
+      description: Epoch timestamp of the API request
+      type: number
+    - contextPath: FullHunt.Subdomain.metadata.user_plan
+      description: Fullhunt plan
+      type: string
+    - contextPath: FullHunt.Subdomain.status
+      description: HTTP status code
+      type: number
+  dockerimage: demisto/python3:3.10.12.65389
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

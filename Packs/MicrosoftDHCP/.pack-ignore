@@ -1,0 +1,6 @@
+[file:MicrosoftDHCP.yml]
+ignore=PR101
+
+[file:MicrosoftDHCP_1_3.yml]
+ignore=MR108
+

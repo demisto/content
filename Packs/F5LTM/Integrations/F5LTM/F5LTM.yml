@@ -10,16 +10,14 @@ configuration:
   type: 0
 - defaultvalue: '443'
   display: Port Number
-  hidden: false
   name: port
   required: true
   type: 0
 - defaultvalue: Common
   display: The administrative partition
-  hidden: false
   name: partition
-  required: false
   type: 0
+  required: false
 - additionalinfo: The Username to use for connection
   display: Username
   name: credentials
@@ -27,12 +25,12 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Manages F5 LTM
 display: F5 LTM
 name: F5LTM
@@ -40,25 +38,15 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Expand pools in the response
-      isArray: false
       name: expand
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of all pools
-    execution: false
     name: f5-ltm-get-pools
     outputs:
     - contextPath: F5.LTM.Pools.membersReference.isSubcollection
@@ -77,21 +65,12 @@ script:
       description: Configuration partition
       type: String
   - arguments:
-    - default: false
-      description: Pool Name
-      isArray: false
+    - description: Pool Name
       name: pool_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get pool details
-    execution: false
     name: f5-ltm-get-pool
     outputs:
     - contextPath: F5.LTM.Pools.allowNat
@@ -176,21 +155,12 @@ script:
       description: Pool slow ramp time
       type: Number
   - arguments:
-    - default: false
-      description: Pool Name
-      isArray: false
+    - description: Pool Name
       name: pool_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get Pool Members
-    execution: false
     name: f5-ltm-get-pool-members
     outputs:
     - contextPath: F5.LTM.Pools.members.address
@@ -251,15 +221,9 @@ script:
       description: Pool member state
       type: String
   - arguments:
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get a list of all nodes
-    execution: false
     name: f5-ltm-get-nodes
     outputs:
     - contextPath: F5.LTM.Nodes.address
@@ -278,21 +242,12 @@ script:
       description: Node checking state
       type: String
   - arguments:
-    - default: false
-      description: Node Name
-      isArray: false
+    - description: Node Name
       name: node_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get node details
-    execution: false
     name: f5-ltm-get-node
     outputs:
     - contextPath: F5.LTM.Nodes.address
@@ -356,21 +311,12 @@ script:
       description: Pool node checking state
       type: String
   - arguments:
-    - default: false
-      description: Node to disable
-      isArray: false
+    - description: Node to disable
       name: node_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Disable a node
-    execution: false
     name: f5-ltm-disable-node
     outputs:
     - contextPath: F5.LTM.Nodes.address
@@ -434,21 +380,12 @@ script:
       description: Pool node checking state
       type: String
   - arguments:
-    - default: false
-      description: Node to enable
-      isArray: false
+    - description: Node to enable
       name: node_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Enable a node
-    execution: false
     name: f5-ltm-enable-node
     outputs:
     - contextPath: F5.LTM.Nodes.address
@@ -512,27 +449,15 @@ script:
       description: Pool node checking state
       type: String
   - arguments:
-    - default: false
-      description: Pool to get its stats
-      isArray: false
+    - description: Pool to get its stats
       name: pool_name
       required: true
-      secret: false
-    - default: false
-      description: Member to get its stats
-      isArray: false
+    - description: Member to get its stats
       name: member_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get Pool Member Stats
-    execution: false
     name: f5-ltm-get-pool-member-stats
     outputs:
     - contextPath: F5.LTM.Stats.members.stats.serverside\.curConns.value
@@ -545,21 +470,12 @@ script:
       description: The pool member status
       type: String
   - arguments:
-    - default: false
-      description: Node To Query
-      isArray: false
+    - description: Node To Query
       name: node_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get Node Stats
-    execution: false
     name: f5-ltm-get-node-stats
     outputs:
     - contextPath: F5.LTM.Nodes.stats.serverside\.curConns.value
@@ -572,21 +488,12 @@ script:
       description: The node status
       type: String
   - arguments:
-    - default: false
-      description: IP address of the node
-      isArray: false
+    - description: IP address of the node
       name: ip_address
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get node information by address
-    execution: false
     name: f5-ltm-get-node-by-address
     outputs:
     - contextPath: F5.LTM.Nodes.name
@@ -596,21 +503,12 @@ script:
       description: The node address
       type: String
   - arguments:
-    - default: false
-      description: Node name
-      isArray: false
+    - description: Node name
       name: node_name
       required: true
-      secret: false
-    - default: false
-      description: The administrative partition name.
-      isArray: false
+    - description: The administrative partition name.
       name: partition
-      required: false
-      secret: false
-    deprecated: false
     description: Get pool information by node
-    execution: false
     name: f5-ltm-get-pool-by-node
     outputs:
     - contextPath: F5.LTM.Nodes.pools
@@ -619,11 +517,7 @@ script:
     - contextPath: F5.LTM.Nodes.name
       description: The node name
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

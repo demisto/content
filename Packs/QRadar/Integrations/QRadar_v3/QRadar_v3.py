@@ -801,7 +801,7 @@ def update_user_query(user_query: str) -> str:
 
 
 def insert_to_updated_context(context_data: dict,
-                              offense_ids: list = None,
+                              offense_ids: list | None = None,
                               should_update_last_fetch: bool = False,
                               should_update_last_mirror: bool = False,
                               should_add_reset_key: bool = False,
@@ -849,7 +849,7 @@ def insert_to_updated_context(context_data: dict,
 def safely_update_context_data(
     context_data: dict,
     version: Any,
-    offense_ids: list = None,
+    offense_ids: list | None = None,
     should_update_last_fetch: bool = False,
     should_update_last_mirror: bool = False,
     should_add_reset_key: bool = False,
@@ -2564,8 +2564,11 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
     if query_expression or saved_search_id:
         try:
             response = client.search_create(query_expression, saved_search_id)
-        except Exception:
-            raise DemistoException(f'Could not create search for offense_id: {offense_id}')
+        except Exception as e:
+            if query_expression:
+                raise DemistoException(f'Could not create search for query: {query_expression}.') from e
+            if saved_search_id:
+                raise DemistoException(f'Could not create search for saved_search_id: {saved_search_id}.') from e
     else:
         response = create_events_search(client,
                                         fetch_mode,
@@ -2575,7 +2578,7 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
                                         start_time,
                                         return_raw_response=True)
         if response == QueryStatus.ERROR.value:
-            raise DemistoException(f'Could not create events search for offense_id: {offense_id}')
+            raise DemistoException(f'Could not create events search for offense_id: {offense_id}.')
 
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     return CommandResults(
@@ -3588,7 +3591,7 @@ def create_events_search(client: Client,
                          events_columns: str,
                          events_limit: int,
                          offense_id: int,
-                         offense_start_time: str = None,
+                         offense_start_time: str | None = None,
                          return_raw_response: bool = False,
                          ) -> str:
     additional_where = ''
@@ -4226,9 +4229,9 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
     # Log exceptions and return errors
-    except Exception as e:
+    except Exception:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}')
 
 
 ''' ENTRY POINT '''

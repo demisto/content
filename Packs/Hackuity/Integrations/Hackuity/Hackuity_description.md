@@ -4,4 +4,4 @@ Copy the *server URL* and *namespace* values from the *about page* of your Hacku
 
 #### Credentials
 
-Enter the *login* and *password* of a valid user of your Hackuity instance. Creating a dedicated user for this purpose is recommended.
+Generate an *API key* for a valid user of your Hackuity instance. Creating a dedicated user for this purpose is recommended.

@@ -49,17 +49,14 @@ args:
   required: true
   description: Value to filter results by
 - name: sensors
-  description: Semicolon separated list of columns to return. E.g. "Computer Name;IP
-    Address"
+  description: Semicolon separated list of columns to return. E.g. "Computer Name;IP Address"
   defaultValue: Computer Name
 outputs:
 - contextPath: Tanium.QuestionResults.Computer Name
-  description: Computer Name that contains the index query file details as specified
-    by the filters
+  description: Computer Name that contains the index query file details as specified by the filters
 - contextPath: Tanium.QuestionResults.Count
   description: Number or results per computer name that match the filter
 scripttarget: 0
-runonce: false
 dependson:
   must:
   - tn-ask-manual-question

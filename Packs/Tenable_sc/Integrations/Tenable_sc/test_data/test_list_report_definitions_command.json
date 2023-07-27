@@ -1,0 +1,14 @@
+{
+    "test_case_1": {
+        "args": {"manageable": "true"},
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable": [
+            {"description": "Test","id":"2","modifiedTime":"1673270090","name":"Critical and Exploitable Vulnerabilities Report","owner":
+            {"firstname":"test","id":"1","lastname":"","username":"test","uuid":"UUID_1"}, 
+            "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},"type":"pdf"},
+            {"description": "Test 2","id":"1","modifiedTime":"1673270079","name":"Critical and Exploitable Vulnerabilities Report","owner":
+            {"firstname":"test 1","id":"1","lastname":"","username":"test","uuid":"UUID_2"}, 
+            "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"},"type":"pdf"}]}, "timestamp":1684676253,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Report Definitions\n|ID|Name|Description|Type|Group|Owner|\n|---|---|---|---|---|---|\n| 2 | Critical and Exploitable Vulnerabilities Report | Test | pdf | Full Access | test |\n",
+        "expected_ec": [{"ID": "2", "Name": "Critical and Exploitable Vulnerabilities Report", "Type": "pdf", "Group": "Full Access", "Owner": "test"}]
+    }
+}

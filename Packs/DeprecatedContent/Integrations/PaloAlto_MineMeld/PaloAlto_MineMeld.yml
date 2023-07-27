@@ -13,8 +13,8 @@ configuration:
   type: 9
 - display: Block list names e.g.(BlackListIPv4, BlackListURL,Malicious)
   name: blacklist
-  required: false
   type: 0
+  required: false
 - additionalinfo: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing an indicator, the update time for all indicators will be changed.
   defaultvalue: 'False'
   display: Stateless
@@ -22,16 +22,16 @@ configuration:
   options:
   - 'True'
   - 'False'
-  required: false
   type: 15
+  required: false
 - display: Whitelist names e.g.(wlWhiteListIPv4,wlWhiteListDomain,Unmalicious)
   name: whitelist
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Deprecated. MineMeld streamlines the aggregation, enforcement and sharing of threat intelligence.
 deprecated: true
 display: Palo Alto Networks MineMeld (Deprecated)
@@ -39,87 +39,47 @@ name: Palo Alto Minemeld
 script:
   commands:
   - arguments:
-    - default: false
-      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
-      isArray: false
+    - description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
       name: miner
       required: true
-      secret: false
-    - default: false
-      description: The indicator's value to add. Support list \ comma-separated values.
+    - description: The indicator's value to add. Support list \ comma-separated values.
       isArray: true
       name: indicator
       required: true
-      secret: false
-    - default: false
-      description: The type of the indicator to add to the miner.
-      isArray: false
+    - description: The type of the indicator to add to the miner.
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Comment for the indicator.
-      isArray: false
+    - description: Comment for the indicator.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing an indicator, the update time for all indicators will be changed.
-      isArray: false
       name: stateless
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Add an indicator to a miner.
-    execution: false
     name: minemeld-add-to-miner
   - arguments:
-    - default: false
-      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
-      isArray: false
+    - description: Miner name - you can get it under Nodes page on MineMeld UI (nodes of type "miner").
       name: miner
       required: true
-      secret: false
-    - default: false
-      description: The value of the indicator to remove.
-      isArray: false
+    - description: The value of the indicator to remove.
       name: indicator
       required: true
-      secret: false
-    - default: false
-      description: The type of the indicator to remove from the miner.
-      isArray: false
+    - description: The type of the indicator to remove from the miner.
       name: type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: When set to "True", only updates indicators that are added or removed. When set to "False", when adding or removing an indicator, the update time for all indicators will be changed.
-      isArray: false
       name: stateless
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Removes an indicator from a miner.
-    execution: false
     name: minemeld-remove-from-miner
   - arguments:
-    - default: false
-      description: Miner name. Specify "all" to get indicators for all miners.
-      isArray: false
+    - description: Miner name. Specify "all" to get indicators for all miners.
       name: miner
       required: true
-      secret: false
-    deprecated: false
     description: Gets the indicators list for a miner.
-    execution: false
     name: minemeld-retrieve-miner
     outputs:
     - contextPath: MineMeld.Miner
@@ -147,21 +107,13 @@ script:
       description: Indicator's comment.
       type: string
   - arguments:
-    - default: false
-      description: Miner name.
-      isArray: false
+    - description: Miner name.
       name: miner
       required: true
-      secret: false
-    - default: false
-      description: Indicator details.
-      isArray: false
+    - description: Indicator details.
       name: indicator
       required: true
-      secret: false
-    deprecated: false
     description: Gets indicators from a miner's list.
-    execution: false
     name: minemeld-get-indicator-from-miner
     outputs:
     - contextPath: MineMeld.Miner
@@ -188,13 +140,9 @@ script:
   - arguments:
     - default: true
       description: ip
-      isArray: false
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Searches for IP addresses on miners.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -263,13 +211,9 @@ script:
   - arguments:
     - default: true
       description: file
-      isArray: false
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Search for file on lists
-    execution: false
     name: file
     outputs:
     - contextPath: DBotScore.Indicator
@@ -344,13 +288,9 @@ script:
   - arguments:
     - default: true
       description: domain
-      isArray: false
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Searches for a specified domain on lists.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -419,13 +359,9 @@ script:
   - arguments:
     - default: true
       description: url
-      isArray: false
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Searches for the specified URL on lists.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -491,9 +427,7 @@ script:
     - contextPath: MineMeld.Miner.name
       description: Miner name.
       type: string
-  - deprecated: false
-    description: Returns all miner names (with supported classes of custom indicators lists).
-    execution: false
+  - description: Returns all miner names (with supported classes of custom indicators lists).
     name: minemeld-get-all-miners-names
     outputs:
     - contextPath: MineMeld.Miner
@@ -508,10 +442,6 @@ script:
     - contextPath: MineMeld.Miner.indicators
       description: Amount of miner's indicators.
       type: string
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python2

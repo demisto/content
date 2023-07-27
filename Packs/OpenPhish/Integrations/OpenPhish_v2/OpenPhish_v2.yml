@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: 'false'
   display: Use HTTPS connection
   name: https
-  required: false
   type: 8
+  required: false
 - display: Database refresh interval (hours)
   name: fetchIntervalHours
   defaultvalue: 1
@@ -33,8 +33,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -43,55 +43,51 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
-description: OpenPhish uses proprietary Artificial Intelligence algorithms to automatically
-  identify zero-day phishing sites and provide comprehensive, actionable, real-time
-  threat intelligence.
+  required: false
+description: OpenPhish uses proprietary Artificial Intelligence algorithms to automatically identify zero-day phishing sites and provide comprehensive, actionable, real-time threat intelligence.
 name: OpenPhish_v2
 display: OpenPhish v2
-defaultEnabled: false
 script:
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.12.63474
   commands:
+  - name: url
+    arguments:
     - name: url
-      arguments:
-        - name: url
-          isArray: true
-          required: true
-          default: true
-          description: URL to check
-      outputs:
-        - contextPath: URL.Data
-          description: The URL
-        - contextPath: URL.Malicious.Vendor
-          description: The vendor reporting the URL as malicious.
-        - contextPath: URL.Malicious.Description
-          description: A description of the malicious URL.
-        - contextPath: DBotScore.Indicator
-          description: The indicator that was tested.
-        - contextPath: DBotScore.Type
-          description: The indicator type.
-        - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
-        - contextPath: DBotScore.Score
-          description: The actual score.
-      description: Checks the reputation of a URL.
-    - name: openphish-reload
-      arguments: []
-      description: Reload OpenPhish database
-    - name: openphish-status
-      arguments: []
-      description: Show OpenPhish database status
+      isArray: true
+      required: true
+      default: true
+      description: URL to check
+    outputs:
+    - contextPath: URL.Data
+      description: The URL
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    description: Checks the reputation of a URL.
+  - name: openphish-reload
+    arguments: []
+    description: Reload OpenPhish database
+  - name: openphish-status
+    arguments: []
+    description: Show OpenPhish database status
   script: '-'
   subtype: python3
   type: python
-hidden: false
 fromversion: 5.0.0
 tests:
-  - No test
+- No test

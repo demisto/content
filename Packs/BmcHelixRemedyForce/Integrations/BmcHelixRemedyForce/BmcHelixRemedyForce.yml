@@ -9,125 +9,111 @@ configuration:
   type: 0
 - display: BMC Remedyforce Login URL
   name: auth_url
-  required: false
   type: 0
   defaultvalue: https://login.salesforce.com
+  required: false
 - display: Username
-  hidden: false
   name: username
-  required: true
   type: 0
+  hidden: true
+  required: false
 - display: Password
-  hidden: false
   name: password
-  required: true
   type: 4
+  hidden: true
+  required: false
+- display: Username
+  name: username_creds
+  type: 9
+  displaypassword: Password
+  required: false
 - additionalinfo: Incidents will be fetched based on selected type.
-  defaultvalue: BMC Remedyforce Service Request
   display: Type
   name: type
+  type: 15
+  defaultvalue: BMC Remedyforce Service Request
   options:
   - BMC Remedyforce Incident
   - BMC Remedyforce Service Request
   required: false
-  type: 15
 - additionalinfo: Incidents will be fetched having this category.
   display: Category
   name: category
-  required: false
   type: 0
+  required: false
 - additionalinfo: Incidents will be fetched having this impact.
   display: Impact
   name: impact
-  required: false
   type: 0
+  required: false
 - additionalinfo: Incidents will be fetched having this urgency.
   display: Urgency
   name: urgency
-  required: false
   type: 0
+  required: false
 - additionalinfo: Incidents will be fetched having this status.
   display: Status
   name: status
-  required: false
   type: 0
+  required: false
 - additionalinfo: Incidents will be fetched having this queue.
   display: Queue
   name: queue
-  required: false
   type: 0
-- additionalinfo: Maximum numbers of ServiceRequests or Incidents to retrieve per
-    fetch.
-  defaultvalue: '10'
+  required: false
+- additionalinfo: Maximum numbers of ServiceRequests or Incidents to retrieve per fetch.
   display: Max Incidents
   name: max_fetch
-  required: false
   type: 0
-- additionalinfo: Fetch notes of the BMC Remedyforce Service Request or BMC Remedyforce
-    Incident.
+  defaultvalue: '10'
+  required: false
+- additionalinfo: Fetch notes of the BMC Remedyforce Service Request or BMC Remedyforce Incident.
   display: Fetch Note(s)
   name: fetch_note
-  required: false
   type: 8
-- additionalinfo: Incidents will be fetched based on the query. Name and LastModifiedDate
-    fields are mandatory to be present inside the select clause of the query. Multiple
-    'where' clauses are not supported.
-  display: Query (If provided other filtering parameters will be ignored) e.g. select
-    Name, LastModifiedDate from BMCServiceDesk__Incident__c where BMCServiceDesk__Impact_Id__c
-    = 'High'
-  name: query
   required: false
+- display: Query (If provided other filtering parameters will be ignored) e.g. select Name, LastModifiedDate from BMCServiceDesk__Incident__c where BMCServiceDesk__Impact_Id__c = 'High'
+  name: query
   type: 12
+  additionalinfo: Incidents will be fetched based on the query. Name and LastModifiedDate fields are mandatory to be present inside the select clause of the query. Multiple 'where' clauses are not supported.
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-- additionalinfo: Specify the time interval in seconds. All the RemedyForce API calls
-    would timeout if the response is not returned within the configured time interval.
-  defaultvalue: '60'
-  display: HTTP(S) Request Timeout (in seconds)
-  hidden: false
+  required: false
+- display: HTTP(S) Request Timeout (in seconds)
   name: request_timeout
   required: true
   type: 0
+  additionalinfo: Specify the time interval in seconds. All the RemedyForce API calls would timeout if the response is not returned within the configured time interval.
+  defaultvalue: '60'
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
-- defaultvalue: 10 minutes
-  display: First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
-  name: first_fetch
   required: false
+- defaultvalue: 10 minutes
+  display: First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch
   type: 0
-description: BMC Helix Remedyforce integration enables customers to create/update
-  service requests and incidents, update statuses, and resolve service requests and
-  incidents with customer notes. This integration exposes standard ticketing capabilities
-  that can be utilized as part of automation & orchestration.
+
+  required: false
+description: BMC Helix Remedyforce integration enables customers to create/update service requests and incidents, update statuses, and resolve service requests and incidents with customer notes. This integration exposes standard ticketing capabilities that can be utilized as part of automation & orchestration.
 display: BMC Helix Remedyforce
 name: BMCHelixRemedyforce
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of the Service Request Definition to return. If not specified,
-        details of all service request definitions are returned.
-      isArray: false
+    - description: The name of the Service Request Definition to return. If not specified, details of all service request definitions are returned.
       name: service_request_definition_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns details of service request definitions using the Service
-      Request Definition name.
-    execution: false
+    description: Returns details of service request definitions using the Service Request Definition name.
     name: bmc-remedy-service-request-definition-get
     outputs:
     - contextPath: BmcRemedyforce.ServiceRequestDefinition.Id
@@ -146,8 +132,7 @@ script:
       description: The date the Service Request Definition was created.
       type: Date
     - contextPath: BmcRemedyforce.ServiceRequestDefinition.Questions.Id
-      description: The ID of the question that was attached to the Service Request
-        Definition.
+      description: The ID of the question that was attached to the Service Request Definition.
       type: String
     - contextPath: BmcRemedyforce.ServiceRequestDefinition.Questions.IsRequired
       description: Indicates whether a question is required.
@@ -168,8 +153,7 @@ script:
       description: The operator of the condition.
       type: String
     - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.DependentQuestionId
-      description: The question ID of the dependent question which is associated with
-        the condition.
+      description: The question ID of the dependent question which is associated with the condition.
       type: String
     - contextPath: BmcRemedyforce.ServiceRequestDefinition.Conditions.Id
       description: The ID of the condition.
@@ -193,29 +177,16 @@ script:
       description: Indicates whether approval is required.
       type: Boolean
   - arguments:
-    - default: false
-      description: The unique incident or service request number to be updated.
-      isArray: false
+    - description: The unique incident or service request number to be updated.
       name: request_number
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The description of the incident or service request when creating the note.
         Default value is 'Client Note'.
-      isArray: false
       name: summary
-      required: false
-      secret: false
-    - default: false
-      description: The detailed note for the incident or service request.
-      isArray: false
+    - description: The detailed note for the incident or service request.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Creates notes for incidents and service requests.
-    execution: false
     name: bmc-remedy-note-create
     outputs:
     - contextPath: BmcRemedyforce.Note.Id
@@ -246,67 +217,28 @@ script:
       description: The created date of the note.
       type: Date
   - arguments:
-    - default: false
-      description: The unique number of the service request to update.
-      isArray: false
+    - description: The unique number of the service request to update.
       name: service_request_number
       required: true
-      secret: false
-    - default: false
-      description: "The unique ID of the category to update. \nGet the Category ID\
-        \ by using the 'bmc-remedy-category-details-get' command."
-      isArray: false
+    - description: "The unique ID of the category to update. \nGet the Category ID by using the 'bmc-remedy-category-details-get' command."
       name: category_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the queue owner to update.
         Get the queue ID by using the 'bmc-remedy-queue-details-get' command.
-      isArray: false
       name: queue_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the staff member to whom the user wants to assign the record.
         Get the staff ID from the staff details, by using the 'bmc-remedy-user-details-get' command.
-      isArray: false
       name: staff_id
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the status to update. Get the status ID by using
-        the 'bmc-remedy-status-details-get'command.
-      isArray: false
+    - description: The unique ID of the status to update. Get the status ID by using the 'bmc-remedy-status-details-get'command.
       name: status_id
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the urgency to update. Get the urgency ID by using
-        the 'bmc-remedy-urgency-details-get' command.
-      isArray: false
+    - description: The unique ID of the urgency to update. Get the urgency ID by using the 'bmc-remedy-urgency-details-get' command.
       name: urgency_id
-      required: false
-      secret: false
-    - default: false
-      description: "The unique ID of the client to update. \nGet the client ID from\
-        \ the email, by using 'bmc-remedy-user-details-get' command."
-      isArray: false
+    - description: "The unique ID of the client to update. \nGet the client ID from the email, by using 'bmc-remedy-user-details-get' command."
       name: client_id
-      required: false
-      secret: false
-    - default: false
-      description: "Add fields which are not present in the current argument list\
-        \ in the format \"fieldname1=value;fieldname2=value\". \nPossible fields:\
-        \ impact_id, account_id or any other custom field."
-      isArray: false
+    - description: "Add fields which are not present in the current argument list in the format \"fieldname1=value;fieldname2=value\". \nPossible fields: impact_id, account_id or any other custom field."
       name: additional_fields
-      required: false
-      secret: false
-    deprecated: false
     description: Updates details of a service request for a service request number.
-    execution: false
     name: bmc-remedy-service-request-update
     outputs:
     - contextPath: BmcRemedyforce.ServiceRequest.Number
@@ -319,80 +251,38 @@ script:
       description: The last updated time and date of a service request.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The unique Id of the service request definition.
         Get the service request definition ID from the Service Request Definition name, by using the 'bmc-remedy-service-request-definition-get' command.
-      isArray: false
       name: service_request_definition_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify the parameters as a delimiter (;) separated string. Each service request definition expects specific parameters to be supplied.
         For example, "param1=value1; param2=value2".
-      isArray: false
       name: service_request_definition_params
-      required: false
-      secret: false
-    - default: false
-      description: "The unique ID of the client. \nGet the client ID from the email,\
-        \ by using the 'bmc-remedy-user-details-get' command."
-      isArray: false
+    - description: "The unique ID of the client. \nGet the client ID from the email, by using the 'bmc-remedy-user-details-get' command."
       name: client_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the category.
         Get the category ID by using the 'bmc-remedy-category-details-get' command.
-      isArray: false
       name: category_id
-      required: false
-      secret: false
-    - default: false
-      description: "The unique ID of the queue owner. \nGet the queue ID by using\
-        \ the 'bmc-remedy-queue-details-get' command."
-      isArray: false
+    - description: "The unique ID of the queue owner. \nGet the queue ID by using the 'bmc-remedy-queue-details-get' command."
       name: queue_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the staff member to whom the user wants to assign the record.
         Get the staff ID from the staff details, by using the 'bmc-remedy-user-details-get' command.
-      isArray: false
       name: staff_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the urgency, which determines the priority of the incident.
         Get the urgency ID by using the 'bmc-remedy-urgency-details-get' command.
-      isArray: false
       name: urgency_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the status.
         Get the status ID by using the 'bmc-remedy-status-details-get' command.
-      isArray: false
       name: status_id
-      required: false
-      secret: false
-    - default: false
-      description: "Add the fields which are not present in the current argument list\
-        \ in the format \"fieldname1=value;fieldname2=value\". \nPossible fields:\
-        \ impact_id, account_id or any other custom field."
-      isArray: false
+    - description: "Add the fields which are not present in the current argument list in the format \"fieldname1=value;fieldname2=value\". \nPossible fields: impact_id, account_id or any other custom field."
       name: additional_fields
-      required: false
-      secret: false
-    deprecated: false
-    description: Creates a new service request, which is the request record generated
-      from the Service Request Definition to manage and track the execution.
-    execution: false
+    description: Creates a new service request, which is the request record generated from the Service Request Definition to manage and track the execution.
     name: bmc-remedy-service-request-create
     outputs:
     - contextPath: BmcRemedyforce.ServiceRequest.Number
@@ -405,17 +295,9 @@ script:
       description: The creation time and date of the service request.
       type: String
   - arguments:
-    - default: false
-      description: The name of the template to return. If not specified, returns details
-        of all the available templates.
-      isArray: false
+    - description: The name of the template to return. If not specified, returns details of all the available templates.
       name: template_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns template details for incidents. Templates enable users to
-      prepopulate commonly used fields in a form.
-    execution: false
+    description: Returns template details for incidents. Templates enable users to prepopulate commonly used fields in a form.
     name: bmc-remedy-template-details-get
     outputs:
     - contextPath: BmcRemedyforce.Template.Id
@@ -431,17 +313,9 @@ script:
       description: Whether the template is recurring.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the impact to return. If not specified, returns details
-        of all the available impacts.
-      isArray: false
+    - description: The name of the impact to return. If not specified, returns details of all the available impacts.
       name: impact_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns the impact details for incidents and service requests. Impact
-      helps calculate the priority of the incident or service request.
-    execution: false
+    description: Returns the impact details for incidents and service requests. Impact helps calculate the priority of the incident or service request.
     name: bmc-remedy-impact-details-get
     outputs:
     - contextPath: BmcRemedyforce.Impact.Id
@@ -451,16 +325,9 @@ script:
       description: The Name of the Impact.
       type: String
   - arguments:
-    - default: false
-      description: The name of service offering to return. If not specified, returns
-        all available service offerings.
-      isArray: false
+    - description: The name of service offering to return. If not specified, returns all available service offerings.
       name: service_offering_name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns service offering details for incidents.
-    execution: false
     name: bmc-remedy-service-offering-details-get
     outputs:
     - contextPath: BmcRemedyforce.ServiceOffering.Id
@@ -470,97 +337,40 @@ script:
       description: The name of the service offering.
       type: String
   - arguments:
-    - default: false
-      description: "The unique ID of the client. \nGet the client ID from the email,\
-        \ by using the 'bmc-remedy-user-details-get' command."
-      isArray: false
+    - description: "The unique ID of the client. \nGet the client ID from the email, by using the 'bmc-remedy-user-details-get' command."
       name: client_id
       required: true
-      secret: false
-    - default: false
-      description: The description of the incident to to create.
-      isArray: false
+    - description: The description of the incident to to create.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: 'The date and time at which the incident was created. Use the format:
-        yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ.'
-      isArray: false
+    - description: 'The date and time at which the incident was created. Use the format: yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ.'
       name: opened_date
-      required: false
-      secret: false
-    - default: false
-      description: 'The date and time at which the incident should be completed. Use
-        the format: yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ.'
-      isArray: false
+    - description: 'The date and time at which the incident should be completed. Use the format: yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ.'
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the queue owner.
         Get the queue ID by using the 'bmc-remedy-queue-details-get' command.
-      isArray: false
       name: queue_id
-      required: false
-      secret: false
-    - default: false
-      description: "The unique ID of the template. Templates enable users to pre-populate\
-        \ commonly used fields in a form. \nGet the template ID by using the 'bmc-remedy-template-details-get'\
-        \ command."
-      isArray: false
+    - description: "The unique ID of the template. Templates enable users to pre-populate commonly used fields in a form. \nGet the template ID by using the 'bmc-remedy-template-details-get' command."
       name: template_id
-      required: false
-      secret: false
-    - default: false
-      description: "The unique ID of the category. \nGet the category ID by using\
-        \ the 'bmc-remedy-category-details-get' command."
-      isArray: false
+    - description: "The unique ID of the category. \nGet the category ID by using the 'bmc-remedy-category-details-get' command."
       name: category_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the urgency, which determines the priority of the incident.
         Get the urgency ID by using the 'bmc-remedy-urgency-details-get' command.
-      isArray: false
       name: urgency_id
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the status. Get the status ID by using the 'bmc-remedy-status-details-get'
-        command.
-      isArray: false
+    - description: The unique ID of the status. Get the status ID by using the 'bmc-remedy-status-details-get' command.
       name: status_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the staff member to whom the user wants to assign the record.
         Get the staff Id from the staff details, by using the 'bmc-remedy-user-details-get' command.
-      isArray: false
       name: staff_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Add fields which are not present in the current argument list in the format "fieldname1=value;fieldname2=value".
         Possible fields: broadcast_id, service_id,impact_id, service_offering_id, asset_id, outage_start, outage_end, account_id or any other custom field.
-      isArray: false
       name: additional_fields
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the impact. Get the impact ID by using the 'bmc-remedy-impact-details-get'
-        command.
-      isArray: false
+    - description: The unique ID of the impact. Get the impact ID by using the 'bmc-remedy-impact-details-get' command.
       name: impact_id
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new incident.
-    execution: false
     name: bmc-remedy-incident-create
     outputs:
     - contextPath: BmcRemedyforce.Incident.Id
@@ -573,83 +383,34 @@ script:
       description: The creation date & time of the incident.
       type: String
   - arguments:
-    - default: false
-      description: The unique number of the incident to update.
-      isArray: false
+    - description: The unique number of the incident to update.
       name: incident_number
       required: true
-      secret: false
-    - default: false
-      description: "The unique ID of the category. \nGet the category ID by using\
-        \ the 'bmc-remedy-category-details-get' command."
-      isArray: false
+    - description: "The unique ID of the category. \nGet the category ID by using the 'bmc-remedy-category-details-get' command."
       name: category_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the queue owner.
         Get the queue ID by using the 'bmc-remedy-queue-details-get' command.
-      isArray: false
       name: queue_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the staff member to whom the user wants to assign the record.
         Get the staff ID from the staff details, by using the 'bmc-remedy-user-details-get' command.
-      isArray: false
       name: staff_id
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the status. Get the status ID by using the 'bmc-remedy-status-details-get'
-        command.
-      isArray: false
+    - description: The unique ID of the status. Get the status ID by using the 'bmc-remedy-status-details-get' command.
       name: status_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The unique ID of the urgency, which determines the priority of the incident.
         Get the urgency ID by using the 'bmc-remedy-urgency-details-get' command.
-      isArray: false
       name: urgency_id
-      required: false
-      secret: false
-    - default: false
-      description: 'The date and time until which the incident should be completed.
-        Use the following format: yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ.'
-      isArray: false
+    - description: 'The date and time until which the incident should be completed. Use the following format: yyyy-MM-ddTHH:mm:ss.SSS+/-HHmm or yyyy-MM-ddTHH:mm:ss.SSSZ.'
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: "The unique ID of the client. \nGet the client ID from the email,\
-        \ by using the 'bmc-remedy-user-details-get' command."
-      isArray: false
+    - description: "The unique ID of the client. \nGet the client ID from the email, by using the 'bmc-remedy-user-details-get' command."
       name: client_id
-      required: false
-      secret: false
-    - default: false
-      description: "Add fields which are not present in the current argument list\
-        \ in the format \"fieldname1=value;fieldname2=value\". \nPossible fields:\
-        \ broadcast_id, service_id,impact_id, service_offering_id, asset_id, outage_start,\
-        \ outage_end, account_id or any other custom field."
-      isArray: false
+    - description: "Add fields which are not present in the current argument list in the format \"fieldname1=value;fieldname2=value\". \nPossible fields: broadcast_id, service_id,impact_id, service_offering_id, asset_id, outage_start, outage_end, account_id or any other custom field."
       name: additional_fields
-      required: false
-      secret: false
-    - default: false
-      description: The unique ID of the impact. Get the impact ID by using the 'bmc-remedy-impact-details-get'
-        command.
-      isArray: false
+    - description: The unique ID of the impact. Get the impact ID by using the 'bmc-remedy-impact-details-get' command.
       name: impact_id
-      required: false
-      secret: false
-    deprecated: false
     description: Updates details of an incident for a given incident number.
-    execution: false
     name: bmc-remedy-incident-update
     outputs:
     - contextPath: BmcRemedyforce.Incident.Id
@@ -662,28 +423,17 @@ script:
       description: The last updated date and time of the incident.
       type: String
   - arguments:
-    - default: false
-      description: The name of the asset to return.
-      isArray: false
+    - description: The name of the asset to return.
       name: asset_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: All Classes
-      description: 'The class type of the asset. Can be: "All Classes", "Asset Classes",
-        or "CI Classes". Default is "All Classes".'
-      isArray: false
+      description: 'The class type of the asset. Can be: "All Classes", "Asset Classes", or "CI Classes". Default is "All Classes".'
       name: instance_type
       predefined:
       - All Classes
       - Asset Classes
       - CI Classes
-      required: false
-      secret: false
-    deprecated: false
     description: Returns asset or configuration item details for incidents.
-    execution: false
     name: bmc-remedy-asset-details-get
     outputs:
     - contextPath: BmcRemedyforce.Asset.Id
@@ -705,16 +455,9 @@ script:
       description: Assets belonging to the selected class.
       type: String
   - arguments:
-    - default: false
-      description: The account name of the account to return. If not specified, returns
-        all available accounts.
-      isArray: false
+    - description: The account name of the account to return. If not specified, returns all available accounts.
       name: account_name
-      required: false
-      secret: false
-    deprecated: false
     description: Returns account details for incidents and service requests.
-    execution: false
     name: bmc-remedy-account-details-get
     outputs:
     - contextPath: BmcRemedyforce.Account.Id
@@ -724,17 +467,9 @@ script:
       description: The name of the account.
       type: String
   - arguments:
-    - default: false
-      description: The status name to return.
-      isArray: false
+    - description: The status name to return.
       name: status_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns status details for incidents and service requests. The status
-      displays the progress of the service request or incident through stages from
-      opening to closure.
-    execution: false
+    description: Returns status details for incidents and service requests. The status displays the progress of the service request or incident through stages from opening to closure.
     name: bmc-remedy-status-details-get
     outputs:
     - contextPath: BmcRemedyforce.Status.Id
@@ -744,16 +479,9 @@ script:
       description: The name of the status.
       type: String
   - arguments:
-    - default: false
-      description: The name of the urgency whose details you want to retrieve.
-      isArray: false
+    - description: The name of the urgency whose details you want to retrieve.
       name: urgency_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns urgency details for incidents and service requests. Urgency
-      determines the priority of the incident or service request.
-    execution: false
+    description: Returns urgency details for incidents and service requests. Urgency determines the priority of the incident or service request.
     name: bmc-remedy-urgency-details-get
     outputs:
     - contextPath: BmcRemedyforce.Urgency.Id
@@ -764,29 +492,16 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: All
-      description: 'The category type whose details you want to retrieve. Can be:
-        "All", "Service Request", or "Incident". Default is "All".'
-      isArray: false
+      description: 'The category type whose details you want to retrieve. Can be: "All", "Service Request", or "Incident". Default is "All".'
       name: type
       predefined:
       - All
       - Service Request
       - Incident
-      required: false
-      secret: false
-    - default: false
-      description: The category name to return.
-      isArray: false
+    - description: The category name to return.
       name: category_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns category details for incidents and service requests. Categories
-      allow users to classify the incident or service request using standard classifications
-      to track the reporting purposes.
-    execution: false
+    description: Returns category details for incidents and service requests. Categories allow users to classify the incident or service request using standard classifications to track the reporting purposes.
     name: bmc-remedy-category-details-get
     outputs:
     - contextPath: BmcRemedyforce.Category.Id
@@ -799,24 +514,14 @@ script:
       description: The number of children of the category.
       type: String
   - arguments:
-    - default: false
-      description: The name of the queue whose details you want to retrieve.
-      isArray: false
+    - description: The name of the queue whose details you want to retrieve.
       name: queue_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter according to the "Incident/Service Request" type.
-      isArray: false
       name: type
       predefined:
       - Incident/Service Request
-      required: false
-      secret: false
-    deprecated: false
     description: Returns queue details for incidents and service requests.
-    execution: false
     name: bmc-remedy-queue-details-get
     outputs:
     - contextPath: BmcRemedyforce.Queue.Id
@@ -829,43 +534,21 @@ script:
       description: The email of the queue.
       type: String
   - arguments:
-    - default: false
-      description: The name of the user to return.
-      isArray: false
+    - description: The name of the user to return.
       name: username
-      required: false
-      secret: false
-    - default: false
-      description: The account name of the user to return.
-      isArray: false
+    - description: The account name of the user to return.
       name: account_name
-      required: false
-      secret: false
-    - default: false
-      description: The email address of the user to return.
-      isArray: false
+    - description: The email address of the user to return.
       name: email
-      required: false
-      secret: false
-    - default: false
-      description: The group/queue name to return.
-      isArray: false
+    - description: The group/queue name to return.
       name: queue_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to retrieve user details. Can be: "true" or "false".'
-      isArray: false
       name: is_staff
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Returns user details for incidents and service requests.
-    execution: false
     name: bmc-remedy-user-details-get
     outputs:
     - contextPath: BmcRemedyforce.User.Id
@@ -908,23 +591,11 @@ script:
       description: Whether the user belongs to the staff.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the broadcast to return.
-      isArray: false
+    - description: The name of the broadcast to return.
       name: broadcast_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the category to return.
-      isArray: false
+    - description: The name of the category to return.
       name: category_name
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns broadcast details for incidents, which enables users to send
-      messages to the entire organization, selected groups within the organization
-      and to external customers.
-    execution: false
+    description: Returns broadcast details for incidents, which enables users to send messages to the entire organization, selected groups within the organization and to external customers.
     name: bmc-remedy-broadcast-details-get
     outputs:
     - contextPath: BmcRemedyforce.Broadcast.Id
@@ -952,29 +623,14 @@ script:
       description: The impact of the broadcast.
       type: String
   - arguments:
-    - default: false
-      description: The time range for which to return the incident. In the format
-        "<number> <time unit>". For example, 12 hours, 7 days, 3 months, 1 year.
-      isArray: false
+    - description: The time range for which to return the incident. In the format "<number> <time unit>". For example, 12 hours, 7 days, 3 months, 1 year.
       name: last_fetch_time
-      required: false
-      secret: false
-    - default: false
-      description: The unique number of the incident to return.
-      isArray: false
+    - description: The unique number of the incident to return.
       name: incident_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of the incidents to return.
-      isArray: false
       name: maximum_incident
-      required: false
-      secret: false
-    deprecated: false
     description: Returns details of incidents.
-    execution: false
     name: bmc-remedy-incident-get
     outputs:
     - contextPath: BmcRemedyforce.Incident.Id
@@ -1059,30 +715,14 @@ script:
       description: The asset of the incident.
       type: String
   - arguments:
-    - default: false
-      description: The unique number of the service request to return.
-      isArray: false
+    - description: The unique number of the service request to return.
       name: service_request_number
-      required: false
-      secret: false
-    - default: false
-      description: The time range for which to return the service request. In the
-        format "<number> <time unit>". For example, 12 hours, 7 days, 3 months, 1
-        year.
-      isArray: false
+    - description: The time range for which to return the service request. In the format "<number> <time unit>". For example, 12 hours, 7 days, 3 months, 1 year.
       name: last_fetch_time
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of the service request to return.
-      isArray: false
       name: maximum_service_request
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the service request details.
-    execution: false
     name: bmc-remedy-service-request-get
     outputs:
     - contextPath: BmcRemedyforce.ServiceRequest.Id
@@ -1157,11 +797,8 @@ script:
     - contextPath: BmcRemedyforce.ServiceRequest.Type
       description: The type of the service request.
       type: String
-  dockerimage: demisto/python3:3.10.11.58677
-  feed: false
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

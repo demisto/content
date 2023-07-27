@@ -258,12 +258,13 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    panorama_server = demisto.params().get('server')
-    panorama_port = demisto.params().get('port', None)
-    panorama_api_key = demisto.params().get('key')
-    bpa_token = demisto.params().get('token')
-    verify = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy')
+    params = demisto.params()
+    panorama_server = params.get('server')
+    panorama_port = params.get('port', None)
+    panorama_api_key = params.get('key_creds', {}).get('password') or params.get('key')
+    bpa_token = params.get('token_creds', {}).get('password') or params.get('token')
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy')
 
     try:
         client = Client(bpa_token, verify, proxy)

@@ -4,3 +4,6 @@ ignore=RM106
 [file:BluecatAddressManager.yml]
 ignore=BA124
 
+[file:BluecatAddressManager_1_3.yml]
+ignore=MR108,PR101
+

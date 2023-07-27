@@ -11,37 +11,37 @@ configuration:
   displaypassword: Refresh Token
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Long running instance
   name: longRunning
-  required: false
   type: 8
+  required: false
 - display: DLP Regions
   name: dlp_regions
   type: 16
-  required: false
   options:
   - US
   - EU
   - AP
   - UK
   defaultvalue: US,EU,AP,UK
+  required: false
 - display: Data profiles to allow exemption
   name: dlp_exemptible_list
   type: 0
-  required: false
   additionalinfo: A comma-separated list of data profile names to request an exemption. Use "*" to allow everything.
+  required: false
 - display: Bot Message
   name: dlp_slack_message
   type: 12
-  required: false
   additionalinfo: The message to send to the user to ask for feedback.
-  defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour upload of *$file_name* on *$app_name* was blocked due to company policy. This file contains sensitive information which violates *$data_profile_name* policy. \n\n $snippets\n\n
+  defaultvalue: Hi $user🔔, \n\n*We need your feedback:* \n\nYour activity on *$app_name* was blocked due to company policy. The data in this activity contains sensitive information which violates *$data_profile_name* policy.\n\nfilename - *$file_name* \n\n $snippets\n\n
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -94,6 +94,7 @@ script:
       - EXCEPTION_NOT_REQUESTED
       - OPERATIONAL_ERROR
       - SEND_NOTIFICATION_FAILURE
+      - EXCEPTION_DENIED
       description: The user feedback
     - name: user_id
       required: true
@@ -105,7 +106,6 @@ script:
     - name: dlp_channel
       description: The DLP channel, needed only for granting exemptions.
     - name: error_details
-      required: false
       description: Error details if status is SEND_NOTIFICATION_FAILURE
     outputs:
     - contextPath: DLP.IncidentUpdate.success
@@ -137,11 +137,10 @@ script:
       required: true
       description: The data profile name associated with the incident.
     - name: snippets
-      required: false
       description: The snippets of the violation.
     - name: app_name
       required: true
-      description: The name of the application that performed the upload.
+      description: The name of the application that performed the activity.
     outputs:
     - contextPath: DLP.slack_message
       description: The Slack bot message.
@@ -150,14 +149,12 @@ script:
   - name: pan-dlp-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.10.11.57890
+  dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   longRunning: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python
-  isfetch: false
 fromversion: 5.0.0
 tests:
 - Palo_Alto_Networks_Enterprise_DLP - Test

@@ -15,6 +15,12 @@ configuration:
   name: apikey
   defaultvalue: ""
   type: 4
+  hidden: true
+  required: false
+- name: apikey_creds
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -24,10 +30,11 @@ configuration:
   name: insecure
   type: 8
   required: false
-- display: CSV list of lists that should be considered malicious
+- defaultvalue: cleanmx_virus,et_c2
+  display: CSV list of lists that should be considered malicious
   name: maliciousList
-  defaultvalue: cleanmx_virus,et_c2
   type: 0
+
   required: false
 script:
   script: ''
@@ -46,7 +53,6 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason for the vendor to make the decision
     description: Get intel from PacketMail.net on IPs
-hidden: false
 tests:
 - no test
 fromversion: 5.0.0

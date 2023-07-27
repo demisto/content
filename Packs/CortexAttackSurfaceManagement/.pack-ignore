@@ -1,11 +1,17 @@
 [file:incidentfield-ASM_-_Alert_Summary.json]
 ignore=IF100
 
-[file:Cortex_ASM_-_ASM_Alert.yml]
+[file:incidentfield-ASM_-_Playbook_Stage.json]
+ignore=IF100
+
+[file:Cortex_ASM_-_ServiceNow_Notification.yml]
 ignore=PB121
 
 [file:Cortex_ASM_-_Tenable.io_Enrichment.yml]
 ignore=PB114
+
+[file:1_6_17.md]
+ignore=RN115
 
 [known_words]
 ASM
@@ -32,3 +38,6 @@ PostgreSQL
 Mysql
 Postgres
 ReportHeader
+RCS
+SNMP
+NMAP

@@ -18,12 +18,23 @@ This integration was integrated and tested with version 14.0 of Cisco Email Secu
     | Filter value | The message filter value by which to fetch results. | False |
     | Recipient filter operator | The message recipient filter operator by which to fetch results. | False |
     | Recipient filter value | The message recipient filter value by which to fetch results. | False |
+    | Time to live for the JWT connection token (in minutes). |   | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Troubleshooting
+If you encounter multiple recurring errors similar to the following message:
+```
+Authorization Error: make sure username and password are set correctly.
+```
+By default, the integration assumes your JWT session tokens have a time to live of 30 minutes. 
+If the time to live is shorter, it can lead to the authorization error above. To resolve this error, reduce the value for the *Time to live* for JWT session token parameter. 
+By default, this value is 30 minutes and should only be reduced if these errors occur.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

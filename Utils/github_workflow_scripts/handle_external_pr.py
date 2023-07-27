@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
 import json
-
-from typing import List, Set
-
+import os
+from pathlib import Path
 import urllib3
 from blessings import Terminal
 from github import Github
+from git import Repo
 from github.Repository import Repository
 
-from utils import get_env_var, timestamped_print
+
+from utils import (
+    get_env_var,
+    timestamped_print,
+    Checkout,
+    load_json,
+    get_content_reviewers,
+    CONTENT_ROLES_PATH
+)
 from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-REVIEWERS = ['thefrieddan1', 'michal-dagan', 'RotemAmit']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
@@ -29,9 +36,21 @@ XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
 COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
+EXTERNAL_LABEL = "External PR"
+SECURITY_LABEL = "Security Review"
+SECURITY_CONTENT_ITEMS = [
+    "Playbooks",
+    "IncidentTypes",
+    "IncidentFields",
+    "IndicatorTypes",
+    "IndicatorFields",
+    "Layouts",
+    "Classifiers",
+    "Wizards"
+]
 
 
-def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
+def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     """Checks the number of open 'Contribution' PRs that have either been assigned to a user or a review
     was requested from the user for each potential reviewer and returns the user with the smallest amount
 
@@ -64,7 +83,26 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_packs_support_level_label(file_paths: List[str]) -> str:
+def get_packs_support_levels(pack_dirs: set[str]) -> set[str]:
+    """
+    Get the pack support levels from the pack metadata.
+
+    Args:
+        pack_dirs (set): paths to the packs that were changed
+    """
+    packs_support_levels = set()
+
+    for pack_dir in pack_dirs:
+        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
+            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
+            packs_support_levels.add(pack_support_level)
+        else:
+            print(f'Could not find pack support level for pack {pack_dir}')
+
+    return packs_support_levels
+
+
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
     """
     Get The contributions' support level label.
 
@@ -79,35 +117,49 @@ def get_packs_support_level_label(file_paths: List[str]) -> str:
 
     Args:
         file_paths(str): file paths
+        external_pr_branch (str): the branch of the external PR.
 
     Returns:
         highest support level of the packs that were changed, empty string in case no packs were changed.
     """
-    changed_pack_dirs = set()
+    pack_dirs_to_check_support_levels_labels = set()
+
     for file_path in file_paths:
         try:
             if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
-                changed_pack_dirs.add(f'Packs/{pack_name}')
+                pack_dirs_to_check_support_levels_labels.add(f'Packs/{pack_name}')
         except Exception as err:
             print(f'Could not retrieve pack name from file {file_path}, {err=}')
 
-    print(f'{changed_pack_dirs=}')
+    print(f'{pack_dirs_to_check_support_levels_labels=}')
 
-    packs_support_levels = set()
-
-    for pack_dir in changed_pack_dirs:
-        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
-            packs_support_levels.add(pack_support_level)
+    # # we need to check out to the contributor branch in his forked repo in order to retrieve the files cause workflow
+    # runs on demisto master while the contributions changes are on the contributors branch
+    print(
+        f'Trying to checkout to forked branch {external_pr_branch} '
+        f'to retrieve support level of {pack_dirs_to_check_support_levels_labels}'
+    )
+    try:
+        fork_owner = os.getenv('GITHUB_ACTOR')
+        with Checkout(
+            repo=Repo(Path().cwd(), search_parent_directories=True),
+            branch_to_checkout=external_pr_branch,
+            # in marketplace contributions the name of the owner should be xsoar-contrib
+            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
+        ):
+            packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
+    except Exception as error:
+        # in case we were not able to checkout correctly, fallback to the files in the master branch to retrieve support labels
+        # in case those files exist.
+        print(f'Received error when trying to checkout to {external_pr_branch} \n{error=}')
+        print('Trying to retrieve support levels from the master branch')
+        packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
 
     print(f'{packs_support_levels=}')
-
-    if packs_support_levels:
-        return get_highest_support_label(packs_support_levels)
-    return ''
+    return get_highest_support_label(packs_support_levels) if packs_support_levels else ''
 
 
-def get_highest_support_label(packs_support_levels: Set[str]):
+def get_highest_support_label(packs_support_levels: set[str]) -> str:
     """
     Get the highest support level.
 
@@ -121,6 +173,25 @@ def get_highest_support_label(packs_support_levels: Set[str]):
         return PARTNER_SUPPORT_LEVEL_LABEL
     else:
         return COMMUNITY_SUPPORT_LEVEL_LABEL
+
+
+def is_requires_security_reviewer(pr_files: list[str]) -> bool:
+    """
+    Checks whether a security engineer is needed in the review.
+
+    Arguments:
+        - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
+        whether a security engineer is required for the review.
+
+    Returns: `bool` whether a security engineer should be assigned
+    """
+
+    for pr_file in pr_files:
+        for item in SECURITY_CONTENT_ITEMS:
+            if item in pr_file:
+                return True
+
+    return False
 
 
 def main():
@@ -148,17 +219,21 @@ def main():
     repo_name = 'content'
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
+
     pr_number = payload.get('pull_request', {}).get('number')
     pr = content_repo.get_pull(pr_number)
 
-    changed_files_paths = [file.filename for file in pr.get_files()]
-    print(f'{changed_files_paths=} for {pr_number=}')
+    pr_files = [file.filename for file in pr.get_files()]
+    print(f'{pr_files=} for {pr_number=}')
 
-    labels_to_add = [CONTRIBUTION_LABEL]
-    if support_label := get_packs_support_level_label(changed_files_paths):
+    labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
+    if support_label := get_packs_support_level_label(pr_files, pr.head.ref):
         labels_to_add.append(support_label)
 
-    # Add 'Contribution' + support Label to the external PR
+    # Add the initial labels to PR:
+    # - Contribution
+    # - External PR
+    # - Support Label
     for label in labels_to_add:
         pr.add_to_labels(label)
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
@@ -169,7 +244,7 @@ def main():
         branch_prefix = 'contrib/'
         new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
         existant_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
-        potential_conflicting_branch_names = [branch.ref.lstrip('refs/heads/') for branch in existant_branches]
+        potential_conflicting_branch_names = [branch.ref.removeprefix('refs/heads/') for branch in existant_branches]
         # make sure new branch name does not conflict with existing branch name
         while new_branch_name in potential_conflicting_branch_names:
             # append or increment digit
@@ -186,16 +261,30 @@ def main():
         pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
-    # assign reviewers / request review from
-    reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
-    pr.add_to_assignees(reviewer_to_assign)
-    pr.create_review_request(reviewers=[reviewer_to_assign])
-    print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
-    print(f'{t.cyan}Requested review from user "{reviewer_to_assign}"{t.normal}')
+    # Parse PR reviewers from JSON and assign them
+    # Exit if JSON doesn't exist or not parsable
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+
+    print(f"Content Reviewers: {','.join(content_reviewers)}")
+    print(f"Security Reviewer: {security_reviewer}")
+
+    content_reviewer = determine_reviewer(content_reviewers, content_repo)
+    pr.add_to_assignees(content_reviewer)
+    reviewers = [content_reviewer]
+
+    # Add a security architect reviewer if the PR contains security content items
+    if is_requires_security_reviewer(pr_files):
+        reviewers.append(security_reviewer)
+        pr.add_to_assignees(security_reviewer)
+        pr.add_to_labels(SECURITY_LABEL)
+
+    pr.create_review_request(reviewers=reviewers)
+    print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
 
     # create welcome comment (only users who contributed through Github need to have that contribution form filled)
     message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
-    body = message_to_send.format(selected_reviewer=reviewer_to_assign)
+    body = message_to_send.format(selected_reviewer=content_reviewer)
     pr.create_issue_comment(body)
     print(f'{t.cyan}Created welcome comment{t.normal}')
 

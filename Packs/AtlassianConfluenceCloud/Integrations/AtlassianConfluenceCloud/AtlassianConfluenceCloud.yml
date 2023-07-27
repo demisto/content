@@ -16,73 +16,50 @@ configuration:
   type: 9
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users, and groups. Users can also manage the space permissions.
 display: Atlassian Confluence Cloud
 name: Atlassian Confluence Cloud
 script:
   commands:
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters.
 
         Note: unique_key cannot be changed after the space is created.
-      isArray: false
       name: unique_key
       required: true
-      secret: false
-    - default: false
-      description: The name of the new space. The maximum length is 200 characters.
-      isArray: false
+    - description: The name of the new space. The maximum length is 200 characters.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The description of the new space.
-      isArray: false
+    - description: The description of the new space.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: |-
         Whether the user wants to create a private space. 
 
         Note: If this option is set to true, permission cannot be applied.
-      isArray: false
       name: is_private_space
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The account ID of the user to whom permission should be granted.
 
         Note: To retrieve the account ID, execute the confluence-cloud-user-list command.
-      isArray: false
       name: permission_account_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The group name to whom permission should be granted.
 
         Note: To retrieve the group name, execute the confluence-cloud-group-list command.
-      isArray: false
       name: permission_group_name
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A comma-separated list of the permissions that should be applied. 
 
         Note: Requires either permission_account_id or permission_group_name.
@@ -96,10 +73,7 @@ script:
         Possible values for targetType: space, page, blogpost, comment, attachment.
       isArray: true
       name: permission_operations
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Specify 'advanced_permissions' to grant access to multiple users or groups. 'advanced_permissions' has priority over 'permission_operations'.
 
         Note: Add backslash(\) before quotes.
@@ -107,15 +81,10 @@ script:
         For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]
 
         To prepare a valid JSON for advanced_permissions, navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it.
-      isArray: false
       name: advanced_permissions
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Creates a new space.
       Note: If no permissions are specified, the default space permissions defined by the Confluence cloud account admin will be used.
-    execution: false
     name: confluence-cloud-space-create
     outputs:
     - contextPath: ConfluenceCloud.Space.id
@@ -257,62 +226,43 @@ script:
       description: Base link to the space.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The title of the content.
 
         Note: The maximum title length is 255 characters.
-      isArray: false
       name: title
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "The type of the new content. \nPossible values: page, blogpost."
-      isArray: false
       name: type
       predefined:
       - page
       - blogpost
       required: true
-      secret: false
-    - default: false
-      description: The space key that the content is being created in.
-      isArray: false
+    - description: The space key that the content is being created in.
       name: space_key
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: current
       description: |-
         The status of the new content.
         Possible values: current, trashed, draft.
 
         Note: The term 'current' refers to the content that is currently active.
-      isArray: false
       name: status
       predefined:
       - current
       - trashed
       - draft
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The body of the new content.
 
         Note: 'body_value' must be a string. In order to reflect 'body_value', 'body_representation' is required.
-      isArray: false
       name: body_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The content format type.
         Possible values: view, export_view, styled_view, storage, editor2, anonymous_export_view.
-      isArray: false
       name: body_representation
       predefined:
       - view
@@ -321,22 +271,14 @@ script:
       - storage
       - editor2
       - anonymous_export_view
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the parent content to create the child content.
 
         Note: Supported for content type page only. To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=page" argument.
-      isArray: false
       name: ancestor_id
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Creates a page or blogpost for a given space.
       Note: To view the expansion of content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
-    execution: false
     name: confluence-cloud-content-create
     outputs:
     - contextPath: ConfluenceCloud.Content.id
@@ -575,78 +517,55 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: current
       description: |-
         The status of the new content.
         Possible values: current, trashed, draft.
 
         Note: The term 'current' refers to the comment that is currently active.
-      isArray: false
       name: status
       predefined:
       - current
       - trashed
       - draft
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The body of the new content.
 
         Note: 'body_value' must be a string.
-      isArray: false
       name: body_value
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The content format type.
         Possible values: storage, editor2, editor.
-      isArray: false
       name: body_representation
       predefined:
       - storage
       - editor2
       - editor
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the parent comment for which to create the child comment.
 
         Note: To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=comment" argument.
-      isArray: false
       name: ancestor_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the container for which to create a comment.
 
         Note: To retrieve the container_id, execute the confluence-cloud-content-list command.
-      isArray: false
       name: container_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The type of the container.
         Possible values: page, blogpost.
-      isArray: false
       name: container_type
       predefined:
       - page
       - blogpost
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Creates a comment for the given content.
       Note: To view the expansion of the content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
-    execution: false
     name: confluence-cloud-comment-create
     outputs:
     - contextPath: ConfluenceCloud.Comment.id
@@ -884,85 +803,54 @@ script:
       description: Base link to the comment.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         The starting index of the returned spaces.
 
         Note: The minimum value supported is 0 and maximum value supported is int32.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A space key to retrieve the specific space.
 
         Note: Supports a comma-separated list of values.
       isArray: true
       name: space_key
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The space ID to retrieve the specific space.
 
         Note: Supports a comma-separated list of values.
       isArray: true
       name: space_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the results to list the spaces based on their status. \nPossible values: current, archived.\n\nNote: The term 'current' refers to the space that is currently active."
-      isArray: false
       name: status
       predefined:
       - current
       - archived
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "Filter the results to list the spaces based on their type. \nPossible values: global, personal."
-      isArray: false
       name: type
       predefined:
       - global
       - personal
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Whether to filter the results to the favorite spaces of the current user.
         Possible values: true, false.
-      isArray: false
       name: favourite
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: "Indicates which properties to expand. \nFor reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.\n\nNote: To separate multiple values, use commas. Expanded properties will be populated in context data only."
+    - description: "Indicates which properties to expand. \nFor reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.\n\nNote: To separate multiple values, use commas. Expanded properties will be populated in context data only."
       isArray: true
       name: expand
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of all Confluence spaces.
-    execution: false
     name: confluence-cloud-space-list
     outputs:
     - contextPath: ConfluenceCloud.Space.id
@@ -1104,76 +992,47 @@ script:
       description: Base link to the space.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         The starting index of the returned content.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The space key to retrieve the contents of a specific space.
-      isArray: false
+    - description: The space key to retrieve the contents of a specific space.
       name: space_key
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: page
       description: "The type to retrieve the contents. \nPossible values: page, blogpost."
-      isArray: false
       name: type
       predefined:
       - page
       - blogpost
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Order in which the response will be sorted.
         Possible values: asc, desc.
 
         Note: If 'sort_key' is specified, the default value for 'sort_order' is ascending.
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Key based on which the response will be sorted.
 
         Note: If 'sort_order' is specified, 'sort_key' is required.
-      isArray: false
       name: sort_key
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The date from which to return the content created on that specific date.
         Formats accepted: 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd.
-      isArray: false
       name: creation_date
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Filter the results to a set of content based on their status. If set to any, content with any status is returned.
         Possible values: any, current, trashed, draft, archived.
@@ -1187,21 +1046,14 @@ script:
       - trashed
       - draft
       - archived
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Indicates which properties to expand.
         For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get.
 
         Note: To separate multiple values, use commas. Expanded properties will be populated in context data only.
       isArray: true
       name: expand
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the list of content of Confluence.
-    execution: false
     name: confluence-cloud-content-list
     outputs:
     - contextPath: ConfluenceCloud.Content.id
@@ -1412,26 +1264,18 @@ script:
       description: Tiny link of the content.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the content to be deleted.
-      isArray: false
+    - description: The ID of the content to be deleted.
       name: content_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The deletion type for the content to be deleted.
         Possible values: move to trash (current), permanent delete (trashed), permanent delete draft (draft).
-      isArray: false
       name: deletion_type
       predefined:
       - move to trash
       - permanent delete
       - permanent delete draft
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Delete the content depending on the content's type and status.
 
@@ -1439,54 +1283,39 @@ script:
     execution: true
     name: confluence-cloud-content-delete
   - arguments:
-    - default: false
-      description: The ID of the content to be updated.
-      isArray: false
+    - description: The ID of the content to be updated.
       name: content_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: current
       description: |-
         The updated status of the content.
         Possible values: current, trashed, draft.
 
         Note: The term 'current' refers to the content that is currently active.
-      isArray: false
       name: status
       predefined:
       - current
       - trashed
       - draft
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The new version for the updated content. Set the version to the current version number incremented by one. If the status changed to 'draft', then it must be 1.
 
         Note: To retrieve the current version, execute the confluence-cloud-content-search command using the query="id={content_id}" argument.
-      isArray: false
       name: version
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The updated title of the content. If the field is not changing, set the title to the current title.
 
         Note: The maximum title length is 255 characters.
-      isArray: false
       name: title
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The type of the content. Set the type to the current type of the content.
         Possible values: page, blogpost, comment, attachment.
 
         Note: If type is comment, 'body_value' and 'body_representation' is required.
-      isArray: false
       name: type
       predefined:
       - page
@@ -1494,24 +1323,17 @@ script:
       - comment
       - attachment
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The body of the content in the relevant format.
 
         Note: 'body_value' must be a string. In order to reflect 'body_value', 'body_representation' is required.
-      isArray: false
       name: body_value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The content format type.
         Possible values: view, export_view, styled_view, storage, editor, editor2, anonymous_export_view.
 
         Note: If type is comment, possible values are editor, editor2, or storage.
-      isArray: false
       name: body_representation
       predefined:
       - view
@@ -1521,13 +1343,9 @@ script:
       - editor
       - editor2
       - anonymous_export_view
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Update the existing content with new content.
       Note: Updating draft content is currently not supported.
-    execution: false
     name: confluence-cloud-content-update
     outputs:
     - contextPath: ConfluenceCloud.Content.id
@@ -1765,24 +1583,16 @@ script:
       description: Base link to the content.
       type: String
   - arguments:
-    - default: false
-      description: The CQL (Confluence Query Language) string that is used to find the requested content.
-      isArray: false
+    - description: The CQL (Confluence Query Language) string that is used to find the requested content.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter the result based on the content status.
         Possible values: current, draft, archived.
 
@@ -1791,30 +1601,19 @@ script:
       name: content_status
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: Retrieves the next page records for the given query (next_page_token retrieved in previous content response).
-      isArray: false
+    - description: Retrieves the next page records for the given query (next_page_token retrieved in previous content response).
       name: next_page_token
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Indicates which properties to expand.
         For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.
 
         Note: To separate multiple values, use commas. Expanded properties will be populated in context data only.
       isArray: true
       name: expand
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieves a list of content using the Confluence Query Language (CQL).
 
       For more information on CQL, see: https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/.
-    execution: false
     name: confluence-cloud-content-search
     outputs:
     - contextPath: ConfluenceCloud.Content.id
@@ -2031,29 +1830,19 @@ script:
       description: The next page token.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         The starting index of the returned users.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of users.
-    execution: false
     name: confluence-cloud-user-list
     outputs:
     - contextPath: ConfluenceCloud.User.type
@@ -2090,42 +1879,28 @@ script:
       description: Link to the user.
       type: String
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Number of records to retrieve in the response.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: |-
         The starting index of the returned groups.
 
         Note: The minimum value supported is 0 and the maximum value supported is int32.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The group permission level for which to filter results.
         Possible values: user, admin, site-admin.
-      isArray: false
       name: access_type
       predefined:
       - user
       - admin
       - site-admin
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all user groups.
-    execution: false
     name: confluence-cloud-group-list
     outputs:
     - contextPath: ConfluenceCloud.Group.type
@@ -2140,11 +1915,7 @@ script:
     - contextPath: ConfluenceCloud.Group._links.self
       description: Link to the group.
       type: String
-  dockerimage: demisto/python3:3.10.11.58677
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3

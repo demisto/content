@@ -11,16 +11,16 @@ configuration:
   name: AnalyzeBaseURL
   defaultvalue: https://analyze.intezer.com/api/
   type: 0
-  required: false
   additionalinfo: The API address to intezer Analyze - i.e. http(s)://<address>/api/
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Malware detection and analysis based on code reuse
 display: Intezer v2
 name: Intezer v2
@@ -28,38 +28,21 @@ script:
   commands:
   - name: intezer-analyze-by-hash
     arguments:
-    - default: false
-      description: Hash of the file to query. Supports SHA256, MD5 and SHA1
-      isArray: false
+    - description: Hash of the file to query. Supports SHA256, MD5 and SHA1
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      description: Should polling be enable for this command
+    - description: Should polling be enable for this command
       defaultValue: false
-      isArray: false
       name: wait_for_result
-      required: false
-      secret: false
-    - default: false
-      description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout
       defaultValue: 600
-      isArray: false
       name: timeout
-      required: false
-      secret: false
       type: number
-    - default: false
-      description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests
       defaultValue: 30
-      isArray: false
       name: interval
-      required: false
-      secret: false
       type: number
-    deprecated: false
     description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
-    execution: false
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: Intezer analysis id
@@ -73,38 +56,21 @@ script:
     polling: true
   - name: intezer-analyze-url
     arguments:
-    - default: false
-      description: Url to query.
-      isArray: false
+    - description: Url to query.
       name: url
       required: true
-      secret: false
-    - default: false
-      description: Should polling be enable for this command
+    - description: Should polling be enable for this command
       defaultValue: false
-      isArray: false
       name: wait_for_result
-      required: false
-      secret: false
-    - default: false
-      description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout
       defaultValue: 600
-      isArray: false
       name: timeout
-      required: false
-      secret: false
       type: number
-    - default: false
-      description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests
       defaultValue: 30
-      isArray: false
       name: interval
-      required: false
-      secret: false
       type: number
-    deprecated: false
     description: Checks reputation of an Url
-    execution: false
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: Intezer analysis id
@@ -130,25 +96,16 @@ script:
     polling: true
   - name: intezer-get-latest-report
     arguments:
-    - default: false
-      description: Hash of the file to query. Supports SHA256, MD5 and SHA1
-      isArray: false
+    - description: Hash of the file to query. Supports SHA256, MD5 and SHA1
       name: file_hash
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Should get only private analysis
-      isArray: false
       name: should_get_only_private_analysis
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
-    execution: false
     outputs:
     - contextPath: File.SHA256
       description: Hash SHA256
@@ -178,66 +135,34 @@ script:
     arguments:
     - default: true
       description: The file entry id to upload
-      isArray: false
       name: file_entry_id
       required: true
-      secret: false
-    - default: false
-      description: Should polling be enable for this command
+    - description: Should polling be enable for this command
       defaultValue: false
-      isArray: false
       name: wait_for_result
-      required: false
-      secret: false
-    - default: false
-      description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout
       defaultValue: 600
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests
       defaultValue: 30
-      isArray: false
       name: interval
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Should disable sandox dynamic execution
-      isArray: false
       name: disable_dynamic_execution
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Should disable static extraction
-      isArray: false
       name: disable_static_extraction
-      required: false
       predefined:
       - 'true'
       - 'false'
-      secret: false
-    - default: false
-      description: Given sandbox command line arguments
-      isArray: false
+    - description: Given sandbox command line arguments
       name: sandbox_command_line_arguments
-      required: false
-      secret: false
-    - default: false
-      description: Zip password in case the file is protected zip
-      isArray: false
+    - description: Zip password in case the file is protected zip
       name: zip_password
-      required: false
-      secret: false
-    deprecated: false
     description: Checks file reputation for uploaded file (up to 150MB)
-    execution: false
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: Intezer analysis id
@@ -263,33 +188,20 @@ script:
     polling: true
   - name: intezer-get-analysis-result
     arguments:
-    - default: false
-      description: The analysis ID we want to get results for
+    - description: The analysis ID we want to get results for
       isArray: true
       name: analysis_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: File
       description: The type of the analysis
-      isArray: false
       name: analysis_type
       predefined:
       - File
       - Endpoint
       - Url
-      required: false
-      secret: false
-    - default: false
-      description: indicator to classify
-      isArray: false
+    - description: indicator to classify
       name: indicator_name
-      required: false
-      secret: false
-    deprecated: false
     description: Check the analysis status and get analysis result, support file and endpoint analysis
-    execution: false
     outputs:
     - contextPath: File.SHA256
       description: Hash SHA256
@@ -350,15 +262,10 @@ script:
       type: Boolean
   - name: intezer-get-sub-analyses
     arguments:
-    - default: false
-      description: The analysis ID we want to get the sub analyses for
-      isArray: false
+    - description: The analysis ID we want to get the sub analyses for
       name: analysis_id
       required: true
-      secret: false
-    deprecated: false
     description: Get a list of the analysis sub analyses
-    execution: false
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: Intezer analysis id
@@ -384,21 +291,12 @@ script:
     description: Get family information from Intezer Analyze
   - name: intezer-get-analysis-code-reuse
     arguments:
-    - default: false
-      description: The analysis ID we want to get the code reuse for
-      isArray: false
+    - description: The analysis ID we want to get the code reuse for
       name: analysis_id
       required: true
-      secret: false
-    - default: false
-      description: The Sub Analysis we want to get the code reuse for
-      isArray: false
+    - description: The Sub Analysis we want to get the code reuse for
       name: sub_analysis_id
-      required: false
-      secret: false
-    deprecated: false
     description: Get All code reuse report for an analysis. To get a sub analysis code-reuse you need to specify an analysis_id and a sub_analysis id!
-    execution: false
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: The composed analysis ID
@@ -420,21 +318,12 @@ script:
       type: string
   - name: intezer-get-analysis-metadata
     arguments:
-    - default: false
-      description: The analysis ID we want to get the metadata for
-      isArray: false
+    - description: The analysis ID we want to get the metadata for
       name: analysis_id
       required: true
-      secret: false
-    - default: false
-      description: The Sub Analysis we want to get the metadata for
-      isArray: false
+    - description: The Sub Analysis we want to get the metadata for
       name: sub_analysis_id
-      required: false
-      secret: false
-    deprecated: false
     description: Get analysis metadata. To get a sub analysis metadata you need to specify an analysis_id and a sub_analysis id!
-    execution: false
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: The composed analysis ID
@@ -447,15 +336,10 @@ script:
       type: Unknown
   - name: intezer-get-analysis-iocs
     arguments:
-    - default: false
-      description: The analysis ID we want to get the metadata for
-      isArray: false
+    - description: The analysis ID we want to get the metadata for
       name: analysis_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets the list of network and files IOCs of a specific analysis id.
-    execution: false
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: The composed analysis ID
@@ -465,38 +349,21 @@ script:
       type: Dict
   - name: intezer-get-file-analysis-result
     arguments:
-    - default: false
-      description: The analysis ID we want to get the analysis result for
-      isArray: false
+    - description: The analysis ID we want to get the analysis result for
       name: analysis_id
       required: true
-      secret: false
-    - default: false
-      description: Should polling be enable for this command
+    - description: Should polling be enable for this command
       defaultValue: true
-      isArray: false
       name: wait_for_result
-      required: false
-      secret: false
-    - default: false
-      description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout
       defaultValue: 600
-      isArray: false
       name: timeout
-      required: false
-      secret: false
       type: number
-    - default: false
-      description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests
       defaultValue: 30
-      isArray: false
       name: interval
-      required: false
-      secret: false
       type: number
-    deprecated: false
     description: Returns the analysis result
-    execution: false
     polling: true
     outputs:
     - contextPath: File.SHA256
@@ -531,38 +398,21 @@ script:
       type: number
   - name: intezer-get-url-analysis-result
     arguments:
-    - default: false
-      description: The analysis ID we want to get the analysis result for
-      isArray: false
+    - description: The analysis ID we want to get the analysis result for
       name: analysis_id
       required: true
-      secret: false
-    - default: false
-      description: Should polling be enable for this command
+    - description: Should polling be enable for this command
       defaultValue: true
-      isArray: false
       name: wait_for_result
-      required: false
-      secret: false
-    - default: false
-      description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout
       defaultValue: 600
-      isArray: false
       name: timeout
-      required: false
-      secret: false
       type: number
-    - default: false
-      description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests
       defaultValue: 30
-      isArray: false
       name: interval
-      required: false
-      secret: false
       type: number
-    deprecated: false
     description: Returns the analysis result
-    execution: false
     polling: true
     outputs:
     - contextPath: URL.Data
@@ -591,38 +441,21 @@ script:
       type: number
   - name: intezer-get-endpoint-analysis-result
     arguments:
-    - default: false
-      description: The analysis ID we want to get the analysis result for
-      isArray: false
+    - description: The analysis ID we want to get the analysis result for
       name: analysis_id
       required: true
-      secret: false
-    - default: false
-      description: Should polling be enable for this command
+    - description: Should polling be enable for this command
       defaultValue: true
-      isArray: false
       name: wait_for_result
-      required: false
-      secret: false
-    - default: false
-      description: Number of seconds before polling throw timeout
+    - description: Number of seconds before polling throw timeout
       defaultValue: 900
-      isArray: false
       name: timeout
-      required: false
-      secret: false
       type: number
-    - default: false
-      description: Intervals in seconds between poll requests
+    - description: Intervals in seconds between poll requests
       defaultValue: 30
-      isArray: false
       name: interval
-      required: false
-      secret: false
       type: number
-    deprecated: false
     description: Returns the analysis result
-    execution: false
     polling: true
     outputs:
     - contextPath: DBotScore.Indicator
@@ -640,8 +473,7 @@ script:
     - contextPath: Endpoint.Metadata
       description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.59905
-  isfetch: false
+  dockerimage: demisto/py3-tools:1.0.0.65317
   runonce: false
   script: '-'
   type: python

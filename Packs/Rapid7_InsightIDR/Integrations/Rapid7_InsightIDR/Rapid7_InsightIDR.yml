@@ -19,93 +19,75 @@ configuration:
   section: Connect
 - display: InsightIDR API key
   name: apiKey
-  required: true
   type: 4
   section: Connect
+  hidden: true
+  required: false
+- name: apikey_creds
+  type: 9
+  section: Connect
+  displaypassword: InsightIDR API key
+  hiddenusername: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
-- defaultvalue: 7 days
+  required: false
+- defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   section: Collect
-- additionalinfo: Max number of alerts per fetch. Default is 50.
-  defaultvalue: '50'
-  display: Fetch Limit
+  required: false
+- display: Fetch Limit
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  additionalinfo: Max number of alerts per fetch. Default is 50.
+  defaultvalue: '50'
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
-- display: Use system proxy settings
+  required: false
+- advanced: true
+  display: Use system proxy settings
   name: proxy
-  required: false
-  type: 8
   section: Connect
-  advanced: true
+  type: 8
+
+  required: false
 description: 'Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.'
 display: Rapid7 InsightIDR
 name: Rapid7 InsightIDR
 script:
   commands:
   - arguments:
-    - default: false
-      description: An optional time range string (i.e 1 week, 1 day)
-      isArray: false
+    - description: An optional time range string (i.e 1 week, 1 day)
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: "Only investigations whose createTime is after this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      isArray: false
+    - description: "Only investigations whose createTime is after this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      isArray: false
+    - description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       name: end_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Only investigations whose status matches one of the entries in the list will be returned. If this argument is omitted, all investigations will be returned.
-      isArray: false
       name: statuses
       predefined:
       - open
       - closed
-      required: false
-      secret: false
-    - default: false
-      description: The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0.
-      isArray: false
+    - description: The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0.
       name: index
-      required: false
-      secret: false
-    - default: false
-      description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
-      isArray: false
+    - description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: List all open/closed investigations. You can filter results by time range and investigation status.
-    execution: false
     name: rapid7-insight-idr-list-investigations
     outputs:
     - contextPath: Rapid7InsightIDR.Investigation.title
@@ -139,15 +121,10 @@ script:
       description: First event time of the alert in the investigation.
       type: String
   - arguments:
-    - default: false
-      description: ID of the investigation to get.
-      isArray: false
+    - description: ID of the investigation to get.
       name: investigation_id
       required: true
-      secret: false
-    deprecated: false
     description: Gets a single investigation (open or closed).
-    execution: false
     name: rapid7-insight-idr-get-investigation
     outputs:
     - contextPath: Rapid7InsightIDR.Investigation.title
@@ -181,64 +158,40 @@ script:
       description: First event time of the alert in the investigation.
       type: String
   - arguments:
-    - default: false
-      description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned - Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      isArray: false
+    - description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned - Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       name: start_time
       required: true
-      secret: false
-    - default: false
-      description: "AOnly investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      isArray: false
+    - description: "AOnly investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       name: end_time
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The name of an investigation source. Only investigations from this source will be closed. If the source is ALERT, an alert type must be specified as well. Can be "ALERT", "MANUAL", or "HUNT""The LEQL query to match desired log events. Do not use a calculation.more
-      isArray: false
       name: source
       predefined:
       - ALERT
       - MANUAL
       - HUNT
       required: true
-      secret: false
-    - default: false
-      description: The category of alerts to closed. This argument is required if the source is ALERT and ignored for other sources. This value must be an exact match of the alert type returned by the List Investigations response.
+    - description: The category of alerts to closed. This argument is required if the source is ALERT and ignored for other sources. This value must be an exact match of the alert type returned by the List Investigations response.
       isArray: true
       name: alert_type
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of alerts to close with this request. If this argument is not specified then there is no maximum. If this limit is exceeded, then a 400 error response is returned. The minimum value is 0.
+    - description: The maximum number of alerts to close with this request. If this argument is not specified then there is no maximum. If this limit is exceeded, then a 400 error response is returned. The minimum value is 0.
       name: max_investigations_to_close
-      required: false
-      secret: false
-    deprecated: false
     description: Bulk closes investigations according to the specified investigation create-time date range. You can specify the maximum number of alerts to close per call. If that maximum is exceeded a 400 error response is returned.
-    execution: false
     name: rapid7-insight-idr-close-investigations
     outputs:
     - contextPath: Rapid7InsightIDR.Investigation.id
       description: ID of the investigation.
       type: String
   - arguments:
-    - default: false
-      description: ID of the investigation to assign the user to.
+    - description: ID of the investigation to assign the user to.
       isArray: true
       name: investigation_id
       required: true
-      secret: false
-    - default: false
-      description: The email address of the user to assign to this investigation. This must be the same email address used to log in to the Insight platform.
-      isArray: false
+    - description: The email address of the user to assign to this investigation. This must be the same email address used to log in to the Insight platform.
       name: user_email_address
       required: true
-      secret: false
-    deprecated: false
     description: Assigns a user to an investigation according to the specified user email  address.
-    execution: false
     name: rapid7-insight-idr-assign-user
     outputs:
     - contextPath: Rapid7InsightIDR.Investigation.title
@@ -272,25 +225,18 @@ script:
       description: First event time of the alert in the investigation.
       type: String
   - arguments:
-    - default: false
-      description: ID of the investigation to set the status of.
+    - description: ID of the investigation to set the status of.
       isArray: true
       name: investigation_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The new status for the investigation. Can be "open" or "closed".
-      isArray: false
       name: status
       predefined:
       - open
       - closed
       required: true
-      secret: false
-    deprecated: false
     description: Sets the investigation status to either open or closed.
-    execution: false
     name: rapid7-insight-idr-set-status
     outputs:
     - contextPath: Rapid7InsightIDR.Investigation.title
@@ -318,39 +264,23 @@ script:
       description: Type of alert in the investigation.
       type: String
   - arguments:
-    - default: false
-      description: Key of the threat (or threats) to add indicators to
+    - description: Key of the threat (or threats) to add indicators to
       isArray: true
       name: key
       required: true
-      secret: false
-    - default: false
-      description: IP address indicators to add.
+    - description: IP address indicators to add.
       isArray: true
       name: ip_addresses
-      required: false
-      secret: false
-    - default: false
-      description: "Hash indicators to add."
+    - description: "Hash indicators to add."
       isArray: true
       name: hashes
-      required: false
-      secret: false
-    - default: false
-      description: Domain indicators to add.
+    - description: Domain indicators to add.
       isArray: true
       name: domain_names
-      required: false
-      secret: false
-    - default: false
-      description: URL indicators to add.
+    - description: URL indicators to add.
       isArray: true
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Adds new indicators to a threat (IP addresses, hashes, domains, and URLs).
-    execution: false
     name: rapid7-insight-idr-add-threat-indicators
     outputs:
     - contextPath: Rapid7InsightIDR.Threat.name
@@ -366,39 +296,23 @@ script:
       description: Whether or not the threat is published.
       type: Boolean
   - arguments:
-    - default: false
-      description: Key of the threat (or threats) to replace indicators for.
+    - description: Key of the threat (or threats) to replace indicators for.
       isArray: true
       name: key
       required: true
-      secret: false
-    - default: false
-      description: IP address indicators to add.
+    - description: IP address indicators to add.
       isArray: true
       name: ip_addresses
-      required: false
-      secret: false
-    - default: false
-      description: "Hash indicators to add."
+    - description: "Hash indicators to add."
       isArray: true
       name: hashes
-      required: false
-      secret: false
-    - default: false
-      description: Domain indicators to add.
+    - description: Domain indicators to add.
       isArray: true
       name: domain_names
-      required: false
-      secret: false
-    - default: false
-      description: URL indicators to add.
+    - description: URL indicators to add.
       isArray: true
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes existing indicators from a threat and adds new indicators to the threat.
-    execution: false
     name: rapid7-insight-idr-replace-threat-indicators
     outputs:
     - contextPath: Rapid7InsightIDR.Threat.name
@@ -414,9 +328,7 @@ script:
       description: Whether or not the threat is published.
       type: Boolean
   - arguments: []
-    deprecated: false
     description: Lists all existing logs for an account.
-    execution: false
     name: rapid7-insight-idr-list-logs
     outputs:
     - contextPath: Rapid7InsightIDR.Log.name
@@ -426,9 +338,7 @@ script:
       description: Log ID.
       type: String
   - arguments: []
-    deprecated: false
     description: Lists all existing log sets for your InsightsIDR instance.
-    execution: false
     name: rapid7-insight-idr-list-log-sets
     outputs:
     - contextPath: Rapid7InsightIDR.LogSet.name
@@ -438,93 +348,41 @@ script:
       description: Log ID
       type: String
   - arguments:
-    - default: false
-      description: IDs of the logs to download - up to 10 logs allowed.
+    - description: IDs of the logs to download - up to 10 logs allowed.
       isArray: true
       name: log_ids
       required: true
-      secret: false
-    - default: false
-      description: "Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied."
-      isArray: false
+    - description: "Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied."
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds.'
-      isArray: false
+    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds.'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The relative time range in a readable format. Optional if "from" \ is supplied. For example: Last 4 Days. Note that if start_time, end_time and\ \ time_range is not provided the default will be Last 3 days.'
-      isArray: false
+    - description: 'The relative time range in a readable format. Optional if "from" \ is supplied. For example: Last 4 Days. Note that if start_time, end_time and\ \ time_range is not provided the default will be Last 3 days.'
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: "The LEQL query to match desired log events. Do not use a calculation.more info: https://docs.rapid7.com/insightidr/build-a-query/"
-      isArray: false
+    - description: "The LEQL query to match desired log events. Do not use a calculation.more info: https://docs.rapid7.com/insightidr/build-a-query/"
       name: query
-      required: false
-      secret: false
-    - default: false
-      description: 'The maximum number of log events to download; cannot exceed 20 million. The default is 20 million. The argument value should be written like this: "10 thousand" or "2 million").'
-      isArray: false
+    - description: 'The maximum number of log events to download; cannot exceed 20 million. The default is 20 million. The argument value should be written like this: "10 thousand" or "2 million").'
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Downloads logs for from your InsightsIDR instance. The maximum number of logs per call is 10.
-    execution: false
     name: rapid7-insight-idr-download-logs
     outputs: []
   - arguments:
-    - default: false
-      description: Logentries log key
-      isArray: false
+    - description: Logentries log key
       name: log_id
       required: true
-      secret: false
-    - default: false
-      description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
-      isArray: false
+    - description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
       name: query
       required: true
-      secret: false
-    - default: false
-      description: A time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
-      isArray: false
+    - description: A time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
-      isArray: false
+    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
-      isArray: false
+    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of log entries to return per page. Default of 50.
-      isArray: false
+    - description: The maximum number of log entries to return per page. Default of 50.
       name: logs_per_page
-      required: false
-      secret: false
-    - default: false
-      description: The earlier sequence number of a log entry to start searching from.
-      isArray: false
+    - description: The earlier sequence number of a log entry to start searching from.
       name: sequence_number
-      required: false
-      secret: false
-    deprecated: false
     description: Queries within a log for certain values.
-    execution: false
     name: rapid7-insight-idr-query-log
     outputs:
     - contextPath: Rapid7InsightIDR.Event.log_id
@@ -537,51 +395,24 @@ script:
       description: Time when the event was triggered.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the log set.
+    - description: ID of the log set.
       isArray: true
       name: log_set_id
       required: true
-      secret: false
-    - default: false
-      description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
-      isArray: false
+    - description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
       name: query
       required: true
-      secret: false
-    - default: false
-      description: A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
-      isArray: false
+    - description: A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
       name: time_range
-      required: false
-      secret: false
-    - default: false
-      description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
-      isArray: false
+    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
-      isArray: false
+    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of log entries to return per page. Default of 50.
-      isArray: false
+    - description: The maximum number of log entries to return per page. Default of 50.
       name: logs_per_page
-      required: false
-      secret: false
-    - default: false
-      description: The earlier sequence number of a log entry to start searching from.
-      isArray: false
+    - description: The earlier sequence number of a log entry to start searching from.
       name: sequence_number
-      required: false
-      secret: false
-    deprecated: false
     description: Queries within a log set for certain values.
-    execution: false
     name: rapid7-insight-idr-query-log-set
     outputs:
     - contextPath: Rapid7InsightIDR.Event.log_id
@@ -593,11 +424,8 @@ script:
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
       type: Number
-  dockerimage: demisto/python3:3.10.11.59070
-  feed: false
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -1,14 +1,14 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # imports
 import calendar
 
-import demistomock as demisto  # noqa: F401
 import duo_client
-from CommonServerPython import *  # noqa: F401
 # Setup
 
 HOST = demisto.getParam('hostname')
-INTEGRATION_KEY = demisto.getParam('integration_key')
-SECRET_KEY = demisto.getParam('secret_key')
+INTEGRATION_KEY = demisto.params().get('credentials_key', {}).get('identifier') or demisto.getParam('integration_key')
+SECRET_KEY = demisto.params().get('credentials_key', {}).get('password') or demisto.getParam('secret_key')
 USE_SSL = not demisto.params().get('insecure', False)
 USE_PROXY = demisto.params().get('proxy', False)
 
@@ -397,6 +397,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    if not (SECRET_KEY and INTEGRATION_KEY):
+        raise DemistoException('Secret Key and Integration Key must be provided.')
     try:
         admin_api = create_api_call()
         set_proxy(admin_api)

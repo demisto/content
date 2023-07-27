@@ -6,8 +6,8 @@ configuration:
 - display: Organization ID
   additionalinfo: When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used.
   name: org_id
-  required: false
   type: 0
+  required: false
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection
   name: credentials
@@ -16,12 +16,12 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: 'Administrate your IT organization from XSOAR with comprehensive commands for the Automox platform.'
 display: Automox
 name: Automox
@@ -32,34 +32,16 @@ script:
     arguments:
     - name: org_id
       description: 'Organization ID'
-      default: false
-      isArray: false
-      required: false
-      secret: false
     - name: group_id
       description: 'Group ID'
-      default: false
-      isArray: false
-      required: false
-      secret: false
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 50
-      secret: false
     - name: page
       description: 'The page of results to return.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 0
-      secret: false
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: Automox.Devices.id
       description: 'Identifier of device'
@@ -237,22 +219,12 @@ script:
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 50
-      secret: false
     - name: page
       description: 'The page of results to return.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 0
-      secret: false
-    deprecated: false
     description: 'List all Automox organizations based on user permissions.'
-    execution: false
     outputs:
     - contextPath: Automox.Organizations.id
       description: 'Identifier of organization'
@@ -281,28 +253,14 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 50
-      secret: false
     - name: page
       description: 'The page of results to return.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 0
-      secret: false
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: Automox.Users.id
       description: 'Identifier of user'
@@ -343,75 +301,44 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: batch_id
       description: 'Batch identifier'
       type: 'number'
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: action
       description: 'Action to perform on the batch specified. Options are "accept" or "reject".'
       auto: PREDEFINED
       predefined:
       - accept
       - reject
-      isArray: false
       required: true
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
   - name: automox-vulnerability-sync-task-action
     description: 'Perform an action on an Automox task.'
     arguments:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: batch_id
       description: 'Batch identifier'
       type: 'number'
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: action
       description: 'Action to perform on the batch specified. Options are "accept" or "reject".'
       auto: PREDEFINED
       predefined:
       - accept
       - reject
-      isArray: false
       required: true
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
   - name: automox-vulnerability-sync-batch-get
     description: 'Get details about a Vulnerability Sync batch.'
     arguments:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: batch_id
       description: 'Batch identifier'
       type: 'number'
-      isArray: false
       required: true
-      default: false
-      secret: false
     outputs:
     - contextPath: Automox.VulnSyncBatch.id
       description: 'Identifier of batch'
@@ -473,26 +400,14 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 50
-      secret: false
     - name: page
       description: 'The page of results to return.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 0
-      secret: false
     outputs:
     - contextPath: Automox.VulnSyncBatches.id
       description: 'Identifier of batch'
@@ -554,17 +469,9 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: batch_id
       description: 'Batch identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: status
       description: 'Filter by status of tasks'
       type: 'string'
@@ -574,26 +481,14 @@ script:
       - in_progress
       - completed
       - canceled
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 50
-      secret: false
     - name: page
       description: 'The page of results to return.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 0
-      secret: false
     outputs:
     - contextPath: Automox.VulnSyncTasks.id
       description: 'Identifier of task'
@@ -673,43 +568,22 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: entry_id
       description: 'Entry ID of the CSV file to upload'
       type: 'string'
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: csv_file_name
       description: 'Name for CSV file uploaded and shown within Automox.'
       type: 'string'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 'XSOAR-uploaded-report.csv'
-      secret: false
     - name: reports_source
       description: 'The third-party source of the vulnerability report.'
       type: 'string'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 'Generic Report'
-      secret: false
     - name: type
       description: 'The type of task to create.'
       type: 'string'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 'patch'
-      secret: false
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: Automox.VulnUpload.batch_id
       description: 'Identifier of batch'
@@ -720,28 +594,14 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 50
-      secret: false
     - name: page
       description: 'The page of results to return.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 0
-      secret: false
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: Automox.Policies.id
       description: 'Identifier of policy'
@@ -764,24 +624,14 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: device_id
       description: 'Device identifier'
       type: 'number'
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: patches
       description: 'List of patches to be installed by name. (Note: this only works with the InstallUpdate command)'
       type: 'string'
       isArray: true
-      required: false
-      default: false
-      secret: false
     - name: command
       description: 'Command to run on device'
       type: 'String'
@@ -791,12 +641,7 @@ script:
       - InstallUpdate
       - InstallAllUpdates
       - Reboot
-      isArray: false
       required: true
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
     outputs:
   - name: automox-device-delete
     description: "Delete a device from Automox"
@@ -804,102 +649,53 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: device_id
       description: 'Device identifier'
       type: 'number'
-      isArray: false
       required: true
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
   - name: automox-device-update
     description: "Update a device's information in Automox"
     arguments:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: device_id
       description: 'Device identifier'
       type: 'number'
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: custom_name
       description: 'Custom name to set on device'
       type: 'string'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: exception
       description: 'Exclude the device from reports and statistics'
       type: Boolean
-      isArray: false
       required: true
-      default: false
       defaultValue: false
-      secret: false
     - name: server_group_id
       description: 'Identifier of server group'
       type: Number
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: tags
       description: 'List of tags to associate with the device'
       type: String
       isArray: true
-      required: false
-      default: false
-      secret: false
     - name: ip_addrs
       description: 'IP address of the device'
       type: String
-      isArray: false
-      required: false
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
   - name: automox-groups-list
     description: "List all groups in Automox based on organization permissions."
     arguments:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: limit
       description: 'The maximum number of results to return per page.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 50
-      secret: false
     - name: page
       description: 'The page of results to return.'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
       defaultValue: 0
-      secret: false
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: Automox.Groups.id
       description: 'Identifier of the created group'
@@ -940,54 +736,27 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: name
       description: 'Name of the group'
       type: String
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: notes
       description: 'Define notes for the group'
       type: String
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: parent_server_group_id
       description: 'Identifier of the parent group. Defaults to default group id if omitted.'
       type: Number
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: policies
       description: 'List of policy identifiers to assign to group'
       type: Number
       isArray: true
-      required: false
-      default: false
-      secret: false
     - name: refresh_interval
       description: 'Frequency of device refreshes in minutes. (Must be between 360 and 1440)'
       type: Number
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: color
       description: 'Automox console highlight color for the group. Value should be a valid Hex color code'
       type: String
-      isArray: false
-      required: false
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: Automox.CreatedGroups.id
       description: 'Identifier of the created group'
@@ -1025,86 +794,44 @@ script:
     - name: org_id
       description: 'Organization identifier'
       type: 'number'
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: group_id
       description: 'Group identifier'
       type: 'number'
-      isArray: false
       required: true
-      default: false
-      secret: false
     - name: name
       description: 'Name of the group'
       type: String
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: notes
       description: 'Define notes for the group'
       type: String
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: parent_server_group_id
       description: 'Identifier of the parent group. Defaults to default group id if omitted.'
       type: Number
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: policies
       description: 'List of policy identifiers to assign to group'
       type: Number
       isArray: true
-      required: false
-      default: false
-      secret: false
     - name: refresh_interval
       description: 'Frequency of device refreshes in minutes'
       type: Number
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: color
       description: 'Automox console highlight color for the group. Value should be a valid Hex color code'
       type: String
-      isArray: false
-      required: false
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
   - name: automox-group-delete
     description: "Delete a group from Automox"
     arguments:
     - name: org_id
       description: 'Organization identifier'
       type: Number
-      isArray: false
-      required: false
-      default: false
-      secret: false
     - name: group_id
       description: 'Group identifier'
       type: Number
-      isArray: false
       required: true
-      default: false
-      secret: false
-    deprecated: false
-    execution: false
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.58677
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.0.0
 tests:
 - No tests

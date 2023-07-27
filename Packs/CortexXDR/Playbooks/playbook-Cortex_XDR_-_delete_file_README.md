@@ -1,22 +1,28 @@
-Initiates a new endpoint script execution to delete the specified file and retrieve the results.
+Deprecated. Use the `xdr-file-delete-script-execute` command instead. Initiates a new endpoint script execution to delete the specified file and retrieve the results.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Cortex XDR - Check Action Status
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * xdr-get-script-execution-results
 * xdr-run-script-delete-file
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -27,6 +33,7 @@ This playbook does not use any scripts.
 | polling_timeout | Amount of time to poll action status before declaring a timeout and resuming the playbook \(in minutes\). | 10 | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -34,5 +41,7 @@ This playbook does not use any scripts.
 | PaloAltoNetworksXDR.ScriptResult.results._return_value | Value returned by the script in case the type is not a dictionary. | unknown |
 
 ## Playbook Image
+
 ---
-![Cortex XDR - delete file](https://raw.githubusercontent.com/demisto/content/2e19477c6355d781bf8f5c9dfdd1216a6bca07b7/Packs/CortexXDR/doc_files/Cortex_XDR_-_Delete_file.png)
+
+![Cortex XDR - delete file](../doc_files/Cortex_XDR_-_Delete_file.png)

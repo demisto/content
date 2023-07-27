@@ -160,8 +160,8 @@ tasks:
       id: 6c4b8a60-449b-4710-89e8-a68c32fdda28
       version: -1
       name: PAN-OS - Register Tag to User
-      description: Apply a tag to a user.
-      script: "|||panorama-register-user-tag"
+      description: Registers users to a tag. This command is only available for PAN-OS version 9.x and above.
+      script: '|||pan-os-register-user-tag'
       type: regular
       iscommand: true
       brand: ""
@@ -170,10 +170,14 @@ tasks:
         - "2"
     scriptarguments:
       Users:
-        simple: ${Blocklist.Final}
+        complex:
+          root: Blocklist
+          accessor: Final
       tag:
-        simple: ${inputs.Tag}
+        complex:
+          root: inputs.Tag
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {

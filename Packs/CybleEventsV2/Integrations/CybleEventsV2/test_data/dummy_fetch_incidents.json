@@ -1,0 +1,50 @@
+{
+
+    "cached": false,
+    "data": [
+      {
+        "alert_group_id": "00000000-0000-0000-0000-000000000000",
+        "archive_date": null,
+        "archived": null,
+        "assignee_id": null,
+        "assignment_date": null,
+        "created_at": "2022-12-08T05:36:31.000Z",
+        "data_id": "00000000-0000-0000-0000-000000000000",
+        "deleted_at": null,
+        "description": null,
+        "hash": "00000000000000000000000000000000000000",
+        "id": "00000000-0000-0000-0000-000000000000",
+        "data_message" : {
+          "metadata" : "sample_data"
+      },
+        "metadata": {
+          "entity": {
+            "entity_id": 11604,
+            "entity_type": 0,
+            "keyword": {
+              "bucket_id": 1,
+              "company_id": 2,
+              "created_at": "2022-12-08T05:36:31",
+              "display_name": "keyword",
+              "id": 1,
+              "tag_name": "keyword",
+              "updated_at": "2022-12-08T05:36:31"
+            },
+            "software": null,
+            "website": null
+          }
+        },
+        "risk_score": null,
+        "service": "service",
+        "severity": "MEDIUM",
+        "status": "UNREVIEWED",
+        "tags": {
+          "data": []
+        },
+        "updated_at": "2022-12-08T05:36:31.000Z",
+        "user_severity": null
+      }
+    ],
+  "meta": {},
+  "success": true
+}

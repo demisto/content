@@ -10,21 +10,20 @@ configuration:
 - additionalinfo: Use "bitsight-companies-guid-get" command to retrieve the company's GUID.
   display: Company's GUID
   name: guid
-  required: false
   type: 0
-- additionalinfo: Enter the number in days. When the fetch incident runs for first
-    time, incidents will be fetched for a given number of days.
+  required: false
+- additionalinfo: Enter the number in days. When the fetch incident runs for first time, incidents will be fetched for a given number of days.
   defaultvalue: '3'
   display: First fetch time in days
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Maximum number of incidents to fetch. The maximum value is 200.
   defaultvalue: '25'
   display: Max Fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Minimum severity of the findings to fetch.
   defaultvalue: Material
   display: Findings Minimum Severity
@@ -34,8 +33,8 @@ configuration:
   - Moderate
   - Material
   - Severe
-  required: false
   type: 15
+  required: false
 - additionalinfo: Filter by the asset category (critical, high, medium, low).
   defaultvalue: High
   display: Findings Minimum Asset Category
@@ -45,8 +44,8 @@ configuration:
   - Medium
   - High
   - Critical
-  required: false
   type: 15
+  required: false
 - additionalinfo: Filter the result by the value of grade.
   defaultvalue: WARN,BAD
   display: Findings Grade
@@ -57,11 +56,9 @@ configuration:
   - WARN
   - BAD
   - NEUTRAL
-  required: false
   type: 16
-- additionalinfo: This parameter supports comma separated list of values. By default 'All'
-    will be selected, if you need only particular values you can unselect 'All' and
-    select the required values.
+  required: false
+- additionalinfo: This parameter supports comma separated list of values. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values.
   defaultvalue: All
   display: Risk Vector ('All' has been selected by default)
   name: risk_vector
@@ -88,45 +85,37 @@ configuration:
   - SSL Configurations
   - Unsolicited Communications
   - All
-  required: false
   type: 16
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
-description: Use the "BitSight for Security Performance Management" Integration to
-  get company guid, details, and findings. This integration also allows to fetch the
-  findings by using the fetch incidents capability.
+  required: false
+description: Use the "BitSight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
 display: BitSight for Security Performance Management
 name: BitSight for Security Performance Management
 script:
   commands:
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         GUID of the company to fetch its details.
 
         Note: Users can get the list of the GUID by executing the "bitsight-companies-guid-get" command.
-      isArray: false
       name: guid
       required: true
-      secret: false
-    deprecated: false
-    description: BitSight command to get company details based on the provided GUID.
-      The details include rating details, rating history, and grades for individual
-      risk vectors.
+    description: BitSight command to get company details based on the provided GUID. The details include rating details, rating history, and grades for individual risk vectors.
     execution: true
     name: bitsight-company-details-get
     outputs:
@@ -140,8 +129,7 @@ script:
       description: The name of this company.
       type: string
     - contextPath: BitSight.Company.description
-      description: Details about this company, which typically includes its industry
-        and location.
+      description: Details about this company, which typically includes its industry and location.
       type: string
     - contextPath: BitSight.Company.ipv4Count
       description: The number of IP addresses attributed to this company.
@@ -198,15 +186,13 @@ script:
       description: Used to visually sort this risk category in the BitSight platform.
       type: number
     - contextPath: BitSight.Company.ratingDetails.beta
-      description: A true value indicates this risk vector is in beta and does not
-        affect this company's security rating.
+      description: A true value indicates this risk vector is in beta and does not affect this company's security rating.
       type: boolean
     - contextPath: BitSight.Company.ratingDetails.order
       description: Used to visually sort this risk vector in the BitSight platform.
       type: number
     - contextPath: BitSight.Company.ratingDetails.displayUrl
-      description: The URL in the BitSight platform that contains the details of this
-        risk vector.
+      description: The URL in the BitSight platform that contains the details of this risk vector.
       type: string
     - contextPath: BitSight.Company.ratings.ratingDate
       description: The date when this BitSight Security Rating Report was generated.
@@ -227,8 +213,7 @@ script:
       description: The type of subscription used to monitor this company.
       type: string
     - contextPath: BitSight.Company.sparkline
-      description: The URL path to the security rating trend line of this company
-        during the past one year.
+      description: The URL path to the security rating trend line of this company during the past one year.
       type: string
     - contextPath: BitSight.Company.subscriptionTypeKey
       description: The slug name of the subscription used to monitor this company.
@@ -237,8 +222,7 @@ script:
       description: The date when the subscription to this company expires.
       type: date
     - contextPath: BitSight.Company.bulkEmailSenderStatus
-      description: A FULL value indicates this company provides bulk email sending
-        services, which excludes this company from the Spam Propagation risk vector.
+      description: A FULL value indicates this company provides bulk email sending services, which excludes this company from the Spam Propagation risk vector.
       type: string
     - contextPath: BitSight.Company.serviceProvider
       description: A true value indicates this company is a service provider.
@@ -259,8 +243,7 @@ script:
       description: A true value indicates this company is part of a ratings bundle.
       type: boolean
     - contextPath: BitSight.Company.ratingIndustryMedian
-      description: Indicates this company's position in the peer group distribution
-        chart.
+      description: Indicates this company's position in the peer group distribution chart.
       type: string
     - contextPath: BitSight.Company.primaryCompany.guid
       description: The unique identifier of this organization's primary company.
@@ -269,26 +252,22 @@ script:
       description: The name of this organization's primary company.
       type: string
     - contextPath: BitSight.Company.permissions.canDownloadCompanyReport
-      description: A true value indicates you can view and download BitSight Security
-        Rating Reports (PDF).
+      description: A true value indicates you can view and download BitSight Security Rating Reports (PDF).
       type: boolean
     - contextPath: BitSight.Company.permissions.canViewForensics
       description: A true value indicates you have the Event Forensics add-on package.
       type: boolean
     - contextPath: BitSight.Company.permissions.canViewServiceProviders
-      description: A true value indicates you can access BitSight for Fourth Party
-        Risk Management.
+      description: A true value indicates you can access BitSight for Fourth Party Risk Management.
       type: boolean
     - contextPath: BitSight.Company.permissions.canRequestSelfPublishedEntity
-      description: A true value indicates you can request the creation of a self-published
-        rating.
+      description: A true value indicates you can request the creation of a self-published rating.
       type: boolean
     - contextPath: BitSight.Company.permissions.canViewInfrastructure
       description: A true value indicates you can view your infrastructure attribution.
       type: boolean
     - contextPath: BitSight.Company.permissions.canAnnotate
-      description: A true value indicates you can identify assets and segment your
-        network with infrastructure tags.
+      description: A true value indicates you can identify assets and segment your network with infrastructure tags.
       type: boolean
     - contextPath: BitSight.Company.permissions.canViewCompanyReports
       description: A true value indicates you can view BitSight Security Rating Reports.
@@ -309,8 +288,7 @@ script:
       description: For internal BitSight use.
       type: string
     - contextPath: BitSight.Company.inSpmPortfolio
-      description: A true value indicates this company is in your Security Performance
-        Management portfolio (My Company, SPM Subsidiary, etc.).
+      description: A true value indicates this company is in your Security Performance Management portfolio (My Company, SPM Subsidiary, etc.).
       type: boolean
     - contextPath: BitSight.Company.isMycompMysubsBundle
       description: For internal BitSight use.
@@ -319,98 +297,54 @@ script:
       description: For internal BitSight use.
       type: string
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         GUID of the company.
 
         Note: Users can get the list of the GUID by executing the "bitsight-companies-guid-get" command.
-      isArray: false
       name: guid
       required: true
-      secret: false
-    - default: false
-      description: 'Filter the findings that were seen on and after this date. Format
-        accepted: YYYY-MM-DD, Example: 2021-01-01.'
-      isArray: false
+    - description: 'Filter the findings that were seen on and after this date. Format accepted: YYYY-MM-DD, Example: 2021-01-01.'
       name: first_seen
       required: true
-      secret: false
-    - default: false
-      description: 'Filter the findings that were seen on and prior to this date.
-        Format accepted: YYYY-MM-DD, Example: 2021-01-01.'
-      isArray: false
+    - description: 'Filter the findings that were seen on and prior to this date. Format accepted: YYYY-MM-DD, Example: 2021-01-01.'
       name: last_seen
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Minimum Severity of the findings.
-      isArray: false
       name: severity
       predefined:
       - minor
       - moderate
       - material
       - severe
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'Filter by the grade of the findings. Supports comma separated values.
-        Select the values from the list of predefined values: good, fair, warn, bad
-        and, neutral.'
+      description: 'Filter by the grade of the findings. Supports comma separated values. Select the values from the list of predefined values: good, fair, warn, bad and, neutral.'
       isArray: true
       name: grade
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Minimum Asset Category of the findings.
 
         Example: If low is selected from the options then low, medium, high, and critical will be considered in retrieving results.
-      isArray: false
       name: asset_category
       predefined:
       - low
       - medium
       - high
       - critical
-      required: false
-      secret: false
-    - default: false
-      description: 'Risk category of the findings. Supports comma separated values.
-        Select the values from the list of predefined values: Web Application Headers,
-        Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing,
-        Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application
-        Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited,
-        Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations
-        and, Unsolicited Communications.'
+    - description: 'Risk category of the findings. Supports comma separated values. Select the values from the list of predefined values: Web Application Headers, Botnet Infections, Breaches, Desktop Software, DKIM, DNSSEC, File Sharing, Insecure Systems, Malware Servers, Mobile App Publications, Mobile Application Security, Mobile Software, Open Ports, Patching Cadence, Potentially Exploited, Server Software, Spam Propagation, SPF, SSL Certificates, SSL Configurations and, Unsolicited Communications.'
       isArray: true
       name: risk_vector_label
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: |-
         Set the maximum number of results to be retrieved. The maximum value is 1000.
 
         Note: If a negative value is provided then the default value of 100 will be used.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: Set the starting point of the results to be returned. A 0 (zero)
-        value starts the results from the first record in the result set.
-      isArray: false
+    - defaultValue: '0'
+      description: Set the starting point of the results to be returned. A 0 (zero) value starts the results from the first record in the result set.
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: BitSight command to get company findings.
-    execution: false
     name: bitsight-company-findings-get
     outputs:
     - contextPath: BitSight.Company.guid
@@ -438,12 +372,10 @@ script:
       description: A true value indicates this asset is an IP address.
       type: boolean
     - contextPath: BitSight.Company.CompanyFinding.details
-      description: Details of this finding. The included keys vary, depending on the
-        following risk types Compromised Systems, Diligence, File Sharing.
+      description: Details of this finding. The included keys vary, depending on the following risk types Compromised Systems, Diligence, File Sharing.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.evidenceKey
-      description: The company's asset (domain or IP address) that's attributed to
-        the finding.
+      description: The company's asset (domain or IP address) that's attributed to the finding.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.firstSeen
       description: The date of the first observation.
@@ -467,8 +399,7 @@ script:
       description: A unique identifier for this observation.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.severity
-      description: The severity of the finding, which is the measured risk that this
-        finding introduces.
+      description: The severity of the finding, which is the measured risk that this finding introduces.
       type: number
     - contextPath: BitSight.Company.CompanyFinding.severityCategory
       description: The slug name of the finding severity.
@@ -486,12 +417,10 @@ script:
       description: For internal BitSight use.
       type: number
     - contextPath: BitSight.Company.CompanyFinding.remediationHistory.lastRequestedRefreshDate
-      description: The date when a record refresh that included this finding was last
-        requested.
+      description: The date when a record refresh that included this finding was last requested.
       type: date
     - contextPath: BitSight.Company.CompanyFinding.remediationHistory.lastRefreshStatusDate
-      description: The date when a refresh of the remediation status of this finding
-        was last requested.
+      description: The date when a refresh of the remediation status of this finding was last requested.
       type: date
     - contextPath: BitSight.Company.CompanyFinding.remediationHistory.lastRefreshStatusLabel
       description: The current record refresh status of this finding.
@@ -509,8 +438,7 @@ script:
       description: The users who are assigned to remediate this finding.
       type: unknown
     - contextPath: BitSight.Company.CompanyFinding.remediationHistory.lastRemediationStatusUpdatedBy
-      description: The name of the user who updated the remediation status of this
-        finding.
+      description: The name of the user who updated the remediation status of this finding.
       type: string
     - contextPath: BitSight.Company.CompanyFinding.assetOverrides.asset
       description: The domain or IP address of the overridden asset.
@@ -539,9 +467,7 @@ script:
     - contextPath: BitSight.Page.count
       description: The number of findings.
       type: Number
-  - deprecated: false
-    description: BitSight command to get list of companies and GUID.
-    execution: false
+  - description: BitSight command to get list of companies and GUID.
     name: bitsight-companies-guid-get
     outputs:
     - contextPath: BitSight.Company.name
@@ -587,8 +513,7 @@ script:
       description: The URL in the BitSight platform to this company's logo image.
       type: String
     - contextPath: BitSight.Company.sparkline
-      description: The URL in the BitSight platform to this company's historical ratings
-        trend line.
+      description: The URL in the BitSight platform to this company's historical ratings trend line.
       type: String
     - contextPath: BitSight.Company.externalId
       description: The external ID assigned to this company.
@@ -617,11 +542,8 @@ script:
     - contextPath: BitSight.MyCompany.guid
       description: The unique identifier of my company.
       type: String
-  dockerimage: demisto/python3:3.10.11.58677
-  feed: false
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

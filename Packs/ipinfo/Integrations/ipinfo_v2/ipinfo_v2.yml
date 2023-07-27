@@ -10,9 +10,9 @@ configuration:
   additionalinfo: The API key to use for the connection.
   hiddenusername: true
   displaypassword: API Token
-  required: false
   type: 9
   section: Connect
+  required: false
 - name: integrationReliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -31,22 +31,21 @@ configuration:
 - name: base_url
   defaultvalue: https://ipinfo.io
   display: Base URL
-  hidden: false
   required: true
   type: 0
   section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use the IPinfo.io API to get data about an IP address.
 display: IPinfo v2
 name: ipinfo_v2
@@ -58,10 +57,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds.
-    execution: false
     name: ip
     outputs:
     - contextPath: IPinfo.IP.Address
@@ -170,11 +166,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
-  dockerimage: demisto/python3:3.10.11.57890
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3

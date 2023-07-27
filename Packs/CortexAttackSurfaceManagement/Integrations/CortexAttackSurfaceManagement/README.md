@@ -1124,3 +1124,86 @@ Returns list of remediation path rules.
 >|---|---|---|---|---|---|---|---|---|---|
 >| Email | RdpServer | 1672897301000 | test@test.com | Test User | {'field': 'severity', 'value': 'high', 'operator': 'eq'},<br/>{'field': 'isCloudManaged', 'value': 'true', 'operator': 'eq'} | AND | for testing | b935cf69-add9-4e75-8c3d-fe32ee471554 | TestRule |
 
+### asm-start-remediation_confirmation_scan
+***
+Starts a new Remediation Confirmation Scan or gets an existing scan ID.
+
+#### Base Command
+
+`asm-start-remediation-confirmation-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_id | The ID of the service in Cortex Xpanse associated with the alert. | Required |
+| attack_surface_rule_id | The Cortex Xpanse attack surface rule associated with the alert. | Required |
+| alert_internal_id | The Cortex Xpanse alert ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.RemediationScan.scanId | String | The ID returned for the created or existing scan. |
+| ASM.RemediationScan.scan_creation_status | String | The creation status of the scan (based on HTTP status). |
+
+#### Command example
+`!asm-start-remediation_confirmation_scan service_id="abc12345-abab-1212-1212-abc12345abcd" attack_surface_rule_id="InsecureOpenSSH" alert_internal_id="1"`
+#### Context Example
+```json
+{
+    "ASM": {
+        "RemediationScan": {
+            "scanId": "abcdef12-3456-789a-bcde-fgh012345678",
+            "scan_creation_status": "created"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Creation of Remediation Confirmation Scan
+> |Scanid|Scan Creation Status|
+> |---|---|
+> | abcdef12-3456-789a-bcde-fgh012345678 | created |
+
+### asm-get-remediation-confirmation-scan-status
+***
+Get the status of an existing Remediation Confirmation Scan.
+
+#### Base Command
+
+`asm-get-remediation-confirmation-scan-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scan_id | The ID of an existing remediation confirmation scan. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.RemediationScan.status| String | Status of the Remediation Confirmation Scan. |
+| ASM.RemediationScan.result | String | Result of the Remediation Confirmation Scan. |
+
+#### Command example
+`!asm-get-remediation-confirmation-scan-status scan_id="abcdef12-3456-789a-bcde-fgh012345678"`
+#### Context Example
+```json
+{
+    "ASM": {
+        "RemediationScan": {
+            "status": "SUCCESS", // Required
+            "result": "REMEDIATED" // Optional (If not SUCCESS)
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Status of Remediation Confirmation Scan
+> |status|result|
+> |---|---|
+> | SUCCESS | REMEDIATED |

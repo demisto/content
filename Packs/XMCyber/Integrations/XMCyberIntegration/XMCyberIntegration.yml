@@ -13,29 +13,29 @@ configuration:
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: '30'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: First fetch
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -48,8 +48,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -58,34 +58,26 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 description: The XM Cyber integration creates unique incidents with valuable data collected daily, and enriches your existing incidents with attack simulation context. This enables you to prioritize your responses based on XM Cyber’s insights.
 display: XM Cyber
 name: XMCyber
 script:
   commands:
   - arguments:
-    - default: false
-      description: The relevant period of time. The options are timeAgo_days_7 (past 7 days) timeAgo_days_14, timeAgo_days_30, or monthly_YYYY_MM for a given year and month
-      isArray: false
+    - description: The relevant period of time. The options are timeAgo_days_7 (past 7 days) timeAgo_days_14, timeAgo_days_30, or monthly_YYYY_MM for a given year and month
       name: timeId
-      required: false
-      secret: false
-    - default: false
-      description: Entity ID
+    - description: Entity ID
       isArray: true
       name: entityId
       required: true
-      secret: false
-    deprecated: false
     description: List critical assets at risk from an entity and the complexity of the attack
-    execution: false
     name: xmcyber-affected-critical-assets-list
     outputs:
     - contextPath: XMCyber.Entity.id
@@ -101,21 +93,13 @@ script:
       description: Minimum attack complexity
       type: Number
   - arguments:
-    - default: false
-      description: The relevant period of time. The options are timeAgo_days_7 (past 7 days) timeAgo_days_14, timeAgo_days_30, or monthly_YYYY_MM for a given year and month
-      isArray: false
+    - description: The relevant period of time. The options are timeAgo_days_7 (past 7 days) timeAgo_days_14, timeAgo_days_30, or monthly_YYYY_MM for a given year and month
       name: timeId
-      required: false
-      secret: false
-    - default: false
-      description: Entity ID
+    - description: Entity ID
       isArray: true
       name: entityId
       required: true
-      secret: false
-    deprecated: false
     description: List all entities at risk from an entity and the complexity of the attack
-    execution: false
     name: xmcyber-affected-entities-list
     outputs:
     - contextPath: XMCyber.Entity.id
@@ -127,17 +111,13 @@ script:
     - contextPath: XMCyber.Entity.entitiesAtRiskList.technique
       description: The attack technique which compromised the entity
       type: String
-  - deprecated: false
-    description: Check if current XM version supports Cortex Xsoar integration
-    execution: false
+  - description: Check if current XM version supports Cortex Xsoar integration
     name: xmcyber-version-supported
     outputs:
     - contextPath: XMCyber.Version.valid
       description: Flag that indicates if the version is valid
       type: Boolean
-  - deprecated: false
-    description: Get current xm version
-    execution: false
+  - description: Get current xm version
     name: xmcyber-version-get
     outputs:
     - contextPath: XMCyber.Version.system
@@ -148,11 +128,7 @@ script:
       description: List of IPs.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    deprecated: false
     description: Return data on Entity by IP from XM Cyber
-    execution: false
     name: xmcyber-enrich-from-ip
     outputs:
     - contextPath: XMCyber.Entity.id
@@ -205,11 +181,7 @@ script:
       description: List of entityIds.
       isArray: true
       name: entityId
-      required: false
-      secret: false
-    deprecated: false
     description: Return data on Entity by entityId from XM Cyber
-    execution: false
     name: xmcyber-enrich-from-entityId
     outputs:
     - contextPath: XMCyber.Entity.id
@@ -259,11 +231,7 @@ script:
       description: List of hostnames.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    deprecated: false
     description: Return data on Entity by hostname from XM Cyber
-    execution: false
     name: xmcyber-enrich-from-hostname
     outputs:
     - contextPath: XMCyber.Entity.id
@@ -309,21 +277,15 @@ script:
       description: The IP address of the host.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of fields to search for the entity
+    - description: Comma-separated list of fields to search for the entity
       isArray: true
       name: fields
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of values (in the same order than the fields list) used to search for the entity
+    - description: Comma-separated list of values (in the same order than the fields list) used to search for the entity
       isArray: true
       name: values
       required: true
-      secret: false
-    deprecated: false
     description: Return data on an XM entity
-    execution: false
     name: xmcyber-enrich-from-fields
     outputs:
     - contextPath: XMCyber.Entity.id
@@ -368,11 +330,8 @@ script:
     - contextPath: Host.IP
       description: The IP address of the host.
       type: String
-  dockerimage: demisto/python3:3.10.11.59070
-  feed: false
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

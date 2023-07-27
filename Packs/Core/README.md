@@ -11,6 +11,6 @@ The playbooks included in this pack help you respond to Cortex XDR alerts in a t
 - Interacts with the analyst to choose a remediation path or close the incident as a false positive based on the gathered information and incident severity.
 - Remediates the incident by blocking malicious indicators and isolating infected endpoints.
 
-![[Cortex XSIAM Video](https://players.brightcove.net/1050259881001/default_default/index.html?videoId=6297044855001)](https://raw.githubusercontent.com/demisto/content/171e5a1e2d66eb73a6f0b3e9b5fca48b7ede355f/Packs/Core/doc_files/XSIAM.png)
+![Cortex XSIAM Video](https://raw.githubusercontent.com/demisto/content/171e5a1e2d66eb73a6f0b3e9b5fca48b7ede355f/Packs/Core/doc_files/XSIAM.png)
 
 ![T1036 - Masquerading](https://raw.githubusercontent.com/demisto/content/171e5a1e2d66eb73a6f0b3e9b5fca48b7ede355f/Packs/Core/doc_files/T1036_-_Masquerading.png)

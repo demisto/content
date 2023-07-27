@@ -70,7 +70,7 @@ script:
     - name: lang
       description: 'The language code of tweets to search for. List of supported languages:  https://developer.twitter.com/en/docs/twitter-for-websites/supported-languages'
     - name: count
-      description: The number of tweets to return. The max is 100. 
+      description: The number of tweets to return. The max is 100.
     - name: include_entities
       description: Display entities (True/False), Defaults to True
       defaultValue: "True"
@@ -85,7 +85,6 @@ script:
     description: Search for tweets on Twitter.
     deprecated: true
   dockerimage: demisto/tweepy:1.0.0.23810
-  runonce: false
   subtype: python3
 fromversion: 6.0.0
 tests:

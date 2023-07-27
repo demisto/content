@@ -16,46 +16,48 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key
   name: apikey
   type: 4
   additionalinfo: Xpanse API Key to use to connect.
   hidden: true
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Fetch Xpanse issues with Priority
   name: priority
   options:
@@ -63,20 +65,20 @@ configuration:
   - Medium
   - High
   - Critical
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: Active
   display: Fetch Xpanse issues with Activity Status
   name: activity_status
   options:
   - Active
   - Inactive
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - display: Fetch Xpanse issues with Progress Status
   name: progress_status
   options:
@@ -85,73 +87,71 @@ configuration:
   - InProgress
   - AcceptableRisk
   - Resolved
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - display: Fetch issues with Business Units (comma separated string)
   name: business_unit
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch issues with Tags (comma separated string)
   name: tag
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch issue with Types (comma separated string)
   name: issue_type
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch Xpanse issues with Cloud Management Status
   name: cloud_management_status
   options:
   - NotApplicable
   - ManagedCloud
   - UnmanagedCloud
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: None
   display: Incident Mirroring Direction
-  hidden: false
   name: mirror_direction
   options:
   - None
   - Incoming
   - Outgoing
   - Both
-  required: false
   type: 15
   section: Collect
+  required: false
 - defaultvalue: 'false'
   display: Sync Incident Owners
-  hidden: false
   name: sync_owners
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Assign these XSOAR tags (comma separated list) to the incoming comments mirrored from the Xpanse Issue (must be different from the sync_tags to prevent loops).
   defaultvalue: FromExpanse
   display: Tag(s) for mirrored comments
   name: incoming_tags
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Mirror XSOAR entries with these XSOAR tags (comma separate list) to the corresponding Xpanse Issue as comments (must be different from the incoming_tags to prevent loops).
   display: Mirror out Entries with tag(s)
   name: sync_tags
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -164,9 +164,9 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Collect
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -175,32 +175,27 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   section: Collect
   advanced: true
+  required: false
 description: The Xpanse integration for Cortex XSOAR leverages the Expander API to create incidents from Xpanse issues. It also leverages Xpanse's unparalleled view of the Internet to enrich IPs, domains and certificates using information from assets discovered by Xpanse Expander and risky flows detected by Xpanse Behavior.
 display: Cortex Xpanse
 name: ExpanseV2
 script:
   commands:
   - arguments:
-    - default: false
-      description: ID of the Xpanse service to retrieve.
-      isArray: false
+    - description: ID of the Xpanse service to retrieve.
       name: service_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve Xpanse service by service ID.
-    execution: false
     name: expanse-get-service
     outputs:
     - contextPath: Expanse.Service.activityStatus
@@ -555,80 +550,39 @@ script:
       description: TLS version observed on the service
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of services to retrieve.
-      isArray: false
+    - description: Maximum number of services to retrieve.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose contents match the given query. Query can be any generic string (ex. telnet).
-      isArray: false
+    - description: Returns only results whose contents match the given query. Query can be any generic string (ex. telnet).
       name: content_search
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results that were found on the given providers (comma separated string).
+    - description: Returns only results that were found on the given providers (comma separated string).
       isArray: true
       name: provider
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results with a business unit whose name falls in the provided list (comma separated string).
+    - description: Returns only results with a business unit whose name falls in the provided list (comma separated string).
       isArray: true
       name: business_unit
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose service type name (or classification ID) matches one of the given types (comma separated string).
+    - description: Returns only results whose service type name (or classification ID) matches one of the given types (comma separated string).
       isArray: true
       name: service_type
-      required: false
-      secret: false
-    - default: false
-      description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
-      isArray: false
+    - description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       name: inet_search
-      required: false
-      secret: false
-    - default: false
-      description: Returns results whose identifier includes a domain matching the query.
-      isArray: false
+    - description: Returns results whose identifier includes a domain matching the query.
       name: domain_search
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose identifier includes one of the given port numbers (comma separated list).
+    - description: Returns only results whose identifier includes one of the given port numbers (comma separated list).
       isArray: true
       name: port_number
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose discovery type matches one of the given values (comma separated string, options are 'ColocatedOnIp', 'DirectlyDiscovered').
+    - description: Returns only results whose discovery type matches one of the given values (comma separated string, options are 'ColocatedOnIp', 'DirectlyDiscovered').
       isArray: true
       name: discovery_type
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose country code matches one of the given ISO-3166 two character country codes (comma separated list).
+    - description: Returns only results whose country code matches one of the given ISO-3166 two character country codes (comma separated list).
       isArray: true
       name: country_code
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose activity status matches one of the given values. (comma separated string, options are 'Active', 'Inactive').
+    - description: Returns only results whose activity status matches one of the given values. (comma separated string, options are 'Active', 'Inactive').
       isArray: true
       name: activity_status
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results that are associated with the provided tag names (comma separated string).
+    - description: Returns only results that are associated with the provided tag names (comma separated string).
       isArray: true
       name: tag
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Returns only results whose cloud management status is the following:(comma-separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
       isArray: true
       name: cloud_management_status
@@ -636,13 +590,9 @@ script:
       - NotApplicable
       - ManagedCloud
       - UnmanagedCloud
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: firstObserved
       description: Sort by specified properties.
-      isArray: false
       name: sort
       predefined:
       - firstObserved
@@ -651,11 +601,7 @@ script:
       - -lastObserved
       - name
       - -name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve all Xpanse services matching the supplied parameters.
-    execution: false
     name: expanse-get-services
     outputs:
     - contextPath: Expanse.Service.activityStatus
@@ -1010,114 +956,54 @@ script:
       description: TLS version observed on the service
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of issues to retrieve.
-      isArray: false
+    - description: Maximum number of issues to retrieve.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose contents match the given query.
-      isArray: false
+    - description: Returns only results whose contents match the given query.
       name: content_search
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results that were found on the given providers (comma separated string).
+    - description: Returns only results that were found on the given providers (comma separated string).
       isArray: true
       name: provider
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results with a business unit whose name falls in the provided list (comma separated string).
+    - description: Returns only results with a business unit whose name falls in the provided list (comma separated string).
       isArray: true
       name: business_unit
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose assignee's username matches one of the given usernames. Use "Unassigned" to fetch issues that are not assigned to any user.
+    - description: Returns only results whose assignee's username matches one of the given usernames. Use "Unassigned" to fetch issues that are not assigned to any user.
       isArray: true
       name: assignee
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose issue type name matches one of the given types (comma separated string).
+    - description: Returns only results whose issue type name matches one of the given types (comma separated string).
       isArray: true
       name: issue_type
-      required: false
-      secret: false
-    - default: false
-      description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
-      isArray: false
+    - description: Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       name: inet_search
-      required: false
-      secret: false
-    - default: false
-      description: Returns results whose identifier includes a domain matching the query.
-      isArray: false
+    - description: Returns results whose identifier includes a domain matching the query.
       name: domain_search
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose identifier includes one of the given port numbers (comma separated list).
+    - description: Returns only results whose identifier includes one of the given port numbers (comma separated list).
       isArray: true
       name: port_number
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose priority matches one of the given values (comma separated string, options are 'Low', 'Medium', 'High', 'Critical').
+    - description: Returns only results whose priority matches one of the given values (comma separated string, options are 'Low', 'Medium', 'High', 'Critical').
       isArray: true
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose progress status matches one of the given values (comma separated string, options are 'New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved').
+    - description: Returns only results whose progress status matches one of the given values (comma separated string, options are 'New', 'Investigating', 'InProgress', 'AcceptableRisk', 'Resolved').
       isArray: true
       name: progress_status
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Returns only results whose activity status matches one of the given values.
       isArray: true
       name: activity_status
       predefined:
       - Active
       - Inactive
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results that are associated with the provided tag names (comma separated string).
+    - description: Returns only results that are associated with the provided tag names (comma separated string).
       isArray: true
       name: tag
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results created before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: Returns only results created before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       name: created_before
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: Returns only results created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       name: created_after
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results modified before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: Returns only results modified before the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       name: modified_before
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results modified after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: Returns only results modified after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       name: modified_after
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Returns only results whose cloud management status is the following. (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud').
       isArray: true
       name: cloud_management_status
@@ -1125,10 +1011,7 @@ script:
       - NotApplicable
       - ManagedCloud
       - UnmanagedCloud
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: created
       description: Sort by specified properties.
       isArray: true
@@ -1148,11 +1031,7 @@ script:
       - -activityStatus
       - headline
       - -headline
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve issues
-    execution: false
     name: expanse-get-issues
     outputs:
     - contextPath: Expanse.Issue.activityStatus
@@ -1675,33 +1554,16 @@ script:
       description: The name of the provider the issue was detected on
       type: String
   - arguments:
-    - default: false
-      description: Expanse issue ID to retrieve updates for.
-      isArray: false
+    - description: Expanse issue ID to retrieve updates for.
       name: issue_id
       required: true
-      secret: false
-    - default: false
-      description: Update types to retrieve (comma separated string. Valid options are 'Assignee', 'Comment', 'Priority', 'ProgressStatus', 'ActivityStatus')
-      isArray: false
+    - description: Update types to retrieve (comma separated string. Valid options are 'Assignee', 'Comment', 'Priority', 'ProgressStatus', 'ActivityStatus')
       name: update_types
-      required: false
-      secret: false
-    - default: false
-      description: Returns only updates created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: Returns only updates created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       name: created_after
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to retrieve.
-      isArray: false
+    - description: Maximum number of results to retrieve.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve updates for an Xpanse issue.
-    execution: false
     name: expanse-get-issue-updates
     outputs:
     - contextPath: Expanse.IssueUpdate.created
@@ -1726,21 +1588,12 @@ script:
       description: The new value of the field that was updated
       type: String
   - arguments:
-    - default: false
-      description: Expanse issue ID to retrieve updates for.
-      isArray: false
+    - description: Expanse issue ID to retrieve updates for.
       name: issue_id
       required: true
-      secret: false
-    - default: false
-      description: Returns only comments created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
-      isArray: false
+    - description: Returns only comments created after the provided timestamp (ISO8601 format YYYY-MM-DDTHH:MM:SSZ).
       name: created_after
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve issue comments (subset of updates)
-    execution: false
     name: expanse-get-issue-comments
     outputs:
     - contextPath: Expanse.IssueComment.created
@@ -1765,14 +1618,10 @@ script:
       description: The new value of the field that was updated
       type: String
   - arguments:
-    - default: false
-      description: Xpanse issue ID to update.
-      isArray: false
+    - description: Xpanse issue ID to update.
       name: issue_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Type of update.
       isArray: true
@@ -1783,16 +1632,10 @@ script:
       - Priority
       - ProgressStatus
       required: true
-      secret: false
-    - default: false
-      description: Updated value.
-      isArray: false
+    - description: Updated value.
       name: value
       required: true
-      secret: false
-    deprecated: false
     description: Update a property of an Xpanse issue.
-    execution: false
     name: expanse-update-issue
     outputs:
     - contextPath: Expanse.IssueUpdate.created
@@ -1817,15 +1660,10 @@ script:
       description: The new value of the field that was updated
       type: String
   - arguments:
-    - default: false
-      description: ID of the Xpanse issue to retrieve.
-      isArray: false
+    - description: ID of the Xpanse issue to retrieve.
       name: issue_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve Xpanse issue by issue ID.
-    execution: false
     name: expanse-get-issue
     outputs:
     - contextPath: Expanse.Issue.activityStatus
@@ -2348,15 +2186,9 @@ script:
       description: The name of the provider the issue was detected on
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of results to retrieve.
-      isArray: false
+    - description: Maximum number of results to retrieve.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: List available business units from Xpanse.
-    execution: false
     name: expanse-list-businessunits
     outputs:
     - contextPath: Expanse.BusinessUnit.id
@@ -2366,15 +2198,9 @@ script:
       description: Business unit name
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of results to retrieve.
-      isArray: false
+    - description: Maximum number of results to retrieve.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: List available providers from Xpanse.
-    execution: false
     name: expanse-list-providers
     outputs:
     - contextPath: Expanse.Provider.id
@@ -2384,15 +2210,9 @@ script:
       description: Provider name
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of results to retrieve
-      isArray: false
+    - description: Maximum number of results to retrieve
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: List available Point of Contacts from Xpanse.
-    execution: false
     name: expanse-list-pocs
     outputs:
     - contextPath: Expanse.PointOfContact.created
@@ -2420,39 +2240,18 @@ script:
       description: Role of Point of Contact
       type: String
   - arguments:
-    - default: false
-      description: Email for Point of Contact.
-      isArray: false
+    - description: Email for Point of Contact.
       name: email
       required: true
-      secret: false
-    - default: false
-      description: First name of Point of Contact. Should be less than 64 characters.
-      isArray: false
+    - description: First name of Point of Contact. Should be less than 64 characters.
       name: first_name
-      required: false
-      secret: false
-    - default: false
-      description: Last name of Point of Contact. Should be less than 64 characters.
-      isArray: false
+    - description: Last name of Point of Contact. Should be less than 64 characters.
       name: last_name
-      required: false
-      secret: false
-    - default: false
-      description: Phone number of Point of Contact. Should be a numeric string (ex. 15551234567)
-      isArray: false
+    - description: Phone number of Point of Contact. Should be a numeric string (ex. 15551234567)
       name: phone
-      required: false
-      secret: false
-    - default: false
-      description: Role of Point of Contact. Should be less than 64 characters.
-      isArray: false
+    - description: Role of Point of Contact. Should be less than 64 characters.
       name: role
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new Point of Contact in Xpanse.
-    execution: false
     name: expanse-create-poc
     outputs:
     - contextPath: Expanse.PointOfContact.created
@@ -2481,222 +2280,128 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Type of Xpanse asset to assign the poc to.
-      isArray: false
       name: asset_type
       predefined:
       - IpRange
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
-      secret: false
-    - default: false
-      description: ID of the asset to assign the poc to.
-      isArray: false
+    - description: ID of the asset to assign the poc to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Email Addresses of the pocs to assign to the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Email Addresses of the pocs to assign to the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Assign Point of Contacts to an Xpanse asset.
-    execution: false
     name: expanse-assign-pocs-to-asset
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Type of Xpanse asset to unassign the pocs from.
-      isArray: false
       name: asset_type
       predefined:
       - IpRange
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
-      secret: false
-    - default: false
-      description: ID of the asset to unassign the pocs from.
-      isArray: false
+    - description: ID of the asset to unassign the pocs from.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to unassign from the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to unassign from the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign Point of Contacts from an Xpanse Asset.
-    execution: false
     name: expanse-unassign-pocs-from-asset
   - arguments:
-    - default: false
-      description: ID of the IP range to assign pocs to.
-      isArray: false
+    - description: ID of the IP range to assign pocs to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to assign to the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to assign to the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Emails of the pocs to assign to the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Emails of the pocs to assign to the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Assign Point of Contacts to an Xpanse IP range.
-    execution: false
     name: expanse-assign-pocs-to-iprange
   - arguments:
-    - default: false
-      description: ID of the IP range to unassign pocs from.
-      isArray: false
+    - description: ID of the IP range to unassign pocs from.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to unassign from the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to unassign from the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Names of the pocs to unassign from the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Names of the pocs to unassign from the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign Point of Contacts from an Xpanse IP range.
-    execution: false
     name: expanse-unassign-pocs-from-iprange
   - arguments:
-    - default: false
-      description: ID of the certificate to assign pocs to.
-      isArray: false
+    - description: ID of the certificate to assign pocs to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to assign to the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to assign to the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Emails of the pocs to assign to the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Emails of the pocs to assign to the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Assign pocs to an Xpanse certificate.
-    execution: false
     name: expanse-assign-pocs-to-certificate
   - arguments:
-    - default: false
-      description: ID of the certificate to assign pocs to.
-      isArray: false
+    - description: ID of the certificate to assign pocs to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to unassign from the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to unassign from the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Emails of the pocs to unassign from the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Emails of the pocs to unassign from the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign pocs from an Xpanse certificate.
-    execution: false
     name: expanse-unassign-pocs-from-certificate
   - arguments:
-    - default: false
-      description: ID of the domain to assign pocs to.
-      isArray: false
+    - description: ID of the domain to assign pocs to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to assign to the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to assign to the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Emails of the pocs to assign to the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Emails of the pocs to assign to the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Assign pocs to an Xpanse domain.
-    execution: false
     name: expanse-assign-pocs-to-domain
   - arguments:
-    - default: false
-      description: ID of the domain to unassign pocs from.
-      isArray: false
+    - description: ID of the domain to unassign pocs from.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the pocs to unassign from the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: IDs of the pocs to unassign from the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: pocs
-      required: false
-      secret: false
-    - default: false
-      description: Emails of the pocs to unassign from the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
+    - description: Emails of the pocs to unassign from the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. At least one poc ID or poc email must be provided.
       isArray: true
       name: poc_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign pocs from an Xpanse domain.
-    execution: false
     name: expanse-unassign-pocs-from-domain
   - arguments:
-    - default: false
-      description: Maximum number of results to retrieve
-      isArray: false
+    - description: Maximum number of results to retrieve
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: List available tags from Xpanse.
-    execution: false
     name: expanse-list-tags
     outputs:
     - contextPath: Expanse.Tag.created
@@ -2722,228 +2427,131 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Type of Xpanse asset to assign the tag to.
-      isArray: false
       name: asset_type
       predefined:
       - IpRange
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
-      secret: false
-    - default: false
-      description: ID of the asset to assign the tags to.
-      isArray: false
+    - description: ID of the asset to assign the tags to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to assign to the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to assign to the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Assign tags to an Xpanse asset.
-    execution: false
     name: expanse-assign-tags-to-asset
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Type of Xpanse asset to unassign the tags from.
-      isArray: false
       name: asset_type
       predefined:
       - IpRange
       - Certificate
       - Domain
       - CloudResource
+      - Network
+      - Device
+      - ResponsiveIP
       required: true
-      secret: false
-    - default: false
-      description: ID of the asset to unassign the tags from.
-      isArray: false
+    - description: ID of the asset to unassign the tags from.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to unassign from the asset (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to unassign from the asset (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign tags from an Xpanse Asset.
-    execution: false
     name: expanse-unassign-tags-from-asset
   - arguments:
-    - default: false
-      description: ID of the IP range to assign tags to.
-      isArray: false
+    - description: ID of the IP range to assign tags to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to assign to the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to assign to the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to assign to the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to assign to the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Assign tags to an Xpanse IP range.
-    execution: false
     name: expanse-assign-tags-to-iprange
   - arguments:
-    - default: false
-      description: ID of the IP range to unassign tags from.
-      isArray: false
+    - description: ID of the IP range to unassign tags from.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to unassign from the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to unassign from the IP range (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to unassign from the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to unassign from the IP range (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign tags from an Xpanse IP range.
-    execution: false
     name: expanse-unassign-tags-from-iprange
   - arguments:
-    - default: false
-      description: ID of the certificate to assign tags to.
-      isArray: false
+    - description: ID of the certificate to assign tags to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to assign to the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to assign to the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to assign to the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to assign to the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Assign tags to an Xpanse certificate.
-    execution: false
     name: expanse-assign-tags-to-certificate
   - arguments:
-    - default: false
-      description: ID of the certificate to assign tags to.
-      isArray: false
+    - description: ID of the certificate to assign tags to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to unassign from the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to unassign from the certificate (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to unassign from the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to unassign from the certificate (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign tags from an Xpanse certificate.
-    execution: false
     name: expanse-unassign-tags-from-certificate
   - arguments:
-    - default: false
-      description: ID of the domain to assign tags to.
-      isArray: false
+    - description: ID of the domain to assign tags to.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to assign to the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to assign to the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to assign to the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to assign to the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Assign tags to an Xpanse domain.
-    execution: false
     name: expanse-assign-tags-to-domain
   - arguments:
-    - default: false
-      description: ID of the domain to unassign tags from.
-      isArray: false
+    - description: ID of the domain to unassign tags from.
       name: asset_id
       required: true
-      secret: false
-    - default: false
-      description: IDs of the tags to unassign from the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
+    - description: IDs of the tags to unassign from the domain (comma separated string). If used in combination with 'tag_names' the lists of tags are merged.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Names of the tags to unassign from the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
+    - description: Names of the tags to unassign from the domain (comma separated string). If used in combination with 'tags' the lists of tags are merged.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    deprecated: false
     description: Unassign tags from an Xpanse domain.
-    execution: false
     name: expanse-unassign-tags-from-domain
   - arguments:
-    - default: false
-      description: Name of the tag (less than 128 characters).
-      isArray: false
+    - description: Name of the tag (less than 128 characters).
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Description of the tag (less than 512 characters).
-      isArray: false
+    - description: Description of the tag (less than 512 characters).
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new tag in Xpanse.
-    execution: false
     name: expanse-create-tag
     outputs:
     - contextPath: Expanse.Tag.created
@@ -2968,47 +2576,25 @@ script:
       description: The tenant ID associated with the tag
       type: String
   - arguments:
-    - default: false
-      description: Asset ID of the Xpanse IP range to retrieve. If provided, other search parameters are ignored.
-      isArray: false
+    - description: Asset ID of the Xpanse IP range to retrieve. If provided, other search parameters are ignored.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
+    - description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       isArray: true
       name: business_units
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
+    - description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
       isArray: true
       name: business_unit_names
-      required: false
-      secret: false
-    - default: false
-      description: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
-      isArray: false
+    - description: Search for given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d).
       name: inet
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
+    - description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
+    - description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: none
       description: Include "none" or any of the following options in the response (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
-      isArray: false
       name: include
       predefined:
       - annotations
@@ -3016,17 +2602,9 @@ script:
       - attributionReasons
       - relatedRegistrationInformation
       - locationInformation
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to retrieve.
-      isArray: false
+    - description: Maximum number of results to retrieve.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve Xpanse IP ranges by asset id or search parameters.
-    execution: false
     name: expanse-get-iprange
     outputs:
     - contextPath: Expanse.IPRange.annotations.additionalNotes
@@ -3186,99 +2764,45 @@ script:
       description: The indicator type.
       type: String
   - arguments:
-    - default: false
-      description: Domain name to retrieve (exact match). If provided, other search parameters are ignored.
-      isArray: false
+    - description: Domain name to retrieve (exact match). If provided, other search parameters are ignored.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD).
-      isArray: false
+    - description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD).
       name: last_observed_date
-      required: false
-      secret: false
-    - default: false
-      description: Search domain names that match the specified substring.
-      isArray: false
+    - description: Search domain names that match the specified substring.
       name: search
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of entries to retrieve.
-      isArray: false
+    - description: Maximum number of entries to retrieve.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Retrieve only domains with or without DNS resolution.
-      isArray: false
       name: has_dns_resolution
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Retrieve only domains with or without an active service discovered by Xpanse.
-      isArray: false
       name: has_active_service
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Retrieve only domains with or without cloud resources discovered by Xpanse.
-      isArray: false
       name: has_related_cloud_resources
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
-      isArray: false
+    - description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
-      isArray: false
+    - description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       name: tag_names
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
-      isArray: false
+    - description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       name: business_units
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
-      isArray: false
+    - description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
       name: business_unit_names
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
-      isArray: false
+    - description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
       name: providers
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
-      isArray: false
+    - description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
       name: provider_names
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve Xpanse domains by domain name or search parameters.
-    execution: false
     name: expanse-get-domain
     outputs:
     - contextPath: Expanse.Domain.annotations.note
@@ -3828,33 +3352,15 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - default: false
-      description: The common name of the certificate to search domains for. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host".
-      isArray: false
+    - description: The common name of the certificate to search domains for. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host".
       name: common_name
-      required: false
-      secret: false
-    - default: false
-      description: The IP address to search domains for.
-      isArray: false
+    - description: The IP address to search domains for.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of matching certificates to retrieve.
-      isArray: false
+    - description: Maximum number of matching certificates to retrieve.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of domains per certificate to retrieve.
-      isArray: false
+    - description: Maximum number of domains per certificate to retrieve.
       name: domains_limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all the Xpanse domains which have been seen with the specified certificate or IP address.
-    execution: false
     name: expanse-get-associated-domains
     outputs:
     - contextPath: Expanse.AssociatedDomain.name
@@ -3882,99 +3388,45 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - default: false
-      description: MD5 Hash of the certificate. If provided, other search parameters are ignored.
-      isArray: false
+    - description: MD5 Hash of the certificate. If provided, other search parameters are ignored.
       name: md5_hash
-      required: false
-      secret: false
-    - default: false
-      description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD), to be used with domain argument.
-      isArray: false
+    - description: Last date the domain was observed by Xpanse (Format is YYYY-MM-DD), to be used with domain argument.
       name: last_observed_date
-      required: false
-      secret: false
-    - default: false
-      description: Search for  certificates with the specified substring in common name.
-      isArray: false
+    - description: Search for  certificates with the specified substring in common name.
       name: search
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of entries to retrieve.
-      isArray: false
+    - description: Maximum number of entries to retrieve.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Retrieve only certificates actively/not actively advertised.
-      isArray: false
       name: has_certificate_advertisement
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Retrieve only certificates with or without an active service discovered by Xpanse.
-      isArray: false
       name: has_active_service
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Retrieve only certificates with or without cloud resources discovered by Xpanse.
-      isArray: false
       name: has_related_cloud_resources
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
-      isArray: false
+    - description: Returns only results whose Tag ID falls in the provided list. (comma separated string). Cannot be used with the 'tag_names' argument.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
-      isArray: false
+    - description: Returns only results whose Tag name falls in the provided list. (comma separated string). Cannot be used with the 'tags' argument.
       name: tag_names
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
-      isArray: false
+    - description: Returns only results whose Business Unit's ID falls in the provided list. (comma separated string). Cannot be used with the 'business_unit_names' argument.
       name: business_units
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
-      isArray: false
+    - description: Returns only results whose Business Unit's name falls in the provided list. (comma separated string). Cannot be used with the 'business_units' argument.
       name: business_unit_names
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
-      isArray: false
+    - description: Returns only results whose Provider's ID falls in the provided list. (comma separated string). Cannot be used with the 'provider_names' argument.
       name: providers
-      required: false
-      secret: false
-    - default: false
-      description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
-      isArray: false
+    - description: Returns only results whose Provider's name falls in the provided list. (comma separated string). Cannot be used with the 'providers' argument.
       name: provider_names
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve Xpanse certificates by MD5 hash or search parameters.
-    execution: false
     name: expanse-get-certificate
     outputs:
     - contextPath: Expanse.Certificate.annotations.note
@@ -4402,23 +3854,15 @@ script:
         corresponding MD5 hash.
       isArray: true
       name: certificate
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |
         If set to true, the command updates the Xpanse custom fields of the indicator.
         Only if an indicator already exists.
-      isArray: false
       name: set_expanse_fields
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Provides data enrichment for an X509 Certificate from Xpanse.
-    execution: false
     name: certificate
     outputs:
     - contextPath: Expanse.Certificate.annotations.note
@@ -4838,81 +4282,39 @@ script:
       description: The indicator type.
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of cloud resources to retrieve.
-      isArray: false
+    - description: Maximum number of cloud resources to retrieve.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Last date the cloud resource was observed by Xpanse (Format is YYYY-MM-DD).
-      isArray: false
+    - description: Last date the cloud resource was observed by Xpanse (Format is YYYY-MM-DD).
       name: last_observed_date
-      required: false
-      secret: false
-    - default: false
-      description: A domain search string to find related cloud resources.
-      isArray: false
+    - description: A domain search string to find related cloud resources.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: An IP search string to find related cloud resources.
-      isArray: false
+    - description: An IP search string to find related cloud resources.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: A search string of provider IDs to find cloud resources hosted by specific providers.
+    - description: A search string of provider IDs to find cloud resources hosted by specific providers.
       isArray: true
       name: providers
-      required: false
-      secret: false
-    - default: false
-      description: A search string of provider names to find cloud resources hosted by specific providers.
+    - description: A search string of provider names to find cloud resources hosted by specific providers.
       isArray: true
       name: provider_names
-      required: false
-      secret: false
-    - default: false
-      description: A search string of business unit IDs to find cloud resources belonging to a specific business unit.
+    - description: A search string of business unit IDs to find cloud resources belonging to a specific business unit.
       isArray: true
       name: business_units
-      required: false
-      secret: false
-    - default: false
-      description: A search string of business unit names to find cloud resources belonging to a specific business unit.
+    - description: A search string of business unit names to find cloud resources belonging to a specific business unit.
       isArray: true
       name: business_unit_names
-      required: false
-      secret: false
-    - default: false
-      description: A search string of tag IDs to find cloud resources that have been assigned a specific tag.
+    - description: A search string of tag IDs to find cloud resources that have been assigned a specific tag.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: A search string of tag names to find cloud resources that have been assigned a specific tag.
+    - description: A search string of tag names to find cloud resources that have been assigned a specific tag.
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    - default: false
-      description: A search string of asset types to find cloud resources of a specific type.
+    - description: A search string of asset types to find cloud resources of a specific type.
       isArray: true
       name: types
-      required: false
-      secret: false
-    - default: false
-      description: A search string of regions to find cloud resources that are hosted in a specific region.
+    - description: A search string of regions to find cloud resources that are hosted in a specific region.
       isArray: true
       name: regions
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve cloud resources from Xpanse.
-    execution: false
     name: expanse-get-cloud-resources
     outputs:
     - contextPath: DBotScore.Score
@@ -5006,15 +4408,10 @@ script:
       description: Any associated VPC names.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the cloud resource.
-      isArray: false
+    - description: The ID of the cloud resource.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve a specified cloud resource from Xpanse.
-    execution: false
     name: expanse-get-cloud-resource
     outputs:
     - contextPath: DBotScore.Score
@@ -5108,45 +4505,21 @@ script:
       description: Any associated VPC names.
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of flows to retrieve.
-      isArray: false
+    - description: Maximum number of flows to retrieve.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Retrieve only flows matching this risk rule ID.
-      isArray: false
+    - description: Retrieve only flows matching this risk rule ID.
       name: risk_rule
-      required: false
-      secret: false
-    - default: false
-      description: Filter by internal IP range. Supported formats a.b.c.d, a.b.c.d/e, a.b.c.d-a.b.c.d, a., a.*
-      isArray: false
+    - description: Filter by internal IP range. Supported formats a.b.c.d, a.b.c.d/e, a.b.c.d-a.b.c.d, a., a.*
       name: internal_ip_range
-      required: false
-      secret: false
-    - default: false
-      description: Filter by tag names (comma separated string).
+    - description: Filter by tag names (comma separated string).
       isArray: true
       name: tag_names
-      required: false
-      secret: false
-    - default: false
-      description: Created Before date (supports ISO8601 format).
-      isArray: false
+    - description: Created Before date (supports ISO8601 format).
       name: created_before
-      required: false
-      secret: false
-    - default: false
-      description: Created After date (supports ISO8601 format).
-      isArray: false
+    - description: Created After date (supports ISO8601 format).
       name: created_after
-      required: false
-      secret: false
     deprecated: true
     description: (Deprecated) Retrieve risky flows detected by Xpanse Behavior.
-    execution: false
     name: expanse-get-risky-flows
     outputs:
     - contextPath: Expanse.RiskyFlow.acked
@@ -5222,15 +4595,10 @@ script:
       description: The known exposure types associated with the asset involved in the risky flow
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of entries to retrieve.
-      isArray: false
+    - description: Maximum number of entries to retrieve.
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: (Deprecated) List risk rules from Xpanse Behavior.
-    execution: false
     name: expanse-list-risk-rules
     outputs:
     - contextPath: Expanse.RiskRule.abbreviatedName
@@ -5260,10 +4628,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Provides data enrichment for domains.
-    execution: false
     name: domain
     outputs:
     - contextPath: Expanse.Domain.annotations.note
@@ -5818,10 +5183,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Provides data enrichment for IPs.
-    execution: false
     name: ip
     outputs:
     - contextPath: Expanse.IP.ip
@@ -5916,18 +5278,10 @@ script:
       description: The CIDR block to enrich.
       isArray: true
       name: cidr
-      required: false
-      secret: false
-    - default: false
-      defaultValue: severityCounts,annotations,attributionReasons,relatedRegistrationInformation,locationInformation
+    - defaultValue: severityCounts,annotations,attributionReasons,relatedRegistrationInformation,locationInformation
       description: Include "none" or any of the following options (comma separated) - annotations, severityCounts, attributionReasons, relatedRegistrationInformation, locationInformation
-      isArray: false
       name: include
-      required: false
-      secret: false
-    deprecated: false
     description: Provides data enrichment for CIDR blocks using Xpanse IP Range.
-    execution: false
     name: cidr
     outputs:
     - contextPath: Expanse.IPRange.annotations.additionalNotes
@@ -6089,13 +5443,9 @@ script:
   - arguments:
     - default: true
       description: The certificate common name. Fuzzy matching is done on this name, however query times can grow quite large when searching for short strings. Ex. "*.myhost.com" is a better search term than "host"
-      isArray: false
       name: common_name
       required: true
-      secret: false
-    deprecated: false
     description: Returns all domains which have been seen with the specified certificate.
-    execution: false
     name: expanse-get-domains-for-certificate
     outputs:
     - contextPath: Expanse.IPDomains.SearchTerm
@@ -6110,11 +5460,8 @@ script:
     - contextPath: Expanse.IPDomains.DomainList
       description: An array of domain objects. This is truncated at 50.
       type: Unknown
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

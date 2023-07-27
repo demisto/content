@@ -1,58 +1,26 @@
 args:
-- default: false
-  defaultValue: Phishing
+- defaultValue: Phishing
   description: A common-separated list of incident types by which to filter.
-  isArray: false
   name: incidentTypes
-  required: false
-  secret: false
-- default: false
-  description: The incident query to fetch the training data for the model.
-  isArray: false
+- description: The incident query to fetch the training data for the model.
   name: incidentsQuery
-  required: false
-  secret: false
-- default: false
-  defaultValue: closeReason
+- defaultValue: closeReason
   description: The field name with the email tag. Supports a comma-separated list, the first non-empty value will be taken.
-  isArray: false
   name: emailTagKey
-  required: false
-  secret: false
-- default: false
-  defaultValue: dbotprediction
+- defaultValue: dbotprediction
   description: The field name with the model prediction.
-  isArray: false
   name: emailPredictionKey
-  required: false
-  secret: false
-- default: false
-  defaultValue: dbotpredictionprobability
+- defaultValue: dbotpredictionprobability
   description: The field name with the model prediction probability.
-  isArray: false
   name: emailPredictionProbabilityKey
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: The model target accuracy, between 0 and 1.
-  isArray: false
   name: modelTargetAccuracy
-  required: false
-  secret: false
-- default: false
-  defaultValue: '*'
+- defaultValue: '*'
   description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
-  isArray: false
   name: phishingLabels
-  required: false
-  secret: false
-- default: false
-  description: A comma-separated list of incident field names to include in the results file.
-  isArray: false
+- description: A comma-separated list of incident field names to include in the results file.
   name: additionalFields
-  required: false
-  secret: false
 commonfields:
   id: EvaluateMLModllAtProduction
   version: -1
@@ -73,11 +41,9 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 type: python
 dockerimage: demisto/ml:1.0.0.45981
 runas: DBotWeakRole
-runonce: false
 fromversion: 5.0.0
 tags:
 - ml

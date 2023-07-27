@@ -4,222 +4,220 @@ commonfields:
 name: Devo_v2
 display: Devo v2
 category: Analytics & SIEM
-description: Use the Devo v2 integration to query Devo for alerts, lookup tables, with support of pagination, and to write to lookup tables.
 configuration:
-  - display: Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query)
-    name: reader_endpoint
-    defaultvalue: https://apiv2-eu.devo.com/search/query
-    type: 0
-    required: true
-  - display: Port (e.g. 443)
-    name: port
-    defaultvalue: "443"
-    type: 0
-    required: false
-  - display: OAuth Token (Preferred method)
-    name: reader_oauth_token
-    type: 4
-    required: true
-  - display: Writer relay to connect to (e.g. us.elb.relay.logtrust.net)
-    name: writer_relay
-    type: 0
-    required: false
-  - display: Writer JSON credentials
-    name: writer_credentials
-    type: 4
-    required: false
-  - display: Devo base domain
-    name: linq_link_base
-    defaultvalue: https://eu.devo.com
-    type: 0
-    required: false
-  - display: Fetch incidents
-    name: isFetch
-    type: 8
-    required: false
-    defaultvalue: "true"
-  - display: Incident type
-    name: incidentType
-    type: 13
-    required: false
-  - display: Custom Alert Table name(If not provided, 'siem.logtrust.alert.info' will be used.)
-    name: table_name
-    type: 0
-    required: false
-  - display: Custom Alert Table prefix (Provide prefix if custom table name provided.)
-    name: prefix
-    type: 0
-    required: false
-  - display: Fetch incidents alert filter (Same filters for get-alerts)
-    name: fetch_incidents_filters
-    type: 12
-    required: false
-  - display: Deduplication parameters JSON if required
-    name: fetch_incidents_deduplication
-    type: 0
-    required: false
-  - display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
-    name: fetch_incidents_limit
-    type: 0
-    required: false
-  - display: Incidents Fetch Interval
-    name: incidentFetchInterval
-    type: 19
-    required: false
-    defaultvalue: "1"
-  - display: Global query default timeout in seconds
-    name: timeout
-    defaultvalue: "60"
-    type: 0
-    required: false
-  - display: Trust any certificate (not secure)
-    name: insecure
-    type: 8
-    required: false
-  - display: Use system proxy settings
-    name: proxy
-    type: 8
-    required: false
+- display: Query Server Endpoint (e.g. https://apiv2-us.devo.com/search/query)
+  name: reader_endpoint
+  defaultvalue: https://apiv2-us.devo.com/search/query
+  type: 0
+  required: true
+- display: Port (e.g. 443)
+  name: port
+  defaultvalue: "443"
+  type: 0
+  required: false
+- display: OAuth Token (Preferred method)
+  name: reader_oauth_token
+  type: 4
+  required: true
+- display: Writer relay to connect to (e.g. us.elb.relay.logtrust.net)
+  name: writer_relay
+  type: 0
+  required: false
+- display: Writer JSON credentials
+  name: writer_credentials
+  type: 4
+  required: false
+- display: Devo base domain
+  name: linq_link_base
+  defaultvalue: https://us.devo.com
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  defaultvalue: "true"
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Custom Alert Table name(If not provided, 'siem.logtrust.alert.info' will be used.)
+  name: table_name
+  type: 0
+  required: false
+- display: Custom Alert Table prefix (Provide prefix if custom table name provided.)
+  name: prefix
+  type: 0
+  required: false
+- display: Fetch incidents alert filter (Same filters for get-alerts)
+  name: fetch_incidents_filters
+  type: 12
+  required: false
+- display: Deduplication parameters JSON if required
+  name: fetch_incidents_deduplication
+  type: 0
+  hidden: true
+  required: false
+- display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
+  name: fetch_incidents_limit
+  type: 0
+  defaultvalue: "50"
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: "1"
+  required: false
+- display: Global query default timeout in seconds
+  name: timeout
+  type: 0
+  defaultvalue: "60"
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 script:
-  script: ''
+  script: ""
   type: python
   commands:
-    - name: devo-run-query
-      arguments:
-        - name: query
-          required: true
-          description: A LINQ query to run in Devo, with pagination support.
-        - name: from
-          required: true
-          description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes.
-        - name: to
-          description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
-        - name: items_per_page
-          description: Enter the per page value you want to set.
-          required: false
-          defaultValue: "1000"
-        - name: queryTimeout
-          description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
-          defaultValue: "60"
-        - name: writeToContext
-          description: Whether to write results to context. Can be "true" or "false". The default value is "true".
-          defaultValue: "true"
-        - name: linqLinkBase
-          description: Overrides the global Devo base domain for linq linking.
-      outputs:
-        - contextPath: Devo.QueryResults
-          description: List of dictionary alerts from the specified time range.
-          type: unknown
-        - contextPath: Devo.QueryLink
-          description: The link to the Devo table for executed query.
-      description: Queries Devo based on the specified LINQ query.
-    - name: devo-get-alerts
-      arguments:
-        - name: table_name
-          description: name of alert table to fetch alerts from a table. If not provided 'siem.logtrust.alert.info' will be used.
-        - name: prefix
-          description: This is required when user wants to fetch from custom alert tables.
-        - name: from
-          description: Start datetime for alerts to fetch.
-          required: true
-        - name: to
-          description: End datetime for alerts to fetch.
-        - name: items_per_page
-          description: Enter the per page value you want to set.
-          required: false
-          defaultValue: "1000"
-        - name: filters
-          description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
-          isArray: true
-        - name: queryTimeout
-          description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
-          defaultValue: "60"
-        - name: writeToContext
-          description: Whether to write results to context. Can be "true" or "false". The default value is "true".
-          defaultValue: "true"
-        - name: linqLinkBase
-          description: Overrides the global Devo base domain for linq linking.
-      outputs:
-        - contextPath: Devo.AlertsResults
-          description: List of dictionary alerts from the specified time range.
-        - contextPath: Devo.QueryLink
-          description: The link to the Devo table for the executed query.
-      description: Queries alerts in the specified timeframe.
-    - name: devo-multi-table-query
-      arguments:
-        - name: tables
-          required: true
-          description: A list of table names to check for the searchToken.
-          isArray: true
-        - name: searchToken
-          required: true
-          description: A string to search for in the specified tables (in any column).
-        - name: from
-          required: true
-          description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes
-        - name: to
-          description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
-        - name: limit
-          description: Limit of results to return to context. 0 for no limit.
-          defaultValue: "50"
-        - name: queryTimeout
-          description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
-          defaultValue: "60"
-        - name: writeToContext
-          description: Whether to write results to context. Can be "true" or "false". The default value is "true".
-          defaultValue: "true"
-        - name: items_per_page
-          description: Enter the per page value you want to set.
-          required: false
-          defaultValue: "1000"
-      outputs:
-        - contextPath: Devo.MultiResults
-          description: A list of dictionary results.
-      description: Queries multiple tables for a given token and returns relevant results.
-    - name: devo-write-to-table
-      arguments:
-        - name: tableName
-          required: true
-          description: The name of the table to write to.
-        - name: records
-          required: true
-          description: Records to write to the specified table.
-          isArray: true
-        - name: linqLinkBase
-          description: Overrides the global Devo base domain for linq linking.
-      outputs:
-        - contextPath: Devo.RecordsWritten
-          description: Records written to specified Devo table.
-          type: unknown
-        - contextPath: Devo.LinqQuery
-          description: The LINQ query to use to see your data in Devo.
-        - contextPath: Devo.QueryLink
-          description: The link to the Devo table for the executed query.
-      description: Writes records to a specified Devo table.
-      execution: true
-    - name: devo-write-to-lookup-table
-      arguments:
-        - name: lookupTableName
-          required: true
-          description: The lookup table name to write to.
-        - name: headers
-          required: true
-          description: Headers for lookup table control.
-          isArray: true
-        - name: records
-          required: true
-          description: Records to write to the specified table.
-          isArray: true
-      outputs:
-        - contextPath: Devo.RecordsWritten
-          description: Lookup records written to the lookup table.
-          type: unknown
-      description: Writes lookup table entry records to a specified Devo table.
-      execution: true
-  dockerimage: demisto/devo:1.0.0.54875
+  - name: devo-run-query
+    arguments:
+    - name: query
+      required: true
+      description: A LINQ query to run in Devo, with pagination support.
+    - name: from
+      required: true
+      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes.
+    - name: to
+      description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
+    - name: items_per_page
+      description: Enter the per page value you want to set.
+      defaultValue: "50"
+    - name: queryTimeout
+      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
+      defaultValue: "60"
+    - name: writeToContext
+      description: Whether to write results to context. Can be "true" or "false". The default value is "true".
+      defaultValue: "true"
+    - name: linqLinkBase
+      description: Overrides the global Devo base domain for linq linking.
+    outputs:
+    - contextPath: Devo.QueryResults
+      description: List of dictionary alerts from the specified time range.
+      type: unknown
+    - contextPath: Devo.QueryLink
+      description: The link to the Devo table for executed query.
+    description: Queries Devo based on the specified LINQ query.
+  - name: devo-get-alerts
+    arguments:
+    - name: table_name
+      description: name of alert table to fetch alerts from a table. If not provided 'siem.logtrust.alert.info' will be used.
+    - name: prefix
+      description: Prefix to use for the column names.
+    - name: from
+      description: Start datetime for alerts to fetch.
+      required: true
+    - name: to
+      description: End datetime for alerts to fetch.
+    - name: items_per_page
+      description: Enter the per page value you want to set.
+      defaultValue: "50"
+    - name: filters
+      description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
+      isArray: true
+    - name: queryTimeout
+      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
+      defaultValue: "60"
+    - name: writeToContext
+      description: Whether to write results to context. Can be "true" or "false". The default value is "true".
+      defaultValue: "true"
+    - name: linqLinkBase
+      description: Overrides the global Devo base domain for linq linking.
+    outputs:
+    - contextPath: Devo.AlertsResults
+      description: List of dictionary alerts from the specified time range.
+    - contextPath: Devo.QueryLink
+      description: The link to the Devo table for the executed query.
+    description: Queries alerts in the specified timeframe.
+  - name: devo-multi-table-query
+    arguments:
+    - name: tables
+      required: true
+      description: A list of table names to check for the searchToken.
+      isArray: true
+    - name: searchToken
+      required: true
+      description: A string to search for in the specified tables (in any column).
+    - name: from
+      required: true
+      description: Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes
+    - name: to
+      description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
+    - name: limit
+      description: Limit of results to return to context. 0 for no limit.
+      defaultValue: "50"
+    - name: queryTimeout
+      description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
+      defaultValue: "60"
+    - name: writeToContext
+      description: Whether to write results to context. Can be "true" or "false". The default value is "true".
+      defaultValue: "true"
+    - name: items_per_page
+      description: Enter the per page value you want to set.
+      defaultValue: "50"
+    outputs:
+    - contextPath: Devo.MultiResults
+      description: A list of dictionary results.
+    description: Queries multiple tables for a given token and returns relevant results.
+  - name: devo-write-to-table
+    arguments:
+    - name: tableName
+      required: true
+      description: The name of the table to write to.
+    - name: records
+      required: true
+      description: Records to write to the specified table.
+      isArray: true
+    - name: linqLinkBase
+      description: Overrides the global Devo base domain for linq linking.
+    outputs:
+    - contextPath: Devo.RecordsWritten
+      description: Records written to specified Devo table.
+      type: unknown
+    - contextPath: Devo.LinqQuery
+      description: The LINQ query to use to see your data in Devo.
+    - contextPath: Devo.QueryLink
+      description: The link to the Devo table for the executed query.
+    description: Writes records to a specified Devo table.
+    execution: true
+  - name: devo-write-to-lookup-table
+    arguments:
+    - name: lookupTableName
+      required: true
+      description: The lookup table name to write to.
+    - name: headers
+      required: true
+      description: Headers for lookup table control.
+      isArray: true
+    - name: records
+      required: true
+      description: Records to write to the specified table.
+      isArray: true
+    outputs:
+    - contextPath: Devo.RecordsWritten
+      description: Lookup records written to the lookup table.
+      type: unknown
+    description: Writes lookup table entry records to a specified Devo table.
+    execution: true
+  dockerimage: demisto/devo:1.0.0.66471
   isfetch: true
-  runonce: false
   subtype: python3
 tests:
-  - No test - no instance
+- No test - no instance
 fromversion: 5.0.0
+description: Use the Devo v2 integration to query Devo for alerts, lookup tables, with support of pagination, and to write to lookup tables.

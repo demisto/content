@@ -20,13 +20,13 @@ ignore=SC105,BA109,BA124
 ignore=SC105,BA124
 
 [file:DBotPredictPhishingWords.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,CJ105
 
 [file:DBotPreprocessTextData.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,CJ105
 
 [file:DBotTrainTextClassifierV2.yml]
-ignore=BA109,BA124
+ignore=BA109,BA124,CJ105
 
 [file:FindSimilarIncidentsByText.yml]
 ignore=BA109
@@ -50,10 +50,10 @@ ignore=SC101
 ignore=BA124
 
 [file:DBotShowClusteringModelInfo.yml]
-ignore=BA124
+ignore=BA124,CJ105
 
 [file:DBotTrainClustering.yml]
-ignore=BA124
+ignore=BA124,CJ105,RM109
 
 [known_words]
 createindicatorrelationship
@@ -76,6 +76,10 @@ refang
 indicatorssearcher
 FeedIndicatorType
 str
+FileResult
+JavaScript
+CPE
+CPEs
 
 [tests_require_network]
 CommonServerPython

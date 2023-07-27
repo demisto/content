@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 import secrets
 import string
 from itertools import zip_longest
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 
 # Disable insecure warnings

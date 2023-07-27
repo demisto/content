@@ -2,7 +2,7 @@
     "name": "PhishTank",
     "description": "PhishTank is a free community site where anyone can submit, verify, track and share phishing data",
     "support": "xsoar",
-    "currentVersion": "2.0.23",
+    "currentVersion": "2.0.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Free Enricher",
+        "Plug & Enrich"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

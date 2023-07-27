@@ -1,13 +1,11 @@
-comment: Data output script for populating the dashboard bar graph widget with the
-  top failing playbooks name.
+comment: Data output script for populating the dashboard bar graph widget with the top failing playbooks name.
 commonfields:
   id: IncidentsCheck-Widget-PlaybookNames
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: IncidentsCheck-Widget-PlaybookNames
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

@@ -253,3 +253,9 @@ Ping
 GetDockerImageLatestTag
 GetDuplicatesMlv2
 DockerHardeningCheck
+
+[file:CloseInvestigationAsDuplicate.yml]
+ignore=BA124
+
+[file:ContextContains.yml]
+ignore=BA124

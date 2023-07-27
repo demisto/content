@@ -2,7 +2,7 @@
     "name": "Common Scripts",
     "description": "Frequently used scripts pack.",
     "support": "xsoar",
-    "currentVersion": "1.11.80",
+    "currentVersion": "1.12.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -23,10 +23,6 @@
         "Gmail": {
             "mandatory": false,
             "display_name": "Gmail"
-        },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
         },
         "MailSenderNew": {
             "mandatory": false,

@@ -1,0 +1,987 @@
+category: IT Services
+commonfields:
+  id: AWS - Lambda
+  version: -1
+configuration:
+- display: AWS Default Region
+  name: defaultRegion
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
+  type: 15
+  required: false
+- display: Role Arn
+  name: roleArn
+  type: 0
+  required: false
+- display: Role Session Name
+  name: roleSessionName
+  type: 0
+  required: false
+- display: Role Session Duration
+  name: sessionDuration
+  type: 0
+  required: false
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  required: false
+- display: Access Key
+  name: access_key
+  type: 0
+  hidden: true
+  required: false
+- display: Secret Key
+  name: secret_key
+  type: 4
+  hidden: true
+  required: false
+- display: Timeout
+  name: timeout
+  defaultvalue: 60,10
+  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used. You may also override the value at the aws-lambda-invoke command."
+  type: 0
+  required: false
+- display: Retries
+  name: retries
+  type: 0
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command."
+  required: false
+- display: PrivateLink service URL.
+  name: endpoint_url
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: STS PrivateLink URL
+  name: sts_endpoint_url
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Amazon Web Services Serverless Compute service (lambda).
+display: AWS - Lambda
+name: AWS - Lambda
+script:
+  commands:
+  - arguments:
+    - description: The name of the Lambda function.
+      name: functionName
+      required: true
+    - description: Specify a version or alias to get details about a published version of the function.
+      name: qualifier
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Returns the configuration information of the Lambda function and a presigned URL link to the .zip file you uploaded with CreateFunction so you can download the .zip file. Note that the URL is valid for up to 10 minutes. The configuration information is the same information you provided as parameters when uploading the function.  Use the Qualifier parameter to retrieve a published version of the function. Otherwise, returns the unpublished version ($LATEST ).
+    name: aws-lambda-get-function
+    outputs:
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.FunctionArn
+      description: The function's Amazon Resource Name.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Runtime
+      description: The runtime environment for the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Handler
+      description: The function Lambda calls to begin executing your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSize
+      description: The size of the function's deployment package in bytes.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Timeout
+      description: The amount of time that Lambda allows a function to run before terminating it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Configuration.MemorySize
+      description: The memory allocated to the function.
+      type: number
+    - contextPath: 'AWS.Lambda.Functions.Configuration.LastModified'
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: date
+    - contextPath: AWS.Lambda.Functions.Configuration.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.SecurityGroupIds
+      description: A list of VPC security groups IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Environment.Variables
+      description: Environment variable key-value pairs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Environment.Error.ErrorCode
+      description: The error code for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Environment.Error.Message
+      description: The error message for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.KMSKeyArn
+      description: The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.TracingConfig.Mode
+      description: The function's AWS X-Ray tracing configuration mode.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.MasterArn
+      description: The ARN of the master function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.RevisionId
+      description: The latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Layers.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Configuration.Layers.CodeSize
+      description: The size of the layer archive in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Code.RepositoryType
+      description: The repository from which you can download the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Code.Location
+      description: The presigned URL you can use to download the function's .zip file that you previously uploaded. The URL is valid for up to 10 minutes.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Tags
+      description: The list of tags associated with the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Concurrency.ReservedConcurrentExecutions
+      description: The number of concurrent executions reserved for this function.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Returns a list of your Lambda functions. For each function, the response includes the function configuration information. You must use GetFunction to retrieve the code for your function.
+    name: aws-lambda-list-functions
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function's Amazon Resource Name.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The runtime environment for the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function's execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function Lambda calls to begin executing your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function's deployment package in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function's description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time that Lambda allows a function to run before terminating it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The memory allocated to the function.
+      type: number
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: date
+    - contextPath: AWS.Lambda.Functions.CodeSha256
+      description: The SHA256 hash of the function's deployment package.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security groups IDs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Variables
+      description: Environment variable key-value pairs.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.ErrorCode
+      description: The error code for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Environment.Error.Message
+      description: The error message for environment variables that could not be applied.
+      type: string
+    - contextPath: AWS.Lambda.Functions.KMSKeyArn
+      description: The KMS key used to encrypt the function's environment variables. Only returned if you've configured a customer managed CMK.
+      type: string
+    - contextPath: AWS.Lambda.Functions.TracingConfig.Mode
+      description: The function's AWS X-Ray tracing configuration mode.
+      type: string
+    - contextPath: AWS.Lambda.Functions.MasterArn
+      description: The ARN of the master function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Layers.Arn
+      description: The Amazon Resource Name (ARN) of the function layer.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Layers.CodeSize
+      description: The size of the layer archive in bytes.
+      type: string
+  - arguments:
+    - description: The name of the Lambda function.
+      name: functionName
+      required: true
+    - description: If you specify this optional parameter, the API returns only the aliases that are pointing to the specific Lambda function version, otherwise the API returns all of the aliases created for the Lambda function.
+      name: functionVersion
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Returns a list of aliases created for a Lambda function. For each alias, the response includes information such as the alias ARN, description, alias name, and the function version to which it points.
+    name: aws-lambda-list-aliases
+    outputs:
+    - contextPath: AWS.Lambda.Aliases.AliasArn
+      description: Lambda function ARN that is qualified using the alias name as the suffix.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Name
+      description: Alias name.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.FunctionVersion
+      description: Function version to which the alias points.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.Description
+      description: Alias description.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RoutingConfig.AdditionalVersionWeights
+      description: The name of the second alias, and the percentage of traffic that is routed to it.
+      type: string
+    - contextPath: AWS.Lambda.Aliases.RevisionId
+      description: Represents the latest updated revision of the function or alias.
+      type: string
+  - arguments:
+    - description: The name of the Lambda function.
+      name: functionName
+      required: true
+    - auto: PREDEFINED
+      description: Choose from the following options.  RequestResponse (default) - Invoke the function synchronously. Keep the connection open until the function returns a response or times out. Event - Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if configured). DryRun - Validate parameter values and verify that the user or role has permission to invoke the function.
+      name: invocationType
+      predefined:
+      - Event
+      - RequestResponse
+      - DryRun
+    - auto: PREDEFINED
+      description: You can set this optional parameter to Tail in the request only if you specify the InvocationType parameter with value RequestResponse . In this case, AWS Lambda returns the base64-encoded last 4 KB of log data produced by your Lambda function in the x-amz-log-result header.
+      name: logType
+      predefined:
+      - None
+      - Tail
+    - description: Using the ClientContext you can pass client-specific information to the Lambda function you are invoking.
+      name: clientContext
+    - description: JSON that you want to provide to your Lambda function as input.
+      name: payload
+    - description: Specify a version or alias to invoke a published version of the function.
+      name: qualifier
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. If not specified, will use the instances configured default timeout.
+      name: retries
+    - description: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If not specified, will use the instances configured default timeout.
+      name: timeout
+    description: Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias.  If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+    execution: true
+    name: aws-lambda-invoke
+    outputs:
+    - contextPath: AWS.Lambda.InvokedFunctions.FunctionName
+      description: The name of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.FunctionError
+      description: Indicates whether an error occurred while executing the Lambda function. If an error occurred this field will have one of two values; Handled or Unhandled. Handled errors are errors that are reported by the function while the Unhandled errors are those detected and reported by AWS Lambda. Unhandled errors include out of memory errors and function timeouts.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.LogResult
+      description: Logs for the Lambda function invocation. This is present only if the invocation type is RequestResponse and the logs were requested.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.Payload
+      description: The JSON representation of the object returned by the Lambda function. This is present only if the invocation type is RequestResponse.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.ExecutedVersion
+      description: The function version that has been executed. This value is returned only if the invocation type is RequestResponse.
+      type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.Region
+      description: The AWS Region.
+      type: string
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    description: Retrieves details about your account's limits and usage in an AWS Region.
+    name: aws-lambda-get-account-settings
+    outputs:
+    - contextPath: AWS.Lambda.AccountLimit.TotalCodeSize
+      description: The amount of storage space that you can use for all deployment packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.CodeSizeUnzipped
+      description: The maximum size of your function's code and layers when they're extracted.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.CodeSizeZipped
+      description: The maximum size of a deployment package when it's uploaded directly to AWS Lambda. Use Amazon S3 for larger files.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.ConcurrentExecutions
+      description: The maximum number of simultaneous function executions.
+      type: number
+    - contextPath: AWS.Lambda.AccountLimit.UnreservedConcurrentExecutions
+      description: The maximum number of simultaneous function executions, minus the capacity that's reserved for individual functions with PutFunctionConcurrency.
+      type: number
+    - contextPath: AWS.Lambda.AccountUsage.TotalCodeSize
+      description: The amount of storage space, in bytes, that's being used by deployment packages and layer archives.
+      type: number
+    - contextPath: AWS.Lambda.AccountUsage. FunctionCount
+      description: The number of Lambda functions.
+      type: number
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    description: Returns the resource-based IAM policy for a function, version, or alias.
+    name: aws-lambda-get-policy
+    outputs:
+    - contextPath: AWS.Lambda.Policy.Version
+      description: The version of the policy.
+      type: String
+    - contextPath: AWS.Lambda.Policy.Id
+      description: The ID of the policy.
+      type: String
+    - contextPath: AWS.Lambda.Policy.Statement.Sid
+      description: The statement ID within the policy.
+      type: String
+    - contextPath: AWS.Lambda.Policy.Statement.Effect
+      description: The effect (allow/deny) specified in the policy statement.
+      type: String
+    - contextPath: AWS.Lambda.Policy.Statement.Principal.AWS
+      description: The AWS principal ARN specified in the AWS Lambda policy statement.
+      type: String
+    - contextPath: AWS.Lambda.Policy.Statement.Action
+      description: The action specified in the AWS Lambda policy statement.
+      type: String
+    - contextPath: AWS.Lambda.Policy.Statement.Resource
+      description: The resource ARN specified in the AWS Lambda policy statement.
+      type: String
+    - contextPath: AWS.Lambda.RevisionId
+      description: A unique identifier for the current revision of the policy.
+      type: String
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    - description: Specify the pagination token that’s returned by a previous request to retrieve the next page of results.
+      name: Marker
+    - description: The maximum number of versions to return. Note that ListVersionsByFunction returns a maximum of 50 items in each response, even if you set the number higher.
+      name: MaxItems
+    description: Returns a list of versions, with the version-specific configuration of each.
+    name: aws-lambda-list-versions-by-function
+    outputs:
+    - contextPath: AWS.Lambda.NextMarker
+      description: The pagination token that's included if more results are available.
+      type: String
+    - contextPath: AWS.Lambda.Versions.FunctionName
+      description: The name of the function.
+      type: String
+    - contextPath: AWS.Lambda.Versions.FunctionArn
+      description: The function’s Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.Versions.Runtime
+      description: The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Role
+      description: The function’s execution role.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: String
+    - contextPath: AWS.Lambda.Versions.CodeSize
+      description: The size of the function’s deployment package, in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.Versions.Description
+      description: The function’s description.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: Number
+    - contextPath: AWS.Lambda.Versions.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: Number
+    - contextPath: AWS.Lambda.Versions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.Versions.CodeSha256
+      description: The SHA256 hash of the function’s deployment package.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Version
+      description: The version of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.Versions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: String
+    - contextPath: AWS.Lambda.Versions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: String
+    - contextPath: AWS.Lambda.Versions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.Lambda.Versions.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Environment.Variables.string
+      description: Environment variable key-value pairs. Omitted from CloudTrail logs.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Environment.Error.ErrorCode
+      description: The error code for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Environment.Error.Message
+      description: The error message for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.Versions.KMSKeyArn
+      description: The ARN of the KMS key used to encrypt the function's environment variables.
+      type: String
+    - contextPath: AWS.Lambda.Versions.TracingConfig.Mode
+      description: The tracing mode for the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.Versions.MasterArn
+      description: The ARN of the main function for Lambda@Edge functions.
+      type: String
+    - contextPath: AWS.Lambda.Versions.FunctionVersion
+      description: The specific function version.
+      type: String
+    - contextPath: AWS.Lambda.Versions.Tags
+      description: The tags assigned to the Lambda function.
+      type: Object
+    - contextPath: AWS.Lambda.Versions.State
+      description: The current state of the function. When the state is Inactive, you can reactivate the function by invoking it.
+      type: String
+    - contextPath: AWS.Lambda.Versions.StateReason
+      description: The reason for the function’s current state.
+      type: String
+    - contextPath: AWS.Lambda.Versions.StateReasonCode
+      description: The reason code for the current state of the function.
+      type: String
+    - contextPath: AWS.Lambda.Versions.LastUpdateStatus
+      description: The status of the last update that was performed on the function. This is first set to Successful after function creation completes.
+      type: String
+    - contextPath: AWS.Lambda.Versions.LastUpdateStatusReason
+      description: The reason for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.Versions.LastUpdateStatusReasonCode
+      description: The reason code for the last update operation status.
+      type: String
+    - contextPath: AWS.Lambda.Versions.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: String
+    - contextPath: AWS.Lambda.Versions.ImageConfigResponse.ImageConfigError.ErrorCode
+      description: The error code for image configuration.
+      type: String
+    - contextPath: AWS.Lambda.Versions.ImageConfigResponse.ImageConfigError.Message
+      description: The error message for image configuration.
+      type: String
+    - contextPath: AWS.Lambda.Versions.ImageConfigResponse.ImageConfigError.Type
+      description: The error type for image configuration.
+      type: String
+    - contextPath: AWS.Lambda.Versions.ImageConfigResponse.ImageConfig
+      description: The image configuration values.
+      type: Object
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    - description: The alias name.
+      name: qualifier
+    description: Returns details about a Lambda function URL.
+    name: aws-lambda-get-function-url-config
+    outputs:
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionUrl
+      description: The HTTP URL endpoint for the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.FunctionArn
+      description: The Amazon Resource Name (ARN) of your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.AuthType
+      description: The type of authentication that the function URL uses. Set to AWS_IAM if you want to restrict access to authenticated users only. Set to NONE if you want to bypass IAM authentication to create a public endpoint.
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowCredentials
+      description: Whether to allow cookies or other credentials in requests to the function URL. The default is false.
+      type: Boolean
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowHeaders
+      description: The HTTP headers that origins can include in requests to the function URL. For example Date, Keep-Alive, X-Custom-Header.
+      type: List
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowMethods
+      description: The HTTP methods that are allowed when calling the function URL. For example GET, POST, DELETE, or the wildcard character ( *).
+      type: List
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.AllowOrigins
+      description: The origins that can access the function URL.You can list any number of specific origins, separated by a comma. For example https://www.example.com, http://localhost:8080. Alternatively, you can grant access to all origins using the wildcard character ( *).
+      type: List
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.ExposeHeaders
+      description: The HTTP headers in the function response that you want to expose to origins that call the function URL. For example Date, Keep-Alive, X-Custom-Header.
+      type: List
+    - contextPath: AWS.Lambda.FunctionURLConfig.Cors.MaxAge
+      description: The maximum amount of time, in seconds, that web browsers can cache results of a preflight request. By default, this is set to 0, which means that the browser doesn’t cache results.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionURLConfig.CreationTime
+      description: When the function URL was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.LastModifiedTime
+      description: When the function URL configuration was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.FunctionURLConfig.InvokeMode
+      description: "Use one of the following options: BUFFERED – This is the default option. Lambda invokes your function using the Invoke API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB. RESPONSE_STREAM – Your function streams payload results as they become available. Lambda invokes your function using the InvokeWithResponseStream API operation. The maximum response payload size is 20 MB, however, you can request a quota increase."
+      type: String
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    - description: Specify a version or alias to get details about a published version of the function.
+      name: qualifier
+    description: Returns the version-specific settings of a Lambda function or version. The output includes only options that can vary between versions of a function.
+    name: aws-lambda-get-function-configuration
+    outputs:
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionName
+      description: The name of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionArn
+      description: The function’s Amazon Resource Name (ARN).
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Runtime
+      description: The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Role
+      description: The function’s execution role.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSize
+      description: The size of the function’s deployment package, in bytes.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.Description
+      description: The function’s description.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: Number
+    - contextPath: AWS.Lambda.FunctionConfig.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.CodeSha256
+      description: The SHA256 hash of the function’s deployment package.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Version
+      description: The version of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.DeadLetterConfig.TargetArn
+      description: The Amazon Resource Name (ARN) of an Amazon SQS queue or Amazon SNS topic.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Variables.string
+      description: Environment variable key-value pairs. Omitted from CloudTrail logs.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Error.ErrorCode
+      description: The error code for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Environment.Error.Message
+      description: The error message for environment variables that couldn't be applied.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.KMSKeyArn
+      description: The ARN of the KMS key used to encrypt the function's environment variables.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.TracingConfig.Mode
+      description: The tracing mode for the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.MasterArn
+      description: The ARN of the main function for Lambda@Edge functions.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.FunctionVersion
+      description: The specific function version.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.Tags
+      description: The tags assigned to the Lambda function.
+      type: Object
+    - contextPath: AWS.Lambda.FunctionConfig.State
+      description: The current state of the function. When the state is Inactive, you can reactivate the function by invoking it.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReason
+      description: The reason for the function’s current state.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.StateReasonCode
+      description: The reason code for the current state of the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatus
+      description: The status of the last update that was performed on the function. This is first set to Successful after function creation completes.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReason
+      description: The reason for the last update that was performed on the function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.LastUpdateStatusReasonCode
+      description: The reason code for the last update operation status.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfigError.ErrorCode
+      description: The error code for image configuration.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfigError.Message
+      description: The error message for image configuration.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfigError.Type
+      description: The error type for image configuration.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConfig.ImageConfigResponse.ImageConfig
+      description: The image configuration values.
+      type: Object
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    - description: Specify a version or alias to get details about a published version of the function.
+      name: qualifier
+    description: Deletes a Lambda function URL. When you delete a function URL, you can’t recover it. Creating a new function URL results in a different URL address.
+    name: aws-lambda-delete-function-url-config
+  - arguments:
+    - description: The AWS Region. If not specified, the default region will be used.
+      auto: PREDEFINED
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - description: The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length.
+      required: true
+      name: functionName
+    - description: Specify a version or alias to get details about a published version of the function.
+      name: qualifier
+    description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
+    name: aws-lambda-delete-function
+  dockerimage: demisto/boto3py3:1.0.0.63019
+  runonce: false
+  subtype: python3
+  script: ''
+  type: python
+tests:
+- AWS-Lambda-Test (Read-Only)
+fromversion: 6.8.0

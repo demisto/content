@@ -13,131 +13,123 @@ configuration:
   displaypassword: ID or Client ID
   hiddenusername: true
   section: Connect
+  required: false
 - name: creds_tenant_id
   type: 9
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
-- name: _auth_id
   required: false
+- name: _auth_id
   type: 0
   display: ID
   hidden: true
+  required: false
 - display: Token
   name: _tenant_id
-  required: false
   type: 0
   hidden: true
-- name: credentials
   required: false
+- name: credentials
   type: 9
   displaypassword: Key or Client Secret
   hiddenusername: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
+  hidden: true
+  required: false
+- displaypassword: Certificate Thumbprint
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  name: credentials_certificate_thumbprint
+  hiddenusername: true
+  type: 9
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   name: private_key
-  required: false
   type: 14
   display: Private Key
+  required: false
 - display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-- name: managed_identities_client_id
   required: false
+- name: managed_identities_client_id
   type: 9
   additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Use a self-deployed Azure Application
   name: self_deployed
-  required: false
   type: 8
+  required: false
 - display: Key (received from the admin consent - see Detailed Instructions (?) (Deprecated)
   name: enc_key
-  required: false
   type: 4
   hidden: true
   additionalinfo: Use the "Key" parameter instead.
+  required: false
 - display: ID (received from the admin consent - see Detailed Instructions (?) (Deprecated)
   name: auth_id
-  required: false
   type: 4
   hidden: true
   additionalinfo: Use the "ID" parameter instead
+  required: false
 - display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated) section)
   name: tenant_id
-  required: false
   type: 4
   hidden: true
   additionalinfo: Use the "Token" parameter instead.
+  required: false
 - display: Suppress Errors for Non Found Groups
   name: handle_error
-  required: false
   defaultvalue: 'true'
   type: 8
+  required: false
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
+  required: false
 - name: creds_auth_code
   type: 9
   displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
   hiddenusername: true
+  required: false
 - display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
   name: auth_code
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 description: Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
 display: Azure Active Directory Groups
 name: Microsoft Graph Groups
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'Sorts groups in an organization by the field values. For example, displayName.'
-      isArray: false
+    - description: 'Sorts groups in an organization by the field values. For example, displayName.'
       name: order_by
-      required: false
-      secret: false
-    - default: false
-      description: The URL to the next results page.
-      isArray: false
+    - description: The URL to the next results page.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Sets the page size of the results.
-      isArray: false
       name: top
-      required: false
-      secret: false
-    - default: false
-      description: 'Filters group results. For example, startswith(displayName,''J''), groupTypes/any(c:c+eq+''Unified'').'
-      isArray: false
+    - description: 'Filters group results. For example, startswith(displayName,''J''), groupTypes/any(c:c+eq+''Unified'').'
       name: filter
-      required: false
-      secret: false
-    deprecated: false
     description: Provides a list of groups.
-    execution: false
     name: msgraph-groups-list-groups
     outputs:
     - contextPath: MSGraphGroups.Classification
@@ -199,15 +191,10 @@ script:
       description: The URL of the next results page.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the group.
-      isArray: false
+    - description: The ID of the group.
       name: group_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns details of a group.
-    execution: false
     name: msgraph-groups-get-group
     outputs:
     - contextPath: MSGraphGroups.Classification
@@ -266,41 +253,26 @@ script:
       description: 'Specifies the visibility of an Office 365 group. Possible values are: Private, Public, or Hiddenmembership. Blank values are treated as public.'
       type: String
   - arguments:
-    - default: false
-      description: The display name of the group.
-      isArray: false
+    - description: The display name of the group.
       name: display_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set to true for mail-enabled groups. False for groups without an email.
-      isArray: false
       name: mail_enabled
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: The mail alias for the group.
-      isArray: false
+    - description: The mail alias for the group.
       name: mail_nickname
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set to true for security groups. False for non security groups (regular groups).
-      isArray: false
       name: security_enabled
       predefined:
       - 'false'
       - 'true'
       required: true
-      secret: false
-    deprecated: false
     description: Create a group.
-    execution: false
     name: msgraph-groups-create-group
     outputs:
     - contextPath: MSGraphGroups.Classification
@@ -359,15 +331,10 @@ script:
       description: 'Specifies the visibility of an Office 365 group. Possible values are: Private, Public, or Hiddenmembership; blank values are treated as public.'
       type: String
   - arguments:
-    - default: false
-      description: The group ID.
-      isArray: false
+    - description: The group ID.
       name: group_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a group.
-    execution: false
     name: msgraph-groups-delete-group
     outputs:
     - contextPath: MSGraphGroups.ID
@@ -377,43 +344,22 @@ script:
       description: Specifies whether the group was deleted.
       type: Boolean
   - arguments:
-    - default: false
-      description: The group ID.
-      isArray: false
+    - description: The group ID.
       name: group_id
       required: true
-      secret: false
-    - default: false
-      description: The URL for the next results page.
-      isArray: false
+    - description: The URL for the next results page.
       name: next_link
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Sets the page size of results.
-      isArray: false
       name: top
-      required: false
-      secret: false
-    - default: false
-      description: 'Filters members results. For example, startswith(displayName,''user'').'
-      isArray: false
+    - description: 'Filters members results. For example, startswith(displayName,''user'').'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: Retrieves the total count of matching resources.
-      isArray: false
+    - description: Retrieves the total count of matching resources.
       name: count
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
-    deprecated: false
     description: Lists group members.
-    execution: false
     name: msgraph-groups-list-members
     outputs:
     - contextPath: MSGraphGroups.Members.BussinessPhones
@@ -459,47 +405,27 @@ script:
       description: The URL to the next results page.
       type: String
   - arguments:
-    - default: false
-      description: The group ID.
-      isArray: false
+    - description: The group ID.
       name: group_id
       required: true
-      secret: false
-    - default: false
-      description: The user ID.
-      isArray: false
+    - description: The user ID.
       name: user_id
       required: true
-      secret: false
-    deprecated: false
     description: Add a member to a group.
-    execution: false
     name: msgraph-groups-add-member
   - arguments:
-    - default: false
-      description: The group ID.
-      isArray: false
+    - description: The group ID.
       name: group_id
       required: true
-      secret: false
-    - default: false
-      description: The user ID.
-      isArray: false
+    - description: The user ID.
       name: user_id
       required: true
-      secret: false
-    deprecated: false
     description: Removes a member from a group.
-    execution: false
     name: msgraph-groups-remove-member
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: msgraph-groups-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.58768
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

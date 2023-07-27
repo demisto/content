@@ -5,15 +5,14 @@ commonfields:
 configuration:
 - display: Username
   name: credentials
-  required: false
   type: 9
+  required: false
 - display: Fetch indicators
   name: feed
   defaultvalue: 'true'
-  required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -22,8 +21,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
@@ -45,18 +44,18 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: indicatorType
   type: 17
-  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
@@ -65,21 +64,18 @@ configuration:
 - defaultvalue: '60'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
-  required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - additionalinfo: To fetch malware and phishing indicators select "all".
   defaultvalue: all
   display: The threat type for which to fetch indicators
@@ -87,55 +83,38 @@ configuration:
   options:
   - all
   - malware
-  required: false
   type: 15
-- additionalinfo: This value also will be used as an expiration time - all indicators
-    before the given time will not be fetched.
+  required: false
+- additionalinfo: This value also will be used as an expiration time - all indicators before the given time will not be fetched.
   defaultvalue: 3 days
   display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
-  hidden: false
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Use the Cofense Feed Integration to fetch indicators from the feed.
 display: Cofense Feed
 name: Cofense Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
-      description: The maximum number of context indicators to return. The default
-        value is 10.
-      isArray: false
+    - defaultValue: '10'
+      description: The maximum number of context indicators to return. The default value is 10.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 3 days
-      description: The time period (previous) for which to fetch indicators. For example,
-        a value of 3 days will return indicators from the previous three days.
-      isArray: false
+    - defaultValue: 3 days
+      description: The time period (previous) for which to fetch indicators. For example, a value of 3 days will return indicators from the previous three days.
       name: from_time
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the feed.
-    execution: false
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

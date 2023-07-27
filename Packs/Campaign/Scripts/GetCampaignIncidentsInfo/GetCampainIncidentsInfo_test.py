@@ -1,5 +1,6 @@
 from CommonServerPython import *
 from GetCampaignIncidentsInfo import *
+import pytest
 
 REQUIRED_KEYS = ['id', 'name', 'emailfrom', 'recipients', 'severity', 'status', 'created']
 STR_VAL_KEYS = ['name', 'emailfrom', 'recipients', 'created']
@@ -36,7 +37,7 @@ def test_incidents_info_md_happy_path(mocker):
 
     """
     # prepare
-    mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys')
+    mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys', return_value=MOCKED_INCIDENTS)
     mocker.patch('GetCampaignIncidentsInfo.get_campaign_incidents_from_context', return_value=MOCKED_INCIDENTS)
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'incidents', return_value=MOCKED_INCIDENTS)
@@ -133,7 +134,7 @@ def test_some_error(mocker):
     # run
     try:
         main()
-        assert False, 'SystemExit should occurred'
+        pytest.fail(msg='SystemExit should occurred')
 
     except SystemExit:
         assert demisto.results.call_args[0][0]['Contents'] == SOME_ERROR
@@ -165,3 +166,37 @@ def test_updated_status_and_severity(mocker):
     hr = demisto.results.call_args[0][0]['HumanReadable']
     hr.count('| Archive |') == NUM_OF_INCIDENTS  # all incidents should have the 'Archive' status
     hr.count('| 3 |') == NUM_OF_INCIDENTS  # all incidents should have severity 3
+
+
+def test_update_incident_with_required_keys(mocker):
+    """
+        Given
+         - Two Phishing Campaign incidents (the first one exists, the second one is deleted)
+         - The required keys
+
+        When
+         - Execute update_incident_with_required_keys function
+
+        Then
+         - Ensure the function returns just the exists incident and does not fail
+
+    """
+    incident_1 = {"emailfrom": "", "emailfromdomain": "", "id": "1", "name": "Campaign Test",
+                  "occurred": "2023-06-21T13:18:38.056972974Z", "recipients": [], "recipientsdomain": [],
+                  "severity": 0, "similarity": 1, "status": 1}
+    incident_2 = {"emailfrom": "", "emailfromdomain": "", "id": "2", "name": "Campaign Test",
+                  "occurred": "2023-06-21T13:18:38.056972974Z", "recipients": [], "recipientsdomain": [],
+                  "severity": 0, "similarity": 1, "status": 1}
+
+    incident_1_correct_format = '[{"emailfrom": "","emailfromdomain": "","id": "1", "name": "Campaign Test",' \
+                                ' "occurred": "2023-06-21T13:18:38.056972974Z","recipients": [], "recipientsdomain": [],' \
+                                ' "severity": 0, "similarity": 1, "status": 1}]'
+
+    incidents = [incident_1, incident_2]
+
+    mocker.patch("demistomock.executeCommand", side_effect=([{"Contents": "[Test]"}], [{"Contents": "[]"}],
+                                                            [{"Type": "Test", "Contents": incident_1_correct_format}]))
+    incidents = update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
+
+    assert len(incidents) == 1
+    assert incidents[0].get('id') == '1'

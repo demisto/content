@@ -237,3 +237,8 @@ GCP
  readme
  params
 Qradar
+XSIAM
+fromversion
+xpanse
+JavaScript
+RFC

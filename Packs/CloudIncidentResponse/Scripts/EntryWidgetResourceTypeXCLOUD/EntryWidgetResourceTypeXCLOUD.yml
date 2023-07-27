@@ -1,0 +1,17 @@
+commonfields:
+  id: EntryWidgetResourceTypeXCLOUD
+  version: -1
+name: EntryWidgetResourceTypeXCLOUD
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Entry widget that returns the resource type involved in the alert.
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

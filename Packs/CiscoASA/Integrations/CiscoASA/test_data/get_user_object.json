@@ -1,0 +1,11 @@
+{
+    "kind": "object#UserObj",
+    "selfLink": "selfLink",
+    "userName": "Chikorita",
+    "user": {
+        "kind": "objectRef#LocalUserObj",
+        "refLink": "user_refLink",
+        "objectId": "Chikorita"
+    },
+    "objectId": "Chikorita"
+}

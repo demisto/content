@@ -67,7 +67,7 @@ In addition, make sure ***Instance execute external*** is enabled.
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** (`instance.execute.external.teams` in this example) key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
- - Note: This option is available from Cortex XSOAR v5.5.0 and later.
+ - Note: This option is available from Cortex XSOAR v5.5.0. Currently, Cortex XSOAR 8 is not supported.
 
 ### 2. Using NGINX as reverse proxy
 In this configuration, the inbound connection, from Microsoft Teams to Cortex XSOAR, goes through a reverse proxy (e.g. NGINX) which relays the HTTPS requests posted from Microsoft Teams
@@ -110,6 +110,8 @@ The proxy intercepts HTTPS traffic, presents a public CA certificate, then proxi
 All HTTPS traffic that will hit the selected messaging endpoint will be directed to the HTTPS web server the integration spins up, and will then be processed.
 
 ## Setup Video
+The information in this video is for Cortex XSOAR 6 only.
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
             type="video/mp4"/>
@@ -169,39 +171,6 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 9. Store the generated secret securely for the next steps.
 
 
-#### Using the App Studio for development environment (Deprecated - Use `Developer Portal` instead.)
-1. Download the ZIP file located at the bottom of this article.
-2. In Microsoft Teams, access the Store.
-3. Search for and click **App Studio**.
-4. Click the **Open** button.
-5. For the **Bot** option, click **Open**.
-6. Click the **Manifest editor** tab.
-7. Click the **Import an existing app** button, and select the ZIP file that you downloaded.
-8. Click the app widget, and in the **Identification** section, click the **Generate** button to generate a unique App ID.  The following parameters are automatically populated in the ZIP file, use this information for reference.
-  - **Short name**: Demisto Bot
-  - **App ID**: the App ID for configuring in Cortex XSOAR.
-  - **Package name**: demisto.bot (this is a unique identifier for the app in the Store)
-  - **Version**: 1.0.0 (this is a unique identifier for the app in the Store)
-  - **Short description**: Mechanism for mirroring between Cortex XSOAR and Microsoft Teams.
-  - **Long description**: Demisto Bot is the mechanism that enables messaging team members and channels, executing Cortex XSOAR commands directly from Teams, and mirroring investigation data between Cortex XSOAR and Microsoft Teams
-
-9. From the left-side navigation pane, under Capabilities, click **Bots > Set up**.
-10. Configure the settings under the **Scope** section, and click **Create bot**.
-  - In the **Name** field, enter *Demisto Bot*.
-  - In the **Scope** section, select the following checkboxes: `Personal`, `Team`, and `Group Chat`.
-
-11. Record the **Bot ID**, which you will need when configuring the integration in Cortex XSOAR.
-![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MSTeams-BotID.png)
-12. Click **Generate new password**. Record the password, which you will need when configuring the integration in Cortex XSOAR.
-13. In the **Messaging endpoints** section, enter the URL to which messages will be sent (to the Demisto Bot).
-  - To enable calling capabilities on the Bot enter the same URL to the **Calling endpoints** section.
-14. In the **Domain and permissions** section, under **AAD App ID** enter the Bot ID.
-15. From the left-side navigation pane, under Finish, click **Test and distribute**.
-16. To download the new bot file, which now includes App Details, click **Download**.
-17. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
-
-
-
 ### In order to connect to the Azure Network Security Groups use one of the following methods:
 
 1. *Client Credentials Flow*
@@ -249,6 +218,7 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
       - Chat.Create
 
     ##### Required Delegated Permissions:
+      - OnlineMeetings.ReadWrite
       - ChannelMessage.Send
       - Chat.ReadWrite
       - ChatMessage.Send
@@ -318,7 +288,7 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 
 - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
 
-#### Using the Developer Portal
+#### Using the Developer Portal and Microsoft Azure Portal
 1. Download the ZIP file located at the bottom of this article.
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
@@ -335,13 +305,6 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 14. Click the **Add to team** button.
 15. In the search box, type the name of the team to which you want to add the bot.
 16. Click the **Add** button on the wanted team and then click the **Apply** button.
-
-#### Using the App Studio (Deprecated - Use `Developer Portal` instead.)
-1. In Microsoft Teams, access the Store.
-2. Search for **Demisto Bot** and click the Demisto Bot widget.
-3. Click the arrow on the **Open** button and select **Add to a team**.
-4. In the search box, type the name of the team to which to add the bot.
-5. Click **Set up** and configure the new app.
 
 
 ## Known Limitations
@@ -432,7 +395,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Investigation mirrored successfully in channel incident-100.
 
-### Delete a channel
+### close-channel
 ***
 Deletes the specified Microsoft Teams channel.
 
@@ -464,7 +427,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Channel was successfully closed.
 
-### Get information on the integration status
+### microsoft-teams-integration-health
 ***
 Returns real-time and historical data on the integration status.
 
@@ -485,13 +448,13 @@ There is no context output for this command.
 
 
 ##### Human Readable Output
-### Microsoft API Health
-| Bot Framework API Health | Graph API Health |
-|--------------------------|------------------|
-| Operational              | Operational      |
-No mirrored channels.
+>### Microsoft API Health
+>| Bot Framework API Health | Graph API Health |
+>|--------------------------|------------------|
+>| Operational              | Operational      |
+>No mirrored channels.
 
-### Ring a user's Team account
+### microsoft-teams-ring-user
 ***
 Rings a user's Teams account. Note: This is a ring only! no media will play in case the generated call is answered. To use this make sure your Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All
 
@@ -523,7 +486,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Calling Avishai Brandeis
 
-### Add a user to a channel
+### microsoft-teams-add-user-to-channel
 ***
 Adds a member (user) to a private/shared channel.
 For a comparison of Teams features for each channel type, see the Microsoft documentation:  [Channel feature comparison](https://learn.microsoft.com/en-us/MicrosoftTeams/teams-channels-overview#channel-feature-comparison).
@@ -558,7 +521,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The User "itayadmin" has been added to channel "example channel" successfully.
 
-### Create a channel
+### microsoft-teams-create-channel
 ***
 Creates a new channel in a Microsoft Teams team.
 For more information about the channels types, see the Microsoft documentation: [standard, private, or shared channels](https://support.microsoft.com/en-us/office/teams-can-have-standard-private-or-shared-channels-de3e20b0-7494-439c-b7e5-75899ebe6a0e)
@@ -596,7 +559,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The channel "example channel" was created successfully
 
-### Create a meeting
+### microsoft-teams-create-meeting
 ***
 Creates a new meeting in Microsoft Teams.
 
@@ -606,12 +569,18 @@ Creates a new meeting in Microsoft Teams.
 `microsoft-teams-create-meeting`
 
 ##### Required Permissions
-`OnlineMeetings.ReadWrite.All`
+`OnlineMeetings.ReadWrite.All` - Application
+`OnlineMeetings.ReadWrite` - Delegated
+
+When using `Client Credentials Flow`:
 Besides setting up this permission, in order to create a meeting, the Azure admin needs to configure application access policy
 and grant users permissions to create meetings.
 The script *ConfigureAzureApplicationAccessPolicy* was created to support the needed commands.
 For more information:
 [Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
+
+When using `Authorization Code Flow`:
+The authentication process is conducted on behalf of the specific user who initiated the login request. Therefore, the given `member` must be the same user.
 
 ##### Input
 
@@ -828,10 +797,10 @@ Sends a new chat message in the specified chat.
 ```!microsoft-teams-message-send-to-chat chat="example chat" content="Hello World"```
 
 ##### Human Readable Output
-### Message was sent successfully in the 'example chat' chat.
-| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
-|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
-| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
+>### Message was sent successfully in the 'example chat' chat.
+>| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
+>|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
+>| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
 
 ### microsoft-teams-chat-add-user
 ***
@@ -903,11 +872,11 @@ Retrieves a list of members from a chat.
 ```!microsoft-teams-chat-member-list chat="example chat"```
 
 ##### Human Readable Output
-### Chat "example chat" Members List:
-| User Id                              | User roles | Name         | Email          | Tenant Id                            |
-|--------------------------------------|------------|--------------|----------------|--------------------------------------|
-| 359d2c3c-162b-414c-b2eq-386461e5l050 | owner      | itayadmin    | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
-| 48d31887-5fad-4d73-a9f5-3c356e68a038 | owner      | Bruce Willis | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
+>### Chat "example chat" Members List:
+>| User Id                              | User roles | Name         | Email          | Tenant Id                            |
+>|--------------------------------------|------------|--------------|----------------|--------------------------------------|
+>| 359d2c3c-162b-414c-b2eq-386461e5l050 | owner      | itayadmin    | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
+>| 48d31887-5fad-4d73-a9f5-3c356e68a038 | owner      | Bruce Willis | test@gmail.com | dcd219dd-bc68-4b9b-bf0b-4a33a796be35 |
 
 ### microsoft-teams-chat-list
 ***
@@ -953,11 +922,11 @@ Retrieves a list of chats that the user is part of. If 'chat' is specified - ret
 ```!microsoft-teams-chat-list filter="topic eq 'testing'"```
 
 ##### Human Readable Output
-### Chats List:
-| Chat Id                                       | Chat name | Created Date Time        | Last Updated Date Time   | Chat Type | webUrl | Tenant Id | Last Message Read Date Time |
-|-----------------------------------------------|-----------|--------------------------|--------------------------|-----------|--------|-----------|-----------------------------|
-| 19:561082c0f3f847a58069deb8eb300807@thread.v2 | testing   | 2023-01-08T14:15:45.412Z | 2023-01-08T14:15:45.412Z | group     | webUrl | tenantId  | 2023-01-08T14:16:48.662Z    |
-| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | testing   | 2022-12-29T11:10:49.173Z | 2022-12-29T11:10:49.173Z | group     | webUrl | tenantId  | 2022-12-29T12:00:07.317Z    |
+>### Chats List:
+>| Chat Id                                       | Chat name | Created Date Time        | Last Updated Date Time   | Chat Type | webUrl | Tenant Id | Last Message Read Date Time |
+>|-----------------------------------------------|-----------|--------------------------|--------------------------|-----------|--------|-----------|-----------------------------|
+>| 19:561082c0f3f847a58069deb8eb300807@thread.v2 | testing   | 2023-01-08T14:15:45.412Z | 2023-01-08T14:15:45.412Z | group     | webUrl | tenantId  | 2023-01-08T14:16:48.662Z    |
+>| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | testing   | 2022-12-29T11:10:49.173Z | 2022-12-29T11:10:49.173Z | group     | webUrl | tenantId  | 2022-12-29T12:00:07.317Z    |
 
 ### microsoft-teams-chat-message-list
 ***
@@ -1015,10 +984,10 @@ Retrieves a list of messages in a chat.
 ```!!microsoft-teams-chat-message-list chat="example chat" order_by=createdDateTime```
 
 ##### Human Readable Output
-### Messages list in "example chat" chat:
-| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
-|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
-| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
+>### Messages list in "example chat" chat:
+>| Chat Id                                       | Created DateTime        | Etag          | From user | From user id                         | From user userIdentityType | Importance | Message Content | Message Type | Message contentType | Message id    | lastModified DateTime   |
+>|-----------------------------------------------|-------------------------|---------------|-----------|--------------------------------------|----------------------------|------------|-----------------|--------------|---------------------|---------------|-------------------------|
+>| 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | 2021-03-29T04:17:43.15Z | 1616991463150 | itayadmin | 8ea0e38b-efb3-4757-924a-5f94061cf8c2 | aadUser                    | normal     | Hello World     | message      | text                | 1616991463150 | 2021-03-29T04:17:43.15Z |
 
 ### microsoft-teams-chat-update
 ***
@@ -1127,28 +1096,30 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
     This probably means that there is a connection issue, and the web server does not intercept the HTTPS queries from Microsoft Teams.
 
-    In order to troubleshoot, first verify the Docker container is up and running and publish the configured port to the outside world:
+    To troubleshoot:
+   1. first verify the Docker container is up and running and publish the configured port to the outside world (currently not supported in XSOAR 8):
 
-    From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
+       From the Cortex XSOAR / Cortex XSOAR engine machine run: `docker ps | grep teams`
 
-    You should see the following, assuming port 7000 is used:
+       You should see the following, assuming port 7000 is used:
 
-    `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
+       `988fdf341127        demisto/teams:1.0.0.6483      "python /tmp/pyrunne…"   6 seconds ago       Up 4 seconds        0.0.0.0:7000->7000/tcp   demistoserver_pyexecLongRunning-b60c04f9-754e-4b68-87ed-8f8113419fdb-demistoteams1.0.0.6483--26`
 
-    If the Docker container is up and running, try running cURL queries, to verify the web server is up and running and listens on the configured URL:
+       If the Docker container is up and running, try running cURL queries to verify the web server is up and running and listens on the configured URL:
 
-     - To the messaging endpoint from a separate box.
-     - From the Cortex XSOAR machine to localhost.
+        - To the messaging endpoint from a separate box.
+        - From the Cortex XSOAR machine to localhost.
+          - Note: The web server supports only POST method queries. 
+        
+   2. If the cURL queries were sent successfully, you should see the following line in Cortex XSOAR logs: `Finished processing Microsoft Teams activity successfully`.
 
-       - Note: The web server supports only POST method queries.
-
-    If the cURL queries were sent successfully, you should see in Cortex XSOAR logs the following line: `Finished processing Microsoft Teams activity successfully`.
-
-    If you're working with secured communication (HTTPS), make sure that you provided a valid certificate, run `openssl s_client -connect <domain.com>:443` command, verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
+   3. If you're working with secured communication (HTTPS), make sure that you provided a valid certificate.
+       1. Run `openssl s_client -connect <domain.com>:443` .
+       2. Verify that the returned value of the `Verify return code` field is `0 (ok)`, otherwise, it's not a valid certificate.
     
-    Try inserting your configured message endpoint in a browser tap, click `Enter`, if `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
+   4. Try inserting your configured message endpoint in a browser and click **Enter**. If `Method Not Allowed` is returned, the endpoint is valid and ready to communicate, otherwise, it needs to be handled according to the returned error's message.
 
-    In some cases, a connection is not created between Teams and the messaging endpoint, when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
+   5. In some cases, a connection is not created between Teams and the messaging endpoint when adding a bot to the team. You can work around this problem by adding any member to the team the bot was added to (the bot should be already added to the team). This will trigger a connection and solve the issue. You can then remove the member that was added.
 
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 

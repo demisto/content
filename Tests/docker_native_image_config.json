@@ -1,36 +1,5 @@
 {
    "native_images":{
-      "native:8.1":{
-         "supported_docker_images":[
-            "python3",
-            "python3-deb",
-            "python3-ubi",
-            "py3-tools",
-            "py3-tools-ubi",
-            "crypto",
-            "readpdf",
-            "parse-emails",
-            "docxpy",
-            "sklearn",
-            "pandas",
-            "ippysocks-py3",
-            "oauthlib",
-            "unzip",
-            "py3ews",
-            "taxii2",
-            "pan-os-python",
-            "slackv3",
-            "google-api-py3",
-            "boto3py3",
-            "pyjwt3",
-            "joe-security",
-            "slack",
-            "office-utils",
-            "chromium",
-            "tesseract"
-         ],
-         "docker_ref": "demisto/py3-native:8.1.0.45852"
-      },
       "native:8.2":{
          "supported_docker_images":[
             "python3",
@@ -61,6 +30,37 @@
             "tesseract"
          ],
          "docker_ref": "demisto/py3-native:8.2.0.54663"
+      },
+      "native:8.3":{
+         "supported_docker_images":[
+            "python3",
+            "python3-deb",
+            "python3-ubi",
+            "py3-tools",
+            "py3-tools-ubi",
+            "crypto",
+            "readpdf",
+            "parse-emails",
+            "docxpy",
+            "sklearn",
+            "pandas",
+            "ippysocks-py3",
+            "oauthlib",
+            "unzip",
+            "py3ews",
+            "taxii2",
+            "pan-os-python",
+            "slackv3",
+            "google-api-py3",
+            "boto3py3",
+            "pyjwt3",
+            "joe-security",
+            "slack",
+            "office-utils",
+            "chromium",
+            "tesseract"
+         ],
+         "docker_ref": "demisto/py3-native:8.3.0.62286"
       },
       "native:dev":{
          "supported_docker_images":[
@@ -121,40 +121,29 @@
             "chromium",
             "tesseract"
          ],
-         "docker_ref": "demisto/py3-native:8.2.0.57834"
+         "docker_ref": "demisto/py3-native:8.3.0.65288"
       }
    },
    "ignored_content_items":[
       {
-         "id":"ParseEmailFilesV2",
-         "reason":"Issue: CIAC-5711 - Failed unit-test: test_eml_contains_empty_htm_not_containing_file_data.",
-         "ignored_native_images":[
-            "native:8.1"
-         ]
-      },
-      {
          "id":"UnzipFile",
          "reason":"Issue: CIAC-5246 - Failed unit-test: test_unrar_no_password.",
          "ignored_native_images":[
-            "native:8.1",
-            "native:8.2",
-            "native:dev"
+            "native:8.2"
          ]
       },
       {
          "id":"DockerHardeningCheck",
          "reason":"Issue: CIAC-5248 - Failed unit-test: get_default_gateway (ip command does not exist).",
          "ignored_native_images":[
-            "native:8.1",
-            "native:8.2",
-            "native:candidate"
+            "native:8.2"
          ]
       },
       {
          "id":"FetchIndicatorsFromFile",
          "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
          "ignored_native_images":[
-            "native:8.1",
+            "native:8.3",
             "native:8.2",
             "native:dev",
             "native:candidate"
@@ -164,7 +153,7 @@
          "id": "Rasterize",
          "reason": "Issue: CRTX-72338.",
          "ignored_native_images": [
-            "native:8.1",
+            "native:8.3",
             "native:8.2"
          ]
       },
@@ -172,6 +161,7 @@
          "id": "RegexExtractAll",
          "reason": "Issue: CIAC-6005",
          "ignored_native_images": [
+            "native:8.3",
             "native:8.2",
             "native:dev",
             "native:candidate"
@@ -180,8 +170,8 @@
    ],
    "flags_versions_mapping": {
       "native:dev" : "native:dev",
-      "native:ga" : "native:8.2",
-      "native:maintenance" : "native:8.1",
+      "native:ga" : "native:8.3",
+      "native:maintenance" : "native:8.2",
       "native:candidate": "native:candidate"
    }
 }

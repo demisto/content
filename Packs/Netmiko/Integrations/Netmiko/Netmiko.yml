@@ -3,89 +3,247 @@ commonfields:
   id: Netmiko
   version: -1
 configuration:
-- display: Platform
-  name: platform
+- name: hostname
+  display: Hostname
   required: true
+  defaultvalue:
   type: 0
-- display: Hostname
-  name: hostname
+  additionalinfo:
+- name: port
+  display: Port
   required: true
+  defaultvalue:
   type: 0
-- display: Port
-  name: port
+  additionalinfo: ""
+- name: platform
+  display: Platform
   required: true
-  type: 0
-- display: Credentials
-  name: credentials
+  defaultvalue:
+  type: 15
+  additionalinfo: ""
+  options:
+  - a10
+  - accedian
+  - adtran_os
+  - adtran_os_telnet
+  - adva_fsp150f2
+  - adva_fsp150f3
+  - alcatel_aos
+  - alcatel_sros
+  - allied_telesis_awplus
+  - apresia_aeos
+  - apresia_aeos_telnet
+  - arista_eos
+  - arista_eos_telnet
+  - arris_cer
+  - aruba_os
+  - aruba_osswitch
+  - aruba_procurve
+  - aruba_procurve_telnet
+  - avaya_ers
+  - avaya_vsp
+  - broadcom_icos
+  - brocade_fastiron
+  - brocade_fastiron_telnet
+  - brocade_fos
+  - brocade_netiron
+  - brocade_netiron_telnet
+  - brocade_nos
+  - brocade_vdx
+  - brocade_vyos
+  - calix_b6
+  - calix_b6_telnet
+  - casa_cmts
+  - cdot_cros
+  - centec_os
+  - centec_os_telnet
+  - checkpoint_gaia
+  - ciena_saos
+  - ciena_saos_telnet
+  - cisco_asa
+  - cisco_ftd
+  - cisco_ios
+  - cisco_ios_telnet
+  - cisco_nxos
+  - cisco_s300
+  - cisco_s300_telnet
+  - cisco_tp
+  - cisco_viptela
+  - cisco_wlc
+  - cisco_xe
+  - cisco_xr
+  - cisco_xr_telnet
+  - cloudgenix_ion
+  - coriant
+  - dell_dnos6_telnet
+  - dell_dnos9
+  - dell_force10
+  - dell_isilon
+  - dell_os10
+  - dell_os6
+  - dell_os9
+  - dell_powerconnect
+  - dell_powerconnect_telnet
+  - dell_sonic
+  - dlink_ds
+  - dlink_ds_telnet
+  - eltex
+  - eltex_esr
+  - endace
+  - enterasys
+  - ericsson_ipos
+  - extreme
+  - extreme_ers
+  - extreme_exos
+  - extreme_exos_telnet
+  - extreme_netiron
+  - extreme_netiron_telnet
+  - extreme_nos
+  - extreme_slx
+  - extreme_telnet
+  - extreme_tierra
+  - extreme_vdx
+  - extreme_vsp
+  - extreme_wing
+  - f5_linux
+  - f5_ltm
+  - f5_tmsh
+  - flexvnf
+  - fortinet
+  - generic
+  - generic_telnet
+  - generic_termserver
+  - generic_termserver_telnet
+  - hillstone_stoneos
+  - hp_comware
+  - hp_comware_telnet
+  - hp_procurve
+  - hp_procurve_telnet
+  - huawei
+  - huawei_olt
+  - huawei_olt_telnet
+  - huawei_smartax
+  - huawei_telnet
+  - huawei_vrpv8
+  - ipinfusion_ocnos
+  - ipinfusion_ocnos_telnet
+  - juniper
+  - juniper_junos
+  - juniper_junos_telnet
+  - juniper_screenos
+  - keymile
+  - keymile_nos
+  - linux
+  - mellanox
+  - mellanox_mlnxos
+  - mikrotik_routeros
+  - mikrotik_switchos
+  - mrv_lx
+  - mrv_optiswitch
+  - netapp_cdot
+  - netgear_prosafe
+  - netscaler
+  - nokia_srl
+  - nokia_sros
+  - nokia_sros_telnet
+  - oneaccess_oneos
+  - oneaccess_oneos_telnet
+  - ovs_linux
+  - paloalto_panos
+  - paloalto_panos_telnet
+  - pluribus
+  - quanta_mesh
+  - rad_etx
+  - rad_etx_telnet
+  - raisecom_roap
+  - raisecom_telnet
+  - ruckus_fastiron
+  - ruckus_fastiron_telnet
+  - ruijie_os
+  - ruijie_os_telnet
+  - sixwind_os
+  - sophos_sfos
+  - supermicro_smis
+  - supermicro_smis_telnet
+  - Supported Secure Copy device_type values
+  - tplink_jetstream
+  - tplink_jetstream_telnet
+  - ubiquiti_edge
+  - ubiquiti_edgerouter
+  - ubiquiti_edgeswitch
+  - ubiquiti_unifiswitch
+  - vyatta_vyos
+  - vyos
+  - watchguard_fireware
+  - yamaha
+  - yamaha_telnet
+  - zte_zxros
+  - zte_zxros_telnet
+  - zyxel_os
+- name: credentials
+  display: Credentials
   required: true
+  defaultvalue:
   type: 9
-description: Multi-vendor library to simplify SSH connections to network devices.
-  Utilises the Python library Netmiko for connections. Supports SSH Key authentication
-  and username / password.
+  additionalinfo:
+  displaypassword: ""
+description: Multi-vendor library to simplify SSH connections to network devices. Utilizes the Python library Netmiko for connections. Supports SSH Key authentication and username / password.
 display: Netmiko
 name: Netmiko
 script:
   commands:
   - arguments:
-    - description: Commands to run (provide a JSON array or commands delimited using
-        \n ).
-      name: cmds
+    - name: cmds
+      description: Command(s) to run (provide a single command, a context key array value, or multiple commands with each on a new line after the first (e.g., cmds="whoami SHIFT+ENTER who").
       required: true
+      isArray: true
+      defaultValue: ""
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Requires "enable" to be run before commands are executed (default
-        is false)
+      description: Whether requires "enable" to be run before commands are executed. Default is false.
       name: require_enable
       predefined:
       - "false"
       - "true"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Commands are config items (such as those used in Cisco devices)
-        (default is false)
+      description: Whether commands are config items (such as those used in Cisco devices). Default is false.
       name: isConfig
       predefined:
       - "false"
       - "true"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Whether an exit argument is required after comamnds are executed
-        (default is false)
+      description: Whether an exit argument is required after comamnds are executed (default is false).
       name: require_exit
       predefined:
       - "false"
       - "true"
     - defaultValue: q
-      description: Optional exit argument used to exit the terminal after commands
-        are executed (default is q)
+      description: Optional exit argument used to exit the terminal after commands are executed. Default is q.
       name: exit_argument
     - auto: PREDEFINED
       defaultValue: "false"
-      description: If true, the output in the war room is raw output (as seen in a
-        terminal) and not in JSON format (default is false)
+      description: If true, the output in the War Room is raw output (as seen in a terminal) and not in JSON format. Default is false.
       name: raw_print
       predefined:
       - "false"
       - "true"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: If set to true, the context is not ouput. This is useful if the
-        command needs to be executed but the result of the command is not required
-        in context (default is false)
+      description: If set to true, the context is not ouput. This is useful if the command needs to be executed but the result of the command is not required in context. Default is false.
       name: disable_context
       predefined:
       - "false"
       - "true"
-    - description: If specified, it will override the target host specified in the
-        integration instrance.
+    - description: If specified, it will override the target host specified in the integration instance.
       name: override_host
-    - description: If specified, it will override the target port specified in the
-        integration instrance.
+    - description: If specified, it will override the target port specified in the integration instance.
       name: override_port
     - auto: PREDEFINED
-      description: If specified, it will override the target platform specified in
-        the integration instrance.
       name: override_platform
+      description: If specified, it will override the target platform specified in the integration instance.
+      defaultValue: ""
       predefined:
       - a10
       - a10_ssh
@@ -274,13 +432,11 @@ script:
       - vyatta_vyos_ssh
       - vyos
       - vyos_ssh
-    - description: If specified, it will override the username specified in the integration
-        instrance.
+    - description: If specified, it will override the username specified in the integration instance.
       name: override_username
-    - description: If specified, it will override the password specified in the integration
-        instrance.
+    - description: If specified, it will override the password specified in the integration instance.
       name: override_password
-    description: Execute commands using Netmiko
+    description: Execute commands using Netmiko.
     execution: true
     name: netmiko-cmds
     outputs:
@@ -296,11 +452,10 @@ script:
     - contextPath: Netmiko.Output
       description: The results of the command.
       type: string
-  dockerimage: demisto/netmiko:1.0.0.15047
-  runonce: false
-  script: ''
+  dockerimage: demisto/netmiko:1.0.0.65807
+  script: ""
   subtype: python3
   type: python
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- Netmiko_test

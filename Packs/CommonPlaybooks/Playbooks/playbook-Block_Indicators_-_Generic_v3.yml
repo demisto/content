@@ -59,7 +59,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - "26"
     separatecontext: false
     view: |-
       {
@@ -314,7 +314,7 @@ tasks:
       {
         "position": {
           "x": 1125,
-          "y": 835
+          "y": 1005
         }
       }
     note: false
@@ -354,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 660
+          "x": 1390,
+          "y": 820
         }
       }
     note: false
@@ -1117,15 +1117,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ee795eae-1fc0-4458-864b-91b2f224db89
+    type: condition
+    task:
+      id: ee795eae-1fc0-4458-864b-91b2f224db89
+      version: -1
+      name: Tag received from inputs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Tag
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1530,
-        "width": 2580,
-        "x": 0,
+        "height": 1700,
+        "width": 2530,
+        "x": 50,
         "y": -630
       }
     }

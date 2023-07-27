@@ -6,17 +6,17 @@ defaultmapperin: Wiz Mapper
 configuration:
 - name: incidentType
   display: Incident type
-  required: false
   defaultvalue: Wiz Issue
   type: 13
+  required: false
 - display: Service Account ID
   name: credentials
   type: 9
   required: true
 - display: Authentication Endpoint
   name: auth_endpoint
-  required: false
   type: 0
+  required: false
 - display: API Endpoint
   name: api_endpoint
   required: true
@@ -25,30 +25,28 @@ configuration:
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: '200'
   display: Max Issues to Fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 description: Agentless cloud security.
 display: Wiz
 name: Wiz
 script:
   commands:
   - arguments:
-    - default: false
-      description: Type of Issue to get
-      isArray: false
+    - description: Type of Issue to get
       name: issue_type
       predefined:
       - ACCESS_ROLE
@@ -138,15 +136,9 @@ script:
       - VOLUME
       - WEB_SERVICE
       - DATA_WORKFLOW
-      required: false
-      secret: false
       auto: PREDEFINED
-    - default: false
-      description: Get Issues of a specific resource
-      isArray: false
+    - description: Get Issues of a specific resource
       name: resource_id
-      required: false
-      secret: false
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -156,9 +148,7 @@ script:
       - LOW
       - INFORMATIONAL
       description: Get Issues of a specific severity and above
-    deprecated: false
     description: Get the Issues on cloud resources
-    execution: false
     name: wiz-get-issues
     outputs:
     - contextPath: Wiz.Manager.Issues.entitySnapshot
@@ -183,15 +173,10 @@ script:
       description: Wiz Issue note
       type: String
   - arguments:
-    - default: false
-      description: resource external id
-      isArray: false
+    - description: resource external id
       name: resource_id
       required: true
-      secret: false
-    deprecated: false
     description: Get details of a resource
-    execution: false
     name: wiz-get-resource
     outputs:
     - contextPath: Wiz.Manager.Resource.id
@@ -214,7 +199,6 @@ script:
       type: String
   - name: wiz-reject-issue
     description: Reject a Wiz Issue
-    execution: false
     arguments:
     - name: issue_id
       required: true
@@ -227,29 +211,29 @@ script:
       - WONT_FIX
       - EXCEPTION
       - FALSE_POSITIVE
+      - CONTROL_CHANGED
+      - CONTROL_DISABLED
+      - CONTROL_DELETED
+      - DETECTION_EXPIRED
     - name: reject_note
       description: rejection note
       required: true
   - name: wiz-reopen-issue
     description: Reject a Wiz Issue
-    execution: false
     arguments:
     - name: issue_id
       description: issue id
       required: true
     - name: reopen_note
       description: reopen note
-      required: false
   - name: wiz-issue-in-progress
     description: Set a Wiz Issue to in progress
-    execution: false
     arguments:
     - name: issue_id
       description: issue id
       required: true
   - name: wiz-set-issue-note
     description: Set a note on a Wiz Issue
-    execution: false
     arguments:
     - name: issue_id
       description: issue id
@@ -259,54 +243,44 @@ script:
       required: true
   - name: wiz-clear-issue-note
     description: Clear a note from a Wiz Issue
-    execution: false
     arguments:
     - name: issue_id
       description: issue id
       required: true
   - name: wiz-set-issue-due-date
     description: Set a due date on a Wiz Issue
-    execution: false
     arguments:
     - name: issue_id
       description: issue id
       required: true
     - name: due_at
       description: due at date. Format needs to be YYYY-MM-DD
-      required: false
   - name: wiz-clear-issue-due-date
     description: Clear a due date on a Wiz Issue
-    execution: false
     arguments:
     - name: issue_id
       description: issue id
       required: true
   - name: wiz-get-issue-evidence
     description: Get the Wiz Issue evidence
-    execution: false
     arguments:
     - name: issue_id
       description: issue id
       required: true
   - name: wiz-get-project-team
     description: Get the Project Owners and Security Champions details
-    execution: false
     arguments:
     - name: project_name
       description: project name
       required: true
   - name: wiz-rescan-machine-disk
     description: Rescan a VM disk in Wiz
-    execution: false
     arguments:
     - name: vm_id
       description: vm cloud provider id
       required: true
-  dockerimage: demisto/python3:3.10.11.59070
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

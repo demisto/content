@@ -1,4 +1,5 @@
 Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
+For Cortex XSOAR 8, see [Manage External Dynamic Lists in the Cortex XSOAR Administrator Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Manage-External-Dynamic-Lists).
 
 ## PAN-OS EDL Management to Export Indicators Service (PAN-OS EDL Service) migration steps
 Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSOAR server. Follow these steps to migrate your EDLs.
@@ -12,10 +13,16 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 6. If you have a deployment with 100 firewalls or more, we recommend using your Panorama device and creating an EDL object there, which will be populated from the `PAN-OS EDL Service`. Then push the EDL object to the respective firewalls.
 7. Follow the instructions in the rest of this guide to make sure that the PAN-OS device is connected to the EDL service.
 
-***Important Note:***
-EDL is designed to spawn on two processes: nginx and python. Nginx is the process that listens on the configured port, while the python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the nginx process will listen on port 9009 and python on port 9010.
-When running without --network=host the python port is not exposed to the machine.
-
+***Important Notes:***
+- EDL is designed to spawn on two processes: NGNIX and Python. NGNIX is the process that listens on the configured port, while the Python process listens on the configured port + 1. This means that if an integration was configured for port 9009, the NGNIX process will listen on port 9009 and Python on port 9010. When running without --network=host, the Python port is not exposed to the machine.
+- 
+- If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
+- When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
+- Note: After a successful configuration of an instance, if the 'test button' is clicked again, it may result in a failure due to an incorrect assumption that the port is already in use. Nevertheless, it is important to highlight that despite this issue, the instance will continue to function correctly.
+## Troubleshooting
+- If you are encountering an 504 Gateway error:
+  1. Increase the NGINX Read Timeout in the instance configuration (for 1,000,000 indicators, it is recommended to increase the timeout up to 1 hour).
+  2. If the issue persists, try to increase the Load Balancer timeout through the Devops team (for 800,000 indicators, it is recommended to increase the timeout up to 1 hour (depends on the indicator query)).
 ## Use Cases
 ---
 1. Export a list of malicious IPs to block via a firewall.
@@ -39,7 +46,7 @@ When running without --network=host the python port is not exposed to the machin
 | Exported Fields                    | For use with JSON and CSV formats - select specific Cortex XSOAR fields to export. If given the value 'all' - all Cortex XSOAR fields are exported. If empty - only value and type are exported.                                                      | False        |
 | List Size                          | Maximum number of items in the list.                                                                                                                                                                                                                 | True         |
 | Refresh Rate                       | How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.                                                      | False        |
-| Listen Port                        | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.                                                                      | True         |
+| Listen Port                        | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.  Note:  If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use."                                                            | True         |
 | Certificate (Required for HTTPS)   | For use with HTTPS - the certificate that the service should use.                                                                                                                                                                                    | False        |
 | Private Key (Required for HTTPS)   | For use with HTTPS - the private key that the service should use.                                                                                                                                                                                    | False        |
 | Username                           | Uses basic authentication for accessing the list. If empty, no authentication is enforced.                                                                                                                                                           | False        |
@@ -148,7 +155,7 @@ Use the following arguments in the URL to change the request:
 | n                 | The maximum number of entries in the output. If no value is provided, uses the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50`                                       |
 | s                 | The starting entry index from which to export the indicators.                                                                                                       | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50`                                  |
 | v                 | The output format. Supports `PAN-OS (text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`).                                                                | `https://{server_host}/instance/execute/{instance_name}?v=JSON`                                     |
-| q                 | The query used to retrieve indicators from the system.                                                                                                              | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
+| q                 | The query used to retrieve indicators from the system. If you are using this argument, no more than 100,000 can be exported through the EDL.                                                                                                             | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"`      |
 | t                 | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.    | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip`                                 |
 | sp                | If set, strips ports off URLs.                                                                                                                                      | `https://{server_host}/instance/execute/{instance_name}?v=PAN-OS (text)&sp`                         |
 | pr                | If set, strips protocol off URLs.                                                                                                                                   | `https://{server_host}/instance/execute/{instance_name}?v=text&pr`                                  |

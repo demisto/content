@@ -1,51 +1,23 @@
 args:
 - auto: PREDEFINED
-  default: false
   description: Incident severity
-  isArray: false
   name: severity
   predefined:
   - 1 - High
   - 2 - Medium
   - 3 - Low
-  required: false
-  secret: false
-- default: false
-  description: Incident assigne name (e.g John Smith)
-  isArray: false
+- description: Incident assigne name (e.g John Smith)
   name: assignee
-  required: false
-  secret: false
-- default: false
-  description: Incident description
-  isArray: false
+- description: Incident description
   name: description
-  required: false
-  secret: false
-- default: false
-  description: Incident assigned group name (e.g Incident Management Group)
-  isArray: false
+- description: Incident assigned group name (e.g Incident Management Group)
   name: assigned_group
-  required: false
-  secret: false
-- default: false
-  description: Incident ID to update
-  isArray: false
+- description: Incident ID to update
   name: id
-  required: false
-  secret: false
-- default: false
-  description: Incident number to update
-  isArray: false
+- description: Incident number to update
   name: number
-  required: false
-  secret: false
-- default: false
-  description: 'Query to use '
-  isArray: false
+- description: 'Query to use '
   name: query
-  required: false
-  secret: false
 comment: |-
   This script is used to wrap the generic update-record command in ServiceNow.
   You can add fields that you want to update the record with as script arguments or in the
@@ -63,14 +35,12 @@ outputs:
   description: Incident number
   type: string
 script: '-'
-system: false
 tags:
 - servicenow
 - servicenow v2
 timeout: '0'
 type: python
 subtype: python3
-runonce: false
 dependson:
   must:
   - servicenow-update-record
@@ -78,6 +48,6 @@ dependson:
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.11.58677
+dockerimage: demisto/python3:3.10.12.63474
 skipprepare:
 - script-name-incident-to-alert

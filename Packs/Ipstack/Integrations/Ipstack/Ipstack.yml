@@ -10,14 +10,14 @@ configuration:
   name: apikey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - name: credentials
   display: ""
   type: 9
   displaypassword: API Key
-  required: false
   hiddenusername: true
+  required: false
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -31,6 +31,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -89,7 +90,7 @@ script:
       type: String
     description: Queries an IP address in ipstack.
   runonce: false
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Ipstack_Test
 fromversion: 5.0.0

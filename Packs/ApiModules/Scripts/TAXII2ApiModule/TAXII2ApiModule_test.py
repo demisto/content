@@ -6,30 +6,30 @@ from taxii2client import v20, v21
 import pytest
 import json
 
-with open('test_data/stix_envelope_no_indicators.json', 'r') as f:
+with open('test_data/stix_envelope_no_indicators.json') as f:
     STIX_ENVELOPE_NO_IOCS = json.load(f)
 
-with open('test_data/stix_envelope_17-19.json', 'r') as f:
+with open('test_data/stix_envelope_17-19.json') as f:
     STIX_ENVELOPE_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/stix_envelope_complex_20-19.json', 'r') as f:
+with open('test_data/stix_envelope_complex_20-19.json') as f:
     STIX_ENVELOPE_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_17-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_17-19.json') as f:
     CORTEX_17_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_20-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_20-19.json') as f:
     CORTEX_COMPLEX_20_IOCS_19_OBJS = json.load(f)
 
-with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json', 'r') as f:
+with open('test_data/cortex_parsed_indicators_complex_skipped_14-19.json') as f:
     CORTEX_COMPLEX_14_IOCS_19_OBJS = json.load(f)
-with open('test_data/id_to_object_test.json', 'r') as f:
+with open('test_data/id_to_object_test.json') as f:
     id_to_object = json.load(f)
-with open('test_data/parsed_stix_objects.json', 'r') as f:
+with open('test_data/parsed_stix_objects.json') as f:
     parsed_objects = json.load(f)
-with open('test_data/objects_envelopes_v21.json', 'r') as f:
+with open('test_data/objects_envelopes_v21.json') as f:
     envelopes_v21 = json.load(f)
-with open('test_data/objects_envelopes_v20.json', 'r') as f:
+with open('test_data/objects_envelopes_v20.json') as f:
     envelopes_v20 = json.load(f)
 
 
@@ -260,8 +260,8 @@ class TestInitServer:
         )
         mock_client.init_server()
         assert isinstance(mock_client.server, v20.Server)
-        assert mock_auth_header_key in mock_client.server._conn.session.headers[0]
-        assert mock_client.server._conn.session.headers[0].get(mock_auth_header_key) == mock_password
+        assert mock_auth_header_key in mock_client.server._conn.session.headers
+        assert mock_client.server._conn.session.headers.get(mock_auth_header_key) == mock_password
 
 
 class TestInitRoots:
@@ -420,15 +420,15 @@ class TestInitRoots:
         assert mock_client.api_root.url == self.default_api_root_url
 
     has_none = "Unexpected Response."
-    has_version_error = "Unexpected Response. Got Content-Type: ‘application/taxii+json; charset=utf-8; version=2.1' " \
-                        "for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
-                        "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
-                        "Server use ‘from taxii2client.v21 import X'"
+    has_version_error = "Unexpected Response. Got Content-Type: 'application/taxii+json; charset=utf-8; version=2.1' " \
+                        "for Accept: 'application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                        "TAXII 2.0 Server use 'from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                        "Server use 'from taxii2client.v21 import X'"
     has_client_error = "Unexpected Response. 406 Client Error."
-    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: ‘application/taxii+json; charset=utf-8; " \
-                      "version=2.1' for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
-                      "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
-                      "Server use ‘from taxii2client.v21 import X'"
+    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: 'application/taxii+json; charset=utf-8; " \
+                      "version=2.1' for Accept: 'application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                      "TAXII 2.0 Server use 'from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                      "Server use 'from taxii2client.v21 import X'"
 
     @pytest.mark.parametrize('error_msg, should_raise_error',
                              [(has_none, True),
@@ -658,6 +658,10 @@ class TestParsingIndicators:
 
         Then:
          - make sure all the fields are being parsed correctly.
+           1. update_custom_fields = False
+              assert custom fields are not parsed
+           2. update_custom_fields = True
+              assert custom fields are parsed
         """
         autonomous_system_obj = {
             "type": "autonomous-system",
@@ -665,9 +669,27 @@ class TestParsingIndicators:
             "id": "autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74",
             "number": 15139,
             "name": "Slime Industries",
-            "rir": "ARIN"
+            "rir": "ARIN",
+            "extensions": {"extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
         }
 
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'value': 15139,
+                'score': Common.DBotScore.NONE,
+                'rawJSON': autonomous_system_obj,
+                'type': 'ASN',
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'name': 'Slime Industries',
+                    'stixid': 'autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74',
+                    'tags': ["test"],
+                    'trafficlightprotocol': 'GREEN'
+                }
+            }
+        ]
         xsoar_expected_response = [
             {
                 'value': 15139,
@@ -685,17 +707,22 @@ class TestParsingIndicators:
                 }
             }
         ]
-
         assert taxii_2_client.parse_sco_autonomous_system_indicator(autonomous_system_obj) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_sco_autonomous_system_indicator(
+            autonomous_system_obj) == xsoar_expected_response_with_update_custom_fields
 
     @pytest.mark.parametrize(
-        '_object, xsoar_expected_response', [
+        '_object, xsoar_expected_response, xsoar_expected_response_with_update_custom_fields', [
             (
                 {
                     "id": "ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e",  # ipv4-addr object.
                     "spec_version": "2.0",
                     "type": "ipv4-addr",
-                    "value": "1.1.1.1"
+                    "value": "1.1.1.1",
+                    "extensions": {
+                        "extension-definition--1234": {"tags": ["test"],
+                                                       "description": "test"}}
                 },
                 [
                     {
@@ -711,6 +738,21 @@ class TestParsingIndicators:
                             'trafficlightprotocol': 'GREEN'
                         }
                     }
+                ],
+                [
+                    {
+                        'value': '1.1.1.1',
+                        'score': Common.DBotScore.NONE,
+                        'type': 'IP',
+                        'fields': {
+                            'description': 'test',
+                            'firstseenbysource': '',
+                            'modified': '',
+                            'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
+                            'tags': ['test'],
+                            'trafficlightprotocol': 'GREEN'
+                        }
+                    }
                 ]
             ),
             (
@@ -718,7 +760,9 @@ class TestParsingIndicators:
                     "type": "domain-name",  # domain object.
                     "spec_version": "2.1",
                     "id": "domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5",
-                    "value": "example.com"
+                    "value": "example.com",
+                    "extensions": {
+                        "extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
                 },
                 [
                     {
@@ -740,12 +784,34 @@ class TestParsingIndicators:
                         'type': 'Domain',
                         'value': 'example.com'
                     }
+                ],
+                [
+                    {
+                        'fields': {
+                            'description': 'test',
+                            'firstseenbysource': '',
+                            'modified': '',
+                            'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
+                            'tags': ['test'],
+                            'trafficlightprotocol': 'GREEN'
+                        },
+                        'rawJSON': {
+                            'id': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
+                            'spec_version': '2.1',
+                            'type': 'domain-name',
+                            'value': 'example.com'
+                        },
+                        'score': Common.DBotScore.NONE,
+                        'type': 'Domain',
+                        'value': 'example.com'
+                    }
                 ]
             ),
 
         ]
     )
-    def test_parse_general_sco_indicator(self, taxii_2_client, _object: dict, xsoar_expected_response: List[dict]):
+    def test_parse_general_sco_indicator(self, taxii_2_client, _object: dict, xsoar_expected_response: List[dict],
+                                         xsoar_expected_response_with_update_custom_fields: List[dict]):
         """
         Given:
          - general SCO object.
@@ -755,9 +821,16 @@ class TestParsingIndicators:
 
         Then:
          - make sure all the fields are being parsed correctly.
+           1. update_custom_fields = False
+              assert custom fields are not parsed
+           2. update_custom_fields = True
+              assert custom fields are parsed
         """
         xsoar_expected_response[0]['rawJSON'] = _object
         assert taxii_2_client.parse_general_sco_indicator(_object) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        xsoar_expected_response_with_update_custom_fields[0]['rawJSON'] = _object
+        assert taxii_2_client.parse_general_sco_indicator(_object) == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_file_sco_indicator(self, taxii_2_client):
         """
@@ -769,6 +842,10 @@ class TestParsingIndicators:
 
         Then:
          - make sure all the fields are being parsed correctly.
+           1. update_custom_fields = False
+              assert custom fields are not parsed
+           2. update_custom_fields = True
+              assert custom fields are parsed
         """
         file_obj = {
             "type": "file",
@@ -778,7 +855,9 @@ class TestParsingIndicators:
                 "SHA-256": "841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649"
             },
             "name": "quêry.dll",
-            "name_enc": "windows-1252"
+            "name_enc": "windows-1252",
+            "extensions": {
+                "extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
         }
 
         xsoar_expected_response = [
@@ -803,8 +882,32 @@ class TestParsingIndicators:
                 'value': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649'
             }
         ]
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'associatedfilenames': 'quêry.dll',
+                    'description': 'test',
+                    'firstseenbysource': '',
+                    'md5': None,
+                    'modified': '',
+                    'path': None,
+                    'sha1': None,
+                    'sha256': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649',
+                    'size': None,
+                    'stixid': 'file--90bd400b-89a5-51a5-b17d-55bc7719723b',
+                    'tags': ["test"],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': file_obj,
+                'score': Common.DBotScore.NONE,
+                'type': 'File',
+                'value': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649'
+            }
+        ]
 
         assert taxii_2_client.parse_sco_file_indicator(file_obj) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_sco_file_indicator(file_obj) == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_mutex_sco_indicator(self, taxii_2_client):
         """
@@ -816,12 +919,18 @@ class TestParsingIndicators:
 
         Then:
          - make sure all the fields are being parsed correctly.
+           1. update_custom_fields = False
+              assert custom fields are not parsed
+           2. update_custom_fields = True
+              assert custom fields are parsed
         """
         mutex_obj = {
             "type": "mutex",
             "spec_version": "2.1",
             "id": "mutex--eba44954-d4e4-5d3b-814c-2b17dd8de300",
-            "name": "__CLEANSWEEP__"
+            "name": "__CLEANSWEEP__",
+            "extensions": {"extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}}
+
         }
 
         xsoar_expected_response = [
@@ -840,8 +949,26 @@ class TestParsingIndicators:
                 'value': '__CLEANSWEEP__'
             }
         ]
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'stixid': 'mutex--eba44954-d4e4-5d3b-814c-2b17dd8de300',
+                    'tags': ['test'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': mutex_obj,
+                'score': Common.DBotScore.NONE,
+                'type': 'Mutex',
+                'value': '__CLEANSWEEP__'
+            }
+        ]
 
         assert taxii_2_client.parse_sco_mutex_indicator(mutex_obj) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_sco_mutex_indicator(mutex_obj) == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_sco_windows_registry_key_indicator(self, taxii_2_client):
         """
@@ -853,12 +980,17 @@ class TestParsingIndicators:
 
         Then:
          - make sure all the fields are being parsed correctly.
+           1. update_custom_fields = False
+              assert custom fields are not parsed
+           2. update_custom_fields = True
+              assert custom fields are parsed
         """
         registry_object = {
             "type": "windows-registry-key",
             "spec_version": "2.1",
             "id": "windows-registry-key--2ba37ae7-2745-5082-9dfd-9486dad41016",
             "key": "hkey_local_machine\\system\\bar\\foo",
+            "extensions": {"extension-definition--1234": {"CustomFields": {"tags": ["test"], "description": "test"}}},
             "values": [
                 {
                     "name": "Foo",
@@ -903,8 +1035,41 @@ class TestParsingIndicators:
                 'value': "hkey_local_machine\\system\\bar\\foo"
             }
         ]
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'modified_time': None,
+                    'number_of_subkeys': None,
+                    'registryvalue': [
+                        {
+                            'data': 'qwerty',
+                            'data_type': 'REG_SZ',
+                            'name': 'Foo'
+                        },
+                        {
+                            'data': '42',
+                            'data_type': 'REG_DWORD',
+                            'name': 'Bar'
+                        }
+                    ],
+                    'stixid': 'windows-registry-key--2ba37ae7-2745-5082-9dfd-9486dad41016',
+                    'tags': ['test'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': registry_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'Registry Key',
+                'value': "hkey_local_machine\\system\\bar\\foo"
+            }
+        ]
 
         assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_sco_windows_registry_key_indicator(
+            registry_object) == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_vulnerability(self, taxii_2_client):
         """
@@ -918,6 +1083,8 @@ class TestParsingIndicators:
          - Make sure all the fields are being parsed correctly.
         """
         vulnerability_object = {'created': '2021-06-01T00:00:00.000Z',
+                                "extensions": {"extension-definition--1234": {
+                                    "CustomFields": {"tags": ["test", "elevated"], "description": "test"}}},
                                 'created_by_ref': 'identity--ce222222-2a22-222b-2222-222222222222',
                                 'external_references': [{'external_id': 'CVE-1234-5', 'source_name': 'cve'},
                                                         {'external_id': '1', 'source_name': 'other'}],
@@ -943,12 +1110,33 @@ class TestParsingIndicators:
                 'value': 'CVE-1234-5'
             }
         ]
+
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'vulnerability--25222222-2a22-222b-2222-222222222222',
+                    'trafficlightprotocol': 'WHITE'},
+                'rawJSON': vulnerability_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'CVE',
+                'value': 'CVE-1234-5'
+            }
+        ]
+        parsed_response = taxii_2_client.parse_vulnerability(vulnerability_object)
+        response_tags = parsed_response[0]['fields'].pop('tags')
         xsoar_expected_tags = {'CVE-1234-5', 'elevated'}
+        assert parsed_response == xsoar_expected_response
+        assert set(response_tags) == xsoar_expected_tags
+
+        taxii_2_client.update_custom_fields = True
 
         parsed_response = taxii_2_client.parse_vulnerability(vulnerability_object)
         response_tags = parsed_response[0]['fields'].pop('tags')
-
-        assert parsed_response == xsoar_expected_response
+        xsoar_expected_tags = {'CVE-1234-5', 'elevated', 'test'}
+        assert parsed_response == xsoar_expected_response_with_update_custom_fields
         assert set(response_tags) == xsoar_expected_tags
 
     def test_parse_indicator(self, taxii_2_client):
@@ -970,6 +1158,8 @@ class TestParsingIndicators:
                          "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
                          "labels": ["medium"],
                          "indicator_types": ["anomalous-activity"],
+                         "extensions": {
+                             "extension-definition--1234": {"CustomFields": {"tags": ["medium"], "description": "test"}}},
                          "pattern_version": "2.1", "spec_version": "2.1"}
 
         indicator_obj['value'] = 'test.org'
@@ -986,8 +1176,23 @@ class TestParsingIndicators:
                 'value': 'test.org'
             }
         ]
+
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'tags': ['medium'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': indicator_obj,
+                'type': 'Domain',
+                'value': 'test.org'
+            }
+        ]
         taxii_2_client.tlp_color = None
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response_with_update_custom_fields
 
     # Parsing SDO Indicators
 
@@ -1013,6 +1218,8 @@ class TestParsingIndicators:
                            'name': 'Government',
                            'sectors': ['government-national'],
                            'spec_version': '2.1',
+                           "extensions": {"extension-definition--1234": {
+                               "CustomFields": {"tags": ["consent-everyone"], "description": "test"}}},
                            'type': 'identity'}
 
         xsoar_expected_response = [
@@ -1034,7 +1241,28 @@ class TestParsingIndicators:
             }
         ]
 
+        xsoar_expected_response_with_update_custom_fields = [
+            {
+                'fields': {
+                    'description': 'test',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'identityclass': 'organization',
+                    'industrysectors': ['government-national'],
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'identity--f8222222-2a22-222b-2222-222222222222',
+                    'tags': ['consent-everyone'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': identity_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'Identity',
+                'value': 'Government'
+            }
+        ]
+
         assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response
+        taxii_2_client.update_custom_fields = True
+        assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response_with_update_custom_fields
 
     upper_case_country_object = {'administrative_area': 'US-MI',
                                  'country': 'US',
@@ -1136,6 +1364,31 @@ class TestParsingIndicators:
          - Make sure all the fields are being parsed correctly.
         """
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
+
+
+class TestParsingObjects:
+
+    def test_parsing_report_with_relationships(self):
+        """
+        Scenario: Test parsing report envelope for v2.0
+
+        Given:
+        - Envelope with reports.
+
+        When:
+        - load_stix_objects_from_envelope is called.
+
+        Then: - validate the result contained the report with relationships as expected.
+
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+
+        result = mock_client.load_stix_objects_from_envelope(envelopes_v20)
+        reports = [obj for obj in result if obj.get('type') == 'Report']
+        report_with_relationship = [report for report in reports if report.get('relationships')]
+
+        assert len(report_with_relationship) == 1
+        assert len(report_with_relationship[0].get('relationships')) == 2
 
 
 @pytest.mark.parametrize('limit, element_count, return_value',

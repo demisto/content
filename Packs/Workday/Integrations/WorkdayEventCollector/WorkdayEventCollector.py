@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Tuple
+import math
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'Workday'
-PRODUCT = 'Workday'
+PRODUCT = 'Activity'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -33,14 +33,16 @@ class Client(BaseClient):
         :param proxy (bool): specifies if to use XSOAR proxy settings.
         """
 
-    def __init__(self, base_url, token_url, verify, proxy, headers, client_id, client_secret, refresh_token):
+    def __init__(self, base_url, token_url, verify, proxy, headers, client_id, client_secret, refresh_token, max_fetch):
         super().__init__(base_url, verify=verify, proxy=proxy, headers=headers)
         self.client_id = client_id
         self.client_secret = client_secret
         self.refresh_token = refresh_token
         self.token_url = token_url
+        self.max_fetch = max_fetch
+        self.access_token = self.get_access_token()
 
-    def get_access_token(self):
+    def get_access_token(self):  # pragma: no cover
         """
          Getting access token from Workday API.
         """
@@ -55,23 +57,25 @@ class Client(BaseClient):
                                                 auth=(self.client_id, self.client_secret))
         if workday_resp_token:
             return workday_resp_token.get("access_token")
+        return None
 
     def http_request(self,
                      method: str,
                      url_suffix: str = '',
                      params: dict = None,
-                     json_data: dict = None) -> dict:  # pragma: no cover
+                     json_data: dict = None,
+                     retries: int = 0) -> dict:  # pragma: no cover
         """
         Overriding BaseClient http request in order to use the access token.
         """
-        access_token = self.get_access_token()
         headers = self._headers
-        headers['Authorization'] = f"Bearer {access_token}"
+        headers['Authorization'] = f"Bearer {self.access_token}"
         return self._http_request(method=method,
                                   url_suffix=url_suffix,
                                   params=params,
                                   json_data=json_data,
-                                  headers=headers)
+                                  headers=headers,
+                                  retries=retries)
 
     def get_activity_logging_request(self, from_date: str, to_date: str, offset: Optional[int] = 0,
                                      user_activity_entry_count: bool = False, limit: Optional[int] = 1000) -> list:
@@ -86,13 +90,16 @@ class Client(BaseClient):
         Returns:
             activity loggings returned from Workday API.
         """
+        instance_returned = math.ceil(self.max_fetch / 10000)
         params = {"from": from_date,
                   "to": to_date,
                   "limit": limit,
-                  "instancesReturned": 1,
+                  "instancesReturned": instance_returned,
                   "offset": offset,
-                  "returnUserActivityEntryCount": user_activity_entry_count}
-        res = self.http_request(method='GET', url_suffix='/activityLogging', params=params)
+                  "returnUserActivityEntryCount": user_activity_entry_count,
+                  "type": "userActivity"}
+        demisto.debug(f'params sent to Workday API are {str(params)}')
+        res = self.http_request(method='GET', url_suffix='/activityLogging', params=params, retries=3)
         return res.get('data', [])
 
 
@@ -120,78 +127,60 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
         activity_loggings.extend(res)
         offset += len(res)
         logging_to_fetch -= len(res)
-        demisto.debug(f'{logging_to_fetch} loggings left to fetch.')
         if not res:
             break
+        demisto.debug(f'{logging_to_fetch} loggings left to fetch.')
     demisto.debug(f'Found {len(activity_loggings)} activity loggings.')
     return activity_loggings
 
 
-def remove_duplicated_activity_logging(activity_loggings: list, last_run: dict, time_to_check: str):
+def remove_duplications(activity_loggings: list, last_run: dict):
     """
     Removes potential duplicated activity loggings.
 
     Args:
         activity_loggings: activity loggings fetched from Workday.
         last_run: Last run object.
-        time_to_check: last request time from last run or first fetch.
     """
+    demisto.debug('Started removing duplications')
+    last_log_stored = last_run.get('last_log')
+    log_found = False
+    final_count = 0
+    if last_log_stored:
+        for count, log in enumerate(activity_loggings):
+            if log == last_log_stored:
+                log_found = True
+                final_count = count
+                break
+        if log_found:
+            demisto.debug(f"Found duplicated with {last_log_stored}, returning from {final_count}")
+            return activity_loggings[final_count + 1:]
+    demisto.debug("Didn't find duplications, returning everything")
+    return activity_loggings
 
-    last_fetched_loggings_ids = set(last_run.get('last_fetched_loggings_ids', []))
-    demisto.debug(f'Looking for duplicated loggings with requestTime {time_to_check}')
-    for logging in activity_loggings.copy():
-        logging_id = logging.get('taskId')
-        logging_request_time: str = logging.get('requestTime')
-        if datetime.strptime(logging_request_time, DATE_FORMAT) > datetime.strptime(time_to_check, DATE_FORMAT):
-            demisto.debug(f'Found logging with bigger requestTime, setting {time_to_check=}')
-            time_to_check = logging_request_time
-            last_fetched_loggings_ids = {logging_id}
-        else:
-            if logging_id in last_fetched_loggings_ids:
-                activity_loggings.remove(logging)
-            else:
-                last_fetched_loggings_ids.add(logging_id)
-    return activity_loggings, list(last_fetched_loggings_ids)
 
-
-def remove_milliseconds_from_time_of_loggings(activity_loggings: list):
+def remove_milliseconds_from_time_of_logging(activity_logging: dict):
     """
     Workday API receive from_date only without milliseconds, therefor need to be removed.
     Args:
-        activity_loggings: activity loggings
+        activity_logging: activity logging
 
     Returns:
-        The loggings with the string in the correct format.
+        The logging with the string in the correct format.
 
     """
     demisto.debug("Changing timestamp of loggings to match date format.")
     date_format_with_milliseconds = '%Y-%m-%dT%H:%M:%S.%fZ'
-    if activity_loggings:
-        for logging in activity_loggings:
-            request_time_date_obj = datetime.strptime(logging.get('requestTime'), date_format_with_milliseconds)
-            request_time_date_obj.replace(microsecond=0)
-            logging['requestTime'] = datetime.strftime(request_time_date_obj, DATE_FORMAT)
-
-
-def add_time_to_loggings(activity_loggings):
-    """
-    Adds the _time key to the activity loggings.
-    Args:
-        activity_loggings: List[Dict] - list of activity loggings to add the _time key to.
-    Returns:
-        list: The activity loggings with the _time key.
-    """
-    if activity_loggings:
-        for logging in activity_loggings:
-            create_time = arg_to_datetime(arg=logging.get('requestTime'))
-            logging['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+    request_time_date_obj = datetime.strptime(activity_logging.get('requestTime'), date_format_with_milliseconds)   # type: ignore
+    request_time_date_obj.replace(microsecond=0)
+    return datetime.strftime(request_time_date_obj, DATE_FORMAT)
 
 
 ''' COMMAND FUNCTIONS '''
 
 
 def get_activity_logging_command(client: Client, from_date: str, to_date: str, limit: Optional[int],
-                                 offset: Optional[int]) -> Tuple[list, CommandResults]:
+                                 offset: Optional[int]) -> tuple[list, CommandResults]:
     """
 
     Args:
@@ -207,7 +196,6 @@ def get_activity_logging_command(client: Client, from_date: str, to_date: str, l
 
     activity_loggings = client.get_activity_logging_request(to_date=to_date, from_date=from_date, limit=limit,
                                                             offset=offset)
-    remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
     readable_output = tableToMarkdown('Activity Logging List:', activity_loggings,
                                       removeNull=True,
                                       headerTransform=lambda x: string_to_table_header(camel_case_to_underscore(x)))
@@ -236,16 +224,11 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
                                                        from_date=from_date,
                                                        to_date=to_date)
 
-    # setting last run object
-    remove_milliseconds_from_time_of_loggings(activity_loggings=activity_loggings)
-    activity_loggings, last_fetched_loggings_ids = remove_duplicated_activity_logging(
-        activity_loggings=activity_loggings,
-        last_run=last_run,
-        time_to_check=from_date)
+    activity_loggings = remove_duplications(activity_loggings=activity_loggings, last_run=last_run)
     if activity_loggings:
-        last_log_time = activity_loggings[-1].get('requestTime')
-        last_run = {'last_fetch_time': last_log_time,
-                    'last_fetched_loggings_ids': last_fetched_loggings_ids}
+        last_log = activity_loggings[-1]
+        last_log_time = remove_milliseconds_from_time_of_logging(last_log)
+        last_run = {'last_fetch_time': last_log_time, 'last_log': last_log}
 
     return activity_loggings, last_run
 
@@ -304,7 +287,8 @@ def main() -> None:  # pragma: no cover
             headers={
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-            })
+            },
+            max_fetch=max_fetch)
 
         if command == 'test-module':
             return_results(test_module(client))
@@ -318,7 +302,6 @@ def main() -> None:  # pragma: no cover
                                                                       offset=arg_to_number(args.get('offset')))
             return_results(results)
             if should_push_events:
-                add_time_to_loggings(activity_loggings=activity_loggings)
                 send_events_to_xsiam(
                     activity_loggings,
                     vendor=VENDOR,
@@ -330,8 +313,6 @@ def main() -> None:  # pragma: no cover
                                                                      max_fetch=max_fetch,
                                                                      first_fetch=first_fetch,  # type: ignore
                                                                      last_run=last_run)
-
-            add_time_to_loggings(activity_loggings=activity_loggings)
             send_events_to_xsiam(
                 activity_loggings,
                 vendor=VENDOR,

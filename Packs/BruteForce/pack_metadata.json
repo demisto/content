@@ -28,10 +28,6 @@
             "mandatory": false,
             "display_name": "Gmail"
         },
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
         "MailSenderNew": {
             "mandatory": false,
             "display_name": "Mail Sender (New)"

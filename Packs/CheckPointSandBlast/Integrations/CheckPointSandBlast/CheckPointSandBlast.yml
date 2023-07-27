@@ -10,17 +10,17 @@ configuration:
   additionalinfo: https://te.checkpoint.com
 - displaypassword: Authorization - API Key
   name: credentials
-  required: false
   type: 9
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - name: integrationReliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -33,8 +33,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 description: "Uploads files using polling. The service supports Microsoft Office files, as well as PDF, SWF, archives, and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. Downloads files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x."
 display: Check Point Threat Emulation (SandBlast)
 name: CheckPointSandBlast
@@ -81,11 +81,8 @@ script:
       type: Number
   - arguments:
     - description: Name of the file to query (recommend using). Without it, status will be "PARTIALLY_FOUND".
-      isArray: false
       name: file_name
-      required: false
     - description: "File hash to query. Accepted digests are: md5, sha1 and sha256. Only md5 returns FOUND status."
-      isArray: false
       name: file_hash
       required: true
     - auto: PREDEFINED
@@ -98,7 +95,6 @@ script:
       - Anti-Virus
       - Threat Extraction
       - All
-      required: false
     - auto: PREDEFINED
       defaultValue: xml, summary
       description: A comma-separated list of supported report formats. Note - Simultaneous requests for PDF and summary reports is not supported.
@@ -109,16 +105,13 @@ script:
       - xml
       - tar
       - summary
-      required: false
     - auto: PREDEFINED
       defaultValue: pdf
       description: Threat extraction request method.
-      isArray: false
       name: method
       predefined:
       - clean
       - pdf
-      required: false
     - auto: PREDEFINED
       defaultValue: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data
       description: A comma-separated list of fields to be cleaned in the file. Only relevant if method = clean.
@@ -141,10 +134,7 @@ script:
       - Custom Properties
       - Statistic Properties
       - Summary Properties
-      required: false
-    deprecated: false
     description: Use the Query API to have a client application look for either a specific file's analysis report on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis. It is recommended to add file_name.
-    execution: false
     name: sandblast-query
     outputs:
     - contextPath: SandBlast.Query.Status
@@ -272,28 +262,19 @@ script:
       type: String
   - arguments:
     - description: The interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
       defaultValue: '60'
     - description: The timeout in seconds until polling ends.
-      isArray: false
       name: timeout_in_seconds
-      required: false
       defaultValue: '600'
     - description: The ID of the file to upload, which will be taken from the uploaded file to Cortex XSOAR.
-      isArray: false
       name: file_id
       required: true
     - description: Rename the upload file. If empty, the uploaded file will keep its original name.
-      isArray: false
       name: file_name
-      required: false
     - description: 'File hash to query. Accepted digests are: md5, sha1 and sha256. Only md5 returns FOUND status.'
       deprecated: true
-      isArray: false
       name: file_hash
-      required: false
     - auto: PREDEFINED
       defaultValue: All
       description: The features to use on the file.
@@ -304,7 +285,6 @@ script:
       - Anti-Virus
       - Threat Extraction
       - All
-      required: false
     - auto: PREDEFINED
       description: 'The ID of available OS images. An image is an operating system configuration. Inputs must be of same length as image_revisions and will be paired according to position. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".'
       isArray: true
@@ -317,11 +297,9 @@ script:
       - 3ff3ddae-e7fd-4969-818c-d5f1a2be336d
       - 6c453c9b-20f7-471a-956c-3198a868dc92
       - 10b4a9c6-e414-425c-ae8b-fe4dd7b25244
-      required: false
     - description: The revisions of available OS images. An image is an operating system configuration. Inputs must be of same length as image_ids and will be paired according to position.
       isArray: true
       name: image_revisions
-      required: false
     - auto: PREDEFINED
       defaultValue: xml, summary
       description: A comma-separated list of supported report formats. Note - Simultaneous requests for PDF and summary reports is not supported.
@@ -332,16 +310,13 @@ script:
       - xml
       - tar
       - summary
-      required: false
     - auto: PREDEFINED
       defaultValue: pdf
       description: The threat extraction request method.
-      isArray: false
       name: method
       predefined:
       - clean
       - pdf
-      required: false
     - auto: PREDEFINED
       defaultValue: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data
       description: A comma-separated list of fields to be cleaned in the file. Only relevant if method = clean.
@@ -364,10 +339,7 @@ script:
       - Custom Properties
       - Statistic Properties
       - Summary Properties
-      required: false
-    deprecated: false
     description: "Uses the Upload API to have a client application request for Check Point Threat Prevention modules to scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis and then deleted. This command uses polling with query. The stages of polling are 'UPLOAD_SUCCESS', 'PENDING' and ends with 'FOUND' or 'PARTIALLY_FOUND'. Once the command is done polling, it returns analyzed information about the file."
-    execution: false
     name: sandblast-upload
     polling: true
     outputs:
@@ -493,12 +465,9 @@ script:
       type: String
   - arguments:
     - description: The ID of the file to download, taken from "Extractedfiledownloadid" from the "Threat Extraction" results.
-      isArray: false
       name: file_id
       required: true
-    deprecated: false
     description: Uses the Download API to download a scanned file from the ThreatCloud according to the file ID.
-    execution: false
     name: sandblast-download
     outputs:
     - contextPath: File.Size
@@ -531,9 +500,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  - deprecated: false
-    description: Uses the Quota API to have a client application get the current license and quota status of the API key used in the authorization of the other APIs. For cloud services only.
-    execution: false
+  - description: Uses the Quota API to have a client application get the current license and quota status of the API key used in the authorization of the other APIs. For cloud services only.
     name: sandblast-quota
     outputs:
     - contextPath: SandBlast.Quota.RemainQuotaHour
@@ -590,11 +557,7 @@ script:
     - contextPath: SandBlast.Quota.Action
       description: The quota action.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

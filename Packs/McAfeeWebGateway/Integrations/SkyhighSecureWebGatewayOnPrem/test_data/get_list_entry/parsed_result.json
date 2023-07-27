@@ -1,0 +1,16 @@
+{
+    "HumanReadable": "### List entry at position 0\n|ListID|Position|Name|Description|\n|---|---|---|---|\n| com.scur.type.regex.386 | 0 | http*://test.evil/* | this is really evil |\n",
+    "EntryContext": {
+        "SWG.List(val.ID && val.ID == obj.ID)": {
+            "ID": "com.scur.type.regex.386",
+            "ListEntries": [
+                {
+                    "Description": "this is really evil",
+                    "ListID": "com.scur.type.regex.386",
+                    "Name": "http*://test.evil/*",
+                    "Position": "0"
+                }
+            ]
+        }
+    }
+}

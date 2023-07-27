@@ -3,7 +3,6 @@ comment: Deprecated. Comment ingestion simplified and audit log ingestion remove
 commonfields:
   id: ZTAPBuildTimeline
   version: -1
-enabled: false
 deprecated: true
 name: ZTAPBuildTimeline
 script: ''

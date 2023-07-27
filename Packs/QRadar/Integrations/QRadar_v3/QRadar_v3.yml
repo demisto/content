@@ -29,19 +29,18 @@ configuration:
   section: Connect
 - display: Incident Type
   name: incident_type
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: 3 days
   additionalinfo: if no offenses are found within the range of first fetch, will be set to fetch the earliest offense.
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: Fetch With All Events
   display: Fetch mode
-  hidden: false
   name: fetch_mode
   options:
   - Fetch Without Events
@@ -53,41 +52,40 @@ configuration:
 - defaultvalue: 'true'
   display: Retry events fetch
   name: retry_events_fetch
-  required: false
   type: 8
   additionalinfo: "Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5"
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20'
   display: Maximum number of events per incident.
   name: events_limit
   additionalinfo: The maximal amount of events to pull per incident.
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
-  required: false
   type: 0
   additionalinfo: In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value.
   defaultvalue: '20'
   section: Collect
   advanced: true
+  required: false
 - display: Query to fetch offenses.
   name: query
-  required: false
   type: 0
   additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". filtering by status in the query may result in unexpected behavior when changing an incident's status.
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: IPs And Assets
   display: 'Incidents Enrichment'
   name: enrichment
   required: true
   additionalinfo: 'IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses.'
   type: 15
-  hidden: false
   options:
   - IPs
   - IPs And Assets
@@ -97,18 +95,17 @@ configuration:
 - defaultvalue: QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime
   display: 'Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping).'
   name: events_columns
-  required: false
   type: 12
   additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
   defaultvalue: 'No Mirroring'
   display: Mirroring Options
   hidden:
   - marketplacev2
   name: mirror_options
-  required: false
   type: 15
   options:
   - No Mirroring
@@ -116,45 +113,46 @@ configuration:
   - Mirror Offense and Events
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
-  required: false
   type: 8
   hidden:
   - marketplacev2
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
   display: The number of incoming incidents to mirror each time
   name: mirror_limit
-  required: false
   type: 0
   defaultvalue: '100'
   section: Collect
   advanced: true
   hidden:
   - marketplacev2
+  required: false
 - display: Advanced Parameters
   name: adv_params
   type: 12
-  required: false
   additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 script:
   commands:
   - name: qradar-offenses-list
@@ -388,12 +386,8 @@ script:
       description: The new status for the offense. When the status of an offense is set to CLOSED, a valid closing_reason_id must be provided. To hide an offense, use the HIDDEN status. To show a previously hidden offense, use the OPEN status.
     - name: closing_reason_id
       description: The ID of a closing reason. You must provide a valid closing_reason_id when you close an offense. For a full list of closing reason IDs, use the 'qradar-closing-reasons' command.
-    - default: false
-      description: 'The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation.'
-      isArray: false
+    - description: 'The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation.'
       name: closing_reason_name
-      required: false
-      secret: false
     - name: assigned_to
       description: User to assign the offense to.
     - name: fields
@@ -417,10 +411,8 @@ script:
       type: Number
     arguments:
     - name: closing_reason_id
-      required: false
       description: The closing reason ID for which to retrieve its details. Specify closing_reason_id to get details about a specific closing reason.
     - name: include_reserved
-      required: false
       description: If true, reserved closing reasons are included in the response.
       defaultValue: 'false'
       auto: PREDEFINED
@@ -428,7 +420,6 @@ script:
       - 'true'
       - 'false'
     - name: include_deleted
-      required: false
       description: If true, deleted closing reasons are included in the response.
       defaultValue: 'false'
       auto: PREDEFINED
@@ -538,7 +529,6 @@ script:
     description: Retrieves a list of rules.
     arguments:
     - name: rule_id
-      required: false
       description: The rule ID for which to retrieve its details. Specify rule_id to get details about a specific rule.
     - name: rule_type
       auto: PREDEFINED
@@ -591,7 +581,6 @@ script:
     description: Retrieves a list of the rule groups.
     arguments:
     - name: rule_group_id
-      required: false
       description: The rule group ID for which to retrieve its details. Specify rule_group_id to get details about a specific rule group.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
@@ -741,7 +730,6 @@ script:
       type: String
     arguments:
     - name: asset_id
-      required: false
       description: The asset ID for which to retrieve its details. Specify asset_id to get details about a specific asset.
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
@@ -789,10 +777,8 @@ script:
       type: Boolean
     arguments:
     - name: saved_search_id
-      required: false
       description: The saved search ID for which to retrieve its details. Specify saved_search_id to get details about a specific saved search.
     - name: timeout
-      required: false
       defaultValue: 35
       description: Number of seconds until timeout for the specified command.
     - name: range
@@ -824,15 +810,12 @@ script:
       type: String
     arguments:
     - name: offense_id
-      required: false
       type: Number
       description: The ID of the offense to retrieve. Mutually exclusive with query_expression and saved_search_id.
     - name: events_limit
-      required: false
       type: Number
       description: The number of events to return. Mutually exclusive with query_expression and saved_search_id.
     - name: events_columns
-      required: false
       type: String
       description: Comma separated list of columns to return. Mutually exclusive with query_expression and saved_search_id.
     - name: fetch_mode
@@ -840,17 +823,13 @@ script:
       predefined:
       - Fetch With All Events
       - Fetch Correlation Events Only
-      required: false
       description: The mode to use when fetching events. Mutually exclusive with query_expression and saved_search_id.
     - name: start_time
-      required: false
       type: Date
       description: The start time of the search.
     - name: query_expression
-      required: false
       description: The AQL query to execute. Mutually exclusive with all other arguments.
     - name: saved_search_id
-      required: false
       description: Saved search ID to execute. Mutually exclusive with all other arguments. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
   - name: qradar-search-status-get
     description: Retrieves status information for a search, based on the search ID.
@@ -876,7 +855,6 @@ script:
       required: true
       description: The identifier for an Ariel search.
     - name: output_path
-      required: false
       description: Replaces the default context output path for the query result (QRadar.Search.Result). E.g., for output_path=QRadar.Correlations, the result will be under the 'QRadar.Correlations' key in the context data.
     - name: range
       description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
@@ -916,19 +894,14 @@ script:
       type: String
     arguments:
     - name: ref_name
-      required: false
       description: The reference name of the reference set for which to retrieve its details. Specify ref_name to get details about a specific reference set.
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: If set to true will try to convert the data values to ISO-8601 string.
-      isArray: false
       name: date_value
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -989,13 +962,11 @@ script:
       description: Indicates if the time_to_live interval is based on when the data was first seen or last seen.
       auto: PREDEFINED
       defaultValue: UNKNOWN
-      required: false
       predefined:
       - FIRST_SEEN
       - LAST_SEEN
       - UNKNOWN
     - name: time_to_live
-      required: false
       description: "The time to live interval, time range. for example: '1 month' or '5 minutes'"
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-POST.html.'
@@ -1010,7 +981,6 @@ script:
       description: Indicates if the reference set should have its contents purged (true), keeping the reference set structure. If the value is 'false', or not specified the reference set is removed completely.
       defaultValue: 'false'
       auto: PREDEFINED
-      required: false
       predefined:
       - 'true'
       - 'false'
@@ -1056,13 +1026,11 @@ script:
       description: "Comma-separated list of the values to add or update in the reference set. If the values are dates, the supported date formats are: epoch, ISO, and time range (<number> <time unit>', e.g., 12 hours, 7 days.)."
       isArray: true
     - name: source
-      required: false
       description: An indication of where the data originated.
       defaultValue: reference data api
     - name: date_value
       description: True if the specified value  type was date.
       auto: PREDEFINED
-      required: false
       predefined:
       - 'true'
       - 'false'
@@ -1081,7 +1049,6 @@ script:
     - name: date_value
       description: True if the specified value type was date.
       auto: PREDEFINED
-      required: false
       predefined:
       - 'True'
       - 'False'
@@ -1389,19 +1356,11 @@ script:
     arguments:
     - name: field_name
       description: A comma-separated list of names of the exact properties to search for.
-    - default: false
-      defaultValue: '25'
+    - defaultValue: '25'
       description: The maximum number of regex event properties to fetch.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list names of a properties to search for. Values are case insensitive.
-      isArray: false
+    - description: A comma-separated list names of a properties to search for. Values are case insensitive.
       name: like_name
-      required: false
-      secret: false
     - name: range
       description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
@@ -1415,63 +1374,31 @@ script:
   - name: get-mapping-fields
     description: Returns the list of fields for an incident type. This command should be used for debugging purposes.
   - arguments:
-    - default: false
-      description: The offense ID.
-      isArray: false
+    - description: The offense ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
-      isArray: false
+    - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
       required: true
-      secret: false
-    deprecated: false
     description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-    execution: false
     name: get-remote-data
   - arguments:
-    - default: false
-      description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
-      isArray: false
+    - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the list of incidents IDs that were modified since the last update time. Note that this method is for debugging purposes. The get-modified-remote-data command is used as part of the mirroring feature, which is available from version 6.1.
-    execution: false
     name: get-modified-remote-data
 #    Deprecated commands, to support backward compatibility for QRadar v2.
   - arguments:
-    - default: false
-      description: 'Query by which to filter offenses. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
-      isArray: false
+    - description: 'Query by which to filter offenses. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named, are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named, are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html"
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: 'Range of results to return. e.g.: 0-20'
-      isArray: false
+    - description: 'Range of results to return. e.g.: 0-20'
       name: range
-      required: false
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     hidden: true
     description: Gets offenses from QRadar.
-    execution: false
     name: qradar-offenses
     outputs:
     - contextPath: QRadar.Offense.Followup
@@ -1552,31 +1479,15 @@ script:
   - arguments:
     - default: true
       description: Offense ID
-      isArray: false
       name: offense_id
       required: true
-      secret: false
-    - default: false
-      description: 'Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
-      isArray: false
+    - description: 'Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html"
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     description: Gets offense with matching offense ID from qradar.
-    execution: false
     hidden: true
     name: qradar-offense-by-id
     outputs:
@@ -1658,68 +1569,36 @@ script:
   - arguments:
     - default: true
       description: The ID of the offense to update.
-      isArray: false
       name: offense_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set to true to protect the offense.
-      isArray: false
       name: protected
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set to true to set the follow up flag on the offense.
-      isArray: false
       name: follow_up
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The new status for the offense.
-      isArray: false
       name: status
       predefined:
       - OPEN
       - HIDDEN
       - CLOSED
-      required: false
-      secret: false
-    - default: false
-      description: 'The id of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation.'
-      isArray: false
+    - description: 'The id of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation.'
       name: closing_reason_id
-      required: false
-      secret: false
-    - default: false
-      description: 'The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation.'
-      isArray: false
+    - description: 'The name of a closing reason. You must provide a valid closing_reason_name when you close an offense. The default closing_reasons are: (1) False-Positive, Tuned (2) Non-Issues (3) Policy Violation.'
       name: closing_reason_name
-      required: false
-      secret: false
-    - default: false
-      description: A user to assign the offense to.
-      isArray: false
+    - description: A user to assign the offense to.
       name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object  separated by commas. Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
-      isArray: false
+    - description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object  separated by commas. Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Update an offense.
-    execution: false
     hidden: true
     name: qradar-update-offense
     outputs:
@@ -1801,19 +1680,11 @@ script:
   - arguments:
     - default: true
       description: The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html")
-      isArray: false
       name: query_expression
       required: true
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     description: Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
-    execution: false
     name: qradar-searches
     hidden: true
     outputs:
@@ -1826,19 +1697,11 @@ script:
   - arguments:
     - default: true
       description: The search id.
-      isArray: false
       name: search_id
       required: true
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a specific search id and status.
-    execution: false
     hidden: true
     name: qradar-get-search
     outputs:
@@ -1851,31 +1714,15 @@ script:
   - arguments:
     - default: true
       description: The search id.
-      isArray: false
       name: search_id
       required: true
-      secret: false
-    - default: false
-      description: 'Range of results to return. e.g.: 0-20'
-      isArray: false
+    - description: 'Range of results to return. e.g.: 0-20'
       name: range
-      required: false
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: Replaces the default context output path for the query result (QRadar.Search.Result). e.g. for output_path=QRadar.Correlations the result will be under the key "QRadar.Correlations" in the context data.
-      isArray: false
+    - description: Replaces the default context output path for the query result (QRadar.Search.Result). e.g. for output_path=QRadar.Correlations the result will be under the key "QRadar.Correlations" in the context data.
       name: output_path
-      required: false
-      secret: false
-    deprecated: false
     description: Gets search results.
-    execution: false
     hidden: true
     name: qradar-get-search-results
     outputs:
@@ -1883,33 +1730,15 @@ script:
       description: The result of the search.
       type: Unknown
   - arguments:
-    - default: false
-      description: 'Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
-      isArray: false
+    - description: 'Query to filter assets. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--asset_model-assets-GET.html"
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: 'Range of results to return. e.g.: 0-20'
-      isArray: false
+    - description: 'Range of results to return. e.g.: 0-20'
       name: range
-      required: false
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     description: List all assets found in the model.
-    execution: false
     hidden: true
     name: qradar-get-assets
     outputs:
@@ -1943,13 +1772,9 @@ script:
   - arguments:
     - default: true
       description: The ID of the requested asset.
-      isArray: false
       name: asset_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the asset by id.
-    execution: false
     hidden: true
     name: qradar-get-asset-by-id
     outputs:
@@ -2027,49 +1852,27 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: If true, reserved closing reasons are included in the response.
-      isArray: false
       name: include_reserved
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: If true, deleted closing reasons are included in the response.
-      isArray: false
       name: include_deleted
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: 'Query to filter results. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
-      isArray: false
+    - description: 'Query to filter results. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html"
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: 'Range of results to return. e.g.: 0-20.'
-      isArray: false
+    - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-      required: false
-      secret: false
-    deprecated: false
     hidden: true
     description: Get closing reasons.
-    execution: false
     name: qradar-get-closing-reasons
     outputs:
     - contextPath: QRadar.Offense.ClosingReasons.ID
@@ -2081,31 +1884,15 @@ script:
   - arguments:
     - default: true
       description: The offense ID to retrieve the note from.
-      isArray: false
       name: offense_id
       required: true
-      secret: false
-    - default: false
-      description: The note ID.
-      isArray: false
+    - description: The note ID.
       name: note_id
-      required: false
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a note for an offense.
-    execution: false
     hidden: true
     name: qradar-get-note
     outputs:
@@ -2124,31 +1911,16 @@ script:
   - arguments:
     - default: true
       description: The offense ID to add the note to.
-      isArray: false
       name: offense_id
       required: true
-      secret: false
-    - default: false
-      description: The note text.
-      isArray: false
+    - description: The note text.
       name: note_text
       required: true
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html"
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     description: Create a note on an offense.
-    execution: false
     hidden: true
     name: qradar-create-note
     outputs:
@@ -2167,30 +1939,18 @@ script:
   - arguments:
     - default: true
       description: The name of the requestered reference.
-      isArray: false
       name: ref_name
       required: true
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided, will show all table headers).
-      isArray: false
+    - description: Table headers to use the human readable output (if none provided, will show all table headers).
       name: headers
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: If set to true will try to convert the data values to ISO-8601 string.
-      isArray: false
       name: date_value
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: Information about the reference set that had data added or updated. This returns the information set, but not the contained data. This feature is supported from version 8.1 and upward.
-    execution: false
     hidden: true
     name: qradar-get-reference-by-name
     outputs:
@@ -2216,16 +1976,11 @@ script:
       description: Reference set items.
       type: Unknown
   - arguments:
-    - default: false
-      description: Reference name to be created.
-      isArray: false
+    - description: Reference name to be created.
       name: ref_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The element type for the values allowed in the reference set. The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date values need to be represented in milliseconds since the Unix Epoch January 1st 1970.'
-      isArray: false
       name: element_type
       predefined:
       - ALN
@@ -2235,27 +1990,16 @@ script:
       - PORT
       - DATE
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The default value is UNKNOWN.
-      isArray: false
       name: timeout_type
       predefined:
       - FIRST_SEEN
       - LAST_SEEN
       - UNKNOWN
-      required: false
-      secret: false
-    - default: false
-      description: 'The time to live interval, for example: "1 month" or "5 minutes".'
-      isArray: false
+    - description: 'The time to live interval, for example: "1 month" or "5 minutes".'
       name: time_to_live
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new reference set. If the provided name is already in use, this command will fail.
-    execution: false
     hidden: true
     name: qradar-create-reference-set
     outputs:
@@ -2277,49 +2021,30 @@ script:
   - arguments:
     - default: true
       description: The name of reference set to delete.
-      isArray: false
       name: ref_name
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a reference set corresponding to the name provided.
-    execution: false
     hidden: true
     name: qradar-delete-reference-set
   - arguments:
-    - default: false
-      description: The name of the reference set to add or update a value in.
-      isArray: false
+    - description: The name of the reference set to add or update a value in.
       name: ref_name
       required: true
-      secret: false
-    - default: false
-      description: "The value/s to add or update in the reference set. Note: Date values must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st 1970). If 'date_value' is set to 'True', then the argument will be converted from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
+    - description: "The value/s to add or update in the reference set. Note: Date values must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st 1970). If 'date_value' is set to 'True', then the argument will be converted from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
       isArray: true
       name: value
       required: true
-      secret: false
-    - default: false
-      description: An indication of where the data originated. The default value is 'reference data api'.
-      isArray: false
+    - description: An indication of where the data originated. The default value is 'reference data api'.
       name: source
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: "If set to True, will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
-      isArray: false
       name: date_value
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     hidden: true
     description: Add or update a value in a reference set.
-    execution: false
     name: qradar-create-reference-set-value
     outputs:
     - contextPath: QRadar.Reference.Name
@@ -2338,39 +2063,24 @@ script:
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
   - arguments:
-    - default: false
-      description: The name of the reference set to add or update a value in.
-      isArray: false
+    - description: The name of the reference set to add or update a value in.
       name: ref_name
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of values to add or update in the reference set. Date values must be represented in milliseconds since the Unix Epoch January 1st 1970.
+    - description: A comma-separated list of values to add or update in the reference set. Date values must be represented in milliseconds since the Unix Epoch January 1st 1970.
       isArray: true
       name: value
       required: true
-      secret: false
-    - default: false
-      description: An indication of where the data originated. The default value is 'reference data api'.
-      isArray: false
+    - description: An indication of where the data originated. The default value is 'reference data api'.
       name: source
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: "If set to True, will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
-      isArray: false
       name: date_value
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     hidden: true
     description: Adds or updates a value in a reference set.
-    execution: false
     name: qradar-update-reference-set-value
     outputs:
     - contextPath: QRadar.Reference.Name
@@ -2389,33 +2099,21 @@ script:
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
       type: string
   - arguments:
-    - default: false
-      description: The name of the reference set to remove a value from.
-      isArray: false
+    - description: The name of the reference set to remove a value from.
       name: ref_name
       required: true
-      secret: false
-    - default: false
-      description: The value to remove from the reference set.
-      isArray: false
+    - description: The value to remove from the reference set.
       name: value
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: "If set to True will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
-      isArray: false
       name: date_value
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     hidden: true
     description: Deletes a value in a reference set.
-    execution: false
     name: qradar-delete-reference-set-value
     outputs:
     - contextPath: QRadar.Reference.Name
@@ -2434,27 +2132,13 @@ script:
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN'
       type: string
   - arguments:
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: Number of results in return.
-      isArray: false
+    - description: Number of results in return.
       name: range
-      required: false
-      secret: false
-    - default: false
-      description: Query to filter offenses.
-      isArray: false
+    - description: Query to filter offenses.
       name: filter
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve all Domains.
-    execution: false
     hidden: true
     name: qradar-get-domains
     outputs:
@@ -2498,21 +2182,12 @@ script:
       description: ID of the Domain tenant.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the domain.
-      isArray: false
+    - description: ID of the domain.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
-      isArray: false
+    - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
       name: fields
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves Domain information By ID.
-    execution: false
     hidden: true
     name: qradar-get-domain-by-id
     outputs:
@@ -2556,16 +2231,11 @@ script:
       description: ID of the Domain tenant.
       type: Number
   - arguments:
-    - default: false
-      description: The name of the reference set to add or update a value in. To create a new reference set, you need to set the element type.
-      isArray: false
+    - description: The name of the reference set to add or update a value in. To create a new reference set, you need to set the element type.
       name: ref_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The element type for the values permitted in the reference set. Only required when creating a new reference set. The valid values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date values need to be represented in milliseconds since the Unix Epoch January 1st 1970.'
-      isArray: false
       name: element_type
       predefined:
       - ALN
@@ -2574,79 +2244,38 @@ script:
       - NUM
       - PORT
       - DATE
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The timeout_type can be "FIRST_SEEN", "LAST_SEEN", or "UNKNOWN". The default value is UNKNOWN. Only required for creating a new reference set.
-      isArray: false
       name: timeout_type
       predefined:
       - FIRST_SEEN
       - LAST_SEEN
       - UNKNOWN
-      required: false
-      secret: false
-    - default: false
-      description: 'The time to live interval, for example: "1 month" or "5 minutes". Only required when creating a new reference set.'
-      isArray: false
+    - description: 'The time to live interval, for example: "1 month" or "5 minutes". Only required when creating a new reference set.'
       name: time_to_live
-      required: false
-      secret: false
-    - default: false
-      description: The query for getting indicators.
-      isArray: false
+    - description: The query for getting indicators.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '1000'
+    - defaultValue: '1000'
       description: The maximum number of indicators to return. The default value is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page from which to get the indicators.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads indicators from Demisto to QRadar.
-    execution: false
     hidden: true
     name: qradar-upload-indicators
   - arguments:
-    - default: false
-      description: Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
+    - description: Comma separated list. Source IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
       isArray: true
       name: source_ip
-      required: false
-      secret: false
-    - default: false
-      description: 'Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
-      isArray: false
+    - description: 'Query to filter IPs. E.g, filter=`source_ip="192.168.0.1"`. For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-source_addresses-GET.html."
-      isArray: false
+    - description: "If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-source_addresses-GET.html."
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: 'Range of results to return. e.g.: 0-20'
-      isArray: false
+    - description: 'Range of results to return. e.g.: 0-20'
       name: range
-      required: false
-      secret: false
-    deprecated: false
     description: Get Source IPs
-    execution: false
-    hidden: false
     name: qradar-ips-source-get
     outputs:
     - contextPath: QRadar.SourceIP.ID
@@ -2680,34 +2309,16 @@ script:
       description: List of local destination address IDs associated with the source address.
       type: Unknown
   - arguments:
-    - default: false
-      description: Comma separated list. Local destination IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
+    - description: Comma separated list. Local destination IPs to retrieve their data, E.g "192.168.0.1,192.160.0.2".
       isArray: true
       name: local_destination_ip
-      required: false
-      secret: false
-    - default: false
-      description: 'Query to filter IPs. E.g, filter=`local_destination_ip="192.168.0.1"` For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
-      isArray: false
+    - description: 'Query to filter IPs. E.g, filter=`local_destination_ip="192.168.0.1"` For reference please consult: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: "If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-local_destination_addresses-GET.html."
-      isArray: false
+    - description: "If used, will filter all fields except for the ones specified. Use this argument to specify which fields should be returned in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--siem-local_destination_addresses-GET.html."
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: 'Range of results to return. e.g.: 0-20'
-      isArray: false
+    - description: 'Range of results to return. e.g.: 0-20'
       name: range
-      required: false
-      secret: false
-    deprecated: false
     description: Get Source IPs
-    execution: false
-    hidden: false
     name: qradar-ips-local-destination-get
     outputs:
     - contextPath: QRadar.LocalDestinationIP.ID
@@ -2742,15 +2353,12 @@ script:
       type: Unknown
   - arguments:
     - name: offense_id
-      required: false
       type: Number
       description: The ID of the offense to retrieve. Mutually exclusive with query_expression.
     - name: events_limit
-      required: false
       type: Number
       description: The number of events to return. Mutually exclusive with query_expression.
     - name: events_columns
-      required: false
       type: String
       description: Comma separated list of columns to return. Mutually exclusive with query_expression.
     - name: fetch_mode
@@ -2758,26 +2366,20 @@ script:
       predefined:
       - Fetch With All Events
       - Fetch Correlation Events Only
-      required: false
       description: The mode to use when fetching events. Mutually exclusive with query_expression.
     - name: start_time
-      required: false
       type: Date
       description: The start time of the search. Mutually exclusive with query_expression.
     - name: query_expression
-      required: false
       type: String
       description: The AQL query to execute. Mutually exclusive with the other arguments.
     - name: interval_in_seconds
-      required: false
       type: Number
       description: The interval in seconds to use when polling events.
     - name: search_id
-      required: false
       type: String
       description: The search id to query the results.
     - name: retry_if_not_all_fetched
-      required: false
       auto: PREDEFINED
       description: Whenever set to true, the command retries to fetch all events if the number of events fetched is less than `event_count`.
       predefined:
@@ -2785,13 +2387,11 @@ script:
       - 'false'
     - name: polling
       description: Wait for search results.
-      required: false
       auto: PREDEFINED
       default: true
       predefined:
       - 'true'
       - 'false'
-    deprecated: false
     description: Polling command to search for events of a specific offense.
     name: qradar-search-retrieve-events
     polling: true
@@ -2926,16 +2526,12 @@ script:
     description: |
       Executes a deployment.
       Potentially harmful: This API command executes any waiting system deployments in QRadar within the same deployment type and hosts defined.
-  runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
+  dockerimage: demisto/python3:3.10.12.66339
   isremotesyncin: true
   longRunning: true
-  longRunningPort: false
   isFetchSamples: true
   ismappable: true
 fromversion: 5.5.0

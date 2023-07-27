@@ -1,12 +1,12 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import logging
 import time
 
 import urllib3
 
-import demistomock as demisto
 import resilient
-from CommonServerPython import *
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -36,8 +36,8 @@ SERVER, PORT = URL.rsplit(":", 1) if ':' in URL else (URL, '443')
 ORG_NAME = DEMISTO_PARAMS['org']
 USERNAME = DEMISTO_PARAMS.get('credentials', {}).get('identifier')
 PASSWORD = DEMISTO_PARAMS.get('credentials', {}).get('password')
-API_KEY_ID = DEMISTO_PARAMS.get('api_key_id')
-API_KEY_SECRET = DEMISTO_PARAMS.get('api_key_secret')
+API_KEY_ID = DEMISTO_PARAMS.get('credentials_api_key', {}).get('identifier') or DEMISTO_PARAMS.get('api_key_id')
+API_KEY_SECRET = DEMISTO_PARAMS.get('credentials_api_key', {}).get('password') or DEMISTO_PARAMS.get('api_key_secret')
 USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
 FETCH_TIME = DEMISTO_PARAMS.get('fetch_time', '')
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

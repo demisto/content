@@ -1,4 +1,4 @@
-![lumu_logo](Lumu_image.png)
+![lumu_logo](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu/Integrations/Lumu/Lumu_image.png)
 
 ## Cortex - XSOAR and LUMU Integration
 
@@ -6,7 +6,7 @@ SecOps operations, reflect and manage the Lumu Incidents either from XSOAR Corte
 
 #### Diagram
 
-![diagram](../../doc_files/Cortex_Lumu.draw.png)
+![diagram](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/Cortex_Lumu.draw.png)
 
 #### Lumu API Specifications
 
@@ -31,7 +31,7 @@ here the short list of the http endpoint used in the Cortex-Lumu Integration
 
 ##### Marketplace
 
-![marketplace](../../doc_files/LumuLocalMarketPlace.png)
+![marketplace](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu/doc_files/LumuLocalMarketPlace.png)
 
 
 ##### Configure: Set Off the integration
@@ -44,7 +44,7 @@ here the short list of the http endpoint used in the Cortex-Lumu Integration
 Once the Lumu package was downloaded from the Cortex Marketplace, then next the Lumu integration initialization
 
 - from the left panel select the `gear` settings, go to `Integrations` Tab and `Instances`, Sub-tab, search for **Lumu** and add a new instance.
-    ![](../../doc_files/integrationConfig1.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/integrationConfig1.png)
     <br>
 
 - Instance Settings
@@ -69,8 +69,8 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
  -  Submit
     -  Click `Test` button and expect the green successful output.
     -  Submit the setup, click `Save and Exit`
-    ![](../../doc_files/integrationConfig2.png)
-    ![](../../doc_files/integrationConfig3.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/integrationConfig2.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/integrationConfig3.png)
 
 
 ##### Dashboard: Incident list
@@ -78,7 +78,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 - These two are the main windows to list, select and check the Lumu incidents which have been mirrored for the Lumu integration in Cortex
     > Note: Lumu Portal to the left screen and Cortex to the right screen.
 
-    ![](../../doc_files/incidentsDashboardBoth.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentsDashboardBoth.png)
     <br>
 
 
@@ -87,16 +87,16 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
 - Mirroring process run in background and trigger each x time interval the commands which are required to successful sync both security platforms
 
-    - Creation 
+    - Creation
     > Note: Cortex to the left screen and Lumu Portal to the right screen.
 
-    ![](../../doc_files/incidentCreation.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCreation.png)
     <br>
 
-    - Updates 
+    - Updates
     > Note: Cortex to the left screen and Lumu Portal to the right screen.
 
-    ![](../../doc_files/incidentEventUpdate.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentEventUpdate.png)
     <br>
 
 
@@ -108,7 +108,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - hover and click in the comment field to edit, overwrite the new comment and click on the `ok` icon.
     `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentCommentFromCortexToLumu.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCommentFromCortexToLumu.png)
         <br>
 
 -  Comment an incident from Lumu Portal
@@ -116,7 +116,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - click in **Take Actions** button, go to `Comment`, fill in the text box field  and submit the form.
     `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentCommentFromLumuToCortex.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCommentFromLumuToCortex.png)
         <br>
 
 
@@ -128,7 +128,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
     - hover and click in the `comment` field to edit, overwrite the new comment and click on the `ok` icon.
     - hover and click in the `lumu_status` field to edit, overwrite the field typing `mute` or `muted` magic words and click on the `ok` icon.
     `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentMuteFromCortexToLumu.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentMuteFromCortexToLumu.png)
         <br>
 
 -  Mute an incident from Lumu Portal
@@ -136,7 +136,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - click in **Take Actions** button, go to `Mute`, fill in the text box field  and submit the form.
     `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentMuteFromLumuToCortex.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentMuteFromLumuToCortex.png)
         <br>
 
 
@@ -150,7 +150,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
     - hover and click in the `comment` field to edit, overwrite the new comment and click on the `ok` icon.
     - hover and click in the `lumu_status` field to edit, overwrite the field typing `unmute` or `unmuted` magic words and click on the `ok` icon.
     `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentUnmuteFromCortexToLumu.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentUnmuteFromCortexToLumu.png)
         <br>
 
 -  Unmute an incident from Lumu Portal
@@ -158,7 +158,7 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
     - click in **Take Actions** button, go to `Unmute`, fill in the text box field  and submit the form.
     `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentUnmuteFromLumuToCortex.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentUnmuteFromLumuToCortex.png)
         <br>
 
 
@@ -168,25 +168,25 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
 - Closing an incident from Cortex XSOAR
     > Note: Cortex to the left screen and Lumu Portal to the right screen.
-    
+
     - click in **Actions** button, fill in the `Close Reason` and yhe `Close Notes` fields and submit the form.
-        
-        ![inc_close_1](../../doc_files/incidentCloseFromCortex.png)
+
+        ![inc_close_1](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromCortex.png)
         <br>
     - Incident closed in both sides triggered by Cortex side.
         `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentCloseFromCortexToLumu.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromCortexToLumu.png)
         <br>
 
 -  Closing an incident from Lumu Portal
     > Note: Lumu Portal to the left screen and Cortex to the right screen.
 
     - click in **Take Actions** button, go to `Close Incident`, fill in the text box field  and submit the form.
-        ![](../../doc_files/incidentCloseFromLumu.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromLumu.png)
         <br>
     - Incident closed in both sides triggered by Cortex side.
         `wait 1 minute tops until the changes are mirrored`
-        ![](../../doc_files/incidentCloseFromLumuToCortex.png)
+        ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/incidentCloseFromLumuToCortex.png)
         <br>
 
 
@@ -194,28 +194,28 @@ Once the Lumu package was downloaded from the Cortex Marketplace, then next the 
 
 - War Room
     it is a kind a CLI where you can crank manual command and check the entries of the integration.
-    ![](../../doc_files/warRoomCLIHistory.png)
+    ![](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/warRoomCLIHistory.png)
     <br>
 
 - Check the fetch history
     it is a table which print every `fetch-incidents` command execution and show the output data result.
-    ![fetch_history](../../doc_files/fetchHistoryRecords.png)
+    ![fetch_history](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/fetchHistoryRecords.png)
     <br>
 
 - integration-instance.log (ssh)
 
 ```bash
-[root@cortex ~]# tail -f /var/log/demisto/integration-instance.log 
-2023-01-26 22:12:03.6217 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentMuted - 17af99e0-9b70-11ed-980e-915fb2011ca7) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6219 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentUnmuted - 17af99e0-9b70-11ed-980e-915fb2011ca7) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6224 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentMuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6226 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentUnmuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6229 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentMuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6232 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentUnmuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6239 debug (Lumu_instance_15_Lumu_fetch-incidents) There are 1 events queued ready to process their updates (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6242 debug (Lumu_instance_15_Lumu_fetch-incidents) Setting integration context (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6244 debug (Lumu_instance_15_Lumu_fetch-incidents) Updating integration context with version -1. Sync: True (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
-2023-01-26 22:12:03.6312 debug (Lumu_instance_15_Lumu_fetch-incidents) total inc found: 3, count=Counter({'17af99e0-9b70-11ed-980e-915fb2011ca7': 1, '2bc88020-9b2c-11ed-980e-915fb2011ca7': 1, 'f563af00-9bda-11ed-a0c7-dd6f8e69d343': 1}) last_run={} next_run={'last_fetch': '1091141'} (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992) 
+[root@cortex ~]# tail -f /var/log/demisto/integration-instance.log
+2023-01-26 22:12:03.6217 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentMuted - 17af99e0-9b70-11ed-980e-915fb2011ca7) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6219 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentUnmuted - 17af99e0-9b70-11ed-980e-915fb2011ca7) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6224 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentMuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6226 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentUnmuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6229 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentMuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6232 debug (Lumu_instance_15_Lumu_fetch-incidents) Ignoring Message (IncidentUnmuted - f563af00-9bda-11ed-a0c7-dd6f8e69d343) from Cortex to not create a loop between both parties (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6239 debug (Lumu_instance_15_Lumu_fetch-incidents) There are 1 events queued ready to process their updates (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6242 debug (Lumu_instance_15_Lumu_fetch-incidents) Setting integration context (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6244 debug (Lumu_instance_15_Lumu_fetch-incidents) Updating integration context with version -1. Sync: True (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
+2023-01-26 22:12:03.6312 debug (Lumu_instance_15_Lumu_fetch-incidents) total inc found: 3, count=Counter({'17af99e0-9b70-11ed-980e-915fb2011ca7': 1, '2bc88020-9b2c-11ed-980e-915fb2011ca7': 1, 'f563af00-9bda-11ed-a0c7-dd6f8e69d343': 1}) last_run={} next_run={'last_fetch': '1091141'} (source: /builds/GOPATH/src/gitlab.xdr.pan.local/xdr/xsoar/server/services/automation/dockercoderunner.go:992)
 
 ```
 

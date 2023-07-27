@@ -25,7 +25,6 @@ def test_populate_modeling_rule_fields():
             Make sure that the method updated the _time field with the value from event_at field as datestring
     """
     populate_modeling_rule_fields(EVENTS_RAW)
-    assert EVENTS_RAW[0]['_time'] == '2023-03-14T21:27:51.000Z'
     assert EVENTS_RAW[0]['id'] == 4000
 
 

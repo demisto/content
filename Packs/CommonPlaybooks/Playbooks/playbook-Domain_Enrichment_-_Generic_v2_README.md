@@ -13,7 +13,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* VirusTotal - Private API
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -21,7 +21,6 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* vt-private-get-domain-report
 * umbrella-domain-categorization
 * domain
 

@@ -20,340 +20,279 @@ display: 'OctoxLabs'
 name: OctoxLabs
 script:
   commands:
-    - name: octoxlabs-get-adapters
-      deprecated: false
-      description: 'Fetch octoxlabs all adapters'
-      execution: false
-      outputs:
-      - contextPath: OctoxLabs.Adapters.count
-        description: 'Adapters count'
-        type: Number
-      - contextPath: OctoxLabs.Adapters.results.id
-        description: 'Adapter id'
-        type: Number
-      - contextPath: OctoxLabs.Adapters.results.name
-        description: 'Adapter name'
-        type: String
-      - contextPath: OctoxLabs.Adapters.results.slug
-        description: 'Adapter slug'
-        type: String
-      - contextPath: OctoxLabs.Adapters.results.description
-        description: 'Adapter description'
-        type: String
-      - contextPath: OctoxLabs.Adapters.results.groups
-        description: 'List<string> Adapter groups'
-        type: Unknown
-      - contextPath: OctoxLabs.Adapters.results.beta
-        description: 'Adapter is beta?'
-        type: Boolean
-      - contextPath: OctoxLabs.Adapters.results.status
-        description: 'Adapter status'
-        type: Number
-      - contextPath: OctoxLabs.Adapters.results.hr_status
-        description: 'Adapter human readable status'
-        type: String
-    - name: octoxlabs-get-connections
-      deprecated: false
-      description: 'Fetch octoxlabs connections'
-      execution: false
-      arguments:
-        - default: true
-          description: 'Page number'
-          isArray: false
-          name: page
-          required: false
-          secret: false
-      outputs:
-        - contextPath: OctoxLabs.Connections.count
-          description: 'Connections count'
-          type: Number
-        - contextPath: OctoxLabs.Connections.results.id
-          description: 'Connection id'
-          type: Number
-        - contextPath: OctoxLabs.Connections.results.adapter_id
-          description: 'Connection adapter id'
-          type: Number
-        - contextPath: OctoxLabs.Connections.results.adapter_name
-          description: 'Connection adapter name'
-          type: String
-        - contextPath: OctoxLabs.Connections.results.name
-          description: 'Connection name'
-          type: String
-        - contextPath: OctoxLabs.Connections.results.status
-          description: 'Connection status'
-          type: Boolean
-        - contextPath: OctoxLabs.Connections.results.description
-          description: 'Connection description'
-          type: String
-        - contextPath: OctoxLabs.Connections.results.enabled
-          description: 'Connection is enabled?'
-          type: Boolean
-    - name: octoxlabs-get-discoveries
-      deprecated: false
-      description: 'Fetch octoxlabs discoveries'
-      execution: false
-      arguments:
-        - default: true
-          description: 'Page number'
-          isArray: false
-          name: page
-          required: false
-          secret: false
-      outputs:
-        - contextPath: OctoxLabs.Discoveries.count
-          description: 'Total discovery count'
-          type: Number
-        - contextPath: OctoxLabs.Discoveries.results.id
-          description: 'Discovery id'
-          type: Number
-        - contextPath: OctoxLabs.Discoveries.results.start_time
-          description: 'Discovery start time'
-          type: String
-        - contextPath: OctoxLabs.Discoveries.results.end_time
-          description: 'Discovery end time'
-          type: String
-        - contextPath: OctoxLabs.Discoveries.results.status
-          description: 'Discovery status'
-          type: Number
-        - contextPath: OctoxLabs.Discoveries.results.hr_status
-          description: 'Discovery human readable status'
-          type: String
-        - contextPath: OctoxLabs.Discoveries.results.progress
-          description: 'Discovery progress'
-          type: Number
-    - name: octoxlabs-get-last-discovery
-      deprecated: false
-      description: 'Get last success discovery'
-      execution: false
-      outputs:
-        - contextPath: OctoxLabs.Discovery.id
-          description: 'Last discovery id'
-          type: Number
-        - contextPath: OctoxLabs.Discovery.start_time
-          description: 'Last discovery start time'
-          type: String
-        - contextPath: OctoxLabs.Discovery.end_time
-          description: 'Last discovery end time'
-          type: String
-        - contextPath: OctoxLabs.Discovery.status
-          description: 'Last discovery status'
-          type: Number
-        - contextPath: OctoxLabs.Discovery.hr_status
-          description: 'Last discovery human readable status'
-          type: String
-        - contextPath: OctoxLabs.Discovery.progress
-          description: 'Last discovery progress'
-          type: Number
-    - name: octoxlabs-search-devices
-      deprecated: false
-      description: 'Search in your devices'
-      execution: false
-      arguments:
-        - default: null
-          description: 'Query'
-          isArray: false
-          name: query
-          required: false
-          secret: false
-        - default: null
-          description: 'Fields'
-          isArray: true
-          name: fields
-          required: false
-          secret: false
-        - default: null
-          description: 'Page'
-          isArray: false
-          name: page
-          required: false
-          secret: false
-        - default: null
-          description: 'Size'
-          isArray: false
-          name: size
-          required: false
-          secret: false
-        - default: null
-          description: 'Specific Discovery Id'
-          isArray: false
-          name: discovery_id
-          required: false
-          secret: false
-      outputs:
-        - contextPath: OctoxLabs.Devices.count
-          description: 'Total devices count'
-          type: Number
-        - contextPath: OctoxLabs.Devices.results
-          description: 'List<Dict> Device information'
-          type: Unknown
-    - name: octoxlabs-get-device
-      deprecated: false
-      description: 'Fetch your device'
-      execution: false
-      arguments:
-        - default: false
-          required: true
-          isArray: false
-          name: hostname
-          description: 'Your device hostname'
-          secret: false
-        - default: false
-          required: false
-          isArray: false
-          name: discovery_id
-          description: 'Your device at specific discovery'
-          secret: false
-      outputs:
-        - contextPath: OctoxLabs.Device
-          description: '<Dict> Octoxlabs Device'
-          type: Unknown
-    - name: octoxlabs-get-queries
-      deprecated: false
-      description: 'Fetch your queries'
-      execution: false
-      arguments:
-        - default: null
-          required: false
-          isArray: false
-          name: page
-          description: 'Query list page.'
-          secret: false
-        - default: null
-          required: false
-          isArray: false
-          name: search
-          description: 'Search text.'
-          secret: false
-        - default: null
-          required: false
-          isArray: false
-          name: size
-          description: 'Query list size.'
-          secret: false
-      outputs:
-        - contextPath: OctoxLabs.Queries.count
-          description: 'Queries count'
-          type: Number
-        - contextPath: OctoxLabs.Queries.results.id
-          description: 'Query id'
-          type: Number
-        - contextPath: OctoxLabs.Queries.results.name
-          description: 'Query name'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.text
-          description: 'Query text'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.tags
-          description: 'List<str> Query tags'
-          type: Unknown
-        - contextPath: OctoxLabs.Queries.results.count
-          description: 'Query device count'
-          type: Number
-        - contextPath: OctoxLabs.Queries.results.is_public
-          description: 'Query is public?'
-          type: Boolean
-        - contextPath: OctoxLabs.Queries.results.created_at
-          description: 'Query created at'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.updated_at
-          description: 'Query updated at'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.username
-          description: 'Query creator'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.is_temporary
-          description: "Query is temporary"
-          type: Boolean
-    - name: octoxlabs-get-query-by-id
-      deprecated: false
-      description: 'Fetch your queries by id'
-      execution: false
-      arguments:
-        - default: false
-          required: true
-          isArray: false
-          name: query_id
-          description: 'Query id.'
-          secret: false
-      outputs:
-        - contextPath: OctoxLabs.Queries.results.id
-          description: 'Query id'
-          type: Number
-        - contextPath: OctoxLabs.Queries.results.name
-          description: 'Query name'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.text
-          description: 'Query text'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.tags
-          description: 'List<str> Query tags'
-          type: Unknown
-        - contextPath: OctoxLabs.Queries.results.count
-          description: 'Query device count'
-          type: Number
-        - contextPath: OctoxLabs.Queries.results.is_public
-          description: 'Query is public?'
-          type: Boolean
-        - contextPath: OctoxLabs.Queries.results.created_at
-          description: 'Query created at'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.updated_at
-          description: 'Query updated at'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.username
-          description: 'Query creator'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.is_temporary
-          description: "Query is temporary"
-          type: Boolean
-    - name: octoxlabs-get-query-by-name
-      deprecated: false
-      description: 'Fetch your queries by id'
-      execution: false
-      arguments:
-        - default: false
-          required: true
-          isArray: false
-          name: query_name
-          description: 'Query name.'
-          secret: false
-      outputs:
-        - contextPath: OctoxLabs.Queries.results.id
-          description: 'Query id'
-          type: Number
-        - contextPath: OctoxLabs.Queries.results.name
-          description: 'Query name'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.text
-          description: 'Query text'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.tags
-          description: 'List<str> Query tags'
-          type: Unknown
-        - contextPath: OctoxLabs.Queries.results.count
-          description: 'Query device count'
-          type: Number
-        - contextPath: OctoxLabs.Queries.results.is_public
-          description: 'Query is public?'
-          type: Boolean
-        - contextPath: OctoxLabs.Queries.results.created_at
-          description: 'Query created at'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.updated_at
-          description: 'Query updated at'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.username
-          description: 'Query creator'
-          type: String
-        - contextPath: OctoxLabs.Queries.results.is_temporary
-          description: "Query is temporary"
-          type: Boolean
-  isfetch: false
+  - name: octoxlabs-get-adapters
+    description: 'Fetch octoxlabs all adapters'
+    outputs:
+    - contextPath: OctoxLabs.Adapters.count
+      description: 'Adapters count'
+      type: Number
+    - contextPath: OctoxLabs.Adapters.results.id
+      description: 'Adapter id'
+      type: Number
+    - contextPath: OctoxLabs.Adapters.results.name
+      description: 'Adapter name'
+      type: String
+    - contextPath: OctoxLabs.Adapters.results.slug
+      description: 'Adapter slug'
+      type: String
+    - contextPath: OctoxLabs.Adapters.results.description
+      description: 'Adapter description'
+      type: String
+    - contextPath: OctoxLabs.Adapters.results.groups
+      description: 'List<string> Adapter groups'
+      type: Unknown
+    - contextPath: OctoxLabs.Adapters.results.beta
+      description: 'Adapter is beta?'
+      type: Boolean
+    - contextPath: OctoxLabs.Adapters.results.status
+      description: 'Adapter status'
+      type: Number
+    - contextPath: OctoxLabs.Adapters.results.hr_status
+      description: 'Adapter human readable status'
+      type: String
+  - name: octoxlabs-get-connections
+    description: 'Fetch octoxlabs connections'
+    arguments:
+    - default: true
+      description: 'Page number'
+      name: page
+    outputs:
+    - contextPath: OctoxLabs.Connections.count
+      description: 'Connections count'
+      type: Number
+    - contextPath: OctoxLabs.Connections.results.id
+      description: 'Connection id'
+      type: Number
+    - contextPath: OctoxLabs.Connections.results.adapter_id
+      description: 'Connection adapter id'
+      type: Number
+    - contextPath: OctoxLabs.Connections.results.adapter_name
+      description: 'Connection adapter name'
+      type: String
+    - contextPath: OctoxLabs.Connections.results.name
+      description: 'Connection name'
+      type: String
+    - contextPath: OctoxLabs.Connections.results.status
+      description: 'Connection status'
+      type: Boolean
+    - contextPath: OctoxLabs.Connections.results.description
+      description: 'Connection description'
+      type: String
+    - contextPath: OctoxLabs.Connections.results.enabled
+      description: 'Connection is enabled?'
+      type: Boolean
+  - name: octoxlabs-get-discoveries
+    description: 'Fetch octoxlabs discoveries'
+    arguments:
+    - default: true
+      description: 'Page number'
+      name: page
+    outputs:
+    - contextPath: OctoxLabs.Discoveries.count
+      description: 'Total discovery count'
+      type: Number
+    - contextPath: OctoxLabs.Discoveries.results.id
+      description: 'Discovery id'
+      type: Number
+    - contextPath: OctoxLabs.Discoveries.results.start_time
+      description: 'Discovery start time'
+      type: String
+    - contextPath: OctoxLabs.Discoveries.results.end_time
+      description: 'Discovery end time'
+      type: String
+    - contextPath: OctoxLabs.Discoveries.results.status
+      description: 'Discovery status'
+      type: Number
+    - contextPath: OctoxLabs.Discoveries.results.hr_status
+      description: 'Discovery human readable status'
+      type: String
+    - contextPath: OctoxLabs.Discoveries.results.progress
+      description: 'Discovery progress'
+      type: Number
+  - name: octoxlabs-get-last-discovery
+    description: 'Get last success discovery'
+    outputs:
+    - contextPath: OctoxLabs.Discovery.id
+      description: 'Last discovery id'
+      type: Number
+    - contextPath: OctoxLabs.Discovery.start_time
+      description: 'Last discovery start time'
+      type: String
+    - contextPath: OctoxLabs.Discovery.end_time
+      description: 'Last discovery end time'
+      type: String
+    - contextPath: OctoxLabs.Discovery.status
+      description: 'Last discovery status'
+      type: Number
+    - contextPath: OctoxLabs.Discovery.hr_status
+      description: 'Last discovery human readable status'
+      type: String
+    - contextPath: OctoxLabs.Discovery.progress
+      description: 'Last discovery progress'
+      type: Number
+  - name: octoxlabs-search-devices
+    description: 'Search in your devices'
+    arguments:
+    - default:
+      description: 'Query'
+      name: query
+    - default:
+      description: 'Fields'
+      isArray: true
+      name: fields
+    - default:
+      description: 'Page'
+      name: page
+    - default:
+      description: 'Size'
+      name: size
+    - default:
+      description: 'Specific Discovery Id'
+      name: discovery_id
+    outputs:
+    - contextPath: OctoxLabs.Devices.count
+      description: 'Total devices count'
+      type: Number
+    - contextPath: OctoxLabs.Devices.results
+      description: 'List<Dict> Device information'
+      type: Unknown
+  - name: octoxlabs-get-device
+    description: 'Fetch your device'
+    arguments:
+    - required: true
+      name: hostname
+      description: 'Your device hostname'
+    - name: discovery_id
+      description: 'Your device at specific discovery'
+    outputs:
+    - contextPath: OctoxLabs.Device
+      description: '<Dict> Octoxlabs Device'
+      type: Unknown
+  - name: octoxlabs-get-queries
+    description: 'Fetch your queries'
+    arguments:
+    - default:
+      name: page
+      description: 'Query list page.'
+    - default:
+      name: search
+      description: 'Search text.'
+    - default:
+      name: size
+      description: 'Query list size.'
+    outputs:
+    - contextPath: OctoxLabs.Queries.count
+      description: 'Queries count'
+      type: Number
+    - contextPath: OctoxLabs.Queries.results.id
+      description: 'Query id'
+      type: Number
+    - contextPath: OctoxLabs.Queries.results.name
+      description: 'Query name'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.text
+      description: 'Query text'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.tags
+      description: 'List<str> Query tags'
+      type: Unknown
+    - contextPath: OctoxLabs.Queries.results.count
+      description: 'Query device count'
+      type: Number
+    - contextPath: OctoxLabs.Queries.results.is_public
+      description: 'Query is public?'
+      type: Boolean
+    - contextPath: OctoxLabs.Queries.results.created_at
+      description: 'Query created at'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.updated_at
+      description: 'Query updated at'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.username
+      description: 'Query creator'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.is_temporary
+      description: "Query is temporary"
+      type: Boolean
+  - name: octoxlabs-get-query-by-id
+    description: 'Fetch your queries by id'
+    arguments:
+    - required: true
+      name: query_id
+      description: 'Query id.'
+    outputs:
+    - contextPath: OctoxLabs.Queries.results.id
+      description: 'Query id'
+      type: Number
+    - contextPath: OctoxLabs.Queries.results.name
+      description: 'Query name'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.text
+      description: 'Query text'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.tags
+      description: 'List<str> Query tags'
+      type: Unknown
+    - contextPath: OctoxLabs.Queries.results.count
+      description: 'Query device count'
+      type: Number
+    - contextPath: OctoxLabs.Queries.results.is_public
+      description: 'Query is public?'
+      type: Boolean
+    - contextPath: OctoxLabs.Queries.results.created_at
+      description: 'Query created at'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.updated_at
+      description: 'Query updated at'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.username
+      description: 'Query creator'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.is_temporary
+      description: "Query is temporary"
+      type: Boolean
+  - name: octoxlabs-get-query-by-name
+    description: 'Fetch your queries by id'
+    arguments:
+    - required: true
+      name: query_name
+      description: 'Query name.'
+    outputs:
+    - contextPath: OctoxLabs.Queries.results.id
+      description: 'Query id'
+      type: Number
+    - contextPath: OctoxLabs.Queries.results.name
+      description: 'Query name'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.text
+      description: 'Query text'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.tags
+      description: 'List<str> Query tags'
+      type: Unknown
+    - contextPath: OctoxLabs.Queries.results.count
+      description: 'Query device count'
+      type: Number
+    - contextPath: OctoxLabs.Queries.results.is_public
+      description: 'Query is public?'
+      type: Boolean
+    - contextPath: OctoxLabs.Queries.results.created_at
+      description: 'Query created at'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.updated_at
+      description: 'Query updated at'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.username
+      description: 'Query creator'
+      type: String
+    - contextPath: OctoxLabs.Queries.results.is_temporary
+      description: "Query is temporary"
+      type: Boolean
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/octoxlabs:1.0.0.58818
+  dockerimage: demisto/octoxlabs:1.0.0.65919
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

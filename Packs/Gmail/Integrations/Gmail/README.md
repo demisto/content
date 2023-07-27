@@ -20,7 +20,6 @@ You need to do the following in Google before configuring your integration insta
     2.  Click **CREATE**.
 4.  In the **Service accounts** section, click **+ CREATE SERVICE ACCOUNT**.    
 
-
     ![gmail_section1_step4](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step4.png)
 5.  In the **Create service account** dialog, type a name for the service account, add a description, and then click **CREATE AND CONTINUE**.  
  
@@ -28,8 +27,7 @@ You need to do the following in Google before configuring your integration insta
 6.  In the **Grant this service account access to project** section,click **Continue**.
 7.  In the **Grant users access to this service account** section, click **DONE**.  
 8.  In the **Actions** column for the newly created service account, click the verticle elipses, then click **Manage keys**.  
-  
-  
+    
     ![gmail_section1_step8](https://raw.githubusercontent.com/demisto/content-docs/c8ff74615d254fcb4f4f0caf3d2a00da156b8b04/docs/doc_imgs/integrations/gmail_section1_step8.png)   
 9. Click the **ADD KEY** dropdown, and select **Create new key**.
 10. Select Key type **JSON** and click **CREATE**.  
@@ -767,7 +765,7 @@ Searches for Gmail records for a specific Google user.
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
 | max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved, separated by commas. For more information, see <https://developers.google.com/gdata/docs/2.0/basics#PartialResponse>. | Optional | 
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
 | labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
 | page-token | Page token to retrieve a specific page of results in the list. | Optional | 
 | include-spam-trash | Include messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 
@@ -1353,7 +1351,7 @@ Inspecting these messages should allow you to determine what percent the search 
 | --- | --- | --- |
 | query | Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en". | Optional | 
 | max-results | The maximum number of results to return. Default is 100. Maximum is 500. Can be 1 to 500, inclusive. Default is 100. | Optional | 
-| fields | Enables partial responses to be retrieved in a comma-separated list. For more information, see <https://developers.google.com/gdata/docs/2.0/basics#PartialResponse>. | Optional | 
+| fields | Enables partial responses to be retrieved, separated by commas. Valid fields are only from the following list: Type, Mailbox, ThreadId, Labels, Headers, Attachments, RawData, Format, Subject, From, To, Body, Cc, Bcc, Date, Html, Attachment Names. | Optional | 
 | labels-ids | Returns messages with labels that match all of the specified label IDs in a comma-separated list. | Optional | 
 | page-token | Page token to retrieve a specific page of results in the list. | Optional | 
 | include-spam-trash | Includes messages from SPAM and TRASH in the results. (Default: false). Possible values are: False, True. Default is False. | Optional | 

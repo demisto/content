@@ -1,8 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import tempfile
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 
 import re
 
@@ -37,6 +36,7 @@ EDL_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, csv, 
 EDL_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the following: string,' \
                             ' applcontrol, dimension, category, ip, mediatype, number, regex'
 EDL_NO_URLS_IN_PROXYSG_FORMAT = 'ProxySG format only outputs URLs - no URLs found in the current query'
+MAX_LIST_SIZE_WITH_URL_QUERY = 100000
 
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: str = ''
@@ -474,20 +474,24 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
     Returns:
         a dict of the formatted indicators by category.
     """
-    if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
-        stripped_indicator = url_handler(indicator_value, True, request_args.url_port_stripping,
-                                         request_args.url_truncate)
+    if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') in ['IP', 'URL', 'Domain', 'DomainGlob']:
+        stripped_indicator = url_handler(indicator_value, request_args.url_protocol_stripping,
+                                         request_args.url_port_stripping, request_args.url_truncate)
         indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')
         # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
                 (indicator_proxysg_category in request_args.category_attribute or len(request_args.category_attribute) == 0):
-            proxysg_category = indicator_proxysg_category
+            # handle indicators in multiple categories
+            if isinstance(indicator_proxysg_category, list):
+                for category in indicator_proxysg_category:
+                    files_by_category = add_indicator_to_category(stripped_indicator, category, files_by_category)
+            else:
+                files_by_category = add_indicator_to_category(stripped_indicator, indicator_proxysg_category, files_by_category)
         else:
             # if ProxySG Category is not set or does not exist in the category_attribute list
-            proxysg_category = request_args.category_default
+            files_by_category = add_indicator_to_category(stripped_indicator, request_args.category_default, files_by_category)
 
-        files_by_category = add_indicator_to_category(stripped_indicator, proxysg_category, files_by_category)
     return files_by_category
 
 
@@ -1003,7 +1007,14 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
+        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration."
+                     "This parameter is deprecated, make sure to adjust your queries accordingly.")
         fields_to_present = 'use_legacy_query'
+
+    if query and request_args.get("q"):
+        demisto.debug("Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
+                      "For more information, review the documentation.")
+        limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
 
     return RequestArguments(query,
                             out_format,
@@ -1086,6 +1097,8 @@ def update_edl_command(args: Dict, params: Dict):
     no_wildcard_tld = argToBoolean(params.get('no_wildcard_tld', False))
 
     if params.get('use_legacy_query'):
+        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration."
+                     "This parameter is deprecated, make sure to adjust your queries accordingly.")
         # workaround for "msgpack: invalid code" error
         fields_to_present = 'use_legacy_query'
 
@@ -1110,7 +1123,17 @@ def update_edl_command(args: Dict, params: Dict):
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
-    hr = 'EDL will be updated the next time you access it'
+    hr = 'EDL will be updated the next time you access it.'
+
+    if not query:
+        warning = "\n**Warning**: Updating EDL, while not specifying a query, may load unwanted indicators."
+
+        if (param_query := params.get("query")):
+            warning += f" Hint: use {param_query} to update indicators using the configured integration instance parameter."
+
+        hr += warning
+        demisto.info(warning)
+
     return hr, {}, {}
 
 
@@ -1135,6 +1158,8 @@ def initialize_edl_context(params: dict):
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
+        demisto.info("Note: You are using a legacy query, it may have an impact on the performance of the integration."
+                     "This parameter is getting deprecated, make sure to adjust your queries accordingly.")
         fields_to_present = 'use_legacy_query'
     offset = 0
     request_args = RequestArguments(query,

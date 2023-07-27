@@ -2,13 +2,12 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: FeedURLhaus
   version: -1
-deprecated: false
 configuration:
 - name: feedTags
   display: Tags
-  required: false
   type: 0
   additionalinfo: Supports CSV values.
+  required: false
 - display: ''
   name: feedExpirationPolicy
   options:
@@ -16,31 +15,30 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - display: Indicator Reputation
   type: 18
-  required: false
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   defaultvalue: 'Bad'
   additionalinfo: Indicators from this integration instance will be marked with this reputation
   name: feedReputation
+  required: false
 - name: tlp_color
   display: Traffic Light Protocol Color
-  required: false
   defaultvalue: WHITE
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
+  required: false
 - name: feed
   defaultvalue: 'true'
   display: Fetch indicators
@@ -66,23 +64,21 @@ configuration:
 - name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
-  required: false
   defaultvalue: '60'
+  required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Fetch url indicators for URLhaus
 display: URLhaus Feed
 name: FeedURLhaus
@@ -90,16 +86,12 @@ script:
   commands:
   - name: urlhaus-get-indicators
     description: Retrieves a limited number of indicators.
-    deprecated: false
     arguments:
-      - name: limit
-        description: Limit of the api request.
+    - name: limit
+      description: Limit of the api request.
     outputs: []
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3

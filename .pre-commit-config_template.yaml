@@ -1,0 +1,260 @@
+# This is a template, used and modified by the demisto-sdk pre-commit command.
+
+exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|.circleci/|docs
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: check-json
+  - id: check-yaml
+  - id: check-ast
+  - id: check-merge-conflict
+  - id: debug-statements
+    language_version: python3
+  - id: name-tests-test
+    files: .+_test.py$
+
+- repo: https://github.com/python-poetry/poetry
+  rev: "1.5.1"
+  hooks:
+  - id: poetry-check
+  - id: poetry-lock
+    args: [--check]
+    files: ^pyproject.toml$
+  - id: poetry-export
+    args: [--with, dev, --without-hashes, "-o", "requirements.txt"]
+
+- repo: https://github.com/hadialqattan/pycln
+  rev: v2.1.2
+  hooks:
+  - id: pycln
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: "v0.0.272"
+  hooks:
+  - id: ruff
+
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: "v2.0.1"
+  hooks:
+  - id: autopep8
+- repo: local
+  hooks:
+  - id: is-circle-changed
+    name: is-circle-changed
+    description: Checks if circle files are changed, and checkout to current if it is.
+    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" true
+    language: script
+    pass_filenames: false
+
+  - id: is-gitlab-changed
+    name: is-gitlab-changed
+    description: Checks if gitlab files are changed, and checkout to current if it is.
+    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" true
+    language: script
+    pass_filenames: false
+
+- repo: https://github.com/demisto/demisto-sdk
+  rev: ""
+  hooks:
+  - id: update-additional-dependencies
+    args: [--pre_commit_config, .pre-commit-config_template.yaml]
+
+          # enable with --test
+  - id: run-unit-tests
+
+  - id: format
+          # update docker image to the latest version, assume no
+    args: ["-ud", "-n", "--no-validate", "-g"]
+
+  - id: validate
+    args: ["-g", "--skip-pack-dependencies"]
+
+  - id: secrets
+    args: ["--ignore-entropy"]
+
+  - id: no-implicit-optional
+      # remove this argument when this hook is ready to use
+    skip: true
+
+- repo: https://github.com/sourcery-ai/sourcery
+  rev: "v1.6.0"
+  hooks:
+  - id: sourcery
+    args: [--no-summary, --fix, --diff, "git diff HEAD"]
+
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v0.982
+  hooks:
+  - id: mypy
+    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition, --python-version=3.10]
+    exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests"
+
+    additional_dependencies:
+    - astor==0.8.1 ; python_version >= "3.8" and python_version < "3.11"
+    - astroid==2.9.3 ; python_version >= "3.8" and python_version < "3.11"
+    - attrs==23.1.0 ; python_version >= "3.8" and python_version < "3.11"
+    - autopep8==1.6.0 ; python_version >= "3.8" and python_version < "3.11"
+    - backports-zoneinfo==0.2.1 ; python_version >= "3.8" and python_version < "3.9"
+    - bandit==1.7.5 ; python_version >= "3.8" and python_version < "3.11"
+    - bcrypt==4.0.1 ; python_version >= "3.8" and python_version < "3.11"
+    - beautifulsoup4==4.12.2 ; python_version >= "3.8" and python_version < "3.11"
+    - bracex==2.3.post1 ; python_version >= "3.8" and python_version < "3.11"
+    - cachetools==5.3.1 ; python_version >= "3.8" and python_version < "3.11"
+    - certifi==2023.5.7 ; python_version >= "3.8" and python_version < "3.11"
+    - cffi==1.15.1 ; python_version >= "3.8" and python_version < "3.11"
+    - cfgv==3.3.1 ; python_version >= "3.8" and python_version < "3.11"
+    - chardet==5.1.0 ; python_version >= "3.8" and python_version < "3.11"
+    - charset-normalizer==3.1.0 ; python_version >= "3.8" and python_version < "3.11"
+    - click==8.1.3 ; python_version >= "3.8" and python_version < "3.11"
+    - colorama==0.4.6 ; python_version >= "3.8" and python_version < "3.11" and (platform_system == "Windows" or sys_platform == "win32")
+    - coloredlogs==15.0.1 ; python_version >= "3.8" and python_version < "3.11"
+    - commonmark==0.9.1 ; python_version >= "3.8" and python_version < "3.11"
+    - configargparse==1.5.5 ; python_version >= "3.8" and python_version < "3.11"
+    - configparser==5.3.0 ; python_version >= "3.8" and python_version < "3.11"
+    - coverage==7.2.7 ; python_version >= "3.8" and python_version < "3.11"
+    - cryptography==36.0.2 ; python_version >= "3.8" and python_version < "3.11"
+    - dateparser==1.1.8 ; python_version >= "3.8" and python_version < "3.11"
+    - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
+    - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-py==3.2.10 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-sdk==1.17.2 ; python_version >= "3.8" and python_version < "3.11"
+    - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
+    - dictor==0.1.11 ; python_version >= "3.8" and python_version < "3.11"
+    - distlib==0.3.6 ; python_version >= "3.8" and python_version < "3.11"
+    - docker==5.0.3 ; python_version >= "3.8" and python_version < "3.11"
+    - docopt==0.6.2 ; python_version >= "3.8" and python_version < "3.11"
+    - exceptiongroup==1.1.2 ; python_version >= "3.8" and python_version < "3.11"
+    - filelock==3.12.2 ; python_version >= "3.8" and python_version < "3.11"
+    - flatten-dict==0.4.2 ; python_version >= "3.8" and python_version < "3.11"
+    - freezegun==1.2.2 ; python_version >= "3.8" and python_version < "3.11"
+    - future==0.18.3 ; python_version >= "3.8" and python_version < "3.11"
+    - gitdb==4.0.10 ; python_version >= "3.8" and python_version < "3.11"
+    - gitpython==3.1.30 ; python_version >= "3.8" and python_version < "3.11"
+    - giturlparse==0.10.0 ; python_version >= "3.8" and python_version < "3.11"
+    - google-api-core==2.11.1 ; python_version >= "3.8" and python_version < "3.11"
+    - google-api-core[grpc]==2.11.1 ; python_version >= "3.8" and python_version < "3.11"
+    - google-auth==2.21.0 ; python_version >= "3.8" and python_version < "3.11"
+    - google-cloud-compute==1.11.0 ; python_version >= "3.8" and python_version < "3.11"
+    - google-cloud-core==2.3.2 ; python_version >= "3.8" and python_version < "3.11"
+    - google-cloud-storage==2.10.0 ; python_version >= "3.8" and python_version < "3.11"
+    - google-crc32c==1.5.0 ; python_version >= "3.8" and python_version < "3.11"
+    - google-resumable-media==2.5.0 ; python_version >= "3.8" and python_version < "3.11"
+    - googleapis-common-protos==1.59.1 ; python_version >= "3.8" and python_version < "3.11"
+    - grpcio-status==1.56.0 ; python_version >= "3.8" and python_version < "3.11"
+    - grpcio==1.56.0 ; python_version >= "3.8" and python_version < "3.11"
+    - humanfriendly==10.0 ; python_version >= "3.8" and python_version < "3.11"
+    - identify==2.5.24 ; python_version >= "3.8" and python_version < "3.11"
+    - idna==3.4 ; python_version >= "3.8" and python_version < "3.11"
+    - imagesize==1.4.1 ; python_version >= "3.8" and python_version < "3.11"
+    - importlib-resources==5.12.0 ; python_version >= "3.8" and python_version < "3.11"
+    - inflection==0.5.1 ; python_version >= "3.8" and python_version < "3.11"
+    - iniconfig==2.0.0 ; python_version >= "3.8" and python_version < "3.11"
+    - isort==5.12.0 ; python_version >= "3.8" and python_version < "3.11"
+    - joblib==1.3.1 ; python_version >= "3.8" and python_version < "3.11"
+    - jsonschema==4.17.3 ; python_version >= "3.8" and python_version < "3.11"
+    - junitparser==2.8.0 ; python_version >= "3.8" and python_version < "3.11"
+    - klara==0.6.3 ; python_version >= "3.8" and python_version < "3.11"
+    - lazy-object-proxy==1.9.0 ; python_version >= "3.8" and python_version < "3.11"
+    - mccabe==0.6.1 ; python_version >= "3.8" and python_version < "3.11"
+    - mergedeep==1.3.4 ; python_version >= "3.8" and python_version < "3.11"
+    - more-itertools==9.1.0 ; python_version >= "3.8" and python_version < "3.11"
+    - mypy-extensions==1.0.0 ; python_version >= "3.8" and python_version < "3.11"
+    - mypy==0.982 ; python_version >= "3.8" and python_version < "3.11"
+    - neo4j==5.10.0 ; python_version >= "3.8" and python_version < "3.11"
+    - networkx==2.8.8 ; python_version >= "3.8" and python_version < "3.11"
+    - nltk==3.8.1 ; python_version >= "3.8" and python_version < "3.11"
+    - nodeenv==1.8.0 ; python_version >= "3.8" and python_version < "3.11"
+    - ordered-set==4.1.0 ; python_version >= "3.8" and python_version < "3.11"
+    - orjson==3.9.1 ; python_version >= "3.8" and python_version < "3.11"
+    - packaging==21.3 ; python_version >= "3.8" and python_version < "3.11"
+    - paramiko==2.12.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pbr==5.11.1 ; python_version >= "3.8" and python_version < "3.11"
+    - pebble==5.0.3 ; python_version >= "3.8" and python_version < "3.11"
+    - pkgutil-resolve-name==1.3.10 ; python_version >= "3.8" and python_version < "3.9"
+    - platformdirs==3.8.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pluggy==1.2.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pre-commit==2.21.0 ; python_version >= "3.8" and python_version < "3.11"
+    - prettytable==3.8.0 ; python_version >= "3.8" and python_version < "3.11"
+    - proto-plus==1.22.3 ; python_version >= "3.8" and python_version < "3.11"
+    - protobuf==4.23.3 ; python_version >= "3.8" and python_version < "3.11"
+    - pyasn1-modules==0.3.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pyasn1==0.5.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pycodestyle==2.8.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pycparser==2.21 ; python_version >= "3.8" and python_version < "3.11"
+    - pydantic==1.10.10 ; python_version >= "3.8" and python_version < "3.11"
+    - pygments==2.15.1 ; python_version >= "3.8" and python_version < "3.11"
+    - pykwalify==1.8.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pylint==2.12.2 ; python_version >= "3.8" and python_version < "3.11"
+    - pynacl==1.5.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pyparsing==2.4.7 ; python_version >= "3.8" and python_version < "3.11"
+    - pypdf2==1.28.6 ; python_version >= "3.8" and python_version < "3.11"
+    - pyreadline3==3.4.1 ; sys_platform == "win32" and python_version >= "3.8" and python_version < "3.11"
+    - pyrsistent==0.19.3 ; python_version >= "3.8" and python_version < "3.11"
+    - pyspellchecker==0.6.3 ; python_version >= "3.8" and python_version < "3.11"
+    - pytest-freezegun==0.4.2 ; python_version >= "3.8" and python_version < "3.11"
+    - pytest==7.4.0 ; python_version >= "3.8" and python_version < "3.11"
+    - python-dateutil==2.8.2 ; python_version >= "3.8" and python_version < "3.11"
+    - python-dotenv==0.20.0 ; python_version >= "3.8" and python_version < "3.11"
+    - pytz-deprecation-shim==0.1.0.post0 ; python_version >= "3.8" and python_version < "3.11"
+    - pytz==2023.3 ; python_version >= "3.8" and python_version < "3.11"
+    - pywin32==227 ; python_version >= "3.8" and python_version < "3.11" and sys_platform == "win32"
+    - pyyaml==6.0 ; python_version >= "3.8" and python_version < "3.11"
+    - regex==2023.6.3 ; python_version >= "3.8" and python_version < "3.11"
+    - requests==2.31.0 ; python_version >= "3.8" and python_version < "3.11"
+    - rich==12.6.0 ; python_version >= "3.8" and python_version < "3.11"
+    - rsa==4.9 ; python_version >= "3.8" and python_version < "3.11"
+    - ruamel-yaml-clib==0.2.7 ; platform_python_implementation == "CPython" and python_version < "3.11" and python_version >= "3.8"
+    - ruamel-yaml==0.17.32 ; python_version >= "3.8" and python_version < "3.11"
+    - setuptools==68.0.0 ; python_version >= "3.8" and python_version < "3.11"
+    - shellingham==1.5.0.post1 ; python_version >= "3.8" and python_version < "3.11"
+    - six==1.16.0 ; python_version >= "3.8" and python_version < "3.11"
+    - slack-sdk==3.21.3 ; python_version >= "3.8" and python_version < "3.11"
+    - smmap==5.0.0 ; python_version >= "3.8" and python_version < "3.11"
+    - soupsieve==2.4.1 ; python_version >= "3.8" and python_version < "3.11"
+    - stevedore==5.1.0 ; python_version >= "3.8" and python_version < "3.11"
+    - tabulate==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
+    - toml==0.10.2 ; python_version >= "3.8" and python_version < "3.11"
+    - tomli==2.0.1 ; python_version >= "3.8" and python_version < "3.11"
+    - tqdm==4.65.0 ; python_version >= "3.8" and python_version < "3.11"
+    - typed-ast==1.5.4 ; python_version >= "3.8" and python_version < "3.11"
+    - typer[all]==0.7.0 ; python_version >= "3.8" and python_version < "3.11"
+    - types-chardet==5.0.4.6 ; python_version >= "3.8" and python_version < "3.11"
+    - types-cryptography==3.3.23.2 ; python_version >= "3.8" and python_version < "3.11"
+    - types-dateparser==1.1.4.9 ; python_version >= "3.8" and python_version < "3.11"
+    - types-decorator==5.1.8.3 ; python_version >= "3.8" and python_version < "3.11"
+    - types-emoji==2.1.0.3 ; python_version >= "3.8" and python_version < "3.11"
+    - types-filelock==3.2.7 ; python_version >= "3.8" and python_version < "3.11"
+    - types-futures==3.3.8 ; python_version >= "3.8" and python_version < "3.11"
+    - types-ipaddress==1.0.8 ; python_version >= "3.8" and python_version < "3.11"
+    - types-markdown==3.4.2.9 ; python_version >= "3.8" and python_version < "3.11"
+    - types-mock==4.0.15.2 ; python_version >= "3.8" and python_version < "3.11"
+    - types-paramiko==2.12.0.1 ; python_version >= "3.8" and python_version < "3.11"
+    - types-pkg-resources==0.1.3 ; python_version >= "3.8" and python_version < "3.11"
+    - types-protobuf==3.20.4.6 ; python_version >= "3.8" and python_version < "3.11"
+    - types-pymysql==1.1.0.0 ; python_version >= "3.8" and python_version < "3.11"
+    - types-python-dateutil==2.8.19.13 ; python_version >= "3.8" and python_version < "3.11"
+    - types-pytz==2022.7.1.2 ; python_version >= "3.8" and python_version < "3.11"
+    - types-pyvmomi==8.0.0.5 ; python_version >= "3.8" and python_version < "3.11"
+    - types-pyyaml==6.0.12.10 ; python_version >= "3.8" and python_version < "3.11"
+    - types-requests==2.28.11 ; python_version >= "3.8" and python_version < "3.11"
+    - types-setuptools==67.8.0.0 ; python_version >= "3.8" and python_version < "3.11"
+    - types-six==1.16.21.8 ; python_version >= "3.8" and python_version < "3.11"
+    - types-tabulate==0.9.0.2 ; python_version >= "3.8" and python_version < "3.11"
+    - types-ujson==5.8.0.0 ; python_version >= "3.8" and python_version < "3.11"
+    - types-urllib3==1.26.25.13 ; python_version >= "3.8" and python_version < "3.11"
+    - typing-extensions==4.7.1 ; python_version >= "3.8" and python_version < "3.11"
+    - tzdata==2023.3 ; python_version >= "3.8" and python_version < "3.11"
+    - tzlocal==4.3.1 ; python_version >= "3.8" and python_version < "3.11"
+    - ujson==5.8.0 ; python_version >= "3.8" and python_version < "3.11"
+    - urllib3==1.26.16 ; python_version >= "3.8" and python_version < "3.11"
+    - virtualenv==20.23.1 ; python_version >= "3.8" and python_version < "3.11"
+    - vulture==2.7 ; python_version >= "3.8" and python_version < "3.11"
+    - wcmatch==8.4.1 ; python_version >= "3.8" and python_version < "3.11"
+    - wcwidth==0.2.6 ; python_version >= "3.8" and python_version < "3.11"
+    - websocket-client==1.6.1 ; python_version >= "3.8" and python_version < "3.11"
+    - wrapt==1.13.3 ; python_version >= "3.8" and python_version < "3.11"
+    - yamlordereddictloader==0.4.0 ; python_version >= "3.8" and python_version < "3.11"
+    - z3-solver==4.12.2.0 ; python_version >= "3.8" and python_version < "3.11"
+    - zipp==3.15.0 ; python_version >= "3.8" and python_version < "3.10"

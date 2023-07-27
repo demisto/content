@@ -1,0 +1,6 @@
+[file:Barracuda_CGFWModelingRules_1_3.yml]
+ignore=MR108
+
+[file:Barracuda_Cloudgen_FirewallParsingRules.yml]
+ignore=PR101
+

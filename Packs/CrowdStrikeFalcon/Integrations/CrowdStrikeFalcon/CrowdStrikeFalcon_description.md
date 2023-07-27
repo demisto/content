@@ -13,3 +13,8 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 - Incidents - Read and Write
 - Spotlight Vulnerabilities - Read
 - User Management - Read
+- On-Demand Scans (ODS) - Read and Write
+- Identity Protection Entities - Read and Write
+- Identity Protection Detections - Read and Write
+- Identity Protection Timeline - Read
+- Identity Protection Assessment - Read

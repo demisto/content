@@ -830,7 +830,6 @@ script:
       description: List of firewalls. Each includes Number, NetworkId, Policy, Protocol, DestPort, DestCidr, and Comment
       type: list
     description: Update rule to L3 firewall rules of an SSID.
-hidden: false
 tests:
 - Cisco-Meraki-Test
 fromversion: 5.0.0

@@ -610,6 +610,13 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     if not issue['fields'].get('issuetype') and issue_creating:
         issue['fields']['issuetype'] = {}
 
+    if issue_args.get('watchers'):
+        watchers = issue_args.get('watchers')
+        if isinstance(watchers, list):
+            issue['watchers'] = watchers
+        elif isinstance(watchers, str):
+            issue['watchers'] = argToList(watchers)
+
     if issue_args.get('summary'):
         issue['fields']['summary'] = issue_args['summary']
 
@@ -723,6 +730,24 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     return human_readable, outputs, contents
 
 
+def get_project_role_command(project_key, role_name):
+    j_res = get_project_roles(project_key)
+    url = j_res.get(role_name)
+    if not url:
+        return_error(f"Role '{role_name}' not found")
+
+    role_id = url.split('/')[-1]
+    url = f'rest/api/latest/project/{project_key}/role/{role_id}'
+    j_res = jira_req('GET', url, resp_type='json')
+    return j_res
+
+
+def get_project_roles(project_key):
+    url = f'rest/api/latest/project/{project_key}/role'
+    j_res = jira_req('GET', url, resp_type='json')
+    return j_res
+
+
 def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
     nofields: set = set()
 
@@ -751,6 +776,20 @@ def create_issue_command():
     contents = j_res
     outputs = md_and_context['context']
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
+
+def add_user_to_project_command(user_email, project_key, role_name):
+    result = get_account_id_from_attribute(user_email)
+
+    if isinstance(result, CommandResults) and isinstance(result.raw_response, dict):
+        user_id = result.raw_response.get('AccountID')
+    else:
+        return_error(f'{result}')
+
+    role_id = get_project_role_command(project_key, role_name).get('id')
+    url = f'rest/projectconfig/latest/roles/{project_key}/{role_id}'
+    json_data = {'users': [user_id], "groups": []}
+    return jira_req('POST', url, json.dumps(json_data)).text
 
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
@@ -794,6 +833,13 @@ def _update_fields(issue_id, new_data):
     url = f'rest/api/latest/issue/{issue_id}/'
     if new_data:
         jira_req('PUT', url, json.dumps({'fields': new_data}))
+
+
+def get_organizations_command():
+    url = '/rest/servicedeskapi/organization'
+    res = jira_req('GET', url, resp_type='json').get('values')
+    [org.pop('_links') for org in res]
+    return CommandResults(outputs=res, outputs_prefix='Jira.Organizations')
 
 
 def get_field_command(issue_id, field):
@@ -1459,9 +1505,13 @@ def main():
             incidents = fetch_incidents(fetch_query, id_offset, fetch_attachments, fetch_comments, incoming_mirror,
                                         outgoing_mirror, comment_tag, attachment_tag, fetch_by_created)
             demisto.incidents(incidents)
+
         elif demisto.command() == 'jira-get-issue':
             human_readable, outputs, raw_response = get_issue(**snakify(demisto.args()))
             return_outputs(human_readable, outputs, raw_response)
+
+        elif demisto.command() == 'jira-get-project-role':
+            return_results(get_project_role_command(**demisto.args()))
 
         elif demisto.command() == 'jira-issue-query':
             human_readable, outputs, raw_response = issue_query_command(**snakify(demisto.args()))
@@ -1469,6 +1519,9 @@ def main():
 
         elif demisto.command() == 'jira-create-issue':
             create_issue_command()
+
+        elif demisto.command() == 'jira-add-user-to-project':
+            return_results(add_user_to_project_command(**demisto.args()))
 
         elif demisto.command() == 'jira-edit-issue':
             human_readable, outputs, raw_response = edit_issue_command(**snakify(demisto.args()))
@@ -1513,8 +1566,12 @@ def main():
         elif demisto.command() == 'jira-get-id-by-attribute':
             return_results(get_account_id_from_attribute(**demisto.args()))
 
+        elif demisto.command() == 'jira-get-organizations':
+            return_results(get_organizations_command())
+
         elif demisto.command() == 'jira-list-transitions':
             return_results(list_transitions_command(demisto.args()))
+
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(demisto.args()))
 

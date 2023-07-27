@@ -5,8 +5,7 @@ fromversion: 5.0.0
 name: CTIX
 display: Cyware Threat Intelligence eXchange
 category: Data Enrichment & Threat Intelligence
-description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches
-  IP/Domain/URL/File Data.
+description: This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
 configuration:
 - display: Endpoint URL
   name: base_url
@@ -43,8 +42,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -53,13 +52,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 script:
   script: ''
   type: python
@@ -76,8 +75,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Boolean Flag which when enabled returns an enhanced response which
-        includes the extra enhancement data from various sources.
+      description: Boolean Flag which when enabled returns an enhanced response which includes the extra enhancement data from various sources.
     outputs:
     - contextPath: IP.Address
       description: IP address.
@@ -125,11 +123,9 @@ script:
       description: Threat Data Object type
       type: string
     - contextPath: CTIX.IP.package_id
-      description: List of IDs of packages on the CTIX application through which these
-        IPs were received
+      description: List of IDs of packages on the CTIX application through which these IPs were received
     - contextPath: CTIX.IP.source
-      description: List of sources from which the IP address was received in the CTIX
-        application
+      description: List of sources from which the IP address was received in the CTIX application
     - contextPath: CTIX.IP.risk_severity
       description: Risk Severity of the Threat Data Object on the scale of 0-5
       type: number
@@ -149,12 +145,10 @@ script:
       description: Shows if the Threat Data Object is blocked on the CTIX application
       type: boolean
     - contextPath: CTIX.IP.blocked_time
-      description: Timestamp of when the Threat Data Object was blocked on the CTIX
-        application.
+      description: Timestamp of when the Threat Data Object was blocked on the CTIX application.
       type: string
     - contextPath: CTIX.IP.deprecated_time
-      description: Timestamp of when the Threat Data Object was deprecated on the
-        CTIX application
+      description: Timestamp of when the Threat Data Object was deprecated on the CTIX application
       type: string
     - contextPath: CTIX.IP.notification_preference
       description: Notification preference
@@ -178,13 +172,11 @@ script:
       description: Type of object
       type: string
     - contextPath: CTIX.IP.blocked_on
-      description: Name of the Application where the Threat Data Object was blocked
-        on.
+      description: Name of the Application where the Threat Data Object was blocked on.
     - contextPath: CTIX.IP.follow_by
       description: List of Cyware Users who follow the object.
     - contextPath: CTIX.IP.is_false_positive
-      description: Shows if the Threat Data Object was marked false positive in the
-        CTIX application
+      description: Shows if the Threat Data Object was marked false positive in the CTIX application
       type: boolean
     - contextPath: CTIX.IP.domain_tld
       description: Top-Level Domain information about the Threat Data Object.
@@ -219,15 +211,13 @@ script:
       description: Boolean Value
       type: boolean
     - contextPath: CTIX.IP.under_review
-      description: Shows if Threat Data Object is marked as Under Review on the CTIX
-        application
+      description: Shows if Threat Data Object is marked as Under Review on the CTIX application
       type: boolean
     - contextPath: CTIX.IP.under_reviewed_time
       description: Timestamp when the object was marked under review.
       type: string
     - contextPath: CTIX.IP.reviewed
-      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX
-        application
+      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX application
       type: boolean
     - contextPath: CTIX.IP.reviewed_time
       description: Timestamp when then object was reviewed.
@@ -238,11 +228,9 @@ script:
     - contextPath: CTIX.IP.source_data
       description: List of sources from which CTIX received this IP.
     - contextPath: CTIX.IP.related_fields
-      description: Relationship Data about the Threat Data Object present on the CTIX
-        application
+      description: Relationship Data about the Threat Data Object present on the CTIX application
     - contextPath: CTIX.IP.enhancement_data
-      description: Additional enhanced data about the Threat Data Object fetched by
-        the CTIX application
+      description: Additional enhanced data about the Threat Data Object fetched by the CTIX application
     description: Return IP Details.
   - name: domain
     arguments:
@@ -256,8 +244,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Boolean Flag which when enabled returns an enhanced response which
-        includes the extra enhancement data from various sources.
+      description: Boolean Flag which when enabled returns an enhanced response which includes the extra enhancement data from various sources.
     outputs:
     - contextPath: Domain.Name
       description: The domain name.
@@ -302,11 +289,9 @@ script:
       description: Threat Data Object type
       type: string
     - contextPath: CTIX.Domain.package_id
-      description: List of IDs of packages on the CTIX application through which these
-        IPs were received
+      description: List of IDs of packages on the CTIX application through which these IPs were received
     - contextPath: CTIX.Domain.source
-      description: List of sources from which the IP address was received in the CTIX
-        application
+      description: List of sources from which the IP address was received in the CTIX application
     - contextPath: CTIX.Domain.risk_severity
       description: Risk Severity of the Threat Data Object on the scale of 0-5
       type: number
@@ -326,12 +311,10 @@ script:
       description: Shows if the Threat Data Object is blocked on the CTIX application
       type: boolean
     - contextPath: CTIX.Domain.blocked_time
-      description: Timestamp of when the Threat Data Object was blocked on the CTIX
-        application.
+      description: Timestamp of when the Threat Data Object was blocked on the CTIX application.
       type: string
     - contextPath: CTIX.Domain.deprecated_time
-      description: Timestamp of when the Threat Data Object was deprecated on the
-        CTIX application
+      description: Timestamp of when the Threat Data Object was deprecated on the CTIX application
       type: string
     - contextPath: CTIX.Domain.notification_preference
       description: Notification preference
@@ -355,13 +338,11 @@ script:
       description: Type of object
       type: string
     - contextPath: CTIX.Domain.blocked_on
-      description: Name of the Application where the Threat Data Object was blocked
-        on.
+      description: Name of the Application where the Threat Data Object was blocked on.
     - contextPath: CTIX.Domain.follow_by
       description: List of Cyware Users who follow the object.
     - contextPath: CTIX.Domain.is_false_positive
-      description: Shows if the Threat Data Object was marked false positive in the
-        CTIX application
+      description: Shows if the Threat Data Object was marked false positive in the CTIX application
       type: boolean
     - contextPath: CTIX.Domain.domain_tld
       description: Top-Level Domain information about the Threat Data Object.
@@ -396,15 +377,13 @@ script:
       description: Boolean Value
       type: boolean
     - contextPath: CTIX.Domain.under_review
-      description: Shows if Threat Data Object is marked as Under Review on the CTIX
-        application
+      description: Shows if Threat Data Object is marked as Under Review on the CTIX application
       type: boolean
     - contextPath: CTIX.Domain.under_reviewed_time
       description: Timestamp when the object was marked under review.
       type: string
     - contextPath: CTIX.Domain.reviewed
-      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX
-        application
+      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX application
       type: boolean
     - contextPath: CTIX.Domain.reviewed_time
       description: Timestamp when then object was reviewed.
@@ -415,11 +394,9 @@ script:
     - contextPath: CTIX.Domain.source_data
       description: List of sources from which CTIX received this IP.
     - contextPath: CTIX.Domain.related_fields
-      description: Relationship Data about the Threat Data Object present on the CTIX
-        application
+      description: Relationship Data about the Threat Data Object present on the CTIX application
     - contextPath: CTIX.Domain.enhancement_data
-      description: Additional enhanced data about the Threat Data Object fetched by
-        the CTIX application
+      description: Additional enhanced data about the Threat Data Object fetched by the CTIX application
     description: Return Domain Details.
   - name: url
     arguments:
@@ -433,8 +410,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Boolean Flag which when enabled returns an enhanced response which
-        includes the extra enhancement data from various sources.
+      description: Boolean Flag which when enabled returns an enhanced response which includes the extra enhancement data from various sources.
     outputs:
     - contextPath: URL.Data
       description: The URL.
@@ -479,11 +455,9 @@ script:
       description: Threat Data Object type
       type: string
     - contextPath: CTIX.URL.package_id
-      description: List of IDs of packages on the CTIX application through which these
-        IPs were received
+      description: List of IDs of packages on the CTIX application through which these IPs were received
     - contextPath: CTIX.URL.source
-      description: List of sources from which the IP address was received in the CTIX
-        application
+      description: List of sources from which the IP address was received in the CTIX application
     - contextPath: CTIX.URL.risk_severity
       description: Risk Severity of the Threat Data Object on the scale of 0-5
       type: number
@@ -503,12 +477,10 @@ script:
       description: Shows if the Threat Data Object is blocked on the CTIX application
       type: boolean
     - contextPath: CTIX.URL.blocked_time
-      description: Timestamp of when the Threat Data Object was blocked on the CTIX
-        application.
+      description: Timestamp of when the Threat Data Object was blocked on the CTIX application.
       type: string
     - contextPath: CTIX.URL.deprecated_time
-      description: Timestamp of when the Threat Data Object was deprecated on the
-        CTIX application
+      description: Timestamp of when the Threat Data Object was deprecated on the CTIX application
       type: string
     - contextPath: CTIX.URL.notification_preference
       description: Notification preference
@@ -532,13 +504,11 @@ script:
       description: Type of object
       type: string
     - contextPath: CTIX.URL.blocked_on
-      description: Name of the Application where the Threat Data Object was blocked
-        on.
+      description: Name of the Application where the Threat Data Object was blocked on.
     - contextPath: CTIX.URL.follow_by
       description: List of Cyware Users who follow the object.
     - contextPath: CTIX.URL.is_false_positive
-      description: Shows if the Threat Data Object was marked false positive in the
-        CTIX application
+      description: Shows if the Threat Data Object was marked false positive in the CTIX application
       type: boolean
     - contextPath: CTIX.URL.domain_tld
       description: Top-Level Domain information about the Threat Data Object.
@@ -573,15 +543,13 @@ script:
       description: Boolean Value
       type: boolean
     - contextPath: CTIX.URL.under_review
-      description: Shows if Threat Data Object is marked as Under Review on the CTIX
-        application
+      description: Shows if Threat Data Object is marked as Under Review on the CTIX application
       type: boolean
     - contextPath: CTIX.URL.under_reviewed_time
       description: Timestamp when the object was marked under review.
       type: string
     - contextPath: CTIX.URL.reviewed
-      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX
-        application
+      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX application
       type: boolean
     - contextPath: CTIX.URL.reviewed_time
       description: Timestamp when then object was reviewed.
@@ -592,11 +560,9 @@ script:
     - contextPath: CTIX.URL.source_data
       description: List of sources from which CTIX received this IP.
     - contextPath: CTIX.URL.related_fields
-      description: Relationship Data about the Threat Data Object present on the CTIX
-        application
+      description: Relationship Data about the Threat Data Object present on the CTIX application
     - contextPath: CTIX.URL.enhancement_data
-      description: Additional enhanced data about the Threat Data Object fetched by
-        the CTIX application
+      description: Additional enhanced data about the Threat Data Object fetched by the CTIX application
     description: Return URL Details.
   - name: file
     arguments:
@@ -610,8 +576,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Boolean Flag which when enabled returns an enhanced response which
-        includes the extra enhancement data from various sources.
+      description: Boolean Flag which when enabled returns an enhanced response which includes the extra enhancement data from various sources.
     outputs:
     - contextPath: File.Name
       description: The full file name.
@@ -668,11 +633,9 @@ script:
       description: Threat Data Object type
       type: string
     - contextPath: CTIX.File.package_id
-      description: List of IDs of packages on the CTIX application through which these
-        IPs were received
+      description: List of IDs of packages on the CTIX application through which these IPs were received
     - contextPath: CTIX.File.source
-      description: List of sources from which the IP address was received in the CTIX
-        application
+      description: List of sources from which the IP address was received in the CTIX application
     - contextPath: CTIX.File.risk_severity
       description: Risk Severity of the Threat Data Object on the scale of 0-5
       type: number
@@ -692,12 +655,10 @@ script:
       description: Shows if the Threat Data Object is blocked on the CTIX application
       type: boolean
     - contextPath: CTIX.File.blocked_time
-      description: Timestamp of when the Threat Data Object was blocked on the CTIX
-        application.
+      description: Timestamp of when the Threat Data Object was blocked on the CTIX application.
       type: string
     - contextPath: CTIX.File.deprecated_time
-      description: Timestamp of when the Threat Data Object was deprecated on the
-        CTIX application
+      description: Timestamp of when the Threat Data Object was deprecated on the CTIX application
       type: string
     - contextPath: CTIX.File.notification_preference
       description: Notification preference
@@ -721,13 +682,11 @@ script:
       description: Type of object
       type: string
     - contextPath: CTIX.File.blocked_on
-      description: Name of the Application where the Threat Data Object was blocked
-        on.
+      description: Name of the Application where the Threat Data Object was blocked on.
     - contextPath: CTIX.File.follow_by
       description: List of Cyware Users who follow the object.
     - contextPath: CTIX.File.is_false_positive
-      description: Shows if the Threat Data Object was marked false positive in the
-        CTIX application
+      description: Shows if the Threat Data Object was marked false positive in the CTIX application
       type: boolean
     - contextPath: CTIX.File.domain_tld
       description: Top-Level Domain information about the Threat Data Object.
@@ -762,15 +721,13 @@ script:
       description: Boolean Value
       type: boolean
     - contextPath: CTIX.File.under_review
-      description: Shows if Threat Data Object is marked as Under Review on the CTIX
-        application
+      description: Shows if Threat Data Object is marked as Under Review on the CTIX application
       type: boolean
     - contextPath: CTIX.File.under_reviewed_time
       description: Timestamp when the object was marked under review.
       type: string
     - contextPath: CTIX.File.reviewed
-      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX
-        application
+      description: Shows if the Threat Data Object is Marked as Reviewed on the CTIX application
       type: boolean
     - contextPath: CTIX.File.reviewed_time
       description: Timestamp when then object was reviewed.
@@ -781,72 +738,53 @@ script:
     - contextPath: CTIX.File.source_data
       description: List of sources from which CTIX received this IP.
     - contextPath: CTIX.File.related_fields
-      description: Relationship Data about the Threat Data Object present on the CTIX
-        application
+      description: Relationship Data about the Threat Data Object present on the CTIX application
     - contextPath: CTIX.File.enhancement_data
-      description: Additional enhanced data about the Threat Data Object fetched by
-        the CTIX application
+      description: Additional enhanced data about the Threat Data Object fetched by the CTIX application
     description: Return File Details.
   - name: ctix-create-intel
     description: Creates Intel in CTIX platform.
     arguments:
     - name: title
-      required: false
       description: Title of ioc.
-      isArray: false
     - name: description
-      required: false
       description: Description of ioc.
-      isArray: false
     - name: tlp
-      required: false
       description: tlp of ioc.
-      isArray: false
     - name: confidence
-      required: false
       description: confidence of ioc.
-      isArray: false
     - name: ips
-      required: false
       description: comma-separated list of IPs.
       isArray: true
     - name: urls
-      required: false
       description: comma-separated list of URLs.
       isArray: true
     - name: domains
-      required: false
       description: comma-separated list of domains.
       isArray: true
     - name: files
-      required: false
       description: comma-separated list of files.
       isArray: true
     - name: emails
-      required: false
       description: comma-separated list of emails.
       isArray: true
     - name: malwares
-      required: false
       description: comma-separated list of malwares.
       isArray: true
     - name: threat_actors
-      required: false
       description: comma-separated list of threat_actors.
       isArray: true
     - name: attack_patterns
-      required: false
       description: comma-separated list of attack_patterns.
       isArray: true
     outputs:
-      - contextPath: CTIX.Intel.response
-        description: The response of the api.
-        type: String
-      - contextPath: CTIX.Intel.status
-        description: Status code returned from the api.
-        type: String
-  dockerimage: demisto/python3:3.10.11.56857
-  runonce: false
+    - contextPath: CTIX.Intel.response
+      description: The response of the api.
+      type: String
+    - contextPath: CTIX.Intel.status
+      description: Status code returned from the api.
+      type: String
+  dockerimage: demisto/python3:3.10.12.63474
   subtype: python3
 tests:
 - No tests

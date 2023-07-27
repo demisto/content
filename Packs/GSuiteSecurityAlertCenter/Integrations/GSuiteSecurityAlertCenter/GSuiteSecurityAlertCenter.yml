@@ -8,51 +8,62 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - defaultvalue: G Suite Security Alert Center
   display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - additionalinfo: User's Service Account JSON key.
   display: Service Account JSON
   name: user_service_account_json
-  required: true
   type: 4
   section: Connect
+  hidden: true
+  required: false
+- display: Admin Email
+  name: admin_email_creds
+  type: 9
+  section: Connect
+  displaypassword: Service Account JSON
+  required: false
 - additionalinfo: G Suite domain administrator's email ID that acts on behalf of the end-user
   display: Admin Email
-  hidden: false
   name: admin_email
-  required: true
   type: 0
   section: Connect
-- additionalinfo: The maximum allowed value is 1000.
+  hidden: true
+  required: false
+- additionalinfo: |-
+    The maximum allowed value is 1000.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: true
   type: 0
   section: Collect
-- additionalinfo: |-
-    The time range to consider for the initial data fetch.
+- additionalinfo: 'The time range to consider for the initial data fetch.
+
     Formats accepted: YYYY-MM-dd, YYYY-MM-ddTHH:mm:ss, 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years.
-    Accepted timezone: UTC
-  defaultvalue: 3 days
+
+    Accepted timezone: UTC'
   display: First fetch time interval
   name: first_fetch
-  required: false
   type: 0
   section: Collect
-- additionalinfo: |-
-    Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty.
-    Note: If type is present in the Filter parameter this value will be overwritten.
+  defaultvalue: 3 days
+  required: false
+- additionalinfo: 'Add a new type or choose existing multiple alert types. Fetches all types of alerts if left empty.
+
+    Note: If type is present in the Filter parameter this value will be overwritten.'
   display: Alert Type
-  hidden: false
   name: alert_type
+  type: 16
+  section: Collect
+  advanced: true
   options:
   - Customer takeout initiated
   - Malware reclassification
@@ -77,83 +88,62 @@ configuration:
   - Activity Rule
   - Data Loss Prevention
   required: false
-  type: 16
-  section: Collect
-  advanced: true
-- additionalinfo: |-
-    An advanced filter to fetch the list of alerts.
+- additionalinfo: 'An advanced filter to fetch the list of alerts.
+
     For example: source:"Google" AND type="Suspicious login".
-    Note: This value takes precedence over any filter arguments. To fetch alerts using createTime, use the first fetch time interval parameter.
+
+    Note: This value takes precedence over any filter arguments. To fetch alerts using createTime, use the first fetch time interval parameter.'
   display: Filter
-  hidden: false
   name: filter
-  required: false
   type: 12
   section: Collect
   advanced: true
-- additionalinfo: Fetches the latest type of feedback for each alert.
-  display: Fetch feedback
-  hidden: false
-  name: fetch_feedback
   required: false
+- display: Fetch feedback
+  name: fetch_feedback
   type: 8
   section: Collect
   advanced: true
+  additionalinfo: Fetches the latest type of feedback for each alert.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
-- display: Use system proxy settings
+  required: false
+- advanced: true
+  display: Use system proxy settings
   name: proxy
-  required: false
-  type: 8
   section: Connect
-  advanced: true
+  type: 8
+
+  required: false
 description: G Suite Security Alert Center allows users to fetch different alert types such as Suspicious login, Device compromised, Leaked password, and more. Users can delete or recover a single alert or a batch of alerts and retrieve the alert's metadata. This integration allows users to provide feedback for alerts and fetch existing feedback for a particular alert.
 display: G Suite Security Alert Center
 name: G Suite Security Alert Center
 script:
   commands:
   - arguments:
-    - default: false
-      description: The requested page size.
-      isArray: false
+    - description: The requested page size.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: A token identifying a page of results the server should return.
-      isArray: false
+    - description: A token identifying a page of results the server should return.
       name: page_token
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A query string for filtering alert results.
         For example: createTime >= "2020-10-28T20:43:34.381Z" AND type="Suspicious login".
-      isArray: false
       name: filter
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The sort order of the list results. Possible values: "createTime asc", "createTime desc", "updateTime asc", and "updateTime desc".'
-      isArray: false
       name: order_by
       predefined:
       - createTime asc
       - createTime desc
       - updateTime asc
       - updateTime desc
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Lists the alerts. Use the filter to filter the list by various alert types.
       Note: The alerts that have been marked for deletion in the past 30 days will still be visible.
-    execution: false
     name: gsac-alert-list
     outputs:
     - contextPath: GSuiteSecurityAlert.PageToken.Alert.nextPageToken
@@ -406,15 +396,10 @@ script:
       description: Query that is used to get the data from the associated source.
       type: String
   - arguments:
-    - default: false
-      description: The identifier of the alert to retrieve.
-      isArray: false
+    - description: The identifier of the alert to retrieve.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: "Gets the specified alert. \nNote: To get the alert_id, execute the gsac-alert-list  command."
-    execution: false
     name: gsac-alert-get
     outputs:
     - contextPath: GSuiteSecurityAlert.Alert.customerId
@@ -661,16 +646,11 @@ script:
       description: Query that is used to get the data from the associated source.
       type: String
   - arguments:
-    - default: false
-      description: The identifier of the alert the feedback belongs to.
-      isArray: false
+    - description: The identifier of the alert the feedback belongs to.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of alert feedback. Possible values: "ALERT_FEEDBACK_TYPE_UNSPECIFIED", "NOT_USEFUL", "SOMEWHAT_USEFUL", and "VERY_USEFUL".'
-      isArray: false
       name: feedback_type
       predefined:
       - ALERT_FEEDBACK_TYPE_UNSPECIFIED
@@ -678,10 +658,7 @@ script:
       - SOMEWHAT_USEFUL
       - VERY_USEFUL
       required: true
-      secret: false
-    deprecated: false
     description: Creates new feedback for an alert.
-    execution: false
     name: gsac-alert-feedback-create
     outputs:
     - contextPath: GSuiteSecurityAlert.Feedback.customerId
@@ -703,30 +680,17 @@ script:
       description: The email of the user who provided the feedback.
       type: String
   - arguments:
-    - default: false
-      description: The identifier of the alert the feedbacks belong to. The "-" wildcard can be used to represent all alerts.
-      isArray: false
+    - description: The identifier of the alert the feedbacks belong to. The "-" wildcard can be used to represent all alerts.
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         A query string for filtering alert results.
         For example: alert_id = alertId01 AND feedback_id = feedbackId01.
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The requested page size. Default is 50.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    deprecated: false
     description: Lists all the feedback for an alert.
-    execution: false
     name: gsac-alert-feedback-list
     outputs:
     - contextPath: GSuiteSecurityAlert.Feedback.customerId
@@ -748,17 +712,13 @@ script:
       description: The email of the user who provided the feedback.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of alert IDs to be marked for deletion.
+    - description: Comma-separated list of alert IDs to be marked for deletion.
       isArray: true
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Performs delete operation on alerts.
       Note: The alerts that are marked for deletion will be removed from the Alert Center after 30 days.
-    execution: false
     name: gsac-alert-delete
     outputs:
     - contextPath: GSuiteSecurityAlert.Delete.successAlerts.id
@@ -780,17 +740,13 @@ script:
       description: Status of the successful alert deletion.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of alert IDs to be recovered.
+    - description: Comma-separated list of alert IDs to be recovered.
       isArray: true
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Performs a recover operation on alerts.
       Note: Recovers the alerts that were marked for deletion within the past 30 days.
-    execution: false
     name: gsac-alert-recover
     outputs:
     - contextPath: GSuiteSecurityAlert.Recover.successAlerts.id
@@ -811,11 +767,8 @@ script:
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
       description: Status of the failed alert recovery.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.58032
-  feed: false
+  dockerimage: demisto/googleapi-python3:1.0.0.65453
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

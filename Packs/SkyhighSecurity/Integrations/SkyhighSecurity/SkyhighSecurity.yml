@@ -15,92 +15,61 @@ configuration:
   type: 9
 - display: Maximum number of incidents to fetch every time. Default is 50. Maximum is 500.
   defaultvalue: 50
-  hidden: false
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days). Default is 3 days.
-  hidden: false
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 display: Skyhigh Security
 name: Skyhigh Security
 script:
   commands:
   - arguments:
-    - default: false
-      description: Maximum number of items that will be returned within a single response. Maximum is 500. If the limit value exceeds the 500 maximum, it will not be flagged as an error but will also not increase results.
-      isArray: false
+    - description: Maximum number of items that will be returned within a single response. Maximum is 500. If the limit value exceeds the 500 maximum, it will not be flagged as an error but will also not increase results.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Pagination support for use with a large “limit” value.
-      isArray: false
+    - description: Pagination support for use with a large “limit” value.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Pagination support for use with a large “limit” value. The maximum is 500.
-      isArray: false
+    - description: Pagination support for use with a large “limit” value. The maximum is 500.
       name: page_size
-      required: false
-      secret: false
     - default: true
       defaultValue: 3 days
       description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
-      isArray: false
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
-      isArray: false
+    - description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
       name: end_time
-      required: false
-      secret: false
-    - default: false
-      description: The actor IDs of the incidents to retrieve.
+    - description: The actor IDs of the incidents to retrieve.
       isArray: true
       name: actor_ids
-      required: false
-      secret: false
-    - default: false
-      description: The service names of the incidents to retrieve.
+    - description: The service names of the incidents to retrieve.
       isArray: true
       name: service_names
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the incidents to retrieve.
       isArray: true
       name: incident_types
       predefined:
       - Alert
       - Threat
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The categories of the incidents to retrieve. When defining the categories argument. the incident_types argument is ignored.
       isArray: true
       name: categories
@@ -114,27 +83,19 @@ script:
       - Policy
       - PrivilegeAccess
       - Vulnerability
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of incidents in ascending time modified order.
-    execution: false
     name: skyhigh-security-incident-query
     outputs:
     - contextPath: SkyhighSecurity.Incident
       description: The incident's metadata.
       type: Unknown
   - arguments:
-    - default: false
-      description: The incidents IDs that should be updated.
+    - description: The incidents IDs that should be updated.
       isArray: true
       name: incident_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The new status of the incidents.
-      isArray: false
       name: status
       predefined:
       - new
@@ -144,25 +105,17 @@ script:
       - suppressed
       - archived
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Update status of single/multiple incidents.
       Note!
       For multiple IDs, a single status will be applied for all IDs
       e.g., 123, 456, 789 >> change status to >> closed.
-    execution: false
     name: skyhigh-security-incident-status-update
   - arguments:
-    - default: false
-      description: The anomaly ID from where to retrieve the activities. Only for incidents of type anomaly (ANO-123).
-      isArray: false
+    - description: The anomaly ID from where to retrieve the activities. Only for incidents of type anomaly (ANO-123).
       name: anomaly_id
       required: true
-      secret: false
-    deprecated: false
     description: Fetches activities for a given anomaly ID.
-    execution: false
     name: skyhigh-security-anomaly-activity-list
     outputs:
     - contextPath: SkyhighSecurity.AnomalyActivity.timeStamp
@@ -283,33 +236,16 @@ script:
       description: The user who triggered the anomaly.
       type: String
   - arguments:
-    - default: false
-      description: Maximum number of policies that will be returned within a single response. Default is 50.
-      isArray: false
+    - description: Maximum number of policies that will be returned within a single response. Default is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Pagination support for use with a large “limit” value.
-      isArray: false
+    - description: Pagination support for use with a large “limit” value.
       name: page
-      required: false
-      secret: false
-    - default: false
-      description: Pagination support for use with a large “limit” value.
-      isArray: false
+    - description: Pagination support for use with a large “limit” value.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The name of the policies to retrieve.
+    - description: The name of the policies to retrieve.
       isArray: true
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: List existing policy dictionaries.
-    execution: false
     name: skyhigh-security-policy-dictionary-list
     outputs:
     - contextPath: SkyhighSecurity.Dictionaries.ID
@@ -322,33 +258,19 @@ script:
       description: The name of the dictionary.
       type: String
   - arguments:
-    - default: false
-      description: The dictionary where to set the policy.
-      isArray: false
+    - description: The dictionary where to set the policy.
       name: dictionary_id
       required: true
-      secret: false
-    - default: false
-      description: A name for the new key-value which will be added in the dictionary.
-      isArray: false
+    - description: A name for the new key-value which will be added in the dictionary.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas.
-      isArray: false
+    - description: The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas.
       name: content
       required: true
-      secret: false
-    deprecated: false
     description: Adds new content to an existing policy dictionary.
-    execution: false
     name: skyhigh-security-policy-dictionary-update
-  dockerimage: demisto/python3:3.10.11.58677
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

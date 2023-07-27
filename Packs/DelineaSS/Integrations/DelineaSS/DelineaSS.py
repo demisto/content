@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 # Disable insecure warnings
@@ -39,9 +39,12 @@ class Client(BaseClient):
 
         return "Bearer " + (self._http_request("POST", "/oauth2/token", headers=headers, data=body)).get('access_token')
 
-    def getPasswordById(self, secret_id: str) -> str:
+    def getPasswordById(self, secret_id: str, autoComment: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/password"
-        return self._http_request("GET", url_suffix)
+        params = {
+            "autoComment": autoComment
+        }
+        return self._http_request("GET", url_suffix, params=params)
 
     def getUsernameById(self, secret_id: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/fields/username"
@@ -232,8 +235,8 @@ def test_module(client) -> str:
     return "ok"
 
 
-def secret_password_get_command(client, secret_id: str = ''):
-    secret_password = client.getPasswordById(secret_id)
+def secret_password_get_command(client, secret_id: str = '', autoComment: str = ''):
+    secret_password = client.getPasswordById(secret_id, autoComment)
     markdown = tableToMarkdown('Password for secret',
                                {'Secret ID': secret_id, 'Password': secret_password})
 
@@ -486,7 +489,7 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
 
 def get_credentials(client, secret_id):
     obj = {}
-    secret = client.getSecret(secret_id)
+    secret = client.getSecret(secret_id, 'XSOAR Fetch Credential')
     items = secret.get('items')
     username = None
     password = None

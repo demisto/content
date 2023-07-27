@@ -11,19 +11,17 @@ def get_contents(args: Dict[str, Any]):
     :rtype: ``dict[str, Any]``
     """
 
-    res = execute_command(
-        "abuseipdb-get-blacklist",
-        {
-            "days": args.get("days"),
-            "limit": args.get("limit"),
-            "confidence": args.get("confidence"),
-        },
+    return (
+        execute_command(
+            "abuseipdb-get-blacklist",
+            {
+                "days": args.get("days"),
+                "limit": args.get("limit"),
+                "confidence": args.get("confidence"),
+            },
+        )
+        or None
     )
-
-    if not res:
-        return None
-
-    return res[0].get("Contents", None)
 
 
 def check_ips(ips: list):
@@ -47,7 +45,7 @@ def main():
             execute_command(
                 "createNewIndicator",
                 {
-                    "type": "ip",
+                    "type": "IP",
                     "value": ip,
                     "source": "AbuseIPDB",
                     "reputation": BLACKLISTED,
