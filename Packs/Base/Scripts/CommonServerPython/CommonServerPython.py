@@ -11099,7 +11099,8 @@ def split_data_to_chunks(data, target_chunk_size):
         yield chunk
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11123,6 +11124,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: The maximal size of each chunk size we send to API
 
     :return: None
     :rtype: ``None``
@@ -11200,7 +11204,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
+    data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
