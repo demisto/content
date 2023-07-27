@@ -5,15 +5,15 @@ from Tests.configure_and_test_integration_instances import XSOARBuild, create_bu
     get_packs_with_higher_min_version, filter_new_to_marketplace_packs, packs_names_to_integrations_names, flatten_cloud_servers
 
 XSIAM_SERVERS = {
-    "build":{
+    "build": {
         "qa2-test-111111": {
-                "ui_url": "https://xsiam1.paloaltonetworks.com/",
-                "instance_name": "qa2-test-111111",
-                "api_key": "1234567890",
-                "x-xdr-auth-id": 1,
-                "base_url": "https://api1.paloaltonetworks.com/",
-                "xsiam_version": "3.2.0",
-                "demisto_version": "99.99.98"
+            "ui_url": "https://xsiam1.paloaltonetworks.com/",
+            "instance_name": "qa2-test-111111",
+            "api_key": "1234567890",
+            "x-xdr-auth-id": 1,
+            "base_url": "https://api1.paloaltonetworks.com/",
+            "xsiam_version": "3.2.0",
+            "demisto_version": "99.99.98"
         },
         "qa2-test-222222": {
             "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
@@ -25,15 +25,15 @@ XSIAM_SERVERS = {
             "demisto_version": "99.99.98"
         }
     },
-    "upload":{
+    "upload": {
         "qa2-test-333333": {
-                "ui_url": "https://xsiam1.paloaltonetworks.com/",
-                "instance_name": "qa2-test-333333",
-                "api_key": "1234567890",
-                "x-xdr-auth-id": 1,
-                "base_url": "https://api1.paloaltonetworks.com/",
-                "xsiam_version": "3.2.0",
-                "demisto_version": "99.99.98"
+            "ui_url": "https://xsiam1.paloaltonetworks.com/",
+            "instance_name": "qa2-test-333333",
+            "api_key": "1234567890",
+            "x-xdr-auth-id": 1,
+            "base_url": "https://api1.paloaltonetworks.com/",
+            "xsiam_version": "3.2.0",
+            "demisto_version": "99.99.98"
         },
         "qa2-test-44444": {
             "ui_url": "https://xsoar-content-2.xdr-qa2-uat.us.paloaltonetworks.com/",
@@ -120,6 +120,7 @@ def test_create_build(mocker, expected_class, build_object_type):
     """
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
+
 
 def test_flatten_cloud_servers():
     """
