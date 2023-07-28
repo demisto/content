@@ -1084,16 +1084,24 @@ class Client(BaseClient):
         :return: True/False
         """
         if (
-            self.keyvault_url is not None
-            or self.keyvault_client_id is not None
-            or self.keyvault_client_secret is not None
-            or self.keyvault_tenant_id is not None
+            (self.keyvault_url is not None
+                and len(self.keyvault_url) != 0)
+            or (self.keyvault_client_id is not None
+                and len(self.keyvault_client_id) != 0)
+            or (self.keyvault_client_secret is not None
+                and len(self.keyvault_client_secret) != 0)
+            or (self.keyvault_tenant_id is not None
+                and len(self.keyvault_tenant_id) != 0)
         ):
             if (
-                self.keyvault_url is None
-                or self.keyvault_client_id is None
-                or self.keyvault_client_secret is None
-                or self.keyvault_tenant_id is None
+                (self.keyvault_url is None
+                    or len(self.keyvault_url) == 0)
+                or (self.keyvault_client_id is None
+                    or len(self.keyvault_client_id) == 0)
+                or (self.keyvault_client_secret is None
+                    or len(self.keyvault_client_secret) == 0)
+                or (self.keyvault_tenant_id is None
+                    or len(self.keyvault_tenant_id) == 0)
             ):
                 return False
             else:
