@@ -1,17 +1,13 @@
 import json as js
 import threading
 import io
-
 import pytest
 import slack_sdk
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
 from slack_sdk.errors import SlackApiError
-
 from unittest.mock import MagicMock
-
 from CommonServerPython import *
-
 import datetime
 
 
@@ -20,8 +16,10 @@ def load_test_data(path):
         return f.read()
 
 
+CHANNELS = load_test_data('./test_data/channels.txt')
 USERS = load_test_data('./test_data/users.txt')
 CONVERSATIONS = load_test_data('./test_data/conversations.txt')
+MESSAGES = load_test_data('./test_data/messages.txt')
 PAYLOAD_JSON = load_test_data('./test_data/payload.txt')
 INTEGRATION_CONTEXT: dict
 
@@ -132,11 +130,11 @@ INBOUND_MESSAGE_FROM_BOT = {
     "event": {
         "type": "message",
         "subtype": "bot_message",
-        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "text": "This is a bot message\nView it on: <https://somexsoarserver.com#/home>",
         "ts": "1644999987.969789",
         "username": "I'm a BOT",
         "icons": {
-            "image_48": "https:\/\/someimage.png"
+            "image_48": "https://someimage.png"
         },
         "bot_id": "B01UZHGMQ9G",
         "channel": "C033HLL3N81",
@@ -206,11 +204,11 @@ INBOUND_MESSAGE_FROM_BOT_WITH_BOT_ID = {
     "event": {
         "type": "message",
         "subtype": "This is missing",
-        "text": "This is a bot message\nView it on: <https:\/\/somexsoarserver.com#\/home>",
+        "text": "This is a bot message\nView it on: <https://somexsoarserver.com#/home>",
         "ts": "1644999987.969789",
         "username": "I'm a BOT",
         "icons": {
-            "image_48": "https:\/\/someimage.png"
+            "image_48": "https://someimage.png"
         },
         "bot_id": "W12345678",
         "channel": "C033HLL3N81",
@@ -260,7 +258,7 @@ INBOUND_EVENT_MESSAGE = {
             "ts": "1645712173.407939",
             "username": "test",
             "icons": {
-                "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2021-07-14\/2273797940146_48.png"
+                "image_48": "https://s3-us-west-2.amazonaws.com/slack-files2/bot_icons/2021-07-14/2273797940146_48.png"
             },
             "bot_id": "B0342JWALTG",
             "blocks": [{
@@ -300,7 +298,7 @@ INBOUND_EVENT_MESSAGE = {
         "state": {
             "values": {}
         },
-        "response_url": "https:\/\/hooks.slack.com\/actions\/T019C4MM2VD\/3146697353558\/Y6ic5jAvlJ6p9ZU9HmyU9sPZ",
+        "response_url": "https://hooks.slack.com/actions/T019C4MM2VD/3146697353558/Y6ic5jAvlJ6p9ZU9HmyU9sPZ",
         "actions": [{
             "action_id": "o2pI",
             "block_id": "06eO",
@@ -4943,19 +4941,57 @@ def test_check_for_unanswered_questions(mocker):
     assert len(total_questions) == 0
 
 
+def test_list_channels(mocker):
+    """
+    Given:
+        A list of channels.
+    When:
+        Listing Channels.
+    Assert:
+        fields match and are listed.
+    """
+    import SlackV3
+    mocker.patch.object(SlackV3, 'list_channels', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    set_integration_context({
+        'channels': json.loads(CHANNELS)
+    })
+    expected_results = {
+        'ID': 'C0475674L3Z',
+        'Name': 'general',
+        'Created': 1666361240,
+        'Creator': 'U047N6DC8VA',
+    }
+
+    channel_context = SlackV3.list_channels()
+    channel_id = channel_context['channels']['id']
+    name_normalized = channel_context['channels']['name_normalized']
+    last_set = channel_context['channels']['purpose']['last_set']
+    creator = channel_context['channels']['creator']
+
+    assert channel_id == expected_results['ID']
+    assert name_normalized == expected_results['Name']
+    assert last_set == expected_results['Created']
+    assert creator == expected_results['Creator']
+
+
 def test_conversation_history(mocker):
     """
     Given:
-        Intration Context containing two conversations.
+        A set of conversations.
     When:
-        Checking to see if a conversation is a Bot or User
-    Then:
-        Assert that the conversation is a Bot or User
+        Listing conversation history.
+    Assert:
+        Conversations are returned.
     """
-    from SlackV3 import conversation_history
+    import SlackV3
+    mocker.patch.object(SlackV3, 'conversation_history', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-
+    set_integration_context({
+        'conversations': json.loads(MESSAGES)
+    })
     expected_results = {
+<<<<<<< HEAD
        "type": "message",
        "text": "Hopa this is a test. ",
        "bot_id": "BMWFS6KSA"
@@ -4975,3 +5011,41 @@ def test_list_channels_all_args():
     list_channels()
     assert demisto.results.call_count == 1
     assert demisto.results.call_args[0][0]['Contents'] is not None
+=======
+        "team": "T047KKY8H7V",
+        "ts": "1690479909.804939",
+        "type": "message",
+        "user": "U047D5QSZD4"
+    }
+
+    messages_context = SlackV3.conversation_history()
+    team = messages_context['conversations'][0]['team']
+    ts = messages_context['conversations'][0]['ts']
+    message_type = messages_context['conversations'][0]['type']
+    user = messages_context['conversations'][0]['user']
+
+    assert team == expected_results['team']
+    assert ts == expected_results['ts']
+    assert message_type == expected_results['type']
+    assert user == expected_results['user']
+
+
+def test_conversation_replies(mocker):
+    """
+    Given:
+        A conversation with replies
+    When:
+        Looking for conversations with replies
+    Assert:
+        Conversations has replies.
+    """
+    import SlackV3
+    mocker.patch.object(SlackV3, 'conversation_replies', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    set_integration_context({
+        'replies': json.loads(MESSAGES)
+    })
+
+    replies_context = SlackV3.conversation_replies()
+    assert replies_context['replies'][1]['reply_count'] == 1
+>>>>>>> 557e118651 (Added Unit Tests, Test Files, and Fixed Linting Errors)
