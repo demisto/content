@@ -844,7 +844,35 @@ def get_poll_minutes(current_time: datetime, sent: Optional[str]) -> float:
     return poll_time_minutes
 
 
-def answer_question(text: str, question: dict, email: str = ''):
+def answer_question(text: str, question: dict, email: str = '') -> str:
+    """
+    Handles an incoming question and extracts the relevant entitlement information to be passed to the Demisto platform.
+
+    Args:
+    - text (str): The text of the question being answered.
+    - question (dict): A dictionary containing information about the question, including its entitlement.
+    - email (str, optional): The email of the user who asked the question. Defaults to ''.
+
+    Returns:
+    - incident_id (str): A string representing the ID of the incident that was created or updated in the Demisto platform.
+
+    Raises:
+    - Exception: If there is an error handling the entitlement for the user.
+
+    The function first extracts the entitlement information from the `question` dictionary using the `extract_entitlement`
+    function. It then attempts to handle the entitlement using the `demisto.handleEntitlementForUser` function. If this
+    is successful, the function sets the `remove` key of the `question` dictionary to `True` and returns the incident ID
+    that was created or updated. If there is an error handling the entitlement, the function raises an exception with an
+    error message.
+
+    Example usage:
+    ```
+    text = "What is the status of my request?"
+    question = {'text': text, 'entitlement': 'view_request_status'}
+    email = "user@example.com"
+    incident_id = answer_question(text, question, email)
+    ```
+    """
     entitlement = question.get('entitlement', '')
     content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
     try:
@@ -855,7 +883,30 @@ def answer_question(text: str, question: dict, email: str = ''):
     return incident_id
 
 
-def check_for_unanswered_questions():
+def check_for_unanswered_questions() -> None:
+    """
+    Checks for any unanswered questions in the integration context and answers them with a default response.
+
+    Args:
+    None.
+
+    Returns:
+    None.
+
+    The function first retrieves the `questions` object from the integration context using the `fetch_context` function.
+    If there are any questions, the function processes each question to determine whether it needs to be answered.
+    If a question has an `expiry` timestamp, the function checks whether the current time has passed the expiry time.
+    If it has, the function answers the question with the default response using the `answer_question` function and
+    removes the question from the `questions` list.
+
+    The function also checks whether enough time (determined by the `POLL_INTERVAL_MINUTES` parameter) has passed
+    since the last polling time. If not, the function continues to the next question until it has. If enough time has passed,
+    the function updates the question's `last_poll_time` value to the current time and adds the updated question to a list
+    called `updated_questions`.
+
+    After processing all the questions, the function updates the integration context with the `updated_questions` list.
+
+    """
     integration_context = fetch_context()
     questions = integration_context.get('questions', None)
     if questions:

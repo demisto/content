@@ -1,18 +1,18 @@
+import datetime
+import io
 import json as js
 import threading
-import io
-
-import pytest
-import slack_sdk
-from slack_sdk.web.async_slack_response import AsyncSlackResponse
-from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.errors import SlackApiError
-
 from unittest.mock import MagicMock
 
-from CommonServerPython import *
+import aiohttp
+import pytest
+import slack_sdk
+from asynctest import mock as async_mock
+from slack_sdk.errors import SlackApiError
+from slack_sdk.web.async_slack_response import AsyncSlackResponse
+from slack_sdk.web.slack_response import SlackResponse
 
-import datetime
+from CommonServerPython import *
 
 
 def load_test_data(path):
@@ -4941,3 +4941,145 @@ def test_check_for_unanswered_questions(mocker):
     total_questions = js.loads(updated_context.get('questions'))
 
     assert len(total_questions) == 0
+
+
+SAMPLE_PAYLOAD = {
+    "type": "block_actions",
+    "user": {
+        "id": "UAALZT5D2",
+        "username": "andrew",
+        "name": "andrew",
+        "team_id": "TABQMPKP0"
+    },
+    "api_app_id": "A01TXQAGB2P",
+    "token": "HRaWNBI1UXkKjvIntY29juPo",
+    "container": {
+        "type": "message",
+        "message_ts": "1680450653.878989",
+        "channel_id": "C033HLL3N81",
+        "is_ephemeral": False
+    },
+    "trigger_id": "5041592236598.351837801782.8d2a1e555be08bbf56da13aa30ce979f",
+    "team": {
+        "id": "TABQMPKP0",
+        "domain": "lexiapplications"
+    },
+    "enterprise": None,
+    "is_enterprise_install": None,
+    "channel": {
+        "id": "C033HLL3N81",
+        "name": "privategroup"
+    },
+    "message": {
+        "type": "message",
+        "subtype": "bot_message",
+        "text": "Sup",
+        "ts": "1680450653.878989",
+        "username": "Cortex XSOAR",
+        "icons": {
+            "image_48": "https:\/\/s3-us-west-2.amazonaws.com\/slack-files2\/bot_icons\/2021-06-29\/2227534346388_48.png"
+        },
+        "bot_id": "B01UZHGMQ9G",
+        "app_id": "A01TXQAGB2P",
+        "blocks": [{
+            "type": "section",
+            "block_id": "ih0cE",
+            "text": {
+                "type": "mrkdwn",
+                "text": "Sup",
+                "verbatim": False
+            }
+        }, {
+            "type": "actions",
+            "block_id": "QYM",
+            "elements": [{
+                "type": "button",
+                "action_id": "qYxYw",
+                "text": {
+                    "type": "plain_text",
+                    "text": "Yes",
+                    "emoji": True
+                },
+                "style": "primary",
+                "value": "{\"entitlement\": \"ed90ca83-a10d-404b-8b2c-e3e03b5902a0@614558f7-a8b7-4ac4-88e1-ce4f57170803\", \"reply\": \"Thank you for your response.\"}"
+            }, {
+                "type": "button",
+                "action_id": "eeCC",
+                "text": {
+                    "type": "plain_text",
+                    "text": "No",
+                    "emoji": True
+                },
+                "style": "danger",
+                "value": "{\"entitlement\": \"ed90ca83-a10d-404b-8b2c-e3e03b5902a0@614558f7-a8b7-4ac4-88e1-ce4f57170803\", \"reply\": \"Thank you for your response.\"}"
+            }]
+        }]
+    },
+    "state": {
+        "values": {}
+    },
+    "response_url": "https:\/\/hooks.slack.com\/actions\/TABQMPKP0\/5048198065858\/J7Hb4nSUyuQwc4wDo1qKfRRY",
+    "actions": [{
+        "action_id": "qYxYw",
+        "block_id": "QYM",
+        "text": {
+            "type": "plain_text",
+            "text": "Yes",
+            "emoji": True
+        },
+        "value": "{\"entitlement\": \"ed90ca83-a10d-404b-8b2c-e3e03b5902a0@614558f7-a8b7-4ac4-88e1-ce4f57170803\", \"reply\": \"Thank you for your response.\"}",
+        "style": "primary",
+        "type": "button",
+        "action_ts": "1680450674.825028"
+    }]
+}
+
+
+@pytest.fixture
+async def client_session():
+    session = aiohttp.ClientSession()
+    yield session
+    await session.close()
+
+
+@pytest.mark.asyncio
+async def test_listen(client_session):
+    """
+    Unit test for the `listen` function in the `SlackV3` module. This test case verifies that the function handles
+    Slack events correctly.
+
+    The test uses a mocked SocketModeRequest object and a mocked SocketModeClient object. It also mocks the Slack API
+    call and the `demisto.debug` method.
+
+    The test sets a return value for the `get_user_details` method, which is used in the function. It also sets a mock
+    response for the Slack API call.
+
+    The function is expected to call the `demisto.debug` method once with the message "Starting to process message",
+    and make a Slack API call with the expected JSON payload.
+    """
+    from unittest import mock
+    from slack_sdk.socket_mode.aiohttp import SocketModeClient
+    from slack_sdk.socket_mode.request import SocketModeRequest
+
+    import SlackV3
+
+    default_envelope_id = "SOMEID"
+
+    req = SocketModeRequest(type='event', payload=SAMPLE_PAYLOAD, envelope_id=default_envelope_id)
+    client = mock.MagicMock(spec=SocketModeClient)
+    with async_mock.patch.object(SlackV3, 'get_user_details') as mock_get_user_details, \
+         mock.patch.object(demisto, 'debug') as mock_debug,\
+         mock.patch.object(requests, 'post') as mock_send_slack_request,\
+         mock.patch.object(SlackV3, 'reset_listener_health'):
+
+        # Set the return value of the mocked get_user_details function
+        mock_user = {'id': 'mock_user_id', 'name': 'mock_user'}
+        mock_get_user_details.return_value = mock_user
+
+        mock_send_slack_request_response = {'ok': True}
+        mock_send_slack_request.return_value.json.return_value = mock_send_slack_request_response
+
+        await SlackV3.listen(client, req)
+
+        mock_debug.assert_called_once_with("Starting to process message")
+        assert mock_send_slack_request.call_args[1].get('json') == {'text': 'Thank you for your response.', 'replace_original': True}
