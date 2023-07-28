@@ -737,3 +737,17 @@ function SetIntegrationContext ([object]$context, $version = -1, [bool]$sync = $
     }
     return $demisto.SetIntegrationContext($context)
 }
+
+function MonitorMemoryUsage {
+    $processes = Get-Process
+    $memoryUsage = $processes | Measure-Object -Property WS -Sum | Select-Object -ExpandProperty Sum
+    $memoryUsageInMB = $memoryUsage / 1MB
+    $memoryUsageLimit = 500MB
+
+    if ($memoryUsageInMB -ge $memoryUsageLimit) {
+        $demisto.Warning("Memory usage: $memoryUsageInMB MB")
+        Exit
+    } else {
+        $demisto.Debug("Memory consumption is within the expected limits. Not killing container")
+    }
+}
