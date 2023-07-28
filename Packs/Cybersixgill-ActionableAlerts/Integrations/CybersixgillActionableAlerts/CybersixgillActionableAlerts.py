@@ -20,7 +20,7 @@ urllib3.disable_warnings()
 CHANNEL_CODE = '7698e8287dfde53dcd13082be750a85a'
 MAX_INCIDENTS = 25
 DEFAULT_INCIDENTS = '25'
-MAX_DAYS_BACK = 30
+MAX_DAYS_BACK = 300
 DEFAULT_DAYS_BACK = '1'
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 DEMISTO_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -130,8 +130,10 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         content_item['content'] = f'https://portal.cybersixgill.com/#/cve/{cve_id}'
         additional_info = item_info.get("additional_info", {})
         incident['CustomFields']['cve'] = cve_id
-        incident['CustomFields']['cybersixgillcvss31'] = additional_info.get("nvd", {}).get("v3", {}).get("current", -1)
-        incident['CustomFields']['cybersixgillcvss20'] = additional_info.get("nvd", {}).get("v2", {}).get("current", -1)
+        cybersixgillcvss31 = additional_info.get("nvd", {}).get("v3", {}).get("current")
+        cybersixgillcvss20 = additional_info.get("nvd", {}).get("v2", {}).get("current")
+        incident['CustomFields']['cybersixgillcvss31'] = cybersixgillcvss31 or -1
+        incident['CustomFields']['cybersixgillcvss20'] = cybersixgillcvss20 or -1
         incident['CustomFields']['cybersixgilldvescore'] = additional_info.get("score", {}).get("current")
         attributes = []
         for attribute in additional_info.get("attributes", []):
