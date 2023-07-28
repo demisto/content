@@ -668,6 +668,10 @@ script:
       - new
       - under_investigation
       - resolved
+      - resolved_contested_asset
+      - resolved_risk_accepted
+      - resolved_no_risk
+      - resolved_remediated_automatically
       description: Updated alert status.
     - name: severity
       auto: PREDEFINED
