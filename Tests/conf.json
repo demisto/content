@@ -79,6 +79,7 @@
         {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
+
         },
         {
             "integrations": [
@@ -224,7 +225,8 @@
         {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": "FireEye Central Management",
@@ -3681,7 +3683,8 @@
         },
         {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
-            "playbookID": "Audit Log - Test"
+            "playbookID": "Audit Log - Test",
+            "memory_threshold": 220
         },
         {
             "integrations": "Nutanix Hypervisor",
@@ -4709,7 +4712,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "GoogleDrive"
-            ]
+            ],
+            "memory_threshold": 300
         },
         {
             "playbookID": "RiskIQDigitalFootprint-Test",
@@ -5304,7 +5308,8 @@
                 "GoogleDrive"
             ],
             "playbookID": "GoogleSheets-Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 500
         },
         {
             "integrations": "CloudflareWAF",
@@ -5474,9 +5479,15 @@
         {
             "integrations": "Kaspersky Security Center",
             "playbookID": "Kaspersky Security Center - Test"
+        },
+        {
+            "integrations": "Forcepoint Security Management Center",
+            "playbookID": "ForcepointSecurityManagementCenter_test",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
+        "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
@@ -5614,7 +5625,6 @@
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
         "SymantecEndpointProtection_Test": "Issue 30157",
-        "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Elasticsearch_v2_test-v8": "CRTX-61980",
@@ -5650,7 +5660,6 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266",
         "EWS_O365_test": "Issue CIAC-6753"
     },
     "skipped_integrations": {
@@ -6056,7 +6065,7 @@
                 "memory_threshold": 105
             },
             "demisto/googleapi-python3": {
-                "memory_threshold": 200
+                "memory_threshold": 300
             },
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85
