@@ -746,35 +746,35 @@ def service_format(service_raw: Dict[str, Any]) -> List:
     service_details = [
         {
             "Field": "Service Type",
-            "Value": service_raw.get("service_type", "N/A")
+            "Value": service_raw.get("service_type", "n/a")
         },
         {
             "Field": "Service Name",
-            "Value": service_raw.get("service_name", "N/A")
+            "Value": service_raw.get("service_name", "n/a")
         },
         {
             "Field": "Active Classifications",
-            "Value": service_raw.get("active_classifications", "N/A")
+            "Value": service_raw.get("active_classifications", "n/a")
         },
         {
             "Field": "Business Units",
-            "Value": service_raw.get("business_units", "N/A")
+            "Value": service_raw.get("business_units", "n/a")
         },
         {
             "Field": "Provider",
-            "Value": service_raw.get("externally_detected_providers", "N/A")
+            "Value": service_raw.get("externally_detected_providers", "n/a")
         },
         {
             "Field": "IP Addresses",
-            "Value": service_raw.get("ip_address", "N/A")
+            "Value": service_raw.get("ip_address", "n/a")
         },
         {
             "Field": "Port",
-            "Value": service_raw.get("port", "N/A")
+            "Value": service_raw.get("port", "n/a")
         },
         {
             "Field": "Protocol",
-            "Value": service_raw.get("protocol", "N/A")
+            "Value": service_raw.get("protocol", "n/a")
         },
         {
             "Field": "First Observed",
