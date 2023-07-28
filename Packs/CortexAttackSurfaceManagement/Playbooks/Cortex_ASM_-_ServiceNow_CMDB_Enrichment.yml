@@ -931,8 +931,9 @@ tasks:
     task:
       id: b3351065-7372-46f0-8cb8-5a077dfc50e0
       version: -1
-      name: Was an enrichment status true?
+      name: Was enrichment performed?
       type: condition
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable
       iscommand: false
       brand: ""
     nexttasks:

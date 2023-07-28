@@ -720,6 +720,9 @@ tasks:
       iscommand: false
       brand: ""
       description: ''
+    nexttasks:
+      '#none#':
+      - "51"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1383,8 +1386,9 @@ tasks:
     task:
       id: 47a02475-dd52-4d9f-81e1-c699f98ff79b
       version: -1
-      name: Was an enrichment status true?
+      name: Was enrichment performed?
       type: condition
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable
       iscommand: false
       brand: ""
     nexttasks:

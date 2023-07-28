@@ -486,6 +486,7 @@ tasks:
       id: a6e41573-d1c0-4a54-8184-83fb1c54a985
       version: -1
       name: Was enrichment performed?
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable
       type: condition
       iscommand: false
       brand: ""
