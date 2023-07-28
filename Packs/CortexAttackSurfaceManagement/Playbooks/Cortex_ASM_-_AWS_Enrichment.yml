@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ea57a3ac-1c68-4a34-8764-c132a855b89f
+    taskid: c5d6e574-80f9-4ab3-8348-c21fe28c484c
     type: start
     task:
-      id: ea57a3ac-1c68-4a34-8764-c132a855b89f
+      id: c5d6e574-80f9-4ab3-8348-c21fe28c484c
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d3f9554b-b342-4875-8104-902f7628f0f6
+    taskid: 7dc3b115-2d0d-4e4f-8e69-86bf3402a316
     type: title
     task:
-      id: d3f9554b-b342-4875-8104-902f7628f0f6
+      id: 7dc3b115-2d0d-4e4f-8e69-86bf3402a316
       version: -1
       name: Set Field
       description: commands.local.cmd.set.incident
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f4662210-3499-4792-8d29-eb8551e4b02e
+    taskid: 69095596-4304-4079-84ee-7e217251a1a8
     type: regular
     task:
-      id: f4662210-3499-4792-8d29-eb8551e4b02e
+      id: 69095596-4304-4079-84ee-7e217251a1a8
       version: -1
       name: Set private IP grid field
       description: |-
@@ -115,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: fb023dd5-b398-444c-8a5c-1ff8987e5cf3
+    taskid: e1c09e77-60fd-4921-8d7b-78b5f50e194f
     type: condition
     task:
-      id: fb023dd5-b398-444c-8a5c-1ff8987e5cf3
+      id: e1c09e77-60fd-4921-8d7b-78b5f50e194f
       version: -1
       name: Is there EC2 information?
       description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
@@ -159,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 36177e14-4172-46c3-8aa6-3fa4ec04dddb
+    taskid: b539eb92-5cf1-4d65-894d-de968aadfc25
     type: title
     task:
-      id: 36177e14-4172-46c3-8aa6-3fa4ec04dddb
+      id: b539eb92-5cf1-4d65-894d-de968aadfc25
       version: -1
       name: Private IP
       type: title
@@ -190,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c0c69c6f-b899-4aca-82b4-529583d52fdc
+    taskid: fc6244ef-42c1-4f4f-897b-1e0d2a210cfe
     type: title
     task:
-      id: c0c69c6f-b899-4aca-82b4-529583d52fdc
+      id: fc6244ef-42c1-4f4f-897b-1e0d2a210cfe
       version: -1
       name: System IDs
       type: title
@@ -221,10 +221,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 79ad8016-473a-4c14-86db-140d34df0b42
+    taskid: 6bb6760f-8cf3-4623-87ff-ba9469d55f5e
     type: condition
     task:
-      id: 79ad8016-473a-4c14-86db-140d34df0b42
+      id: 6bb6760f-8cf3-4623-87ff-ba9469d55f5e
       version: -1
       name: Is there EC2 and security group information?
       description: Determines if there is EC2 and security group information to set in the system IDs field.
@@ -271,10 +271,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f09d04c3-a373-42b9-835f-0625bed72264
+    taskid: 5e7c8a92-bd35-468b-816b-6f358513025a
     type: regular
     task:
-      id: f09d04c3-a373-42b9-835f-0625bed72264
+      id: 5e7c8a92-bd35-468b-816b-6f358513025a
       version: -1
       name: Set system IDs grid field (VPC)
       description: |-
@@ -318,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: bc842cd6-7a1e-46d6-8ab8-831cf6429328
+    taskid: bcae2337-7c0e-4a8a-8b1d-f35aa1a1bb94
     type: regular
     task:
-      id: bc842cd6-7a1e-46d6-8ab8-831cf6429328
+      id: bcae2337-7c0e-4a8a-8b1d-f35aa1a1bb94
       version: -1
       name: Set system IDs grid field (SG)
       description: |-
@@ -365,10 +365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7fed654b-3df9-473a-82a8-021d51f7d7b5
+    taskid: 061253be-fb55-46ec-8c52-d1692e0af943
     type: regular
     task:
-      id: 7fed654b-3df9-473a-82a8-021d51f7d7b5
+      id: 061253be-fb55-46ec-8c52-d1692e0af943
       version: -1
       name: Set system IDs grid field (NET)
       description: |-
@@ -412,10 +412,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 2682239b-617f-4523-8466-3d93440c88b2
+    taskid: c65edca1-0d9d-4b37-8a7d-a0db10c819a9
     type: regular
     task:
-      id: 2682239b-617f-4523-8466-3d93440c88b2
+      id: c65edca1-0d9d-4b37-8a7d-a0db10c819a9
       version: -1
       name: Set system IDs grid field (NIC)
       description: |-
@@ -459,10 +459,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 362a9faf-19af-40c1-8aec-6a6aef64f362
+    taskid: ac9e6536-70b7-4de0-8937-f79feb43a838
     type: regular
     task:
-      id: 362a9faf-19af-40c1-8aec-6a6aef64f362
+      id: ac9e6536-70b7-4de0-8937-f79feb43a838
       version: -1
       name: Set system IDs grid field (EC2)
       description: |-
@@ -506,10 +506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 8e87af9e-c60c-46b0-8f15-386934fc14fd
+    taskid: 8e39a5e0-62d5-4b74-8be7-e8da00e3f488
     type: title
     task:
-      id: 8e87af9e-c60c-46b0-8f15-386934fc14fd
+      id: 8e39a5e0-62d5-4b74-8be7-e8da00e3f488
       version: -1
       name: Cloud
       type: title
@@ -537,10 +537,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ae752c67-c362-440c-892c-b0e76e7dfbdb
+    taskid: 6b534156-b0f7-4f49-82f7-82ea134feec4
     type: regular
     task:
-      id: ae752c67-c362-440c-892c-b0e76e7dfbdb
+      id: 6b534156-b0f7-4f49-82f7-82ea134feec4
       version: -1
       name: Set cloud grid field
       description: |-
@@ -594,10 +594,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 912e97cb-845c-410c-8bf5-34ae80601c0e
+    taskid: e359cde3-d98a-4141-86b5-b8600db14d12
     type: title
     task:
-      id: 912e97cb-845c-410c-8bf5-34ae80601c0e
+      id: e359cde3-d98a-4141-86b5-b8600db14d12
       version: -1
       name: Tags
       type: title
@@ -625,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7fb051d2-60d8-4943-86af-e4cc1b6fc883
+    taskid: c4eede25-b9a5-487d-8f79-b2a7666af1cb
     type: regular
     task:
-      id: 7fb051d2-60d8-4943-86af-e4cc1b6fc883
+      id: c4eede25-b9a5-487d-8f79-b2a7666af1cb
       version: -1
       name: Set tags grid field
       description: |-
@@ -674,10 +674,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 0a2b0187-2354-4aef-8c80-6f201f6c581b
+    taskid: 9b3e9b3d-38fd-41cc-8e38-310ce890188c
     type: playbook
     task:
-      id: 0a2b0187-2354-4aef-8c80-6f201f6c581b
+      id: 9b3e9b3d-38fd-41cc-8e38-310ce890188c
       version: -1
       name: AWS - Enrichment
       description: Given the IP address this playbook enriches EC2 and IAM information.
@@ -710,20 +710,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: b5bf659c-ec76-411c-8133-0d06eebf0d5e
+    taskid: 7c6422e0-b723-4d70-85b3-eaa958df637e
     type: title
     task:
-      id: b5bf659c-ec76-411c-8133-0d06eebf0d5e
+      id: 7c6422e0-b723-4d70-85b3-eaa958df637e
       version: -1
       name: Closing Steps
       type: title
       iscommand: false
       brand: ""
       description: ''
-    nexttasks:
-      '#none#':
-      - "43"
-      - "44"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -742,10 +738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 4e62bf87-1f16-47b9-8f0e-ef0168c8df9c
+    taskid: 889329a3-19b7-4945-89c3-c48dba206baa
     type: condition
     task:
-      id: 4e62bf87-1f16-47b9-8f0e-ef0168c8df9c
+      id: 889329a3-19b7-4945-89c3-c48dba206baa
       version: -1
       name: Are there EC2 tags?
       description: Determines if there is EC2 tag information to set the tags fields.
@@ -787,10 +783,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 96b672d3-f0d3-4d33-89ba-2ab85c25fd87
+    taskid: 3cc2a41a-bcaf-43e5-8848-192fe2764fcd
     type: playbook
     task:
-      id: 96b672d3-f0d3-4d33-89ba-2ab85c25fd87
+      id: 3cc2a41a-bcaf-43e5-8848-192fe2764fcd
       version: -1
       name: AWS - Unclaimed S3 Bucket Validation
       description: The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information.
@@ -819,10 +815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 1aa82310-94c5-4a69-8de4-286f85f1d203
+    taskid: a9cef5cd-de21-418b-81ff-9b3a89b07b07
     type: condition
     task:
-      id: 1aa82310-94c5-4a69-8de4-286f85f1d203
+      id: a9cef5cd-de21-418b-81ff-9b3a89b07b07
       version: -1
       name: Was an S3 bucket passed back?
       description: Determines if an S3 bucket was passed back or not.
@@ -861,10 +857,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 1695d013-7787-47b7-856c-40c0dabdada5
+    taskid: bfcbd460-c608-4d2d-8b85-f7d11cdc2899
     type: regular
     task:
-      id: 1695d013-7787-47b7-856c-40c0dabdada5
+      id: bfcbd460-c608-4d2d-8b85-f7d11cdc2899
       version: -1
       name: Set system IDs grid field (BucketName)
       description: |-
@@ -907,10 +903,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: ce046e34-dc7c-4f70-8d96-6331d3b6316a
+    taskid: e2a41c5d-3950-4f98-86b1-2569da7d676b
     type: condition
     task:
-      id: ce046e34-dc7c-4f70-8d96-6331d3b6316a
+      id: e2a41c5d-3950-4f98-86b1-2569da7d676b
       version: -1
       name: What is the sub-alert type?
       description: Determines the ASM sub-alert type for different scans.
@@ -958,10 +954,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 5430f8fa-e6f6-4c81-8170-06f9007d48fb
+    taskid: 2e067afb-e3c7-4566-8329-444ff9935d1c
     type: regular
     task:
-      id: 5430f8fa-e6f6-4c81-8170-06f9007d48fb
+      id: 2e067afb-e3c7-4566-8329-444ff9935d1c
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -973,6 +969,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: asm_enrichment_flag_aws
       value:
@@ -995,10 +993,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 80c31307-54f2-47b8-8556-e3484cd9bb4c
+    taskid: f2021814-7268-45cf-86e2-587df0a90eb1
     type: regular
     task:
-      id: 80c31307-54f2-47b8-8556-e3484cd9bb4c
+      id: f2021814-7268-45cf-86e2-587df0a90eb1
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1032,10 +1030,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 562ceb6b-4664-4494-8f7a-a2b3cb00c44e
+    taskid: 03622081-be2e-45a1-8bfe-30691917f557
     type: regular
     task:
-      id: 562ceb6b-4664-4494-8f7a-a2b3cb00c44e
+      id: 03622081-be2e-45a1-8bfe-30691917f557
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1047,6 +1045,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: asm_enrichment_flag_aws
       value:
@@ -1069,10 +1069,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: f330179a-cc85-4fd5-8fee-7c4f0f00d7e6
+    taskid: 2a5ba1aa-bd62-4db9-84aa-e550ae792187
     type: regular
     task:
-      id: f330179a-cc85-4fd5-8fee-7c4f0f00d7e6
+      id: 2a5ba1aa-bd62-4db9-84aa-e550ae792187
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1084,6 +1084,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: asm_enrichment_flag_aws
       value:
@@ -1106,10 +1108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 76ef9cb5-ce5b-4272-8fd2-8ae01e086e8b
+    taskid: a4e57af0-6ca7-459a-82df-07d2b092a611
     type: regular
     task:
-      id: 76ef9cb5-ce5b-4272-8fd2-8ae01e086e8b
+      id: a4e57af0-6ca7-459a-82df-07d2b092a611
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1143,10 +1145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 0b975434-3123-497e-86de-c39fa20b2431
+    taskid: bdc65d6a-9f8e-4412-886e-b32f5c151f38
     type: regular
     task:
-      id: 0b975434-3123-497e-86de-c39fa20b2431
+      id: bdc65d6a-9f8e-4412-886e-b32f5c151f38
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1158,6 +1160,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: asm_enrichment_flag_aws
       value:
@@ -1180,10 +1184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 343f7758-51df-4874-83f8-9fdaa8b70c51
+    taskid: d65dd862-5870-4121-816e-7775e30fbc4f
     type: regular
     task:
-      id: 343f7758-51df-4874-83f8-9fdaa8b70c51
+      id: d65dd862-5870-4121-816e-7775e30fbc4f
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1195,6 +1199,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: asm_enrichment_flag_aws_s3
       value:
@@ -1217,10 +1223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: dcecfa37-5d5d-4604-81a8-92652675d342
+    taskid: 607c8cc9-9bf2-4d33-8b73-fe4a0a122a8a
     type: regular
     task:
-      id: dcecfa37-5d5d-4604-81a8-92652675d342
+      id: 607c8cc9-9bf2-4d33-8b73-fe4a0a122a8a
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1254,10 +1260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 920d0d31-2f61-4813-8e71-ef5d4a3e3efc
+    taskid: e9ead50e-7025-4eb6-8149-b96a0bfba9d8
     type: title
     task:
-      id: 920d0d31-2f61-4813-8e71-ef5d4a3e3efc
+      id: e9ead50e-7025-4eb6-8149-b96a0bfba9d8
       version: -1
       name: Complete
       type: title
@@ -1269,8 +1275,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2340
+          "x": 440,
+          "y": 2730
         }
       }
     note: false
@@ -1282,10 +1288,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 52af0b3b-fc97-4177-8497-c77cdf50151d
+    taskid: e8b0825b-7112-4141-8543-170bec83f792
     type: regular
     task:
-      id: 52af0b3b-fc97-4177-8497-c77cdf50151d
+      id: e8b0825b-7112-4141-8543-170bec83f792
       version: -1
       name: Set ASM enrichment status field (s3)
       description: |-
@@ -1314,8 +1320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 2150
+          "x": 200,
+          "y": 2540
         }
       }
     note: false
@@ -1327,10 +1333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 9179a134-d791-4492-808e-f7156b8426a9
+    taskid: 9efdf1dd-f6f9-41ed-83ae-cc89e73bb804
     type: regular
     task:
-      id: 9179a134-d791-4492-808e-f7156b8426a9
+      id: 9efdf1dd-f6f9-41ed-83ae-cc89e73bb804
       version: -1
       name: Set ASM enrichment status field (AWS)
       description: |-
@@ -1359,8 +1365,119 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 2150
+          "x": 680,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 47a02475-dd52-4d9f-81e1-c699f98ff79b
+    type: condition
+    task:
+      id: 47a02475-dd52-4d9f-81e1-c699f98ff79b
+      version: -1
+      name: Was an enrichment status true?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      AWS (EC2):
+      - "44"
+      Both:
+      - "52"
+      S3:
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: Both
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws_s3
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: S3
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws_s3
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: AWS (EC2)
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 6937cd96-4768-43c0-82f3-75abe528a158
+    type: title
+    task:
+      id: 6937cd96-4768-43c0-82f3-75abe528a158
+      version: -1
+      name: Both
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2390
         }
       }
     note: false
@@ -1375,11 +1492,13 @@ view: |-
     "linkLabelsPosition": {
       "22_32_#default#": 0.32,
       "29_23_Unclaimed S3 Bucket": 0.71,
-      "4_32_#default#": 0.44
+      "4_32_#default#": 0.44,
+      "51_42_#default#": 0.85,
+      "51_52_Both": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 2405,
+        "height": 2795,
         "width": 2760,
         "x": -530,
         "y": 0

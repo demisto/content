@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 388441bb-83c7-44b4-8228-c10d3a4bab74
+    taskid: 21391673-cebd-400b-8989-02d88f323781
     type: start
     task:
-      id: 388441bb-83c7-44b4-8228-c10d3a4bab74
+      id: 21391673-cebd-400b-8989-02d88f323781
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9424140c-14f5-4115-88c5-c20a04c1129a
+    taskid: 93e61b69-6e58-48eb-8160-04750182141d
     type: condition
     task:
-      id: 9424140c-14f5-4115-88c5-c20a04c1129a
+      id: 93e61b69-6e58-48eb-8160-04750182141d
       version: -1
       name: Is Qualys enabled and input value defined?
       description: Determines if the "Qualys" integration instance is enabled in order to find assets and asset tags.
@@ -103,10 +103,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 75b65f6d-c35d-4c6b-87a1-53fba44d9ade
+    taskid: 8591339a-58df-48e1-8e54-5c4948d95821
     type: title
     task:
-      id: 75b65f6d-c35d-4c6b-87a1-53fba44d9ade
+      id: 8591339a-58df-48e1-8e54-5c4948d95821
       version: -1
       name: Done
       type: title
@@ -131,10 +131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 301a21d1-395b-4e3d-89ca-5a98105d456d
+    taskid: f61534f8-5f56-46d6-8351-95f5ae4d5e83
     type: regular
     task:
-      id: 301a21d1-395b-4e3d-89ca-5a98105d456d
+      id: f61534f8-5f56-46d6-8351-95f5ae4d5e83
       version: -1
       name: Lookup host information in Qualys
       description: View host information in the Qualys account.
@@ -173,10 +173,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 581c36a1-32b6-42ae-8686-292a399d1b3c
+    taskid: e0b7e13b-0ef6-4324-804c-18d37e723886
     type: title
     task:
-      id: 581c36a1-32b6-42ae-8686-292a399d1b3c
+      id: e0b7e13b-0ef6-4324-804c-18d37e723886
       version: -1
       name: Service Owner
       type: title
@@ -204,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 01668533-6ed8-420a-8cfb-6aa5aeecacb4
+    taskid: ed7f441b-883a-4c3d-8682-a17253f7b2c5
     type: title
     task:
-      id: 01668533-6ed8-420a-8cfb-6aa5aeecacb4
+      id: ed7f441b-883a-4c3d-8682-a17253f7b2c5
       version: -1
       name: Set Field
       type: title
@@ -237,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 60ee6e86-5b2f-4588-8389-b7c47fb540f6
+    taskid: c0ab571b-27f7-4b2f-8412-282c82312aa7
     type: title
     task:
-      id: 60ee6e86-5b2f-4588-8389-b7c47fb540f6
+      id: c0ab571b-27f7-4b2f-8412-282c82312aa7
       version: -1
       name: System IDs
       type: title
@@ -268,10 +268,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e144d234-e2bb-42fe-8b6c-7adf2debd72f
+    taskid: 1f5e5f5f-2229-4f6f-8e1d-712160673572
     type: title
     task:
-      id: e144d234-e2bb-42fe-8b6c-7adf2debd72f
+      id: 1f5e5f5f-2229-4f6f-8e1d-712160673572
       version: -1
       name: Tags
       type: title
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 30abe8b0-654f-4b49-8447-412362634bcd
+    taskid: d5811782-f9a0-4134-8385-4a59f15bde38
     type: condition
     task:
-      id: 30abe8b0-654f-4b49-8447-412362634bcd
+      id: d5811782-f9a0-4134-8385-4a59f15bde38
       version: -1
       name: Was a host found?
       description: Check whether the last command returned Qualys asset information or not.
@@ -344,10 +344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 21e9747a-4d22-4368-80e0-9964da14108a
+    taskid: 9650c653-3053-4740-8c9e-5ed3562ed28f
     type: condition
     task:
-      id: 21e9747a-4d22-4368-80e0-9964da14108a
+      id: 9650c653-3053-4740-8c9e-5ed3562ed28f
       version: -1
       name: Was an owner found?
       description: Check whether the last command has owner or not.
@@ -389,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 24a233a0-e121-4058-88d9-8cc0abd9278b
+    taskid: b1cce451-d215-4b81-87a7-07f2699d2836
     type: regular
     task:
-      id: 24a233a0-e121-4058-88d9-8cc0abd9278b
+      id: b1cce451-d215-4b81-87a7-07f2699d2836
       version: -1
       name: Set service owner grid field
       description: |-
@@ -443,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7b445fba-007d-4112-8814-d9be53af992a
+    taskid: 6efa5b66-fdc5-4b03-802a-99cad0b42c63
     type: regular
     task:
-      id: 7b445fba-007d-4112-8814-d9be53af992a
+      id: 6efa5b66-fdc5-4b03-802a-99cad0b42c63
       version: -1
       name: Get current time
       description: |
@@ -476,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 30666ce4-dba7-4b63-8822-da8be0f58d22
+    taskid: b02d9e73-e796-4d1d-871f-762de59071d3
     type: regular
     task:
-      id: 30666ce4-dba7-4b63-8822-da8be0f58d22
+      id: b02d9e73-e796-4d1d-871f-762de59071d3
       version: -1
       name: Set tags grid field
       description: |-
@@ -539,10 +539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 1a5c86b1-37f6-413f-8091-9f1ca67156ad
+    taskid: e6aad327-ab80-439e-83a6-5f96331f4b27
     type: condition
     task:
-      id: 1a5c86b1-37f6-413f-8091-9f1ca67156ad
+      id: e6aad327-ab80-439e-83a6-5f96331f4b27
       version: -1
       name: Was a tag present?
       description: Check whether the last command returned Qualys host with one or more tags.
@@ -584,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1b763ff4-9970-4f7c-8ebe-57106d5670f8
+    taskid: 2f36d8bf-1c06-45f3-84be-087c520a322d
     type: regular
     task:
-      id: 1b763ff4-9970-4f7c-8ebe-57106d5670f8
+      id: 2f36d8bf-1c06-45f3-84be-087c520a322d
       version: -1
       name: Set system IDs grid field (Host id)
       description: |-
@@ -631,10 +631,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a735c5bb-1f9a-49df-80e7-84b96878a1bf
+    taskid: c737255d-4571-477a-8887-b29ea923efc1
     type: regular
     task:
-      id: a735c5bb-1f9a-49df-80e7-84b96878a1bf
+      id: c737255d-4571-477a-8887-b29ea923efc1
       version: -1
       name: Set ASM - Enrichment Status
       description: |-
@@ -676,10 +676,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 1bbdc0bb-2552-49df-8bcf-41ff2c3d01d3
+    taskid: ea5e1f1e-027e-47ab-8765-0eec317445d0
     type: regular
     task:
-      id: 1bbdc0bb-2552-49df-8bcf-41ff2c3d01d3
+      id: ea5e1f1e-027e-47ab-8765-0eec317445d0
       version: -1
       name: Set ASM - Enrichment Status
       description: |-

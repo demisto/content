@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 15002d0c-2c5e-42de-8e7f-7f93c7e5d921
+    taskid: 6395a66d-a0ac-4c07-8324-2335ae7029f7
     type: start
     task:
-      id: 15002d0c-2c5e-42de-8e7f-7f93c7e5d921
+      id: 6395a66d-a0ac-4c07-8324-2335ae7029f7
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0d66d3b7-0bb8-4281-857b-a67f341f37ef
+    taskid: f2d28f63-f0cf-497e-8598-3e0008ad8616
     type: title
     task:
-      id: 0d66d3b7-0bb8-4281-857b-a67f341f37ef
+      id: f2d28f63-f0cf-497e-8598-3e0008ad8616
       version: -1
       name: |
         Done
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 68945e50-5bfb-4dd8-86e8-0db781462a74
+    taskid: 0f91d545-fe90-4b59-8943-5f24a675c341
     type: condition
     task:
-      id: 68945e50-5bfb-4dd8-86e8-0db781462a74
+      id: 0f91d545-fe90-4b59-8943-5f24a675c341
       version: -1
       name: Is Tenable.io enabled and is Input value defined?
       description: Determines if the Tenable.io integration instance is configured and Input values are defined to pull enrichment data.
@@ -132,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: a9c9cdf2-2119-41e7-81b8-4d64fced0764
+    taskid: dd57b1e8-5a14-4426-8512-575b56aa5fe5
     type: regular
     task:
-      id: a9c9cdf2-2119-41e7-81b8-4d64fced0764
+      id: dd57b1e8-5a14-4426-8512-575b56aa5fe5
       version: -1
       name: Lookup asset information by IP
       description: Retrieves details for the specified asset to include custom attributes.
@@ -170,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 294b4636-dccb-42d3-896f-1d484c859806
+    taskid: 7ef293a4-98f1-4044-8faf-03a62f105d98
     type: condition
     task:
-      id: 294b4636-dccb-42d3-896f-1d484c859806
+      id: 7ef293a4-98f1-4044-8faf-03a62f105d98
       version: -1
       name: Was an asset found?
       description: Check whether the last command returned Tenable.io asset information or not.
@@ -215,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 4b72c01c-f52d-4215-8d8e-e277707e786c
+    taskid: 5f6aec55-359b-48db-8163-b6d54511d2f4
     type: regular
     task:
-      id: 4b72c01c-f52d-4215-8d8e-e277707e786c
+      id: 5f6aec55-359b-48db-8163-b6d54511d2f4
       version: -1
       name: Extract indicators
       description: commands.local.cmd.extract.indicators
@@ -252,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 791ea5bf-f418-4849-8150-2078a2876d5a
+    taskid: b50ddd91-131f-4313-8587-d5c2e6fe374a
     type: condition
     task:
-      id: 791ea5bf-f418-4849-8150-2078a2876d5a
+      id: b50ddd91-131f-4313-8587-d5c2e6fe374a
       version: -1
       name: Was an email found?
       description: Check whether the last command extracted an email address or not.
@@ -297,10 +297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ca4b3174-eec8-41f7-8bd5-e4edbcc6ca9c
+    taskid: 5f874b24-9866-4276-827b-482ad9bda603
     type: regular
     task:
-      id: ca4b3174-eec8-41f7-8bd5-e4edbcc6ca9c
+      id: 5f874b24-9866-4276-827b-482ad9bda603
       version: -1
       name: Set service owner grid field
       description: |-
@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 2734e900-1db5-4b1f-842d-a93e4c748c15
+    taskid: 6ed6af27-c120-42b6-803f-e064b69a26d3
     type: regular
     task:
-      id: 2734e900-1db5-4b1f-842d-a93e4c748c15
+      id: 6ed6af27-c120-42b6-803f-e064b69a26d3
       version: -1
       name: Get current time
       description: |
@@ -382,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 1e965fed-8642-4dd4-8164-8bd5c05f92af
+    taskid: 8a0828de-d7ad-4e43-812f-b232aa3a28f2
     type: title
     task:
-      id: 1e965fed-8642-4dd4-8164-8bd5c05f92af
+      id: 8a0828de-d7ad-4e43-812f-b232aa3a28f2
       version: -1
       name: Service Owner
       type: title
@@ -413,10 +413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: bd2f49d4-bfb5-4db5-8594-22cdfa2d1f18
+    taskid: 9508fdb5-a929-42aa-8c86-d3ecb42da92b
     type: title
     task:
-      id: bd2f49d4-bfb5-4db5-8594-22cdfa2d1f18
+      id: 9508fdb5-a929-42aa-8c86-d3ecb42da92b
       version: -1
       name: Set Field
       type: title
@@ -446,10 +446,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f876b403-878f-4797-8a08-18671c4d9922
+    taskid: dd9fc021-ef0e-4c45-8b05-b97c7ffe6ae0
     type: title
     task:
-      id: f876b403-878f-4797-8a08-18671c4d9922
+      id: dd9fc021-ef0e-4c45-8b05-b97c7ffe6ae0
       version: -1
       name: System IDs
       type: title
@@ -477,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: bad0dba9-aa7a-46de-8b7e-b34634bdc168
+    taskid: 77cd9de1-4064-4174-89a0-0abccac470d9
     type: regular
     task:
-      id: bad0dba9-aa7a-46de-8b7e-b34634bdc168
+      id: 77cd9de1-4064-4174-89a0-0abccac470d9
       version: -1
       name: Set system IDs grid field (Asset_id)
       description: |-
@@ -535,10 +535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b8a184c1-bdbf-43d3-86f8-262fe326fecb
+    taskid: 798b0e60-7afe-46cb-8962-885a56ebe811
     type: title
     task:
-      id: b8a184c1-bdbf-43d3-86f8-262fe326fecb
+      id: 798b0e60-7afe-46cb-8962-885a56ebe811
       version: -1
       name: Tags
       type: title
@@ -566,10 +566,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 4bf11bde-e5a9-4451-884c-a98d60b6fddc
+    taskid: cdf162a8-b4d2-4fb8-858e-c153bef32826
     type: regular
     task:
-      id: 4bf11bde-e5a9-4451-884c-a98d60b6fddc
+      id: cdf162a8-b4d2-4fb8-858e-c153bef32826
       version: -1
       name: Set tags grid field
       description: |-
@@ -615,10 +615,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: df65bf86-0c7c-4cb3-8c16-80841b636158
+    taskid: 93aafad2-28d9-49e6-82a4-58a3882cab31
     type: condition
     task:
-      id: df65bf86-0c7c-4cb3-8c16-80841b636158
+      id: 93aafad2-28d9-49e6-82a4-58a3882cab31
       version: -1
       name: Was a tag present?
       description: Check whether the last command returned Tenable.io asset with one or more tags.
@@ -660,10 +660,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: ec3e1094-6ba9-4e17-83cc-c4b94513f8df
+    taskid: 85cbe1ca-ffde-40c0-899f-d5f6103d1c99
     type: regular
     task:
-      id: ec3e1094-6ba9-4e17-83cc-c4b94513f8df
+      id: 85cbe1ca-ffde-40c0-899f-d5f6103d1c99
       version: -1
       name: Set ASM enrichment status to true
       description: |-
@@ -705,10 +705,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e0ae79e3-f89f-45ef-88e0-c95529cde214
+    taskid: e1bdcc91-0fbc-4503-8b56-4a957f4c678e
     type: regular
     task:
-      id: e0ae79e3-f89f-45ef-88e0-c95529cde214
+      id: e1bdcc91-0fbc-4503-8b56-4a957f4c678e
       version: -1
       name: Set ASM enrichment status to false
       description: |-
