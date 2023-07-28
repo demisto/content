@@ -580,9 +580,9 @@ class HuntingQueryBuilder:
                 if not (device_id or device_name):
                     raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
 
-            elif query_purpose != 'powershell_execution_unsigned_files':
-                if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
-                    raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
+            elif (query_purpose != 'powershell_execution_unsigned_files' and
+            not (device_name or file_name or sha1 or sha256 or md5 or device_id)):
+                raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
 
             self._limit = limit * (int(page))
             self._query_operation = query_operation
