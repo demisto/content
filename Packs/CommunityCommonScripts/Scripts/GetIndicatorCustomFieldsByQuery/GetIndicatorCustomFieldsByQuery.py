@@ -1,9 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('GetIndicatorCustomFieldsByQuery', 'start', __line__())
-
-
 """
 Searches the TIM DB for device indicators based on the provided query string and returns along with their custom fields.
 """
@@ -44,4 +41,3 @@ def main():
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-register_module_line('GetIndicatorCustomFieldsByQuery', 'end', __line__())
