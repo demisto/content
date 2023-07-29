@@ -1,4 +1,8 @@
-Returns indicator custom fields into the context by the given query.
+
+Purpose:      This automation will return indicator custom fields into the context by the given query.
+Author:       Mahmood Azmat
+Input1:       Query for retrieving indicator(s).
+
 
 ## Script Data
 
