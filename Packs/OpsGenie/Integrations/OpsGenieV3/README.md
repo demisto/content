@@ -1862,7 +1862,7 @@ Lists team routing rules.
 | OpsGenie.TeamRoutingRule.name | unknown | Name of the routing rule. | 
 | OpsGenie.TeamRoutingRule.order | unknown | Order of the routing rule. | 
 | OpsGenie.TeamRoutingRule.id | unknown | ID of the routing rule. | 
-| OpsGenie.Team.RoutingRules.timezone | unknown | Timezone of the routing rule. | 
+| OpsGenie.TeamRoutingRule.timezone | unknown | Timezone of the routing rule. | 
 | OpsGenie.TeamRoutingRule.teamId | unknown | Team ID of the routing rule. | 
 | OpsGenie.TeamRoutingRule.customerId | unknown | Customer ID of the routing rule. | 
 | OpsGenie.TeamRoutingRule.notify.id | unknown | Notify ID of the routing rule. | 
