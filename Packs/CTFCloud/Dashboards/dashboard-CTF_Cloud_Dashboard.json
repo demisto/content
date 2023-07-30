@@ -1,0 +1,282 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "CTF Cloud Dashboard",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "762ef4f0-2952-11ee-a7bd-7fcc2b1d51f9",
+            "id": "762ef4f0-2952-11ee-a7bd-7fcc2b1d51f9",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "4fc2d3d6-a22c-4cf2-89f1-090147f42355",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-07-23T12:14:21.075546199Z",
+                "name": "Finished",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Finished",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctfsla.runStatus:ended",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "a27de200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "id": "a27de200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "c8ec1a35-af68-4293-857c-506035c82560",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-07-23T12:15:37.663704239Z",
+                "name": "Users that are doing the CTF",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "owner"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "User doing the CTF",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctfsla.runStatus:running",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "bar"
+            },
+            "x": 0,
+            "y": 6
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "d2678200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "id": "d2678200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "reflectDimensions": true,
+            "w": 10,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "79900405-6299-45ae-83e6-3279bd0fed11",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-07-23T12:16:55.375317441Z",
+                "name": "fastest Top 10 users finished",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "owner"
+                    ],
+                    "keys": [
+                        "avg|ctfsla.totalDuration"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "hours",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Top 10 users finished",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctfsla.runStatus:ended playbook:\"CTF - Analyst View - IAM\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 2,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "f0717f30-2970-11ee-960d-4d66530a43c1",
+            "id": "f0717f30-2970-11ee-960d-4d66530a43c1",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "6fabb894-5e21-443f-872d-6c69d7b10bd3",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-07-23T15:52:32.540751271Z",
+                "name": "Finished CTF Incidents",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "owner",
+                            "width": 160
+                        },
+                        {
+                            "displayed": true,
+                            "key": "CTF_SLA",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "List of all CTF incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"CTF - Analyst View - IAM\" ctfsla.runStatus:ended",
+                "shouldCommit": false,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "id",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 3
+        }
+    ],
+    "name": "CTF Cloud Dashboard",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.9.0",
+    "description": "",
+    "isPredefined": true
+}
