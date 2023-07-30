@@ -200,6 +200,7 @@ install-packs-in-server-master:
     TIME_TO_LIVE: ""
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     BUILD_TYPE: "upload"
+    CLOUD_SERVER_PATH: "xsiam_servers.json"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
