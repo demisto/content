@@ -1,4 +1,4 @@
-fromversion: 8.2.0 
+fromversion: 8.4.0 
 id: HPE_Aruba_ClearPass_ModelingRule
 name: HPE Aruba ClearPass Modeling Rule
 rules: ''
