@@ -264,7 +264,7 @@ tasks:
         simple: "1"
       query_expression:
         simple: |-
-          select  ${inputs.Fields} from events WHERE InOffense(${inputs.ID}) ${CRESettings}
+          select  ${inputs.Fields} from events WHERE INOFFENSE(${inputs.ID}) ${CRESettings}
           LIMIT ${inputs.MaxLogsCount}
           START '${Time}'
       timeout:
