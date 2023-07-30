@@ -16,6 +16,7 @@ PRODUCT = "forcepoint_dlp"
 DEFAULT_MAX_FETCH = 10000
 API_DEFAULT_LIMIT = 10000
 MAX_GET_IDS_CHUNK_SIZE = 1000
+DEFAULT_TEST_MODULE_SINCE_TIME = "3 days"
 DATEPARSER_SETTINGS = {
     "RETURN_AS_TIMEZONE_AWARE": True,
     "TIMEZONE": "UTC",
@@ -24,8 +25,10 @@ DATEPARSER_SETTINGS = {
 
 """ CLIENT CLASS """
 
+
 def to_str_time(t: datetime) -> str:
     return t.strftime("%m/%d/%Y %H:%M:%S")
+
 
 def from_str_time(s: str) -> datetime:
     return datetime.strptime(s, "%m/%d/%Y %H:%M:%S")
@@ -45,13 +48,12 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool, utc_now: datetime,
-                 api_limit = API_DEFAULT_LIMIT,
+                 api_limit=API_DEFAULT_LIMIT,
                  **kwargs):
         self.username = username
         self.password = password
         self.api_limit = api_limit
         self.utc_now = utc_now
-
 
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, **kwargs)
 
@@ -190,20 +192,20 @@ def fetch_events_command_sub(
     from_time = last_fetch_time
     events = []
     last_run_ids = set(last_run_ids or set())
-    new_last_run_ids: dict[datetime, set] = defaultdict(set)
+    new_last_run_ids: dict[str, set] = defaultdict(set)
     incidents_response = client.get_incidents(from_time, to_time)
     incidents = incidents_response["incidents"]
     for incident in incidents:
         if incident["id"] not in last_run_ids:
             events.append(incident)
-            new_last_run_ids[incident["event_time"]].add(incident["id"])
+            new_last_run_ids[to_str_time(incident["event_time"])].add(incident["id"])
             if len(events) == max_fetch:
                 break
 
     if not events and incidents:
         # Anti-starvation protection, we've exhausted all events for this second, but they're all duplicated.
         # This means that we've more events in the minimal epoch, that we're able to get in a single fetch.
-        next_fetch_time = to_str_time(from_time + timedelta(seconds=1))
+        next_fetch_time: str = to_str_time(from_time + timedelta(seconds=1))
         demisto.log(f"Moving the fetch to the next second:{next_fetch_time}, this means that any additional events in this "
                     f"second will be lost!")
         return [], [], next_fetch_time
@@ -223,9 +225,9 @@ def test_module_command(client: Client, first_fetch: datetime) -> str:
 def fetch_events(client, first_fetch, max_fetch):
     events = []
     forward = demisto.getLastRun().get("forward") or {
-                "last_fetch": to_str_time(datetime.utcnow() + timedelta(seconds=1)),
-                "last_events_ids": [],
-            }
+        "last_fetch": to_str_time(datetime.utcnow() + timedelta(seconds=1)),
+        "last_events_ids": [],
+    }
 
     from_time = from_str_time(forward["last_fetch"])
     to_time = client.utc_now
@@ -240,11 +242,11 @@ def fetch_events(client, first_fetch, max_fetch):
     events.extend(forward_events)
 
     backward = demisto.getLastRun().get("backward") or {
-                "last_fetch": arg_to_datetime(first_fetch, settings=DATEPARSER_SETTINGS),
-                "last_events_ids": [],
-                "to_time": to_str_time(client.utc_now),
-                "done": not first_fetch,  # If first fetch is set to a value, it means we have something backward to fetch.
-            }
+        "last_fetch": arg_to_datetime(first_fetch, settings=DATEPARSER_SETTINGS),
+        "last_events_ids": [],
+        "to_time": to_str_time(client.utc_now),
+        "done": not first_fetch,  # If first fetch is set to a value, it means we have something backward to fetch.
+    }
 
     if not backward["done"] and max_fetch - len(events):
         from_time = from_str_time(backward["last_fetch"])
@@ -295,7 +297,8 @@ def main():
             utc_now=datetime.utcnow(),
         )
         if command == "test-module":
-            return_results(test_module_command(client, first_fetch))
+            test_module_first_fetch: datetime = arg_to_datetime(DEFAULT_TEST_MODULE_SINCE_TIME, settings=DATEPARSER_SETTINGS)
+            return_results(test_module_command(client, test_module_first_fetch))
 
         elif command == "forcepoint-dlp-get-events":
             results, events = get_events_command(client, args)

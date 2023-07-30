@@ -3,12 +3,10 @@ import pytest
 
 import demistomock as demisto
 from ForcepointEventCollector import (
-    arg_to_datetime,
     fetch_events,
-    get_events_command,
     main,
     Client,
-    DATEPARSER_SETTINGS, to_str_time
+    to_str_time
 )
 
 #
@@ -112,34 +110,34 @@ def test_test_module(mocker, params, is_valid, result_msg):
 
 def generate_mocked_event(event_id, event_time):
     return {
-            "action": "AUTHORIZED",
-            "analyzed_by": "Policy Engine test.corp.service.com",
-            "channel": "EMAIL",
-            "destination": "John.Doe@test.com",
-            "details": "SOS",
-            "detected_by": "Forcepoint Email Security on test.corp.service.com",
-            "event_id": "14070409734372476071",
-            "event_time": event_time,
-            "file_name": "MIME Data.txt - 337.8 KB; MIME Data.txt - 59.47 KB",
-            "id": event_id,
-            "ignored_incidents": False,
-            "incident_time": event_time,
-            "maximum_matches": 1,
-            "partition_index": 20210213,
-            "policies": "TTL",
-            "released_incident": False,
-            "severity": "LOW",
-            "source": {
-                "business_unit": "Excluded Resources",
-                "department": "Quality Excellence",
-                "email_address": "John.Doe@test.com",
-                "login_name": "FooBar",
-                "manager": "John Doe"
-            },
-            "status": "New",
-            "transaction_size": 423151,
-            "violation_triggers": 1
-        }
+        "action": "AUTHORIZED",
+        "analyzed_by": "Policy Engine test.corp.service.com",
+        "channel": "EMAIL",
+        "destination": "John.Doe@test.com",
+        "details": "SOS",
+        "detected_by": "Forcepoint Email Security on test.corp.service.com",
+        "event_id": "14070409734372476071",
+        "event_time": event_time,
+        "file_name": "MIME Data.txt - 337.8 KB; MIME Data.txt - 59.47 KB",
+        "id": event_id,
+        "ignored_incidents": False,
+        "incident_time": event_time,
+        "maximum_matches": 1,
+        "partition_index": 20210213,
+        "policies": "TTL",
+        "released_incident": False,
+        "severity": "LOW",
+        "source": {
+            "business_unit": "Excluded Resources",
+            "department": "Quality Excellence",
+            "email_address": "John.Doe@test.com",
+            "login_name": "FooBar",
+            "manager": "John Doe"
+        },
+        "status": "New",
+        "transaction_size": 423151,
+        "violation_triggers": 1
+    }
 
 
 @pytest.mark.parametrize(
@@ -236,11 +234,11 @@ def test_fetch_events(mocker, scenario, first_fetch, utc_now, max_fetch, last_fe
                       incidents_per_time, returned_events_ids, forward_last_events_ids, forward_last_fetch,
                       backward_done, backward_last_events_ids, backward_last_fetch, backward_to_time):
 
-
     def mock_get_incidents(from_date, to_date):
         from_date_str = to_str_time(from_date)
         to_date_str = to_str_time(to_date)
-        incidents = [generate_mocked_event(event_id,  event_time) for event_id, event_time in incidents_per_time.get((from_date_str, to_date_str)).items()]
+        incidents = [generate_mocked_event(event_id, event_time)
+                     for event_id, event_time in incidents_per_time.get((from_date_str, to_date_str)).items()]
         return {
             "incidents": incidents[:api_limit],
             "total_count": len(incidents),

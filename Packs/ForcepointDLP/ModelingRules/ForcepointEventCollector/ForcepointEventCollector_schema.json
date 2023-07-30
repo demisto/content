@@ -1,5 +1,5 @@
 {
-  "forecepoint_dlp_raw": {
+  "forcepoint_dlp_raw": {
       "action": {
           "type": "string",
           "is_array": false
