@@ -144,20 +144,21 @@ def wait_until_not_updating(client: demisto_client,
 
     """
     end_time = datetime.utcnow() + timedelta(seconds=maximum_time_to_wait)
-    while attempts_count > 0 and datetime.utcnow() <= end_time:
+    while datetime.utcnow() <= end_time:
         success, updating_status = get_updating_status(client)
         if success:
             if not updating_status:
                 return True
             logging.debug(f"Server is still installation/updating status, sleeping for {sleep_interval} seconds.")
-        else:
-            logging.debug(f"failed to get installation/updating status, sleeping for {sleep_interval} seconds.")
-            attempts_count -= 1
-
-        # There are more attempts available, sleep and retry.
-        if attempts_count:
-log me
             sleep(sleep_interval)
+        else:
+            if attempts_count := attempts_count - 1:
+                logging.debug(f"failed to get installation/updating status, sleeping for {sleep_interval} seconds.")
+                sleep(sleep_interval)
+            else:
+                logging.info("Exiting after exhausting all attempts")
+                return False
+    logging.info(f"Exiting after exhausting the allowed time:{maximum_time_to_wait} seconds")
     return False
 
 
