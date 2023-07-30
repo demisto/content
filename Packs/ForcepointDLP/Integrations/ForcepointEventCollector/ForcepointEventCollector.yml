@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Forcepoint DLP Event Collector-dev1
+  id: Forcepoint DLP (v2) Event Collector
   version: -1
 configuration:
 - display: Server URL (e.g., https://<server url>:<server port>/)
@@ -42,8 +42,8 @@ configuration:
   section: Connect
   advanced: true
 description: Use this integration to fetch security incidents from Forcepoint DLP as XSIAM events.
-display: Forcepoint DLP Event Collector-dev1
-name: Forcepoint DLP Event Collector-dev1
+display: Forcepoint DLP (v2) Event Collector
+name: Forcepoint DLP (v2) Event Collector
 script:
   commands:
   - arguments:
@@ -67,12 +67,12 @@ script:
       isArray: false
       name: should_push_events
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: true
     description: Gets security events from Forcepoint DLP.
     name: forcepoint-dlp-get-events
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetchevents: true
   runonce: false
   script: ''
