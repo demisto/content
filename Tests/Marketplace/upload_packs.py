@@ -1280,7 +1280,7 @@ def main():
         return
 
     # list of all marketplace compatible content packs from the graph
-    x = marketplace_compatible_packs
+    all_content_packs = marketplace_compatible_packs
 
     # pack's list to update their index metadata and upload them.
     # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
