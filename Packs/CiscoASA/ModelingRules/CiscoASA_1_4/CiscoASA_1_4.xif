@@ -269,7 +269,7 @@ config case_sensitive = true
     src_interface = arrayindex(regextract(_raw_log ,"src\s([\w+\-\_]+)\:\d+\.\d+\.\d+\.\d+"),0),
     dst_interface1 = arrayindex(regextract(_raw_log ,"on\sinterface\s([\w\-\_]+)"),0),
     dst_interface2 = arrayindex(regextract(_raw_log ,"dst\s([\w+\-\_]+)\:\d+\.\d+\.\d+\.\d+"),0),
-    protocol1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s+[A-Za-z]+\s+([A-Z]{3,})\s+"),0)
+    protocol1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s+[A-Za-z]+\s+([A-Z]{3,})\s+"),0),
     protocol2 = arrayindex(regextract(_raw_log ,"\:\s([A-Za-z]+)\ssrc\s[\w+\-\_]+\:\d+\.\d+\.\d+\.\d+\sdst"),0)
 | alter protocol = coalesce(protocol1,protocol2)
 | alter
