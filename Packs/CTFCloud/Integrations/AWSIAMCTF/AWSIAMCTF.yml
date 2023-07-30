@@ -90,17 +90,6 @@ configuration:
   required: false
   section: Connect
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 487352e8-c013-40ec-8b79-c42738475330
-    packName: integrations
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Amazon Web Services Identity and Access Management (IAM)
 display: AWS - IAM_CTF
 name: AWS - IAM_CTF
@@ -1525,4 +1514,6 @@ script:
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: AWS - IAM_CTF
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
