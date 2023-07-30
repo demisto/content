@@ -373,31 +373,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-<<<<<<< HEAD
-version = "1.28.11"
-=======
 version = "1.28.15"
->>>>>>> new_bucket_xsoar_saas
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-<<<<<<< HEAD
-    {file = "boto3-1.28.11-py3-none-any.whl", hash = "sha256:e24460d50001b517c6734dcf1c879feb43aa2062d88d9bdbb8703c986cb05941"},
-    {file = "boto3-1.28.11.tar.gz", hash = "sha256:0fe7a35cf0041145c8eefebd3ae2ddf41baed62d7c963e5042b8ed8c297f648f"},
-]
-
-[package.dependencies]
-botocore = ">=1.31.11,<1.32.0"
-=======
     {file = "boto3-1.28.15-py3-none-any.whl", hash = "sha256:84b7952858e9319968b0348d9894a91a6bb5f31e81a45c68044d040a12362abe"},
     {file = "boto3-1.28.15.tar.gz", hash = "sha256:a6e711e0b6960c3a5b789bd30c5a18eea7263f2a59fc07f85efa5e04804e49d2"},
 ]
 
 [package.dependencies]
 botocore = ">=1.31.15,<1.32.0"
->>>>>>> new_bucket_xsoar_saas
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -406,23 +393,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-<<<<<<< HEAD
-version = "1.31.11"
-=======
 version = "1.31.15"
->>>>>>> new_bucket_xsoar_saas
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-<<<<<<< HEAD
-    {file = "botocore-1.31.11-py3-none-any.whl", hash = "sha256:d3cbffe554c9a1ba2ac6973734c43c21b8e7985a2ac4a4c31a09811b8029445c"},
-    {file = "botocore-1.31.11.tar.gz", hash = "sha256:b17ff973bb70b02b227928c2abe4992f1cfc46d13aee0228516c8f32572b88c6"},
-=======
     {file = "botocore-1.31.15-py3-none-any.whl", hash = "sha256:b3a0f787f275711875476cbe12a0123b2e6570b2f505e2fa509dcec3c5410b57"},
     {file = "botocore-1.31.15.tar.gz", hash = "sha256:b46d1ce4e0cf42d28fdf61ce0c999904645d38b51cb809817a361c0cec16d487"},
->>>>>>> new_bucket_xsoar_saas
 ]
 
 [package.dependencies]
@@ -1031,7 +1009,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.17.2"
+version = "1.18.0"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -1127,8 +1105,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "sdk_new_bucket_xsoar_saas"
-resolved_reference = "3b43dc5a439c14bfdf6977e4e72a1d0eea8a637d"
-
+resolved_reference = "bb5ef320d33e275fd2eaaa646f8c913098c3f748"
 
 [[package]]
 name = "deprecated"
@@ -6236,23 +6213,14 @@ files = [
 
 [[package]]
 name = "webdriver-manager"
-<<<<<<< HEAD
-version = "3.9.1"
-=======
 version = "4.0.0"
->>>>>>> new_bucket_xsoar_saas
 description = "Library provides the way to automatically manage drivers for different browsers"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-<<<<<<< HEAD
-    {file = "webdriver_manager-3.9.1-py2.py3-none-any.whl", hash = "sha256:1dfc29a786abb97ba28076d4766d931064eeeac71a9685a3e8d46f5d363fcbe3"},
-    {file = "webdriver_manager-3.9.1.tar.gz", hash = "sha256:cd1f49ebb325a98b4dc3c41056f5b645e82fff3f83e346607844ec0bdf561c0b"},
-=======
     {file = "webdriver_manager-4.0.0-py2.py3-none-any.whl", hash = "sha256:05f58ab599b907b03e0aa8d6b43624b1ca8c12d5d48455c79c531b9052ae2356"},
     {file = "webdriver_manager-4.0.0.tar.gz", hash = "sha256:2b8d1c2cb590d296ade18bc7bc2589578a868f5587133922d744641f6a757a20"},
->>>>>>> new_bucket_xsoar_saas
 ]
 
 [package.dependencies]
