@@ -2305,7 +2305,7 @@ def main():
     verify = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     base_url = demisto.params().get('url').rstrip('/')
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get("credentials", {}).get("password")
 
     try:
         headers = {

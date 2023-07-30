@@ -17,9 +17,11 @@ configuration:
   type: 13
   required: false
 - display: API Key
+  displaypassword: API Key
   name: apikey
-  type: 0
+  type: 9
   required: false
+  hiddenusername: true
 - display: Long running instance
   name: longRunning
   type: 8
