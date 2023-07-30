@@ -51,5 +51,6 @@ jobs:
         git commit -m "poetry files" -a
         git push origin ${{ inputs.release_version }}
         gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved"
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
       env:
         GH_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
