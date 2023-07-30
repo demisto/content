@@ -109,7 +109,7 @@ script: |2-
       "09" : ["true positive"],
       "10" : ["keepcalmandstaysecure"],
       "11" : ["192.42.116.193"],
-      "12" : ["ctf_pack"],
+      "12" : ["ctf cloud use case"],
       "13" : ["hastalavistababy","hasta lavista baby","hasta la vista baby","hast alavi stababy"],
       "14" : ["4331"],
       "15" : ["detected"],

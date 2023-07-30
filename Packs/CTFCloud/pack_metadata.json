@@ -1,5 +1,5 @@
 {
-    "name": "CTF - Cloud IAM Incident",
+    "name": "CTF Cloud Use Case",
     "description": "Not so easy... Follow the instrucstion to set up your enviorment and enjoy the challange.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
