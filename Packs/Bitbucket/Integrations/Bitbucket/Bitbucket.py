@@ -1553,7 +1553,7 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
         human_readable.append(d)
     headers = ['Name', 'AccountId']
     readable_output = tableToMarkdown(
-        name='The list of all the workspace members',
+        name='The list of  all the workspace members',
         t=human_readable,
         removeNull=True,
         headers=headers
