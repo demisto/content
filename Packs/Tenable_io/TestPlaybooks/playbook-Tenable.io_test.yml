@@ -5,23 +5,23 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3eb1d5e6-bcb1-4a56-8c2d-64454ee75da4
+    taskid: c6c8a575-ac97-4c57-8985-0c8c2dbddf84
     type: start
     task:
-      id: 3eb1d5e6-bcb1-4a56-8c2d-64454ee75da4
+      id: c6c8a575-ac97-4c57-8985-0c8c2dbddf84
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "4"
+      '#none#':
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -34,20 +34,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fc0ab069-67dc-4656-840e-40e061fa5975
+    taskid: 02f8833a-276b-4b9e-831c-34e78e2f5ab4
     type: regular
     task:
-      id: fc0ab069-67dc-4656-840e-40e061fa5975
+      id: 02f8833a-276b-4b9e-831c-34e78e2f5ab4
       version: -1
       name: tenable-io-list-scans
       description: Retrive scans from the Tenable platform.
-      script: "|||tenable-io-list-scans"
+      script: '|||tenable-io-list-scans'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     scriptarguments:
       retry-count:
         simple: "2"
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -69,22 +69,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 17b6cd73-2dc3-45e7-85d5-ce88bd5fb133
+    taskid: 449437fd-8d0d-4dff-8ae2-14cd72c9fbcb
     type: regular
     task:
-      id: 17b6cd73-2dc3-45e7-85d5-ce88bd5fb133
+      id: 449437fd-8d0d-4dff-8ae2-14cd72c9fbcb
       version: -1
       name: tenable-io-get-scan-status
-      description:
-        "Check the status of a specific scan using its ID. The status can
-        hold following possible values : Running, Completed and Empty (Ready to run)."
-      script: "|||tenable-io-get-scan-status"
+      description: 'Check the status of a specific scan using its ID. The status can
+        hold following possible values : Running, Completed and Empty (Ready to run).'
+      script: '|||tenable-io-get-scan-status'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "3"
+      '#none#':
+      - "3"
     scriptarguments:
       retry-count:
         simple: "2"
@@ -95,7 +94,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -108,20 +107,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3426c644-a954-47ad-8c11-ae8ad0128a1a
+    taskid: 9614d1d3-fb7c-4b3e-84df-66a37dbe8893
     type: regular
     task:
-      id: 3426c644-a954-47ad-8c11-ae8ad0128a1a
+      id: 9614d1d3-fb7c-4b3e-84df-66a37dbe8893
       version: -1
       name: tenable-io-get-scan-report
       description: Retrive scan-report for the given scan.
-      script: "|||tenable-io-get-scan-report"
+      script: '|||tenable-io-get-scan-report'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "6"
+      '#none#':
+      - "6"
     scriptarguments:
       detailed:
         simple: "yes"
@@ -136,7 +135,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
@@ -149,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c29ead08-0608-4606-8d8a-47502664aa06
+    taskid: c35c7a8d-cf71-44c3-867b-95973eae02f9
     type: regular
     task:
-      id: c29ead08-0608-4606-8d8a-47502664aa06
+      id: c35c7a8d-cf71-44c3-867b-95973eae02f9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -161,8 +160,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "1"
+      '#none#':
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -171,7 +170,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -184,20 +183,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 032d62f2-48ee-4da9-8d44-102483d55381
+    taskid: 63b25736-4cf8-4558-8393-afa52547bf6f
     type: regular
     task:
-      id: 032d62f2-48ee-4da9-8d44-102483d55381
+      id: 63b25736-4cf8-4558-8393-afa52547bf6f
       version: -1
       name: tenable-io-get-vulnerability-details
       description: Retrieve details for the given vulnerability.
-      script: "|||tenable-io-get-vulnerability-details"
+      script: '|||tenable-io-get-vulnerability-details'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "7"
+      '#none#':
+      - "7"
     scriptarguments:
       retry-count:
         simple: "2"
@@ -210,7 +209,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
@@ -223,22 +222,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d100973b-5dd5-42bc-81e1-9823410df2bd
+    taskid: 8299cc5a-ed19-4d7a-88c3-9367b5f889f7
     type: regular
     task:
-      id: d100973b-5dd5-42bc-81e1-9823410df2bd
+      id: 8299cc5a-ed19-4d7a-88c3-9367b5f889f7
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
-      description:
-        Get a list of up to 5000 of the vulnerabilities recorded for a
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a
         given asset. By default, this list is sorted by vulnerability count, descending.
-      script: "|||tenable-io-get-vulnerabilities-by-asset"
+      script: '|||tenable-io-get-vulnerabilities-by-asset'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "5"
+      '#none#':
+      - "5"
     scriptarguments:
       hostname:
         simple: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
@@ -249,7 +247,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -262,20 +260,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: af2fd25a-6070-4fcb-8ac0-17f7600230c2
+    taskid: bbbfda0b-1553-4185-817b-d11b787fb8bd
     type: regular
     task:
-      id: af2fd25a-6070-4fcb-8ac0-17f7600230c2
+      id: bbbfda0b-1553-4185-817b-d11b787fb8bd
       version: -1
       name: Tenable-io-export-assets
       description: Retrieves details for the specified asset to include custom attributes.
-      script: "|||tenable-io-export-assets"
+      script: '|||tenable-io-export-assets'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "10"
+      '#none#':
+      - "10"
     scriptarguments:
       chunkSize:
         simple: "500"
@@ -286,7 +284,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1245
         }
       }
@@ -299,10 +297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 15d882e0-c3d6-4ff4-84a5-7b3204797396
+    taskid: f5aca946-7998-4349-8406-af958323e879
     type: regular
     task:
-      id: 15d882e0-c3d6-4ff4-84a5-7b3204797396
+      id: f5aca946-7998-4349-8406-af958323e879
       version: -1
       name: Tenable-io-export-vulnerability
       description: Retrieves details for the specified asset to include custom attributes.
@@ -311,8 +309,8 @@ tasks:
       iscommand: true
       brand: Tenable.io
     nexttasks:
-      "#none#":
-        - "9"
+      '#none#':
+      - "9"
     scriptarguments:
       numAssets:
         simple: "500"
@@ -321,7 +319,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1595
         }
       }
@@ -334,10 +332,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 8dc9bb01-ba06-4464-8cd2-4be0fe360fee
+    taskid: 5688eba5-b52a-49ea-85f4-9a4611f33454
     type: condition
     task:
-      id: 8dc9bb01-ba06-4464-8cd2-4be0fe360fee
+      id: 5688eba5-b52a-49ea-85f4-9a4611f33454
       version: -1
       name: Verify vulnerabilities
       type: condition
@@ -345,21 +343,22 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "12"
+      - "12"
+      - "13"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: TenableIO.Vulnerability.asset
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Vulnerability.asset
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1770
         }
       }
@@ -372,10 +371,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: afb82e34-3d4c-4307-84dc-f7e2f3f866b7
+    taskid: f8b35fd8-eedd-4b54-8cf2-d62e01c0daa5
     type: condition
     task:
-      id: afb82e34-3d4c-4307-84dc-f7e2f3f866b7
+      id: f8b35fd8-eedd-4b54-8cf2-d62e01c0daa5
       version: -1
       name: Verify assets
       type: condition
@@ -383,21 +382,21 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "8"
+      - "8"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: TenableIO.Asset.id
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: TenableIO.Asset.id
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1420
         }
       }
@@ -410,10 +409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 681e360e-2a88-441d-8141-87cfb3801e5f
+    taskid: 71e70fae-1bd1-430b-8e1e-6ae63ed3ad91
     type: title
     task:
-      id: 681e360e-2a88-441d-8141-87cfb3801e5f
+      id: 71e70fae-1bd1-430b-8e1e-6ae63ed3ad91
       version: -1
       name: Done
       type: title
@@ -424,8 +423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2120
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
@@ -437,26 +436,35 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 6095f68c-243e-490f-8729-16a5f268ce9c
-    type: playbook
+    taskid: 53df8437-0b55-47ce-8cae-e6a8fb679000
+    type: regular
     task:
-      id: 6095f68c-243e-490f-8729-16a5f268ce9c
+      id: 53df8437-0b55-47ce-8cae-e6a8fb679000
       version: -1
-      name: Tenable.io Run And Export Scan Test
-      playbookName: Tenable.io Run And Export Scan Test
-      type: playbook
-      iscommand: false
-      brand: ""
+      name: Run get-scan-history Command
+      description: Lists the individual runs of the specified scan.
+      script: Tenable.io|||tenable-io-get-scan-history
+      type: regular
+      iscommand: true
+      brand: Tenable.io
     nexttasks:
-      "#none#":
-        - "11"
-    separatecontext: true
+      '#none#':
+      - "14"
+    scriptarguments:
+      excludeRollover:
+        simple: "true"
+      page:
+        simple: "2"
+      pageSize:
+        simple: "1"
+      scanId:
+        simple: "16"
+      sortFields:
+        simple: end_date,status
+      sortOrder:
+        simple: desc
+    separatecontext: false
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
@@ -471,13 +479,130 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d9871de6-59ae-4674-87a3-f1e466c23ca6
+    type: regular
+    task:
+      id: d9871de6-59ae-4674-87a3-f1e466c23ca6
+      version: -1
+      name: Run list-scan-filters Command
+      description: Lists the filtering, sorting, and pagination capabilities available
+        for scan records on endpoints/commands that support them.
+      script: Tenable.io|||tenable-io-list-scan-filters
+      type: regular
+      iscommand: true
+      brand: Tenable.io
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: cba667e0-e859-4813-891b-c7a829e6095a
+    type: regular
+    task:
+      id: cba667e0-e859-4813-891b-c7a829e6095a
+      version: -1
+      name: Run export-scan Command
+      description: Export and download a scan report.
+      script: Tenable.io|||tenable-io-export-scan
+      type: regular
+      iscommand: true
+      brand: Tenable.io
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      assetId:
+        simple: "10"
+      chapters:
+        simple: vuln_hosts_summary,remediations,compliance_exec,vuln_by_host,compliance,vuln_by_plugin
+      filterName:
+        complex:
+          root: TenableIO.ScanFilter.name
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "1"
+              to:
+                value:
+                  simple: "3"
+      filterQuality:
+        complex:
+          root: TenableIO.ScanFilter.operators
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "1"
+              to:
+                value:
+                  simple: "3"
+      filterSearchType:
+        simple: or
+      filterValue:
+        complex:
+          root: TenableIO.ScanFilter.control
+          accessor: readable_regex
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "1"
+              to:
+                value:
+                  simple: "3"
+      format:
+        simple: HTML
+      historyId:
+        simple: ${TenableIO.ScanHistory.id}
+      historyUuid:
+        simple: ${TenableIO.ScanHistory.scan_uuid}
+      scanId:
+        simple: "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 380,
+        "height": 2310,
+        "width": 810,
         "x": 50,
         "y": 50
       }
