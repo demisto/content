@@ -1,5 +1,6 @@
 import pytest
 from GeneratePassword import generate_password, SYMBOLS
+from CommonServerPython import DemistoException
 
 
 def does_password_meet_requirement(
@@ -30,7 +31,6 @@ def does_password_meet_requirement(
     'min_lowercase, max_lowercase, min_uppercase, max_uppercase, min_digits, max_digits, min_symbols, max_symbols',
     [
         (1, 2, 1, 2, 1, 2, 1, 2),  # Test case with all ranges set to 1-2
-        (0, 5, 0, 5, 0, 5, 0, 5),  # Test case with all ranges set to 0-5
         (2, 5, 3, 5, 4, 6, 1, 3),  # Test case with various ranges
     ]
 )
@@ -69,3 +69,35 @@ def test_generate_password(
         min_symbols,
         max_symbols,
     )
+
+
+@pytest.mark.parametrize(
+    'min_lowercase, max_lowercase, min_uppercase, max_uppercase, min_digits, max_digits, min_symbols, max_symbols',
+    [
+        (0, 5, 0, 5, 0, 5, 0, 5),  # Test case with all ranges set to 0-5
+    ]
+)
+def test_generate_password_zero_inputs(
+    min_lowercase: int,
+    max_lowercase: int,
+    min_uppercase: int,
+    max_uppercase: int,
+    min_digits: int,
+    max_digits: int,
+    min_symbols: int,
+    max_symbols: int,
+):
+    args = {
+        'debug': 'true',
+        'min_lcase': min_lowercase,
+        'max_lcase': max_lowercase,
+        'min_ucase': min_uppercase,
+        'max_ucase': max_uppercase,
+        'min_digits': min_digits,
+        'max_digits': max_digits,
+        'min_symbols': min_symbols,
+        'max_symbols': max_symbols,
+    }
+    with pytest.raises(DemistoException) as e:
+        generate_password(args)
+    assert 'error: At least one of the following arguments' in str(e)
