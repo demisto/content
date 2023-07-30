@@ -49,7 +49,8 @@ Create an alert in Opsgenie.
 | tags | Comma-separated list of tags to add. | Optional | 
 | priority | Incident priority. Possible values are: P1, P2, P3, P4, P5. Default is P3. | Optional | 
 | source | Display name of the request source. Defaults to IP address of the request sender. | Optional | 
-| note | Additional alert note. | Optional | 
+| note | Additional alert note. | Optional |
+| details | Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01". | Optional |
 
 
 #### Context Output
