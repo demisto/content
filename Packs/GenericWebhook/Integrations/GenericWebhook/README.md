@@ -18,9 +18,11 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 
 4. Click **Done**.
 5. Navigate to  **Settings > About > Troubleshooting**.
-6. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+6. (For Cortex XSOAR 6.x) In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 
-You can now trigger the webhook URL: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/webhook`. Please note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+You can now trigger the webhook URL:
+- For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/webhook`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+- For Cortex XSOAR 8: '<https://ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, https://ext-dev-tertius.crtx.us.paloaltonetworks.com/xsoar/instance/execute/webhook1. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
 
 If you're not invoking the integration via the server HTTPS endpoint, then you should trigger the webhook URL as follows: `<CORTEX-XSOAR-URL>:<LISTEN_PORT>/`. For example, `https://my.demisto.live:8000/`.
 
