@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import difflib
 
 
-def stringSimilarity(firstString: str, second_string: str, similarityThreshold: float):
+def stringSimilarity(firstString: str, secondString: str, similarityThreshold: float):
     """
     Calculate the similarity score between two strings using the SequenceMatcher.
 
@@ -25,26 +25,31 @@ def stringSimilarity(firstString: str, second_string: str, similarityThreshold: 
         ValueError: If the similarity ratio is below the 'similarityThreshold', a ValueError is raised
                     with a message indicating that no similarity score is calculated.
     """
-    similarity_ratio = difflib.SequenceMatcher(None, firstString, second_string).ratio()
-    if similarity_ratio >= similarityThreshold:
-        commandResults = CommandResults("StringSimilarity", "SimilarityScore", {
-            "StringA": firstString,
-            "StringB": second_string,
-            "SimilarityScore": similarity_ratio
-        })
-        return commandResults
 
-    # Raise an exception if none of the conditions are met.
-    return ValueError("No similarity score calculated. Check the similarityThreshold value.")
+    similarity_ratio = difflib.SequenceMatcher(None, firstString, secondString).ratio()
+    if similarity_ratio >= float(similarityThreshold):
+        json_results = {
+            "StringA": firstString,
+            "StringB": secondString,
+            "SimilarityScore": similarity_ratio
+        }
+
+    return json_results
 
 
 def main():
-    similarity_threshold = float(demisto.getArg('similarity_threshold'))
-    first_string = demisto.getArg('string_A')
-    second_string = demisto.getArg('string_B')
-    commandResults = stringSimilarity(first_string, second_string, similarity_threshold)
+    similarityThreshold = demisto.getArg('similarity_threshold')
+    firstString = demisto.getArg('string_A')
+    secondString = demisto.getArg('string_B')
 
-    return_results(commandResults)
+    try:
+        results = stringSimilarity(firstString, secondString, similarityThreshold)
+
+        commandResults = CommandResults("StringSimilarity", ["StringA", "StringB"], results)
+
+        return_results(commandResults)
+    except Exception as e:
+        return_error(f'Failed to check string similarity. Problem: {str(e)}')
 
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
