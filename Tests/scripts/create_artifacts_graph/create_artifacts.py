@@ -105,7 +105,7 @@ def main():
 
     with Neo4jContentGraphInterface() as interface:
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
-        packs_to_create_zips = {}
+        packs_to_create_zips = set()
         if args.content_packs:
             packs_to_create_zips = {p.strip() for p in args.content_packs.split(',') if p not in IGNORED_FILES}
         logger.debug(f"Got packs to create artifacts: {packs_to_create_zips}")
