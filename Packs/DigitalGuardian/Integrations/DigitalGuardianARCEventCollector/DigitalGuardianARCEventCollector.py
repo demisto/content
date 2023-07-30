@@ -22,10 +22,8 @@ class Client(BaseClient):
     implements get_token and get_events functions
     """
 
-    def __init__(self, verify, proxy, auth_url, gateway_url, client_id, client_secret, export_profile,
-                 headers=None, base_url=None):
+    def __init__(self, verify, proxy, auth_url, base_url, client_id, client_secret, export_profile, headers=None):
         self.auth_url = auth_url
-        self.gateway_url = gateway_url
         self.client_id = client_id
         self.client_secret = client_secret
         self.export_profile = export_profile
@@ -65,7 +63,7 @@ class Client(BaseClient):
         }
         response = self._http_request(
             method='GET',
-            full_url=f'{self.gateway_url}/rest/2.0/export_profiles/{self.export_profile}/export?q=dg_time:last_n_days,1',
+            #full_url=f'{self.gateway_url}/rest/2.0/export_profiles/{self.export_profile}/export?q=dg_time:last_n_days,1',
             headers=headers,
         )
         return response
@@ -224,6 +222,7 @@ def main() -> None:  # pragma: no cover
     client_secret = params.get('client_secret')
     export_profile = params.get('export_profile')
     verify_certificate = not params.get('insecure', False)
+    base_url = urljoin(gateway_url, f'/rest/2.0/export_profiles/{export_profile}/export?q=dg_time:last_n_days,1')
     next_run = None
 
     # How much time before the first fetch to retrieve events
@@ -236,7 +235,7 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             auth_url=auth_url,
-            gateway_url=gateway_url,
+            base_url=base_url,
             client_id=client_id,
             client_secret=client_secret,
             export_profile=export_profile
