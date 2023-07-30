@@ -808,28 +808,6 @@ def test_search_users_empty_userAccountControl(mocker):
         mock.assert_called_with(expected_results)
 
 
-def test_test_credentials_old(mocker):
-    """
-    Given:
-        The 'userAccountControl' attribute was returned empty
-    When:
-        Run the 'ad-test-credentials' command
-    Then:
-        The result returns without raise IndexError: list index out of range
-    """
-    import Active_Directory_Query 
-    args = {'username': 'username_test_credentials', 'password': 'password_test_credentials',
-            'ntlm': 'true'}
-    mocker.patch.object(demisto, 'args', return_value=args)
-
-    class ConnectionMocker:
-        entries = []
-        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': b'<cookie>'}}}}
-    Active_Directory_Query.conn = ConnectionMocker()
-    command_results = Active_Directory_Query.test_credentials(BASE_TEST_PARAMS['server_ip'])
-    assert command_results
-
-
 def test_test_credentials(mocker):
     """
     Given:
