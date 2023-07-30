@@ -64,8 +64,8 @@ class Client(BaseClient):
         }
         response = self._http_request(
             method='GET',
-            #full_url=f'{self.gateway_url}/rest/2.0/export_profiles/{self.export_profile}/export?q=dg_time:last_n_days,1',
             headers=headers,
+            params={'q': 'dg_time:last_n_days,1'}
         )
         return response
 
@@ -82,7 +82,6 @@ def test_module(client: Client, params: Dict[str, Any]) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-
     try:
         limit = arg_to_number(params.get('number_of_events', 1000))
         fetch_events(
@@ -223,7 +222,8 @@ def main() -> None:  # pragma: no cover
     client_secret = params.get('client_secret')
     export_profile = params.get('export_profile')
     verify_certificate = not params.get('insecure', False)
-    base_url = urljoin(gateway_url, f'/rest/2.0/export_profiles/{export_profile}/export?q=dg_time:last_n_days,1')
+    base_url = urljoin(gateway_url, f'/rest/2.0/export_profiles/{export_profile}/export')
+    demisto.debug(f'the base url is:{base_url}')
     next_run = None
 
     # How much time before the first fetch to retrieve events
@@ -236,7 +236,7 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             auth_url=auth_url,
-            geteway_url=gateway_url,
+            gateway_url=gateway_url,
             base_url=base_url,
             client_id=client_id,
             client_secret=client_secret,
