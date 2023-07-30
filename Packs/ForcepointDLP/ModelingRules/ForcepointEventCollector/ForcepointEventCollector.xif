@@ -15,7 +15,7 @@ alter   xdm.observer.action=action
         observer_type = arrayindex(regextract(detected_by, "(.+?)\s+on"), 0)
 | alter xdm.observer.type = coalesce(observer_type, detected_by)
         xdm.source.host.device_category=endpoint_type
-        xdm.event.id=to_integer(event_id)
+        xdm.event.id=event_id
         file_name_array = arraymap(regextract(file_name, "(.+?)\s+\-\s+\d+[\.\d]*\s+[KMGTP]*B;?"), trim("@element"))
 | alter file_type_array = arraymap(file_name_array, if("@element" ~= "\.[\w]+$", arrayindex(regextract("@element", ".+?\.(\w+)$"), 0), ""))
 | alter xdm.target.file.filename = arraystring(file_name_array, ";")
