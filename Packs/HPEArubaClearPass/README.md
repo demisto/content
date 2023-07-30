@@ -1,6 +1,6 @@
 # HPE Aruba ClearPass
 This pack includes Cortex XSIAM content.
-
+<~XSIAM>
 ## Collect Events from Product
 You need to configure Aruba ClearPass to forward Syslog messages in CEF format.
 
@@ -19,7 +19,7 @@ Open your Aruba ClearPass UI and follow these instructions:
 3. Save your filter.
 
 * Pay attention: Timestamp parsing is supported for the **rt** field.
-
+</~XSIAM>
 
 Use this content pack to help automate adding devices in the network to a block list in response to security events, such as a stolen or compromised device.
 
