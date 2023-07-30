@@ -211,7 +211,7 @@ tasks:
             value:
               complex:
                 root: StringSimilarity
-                accessor: similarityScore
+                accessor: SimilarityScore
             iscontext: true
           right:
             value: {}
@@ -252,7 +252,9 @@ tasks:
       value:
         complex:
           root: StringSimilarity
-          accessor: string_A
+          accessor: StringA
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -342,6 +344,9 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      similarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreashold
       similiarity_threshold:
         complex:
           root: inputs.StringSimilarityThreashold
