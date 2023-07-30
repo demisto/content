@@ -216,6 +216,7 @@ install-packs-in-server-master:
         echo "Setting BUILD_TYPE to build in test upload-flow"
         BUILD_TYPE="build"
       fi
+    - echo "$BUILD_TYPE"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
