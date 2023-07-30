@@ -52,6 +52,8 @@ def get_diff(existing_metadata: dict, new_metadata: dict, missing_in: str, paren
     different_keys = []
     different_ignored_keys = []
     for key, val in existing_metadata.items():
+        if key in IGNORE_FIELDS:
+            continue
 
         if key not in new_metadata:
             add_diff_to_list(key, parent_key, different_keys, different_ignored_keys)
