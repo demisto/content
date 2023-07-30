@@ -42,6 +42,12 @@ To find the appropriate Endpoint URI, use the following resources:
 - For Worldwide or Geo Proximity URLs, see [Supported Microsoft 365 Defender APIs](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris)
 - For Us Government & DoD URLs, see [Microsoft Defender for Endpoint for US Government customers](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api)
 
+## Log ingestion
+
+Note: In order to parse the timestamp correctly, make sure that the timestamp field is in UTC time zone (timestamp ends with "Z").
+The supported time format is yyyy-MM-ddThh:mm:%E3S (2021-12-08 10:00:00.123Z). The relevant field is "lastEventTime".
+
+
 ## Licence information
 
 Available for E3, E5, and standalone licenses.
