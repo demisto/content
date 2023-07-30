@@ -1282,7 +1282,7 @@ script:
     - contextPath: OpsGenie.Team.RoutingRules.customerId
       description: Customer ID of the routing rule.
     - contextPath: OpsGenie.Team.RoutingRules.notify.id
-      description: Notify ID of the routing rule
+      description: Notify ID of the routing rule.
     - contextPath: OpsGenie.Team.RoutingRules.notify.name
       description: Notify name of the routing rule.
     - contextPath: OpsGenie.Team.RoutingRules.notify.type
