@@ -40,6 +40,7 @@ jobs:
     
     - name: Update dependencies
       run: |
+        poetry install
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
 
