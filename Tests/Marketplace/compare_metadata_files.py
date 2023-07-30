@@ -49,8 +49,8 @@ def add_diff_to_list(key, parent_key, different_keys, different_ignored_keys):
 
 
 def get_diff(existing_metadata: dict, new_metadata: dict, missing_in: str, parent_key=None):
-    different_keys = []
-    different_ignored_keys = []
+    different_keys: list = []
+    different_ignored_keys: list = []
     for key, val in existing_metadata.items():
         if key in IGNORE_FIELDS:
             continue
@@ -60,18 +60,18 @@ def get_diff(existing_metadata: dict, new_metadata: dict, missing_in: str, paren
             logging.debug(f"Key {key} not found in {missing_in} - {parent_key=}\n")
         else:
             if isinstance(val, dict):
-                get_diff(val, new_metadata.get(key), missing_in, key)
+                get_diff(val, new_metadata.get(key), missing_in, key)  # type:ignore[arg-type]
             elif isinstance(val, list):
                 if val and isinstance(val[0], dict):
                     new_val = new_metadata.get(key)
                     for i in val:
-                        if not check_dict_in_list(i, new_val, missing_in, key):
+                        if not check_dict_in_list(i, new_val, missing_in, key):  # type:ignore[arg-type]
                             add_diff_to_list(key, parent_key, different_keys, different_ignored_keys)
                             logging.debug(f"Value of key '{key}' is different in {missing_in}: '{i}' not in '{new_val}' - "
                                           f"{parent_key=}\n")
                 else:
                     for i in val:
-                        if i not in new_metadata.get(key):
+                        if i not in new_metadata.get(key):  # type:ignore[operator]
                             add_diff_to_list(key, parent_key, different_keys, different_ignored_keys)
                             logging.debug(f"Value '{i}' with key '{key}' is not in {missing_in} - {parent_key=}\n")
             else:
