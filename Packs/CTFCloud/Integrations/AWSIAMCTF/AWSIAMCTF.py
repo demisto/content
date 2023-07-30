@@ -4,7 +4,6 @@ from CommonServerPython import *  # noqa: F401
 import botocore.exceptions
 
 
-
 from datetime import datetime, date
 import urllib3.util
 
@@ -87,15 +86,17 @@ def create_login_profile(args, client):  # pragma: no cover
 def get_user(args, client):  # pragma: no cover
     #response = client.get_user(UserName=args.get('userName'))
     #user = response['User']
-    #data = ({
+    # data = ({
     #    'UserName': user['UserName'],
     #    'UserId': user['UserId'],
     #    'Arn': user['Arn'],
     #    'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
     #    'Path': user['Path'],
     # })
-    ec = {"AWS.IAM.Users":{"Arn":"arn:aws:iam::666688938958:user/svc_dev","CreateDate":"2022-04-24T11:32:48","Path":"/","UserId":"AIDAZVSI2Y5HDD5KLAZUD","UserName":"svc_dev"}}
-    human_readable = "### AWS IAM Users\n|Arn|CreateDate|Path|UserId|UserName|\n|---|---|---|---|---|\n| arn:aws:iam::666688938958:user/svc_dev | 2022-04-24T11:32:48 | / | AIDAZVSI2Y5HDD5KLAZUD | svc_dev |\n" #tableToMarkdown('AWS IAM Users', data)
+    ec = {"AWS.IAM.Users": {"Arn": "arn:aws:iam::666688938958:user/svc_dev", "CreateDate": "2022-04-24T11:32:48",
+                            "Path": "/", "UserId": "AIDAZVSI2Y5HDD5KLAZUD", "UserName": "svc_dev"}}
+    # tableToMarkdown('AWS IAM Users', data)
+    human_readable = "### AWS IAM Users\n|Arn|CreateDate|Path|UserId|UserName|\n|---|---|---|---|---|\n| arn:aws:iam::666688938958:user/svc_dev | 2022-04-24T11:32:48 | / | AIDAZVSI2Y5HDD5KLAZUD | svc_dev |\n"
     return_outputs(human_readable, ec)
 
 
@@ -133,13 +134,15 @@ def update_user(args, client):  # pragma: no cover
 
 
 def delete_user(args, client):  # pragma: no cover
-    UserName=args.get('userName')
-    if UserName.lower()=="bob":
-        demisto.results('The User {0} has been deleted!\n Great job - here is your seconde part of the flag ( out of 3)...\nflag:\"alavi\"'.format(UserName))
+    UserName = args.get('userName')
+    if UserName.lower() == "bob":
+        demisto.results(
+            'The User {0} has been deleted!\n Great job - here is your seconde part of the flag ( out of 3)...\nflag:\"alavi\"'.format(UserName))
     else:
-        return_error(('You\'ve entered the folowing user {0}.\nAre you sure that this user you want to delete?\nOperation avorted.Exit code (400).'.format(UserName)))
+        return_error(
+            ('You\'ve entered the folowing user {0}.\nAre you sure that this user you want to delete?\nOperation avorted.Exit code (400).'.format(UserName)))
     #response = client.delete_user(UserName=args.get('userName'))
-    #if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
     #    demisto.results('The User {0} has been deleted'.format(args.get('userName')))
 
 
@@ -192,7 +195,7 @@ def list_groups(args, client):  # pragma: no cover
 def list_groups_for_user(args, client):  # pragma: no cover
     #data = []
     #response = client.list_groups_for_user(UserName=args.get('userName'))
-    #for group in response['Groups']:
+    # for group in response['Groups']:
     #    data.append({
     #        'UserName': args.get('userName'),
     #        'GroupName': group['GroupName'],
@@ -202,8 +205,10 @@ def list_groups_for_user(args, client):  # pragma: no cover
     #        'Path': group['Path'],
     #    })
 
-    ec = {"AWS.IAM.Users(val.UserName === obj.UserName).Groups":[{"Arn":"arn:aws:iam::666688938958:group/Admins","CreateDate":"2021-08-12T08:06:11","GroupId":"AGPAZVSI2Y5HG6QCQLIUD","GroupName":"Admins","Path":"/","UserName":"svc_dev"}]}
-    human_readable ="### AWS IAM User Groups\n|Arn|CreateDate|GroupId|GroupName|Path|UserName|\n|---|---|---|---|---|---|\n| arn:aws:iam::666688938958:group/Admins | 2021-08-12T08:06:11 | AGPAZVSI2Y5HG6QCQLIUD | Admins | / | svc_dev |\n"  #tableToMarkdown('AWS IAM User Groups', data)
+    ec = {"AWS.IAM.Users(val.UserName === obj.UserName).Groups": [
+        {"Arn": "arn:aws:iam::666688938958:group/Admins", "CreateDate": "2021-08-12T08:06:11", "GroupId": "AGPAZVSI2Y5HG6QCQLIUD", "GroupName": "Admins", "Path": "/", "UserName": "svc_dev"}]}
+    # tableToMarkdown('AWS IAM User Groups', data)
+    human_readable = "### AWS IAM User Groups\n|Arn|CreateDate|GroupId|GroupName|Path|UserName|\n|---|---|---|---|---|---|\n| arn:aws:iam::666688938958:group/Admins | 2021-08-12T08:06:11 | AGPAZVSI2Y5HG6QCQLIUD | Admins | / | svc_dev |\n"
     return_outputs(human_readable, ec)
 
 
@@ -254,7 +259,7 @@ def update_access_key(args, client):  # pragma: no cover
 def list_access_key_for_user(args, client):  # pragma: no cover
     #data = []
     #response = client.list_access_keys(UserName=args.get('userName'))
-    #for accesskey in response['AccessKeyMetadata']:
+    # for accesskey in response['AccessKeyMetadata']:
     #    data.append({
     #        'UserName': accesskey['UserName'],
     #        'AccessKeyId': accesskey['AccessKeyId'],
@@ -262,7 +267,8 @@ def list_access_key_for_user(args, client):  # pragma: no cover
     #        'CreateDate': datetime.strftime(accesskey['CreateDate'], '%Y-%m-%dT%H:%M:%S')
     #    })
 
-    ec = {"AWS.IAM.Users(val.UserName === obj.UserName).AccessKeys":[{"AccessKeyId":"AKIAZVSI4536365AD6WCJC","CreateDate":"2022-04-24T11:32:49","Status":"Active","UserName":"svc_dev"}]}
+    ec = {"AWS.IAM.Users(val.UserName === obj.UserName).AccessKeys": [
+        {"AccessKeyId": "AKIAZVSI4536365AD6WCJC", "CreateDate": "2022-04-24T11:32:49", "Status": "Active", "UserName": "svc_dev"}]}
     human_readable = "### AWS IAM Users Access Keys\n|AccessKeyId|CreateDate|Status|UserName|\n|---|---|---|---|\n| AKIAZVSI4536365AD6WCJC | 2022-04-24T11:32:49 | Active | svc_dev |"
     return_outputs(human_readable, ec)
 
@@ -368,17 +374,19 @@ def delete_group(args, client):  # pragma: no cover
 
 def remove_user_from_group(args, client):  # pragma: no cover
     #response = client.remove_user_from_group(GroupName=args.get('groupName'),UserName=args.get('userName'))
-    GroupName=args.get('groupName')
-    UserName=args.get('userName')
+    GroupName = args.get('groupName')
+    UserName = args.get('userName')
     if GroupName.lower() != "admin":
-       return_error("R u sure that you have provided the right group (\'{0}\')? Operation is aborted".format(args.get('groupName')))
+        return_error("R u sure that you have provided the right group (\'{0}\')? Operation is aborted".format(
+            args.get('groupName')))
     elif UserName.lower() != "bob":
-       return_error("R u sure that you have provided the right username (\'{0}\')? Operation is aborted".format(args.get('userName')))
+        return_error("R u sure that you have provided the right username (\'{0}\')? Operation is aborted".format(
+            args.get('userName')))
     else:
-            demisto.results("The User {0} has been removed from the group {1}\nYour first part of the flag (out of 3) is \"hast\"".format(args.get('userName'),args.get('groupName')))
+        demisto.results("The User {0} has been removed from the group {1}\nYour first part of the flag (out of 3) is \"hast\"".format(
+            args.get('userName'), args.get('groupName')))
 
-
-    #if response['ResponseMetadata']['HTTPStatusColete'] == 200:
+    # if response['ResponseMetadata']['HTTPStatusColete'] == 200:
     #    demisto.results("The User {0} has been removed from the group {1}".format(args.get('userName'),args.get('groupName')))
 
 
@@ -1203,7 +1211,7 @@ def get_access_key_last_used_command(args, client):
 def test_function(client):
     demisto.results('ok')
    # response = client.list_users()
-    #if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
     #    demisto.results('ok')
 
 
@@ -1362,9 +1370,7 @@ def main():     # pragma: no cover
             code=type(e), message=str(e)))
 
 
-
 from AWSApiModule import *  # noqa: E402
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-

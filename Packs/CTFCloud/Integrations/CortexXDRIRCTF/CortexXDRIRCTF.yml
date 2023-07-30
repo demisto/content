@@ -86,17 +86,6 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 487352e8-c013-40ec-8b79-c42738475330
-    packName: integrations
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Cortex XDR - IR CTF
 name: Cortex XDR - IR CTF
@@ -744,9 +733,10 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  defaultmapperin: XDR - Incoming Mapper - CTF2
-  defaultclassifier: Cortex XDR Incident Handler - Classifier_CTF
   runonce: false
   script: ''
   subtype: python3
   type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

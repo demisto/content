@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 from datetime import date
 
 import json
@@ -941,7 +940,7 @@ def stop_instances_command(args, aws_client):
 def terminate_instances_command(args, aws_client):
     #client = aws_client.aws_session(service='ec2',region=args.get('region'),role_arn=args.get('roleArn'),role_session_name=args.get('roleSessionName'),role_session_duration=args.get('roleSessionDuration'))
     #response = client.terminate_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
-    #if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
     instanceIDs = args.get('instanceIds')
     if instanceIDs.lower() == "i-ebeaf9e2":
         demisto.results("The Instances were terminated! Great job!\nHere is your Third and final part of the flag: \"stababy\".\nTry to combine those flag parts and see what string you will get :)")
@@ -2968,7 +2967,7 @@ def main():
             # This is the call made when pressing the integration test button.
             #client = aws_client.aws_session(service='ec2')
             #response = client.describe_regions()
-            #if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             demisto.results('ok')
 
         elif command == 'aws-ec2-describe-regions':
@@ -3190,10 +3189,8 @@ def main():
             code=type(e), message=e))
 
 
-
 from AWSApiModule import *  # noqa: E402
 
 
 if __name__ in ['__builtin__', 'builtins', '__main__']:
     main()
-
