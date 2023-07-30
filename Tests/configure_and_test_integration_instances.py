@@ -14,7 +14,6 @@ from enum import IntEnum
 from pprint import pformat
 from threading import Thread
 from time import sleep
-from typing import List, Tuple, Union, Set
 
 from urllib.parse import quote_plus
 import demisto_client
@@ -85,6 +84,10 @@ class Running(IntEnum):
     WITH_LOCAL_SERVER = 2
 
 
+def generate_user_agent(build_number):
+    return f"demisto-py/dev (Build:{build_number})"
+
+
 class Server:
 
     def __init__(self):
@@ -93,9 +96,6 @@ class Server:
         self.password = None
         self.name = ''
         self.build_number = 'unknown'
-
-    def get_custom_user_agent(self):
-        return f"demisto-py/dev (Build:{self.build_number})"
 
 
 class CloudServer(Server):
@@ -127,7 +127,7 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
-        custom_user_agent = self.get_custom_user_agent()
+        custom_user_agent = generate_user_agent(self.build_number)
         logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
@@ -158,7 +158,7 @@ class XSOARServer(Server):
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
-        custom_user_agent = self.get_custom_user_agent()
+        custom_user_agent = generate_user_agent(self.build_number)
         logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
@@ -174,7 +174,7 @@ class XSOARServer(Server):
                                 stderr=subprocess.STDOUT)
 
 
-def get_id_set(id_set_path) -> Union[dict, None]:
+def get_id_set(id_set_path) -> dict | None:
     """
     Used to collect the ID set so it can be passed to the Build class on init.
 
@@ -240,7 +240,7 @@ class Build(ABC):
         :return: List of tests if there are any, otherwise empty list.
         """
         tests_to_run = []
-        with open(tests_to_run_path, "r") as filter_file:
+        with open(tests_to_run_path) as filter_file:
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
@@ -256,7 +256,7 @@ class Build(ABC):
         :return: List of Pack IDs if there are any, otherwise empty list.
         """
         tests_to_run = []
-        with open(packs_to_install_path, "r") as filter_file:
+        with open(packs_to_install_path) as filter_file:
             tests_from_file = filter_file.readlines()
             for test_from_file in tests_from_file:
                 test_clean = test_from_file.rstrip()
@@ -303,7 +303,7 @@ class Build(ABC):
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self, packs_not_to_install: Set[str] | None = None) -> Tuple[List[str], List[str]]:
+    def get_changed_integrations(self, packs_not_to_install: set[str] | None = None) -> tuple[list[str], list[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
         The modified list is exclude the packs_not_to_install and the new list is including it
@@ -359,7 +359,7 @@ class Build(ABC):
 
         return installed_content_packs_successfully
 
-    def get_tests(self) -> List[dict]:
+    def get_tests(self) -> list[dict]:
         """
         Selects the tests from that should be run in this execution and filters those that cannot run in this server version
         Args:
@@ -461,7 +461,7 @@ class Build(ABC):
             self: The build object
             modified_integrations_to_configure: Integrations to configure that are already exists
             new_integrations_to_configure: Integrations to configure that were created in this build
-            demisto_client: A demisto client
+            demisto_client_: A demisto client
 
         Returns:
             A tuple with two lists:
@@ -486,7 +486,7 @@ class Build(ABC):
                          all_module_instances: list,
                          pre_update: bool,
                          use_mock: bool = True,
-                         first_call: bool = True) -> Tuple[set, set]:
+                         first_call: bool = True) -> tuple[set, set]:
         """
         Runs 'test-module' command for the instances detailed in `all_module_instances`
         Args:
@@ -599,19 +599,17 @@ class XSOARBuild(Build):
     def configure_servers_and_restart(self):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
-            configurations = dict()
-            configure_types = []
+            configurations = {}
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
                 configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types.append('docker hardening')
-            configure_types.append('marketplace')
+            configure_types = ['docker hardening', 'marketplace']
             configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
         if manual_restart:
@@ -688,7 +686,6 @@ class XSOARBuild(Build):
         Runs 'test-module' for given integration with mitmproxy
         In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
         Args:
-            build: An object containing the current build info.
             instance: A dict containing the instance details
             pre_update: Whether this instance testing is before or after the content update on the server.
 
@@ -1371,7 +1368,7 @@ def group_integrations(integrations, skipped_integrations_conf, new_integrations
     integration_to_status = {}
     for integration in integrations:
         integration_name = integration.get('name', '')
-        if integration_name in skipped_integrations_conf.keys():
+        if integration_name in skipped_integrations_conf:
             continue
 
         if integration_name in new_integrations_names:
@@ -1436,7 +1433,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
         release, asset_id = get_content_version_details(client, ami_name)
         logging.info(f'Content Release Version: {release}')
-        with open('./artifacts/content-descriptor.json', 'r') as cd_file:
+        with open('./artifacts/content-descriptor.json') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
@@ -1569,7 +1566,7 @@ def get_servers(env_results, instance_role):
 
 
 def get_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         return json.loads(json_file.read())
 
 
@@ -1651,7 +1648,7 @@ def test_pack_zip(content_path, target, packs: list = None):
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
-            with open(test_path, 'r') as test_file:
+            with open(test_path) as test_file:
                 if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
@@ -1678,7 +1675,7 @@ def get_non_added_packs_ids(build: Build):
         added_files = added_files if not added_contrib_files else '\n'.join([added_files, added_contrib_files])
 
     added_files = filter(lambda x: x, added_files.split('\n'))
-    added_pack_ids = map(lambda x: x.split('/')[1], added_files)
+    added_pack_ids = (x.split('/')[1] for x in added_files)
     # build.pack_ids_to_install contains new packs and modified. added_pack_ids contains new packs only.
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
@@ -1692,7 +1689,9 @@ def run_git_diff(pack_name: str, build: Build) -> str:
     Returns:
         (str): The git diff output.
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    compare_against = (
+        f"origin/master{'' if build.branch_name != 'master' else '~1'}"
+    )
     return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
@@ -1706,13 +1705,10 @@ def check_hidden_field_changed(pack_name: str, build: Build) -> bool:
         (bool): True if the pack transformed to non-hidden.
     """
     diff = run_git_diff(pack_name, build)
-    for diff_line in diff.splitlines():
-        if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
-            return True
-    return False
+    return any('"hidden": false' in diff_line and diff_line.split()[0].startswith('+') for diff_line in diff.splitlines())
 
 
-def get_turned_non_hidden_packs(modified_packs_names: Set[str], build: Build) -> Set[str]:
+def get_turned_non_hidden_packs(modified_packs_names: set[str], build: Build) -> set[str]:
     """
     Return a set of packs which turned from hidden to non-hidden.
     Args:
@@ -1740,7 +1736,7 @@ def create_build_object() -> Build:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
 
 
-def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -> List[str]:
+def packs_names_to_integrations_names(turned_non_hidden_packs_names: set[str]) -> list[str]:
     """
     Convert packs names to the integrations names contained in it.
     Args:
@@ -1761,8 +1757,8 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     return hidden_integrations_names
 
 
-def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str] | None,
-                             modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
+def update_integration_lists(new_integrations_names: list[str], packs_not_to_install: set[str] | None,
+                             modified_integrations_names: list[str]) -> tuple[list[str], list[str]]:
     """
     Add the turned non-hidden integrations names to the new integrations names list and
      remove it from modified integrations names.
@@ -1785,7 +1781,7 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
     return list(set(new_integrations_names)), modified_integrations_names
 
 
-def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str]) -> Set[str]:
+def filter_new_to_marketplace_packs(build: Build, modified_pack_names: set[str]) -> set[str]:
     """
     Return a set of packs that is new to the marketplace.
     Args:
@@ -1802,7 +1798,7 @@ def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str])
     return first_added_to_marketplace
 
 
-def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
+def get_packs_to_install(build: Build) -> tuple[set[str], set[str]]:
     """
     Return a set of packs to install only in the pre-update, and set to install in post-update.
     Args:
@@ -1831,8 +1827,8 @@ def get_packs_to_install(build: Build) -> Tuple[Set[str], Set[str]]:
     return packs_to_install_in_pre_update, non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str],
-                                      server_numeric_version: str) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: set[str],
+                                      server_numeric_version: str) -> set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 

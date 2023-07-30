@@ -3,6 +3,7 @@ import ast
 import math
 import os
 import sys
+from datetime import datetime, timedelta
 from time import sleep
 
 import demisto_client
@@ -10,7 +11,7 @@ from demisto_client.demisto_api.rest import ApiException
 from urllib3.exceptions import HTTPWarning, HTTPError
 
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
-from Tests.configure_and_test_integration_instances import CloudBuild
+from Tests.configure_and_test_integration_instances import CloudBuild, generate_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -97,7 +98,8 @@ def get_updating_status(client: demisto_client,
                                                                                      _request_timeout=None)
 
                 if 200 <= status_code < 300 and status_code != 204:
-                    updating_status = str(response).lower() == 'true'
+                    # the endpoint simply returns a string (rather than a json object.)
+                    updating_status = 'true' in str(response).lower()
                     logging.info(f"Got updating status:{updating_status}")
                     return True, updating_status
 
@@ -126,8 +128,21 @@ def get_updating_status(client: demisto_client,
 def wait_until_not_updating(client: demisto_client,
                             attempts_count: int = 2,
                             sleep_interval: int = 30,
+                            maximum_time_to_wait=600,
                             ) -> bool:
-    while attempts_count > 0:
+    """
+
+    Args:
+        client (demisto_client): The client to connect to.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
+        maximum_time_to_wait(int): The maximum time to wait for the server not to be in updating mode, in seconds.
+    Returns:
+        Boolean - If the operation succeeded.
+
+    """
+    end_time = datetime.utcnow() + timedelta(seconds=maximum_time_to_wait)
+    while attempts_count > 0 and datetime.utcnow() <= end_time:
         success, updating_status = get_updating_status(client)
         if success:
             if not updating_status:
@@ -339,6 +354,7 @@ def options_handler():
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
     parser.add_argument('--unremovable_packs', help='List of packs that cant be removed.')
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
+    parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
 
     options = parser.parse_args()
 
@@ -363,6 +379,9 @@ def main():
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
+    client.api_client.user_agent = generate_user_agent(options.build_number)
+    logging.debug(f'Setting user agent on client to:{client.api_client.user_agent}')
+
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
     sync_marketplace(client=client)
