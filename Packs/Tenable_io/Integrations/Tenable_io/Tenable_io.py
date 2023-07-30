@@ -1389,6 +1389,8 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
         args.get('fileId')
         or initiate_export_scan(args, client))
 
+    demisto.debug(f'{file_id=}')
+
     match client.check_export_scan_status(scan_id, file_id).get('status'):
         case 'ready':
             return PollResult(

@@ -1,3 +1,3 @@
 !tenable-io-list-scan-filters
 !tenable-io-get-scan-history scanId=16 excludeRollover=true sortFields=end_date,status sortOrder=desc page=2 pageSize=30
-!tenable-io-export-scan scanId=16 format=HTML chapters="compliance_exec,remediations,vuln_by_plugin" historyId=19540157 historyUuid=f7eaad37-23bd-4aac-a979-baab0e9a465b filterSearchType=or filterName="host.id,plugin.attributes.bid" filterQuality=eq,neq filterValue=".*,(.[0-9]0-9)*"  assetId=10
+!tenable-io-export-scan scanId=16 format=HTML chapters="compliance_exec,remediations,vuln_by_plugin" historyId=19540157 historyUuid=f7eaad37-23bd-4aac-a979-baab0e9a465b filterSearchType=OR filterName="host.id,plugin.attributes.bid" filterQuality=eq,neq filterValue="01234567-abcd-ef01-2345-6789abcdef01,NUMBER"  assetId=10

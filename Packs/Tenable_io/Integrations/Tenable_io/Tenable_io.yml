@@ -1222,7 +1222,7 @@ script:
          Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
          For example:
-          If filterName is "n1,n2", filterQuality is "op1,op1" and filterValue is "val1,val2",
+          If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",
           then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
       isArray: true
     - name: filterQuality
@@ -1231,16 +1231,17 @@ script:
          Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
          For example:
-          If filterName is "n1,n2", filterQuality is "op1,op1" and filterValue is "val1,val2",
+          If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",
           then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
       isArray: true
     - name: filterValue
       description: |
-        A comma-separated list of regular expressions for the filter to apply to the exported scan report.
-         Run the "tenable-io-list-scan-filters" command to get filter values ("Filter regex" in response).
+        A comma-separated list of readable regular expressions for the filter to apply to the exported scan report.
+         Run the "tenable-io-list-scan-filters" command to get filter values ("Readable
+          regex" in response).
          The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
          For example:
-          If filterName is "n1,n2", filterQuality is "op1,op1" and filterValue is "val1,val2",
+          If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",
           then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
       isArray: true
     - name: filterSearchType
@@ -1252,6 +1253,10 @@ script:
       - OR
     - name: assetId
       description: The ID of the asset scanned.
+    - name: fileId
+      hidden: true
+    - name: hide_polling_output
+      hidden: true
     polling: true
     description: |
       Export and download a scan report.
