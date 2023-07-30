@@ -1,0 +1,20 @@
+args:
+- name: username
+  required: true
+comment: CTF Script that initiates a revoke for all user's access keys.
+commonfields:
+  id: APIKeyRevokeCTF
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: APIKeyRevokeCTF
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,17 @@
+commonfields:
+  id: CloudTrailCTF
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: CloudTrailCTF
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
