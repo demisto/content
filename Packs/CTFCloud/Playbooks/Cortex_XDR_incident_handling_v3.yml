@@ -1,8 +1,8 @@
-id: Cortex XDR incident handling v3
+id: Cortex XDR incident handling v3 - CTF2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex XDR incident handling v3
+name: Cortex XDR incident handling v3 - CTF2
 description: |-
   This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.
   The playbook syncs and updates new XDR alerts that construct the incident and triggers a sub-playbook to handle each alert by type.
