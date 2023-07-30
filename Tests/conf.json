@@ -4614,7 +4614,7 @@
         {
             "playbookID": "Detect & Manage Phishing Campaigns - Test",
             "fromversion": "6.0.0",
-            "timeout": 7000,
+            "timeout": 7001,
             "integrations": [
                 "Core REST API",
                 "Rasterize",
