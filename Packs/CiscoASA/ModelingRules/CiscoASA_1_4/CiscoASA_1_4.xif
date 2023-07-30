@@ -57,7 +57,7 @@ config case_sensitive = true
     //<source_interface>:<source_ip>/<source_port> (<mapped_source_ip>/<mapped_source_port>)(<source_username>) to <dest_interface>:<dest_ip>/<dest_port> (<mapped_dst_ip>/<mapped_dst_port>) (<dst_username>)
     _raw_log ~= "\w+\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)\([^\)]+\)\sto\s[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s\(\d+\.\d+\.\d+\.\d+\/\d+\)"
 | call cisco_asa_main_fields_extraction
-| alter action = arrayindex(regextract(_raw_log,"\%ASA\-[session]*\-*\d\-\d+\:\s([A-Za-z\s]+)\sfrom"),0)
+| alter action = arrayindex(regextract(_raw_log,"\%ASA\-[session]*\-*\d\-\d+\:\s([A-Za-z\s\:]+)\sfrom"),0)
 | alter
     src_ip = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
     action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
