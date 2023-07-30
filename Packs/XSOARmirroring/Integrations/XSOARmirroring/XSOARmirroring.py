@@ -634,7 +634,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
             del XSOARMirror_mirror_reset[remote_args.remote_incident_id]
             integration_context[MIRROR_RESET] = XSOARMirror_mirror_reset
             set_to_integration_context_with_retries(context=integration_context)
-            demisto.debug(f'Removed incident id: {remote_args.remote_incident_id} from XSOARMirror_mirror_reset context data list.')
+            demisto.debug(f'Removed incident id: {remote_args.remote_incident_id} from XSOARMirror_mirror_reset\
+                context data list.')
 
         formatted_entries = []
         # file_attachments = []
