@@ -119,7 +119,7 @@ def get_updating_status(client: demisto_client,
                     raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to get installation/update status, sleeping for {sleep_interval} seconds.")
+            logging.debug(f"Failed to get installation/update status, sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
 
     except Exception as e:
