@@ -1286,7 +1286,7 @@ script:
     - contextPath: OpsGenie.Team.RoutingRules.notify.name
       description: Notify name of the routing rule.
     - contextPath: OpsGenie.Team.RoutingRules.notify.type
-      description: Notify Type of the routing rule
+      description: Notify type of the routing rule.
 
   dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
