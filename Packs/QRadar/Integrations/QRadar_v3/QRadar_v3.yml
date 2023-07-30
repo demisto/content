@@ -1105,35 +1105,32 @@ script:
   - name: qradar-indicators-upload
     description: Uploads indicators to QRadar.
     outputs:
-    - contextPath: QRadar.Reference.TimeoutType
-      description: 'Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
-      type: String
-    - contextPath: QRadar.Reference.NumberOfElements
-      description: Number of elements in the reference set.
+    - contextPath: QRadar.Reference.completed
+      description: The timestamp time of the task.
       type: Number
-    - contextPath: QRadar.Reference.TimeToLive
-      description: Time left to live for the reference.
+    - contextPath: QRadar.Reference.created
+      description: The timestamp the task was created.
+      type: Number
+    - contextPath: QRadar.Reference.created_by
+      description: The use the task was created by.
       type: String
-    - contextPath: QRadar.Reference.Data.LastSeen
-      description: Date when this data was last seen.
-      type: Date
-    - contextPath: QRadar.Reference.Data.FirstSeen
-      description: Date when this data was first seen.
-      type: Date
-    - contextPath: QRadar.Reference.Data.Source
-      description: Source of this data.
+    - contextPath: QRadar.Reference.error_code
+      description: The error code of the task creation.
+      type: Number
+    - contextPath: QRadar.Reference.error_message
+      description: The error message of the task creation, if failed.
       type: String
-    - contextPath: QRadar.Reference.Data.Value
-      description: Data value.
+    - contextPath: QRadar.Reference.modified
+      description: The timestamp this task was modified.
+      type: Number
+    - contextPath: QRadar.Reference.name
+      description: The name of the reference set.
       type: String
-    - contextPath: QRadar.Reference.CreationTime
-      description: Date when the reference set was created.
-      type: Date
-    - contextPath: QRadar.Reference.Name
-      description: Name of the reference set.
-      type: String
-    - contextPath: QRadar.Reference.ElementType
-      description: Type of the elements in the reference set.
+    - contextPath: QRadar.Reference.started
+      description: The timestamp the task was started.
+      type: Number
+    - contextPath: QRadar.Reference.status
+      description: The status of the task. One of CANCELLED, CANCELING, CANCEL_REQUESTED, COMPLETED, CONFLICT, EXCEPTION, INITIALIZING, INTERRUPTED, PAUSED, PROCESSING, QUEUED, RESUMING.
       type: String
     arguments:
     - name: ref_name
