@@ -105,8 +105,8 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo: >
-   'Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted.
-   Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.'
+   Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted.
+   Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.
   required: false
 script:
   script: ''
