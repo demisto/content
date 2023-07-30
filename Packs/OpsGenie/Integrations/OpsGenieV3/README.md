@@ -1867,4 +1867,4 @@ Lists team routing rules.
 | OpsGenie.Team.RoutingRules.customerId | unknown | Customer ID of the routing rule. | 
 | OpsGenie.Team.RoutingRules.notify.id | unknown | Notify ID of the routing rule. | 
 | OpsGenie.Team.RoutingRules.notify.name | unknown | Notify name of the routing rule. | 
-| OpsGenie.Team.RoutingRules.notify.type | unknown | Notify Type of the routing rule | 
+| OpsGenie.Team.RoutingRules.notify.type | unknown | Notify type of the routing rule. | 
