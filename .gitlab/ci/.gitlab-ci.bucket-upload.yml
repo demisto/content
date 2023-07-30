@@ -211,11 +211,11 @@ install-packs-in-server-master:
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"
     - section_end "Download configuration"
     - section_start "Lock Machine"
-    -  |
-       if [[ $TEST_UPLOAD == "true" ]]; then 
-          echo "Setting BUILD_TYPE to build in test upload-flow"
-          BUILD_TYPE="build"
-       fi
+    - |
+      if [[ $TEST_UPLOAD == "true" ]]; then
+        echo "Setting BUILD_TYPE to build in test upload-flow"
+        BUILD_TYPE="build"
+      fi
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
