@@ -157,7 +157,9 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException(f"Error in query: {error['root_cause'][0]['reason']}")
 
     data_response = response["responses"][0]["hits"]["hits"]
+
     table_to_markdown = [_parse_entry(entry) for entry in data_response]
+
     markdown_table = tableToMarkdown(name="Logs", t=table_to_markdown)
 
     return CommandResults(

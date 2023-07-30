@@ -18,40 +18,36 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: Cloud-delivered Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
 display: Exabeam Data Lake
 name: Exabeam Data Lake
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+    - description: The search query string to filter the events.(e.g. "VPN" more examples in the README File)
       name: query
-    - description: Can be either "*" or "VPN" etc.
+    - description: 'The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26.243Z".'
       name: start_time
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+    - description: 'The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26.243Z".'
       name: end_time
     - defaultValue: '50'
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      description: the limit of exabeam data lake query result, max is 10,000.
       name: limit
     - defaultValue: false
       auto: PREDEFINED
-      description: 'the limit of exabeam data lake query result, max is 10,000'
+      description: all result from exabeam data lake query (max 10,000).
       name: all_result
       predefined:
-      - true
-      - false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+      - "true"
+      - "false"
+    description: Get events from Exabeam Data Lake.
     name: exabeam-data-lake-query
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.65389
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
