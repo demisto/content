@@ -474,7 +474,7 @@ config case_sensitive = true
 | filter event_id >= 111001 and event_id <= 111010
 | alter severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
     message = arrayindex(regextract(_raw_log, "\%ASA\-[session]*\-*\d\-\d+[\:|\s\-]+\s(.*)"),0),
-    observer_name = arrayindex(regextract(_raw_log , "([\w\-\_\.\@]+)\s\:\s%ASA-\d+"),0),
+    observer_name = arrayindex(regextract(_raw_log , "([\w\-\_\.\@]+)\s*\:*\s%ASA-\d+"),0),
     dst_username = arrayindex(regextract(_raw_log ,"User\s\'([^\']+)\'"),0),
     command_line1 = arrayindex(regextract(_raw_log , "executed\scmd:\s(.*)$"),0),
     command_line2 = arrayindex(regextract(_raw_log ,"executed the \'([^\']+)\'"),0),
