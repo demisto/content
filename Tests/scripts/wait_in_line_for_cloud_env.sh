@@ -13,8 +13,9 @@ set -e
 touch CloudEnvVariables
 
 # Filter out not enabled and unnecessary machines
-echo $CLOUD_SERVERS_FILE
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
+echo $CLOUD_SERVERS_PATH
+echo $(jq '.' $CLOUD_SERVERS_PATH)
 TEST_MACHINES_LIST=$(jq --arg flow_type "$1" 'to_entries | map(select(.value.enabled == true and .value.flow_type == $flow_type)) | from_entries' "$CLOUD_SERVERS_PATH")
 
 # Get the number of existing machines
