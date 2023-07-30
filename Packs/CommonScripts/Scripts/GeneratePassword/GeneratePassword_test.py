@@ -72,9 +72,10 @@ def test_generate_password(
 
 
 @pytest.mark.parametrize(
-    'min_lowercase, max_lowercase, min_uppercase, max_uppercase, min_digits, max_digits, min_symbols, max_symbols',
+    'min_lowercase, max_lowercase, min_uppercase, max_uppercase, min_digits, max_digits, min_symbols, max_symbols, exception',
     [
-        (0, 5, 0, 5, 0, 5, 0, 5),  # Test case with all ranges set to 0-5
+        (0, 5, 0, 5, 0, 5, 0, 5, "error: At least one of the following arguments"),  # Test case with all ranges set to 0-5
+        (-3, 5, 0, 5, 0, 5, 0, 5, "error: only positive arguments are accepted.")
     ]
 )
 def test_generate_password_zero_inputs(
@@ -86,6 +87,7 @@ def test_generate_password_zero_inputs(
     max_digits: int,
     min_symbols: int,
     max_symbols: int,
+    exception: str,
 ):
     args = {
         'debug': 'true',
@@ -100,4 +102,4 @@ def test_generate_password_zero_inputs(
     }
     with pytest.raises(DemistoException) as e:
         generate_password(args)
-    assert 'error: At least one of the following arguments' in str(e)
+    assert exception in str(e)

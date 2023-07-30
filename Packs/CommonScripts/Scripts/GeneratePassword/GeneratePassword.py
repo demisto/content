@@ -37,7 +37,10 @@ def generate_password(args: Dict[str, Any]) -> CommandResults:
     min_symbols = arg_to_number(args.get('min_symbols')) or DEFAULT_MIN
     max_symbols = arg_to_number(args.get('max_symbols')) or DEFAULT_MAX
 
-    if all(value == 0 for value in [min_uppercase, min_lowercase, min_digits, min_symbols]):
+    if any(val < 0 for val in [min_uppercase, min_lowercase, min_digits, min_symbols]):
+        raise DemistoException("error: only positive arguments are accepted.")
+
+    if min_uppercase + min_lowercase + min_digits + min_symbols == 0:
         raise DemistoException("error: At least one of the following arguments should be above 0: "
                                "min_uppercase, min_lowercase, min_digits, min_symbols")
 
