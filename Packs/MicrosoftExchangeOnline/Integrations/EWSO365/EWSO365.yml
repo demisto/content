@@ -956,7 +956,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.66334
+  dockerimage: demisto/py3ews:1.0.0.66850
   isfetch: true
   script: ''
   subtype: python3
