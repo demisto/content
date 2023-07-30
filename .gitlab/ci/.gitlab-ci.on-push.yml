@@ -520,7 +520,7 @@ xsiam_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
+    CLOUD_SERVER_PATH: "xsiam_servers.json"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
@@ -546,7 +546,7 @@ xsoar_ng_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
+    CLOUD_SERVER_PATH: "xsoar_ng_servers.json"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
