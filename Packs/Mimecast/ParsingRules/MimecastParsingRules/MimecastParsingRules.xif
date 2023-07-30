@@ -1,2 +1,3 @@
 [INGEST:vendor="mimecast", product="mimecast", target_dataset="mimecast_mimecast_raw", no_hit=keep]
-alter _time=parse_timestamp("%Y-%m-%dT%H:%M:%S%z",to_string(if(xsiem_classifier = "siem_log",datetime,eventTime)));
+filter to_string(datetime) ~= "\d{2}:\d{2}:\d{2}.*" or to_string(eventTime) ~= "\d{2}:\d{2}:\d{2}.*"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%S%z", to_string(if(xsiem_classifier = "siem_log", datetime, eventTime)));
