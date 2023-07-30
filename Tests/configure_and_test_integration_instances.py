@@ -84,7 +84,7 @@ class Running(IntEnum):
     WITH_LOCAL_SERVER = 2
 
 
-def generate_user_agent(build_number):
+def get_custom_user_agent(build_number):
     return f"demisto-py/dev (Build:{build_number})"
 
 
@@ -127,7 +127,7 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
-        custom_user_agent = generate_user_agent(self.build_number)
+        custom_user_agent = get_custom_user_agent(self.build_number)
         logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
@@ -158,7 +158,7 @@ class XSOARServer(Server):
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
-        custom_user_agent = generate_user_agent(self.build_number)
+        custom_user_agent = get_custom_user_agent(self.build_number)
         logging.debug(f'Setting user agent on client to:{custom_user_agent}')
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client

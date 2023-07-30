@@ -11,7 +11,7 @@ from demisto_client.demisto_api.rest import ApiException
 from urllib3.exceptions import HTTPWarning, HTTPError
 
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
-from Tests.configure_and_test_integration_instances import CloudBuild, generate_user_agent
+from Tests.configure_and_test_integration_instances import CloudBuild, get_custom_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -100,18 +100,20 @@ def get_updating_status(client: demisto_client,
                 if 200 <= status_code < 300 and status_code != 204:
                     # the endpoint simply returns a string (rather than a json object.)
                     updating_status = 'true' in str(response).lower()
-                    logging.info(f"Got updating status:{updating_status}")
+                    logging.info(f"Got updating status: {updating_status}")
                     return True, updating_status
+                else:
+                    logging.info(f"Got bad response for updating status: {response}")
 
                 if not attempt:
                     raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
 
-                logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
+                logging.warning(f"Got bad status code: {status_code} from the server, headers: {headers}")
 
             except ApiException as ex:
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     # Unknown exception reason, re-raise.
-                    raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+                    raise Exception(f"Got status {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
             except (HTTPError, HTTPWarning) as http_ex:
                 if not attempt:
                     raise Exception("Failed to perform http request to the server") from http_ex
@@ -121,14 +123,14 @@ def get_updating_status(client: demisto_client,
             sleep(sleep_interval)
 
     except Exception as e:
-        logging.exception(f'The request to uninstall packs has failed. Additional info: {str(e)}')
+        logging.exception(f'The request to get update status has failed. Additional info: {str(e)}')
     return False, None
 
 
 def wait_until_not_updating(client: demisto_client,
                             attempts_count: int = 2,
                             sleep_interval: int = 30,
-                            maximum_time_to_wait=600,
+                            maximum_time_to_wait: int = 600,
                             ) -> bool:
     """
 
@@ -136,7 +138,7 @@ def wait_until_not_updating(client: demisto_client,
         client (demisto_client): The client to connect to.
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
-        maximum_time_to_wait(int): The maximum time to wait for the server not to be in updating mode, in seconds.
+        maximum_time_to_wait (int): The maximum time to wait for the server to exit the updating mode, in seconds.
     Returns:
         Boolean - If the operation succeeded.
 
@@ -154,6 +156,7 @@ def wait_until_not_updating(client: demisto_client,
 
         # There are more attempts available, sleep and retry.
         if attempts_count:
+log me
             sleep(sleep_interval)
     return False
 
@@ -185,13 +188,13 @@ def uninstall_pack(client: demisto_client,
                                                                                      _request_timeout=None)
 
                 if 200 <= status_code < 300 and status_code != 204:
-                    logging.success(f'Pack:{pack_id} was successfully uninstalled from the server')
+                    logging.success(f'Pack: {pack_id} was successfully uninstalled from the server')
                     break
 
                 if not attempt:
                     raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
 
-                logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
+                logging.warning(f"Got bad status code: {status_code} from the server, headers: {headers}")
 
             except ApiException as ex:
 
@@ -199,18 +202,18 @@ def uninstall_pack(client: demisto_client,
                     wait_succeeded = wait_until_not_updating(client)
                     if not wait_succeeded:
                         raise Exception(
-                            "Failed to wait for the server to not be in installation/updating status"
+                            "Failed to wait for the server to exit installation/updating status"
                         ) from ex
 
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     # Unknown exception reason, re-raise.
-                    raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+                    raise Exception(f"Got {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
             except (HTTPError, HTTPWarning) as http_ex:
                 if not attempt:
                     raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to uninstall packs: {pack_id}, sleeping for {sleep_interval} seconds.")
+            logging.debug(f"failed to uninstall pack: {pack_id}, sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
 
         return True
@@ -379,8 +382,8 @@ def main():
                                       verify_ssl=False,
                                       api_key=api_key,
                                       auth_id=xdr_auth_id)
-    client.api_client.user_agent = generate_user_agent(options.build_number)
-    logging.debug(f'Setting user agent on client to:{client.api_client.user_agent}')
+    client.api_client.user_agent = get_custom_user_agent(options.build_number)
+    logging.debug(f'Setting user agent on client to: {client.api_client.user_agent}')
 
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
