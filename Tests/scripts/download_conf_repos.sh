@@ -25,13 +25,12 @@ echo ${DEMISTO_PACK_SIGNATURE_UTIL_PATH} > demisto_pack_sig_util_path
 TEST_CONF_BRANCH="$UNDERSCORE_BRANCH"
 
 # download configuration files from Gitlab repo
-echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
-git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
-if [ "$?" != "0" ]; then
-    echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
-    TEST_CONF_BRANCH="master"
-    git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
-fi
+echo "clone content-test-conf from branch: fix-failed-secrets in content-test-conf"
+git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch fix-failed-secrets
+
+cp ./content-test-conf/secrets_build_scripts/google_secret_manager_handler.py ./Tests/scripts
+cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
+cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./Tests/scripts
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
