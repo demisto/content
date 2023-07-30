@@ -22,8 +22,9 @@ class Client(BaseClient):
     implements get_token and get_events functions
     """
 
-    def __init__(self, verify, proxy, auth_url, base_url, client_id, client_secret, export_profile, headers=None):
+    def __init__(self, verify, proxy, auth_url, gateway_url, base_url, client_id, client_secret, export_profile, headers=None):
         self.auth_url = auth_url
+        self.gateway_url = gateway_url
         self.client_id = client_id
         self.client_secret = client_secret
         self.export_profile = export_profile
@@ -235,6 +236,7 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             auth_url=auth_url,
+            geteway_url=gateway_url,
             base_url=base_url,
             client_id=client_id,
             client_secret=client_secret,

@@ -40,8 +40,8 @@ def test_get_raw_events_command(mocker):
     raw_events = util_load_json('test_data/events_mock_request.json')
     mocker.patch.object(Client, 'get_token', return_value='token')
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
-    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", client_id="11",
-                    client_secret="22", export_profile="33")
+    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
+                    client_id="11", client_secret="22", export_profile="33")
     events = get_raw_events(client)
 
     mock_events = util_load_json('test_data/events.json')
@@ -66,8 +66,8 @@ def test_get_events_command(mocker):
     mocker.patch.object(Client, 'get_events', return_value=raw_events)
 
     args = {"limit": 1}
-    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", client_id="11",
-                    client_secret="22", export_profile="33")
+    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
+                    client_id="11", client_secret="22", export_profile="33")
     events, _ = get_events_command(client, args)
 
     expected_events = util_load_json('test_data/events_mock_1_response.json')
@@ -113,8 +113,8 @@ def test_fetch_events_command(mocker):
     events = util_load_json('test_data/events.json')
     mocker.patch("DigitalGuardianARCEventCollector.get_raw_events", return_value=events)
 
-    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", client_id="11",
-                    client_secret="22", export_profile="33")
+    client = Client(verify=False, proxy=False, auth_url="example.com", gateway_url="test.com", base_url="exmpt.com",
+                    client_id="11", client_secret="22", export_profile="33")
     next_run, events = fetch_events(client, limit=2, last_run={})
 
     mock_events = util_load_json('test_data/events.json')
