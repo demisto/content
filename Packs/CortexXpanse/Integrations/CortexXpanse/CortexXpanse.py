@@ -32,6 +32,16 @@ INCIDENT_STATUSES = [
     "resolved"
 ]
 
+ALERT_STATUSES = [
+    "new",
+    "under_investigation",
+    "resolved_no_risk",
+    "resolved_risk_accepted",
+    "resolved_contested_asset",
+    "resolved_remediated_automatically",
+    "resolved"
+]
+
 
 class Client(BaseClient):
     """
@@ -969,10 +979,10 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     if severity:
         update_params["update_data"]["severity"] = severity
     if status:
-        if status in INCIDENT_STATUSES:
+        if status in ALERT_STATUSES:
             update_params["update_data"]["status"] = status
         else:
-            raise ValueError(f'status must be one of {INCIDENT_STATUSES}')
+            raise ValueError(f'status must be one of {ALERT_STATUSES}')
 
     response = client.update_alert_request(request_data=update_params)
 
