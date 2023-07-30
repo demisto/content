@@ -10,9 +10,6 @@ ignore=IF100
 [file:DevSecOps_PR_Head_Open_Issues.json]
 ignore=IF100
 
-[file:MinIO.yml]
-ignore=DO109
-
 [file:DockerEngine_image.png]
 ignore=IM111
 
