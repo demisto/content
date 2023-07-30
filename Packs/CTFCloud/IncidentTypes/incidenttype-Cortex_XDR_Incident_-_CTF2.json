@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#6200EA",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Cortex XDR Incident - CTF2",
+    "layout": "Cortex XDR Incident",
+    "locked": false,
+    "name": "Cortex XDR Incident - CTF2",
+    "onChangeRepAlg": 1,
+    "playbookId": "Cortex XDR incident handling v3",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.9.0"
+}

@@ -1,0 +1,186 @@
+id: CTF remediation tasks
+inputs: []
+name: CTF remediation tasks
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d192f33f-34a2-4954-8016-c5566dfe6a5e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d192f33f-34a2-4954-8016-c5566dfe6a5e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -160
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a810f908-365f-4466-81d5-14d72b4eeb58
+      iscommand: false
+      name: '//TODO - Delete the newly created user '
+      type: regular
+      version: -1
+    taskid: a810f908-365f-4466-81d5-14d72b4eeb58
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 350
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d9dc9817-b316-4a94-89ea-a2b40736d15d
+      iscommand: false
+      name: '//TODO -  Terminate the spined  by the attacker EC2 insistence '
+      type: regular
+      version: -1
+    taskid: d9dc9817-b316-4a94-89ea-a2b40736d15d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 520
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db348261-1ae9-49f2-8553-5dc2f81b16d4
+      iscommand: false
+      name: //TODO - Ask the user if he wants to approve this action
+      type: regular
+      version: -1
+    taskid: db348261-1ae9-49f2-8553-5dc2f81b16d4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -10
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dfeecdc1-c34c-4b35-80eb-f9239050e91c
+      iscommand: false
+      name: //TODO - Remove the newly created user from the required group
+      type: regular
+      version: -1
+    taskid: dfeecdc1-c34c-4b35-80eb-f9239050e91c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 170
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b068fba7-6ce1-4807-8757-e50624d61ab7
+      iscommand: false
+      name: Done - Check the results of each command - the flag has 3 parts
+      type: title
+      version: -1
+      description: ''
+    taskid: b068fba7-6ce1-4807-8757-e50624d61ab7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 700
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 380,
+        "x": 190,
+        "y": -160
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
+description: ''

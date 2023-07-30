@@ -1,0 +1,492 @@
+id: Cortex XDR incident handling v3
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Cortex XDR incident handling v3
+description: |-
+  This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.
+  The playbook syncs and updates new XDR alerts that construct the incident and triggers a sub-playbook to handle each alert by type.
+  Then, the playbook performs enrichment on the incident’s indicators and hunts for related IOCs.
+  Based on the severity, it lets the analyst decide whether to continue to the remediation stage or close the investigation as a false positive.
+  After the remediation, if there are no new alerts, the playbook stops the alert sync and closes the XDR incident and investigation. For performing the bidirectional sync, the playbook uses the incoming and outgoing mirroring feature added in XSOAR version 6.0.0. After the Calculate Severity - Generic v2 sub-playbook’s run, Cortex XSOAR will be treated as the single source of truth for the severity field, and it will sync only from Cortex XSOAR to XDR, so manual changes for the severity field in XDR will not update in the XSOAR incident.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2dd4904d-513e-4071-8b3e-25aeba751b52
+    type: start
+    task:
+      id: 2dd4904d-513e-4071-8b3e-25aeba751b52
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: eefe7e8b-7c51-4be3-832f-c798d49bd3c4
+    type: title
+    task:
+      id: eefe7e8b-7c51-4be3-832f-c798d49bd3c4
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b425ff10-7bf0-40d0-80c6-407e5d96801a
+    type: title
+    task:
+      id: b425ff10-7bf0-40d0-80c6-407e5d96801a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e04652fb-03d5-4c74-83a5-89515bd11b16
+    type: title
+    task:
+      id: e04652fb-03d5-4c74-83a5-89515bd11b16
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 727e5f68-a09c-45b0-8fd3-29d276bbf5e5
+    type: playbook
+    task:
+      id: 727e5f68-a09c-45b0-8fd3-29d276bbf5e5
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain.Name
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.XDRDomain
+                iscontext: true
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL.Data
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: URL.Data
+                iscontext: true
+              right:
+                value:
+                  simple: incident.xdrurl
+                iscontext: true
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 29397716-1271-45d5-8029-91b655d566ae
+    type: regular
+    task:
+      id: 29397716-1271-45d5-8029-91b655d566ae
+      version: -1
+      name: Count XDR alerts
+      description: Sets a value in context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: XDR.HandledAlerts
+      value:
+        complex:
+          root: incident
+          accessor: xdralertcount
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 7eb71361-15aa-44ed-8071-85c7ff4f1400
+    type: regular
+    task:
+      id: 7eb71361-15aa-44ed-8071-85c7ff4f1400
+      version: -1
+      name: Cortex XDR - get incident extra data
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
+      script: '|||xdr-get-incident-extra-data-ctf'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      incident_id:
+        complex:
+          root: inputs.incident_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: MITRE Tactic Name
+      output:
+        simple: ${PaloAltoNetworksXDR.Incident.alerts.mitre_tactic_id_and_name}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: cd52a989-d59a-4204-831c-60f8724e6a20
+    type: playbook
+    task:
+      id: cd52a989-d59a-4204-831c-60f8724e6a20
+      version: -1
+      name: Cortex XDR Alerts Handling - CTF2
+      description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan"
+      playbookName: Cortex XDR Alerts Handling - CTF2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: alert_id
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 380,
+        "x": 50,
+        "y": 60
+      }
+    }
+  }
+inputs:
+- key: incident_id
+  value:
+    complex:
+      root: incident
+      accessor: xdrincidentid
+  required: false
+  description: Incident ID.
+  playbookInputQuery:
+- key: LinkSimilarIncidents
+  value:
+    simple: "Yes"
+  required: false
+  description: This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No.
+  playbookInputQuery:
+- key: Hunting
+  value:
+    simple: "Yes"
+  required: false
+  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
+  playbookInputQuery:
+- key: CriticalUsernames
+  value:
+    simple: admin,administrator
+  required: false
+  description: |-
+    A comma-separated list of names of critical users in the organization.
+    This will affect the calculated severity of the incident.
+  playbookInputQuery:
+- key: CriticalHostnames
+  value: {}
+  required: false
+  description: A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident.
+  playbookInputQuery:
+- key: CriticalADGroups
+  value: {}
+  required: false
+  description: A comma-separated list of DN names of critical Active Directory groups. This will affect the severity calculated for this incident.
+  playbookInputQuery:
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}.
+  playbookInputQuery:
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
+  playbookInputQuery:
+- key: TimeStamp
+  value:
+    simple: 10 days
+  required: false
+  description: Timestamp in relative date format for query device control events from Cortex XDR.
+  playbookInputQuery:
+- key: AutoRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+  playbookInputQuery:
+- key: XDRDomain
+  value:
+    complex:
+      root: incident
+      accessor: xdrurl
+      transformers:
+      - operator: Cut
+        args:
+          delimiter:
+            value:
+              simple: /
+          fields:
+            value:
+              simple: "3"
+  required: false
+  description: XDR instance domain
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
