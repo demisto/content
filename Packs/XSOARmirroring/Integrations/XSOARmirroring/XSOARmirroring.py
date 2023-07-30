@@ -28,7 +28,7 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
+MIRROR_RESET = 'XSOARMirror_mirror_reset'
 
 ''' CLIENT CLASS '''
 
@@ -320,7 +320,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
         if incident_mirror_reset:
             demisto.debug(f'Adding incidents id to mirror reset set:{incident_mirror_reset}')
-            integration_context['XSOARMirror_mirror_reset'] = incident_mirror_reset
+            integration_context[MIRROR_RESET] = incident_mirror_reset
             set_to_integration_context_with_retries(context=integration_context)
 
     for incident in incidents:
@@ -616,7 +616,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         demisto_debug(f'tags: {tags}')
         demisto_debug(f'tags: {categories}')
         integration_context = get_integration_context()
-        XSOARMirror_mirror_reset: dict = json.loads(integration_context.get('XSOARMirror_mirror_reset', None))
+        XSOARMirror_mirror_reset: dict = json.loads(integration_context.get(MIRROR_RESET, '{}'))
         is_incident_update_after_reset = False
         if XSOARMirror_mirror_reset:
             is_incident_update_after_reset = XSOARMirror_mirror_reset.get(remote_args.remote_incident_id, None)
@@ -632,7 +632,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         )
         if is_incident_update_after_reset:
             del XSOARMirror_mirror_reset[remote_args.remote_incident_id]
-            integration_context['XSOARMirror_mirror_reset'] = XSOARMirror_mirror_reset
+            integration_context[MIRROR_RESET] = XSOARMirror_mirror_reset
             set_to_integration_context_with_retries(context=integration_context)
             demisto.debug(f'Removed incident id: {remote_args.remote_incident_id} from XSOARMirror_mirror_reset context data list.')
 
