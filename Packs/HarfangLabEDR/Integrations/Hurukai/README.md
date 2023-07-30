@@ -29,6 +29,41 @@ This integration was integrated and tested with version 2.13.7+ of Hurukai
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+### test-module
+
+***
+Allows to test that the HarfangLab EDR API is reachable
+
+#### Base Command
+
+`test-module`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### fetch-incidents
+
+***
+Allows to retrieve incidents from the HarfangLab EDR API
+
+#### Base Command
+
+`fetch-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### harfanglab-get-endpoint-info
 ***
 Get endpoint information from agent_id
