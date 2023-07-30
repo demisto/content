@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
-  defaultvalue: "201"
+  defaultvalue: "2"
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
