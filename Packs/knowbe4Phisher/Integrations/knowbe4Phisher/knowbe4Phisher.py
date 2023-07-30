@@ -347,6 +347,7 @@ def create_gql_request(readable_request: str) -> str:
     """
     format_desc = readable_request.splitlines()
     final = ""
+
     for line in format_desc:
         final += line + '\\n'
     return final[:-2]
