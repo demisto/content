@@ -78,6 +78,12 @@ repos:
       # remove this argument when this hook is ready to use
     skip: true
 
+- repo: https://github.com/sourcery-ai/sourcery
+  rev: "v1.6.0"
+  hooks:
+  - id: sourcery
+    args: [--no-summary, --fix, --diff, "git diff HEAD"]
+
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
