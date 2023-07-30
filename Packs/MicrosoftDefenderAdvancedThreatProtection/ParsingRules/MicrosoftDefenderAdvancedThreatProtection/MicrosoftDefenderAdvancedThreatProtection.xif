@@ -1,7 +1,7 @@
 [INGEST:vendor="Microsoft 365", product="Defender", target_dataset="microsoft_365_defender_raw", no_hit = keep]
 // Support only date time of format: yyyy-MM-ddThh:mm:%E3S. For example: "2021-07-01T10:00:00.667Z".
 filter to_string(lastEventTime) ~= "\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d*Z"
-| alter tmp_splitStr = split(lastEventTime , ".")
+| alter tmp_splitStr = split(to_string(lastEventTime) , ".")
 | alter tmp_epoch_s = to_epoch(parse_timestamp("%Y-%m-%dT%H:%M:%S", arrayindex(tmp_splitStr ,0)), "millis")
 | alter tmp_epoch_ms = to_integer(arrayindex(regextract(arrayindex(tmp_splitStr, 1),"^(\d{3}).*"),0))
 | alter tmp_cc = add(tmp_epoch_s , tmp_epoch_ms)
