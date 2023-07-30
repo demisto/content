@@ -42,7 +42,8 @@ class Client:
             tenant_id=tenant_id,
             enc_key=enc_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix="msgraph-apps",
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
@@ -70,7 +71,7 @@ class Client:
             )
             return res['value']
         else:  # unlimited, should page
-            results = list()
+            results = []
             res = self.ms_client.http_request(
                 'GET',
                 suffix
@@ -120,14 +121,6 @@ def complete_auth(client: Client) -> str:
 def test_connection(client: Client) -> str:
     client.ms_client.get_access_token()
     return '✅ Success!'
-
-
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!msgraph-apps-start** to start the '
-                        'authentication process.'
-    )
 
 
 def list_service_principals_command(ms_client: Client, args: dict) -> CommandResults:

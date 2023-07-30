@@ -458,8 +458,8 @@ def create_client(timeout: int = 15):
     proxy = demisto.params().get('proxy', False)
 
     client = Client(base_url, verify=verify_certificate, proxy=proxy, self_deployed=True, auth_and_token_url="test",
-                    refresh_token="test", refresh_token_param="test", enc_key="test", auth_code="test",
-                    tenant_id="test", redirect_uri="", timeout=timeout)
+                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="",
+                    timeout=timeout)
 
     return client
 
@@ -502,8 +502,10 @@ def test_content_records_to_incidents_records_creation():
     incidents, latest_creation_time = content_records_to_incidents(GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL,
                                                                    TIME_6_HOURS_AGO_STRING, time_now_string)
     single_incident = incidents[0]
-    assert 'name' in single_incident and single_incident['name'] == 'Microsoft Management Activity: 1234'
-    assert 'occurred' in single_incident and single_incident['occurred'] == '2020-02-27T00:57:40Z'
+    assert 'name' in single_incident
+    assert single_incident['name'] == 'Microsoft Management Activity: 1234'
+    assert 'occurred' in single_incident
+    assert single_incident['occurred'] == '2020-02-27T00:57:40Z'
 
 
 @pytest.mark.parametrize('content_records, expected_last_run', TEST_LAST_RUN_UPDATE_DATA)

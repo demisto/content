@@ -288,5 +288,24 @@ You will be automatically redirected to a link with the following structure:
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
+
+### ms-management-activity-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`ms-management-activity-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+
 ## Additional Information
 Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.

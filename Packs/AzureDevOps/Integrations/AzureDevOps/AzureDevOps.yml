@@ -123,7 +123,7 @@ script:
     name: azure-devops-auth-complete
     arguments: []
     outputs: []
-  - description: Run this command if you need to rerun the authentication process for some reason,.
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-devops-auth-reset
     arguments: []
     outputs: []
@@ -776,7 +776,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
+  dockerimage: demisto/crypto:1.0.0.66562
   isremotesyncout: true
   ismappable: true
   isfetch: true
