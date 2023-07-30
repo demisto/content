@@ -1859,12 +1859,12 @@ Lists team routing rules.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| OpsGenie.Team.RoutingRules.name | unknown | Name of the routing rule. | 
-| OpsGenie.Team.RoutingRules.order | unknown | Order of the routing rule. | 
-| OpsGenie.Team.RoutingRules.id | unknown | ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.name | unknown | Name of the routing rule. | 
+| OpsGenie.TeamRoutingRule.order | unknown | Order of the routing rule. | 
+| OpsGenie.TeamRoutingRule.id | unknown | ID of the routing rule. | 
 | OpsGenie.Team.RoutingRules.timezone | unknown | Timezone of the routing rule. | 
-| OpsGenie.Team.RoutingRules.teamId | unknown | Team ID of the routing rule. | 
-| OpsGenie.Team.RoutingRules.customerId | unknown | Customer ID of the routing rule. | 
-| OpsGenie.Team.RoutingRules.notify.id | unknown | Notify ID of the routing rule. | 
-| OpsGenie.Team.RoutingRules.notify.name | unknown | Notify name of the routing rule. | 
-| OpsGenie.Team.RoutingRules.notify.type | unknown | Notify type of the routing rule. | 
+| OpsGenie.TeamRoutingRule.teamId | unknown | Team ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.customerId | unknown | Customer ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.id | unknown | Notify ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.name | unknown | Notify name of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.type | unknown | Notify type of the routing rule. | 

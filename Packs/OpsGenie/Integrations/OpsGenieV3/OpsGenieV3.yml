@@ -150,7 +150,6 @@ script:
     - contextPath: OpsGenie.Alert.success
       description: Whether the request was successful.
       type: Boolean
-
   - arguments:
     - description: The ID of the alert from Opsgenie.
       name: alert-id
@@ -1261,7 +1260,6 @@ script:
     - contextPath: OpsGenie.Incident.success
       description: Whether the request was successful.
       type: Boolean
-
   - name: opsgenie-get-team-routing-rules
     description: Lists team routing rules.
     arguments:
@@ -1269,25 +1267,24 @@ script:
       description: The ID of the team from Opsgenie.
       required: true
     outputs:
-    - contextPath: OpsGenie.Team.RoutingRules.name
+    - contextPath: OpsGenie.TeamRoutingRule.name
       description: Name of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.order
+    - contextPath: OpsGenie.TeamRoutingRule.order
       description: Order of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.id
+    - contextPath: OpsGenie.TeamRoutingRule.id
       description: ID of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.timezone
+    - contextPath: OpsGenie.TeamRoutingRule.timezone
       description: Timezone of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.teamId
+    - contextPath: OpsGenie.TeamRoutingRule.teamId
       description: Team ID of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.customerId
+    - contextPath: OpsGenie.TeamRoutingRule.customerId
       description: Customer ID of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.notify.id
+    - contextPath: OpsGenie.TeamRoutingRule.notify.id
       description: Notify ID of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.notify.name
+    - contextPath: OpsGenie.TeamRoutingRule.notify.name
       description: Notify name of the routing rule.
-    - contextPath: OpsGenie.Team.RoutingRules.notify.type
+    - contextPath: OpsGenie.TeamRoutingRule.notify.type
       description: Notify type of the routing rule.
-
   dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   script: '-'
