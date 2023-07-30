@@ -1,7 +1,9 @@
 id: Command-Line Analysis
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Command-Line Analysis
-description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
+description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
 starttaskid: "0"
 tasks:
   "0":
@@ -19,6 +21,7 @@ tasks:
       '#none#':
       - "34"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -49,6 +52,7 @@ tasks:
       '#none#':
       - "23"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -93,6 +97,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -131,6 +136,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -153,21 +159,22 @@ tasks:
       id: 81a7238c-3db0-43d4-89e3-5f4e7da0f2f7
       version: -1
       name: Done
-      type: title
-      iscommand: false
-      brand: ""
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      type: title
+      iscommand: false
+      brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2530,
-          "y": 1300
+          "y": 1610
         }
       }
     note: false
@@ -202,6 +209,7 @@ tasks:
       regex:
         simple: (?:^|[ \"'])((?:[A-Za-z0-9+/]{4}){4,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4}))(?:$|[ \"'])
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -235,12 +243,14 @@ tasks:
       - "21"
       - "22"
       - "31"
+      - "39"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2240,
-          "y": 770
+          "y": 1080
         }
       }
     note: false
@@ -272,11 +282,12 @@ tasks:
       value:
         simple: "True"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 500,
-          "y": 1130
+          "y": 1440
         }
       }
     note: false
@@ -564,11 +575,12 @@ tasks:
           right:
             value:
               simple: Get-GPPPassword
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1380,
-          "y": 930
+          "y": 1240
         }
       }
     note: false
@@ -640,6 +652,7 @@ tasks:
             value:
               simple: '-e '
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -729,11 +742,12 @@ tasks:
             value:
               simple: Net.webclient
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 500,
-          "y": 930
+          "y": 1240
         }
       }
     note: false
@@ -917,11 +931,12 @@ tasks:
           right:
             value:
               simple: Get-RickAstley
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 920,
-          "y": 930
+          "y": 1240
         }
       }
     note: false
@@ -1056,11 +1071,12 @@ tasks:
           right:
             value:
               simple: AmsiScanBuffer()
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1810,
-          "y": 930
+          "y": 1240
         }
       }
     note: false
@@ -1085,7 +1101,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "12"
+      - "37"
     scriptarguments:
       text:
         complex:
@@ -1099,6 +1115,7 @@ tasks:
                 iscontext: true
     reputationcalc: 2
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1137,18 +1154,6 @@ tasks:
       value:
         complex:
           root: inputs.Commandline
-          transformers:
-          - operator: replace
-            args:
-              replaceWith:
-                value:
-                  simple: Base64.decoded
-                iscontext: true
-              limit: {}
-              toReplace:
-                value:
-                  simple: MatchRegex.results
-                iscontext: true
           filters:
           - - operator: containsString
               left:
@@ -1159,7 +1164,20 @@ tasks:
                 value:
                   simple: Base64.originalValue
                 iscontext: true
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Base64.decoded
+                iscontext: true
+              toReplace:
+                value:
+                  simple: MatchRegex.results
+                iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1196,11 +1214,12 @@ tasks:
       value:
         simple: "True"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 920,
-          "y": 1130
+          "y": 1440
         }
       }
     note: false
@@ -1232,11 +1251,12 @@ tasks:
       value:
         simple: "True"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1380,
-          "y": 1130
+          "y": 1440
         }
       }
     note: false
@@ -1268,11 +1288,12 @@ tasks:
       value:
         simple: "True"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1810,
-          "y": 1130
+          "y": 1440
         }
       }
     note: false
@@ -1304,6 +1325,7 @@ tasks:
       value:
         simple: "True"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1354,11 +1376,12 @@ tasks:
           right:
             value: {}
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2240,
-          "y": 930
+          "y": 1240
         }
       }
     note: false
@@ -1390,11 +1413,12 @@ tasks:
       value:
         simple: "True"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2240,
-          "y": 1130
+          "y": 1440
         }
       }
     note: false
@@ -1421,14 +1445,15 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: commandline.original
       value:
         complex:
           root: inputs.Commandline
-      append:
-        simple: "true"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1456,10 +1481,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "33"
       '#default#':
       - "9"
+      "yes":
+      - "33"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1469,6 +1494,7 @@ tasks:
             value:
               simple: inputs.Commandline
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1510,11 +1536,173 @@ tasks:
       subplaybook:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1820,
           "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 940e7968-93d7-4fcb-86cb-46b9e276e19e
+    type: title
+    task:
+      id: 940e7968-93d7-4fcb-86cb-46b9e276e19e
+      version: -1
+      name: Suspicious LOLBIN Execution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 38a7a83c-9784-45a3-84b8-105caba13f26
+    type: playbook
+    task:
+      id: 38a7a83c-9784-45a3-84b8-105caba13f26
+      version: -1
+      name: Compare Process Execution Arguments To LOLBAS Patterns
+      description: 'This playbook takes a process name and a command line from the alert and performs the following actions:'
+      playbookName: Compare Process Execution Arguments To LOLBAS Patterns
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: inputs.ProcessImageName
+          transformers:
+          - operator: uniq
+      ProcessName:
+        complex:
+          root: inputs.Commandline
+          transformers:
+          - operator: uniq
+      StringSimilarityThreashold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 3212780f-1634-43cd-8a59-39af8883e672
+    type: condition
+    task:
+      id: 3212780f-1634-43cd-8a59-39af8883e672
+      version: -1
+      name: Found suspicious LOLBIN execution?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: SuspiciousLolbinArguments
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 0de2c957-6cf3-4552-8776-c49fe89e5d60
+    type: regular
+    task:
+      id: 0de2c957-6cf3-4552-8776-c49fe89e5d60
+      version: -1
+      name: Set command line verdict of maliciousTools
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.SuspiciousLolbinExecution
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1440
         }
       }
     note: false
@@ -1531,7 +1719,7 @@ view: |-
       "17_11_yes": 0.44,
       "17_4_#default#": 0.1,
       "19_13_yes": 0.5,
-      "19_9_#default#": 0.85,
+      "19_9_#default#": 0.9,
       "21_9_#default#": 0.71,
       "22_9_#default#": 0.85,
       "31_9_#default#": 0.9,
@@ -1540,9 +1728,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2505,
-        "width": 2410,
-        "x": 500,
+        "height": 2815,
+        "width": 2850,
+        "x": 60,
         "y": -1140
       }
     }
@@ -1552,6 +1740,16 @@ inputs:
   value: {}
   required: false
   description: The command line.
+  playbookInputQuery:
+- key: ProcessImageName
+  value: {}
+  required: false
+  description: The Process Name.
+  playbookInputQuery:
+- key: StringSimilarityThreshold
+  value: {}
+  required: false
+  description: StringSimilarity automation threshold. Used by the Compare "Process Execution Arguments To LOLBAS Patterns" sub-playbook. This input controls the StringSimilarity automation threshold.
   playbookInputQuery:
 outputs:
 - contextPath: MatchRegex
@@ -1582,10 +1780,8 @@ outputs:
   description: The domain object.
   type: unknown
 tests:
-  - No tests
+- No tests
 fromversion: 6.0.0
-contentitemexportablefields:
-  contentitemfields: {}
 system: true
 marketplaces:
   - xsoar
