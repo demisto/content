@@ -21,14 +21,12 @@ from unittest.mock import patch
         "SimilarityScore": 0.7272727272727273,
     }),
 ])
-def test_string_similarity(first_string, second_string, similarity_threshold, expected_result, mocker, capfd):
-    with capfd.disabled():
-        try:
-            result = stringSimilarity(first_string, second_string, similarity_threshold)
-            print(result)
-            assert result == expected_result
-        except ValueError as e:
-            assert "No similarity score calculated" in str(e)
+def test_string_similarity(first_string, second_string, similarity_threshold, expected_result, mocker):
+    try:
+        result = stringSimilarity(first_string, second_string, similarity_threshold)
+        assert result.outputs == expected_result
+    except ValueError as e:
+        assert "No similarity score calculated" in str(e)
 
 
 def test_main_with_similarity_match():
