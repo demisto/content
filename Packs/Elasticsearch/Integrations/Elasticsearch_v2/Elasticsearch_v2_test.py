@@ -1,5 +1,9 @@
 from datetime import datetime
 from unittest.mock import patch
+
+import dateparser
+import freezegun
+
 import demistomock as demisto
 import importlib
 import Elasticsearch_v2
@@ -965,3 +969,16 @@ def test_execute_raw_query(mocker):
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
     es = Elasticsearch_v2.elasticsearch_builder({})
     assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE
+
+
+@freezegun.freeze_time('2022-05-17T00:00:00Z')
+@pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [
+    ('123456', 'Timestamp-Seconds', '', 123456),
+    ('123456', 'Timestamp-Milliseconds', '', 123456),
+    ('123456', 'Simple-Date', '', 123456),
+    (dateparser.parse('7 days'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss', '2023-07-23 16:41:47'),
+])
+def test_convert_date_to_timestamp(mocker, date_time, time_method, time_format, expected_time):
+    mocker.patch.object(demisto, 'params', return_value={'time_format': time_format})
+    Elasticsearch_v2.TIME_METHOD = time_method
+    assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
