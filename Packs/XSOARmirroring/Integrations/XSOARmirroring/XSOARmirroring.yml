@@ -100,11 +100,13 @@ configuration:
   type: 8
   additionalinfo: 'A parameter integration that removes the playbook ID field from incoming incidents. Note: When set to true (default), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type (if configured locally).'
   required: false
-- display: Reset mirror 
-  name: reset_mirror
+- display: Fetch incident history
+  name: fetch_incident_history
   defaultvalue: "false"
   type: 8
-  additionalinfo: 'Will mirror all notes,tags and attachments for incidents. Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.'
+  additionalinfo: >
+   'Will mirror historical notes,tags and attachments in case their corresponding incidents were deleted.
+   Notice can impact performance if combined with "Reset the "last run" timestamp" and multiple incidents in system.'
   required: false
 script:
   script: ''
