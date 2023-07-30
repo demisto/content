@@ -1,15 +1,20 @@
-import ast
 import argparse
+import ast
 import math
 import os
 import sys
+from time import sleep
 
 import demisto_client
+from demisto_client.demisto_api.rest import ApiException
+from urllib3.exceptions import HTTPWarning, HTTPError
+
+from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.configure_and_test_integration_instances import CloudBuild
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
-from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
-from time import sleep
+
+ALREADY_IN_PROGRESS = "create / update / delete operation is already in progress (10102)"
 
 
 def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
@@ -77,23 +82,122 @@ def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable
     return uninstalled_count == len(packs_to_uninstall)
 
 
-def uninstall_pack(client: demisto_client, pack_id: str):
+def get_updating_status(client: demisto_client,
+                        attempts_count: int = 5,
+                        sleep_interval: int = 60,
+                        ) -> tuple[bool, bool | None]:
+    try:
+        for attempt in range(attempts_count - 1, -1, -1):
+            try:
+                logging.info(f"Getting installation/update status, Attempt: {attempts_count - attempt}/{attempts_count}")
+                response, status_code, headers = demisto_client.generic_request_func(client,
+                                                                                     path='/content/updating',
+                                                                                     method='GET',
+                                                                                     accept='application/json',
+                                                                                     _request_timeout=None)
+
+                if 200 <= status_code < 300 and status_code != 204:
+                    updating_status = str(response).lower() == 'true'
+                    logging.info(f"Got updating status:{updating_status}")
+                    return True, updating_status
+
+                if not attempt:
+                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
+
+                logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
+
+            except ApiException as ex:
+                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                    # Unknown exception reason, re-raise.
+                    raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+            except (HTTPError, HTTPWarning) as http_ex:
+                if not attempt:
+                    raise Exception("Failed to perform http request to the server") from http_ex
+
+            # There are more attempts available, sleep and retry.
+            logging.debug(f"failed to get installation/update status, sleeping for {sleep_interval} seconds.")
+            sleep(sleep_interval)
+
+    except Exception as e:
+        logging.exception(f'The request to uninstall packs has failed. Additional info: {str(e)}')
+    return False, None
+
+
+def wait_until_not_updating(client: demisto_client,
+                            attempts_count: int = 2,
+                            sleep_interval: int = 30,
+                            ) -> bool:
+    while attempts_count > 0:
+        success, updating_status = get_updating_status(client)
+        if success:
+            if not updating_status:
+                return True
+            logging.debug(f"Server is still installation/updating status, sleeping for {sleep_interval} seconds.")
+        else:
+            logging.debug(f"failed to get installation/updating status, sleeping for {sleep_interval} seconds.")
+            attempts_count -= 1
+
+        # There are more attempts available, sleep and retry.
+        if attempts_count:
+            sleep(sleep_interval)
+    return False
+
+
+def uninstall_pack(client: demisto_client,
+                   pack_id: str,
+                   attempts_count: int = 5,
+                   sleep_interval: int = 60,
+                   ):
     """
 
     Args:
         client (demisto_client): The client to connect to.
         pack_id: packs id to uninstall
-
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
     Returns:
         Boolean - If the operation succeeded.
 
     """
     try:
-        demisto_client.generic_request_func(client,
-                                            path=f'/contentpacks/installed/{pack_id}',
-                                            method='DELETE',
-                                            accept='application/json',
-                                            _request_timeout=None)
+        for attempt in range(attempts_count - 1, -1, -1):
+            try:
+                logging.info(f"Uninstalling packs {pack_id}, Attempt: {attempts_count - attempt}/{attempts_count}")
+                response, status_code, headers = demisto_client.generic_request_func(client,
+                                                                                     path=f'/contentpacks/installed/{pack_id}',
+                                                                                     method='DELETE',
+                                                                                     accept='application/json',
+                                                                                     _request_timeout=None)
+
+                if 200 <= status_code < 300 and status_code != 204:
+                    logging.success(f'Pack:{pack_id} was successfully uninstalled from the server')
+                    break
+
+                if not attempt:
+                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
+
+                logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
+
+            except ApiException as ex:
+
+                if ALREADY_IN_PROGRESS in ex.body:
+                    wait_succeeded = wait_until_not_updating(client)
+                    if not wait_succeeded:
+                        raise Exception(
+                            "Failed to wait for the server to not be in installation/updating status"
+                        ) from ex
+
+                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                    # Unknown exception reason, re-raise.
+                    raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+            except (HTTPError, HTTPWarning) as http_ex:
+                if not attempt:
+                    raise Exception("Failed to perform http request to the server") from http_ex
+
+            # There are more attempts available, sleep and retry.
+            logging.debug(f"failed to uninstall packs: {pack_id}, sleeping for {sleep_interval} seconds.")
+            sleep(sleep_interval)
+
         return True
     except Exception as e:
         logging.exception(f'The request to uninstall packs has failed. Additional info: {str(e)}')
@@ -244,7 +348,7 @@ def options_handler():
 def main():
     install_logging('cleanup_cloud_instance.log', logger=logging)
 
-    # in cloud we dont use demisto username
+    # In Cloud, We don't use demisto username
     os.environ.pop('DEMISTO_USERNAME', None)
 
     options = options_handler()
