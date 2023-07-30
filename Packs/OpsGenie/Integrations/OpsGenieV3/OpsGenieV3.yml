@@ -1284,7 +1284,7 @@ script:
     - contextPath: OpsGenie.Team.RoutingRules.notify.id
       description: Notify ID of the routing rule
     - contextPath: OpsGenie.Team.RoutingRules.notify.name
-      description: Notify Name of the routing rule
+      description: Notify name of the routing rule.
     - contextPath: OpsGenie.Team.RoutingRules.notify.type
       description: Notify Type of the routing rule
 
