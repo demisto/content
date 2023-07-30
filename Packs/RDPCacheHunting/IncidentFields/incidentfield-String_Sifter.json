@@ -1,0 +1,63 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "incidentrdpcachehuntingstringsifter",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Rating",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "rating",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "number",
+            "width": 150
+        },
+        {
+            "displayName": "String",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "string",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_RDPCacheHunting_stringsifter",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "RDPCacheHunting String Sifter",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}
