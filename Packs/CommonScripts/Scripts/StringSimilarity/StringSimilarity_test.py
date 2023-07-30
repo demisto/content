@@ -78,7 +78,7 @@ def test_main_with_invalid_similarity_threshold(mocker):
     similarity_threshold = "invalid_threshold"
     first_string = "hello world"
     second_string = "hi world"
-    expected_results = {'StringA': 'hello', 'StringB': 'world', 'SimilarityScore': 0.2}
+
     # Mock demisto.getArg function to return the input arguments
     with patch.object(demisto, 'getArg') as mocked_getArg:
         mocked_getArg.side_effect = lambda arg_name: {
