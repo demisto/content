@@ -531,10 +531,9 @@ xsiam_server_ga:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
     UNREMOVABLE_PACKS: "Base"
-  needs: []
-#  needs:
-#    - job: mpv2-prepare-testing-bucket
-#      optional: true
+  needs:
+    - job: mpv2-prepare-testing-bucket
+      optional: true
 
 xsoar_ng_server_ga:
   extends:
