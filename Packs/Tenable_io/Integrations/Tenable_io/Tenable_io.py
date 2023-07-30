@@ -82,15 +82,14 @@ def paginate(
                 offset = 0
 
                 if api_limit:
-                    for curr_offset in range(0, limit - api_limit, api_limit):
+                    for offset in range(0, limit - api_limit, api_limit):
                         pages += get_page(
                             limit=api_limit,
-                            offset=curr_offset)
+                            offset=offset)
 
                     # the remaining call can be less than OR equal the api_limit but not empty
-                    remainder = limit % api_limit or api_limit
-                    offset = limit - remainder
-                    limit = remainder
+                    limit = limit % api_limit or api_limit
+                    offset += api_limit
 
             pages += get_page(
                 limit=limit,
