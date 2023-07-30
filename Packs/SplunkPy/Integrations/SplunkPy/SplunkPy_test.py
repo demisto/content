@@ -1089,7 +1089,7 @@ def test_get_remote_data_command_with_message(mocker):
     Test for the get_remote_data_command function with a message.
 
     This test verifies that when the splunk-sdk returns a message, the function correctly logs the message
-    using demisto.debug().
+    using demisto.info().
 
     Args:
         mocker: The mocker object for patching and mocking.
@@ -1113,17 +1113,16 @@ def test_get_remote_data_command_with_message(mocker):
         "close_extra_labels": ["Custom"],
         "mapper": splunk.UserMappingObject(Service(), False),
     }
-    debug_mock = mocker.patch.object(demisto, "debug")
+    info_mock = mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
-    mocker.patch.object(demisto, "info")
     mocker.patch(
         "SplunkPy.results.JSONResultsReader", return_value=[results.Message("INFO-test", "test message")]
     )
     mocker.patch("SplunkPy.isinstance", return_value=True)
 
     splunk.get_remote_data_command(Service(), **func_call_kwargs)
-    (debug_message,) = debug_mock.call_args_list[1][0]
-    assert debug_message == "Splunk-SDK message: test message"
+    (info_message,) = info_mock.call_args_list[0][0]
+    assert info_message == "Splunk-SDK message: test message"
 
 
 def test_get_modified_remote_data_command(mocker):
