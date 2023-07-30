@@ -7,7 +7,7 @@ filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}Z"
 //supported format: 2023-07-25T07:10:47+07:00
 filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[\+|\-]\d{2}\:\d{2}"
 | alter tmp_timestamp_string3 = arrayindex(regextract(_raw_log ,"(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}[\+|\-]\d{2}\:\d{2})"),0)
-| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%S%Ez", tmp_timestamp_string )
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%S%Ez", tmp_timestamp_string3 )
 | fields - tmp_timestamp_string3;
 //supported format: Jul 08 09:14:35 UTC
 filter _raw_log ~= "[A-Za-z]{3}\s\d+\s\d+\:\d+\:\d+\sUTC"
