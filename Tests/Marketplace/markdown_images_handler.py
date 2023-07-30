@@ -9,17 +9,17 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 
 def download_markdown_images_from_artifacts(
-    readme_urls_data_dict_path: Path, storage_bucket, storge_base_path: str
+    markdown_urls_data_dict_path: Path, storage_bucket, storge_base_path: str
 ):
     """
-    Iterates over the readme_url_data_list and calls the download_markdown_image_from_url_and_upload_to_gcs
+    Iterates over the markdown_url_data_list and calls the download_markdown_image_from_url_and_upload_to_gcs
     Args:
-        readme_urls_data_dict_path (Path): A path to a json file generate in SDK prepare-content of all markdown images
+        markdown_urls_data_dict_path (Path): A path to a json file generate in SDK prepare-content of all markdown images
                                             that need to be uploaded to GCS.
         storage_bucket: The storage bucket to upload the images to.
         storge_base_path: The path to the Pack dir in the storage.
     """
-    with open(readme_urls_data_dict_path) as f:
+    with open(markdown_urls_data_dict_path) as f:
         # reading the file generated in the sdk of all the packs readme images data.
         readme_urls_data_dict = json.load(f)
 
@@ -28,11 +28,11 @@ def download_markdown_images_from_artifacts(
     for pack_name, readme_description_images_data in readme_urls_data_dict.items():
         pack_images_names[pack_name] = {}
         for readme_desc_data, images_data in readme_description_images_data.items():
-            for readme_url_data in images_data:
-                original_markdown_url = readme_url_data.get("original_markdown_url")
-                final_dst_image_path = str(readme_url_data.get("final_dst_image_path"))
-                image_name = str(readme_url_data.get("image_name"))
-                relative_image_path = str(readme_url_data.get("relative_image_path"))
+            for markdown_url_data in images_data:
+                original_markdown_url = markdown_url_data.get("original_markdown_url")
+                final_dst_image_path = str(markdown_url_data.get("final_dst_image_path"))
+                image_name = str(markdown_url_data.get("image_name"))
+                relative_image_path = str(markdown_url_data.get("relative_image_path"))
 
                 logging.info(f"image_final_storage_des ={final_dst_image_path}")
 
@@ -87,10 +87,10 @@ def download_markdown_image_from_url_and_upload_to_gcs(
             # init the blob with the correct path to save the image on gcs
             gcs_storage_path = os.path.join(storage_base_path, relative_image_path)
             logging.info(f"{gcs_storage_path=}")
-            readme_image = storage_bucket.blob(gcs_storage_path)
+            markdown_image = storage_bucket.blob(gcs_storage_path)
             # load the file from local memo to the gcs
             with open(image_name, "rb") as image_file:
-                readme_image.upload_from_file(image_file)
+                markdown_image.upload_from_file(image_file)
 
             # remove local saved image
             os.remove(image_name)
@@ -117,7 +117,7 @@ def copy_markdown_images(
     storage_base_path: str,
     build_bucket_base_path: str,
 ):
-    """Copies pack's readme_images from the build bucket to the production bucket
+    """Copies pack's markdown_images from the build bucket to the production bucket
 
     Args:
         production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
@@ -129,9 +129,9 @@ def copy_markdown_images(
         bool: Whether the operation succeeded.
     """
     logging.info("Starting readme images copy.")
-    readme_images: dict = {}
-    if readme_images := images_data.get(BucketUploadFlow.MARKDOWN_IMAGES, {}):
-        for pack_name, readme_description_md in readme_images.items():
+    markdown_images: dict = {}
+    if markdown_images := images_data.get(BucketUploadFlow.MARKDOWN_IMAGES, {}):
+        for pack_name, readme_description_md in markdown_images.items():
             task_status = True
             err_msg = f"Failed copying {pack_name} pack readme images."
 
