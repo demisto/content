@@ -601,7 +601,7 @@ class Client(BaseClient):
         current_date = datetime.utcnow()
         epoch = datetime(1970, 1, 1)
         seconds_since_epoch = int((current_date - epoch).total_seconds())
-        fromtime = last_run.get("last_fetch")
+        fromtime = last_run
         if fromtime is None:
             fromtime = str(dateparser.parse(first_fetch_time))
             fromtime = int(time.mktime(datetime.fromisoformat(fromtime).timetuple()))
@@ -1401,7 +1401,7 @@ def main() -> None:
             return_results("ok")
         elif command == "fetch-incidents":
             last_fetch, out = fetch_incidents(
-                client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time
+                client, last_run=demisto.getLastRun().get('last_fetch'), first_fetch_time=first_fetch_time
             )
             if (out is None) or len(out) == 0:
                 demisto.incidents([])
