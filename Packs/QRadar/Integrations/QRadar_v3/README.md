@@ -3292,6 +3292,24 @@ Polling command to search for events of a specific offense.
 | QRadar.SearchEvents.Events | Unknown | The events from QRadar search. | 
 | QRadar.SearchEvents.Status | Unknown | The status of the search \('wait', 'partial', 'success'\). | 
 
+#### Command example
+```!qradar-search-retrieve-events offense_id=14```
+#### Context Example
+```json
+{
+    "QRadar": {
+        "SearchEvents": {
+            "ID": "5182044b-958e-4030-b84b-6426193298a2",
+            "Status": "wait"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Search ID: 5182044b-958e-4030-b84b-6426193298a2
+
 ### qradar-remote-network-cidr-create
 
 ***
@@ -3419,50 +3437,3 @@ Potentially harmful: This API command executes any waiting system deployments in
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.deploy.status | String | The deployment status \(INITIALIZING, IN_PROGRESS, COMPLETE\). | 
-
-## Incident Mirroring
-
-You can enable incident mirroring between Cortex XSOAR incidents and IBM QRadar v3 corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
-1. Enable *Fetching incidents* in your instance configuration.
-2. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in IBM QRadar v3.
-
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and IBM QRadar v3.
-
-## Breaking changes from the previous version of this integration - IBM QRadar v3
-%%FILL HERE%%
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
