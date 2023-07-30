@@ -3,8 +3,8 @@ ThreatQ provides indicator scoring weighting for indicators and their contextual
 For detailed information on ThreatQ scoring please refer to https://helpcenter.threatq.com/
 
 Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
-- url
-- domain
+- ***url***
+- ***domain***
 See the vendor’s documentation for more details.
 
 
