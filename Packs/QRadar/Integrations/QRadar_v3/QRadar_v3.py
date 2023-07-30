@@ -2802,26 +2802,24 @@ def qradar_reference_set_value_upsert_command(client: Client, args: dict) -> Com
     values: List[str] = argToList(args.get('value', ''))
     if not values:
         raise DemistoException('Value to insert must be given.')
-    source = args.get('source')
+    # source = args.get('source')
     date_value = argToBoolean(args.get('date_value', False))
     fields = args.get('fields')
 
     if date_value:
         values = [get_time_parameter(value, epoch_format=True) for value in values]
 
-    # if one of these calls fail, raise an error and stop command execution
-    if len(values) == 1:
-        response = client.reference_set_value_upsert(ref_name, values[0], source, fields)
+    # # if one of these calls fail, raise an error and stop command execution
+    # if len(values) == 1:
+    #     response = client.reference_set_value_upsert(ref_name, values[0], source, fields)
 
-    else:
-        response = client.indicators_upload(ref_name, values, fields)
+    # else:
+    response = client.indicators_upload(ref_name, values, fields)
 
-    outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response)
 
     return CommandResults(
-        readable_output=tableToMarkdown('Reference Update Create', outputs,
-                                        ['Name', 'ElementType', 'TimeToLive', 'TimeoutType', 'NumberOfElements',
-                                         'CreationTime'], removeNull=True),
+        readable_output=tableToMarkdown('Reference Update Create', outputs, removeNull=True),
         outputs_prefix='QRadar.Reference',
         outputs_key_field='Name',
         outputs=outputs,
