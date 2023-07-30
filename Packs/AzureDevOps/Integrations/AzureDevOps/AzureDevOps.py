@@ -690,9 +690,9 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def blob_zip_get_list_request(self, org_repo_project_tuple: namedtuple, file_object_id: str):
+    def blob_zip_get_request(self, org_repo_project_tuple: namedtuple, file_object_id: str):
 
-        params = {"api-version": 7.0}
+        params = {"api-version": 7.0, "$format": "zip"}
 
         full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/_apis/git/' \
                    f'repositories/{org_repo_project_tuple.repository}/blobs/{file_object_id}'
@@ -2164,7 +2164,7 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
 
 
 def file_content_get_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
-                             project: Optional[str]) -> CommandResults:
+                             project: Optional[str]) -> list:
     """
     Getting the content file.
     """
@@ -2174,13 +2174,15 @@ def file_content_get_command(client: Client, args: Dict[str, Any], organization:
     response = client.file_content_get_request(org_repo_project_tuple, args=args)
 
     readable_output = tableToMarkdown('Content File', response, headers=["path", "content"])
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='AzureDevOps.File',
-        outputs=response,
-        raw_response=response
-    )
+    file_name = Path(response["path"]).name
+    file = fileResult(filename=file_name, data=response["content"], file_type=EntryType.ENTRY_INFO_FILE)
+    results = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AzureDevOps.File',
+            outputs=response,
+            raw_response=response
+        )
+    return [results, file]
 
 
 def branch_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
@@ -2350,9 +2352,9 @@ def blob_zip_get_command(client: Client, args: Dict[str, Any], organization: Opt
     # pre-processing inputs
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.blob_zip_get_list_request(org_repo_project_tuple, args["file_object_id"])
+    response = client.blob_zip_get_request(org_repo_project_tuple, args["file_object_id"])
 
-    return fileResult(filename='blob.zip', data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
+    return fileResult(filename='blob.zip', data=response.content, file_type=EntryType.FILE)
 
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
