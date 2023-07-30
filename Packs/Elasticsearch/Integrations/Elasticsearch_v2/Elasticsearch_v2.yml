@@ -77,6 +77,28 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
+  defaultvalue: None
+  display: Instance Date Format
+  name: date_format
+  options:
+  - yyyy-MM-dd
+  - yyyy-MM-ddTHH:mm:ss.SSSZ
+  - yyyy-MM-ddTHH:mm:ss.SSSSSSZ
+  - yyyy-MM-dd HH:mm:ss.SSSZ
+  - yyyy-MM-dd HH:mm:ss.SSSSSSZ
+  - yyyy/MM/dd
+  - yyyy/MM/ddTHH:mm:ss.SSSZ
+  - yyyy/MM/ddTHH:mm:ss.SSSSSSZ
+  - yyyy/MM/dd HH:mm:ss.SSSZ
+  - yyyy/MM/dd HH:mm:ss.SSSSSSZ
+  - yyyy.MM.dd
+  - yyyy.MM.ddTHH:mm:ss.SSSZ
+  - yyyy.MM.ddTHH:mm:ss.SSSSSSZ
+  - yyyy.MM.dd HH:mm:ss.SSSZ
+  - yyyy.MM.dd HH:mm:ss.SSSSSSZ
+  type: 15
+  required: false
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
