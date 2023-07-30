@@ -108,7 +108,7 @@ def main():
         packs_to_create_zips = set()
         if args.content_packs:
             packs_to_create_zips = {p.strip() for p in args.content_packs.split(',') if p not in IGNORED_FILES}
-        logger.debug(f"Got packs to create artifacts: {packs_to_create_zips}")
+        logger.info(f"Got packs to create artifacts: {packs_to_create_zips}")
 
         logger.info("Creating pack dependencies mapping")
         dependencies_to_create_zips = create_dependencies(content_dto, args.bucket_upload, Path(args.dependencies_output),

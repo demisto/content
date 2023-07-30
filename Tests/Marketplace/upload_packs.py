@@ -23,6 +23,7 @@ from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPCon
     CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES
 from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
+from demisto_sdk.commands.content_graph.common import ContentType
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
@@ -184,7 +185,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str, content_packs: list[Pack], marketplace: str = 'xsoar') -> bool:
+                             storage_base_path: str, content_packs: list[str], marketplace: str = 'xsoar') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -208,7 +209,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         return True
 
     logging.info("Start cleaning non existing packs in index.")
-    valid_pack_names = {p.name for p in content_packs}
+    valid_pack_names = set(content_packs)
     if marketplace == 'xsoar':
         private_packs_names = {p.get('id', '') for p in private_packs}
         valid_pack_names.update(private_packs_names)
@@ -1054,7 +1055,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
 
 
 def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
-                                               current_marketplace_packs: list[Pack],
+                                               current_marketplace_packs: list[str],
                                                private_packs: list[dict]):
     """
     Delete from index packs that not relevant in the current marketplace from index.
@@ -1067,7 +1068,7 @@ def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
     """
     packs_in_index = set(os.listdir(index_folder_path))
     private_packs_names = {p.get('id', '') for p in private_packs}
-    current_marketplace_pack_names = {pack.name for pack in current_marketplace_packs}
+    current_marketplace_pack_names = set(current_marketplace_packs)
     packs_to_be_deleted = packs_in_index - current_marketplace_pack_names - private_packs_names
     deleted_packs = set()
     for pack_name in packs_to_be_deleted:
@@ -1267,15 +1268,24 @@ def main():
     # detect packs to upload
     pack_names_to_upload = get_packs_names(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    # list of all packs from `content_packs.zip` given from create artifacts
-    all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
-                              is_modified=pack_name in pack_names_to_upload)
-                         for pack_name in os.listdir(extract_destination_path)]
+
+    try:
+        with Neo4jContentGraphInterface() as neo4j_interface:
+            marketplace_compatible_packs = {pack.object_id for pack in neo4j_interface.search(
+                marketplace=marketplace,
+                content_type=ContentType.PACK,
+            )}
+    except Exception as e:
+        logging.error(f"Neo4j database is not ready, could not get content packs from graph.\n{e}")
+        return
+
+    # list of all marketplace compatible content packs from the graph
+    x = marketplace_compatible_packs
 
     # pack's list to update their index metadata and upload them.
     # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
-    packs_list = list(filter(lambda x: x.name not in IGNORED_FILES, all_content_packs)) if is_bucket_upload_flow else \
-        list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), is_modified=True)
+                  for pack_name in pack_names_to_upload]
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 

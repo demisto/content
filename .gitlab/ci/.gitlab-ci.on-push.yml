@@ -159,14 +159,15 @@ validate-content-conf:
     - section_start "Create Content Artifacts" --collapsed
     - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
     - CONTENT_PACKS_TO_UPLOAD=$(paste -sd, "$ARTIFACTS_FOLDER/content_packs_to_upload.txt")
+    - CONTENT_PACKS_TO_INSTALL=$(paste -sd, "$ARTIFACTS_FOLDER/content_packs_to_install.txt")
     - |
       if [[ $MARKETPLACE_VERSION == "xsoar" ]];
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --content-packs "$CONTENT_PACKS_TO_UPLOAD" --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --content-packs "$CONTENT_PACKS_TO_UPLOAD,$CONTENT_PACKS_TO_INSTALL" --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --content-packs "$CONTENT_PACKS_TO_UPLOAD" --no-zip --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --content-packs "$CONTENT_PACKS_TO_UPLOAD,$CONTENT_PACKS_TO_INSTALL" --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
     - section_end "Create Content Artifacts"
