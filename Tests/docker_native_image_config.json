@@ -173,7 +173,8 @@
          "ignored_native_images": [
             "native:8.3",
             "native:8.2",
-            "native:dev"
+            "native:dev",
+            "native:candidate"
          ]
       }
    ],
