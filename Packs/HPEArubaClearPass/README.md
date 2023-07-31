@@ -18,7 +18,7 @@ Open your Aruba ClearPass UI and follow these instructions:
    * Under **Syslog Servers**, choose the relevant server config for XSIAM.
 3. Save your filter.
 
-* Pay attention: Timestamp parsing is supported for the **rt** field.
+* Pay attention: Timestamp parsing is supported for the **rt** field in Epoch (UNIX) format.
 </~XSIAM>
 
 Use this content pack to help automate adding devices in the network to a block list in response to security events, such as a stolen or compromised device.
