@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 
 """ CONSTANTS """
@@ -25,7 +25,7 @@ class Client(BaseClient):
         proxy: bool,
     ):
         super().__init__(
-            base_url=f"{base_url}", headers=HEADERS, verify=verify, proxy=proxy
+            base_url=base_url, headers=HEADERS, verify=verify, proxy=proxy
         )
         self.username = username
         self.password = password
@@ -37,7 +37,7 @@ class Client(BaseClient):
 
     def _login(self):
         """
-        Login using the credentials and store the cookie in the session(in the BaseClient class).
+            Login using the BaseClient session and the provided credentials.
         """
         self._http_request(
             "POST",
@@ -122,7 +122,6 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
             "Action": source.get("action"),
         }
 
-    query = args["query"]
     limit = arg_to_number(args.get("limit", 50))
     all_result = argToBoolean(args.get("all_result", False))
 
@@ -141,7 +140,7 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
             "sortBy": [
                 {"field": "@timestamp", "order": "desc", "unmappedType": "date"}
             ],  # the response sort by timestamp
-            "query": query,  # can be "VPN" or "*"
+            "query": args["query"],  # can be "VPN" or "*"
             "size": result_size_to_get,  # the size of the response
             "clusterWithIndices": [
                 {
@@ -152,11 +151,12 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
         }
     )
 
-    response = client.query_datalake_request(search_query)
-    if error := response["responses"][0].get("error"):
+    response = client.query_datalake_request(search_query).get("response", [{}])
+
+    if error := response[0].get("error"):
         raise DemistoException(f"Error in query: {error['root_cause'][0]['reason']}")
 
-    data_response = response["responses"][0]["hits"]["hits"]
+    data_response = response[0].get("hits", {}).get("hits")
 
     table_to_markdown = [_parse_entry(entry) for entry in data_response]
 
@@ -165,7 +165,7 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="ExabeamDataLake.Log",
         outputs=data_response,
-        readable_output=markdown_table,
+        readable_output=markdown_table if data_response else "No results found.",
     )
 
 

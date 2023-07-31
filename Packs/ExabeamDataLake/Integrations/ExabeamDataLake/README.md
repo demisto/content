@@ -1,3 +1,4 @@
+Cloud-delivered Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
 This integration was integrated and tested with version xx of Exabeam Data Lake
 
 ## Configure Exabeam Data Lake on Cortex XSOAR
@@ -24,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### exabeam-data-lake-query
 
 ***
-Enter a description of the command, including any important information users need to know, for example required permissions.
+Get events from Exabeam Data Lake.
 
 #### Base Command
 
@@ -34,11 +35,11 @@ Enter a description of the command, including any important information users ne
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The search query string to filter the events. (example in the table below.) | Optional | 
-| start_time | Can be either "*" or "VPN" etc. | Optional | 
-| end_time | aa. | Optional | 
-| limit | Enter a description of the argument, including any important information users need to know, for example, default values. Default is 50. | Optional | 
-| all_result | the limit of exabeam data lake query result, max is 10,000. Possible values are: true, false. | Optional | 
+| query | The search query string to filter the events. (examples in the table below.) | Optional | 
+| start_time | The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26.243Z". | Optional | 
+| end_time | The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26.243Z". | Optional | 
+| limit | the limit of exabeam-data-lake query result, max is 10,000. | Optional | 
+| all_result | all result from exabeam-data-lake query (max 10,000). Possible values are: true, false. | Optional | 
 
 
 ## Query Argument - Examples
@@ -50,12 +51,6 @@ Enter a description of the command, including any important information users ne
 | Search for all vpn logs:	 | exa_category:VPN |
 | Search for Windows Event logs with the code number 4624 ("An account was successfully logged on"): | exa_category:"Windows Authentication" AND event_code:4624 |
 | Search for successful traffic to the internet: | exa_category:Network AND data_type:networkfw-allow AND NOT dest_ip:[10.0.0.0 TO 10.255.255.255] |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| BaseIntegration.Output | String | aaa | 
 
 #### Command example
 
