@@ -41,7 +41,7 @@ class DFIRIrisAPI:
             else:
                 return "No cases found."
         else:
-            return (f"Request failed with status code {response.status_code}.")
+            raise DemistoException(f"Request failed with status code {response.status_code}.")
 
     def get_all_cases(self):
 
