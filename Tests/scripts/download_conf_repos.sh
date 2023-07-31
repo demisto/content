@@ -28,7 +28,7 @@ TEST_CONF_BRANCH="$UNDERSCORE_BRANCH"
 echo "clone content-test-conf from branch: $UNDERSCORE_BRANCH in content-test-conf"
 git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git --branch $UNDERSCORE_BRANCH
 if [ "$?" != "0" ]; then
-    echo "No such branch in content-test-conf: $UNDERSCORE_BRANCH , falling back to master"
+    echo "No such branch in content-test-confx: $UNDERSCORE_BRANCH , falling back to master"
     TEST_CONF_BRANCH="master"
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
 fi
