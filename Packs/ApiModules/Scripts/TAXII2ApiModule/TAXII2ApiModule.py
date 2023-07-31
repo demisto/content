@@ -1256,8 +1256,8 @@ class Taxii2FeedClient:
             self.objects_to_fetch.append('relationship')
         kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            return v20.as_pages(get_objects, per_request=page_size, kwargs=kwargs)
-        return v21.as_pages(get_objects, per_request=page_size, kwargs=kwargs)
+            return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
         """
