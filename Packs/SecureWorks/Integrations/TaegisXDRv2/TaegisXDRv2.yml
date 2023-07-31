@@ -11,10 +11,10 @@ configuration:
   type: 15
   required: true
   options:
-  - US1
-  - US2
-  - US3
-  - EU
+  - US1 (Charlie)
+  - US2 (Delta)
+  - US3 (Foxtrot)
+  - EU (Echo)
   additionalinfo: Used to determine the URL and API endpoint to utilize for your tenant
 - display: Trust any certificate (not secure)
   name: insecure

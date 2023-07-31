@@ -75,7 +75,7 @@ TAEGIS_ENDPOINT = {
     "sensorVersion": "2.8.5.0",
 }
 
-TAEGIS_ENVIRONMENT = "us1"
+TAEGIS_ENVIRONMENT = "us1 (charlie)"
 
 TAEGIS_INVESTIGATION = {
     "archived_at": None,

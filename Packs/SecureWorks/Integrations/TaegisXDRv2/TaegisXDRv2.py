@@ -10,10 +10,10 @@ AUTH_ENDPOINT = "/auth/api/v2/auth/token"
 GRAPHQL_ENDPOINT = "/graphql"
 
 ENV_URLS = {
-    "us1": {"api": "https://api.ctpx.secureworks.com", "xdr": "https://ctpx.secureworks.com"},
-    "us2": {"api": "https://api.delta.taegis.secureworks.com", "xdr": "https://delta.taegis.secureworks.com"},
-    "us3": {"api": "https://api.foxtrot.taegis.secureworks.com", "xdr": "https://foxtrot.taegis.secureworks.com"},
-    "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
+    "us1 (charlie)": {"api": "https://api.ctpx.secureworks.com", "xdr": "https://ctpx.secureworks.com"},
+    "us2 (delta)": {"api": "https://api.delta.taegis.secureworks.com", "xdr": "https://delta.taegis.secureworks.com"},
+    "us3 (foxtrot)": {"api": "https://api.foxtrot.taegis.secureworks.com", "xdr": "https://foxtrot.taegis.secureworks.com"},
+    "eu (echo)": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
 ALERT_STATUSES = set((
