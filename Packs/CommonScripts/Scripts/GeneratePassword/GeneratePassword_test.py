@@ -76,7 +76,7 @@ def test_generate_password(
     [
         (0, 5, 0, 5, 0, 5, 0, 5,
          "error: At least one of the following arguments should be above 0"),  # Test case with all ranges set to 0-5
-        (-3, 5, 0, 5, 0, 5, 0, 5, "error: only positive arguments are accepted.")
+        (-3, 5, 0, 5, 0, 5, 0, 5, "All numeral arguments must be positive.")
     ]
 )
 def test_generate_password_zero_inputs(
