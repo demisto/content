@@ -386,7 +386,7 @@ tasks:
       id: c0bc4d8c-2ae5-42b4-892c-47cde9d558d0
       iscommand: false
       name: Check the Answer for Q1
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: c0bc4d8c-2ae5-42b4-892c-47cde9d558d0
@@ -697,7 +697,7 @@ tasks:
       id: 7b2524dc-b2a2-4cda-8950-0a1f39e635a8
       iscommand: false
       name: Check the Answer for Q2
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 7b2524dc-b2a2-4cda-8950-0a1f39e635a8
@@ -737,7 +737,7 @@ tasks:
       id: ca3b2518-ad4f-4c15-8e0c-325addb1b2f8
       iscommand: false
       name: Check the Answer for Q3
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: ca3b2518-ad4f-4c15-8e0c-325addb1b2f8
@@ -777,7 +777,7 @@ tasks:
       id: dd83c85f-5328-4dd9-8970-cdf7b16a6db0
       iscommand: false
       name: Check Answer for Q4
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: dd83c85f-5328-4dd9-8970-cdf7b16a6db0
@@ -817,7 +817,7 @@ tasks:
       id: 6d18d4b3-962b-4200-8166-e98b26eb2c56
       iscommand: false
       name: Check Answer for Q5
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 6d18d4b3-962b-4200-8166-e98b26eb2c56
@@ -857,7 +857,7 @@ tasks:
       id: 5f9e0b21-a84a-4a77-85b1-d876dcbdd6b1
       iscommand: false
       name: Check the Answer for Q6
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 5f9e0b21-a84a-4a77-85b1-d876dcbdd6b1
@@ -898,7 +898,7 @@ tasks:
       iscommand: false
       name: |
         Check the Answer for Q7
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 517a56c4-6423-4e75-8f53-8ba27bb2861a
@@ -1056,7 +1056,7 @@ tasks:
       id: d429434f-7018-4399-8c03-bceaa4f9f1ee
       iscommand: false
       name: Check the Answer for Q8
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: d429434f-7018-4399-8c03-bceaa4f9f1ee
@@ -1167,7 +1167,7 @@ tasks:
       id: 07338aab-2da4-47f8-8c76-51f08a801e57
       iscommand: false
       name: Check the Answer for Q9
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 07338aab-2da4-47f8-8c76-51f08a801e57
@@ -1238,7 +1238,7 @@ tasks:
       id: 29410893-741f-42e5-8c10-7c65e92ec0db
       iscommand: false
       name: Check answer for Q11
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 29410893-741f-42e5-8c10-7c65e92ec0db
@@ -1382,7 +1382,7 @@ tasks:
       id: a1e77821-f8fe-456a-83b3-5c4997f4ceed
       iscommand: false
       name: Check the Answer for Q9
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: a1e77821-f8fe-456a-83b3-5c4997f4ceed
@@ -1476,7 +1476,7 @@ tasks:
       id: 115dbe77-2934-4555-85e9-3d6b60f546ea
       iscommand: false
       name: Check the Answer for Q15
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 115dbe77-2934-4555-85e9-3d6b60f546ea
@@ -1516,7 +1516,7 @@ tasks:
       id: 986bbcaa-08e4-48ae-83ad-199c5b899cc7
       iscommand: false
       name: Check the Answer for Q14
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 986bbcaa-08e4-48ae-83ad-199c5b899cc7
@@ -1695,7 +1695,7 @@ tasks:
       id: dd32e85b-521d-4344-8857-fa1bf5bb5e79
       iscommand: false
       name: 'Check the final answer #13'
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: dd32e85b-521d-4344-8857-fa1bf5bb5e79
@@ -1735,7 +1735,7 @@ tasks:
       id: 57a88fc5-c1d1-480a-8b2d-050c6c160e86
       iscommand: false
       name: 'Check question #12'
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 57a88fc5-c1d1-480a-8b2d-050c6c160e86
@@ -1887,7 +1887,7 @@ tasks:
       id: 555fa990-46e4-49f2-8ec0-59efc5ec12e6
       iscommand: false
       name: Check the answer for Q16
-      script: 3e3a0974-919b-4276-8ec1-6028a4324126
+      script: CTFSKO
       type: regular
       version: -1
     taskid: 555fa990-46e4-49f2-8ec0-59efc5ec12e6
