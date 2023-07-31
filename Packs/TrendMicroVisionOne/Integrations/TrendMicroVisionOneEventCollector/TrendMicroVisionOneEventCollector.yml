@@ -54,20 +54,17 @@ display: 'Trend Micro Vision One Event Collector'
 name: TrendMicroVisionOneEventCollector
 script:
   commands:
-  - deprecated: false
-    description: Returns a list of logs.
+  - description: Returns a list of logs.
     name: trend-micro-vision-one-get-events
     arguments:
     - description: The maximum number of logs to retrieve.
       defaultValue: '50'
       name: limit
-      secret: false
     - description: From which time to retrieve the log(s) in ISO8601 format.
       name: from_time
       required: true
     - description: To which time to retrieve the log(s) in ISO8601 format. Defaults to the current time if not provided.
       name: to_time
-      required: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to push the fetched events to Cortex XSIAM or not.
@@ -83,7 +80,6 @@ script:
     - contextPath: TrendMicroVisionOne.Events
       description: Trend Micro Vision One events.
       type: Unknown
-  isfetch: false
   isfetchevents: true
   runonce: false
   script: '-'
