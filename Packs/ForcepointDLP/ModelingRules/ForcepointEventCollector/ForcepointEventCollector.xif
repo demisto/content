@@ -1,6 +1,6 @@
 [MODEL:dataset="forcepoint_dlp_raw"]
 filter  _collector_type = "API" // API based logs modeling rules
-alter   xdm.observer.action=action,
+| alter xdm.observer.action=action,
         xdm.event.outcome = if(action in ("AUTHORIZED", "RELEASED", "AUDITED", "ENDPOINT_CONFIRM_CONTINUE"), XDM_CONST.OUTCOME_SUCCESS, action in ("QUARANTINED", "BLOCKED", "ENDPOINT_CONFIRM_ABORT"), XDM_CONST.OUTCOME_FAILED),
         xdm.observer.name=analyzed_by,
         xdm.event.type=channel,
@@ -13,12 +13,12 @@ alter   xdm.observer.action=action,
         xdm.target.port = arrayindex(regextract(destination, "\w+:(\d{1,5})"), 0),
         xdm.email.subject = if(channel = "EMAIL", details),
         xdm.event.description=details,
-        observer_type = arrayindex(regextract(detected_by, "(.+?)\s+on"), 0),
+        observer_type = arrayindex(regextract(detected_by, "(.+?)\s+on"), 0)
 | alter xdm.observer.type = coalesce(observer_type, detected_by),
         xdm.source.host.device_category=endpoint_type,
         xdm.event.id=event_id,
-        file_name_array = arraymap(regextract(file_name, "(.+?)\s+\-\s+\d+[\.\d]*\s+[KMGTP]*B;?"), trim("@element")),
-| alter file_type_array = arraymap(file_name_array, if("@element" ~= "\.[\w]+$", arrayindex(regextract("@element", ".+?\.(\w+)$"), 0), "")),
+        file_name_array = arraymap(regextract(file_name, "(.+?)\s+\-\s+\d+[\.\d]*\s+[KMGTP]*B;?"), trim("@element"))
+| alter file_type_array = arraymap(file_name_array, if("@element" ~= "\.[\w]+$", arrayindex(regextract("@element", ".+?\.(\w+)$"), 0), ""))
 | alter xdm.target.file.filename = arraystring(file_name_array, ";"),
         xdm.target.file.file_type = arraystring(file_type_array, ";"),
         xdm.email.attachment.filename = if(channel ~= "EMAIL", file_name_array),
@@ -31,14 +31,14 @@ alter   xdm.observer.action=action,
         xdm.source.user.ou=json_extract_scalar(source, "$.department"),
         xdm.email.sender=json_extract_scalar(source, "$.email_address"),
         xdm.source.host.hostname=json_extract_scalar(source, "$.host_name"),
-        ip_address = json_extract_scalar(source,  "$.ip_address"),
+        ip_address = json_extract_scalar(source,  "$.ip_address")
 | alter xdm.source.ipv6 = if(ip_address ~= "\:[a-fA-F\d]{1,4}|[a-fA-F\d]{1,4}\:", ip_address, null),
         xdm.source.ipv4 = if(ip_address ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", ip_address, null),
         username = json_extract_scalar(source,  "$.login_name"),
         nt_domain = json_extract_scalar(source,  "$.nt_domain"),
-        email_address = json_extract_scalar(source,  "$.email_address"),
+        email_address = json_extract_scalar(source,  "$.email_address")
 | alter xdm.source.user.username=coalesce(username, email_address),
-        user_domain = arrayindex(regextract(username, "([^\\]+)\\"), 0),
+        user_domain = arrayindex(regextract(username, "([^\\]+)\\"), 0)
 | alter xdm.source.user.domain = coalesce(nt_domain, user_domain),
         xdm.event.is_completed = if(uppercase(status) ~= "CLOSE|FALSE.POSITIVE", true, false),
         xdm.event.tags = arraycreate(`tag`),
