@@ -2656,11 +2656,12 @@ def conversation_history():
     Fetches a conversation's history of messages
     and events
     """
-    channel_id = demisto.args()['channel_id']
-    limit = demisto.args().get('limit')
+    args = demisto.args()
+    channel_id = args.get('channel_id')
+    limit = args.get('limit')
     if limit is None:
         limit = 100
-    conversation_id = demisto.args().get('conversation_id')
+    conversation_id = args.get('conversation_id')
     if conversation_id is None:
         body = {
             'channel': channel_id,
@@ -2677,7 +2678,7 @@ def conversation_history():
     messages = raw_response['messages']
     if raw_response['ok'] is False:
         error = raw_response['error']
-        return_error(f'You received the following error: {error}')
+        return_error(f'An error occurred while listing conversation history: {error}')
     if type(messages) is dict:
         messages = [messages]
     if type(messages) is list:
@@ -2721,7 +2722,7 @@ def conversation_history():
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
     else:
         error = raw_response['error']
-        return_error(f'You received the following error: {error}')
+        return_error(f'An error occurred while listing conversation history: {error}')
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': messages,
@@ -2737,9 +2738,13 @@ def conversation_replies():
     Retrieves replies to specific messages, regardless of whether it's
     from a public or private channel, direct message, or otherwise.
     """
-    channel_id = demisto.args()['channel_id']
-    thread_id = demisto.args()['thread_id']
-    limit = demisto.args().get('limit')
+    args = demisto.args()
+    channel_id = args.get('channel_id')
+    thread_id = args.get('thread_id')
+    limit = args.get('limit')
+    # channel_id = demisto.args()['channel_id']
+    # thread_id = demisto.args()['thread_id']
+    # limit = demisto.args().get('limit')
     if limit is None:
         limit = 100
     body = {
@@ -2750,7 +2755,7 @@ def conversation_replies():
     messages = raw_response['messages']
     if raw_response['ok'] is False:
         error = raw_response['error']
-        return_error(f'You received the following error: {error}')
+        return_error(f'An error occurred while listing conversation replies: {error}')
     if type(messages) is dict:
         messages = [messages]
     if type(messages) is list:
@@ -2787,7 +2792,7 @@ def conversation_replies():
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
     else:
         error = raw_response['error']
-        return_error(f'You received the following error: {error}')
+        return_error(f'An error occurred while listing conversation replies: {error}')
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': messages,
