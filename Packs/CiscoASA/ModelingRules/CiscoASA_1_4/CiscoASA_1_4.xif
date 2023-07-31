@@ -710,6 +710,7 @@ filter _raw_log ~= "\d+\-\d+\:\s\([\w\-\_]+\)"
     xdm.alert.severity = severity,
     xdm.observer.name = observer_name,
     xdm.target.zone = dst_interface,
+    xdm.target.interface = dst_interface,
     xdm.target.process.command_line = command_line;
 
 //722003 -  %ASA-x-xxxx: IP <src_ip>
@@ -732,6 +733,7 @@ filter _raw_log ~= "from\s\(\d+\.\d+\.\d+\.\d+\)\sto\s\d+\.\d+\.\d+\.\d+"
 | alter xdm.source.ipv4 = src_ip,
     xdm.target.ipv4 = dst_ip,
     xdm.target.zone= dst_interface,
+    xdm.target.interface = dst_interface,
     xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
@@ -773,8 +775,10 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*
     protocol = uppercase(arrayindex(regextract(_raw_log ,"by\s\S+\sfrom\s([A-Za-z]+)\s"),0)),
     dst_ip = arrayindex(regextract(_raw_log ,"\(remote\s(\d+\.\d+\.\d+\.\d+)\)"),0),
     outcome_reason = arrayindex(regextract(_raw_log ,"Reload\sreason\:\s\[([^\]]+)"),0),
-    network_rule = arrayindex(regextract(_raw_log , "for\s([A-Z]+)\slog"),0)
+    network_rule = arrayindex(regextract(_raw_log , "for\s([A-Z]+)\slog"),0),
+    src_ip = arrayindex(regextract(_raw_log ,"\(from\s(\d+\.\d+\.\d+\.\d+)\)"),0)
 | alter xdm.event.log_level = if(log_level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, uppercase(log_level)),
+    xdm.event.original_event_type = to_string(event_id),
     xdm.target.file.path = file_path,
     xdm.event.description = message,
     xdm.alert.severity = severity,
@@ -784,5 +788,6 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*
     xdm.source.user.username = src_username,
     xdm.network.application_protocol = protocol, // like ssh
     xdm.target.ipv4 = dst_ip,
+    xdm.source.ipv4 = src_ip
     xdm.event.outcome_reason = outcome_reason,
     xdm.network.rule = network_rule;
