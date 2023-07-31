@@ -16,7 +16,7 @@ import demisto_client
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
-from google.cloud.storage import Bucket
+from google.cloud.storage import Bucket  # noqa
 from packaging.version import Version
 from urllib3.exceptions import HTTPWarning, HTTPError
 
@@ -124,58 +124,80 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
-def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
-    """ Get the pack's required dependencies.
-
+def get_pack_dependencies(client: demisto_client,
+                          pack_data: dict,
+                          lock: Lock,
+                          attempts_count: int = 5,
+                          sleep_interval: int = 60,
+                          ):
+    """
+    Get the pack's required dependencies.
     Args:
         client (demisto_client): The configured client to use.
         pack_data (dict): Contains the pack ID and version.
         lock (Lock): A lock object.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
     Returns:
         (list) The pack's dependencies.
     """
     global SUCCESS_FLAG
     pack_id = pack_data['id']
     logging.debug(f'Getting dependencies for pack {pack_id}')
+
     try:
-        response_data, status_code, _ = demisto_client.generic_request_func(
-            client,
-            path='/contentpacks/marketplace/search/dependencies',
-            method='POST',
-            body=[pack_data],
-            accept='application/json',
-            _request_timeout=None,
-            response_type='object'
-        )
-        if 200 <= status_code < 300:
-            dependencies_data: list = []
-            dependants_ids = [pack_id]
-            response_data = response_data.get('dependencies', [])
-            create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, dependants_ids)
-            if dependencies_data:
-                dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
-                logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
-            return dependencies_data
-        if status_code == 400:
-            logging.error(f'Unable to find dependencies for {pack_id}.')
-            return []
-        msg = response_data.get('message', '')
-        raise Exception(f'status code {status_code}\n{msg}\n')
-    except ApiException as api_ex:
-        with lock:
-            SUCCESS_FLAG = False
-        logging.exception(f"The request to get pack {pack_id} dependencies has failed, Got {api_ex.status} from server, "
-                          f"message:{api_ex.body}, headers:{api_ex.headers}")
-    except Exception as ex:
-        with lock:
-            SUCCESS_FLAG = False
-        logging.exception(f"The request to get pack {pack_id} dependencies has failed. {ex}.")
+        for attempt in range(attempts_count - 1, -1, -1):
+            try:
+                logging.info(f"Searching for pack:{pack_id} dependencies, Attempt: {attempts_count - attempt}/{attempts_count}")
+                response_data, status_code, headers = demisto_client.generic_request_func(
+                    client,
+                    path='/contentpacks/marketplace/search/dependencies',
+                    method='POST',
+                    body=[pack_data],
+                    accept='application/json',
+                    _request_timeout=None,
+                    response_type='object'
+                )
+                if 200 <= status_code < 300:
+                    dependencies_data: list = []
+                    dependants_ids = [pack_id]
+                    response_data = response_data.get('dependencies', [])
+                    create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, dependants_ids)
+                    if dependencies_data:
+                        dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
+                        logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
+                    return dependencies_data
+                if status_code == 400:
+                    logging.error(f'Unable to find dependencies for {pack_id}.')
+                    return []
+
+                if not attempt:
+                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
+
+                logging.debug(f"Got bad status code: {status_code} from the server, headers:{headers}")
+
+            except (HTTPError, HTTPWarning, ApiException) as ex:
+                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                    # Unknown exception reason, re-raise.
+                    raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+
+            # There are more attempts available, sleep and retry.
+            logging.debug(f"failed to search for pack dependencies: {pack_id}, Sleeping for {sleep_interval} seconds.")
+            sleep(sleep_interval)
+    except Exception as e:
+        logging.exception(f'The request to search for pack: {pack_id} dependencies has failed. Additional info: {str(e)}')
+    with lock:
+        SUCCESS_FLAG = False
+    return []
 
 
 def search_pack(client: demisto_client,
                 pack_display_name: str,
                 pack_id: str,
-                lock: Lock) -> dict:
+                lock: Lock,
+                attempts_count: int = 5,
+                sleep_interval: int = 60,
+                ) -> dict:
     """ Make a pack search request.
 
     Args:
@@ -183,42 +205,52 @@ def search_pack(client: demisto_client,
         pack_display_name (string): The pack display name.
         pack_id (string): The pack ID.
         lock (Lock): A lock object.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between install attempts.
     Returns:
         (dict): Returns the pack data if found, or empty dict otherwise.
     """
-
-    try:
-        response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                            path=f'/contentpacks/marketplace/{pack_id}',
-                                                                            method='GET',
-                                                                            accept='application/json',
-                                                                            _request_timeout=None,
-                                                                            response_type='object')
-        if 200 <= status_code < 300:
-            if response_data and response_data.get('currentVersion'):
-                logging.debug(f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!')
-                return {
-                    'id': response_data.get('id'),
-                    'version': response_data.get('currentVersion'),
-                }
-            else:
-                raise Exception(f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.')
-        else:
-            err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
-                      f'{status_code}\n{response_data.get("message", "")}'
-            raise Exception(err_msg)
-
-    except ApiException as ex:
-        logging.exception(f'API Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
-                          f' Exception: {ex.status}, {ex.body}')
-    except Exception as ex:
-        logging.exception(f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed. '
-                          f'Exception: {str(ex)}')
-
-    lock.acquire()
     global SUCCESS_FLAG
-    SUCCESS_FLAG = False
-    lock.release()
+    try:
+        for attempt in range(attempts_count - 1, -1, -1):
+            try:
+                logging.info(f"Searching for pack:{pack_display_name} With ID:{pack_id}, "
+                             f"Attempt: {attempts_count - attempt}/{attempts_count}")
+                response_data, status_code, headers = demisto_client.generic_request_func(client,
+                                                                                          path=f'/contentpacks/marketplace/'
+                                                                                               f'{pack_id}',
+                                                                                          method='GET',
+                                                                                          accept='application/json',
+                                                                                          _request_timeout=None,
+                                                                                          response_type='object')
+                if 200 <= status_code < 300:
+                    if response_data and response_data.get('currentVersion'):
+                        logging.debug(f"Found pack: {pack_display_name} by its ID: {pack_id} in bucket!")
+                        return {
+                            'id': response_data.get('id'),
+                            'version': response_data.get('currentVersion'),
+                        }
+                    raise Exception(f"Did not find pack: {pack_display_name} by its ID: {pack_id} in bucket.")
+
+                if not attempt:
+                    raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
+
+                logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
+
+            except (HTTPError, HTTPWarning, ApiException) as ex:
+                if not attempt:  # exhausted all attempts, understand what happened and exit.
+                    # Unknown exception reason, re-raise.
+                    raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+
+            # There are more attempts available, sleep and retry.
+            logging.debug(f"failed to search for pack: {pack_display_name} With ID: {pack_id}, "
+                          f"Sleeping for {sleep_interval} seconds.")
+            sleep(sleep_interval)
+    except Exception as e:
+        logging.exception(f'The request to search for pack: {pack_display_name} With ID: {pack_id} has failed. '
+                          f'Additional info: {str(e)}')
+    with lock:
+        SUCCESS_FLAG = False
     return {}
 
 
@@ -673,7 +705,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     """
     host = hostname or client.api_client.configuration.host
 
-    logging.info(f'Starting to search and install packs in server: {host}')
+    logging.info(f'Starting to search packs in server: {host}')
 
     packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body: list = []  # the packs to install, in the request format
