@@ -74,7 +74,8 @@ configuration:
   type: 14
   section: Connect
   required: false
-- display: Use a self-deployed Azure application
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
@@ -285,6 +286,9 @@ script:
       type: string
   - description: Generate the login url used for Authorization code flow.
     name: ms-management-activity-generate-login-url
+    arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: ms-management-activity
     arguments: []
   dockerimage: demisto/pyjwt3:1.0.0.66845
   isfetch: true
