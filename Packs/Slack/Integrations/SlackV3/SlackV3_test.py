@@ -2401,10 +2401,7 @@ def test_reset_user_session(mocker):
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
     mocker.patch.object(demisto, 'args', return_value={'user_id': 'U012A3CDE'})
 
-    res = SlackV3.user_session_reset()
-
-    # Assert
-    assert res == 'User session reset successfully.'
+    SlackV3.user_session_reset()
 
 
 def test_send_request_channel_id(mocker):

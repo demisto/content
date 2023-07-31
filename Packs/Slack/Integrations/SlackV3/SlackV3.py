@@ -2731,7 +2731,7 @@ def user_session_reset():
     }
     try:
         send_slack_request_sync(CLIENT, 'admin.users.session.reset', body=body)
-        return_results('The session was reset successfully.')
+        return_results(CommandResults(readable_output=f"The session was reset successfully to the user {user_id}."))
 
     except SlackApiError as slack_error:
         return_error(f"{slack_error}")
