@@ -1744,6 +1744,7 @@ def main():
             commands[command](
                 client=client,
                 env=environment,
+                first_fetch_interval=PARAMS.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL)
                 fetch_type=PARAMS.get("fetch_type"),
                 max_fetch=PARAMS.get("max_fetch"),
                 include_assets=PARAMS.get("include_assets")
