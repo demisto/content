@@ -1,0 +1,295 @@
+id: Ataya_Webhook
+version: 1
+vcShouldKeepItemLegacyProdMachine: false
+name: Ataya_Webhook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 42dfc20c-14c3-4e5e-86d4-1cd61e2f0498
+    type: start
+    task:
+      id: 42dfc20c-14c3-4e5e-86d4-1cd61e2f0498
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3f205a5f-733c-4c32-8333-deb80b17685e
+    type: regular
+    task:
+      id: 3f205a5f-733c-4c32-8333-deb80b17685e
+      version: -1
+      name: checkValue
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${incident.atayaimei}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 684d32ab-b351-4e88-8eb3-a942140f1e64
+    type: regular
+    task:
+      id: 684d32ab-b351-4e88-8eb3-a942140f1e64
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9d65e84a-2179-40ef-85b8-ea6331c9915f
+    type: regular
+    task:
+      id: 9d65e84a-2179-40ef-85b8-ea6331c9915f
+      version: -1
+      name: Update User ID
+      description: Runs any command supported in the API.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
+          \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\"
+          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
+          \         </login> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 73a7cdcc-c0e6-4509-8cbc-308097a820d7
+    type: condition
+    task:
+      id: 73a7cdcc-c0e6-4509-8cbc-308097a820d7
+      version: -1
+      name: Event Type Inspection
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      create:
+      - "3"
+      delete:
+      - "6"
+      modify:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.atayaeventtype
+            iscontext: true
+          right:
+            value:
+              simple: create
+    - label: delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.atayaeventtype
+            iscontext: true
+          right:
+            value:
+              simple: delete
+    - label: modify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.atayaeventtype
+            iscontext: true
+          right:
+            value:
+              simple: modify
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cca54888-0943-498f-8b76-b1381faabfcf
+    type: regular
+    task:
+      id: cca54888-0943-498f-8b76-b1381faabfcf
+      version: -1
+      name: Remove User ID Mapping
+      description: Runs any command supported in the API.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
+          \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\"
+          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
+          \         </logout> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 76342075-613c-45fa-8640-c16dfbf0a69c
+    type: regular
+    task:
+      id: 76342075-613c-45fa-8640-c16dfbf0a69c
+      version: -1
+      name: Update User ID
+      description: Runs any command supported in the API.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
+          \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\"
+          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
+          \         </login> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 905,
+        "width": 1340,
+        "x": 0,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
