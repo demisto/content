@@ -1,18 +1,22 @@
 from collections import defaultdict
 from http import HTTPStatus
-from typing import Callable
-from typing import Tuple
+from io import BytesIO
+from collections.abc import Callable
 
 from intezer_sdk import consts
+from intezer_sdk.alerts import Alert
 from intezer_sdk.analysis import FileAnalysis
 from intezer_sdk.analysis import UrlAnalysis
 from intezer_sdk.api import IntezerApi
 from intezer_sdk.endpoint_analysis import EndpointAnalysis
+from intezer_sdk.errors import AlertInProgressError
+from intezer_sdk.errors import AlertNotFoundError
 from intezer_sdk.errors import AnalysisIsAlreadyRunning
 from intezer_sdk.errors import AnalysisIsStillRunning
 from intezer_sdk.errors import FamilyNotFoundError
 from intezer_sdk.errors import HashDoesNotExistError
 from intezer_sdk.errors import InvalidApiKey
+
 from intezer_sdk.errors import ServerError
 from intezer_sdk.family import Family
 from intezer_sdk.sub_analysis import SubAnalysis
@@ -31,23 +35,23 @@ DEFAULT_POLLING_TIMEOUT = 600
 DEFAULT_POLLING_INTERVAL = 30
 
 dbot_score_by_verdict = {
-    'malicious': 3,
-    'suspicious': 2,
-    'trusted': 1,
-    'neutral': 1,
-    'no_threats': 1
+    'malicious': Common.DBotScore.BAD,
+    'suspicious': Common.DBotScore.SUSPICIOUS,
+    'trusted': Common.DBotScore.GOOD,
+    'neutral': Common.DBotScore.GOOD,
+    'no_threats': Common.DBotScore.GOOD
 }
 
 ''' HELPER FUNCTIONS '''
 
 
 def _get_missing_file_result(file_hash: str) -> CommandResults:
-    dbot = {
-        'Vendor': 'Intezer',
-        'Type': 'hash',
-        'Indicator': file_hash,
-        'Score': 0
-    }
+    dbot = Common.DBotScore(
+        indicator=file_hash,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='Intezer',
+        score=Common.DBotScore.NONE
+    )
 
     return CommandResults(
         readable_output=f'The Hash {file_hash} was not found on Intezer genome database',
@@ -58,12 +62,12 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
 
 
 def _get_missing_url_result(url: str, ex: ServerError = None) -> CommandResults:
-    dbot = {
-        'Vendor': 'Intezer',
-        'Type': 'Url',
-        'Indicator': url,
-        'Score': 0
-    }
+    dbot = Common.DBotScore(
+        indicator=url,
+        indicator_type=DBotScoreType.URL,
+        integration_name='Intezer',
+        score=Common.DBotScore.NONE
+    )
 
     return CommandResults(
         readable_output=f'The Url {url} was not found on Intezer. Error {ex}',
@@ -86,6 +90,14 @@ def _get_missing_analysis_result(analysis_id: str, sub_analysis_id: str = None) 
 
 def _get_missing_endpoint_analysis_result(analysis_id: str) -> CommandResults:
     output = f'Could not find the endpoint analysis \'{analysis_id}\''
+
+    return CommandResults(
+        readable_output=output
+    )
+
+
+def _get_missing_alert_result(alert_id: str) -> CommandResults:
+    output = f'Could not find alert with the alert_id of \'{alert_id}\''
 
     return CommandResults(
         readable_output=output
@@ -116,6 +128,29 @@ def _get_analysis_running_result(analysis_type: str,
         readable_output='Analysis is still in progress',
         outputs=context_json
     )
+
+
+def _get_running_alert_result(alert_id) -> CommandResults:
+    return CommandResults(
+        outputs_prefix='Intezer.Alert',
+        outputs_key_field='ID',
+        readable_output='Alert is still in progress..',
+        outputs={
+            'Intezer.Alert(val.ID && val.ID == obj.ID)': {'ID': alert_id, 'Status': 'InProgress'}
+        }
+    )
+
+
+def _get_presentable_alert_result(alert: Alert) -> str:
+    alert_result = alert.result()
+    presentable_result = '## Intezer Alert result\n'
+    presentable_result += f" Verdict: **{alert_result['triage_result']['alert_verdict_display']}**\n"
+    presentable_result += f" Risk category: **{alert_result['triage_result']['risk_category_display']}**\n"
+    if alert.family_name is not None:
+        presentable_result += f'Family: **{alert.family_name}**\n'
+    presentable_result += f'[Alert Link]({alert.intezer_alert_url})\n'
+
+    return presentable_result
 
 
 ''' COMMANDS '''
@@ -160,7 +195,7 @@ def analyze_by_hash_command(args: Dict[str, str], intezer_api: IntezerApi) -> Co
         return CommandResults(outputs_prefix='Intezer.Analysis',
                               outputs_key_field='ID',
                               outputs=context_json,
-                              readable_output='Analysis created successfully: {}'.format(analysis_id))
+                              readable_output=f'Analysis created successfully: {analysis_id}')
     except HashDoesNotExistError:
         return _get_missing_file_result(file_hash)
     except AnalysisIsAlreadyRunning as error:
@@ -194,7 +229,7 @@ def analyze_url_command(args: Dict[str, str], intezer_api: IntezerApi) -> Comman
         return CommandResults(outputs_prefix='Intezer.Analysis',
                               outputs_key_field='ID',
                               outputs=context_json,
-                              readable_output='Analysis created successfully: {}'.format(analysis_id))
+                              readable_output=f'Analysis created successfully: {analysis_id}')
     except AnalysisIsAlreadyRunning as error:
         return _get_analysis_running_result('Url', response=error.response)
     except ServerError as ex:
@@ -219,7 +254,13 @@ def get_latest_result_command(args: Dict[str, str], intezer_api: IntezerApi) -> 
 def analyze_by_uploaded_file_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
     try:
         analysis = FileAnalysis(**_get_file_analysis_options(args, intezer_api))
-        analysis.send(requester=REQUESTER)
+
+        params = {'requester': REQUESTER}
+
+        if args.get('related_alert_ids'):
+            params['related_alert_ids'] = args['related_alert_ids']
+
+        analysis.send(**params)
 
         wait_for_result = args.get('wait_for_result')
         if wait_for_result and argToBoolean(wait_for_result):
@@ -486,6 +527,74 @@ def get_family_info_command(args: dict, intezer_api: IntezerApi) -> CommandResul
     )
 
 
+def submit_alert_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
+    raw_alert_data = args.get('raw_alert')
+    definition_mapping = json.loads(args['mapping'])
+    source = args.get('source')
+
+    if isinstance(raw_alert_data, str):
+        raw_alert_data = json.loads(raw_alert_data)
+
+    alert = Alert.send(raw_alert=raw_alert_data,
+                       source=source,
+                       alert_mapping=definition_mapping,
+                       api=intezer_api)
+
+    alert_id = alert.alert_id
+
+    context_json = {
+        'ID': alert_id,
+        'Status': 'Created'
+    }
+
+    return CommandResults(outputs_prefix='Intezer.Alert',
+                          outputs_key_field='ID',
+                          outputs=context_json,
+                          readable_output=f'Alert created successfully: {alert_id}')
+
+
+def submit_suspected_phishing_email_command(args: dict, intezer_api: IntezerApi) -> CommandResults:
+    file_entry_id = args.get('email_file_entry_id')
+    file_data = demisto.getFilePath(file_entry_id)
+
+    with open(file_data['path'], 'rb') as email_file:
+        raw_email = BytesIO(email_file.read())
+        alert = Alert.send_phishing_email(raw_email=raw_email, api=intezer_api)
+
+        context_json = {
+            'ID': alert.alert_id,
+            'Status': 'Created'
+        }
+
+        return CommandResults(outputs_prefix='Intezer.Alert',
+                              outputs_key_field='ID',
+                              outputs=context_json,
+                              readable_output=f'Suspected email was sent successfully, alert_id: {alert.alert_id}')
+
+
+@polling_function(name='intezer-get-alert-result',
+                  poll_message='Fetching Intezer alert. Please wait...',
+                  polling_arg_name='wait_for_result',
+                  timeout=arg_to_number(demisto.args().get('timeout', DEFAULT_POLLING_TIMEOUT), arg_name='timeout'),
+                  interval=arg_to_number(demisto.args().get('interval', DEFAULT_POLLING_INTERVAL), arg_name='interval'))
+def get_alert_result_command(args: dict, intezer_api: IntezerApi) -> PollResult:
+    alert_id = args['alert_id']
+
+    try:
+        alert = Alert.from_id(alert_id=alert_id, api=intezer_api, fetch_scans=True)
+
+        return PollResult(response=enrich_dbot_and_display_alert_results(alert, intezer_api))
+
+    except AlertNotFoundError:
+        return PollResult(
+            response=_get_missing_alert_result(alert_id=alert_id)
+        )
+
+    except AlertInProgressError:
+        return PollResult(continue_to_poll=True,
+                          response=_get_running_alert_result(alert_id=alert_id))
+
+
 @polling_function(name='intezer-get-file-analysis-result',
                   poll_message='Fetching Intezer analysis. Please wait...',
                   polling_arg_name='wait_for_result',
@@ -591,6 +700,7 @@ def get_endpoint_analysis_result_command(args: dict, intezer_api: IntezerApi) ->
         return PollResult(continue_to_poll=True,
                           response=_get_analysis_running_result('Endpoint', analysis_id=analysis_id))
 
+
 # region Enrich DBot
 
 
@@ -622,7 +732,7 @@ def enrich_dbot_and_display_file_analysis_results(intezer_result: dict, file_met
     )
 
 
-def _get_dbot_score_and_file_entries(file_analysis_result: dict, file_metadata: dict) -> Tuple[List[dict], dict]:
+def _get_dbot_score_and_file_entries(file_analysis_result: dict, file_metadata: dict) -> tuple[List[dict], dict]:
     verdict: str = file_analysis_result.get('verdict', '')
     sha256 = file_metadata.get('sha256')
     md5 = file_metadata.get('md5')
@@ -788,9 +898,9 @@ def _get_file_analysis_options(args: dict, intezer_api: IntezerApi) -> dict:
     disable_static_extraction = args.get('disable_static_extraction')
     sandbox_command_line_arguments = args.get('sandbox_command_line_arguments')
 
-    analysis_options = dict(file_path=file_data['path'],
-                            file_name=file_data['name'],
-                            api=intezer_api)
+    analysis_options = {'file_path': file_data['path'],
+                        'file_name': file_data['name'],
+                        'api': intezer_api}
 
     if zip_password:
         analysis_options['zip_password'] = zip_password
@@ -808,9 +918,9 @@ def _get_file_analysis_options(args: dict, intezer_api: IntezerApi) -> dict:
 
 
 def _get_latest_hash_analysis_options(args: dict, intezer_api: IntezerApi) -> dict:
-    latest_hash_analysis_options = dict(file_hash=args.get('file_hash'),
-                                        api=intezer_api,
-                                        requester=REQUESTER)
+    latest_hash_analysis_options = {'file_hash': args.get('file_hash'),
+                                    'api': intezer_api,
+                                    'requester': REQUESTER}
 
     should_get_only_private_analysis = args.get('should_get_only_private_analysis')
     if should_get_only_private_analysis:
@@ -852,6 +962,166 @@ def enrich_dbot_and_display_endpoint_analysis_results(intezer_result, indicator_
     )
 
 
+def enrich_dbot_and_display_alert_results(alert: Alert, intezer_api: IntezerApi):
+    command_results = []
+
+    # Running over all the alert scans, not including the artifact scans
+    for analysis in alert.scans:
+        if isinstance(analysis, FileAnalysis):
+            command_results.append(_get_return_command_for_file_analysis(analysis))
+
+        elif isinstance(analysis, UrlAnalysis):
+            command_results.append(_get_return_command_for_url_analysis(analysis))
+
+            analysis_result = analysis.result()
+
+            if 'downloaded_file' in analysis_result and 'analysis_id' in analysis_result['downloaded_file']:
+                downloaded_file_analysis = FileAnalysis.from_analysis_id(analysis_result['downloaded_file']['analysis_id'],
+                                                                         api=intezer_api)
+                command_results.append(_get_return_command_for_file_analysis(downloaded_file_analysis))
+
+        elif isinstance(analysis, EndpointAnalysis):
+            command_results.append(_get_return_command_for_endpoint_analysis(analysis))
+
+    alert_scans = alert.result().get('scans', [])
+
+    # Running over artifact analyses
+    for scan in alert_scans:
+        if scan['scan_type'] != 'artifact':
+            continue
+
+        artifact_analysis = scan['artifact_analysis']
+
+        if artifact_analysis['artifact_type'] not in ('ip', 'domain'):
+            continue
+
+        command_results.append(_get_return_command_for_artifact_analysis(artifact_analysis))
+
+    command_results.append(CommandResults(
+        outputs_prefix='Intezer.Alert',
+        outputs_key_field='ID',
+        readable_output=_get_presentable_alert_result(alert),
+        outputs={
+            'ID': alert.alert_id, 'Status': 'Done', 'Result': alert.result()
+        }
+    ))
+    return_results(command_results)
+
+
+def _get_return_command_for_file_analysis(analysis: FileAnalysis):
+    file_metadata = analysis.get_root_analysis().metadata
+    file_analysis_result = analysis.result()
+    verdict = file_analysis_result.get('verdict', '')
+    sha256 = file_metadata.get('sha256')
+    md5 = file_metadata.get('md5')
+    sha1 = file_metadata.get('sha1')
+
+    dbot_score = Common.DBotScore(
+        indicator=sha256,
+        indicator_type=DBotScoreType.FILE,
+        integration_name='Intezer',
+        score=dbot_score_by_verdict.get(verdict, 0)
+    )
+
+    file = Common.File(
+        md5=md5,
+        sha1=sha1,
+        sha256=sha256,
+        dbot_score=dbot_score
+    )
+    return CommandResults(
+        outputs_prefix='Intezer.File',
+        outputs_key_field='sha256',
+        indicator=file
+    )
+
+
+def _get_return_command_for_url_analysis(analysis: UrlAnalysis):
+    url_analysis_result = analysis.result()
+
+    submitted_url = url_analysis_result['submitted_url']
+    scanned_url = url_analysis_result['scanned_url']
+    verdict = url_analysis_result['summary']['verdict_type']
+    relationships = []
+
+    dbot_score = Common.DBotScore(
+        indicator=scanned_url,
+        indicator_type=DBotScoreType.URL,
+        integration_name='Intezer',
+        score=dbot_score_by_verdict.get(verdict, 0)
+    )
+
+    if scanned_url != submitted_url:
+        relationships.append(EntityRelationship(
+            name='contains',
+            entity_a=submitted_url,
+            entity_a_type=FeedIndicatorType.URL,
+            entity_b=scanned_url,
+            entity_b_type=FeedIndicatorType.URL
+        ))
+
+    url = Common.URL(
+        url=submitted_url,
+        relationships=relationships,
+        dbot_score=dbot_score
+    )
+
+    return CommandResults(
+        outputs_prefix='Intezer.URL',
+        outputs_key_field='url',
+        indicator=url
+    )
+
+
+def _get_return_command_for_endpoint_analysis(analysis: EndpointAnalysis):
+    endpoint_analysis_result = analysis.result()
+    verdict = endpoint_analysis_result['verdict']
+    computer_name = endpoint_analysis_result['computer_name']
+
+    dbot_score = Common.DBotScore(
+        indicator=computer_name,
+        indicator_type=DBotScoreType.CUSTOM,
+        integration_name='Intezer',
+        score=dbot_score_by_verdict.get(verdict, 0)
+    )
+
+    endpoint = {'Metadata': endpoint_analysis_result}
+
+    return CommandResults(
+        outputs_prefix='Intezer.Endpoint',
+        outputs={
+            outputPaths['dbotscore']: dbot_score,
+            'endpoint': endpoint
+        }
+    )
+
+
+def _get_return_command_for_artifact_analysis(artifact_analysis: dict):
+    artifact_type = DBotScoreType.DOMAIN if artifact_analysis['artifact_type'] == 'domain' else DBotScoreType.IP
+
+    dbot_score = Common.DBotScore(
+        indicator=artifact_analysis['artifact_value'],
+        indicator_type=artifact_type,
+        integration_name='Intezer',
+        score=dbot_score_by_verdict.get(artifact_analysis['verdict'], 0)
+    )
+
+    indicator: Union[Common.Domain, Common.IP] | None = None
+
+    if artifact_analysis['artifact_type'] == 'domain':
+        indicator = Common.Domain(
+            domain=artifact_analysis['artifact_value'],
+            dbot_score=dbot_score
+        )
+    else:
+        indicator = Common.IP(
+            ip=artifact_analysis['artifact_value'],
+            dbot_score=dbot_score
+        )
+
+    return CommandResults(indicator=indicator)
+
+
 # endregion
 
 ''' EXECUTION CODE '''
@@ -879,6 +1149,8 @@ def main():
                                                                        PollResult,
                                                                        str]]] = {
             'test-module': check_is_available,
+            'intezer-submit-alert': submit_alert_command,
+            'intezer-submit-suspected-phishing-email': submit_suspected_phishing_email_command,
             'intezer-analyze-by-hash': analyze_by_hash_command,
             'intezer-analyze-by-file': analyze_by_uploaded_file_command,
             'intezer-analyze-url': analyze_url_command,
@@ -891,7 +1163,8 @@ def main():
             'intezer-get-family-info': get_family_info_command,
             'intezer-get-file-analysis-result': get_file_analysis_result_command,
             'intezer-get-url-analysis-result': get_url_analysis_result_command,
-            'intezer-get-endpoint-analysis-result': get_endpoint_analysis_result_command
+            'intezer-get-endpoint-analysis-result': get_endpoint_analysis_result_command,
+            'intezer-get-alert-result': get_alert_result_command
         }
 
         command = demisto.command()

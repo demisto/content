@@ -26,6 +26,123 @@ display: Intezer v2
 name: Intezer v2
 script:
   commands:
+  - name: intezer-submit-alert
+    arguments:
+    - description: The raw alert as it stored in the context
+      name: raw_alert
+      required: true
+      default: false
+      isArray: false
+      type: string
+      secret: false
+    - description: The mapping for the raw alert data
+      name: mapping
+      default: false
+      isArray: false
+      type: string
+      required: true
+      secret: false
+    - description: The source of the alert
+      name: source
+      type: string
+      default: false
+      isArray: false
+      required: false
+      secret: false
+    description: Submit a new alert, including the raw alert information, to Intezer for processing
+    outputs:
+    - contextPath: Intezer.Alert.ID
+      description: Intezer alert id
+      type: string
+    - contextPath: Intezer.Alert.Status
+      description: Status of the Alert
+      type: string
+    deprecated: false
+  - name: intezer-submit-suspected-phishing-email
+    arguments:
+    - description: The email file entry id to upload
+      name: email_file_entry_id
+      required: true
+      default: true
+    description: Submit a suspicious phishing email in a raw format (.MSG or .EML) to Intezer for processing
+    outputs:
+    - contextPath: Intezer.Alert.ID
+      description: Intezer alert id
+      type: string
+    - contextPath: Intezer.Alert.Status
+      description: status of the Alert
+      type: string
+    deprecated: false
+  - name: intezer-get-alert-result
+    arguments:
+    - description: The alert id to query
+      name: alert_id
+      required: true
+      default: true
+    - description: Should polling be enable for this command
+      name: wait_for_result
+      defaultValue: false
+    description: Get an ingested alert triage and response information using alert ID
+    outputs:
+    - contextPath: Intezer.Alert.ID
+      description: Intezer alert id
+      type: string
+    - contextPath: Intezer.Alert.Status
+      description: The status of the Alert
+      type: string
+    - contextPath: Intezer.Alert.Result
+      description: The full report of the alert
+      type: object
+    - contextPath: Intezer.Alert.Result.intezer_alert_url
+      description: The url of the alert in Intezer Analyze
+      type: string
+    - contextPath: Intezer.Alert.Result.source_display
+      description: The source of the Alert
+      type: string
+    - contextPath: Intezer.Alert.Result.response.user_recommended_actions_display
+      description: The actions recommended by Intezer to be taken
+      type: string
+    - contextPath: Intezer.Alert.Result.triage_result.alert_verdict_display
+      description: The calculated verdict of the Alert
+      type: string
+    - contextPath: Intezer.Alert.Result.triage_result.risk_category_display
+      description: The risk category of the Alert
+      type: string
+    - contextPath: Intezer.Alert.Result.raw_alert
+      description: The raw alert object
+      type: object
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.MD5
+      description: Hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Hash SHA1
+      type: string
+    - contextPath: URL.Data
+      description: The submitted Url
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious Url, the vendor that made the decision
+      type: string
+    - contextPath: URL.Relationships
+      description: The relationships between two urls
+      type: Unknown
+    deprecated: false
+    polling: true
   - name: intezer-analyze-by-hash
     arguments:
     - description: Hash of the file to query. Supports SHA256, MD5 and SHA1
@@ -59,12 +176,12 @@ script:
     - description: Url to query.
       name: url
       required: true
-    - description: Should polling be enable for this command
-      defaultValue: false
+    - defaultValue: false
+      description: Should polling be enable for this command
       name: wait_for_result
     - description: Number of seconds before polling throw timeout
-      defaultValue: 600
       name: timeout
+      defaultValue: 600
       type: number
     - description: Intervals in seconds between poll requests
       defaultValue: 30
@@ -133,10 +250,10 @@ script:
       type: Boolean
   - name: intezer-analyze-by-file
     arguments:
-    - default: true
-      description: The file entry id to upload
-      name: file_entry_id
+    - name: file_entry_id
       required: true
+      description: The file entry id to upload
+      default: true
     - description: Should polling be enable for this command
       defaultValue: false
       name: wait_for_result
@@ -158,11 +275,14 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: An array of alert ids to associate with the file analysis. The ids should be comma separated
+      name: related_alert_ids
+      type: Array
+      isArray: true
     - description: Given sandbox command line arguments
       name: sandbox_command_line_arguments
     - description: Zip password in case the file is protected zip
       name: zip_password
-    description: Checks file reputation for uploaded file (up to 150MB)
     outputs:
     - contextPath: Intezer.Analysis.ID
       description: Intezer analysis id
@@ -185,16 +305,17 @@ script:
     - contextPath: File.ExistsInIntezer
       description: Does the file exists on intezer genome database
       type: Boolean
+    description: Checks file reputation for uploaded file (up to 150MB)
     polling: true
   - name: intezer-get-analysis-result
     arguments:
     - description: The analysis ID we want to get results for
-      isArray: true
       name: analysis_id
-    - auto: PREDEFINED
-      defaultValue: File
-      description: The type of the analysis
+      isArray: true
+    - description: The type of the analysis
       name: analysis_type
+      auto: PREDEFINED
+      defaultValue: File
       predefined:
       - File
       - Endpoint
@@ -275,9 +396,10 @@ script:
       type: Unknown
   - name: intezer-get-family-info
     arguments:
-    - name: family_id
+    - description: The Family ID
+      name: family_id
       required: true
-      description: The Family ID
+    description: Get family information from Intezer Analyze
     outputs:
     - contextPath: Intezer.Family.ID
       description: Family id in intezer genome database
@@ -288,7 +410,6 @@ script:
     - contextPath: Intezer.Family.Type
       description: Family Type
       type: string
-    description: Get family information from Intezer Analyze
   - name: intezer-get-analysis-code-reuse
     arguments:
     - description: The analysis ID we want to get the code reuse for
@@ -473,7 +594,7 @@ script:
     - contextPath: Endpoint.Metadata
       description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.65317
+  dockerimage: demisto/py3-tools:1.0.0.67089
   runonce: false
   script: '-'
   type: python
