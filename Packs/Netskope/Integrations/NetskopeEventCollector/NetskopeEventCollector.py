@@ -8,7 +8,6 @@ from typing import Dict, Any, Tuple
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 ''' CONSTANTS '''
 
 ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network']
@@ -16,13 +15,13 @@ ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network']
 MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
 
-EXECUTION_TIMEOUT_SECONDS = 190 # 3:30 minutes
+EXECUTION_TIMEOUT_SECONDS = 190  # 3:30 minutes
 EVENT_LOGGER = {}
 
 # Netskope response constants
-WAIT_TIME = 'wait_time'     # Wait time between queries
-RATELIMIT_REMAINING = "ratelimit-remaining"     # Rate limit remaining
-RATELIMIT_RESET = "ratelimit-reset"     # Rate limit RESET value is in seconds
+WAIT_TIME = 'wait_time'  # Wait time between queries
+RATELIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
+RATELIMIT_RESET = "ratelimit-reset"  # Rate limit RESET value is in seconds
 
 ''' CLIENT CLASS '''
 
@@ -38,12 +37,11 @@ class Client(BaseClient):
         proxy (bool): Specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(self, base_url: str, token: str, api_version: str, validate_certificate: bool, proxy: bool):
-        super().__init__(base_url, verify=validate_certificate, proxy=proxy)
-        if api_version == 'v1':
-            self._session.params['token'] = token  # type: ignore
-        else:
-            self._headers = {'Netskope-Api-Token': token}
+    def __init__(self, base_url: str, token: str, validate_certificate: bool, proxy: bool):
+        self.fetch_status: dict = {event_type: False for event_type in ALL_SUPPORTED_EVENT_TYPES}
+
+        headers = {'Netskope-Api-Token': token}
+        super().__init__(base_url, verify=validate_certificate, proxy=proxy, headers=headers)
 
     def perform_data_export(self, endpoint, _type, index_name, operation):
         url_suffix = f'events/dataexport/{endpoint}/{_type}'
@@ -102,6 +100,7 @@ def prepare_events(events: list, event_type: str) -> list:
         event_id = event.get('_id')
         event['event_id'] = event_id
 
+    return events
 
 def print_event_statistics_logs(events: list, event_type: str):
     demisto.debug(f'__[{event_type}]__ - Total events fetched this round: {len(events)}')
@@ -155,29 +154,22 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
         if not results or len(results) < MAX_EVENTS_PAGE_SIZE:
             break
 
+    # We mark this event type as successfully fetched
+    client.fetch_status[event_type] = True
     return events, False
 
 
 def setup_last_run(last_run_dict: dict, first_fetch: str) -> dict:
-    # TODO: Add docs-strings
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         if not last_run_dict.get(event_type, {}).get('operation'):
             last_run_dict[event_type] = {'operation': first_fetch}
 
-    demisto.debug(f'V2 First Fetch - Initialize last run - {last_run_dict}')
+    demisto.debug(f'Initialize last run to - {last_run_dict}')
 
     return last_run_dict
 
 
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client, api_version: str, last_run: dict, max_fetch: int) -> str:
-    fetch_events_command(client, api_version, last_run, max_fetch=max_fetch, is_command=True)
-    return 'ok'
-
-
-def get_all_events(client: Client, last_run: dict, limit: int, api_version: str, is_command: bool) -> Tuple[list, dict]:
+def get_all_events(client: Client, last_run: dict, limit: int, is_command: bool) -> Tuple[list, dict]:
     # We add the instance name to the index so several instances could run in parallel without effecting each other
     if limit is None:
         limit = MAX_EVENTS_PAGE_SIZE
@@ -185,10 +177,11 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
     all_types_events_result = []
     start_time = datetime.utcnow()
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        operation = last_run.get(event_type).get('operation')
+        event_type_operation = last_run.get(event_type).get('operation')
 
-        events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type, operation=operation,
-                                                                limit=limit, start_time=start_time)
+        events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type,
+                                                                operation=event_type_operation, limit=limit,
+                                                                start_time=start_time)
         all_types_events_result.extend(prepare_events(events, event_type))
         last_run[event_type] = {'operation': 'next'}
 
@@ -199,11 +192,17 @@ def get_all_events(client: Client, last_run: dict, limit: int, api_version: str,
     return all_types_events_result, last_run
 
 
-def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api_version: str,
-                       is_command: bool) -> Tuple[CommandResults, list]:
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: Client, last_run: dict, max_fetch: int) -> str:
+    fetch_events_command(client, last_run, max_fetch=max_fetch, is_command=True)
+    return 'ok'
+
+
+def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, is_command: bool) -> Tuple[CommandResults, list]:
     limit = arg_to_number(args.get('limit')) or 50
-    events, _ = fetch_events_command(client=client, api_version=api_version, last_run=last_run, max_fetch=limit,
-                                     is_command=is_command)
+    events, _ = fetch_events_command(client=client, last_run=last_run, max_fetch=limit, is_command=is_command)
 
     for event in events:
         event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
@@ -222,71 +221,69 @@ def get_events_command(client: Client, args: Dict[str, Any], last_run: dict, api
     return results, events
 
 
-def fetch_events_command(client, api_version, last_run, max_fetch, is_command):  # pragma: no cover
-    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch, api_version=api_version,
-                                          is_command=is_command)
+def fetch_events_command(client, last_run, max_fetch, is_command):  # pragma: no cover
+    events, new_last_run = get_all_events(client, last_run=last_run, limit=max_fetch, is_command=is_command)
     return events, new_last_run
 
 
 ''' MAIN FUNCTION '''
-original_func = split_data_to_chunks
-
-
-# TODO handle in common server python
-def split_data_to_chunks(data, target_chunk_size = None):
-    return original_func(data, target_chunk_size=2 ** 20 * 5)
 
 
 def main() -> None:  # pragma: no cover
-    demisto.debug('some line\n some new line')
-    params = demisto.params()
-
-    url = params.get('url')
-    api_version = params.get('api_version')
-    token = params.get('credentials', {}).get('password')
-    base_url = urljoin(url, f'/api/{api_version}/')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    first_fetch = params.get('first_fetch')
-    max_fetch = arg_to_number(params.get('max_fetch', 1000))
-    vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev_2')
-
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        client = Client(base_url, token, api_version, verify_certificate, proxy)
-        first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
+        params = demisto.params()
 
-        last_run = demisto.getLastRun()
+        url = params.get('url')
+        token = params.get('credentials', {}).get('password')
+        base_url = urljoin(url, f'/api/v2/')
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+        first_fetch = params.get('first_fetch')
+        max_fetch = arg_to_number(params.get('max_fetch', 1000))
+        vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope_dev_2')
+        command_name = demisto.command()
+        demisto.debug(f'Command being called is {command_name}')
+
+        client = Client(base_url, token, verify_certificate, proxy)
+        first_fetch = int(arg_to_datetime(first_fetch).timestamp())  # type: ignore[union-attr]
+        last_run = setup_last_run(demisto.getLastRun(), first_fetch)
         demisto.debug(f'Running with the following last_run - {last_run}')
-        last_run = setup_last_run(last_run, first_fetch)
-        if demisto.command() == 'test-module':
+
+        events = []
+        new_last_run = {}
+        if command_name == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, api_version, last_run, max_fetch=MAX_EVENTS_PAGE_SIZE)  # type: ignore[arg-type]
+            result = test_module(client, last_run, max_fetch=MAX_EVENTS_PAGE_SIZE)  # type: ignore[arg-type]
             return_results(result)
 
-        elif demisto.command() == 'netskope-get-events':
-            results, events = get_events_command(client, demisto.args(), last_run, api_version, is_command=True)
-
+        elif command_name == 'netskope-get-events':
+            results, events = get_events_command(client, demisto.args(), last_run, is_command=True)
             if argToBoolean(demisto.args().get('should_push_events', 'true')):
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)  # type: ignore
             return_results(results)
 
-        elif demisto.command() == 'fetch-events':
-            start = datetime.utcnow()
-            demisto.debug(f'Sending request with last run {last_run}')
-            events, new_last_run = fetch_events_command(client, api_version, last_run, max_fetch, is_command=False)
-            demisto.debug(f'sending {len(events)} to xsiam')
-            send_events_to_xsiam(events=events, vendor=vendor, product=product)
-            demisto.debug(f'Setting the last_run to: {new_last_run}')
+        elif command_name == 'fetch-events':
+            # We have this try-finally block for fetch events where wrapping up should be done if errors occur
+            try:
+                start = datetime.utcnow()
+                demisto.debug(f'Sending request with last run {last_run}')
+                events, new_last_run = fetch_events_command(client, last_run, max_fetch, is_command=False)
+            finally:
+                demisto.debug(f'sending {len(events)} to xsiam')
+                send_events_to_xsiam(events=events, vendor=vendor, product=product)
 
-            end = datetime.utcnow()
-            demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
-            demisto.setLastRun(new_last_run)
+                for event_type, status, in client.fetch_status.items():
+                    if not status:
+                        new_last_run[event_type] = {'operation': 'resend'}
+                demisto.debug(f'Setting the last_run to: {new_last_run}')
+
+                end = datetime.utcnow()
+                demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
+                demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
     except Exception as e:
-        # TODO: Add resend
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command_name} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

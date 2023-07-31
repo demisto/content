@@ -18,12 +18,13 @@ configuration:
   type: 9
   section: Connect
 - additionalinfo: 'The first fetch is limited to the last 50,000 events (for each event type).'
-  defaultvalue: 1 minute
+  defaultvalue: now
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   section: Collect
   type: 0
+  hidden: true
 - additionalinfo: The maximum amount of events to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '50000'
   display: Max events per fetch
