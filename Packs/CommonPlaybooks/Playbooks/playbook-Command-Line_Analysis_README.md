@@ -27,10 +27,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* MatchRegexV2
-* Base64Decode
-* Set
 * DeleteContext
+* Set
+* Base64Decode
+* MatchRegexV2
 
 ### Commands
 
@@ -43,8 +43,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Commandline | The command line. |  | Optional |
-| ProcessImageName | The Process Name. |  | Optional |
-| StringSimilarityThreshold | StringSimilarity automation threshold. Used by the Compare "Process Execution Arguments To LOLBAS Patterns" sub-playbook. This input controls the StringSimilarity automation threshold. |  | Optional |
+| StringSimilarityThreshold | StringSimilarity automation threshold. Used by the Compare "Process Execution Arguments To LOLBAS Patterns" sub-playbook. This input controls the StringSimilarity automation threshold. | 0.5 | Optional |
 
 ## Playbook Outputs
 

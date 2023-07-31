@@ -1,9 +1,7 @@
 id: Compare Process Execution Arguments To LOLBAS Patterns
 version: -1
 name: Compare Process Execution Arguments To LOLBAS Patterns
-description: |-
-  This playbook takes a process name and determine its presence in the LOLBAS repository .Upon confirming the process's existence in the LOLBAS feed, the playbook proceeds to compare the incident command line against known patterns of malicious commands listed in the LOLBAS repository.
-  The playbook outputs results where the similarity between the analyzed command line and the malicious patterns greater or equals the preconfigured StringSimilarity threshold. The playbook offers the flexibility to adjust this threshold through the use of the dedicated playbook input, "StringSimilarityThreshold."
+description: This playbook takes a process name and determines its presence in the LOLBAS repository. It then proceeds to compare the incident command line against known patterns of malicious commands listed in the LOLBAS repository. The playbook outputs results when the similarity between the analyzed command line and the malicious patterns is greater than or equal to the preconfigured StringSimilarity threshold. The playbook offers the flexibility to adjust this threshold through the use of the dedicated playbook input, 'StringSimilarityThreshold'.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +41,7 @@ tasks:
     task:
       id: c61b97f4-f754-44fa-882b-796c38ed1b78
       version: -1
-      name: Has results?
+      name: Does the process name exist in the LOLBAS repository?
       type: condition
       iscommand: false
       brand: ""
@@ -88,7 +86,7 @@ tasks:
     task:
       id: f0c62078-cd49-4a32-83f2-7e1db923d75f
       version: -1
-      name: Does input data exist?
+      name: Are the process names and command-lines provided as inputs?
       type: condition
       iscommand: false
       brand: ""
@@ -166,7 +164,7 @@ tasks:
     task:
       id: fa54f32d-9f9d-48dc-8308-561d639a9444
       version: -1
-      name: Has results?
+      name: Is there a similarity between the incident command-lines and a malicious LOLBAS pattern?
       type: condition
       iscommand: false
       brand: ""
@@ -308,7 +306,7 @@ tasks:
     task:
       id: ffd0db6f-a6fa-4c86-814c-3fb87c3d9da8
       version: -1
-      name: Compare incident commandline arguments With LOLBAS templates
+      name: Compare incident commandline arguments with LOLBAS malicious patterns?
       description: This automation calculates the similarity ratio between text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
       scriptName: StringSimilarity
       type: regular

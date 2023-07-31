@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": -1140
+          "y": -970
         }
       }
     note: false
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 480
+          "y": 650
         }
       }
     note: false
@@ -102,7 +102,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": -350
+          "y": -180
         }
       }
     note: false
@@ -141,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": -180
+          "y": -10
         }
       }
     note: false
@@ -214,7 +214,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": -500
+          "y": -330
         }
       }
     note: false
@@ -657,7 +657,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": -670
+          "y": -500
         }
       }
     note: false
@@ -1120,7 +1120,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 610
+          "y": 780
         }
       }
     note: false
@@ -1182,7 +1182,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": -20
+          "y": 150
         }
       }
     note: false
@@ -1330,7 +1330,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": 310
+          "y": 480
         }
       }
     note: false
@@ -1458,7 +1458,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": -835
+          "y": -665
         }
       }
     note: false
@@ -1499,7 +1499,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": -1010
+          "y": -840
         }
       }
     note: false
@@ -1541,7 +1541,7 @@ tasks:
       {
         "position": {
           "x": 1820,
-          "y": 150
+          "y": 320
         }
       }
     note: false
@@ -1565,14 +1565,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "41"
+      - "38"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2240,
-          "y": 780
+          "y": 950
         }
       }
     note: false
@@ -1606,22 +1606,30 @@ tasks:
           - operator: uniq
       ProcessName:
         complex:
-          root: inputs.ProcessImageName
+          root: commandline
+          accessor: original
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: ExtractedProcessName
-                iscontext: true
-          - operator: replace
+                  simple: commandline.decoded
+          - operator: RegexExtractAll
             args:
-              limit: {}
-              replaceWith: {}
-              toReplace:
+              error_if_no_match: {}
+              ignore_case:
                 value:
-                  simple: \
-          - operator: uniq
+                  simple: "true"
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \\([^\\"]+\.(?:exe))
+              unpack_matches: {}
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
       StringSimilarityThreashold:
         complex:
           root: inputs.StringSimilarityThreshold
@@ -1695,7 +1703,7 @@ tasks:
     task:
       id: 0de2c957-6cf3-4552-8776-c49fe89e5d60
       version: -1
-      name: Set command line verdict of maliciousTools
+      name: Set command line verdict of SuspiciousLolbinExecution
       description: Sets a value in context from the key entered.
       scriptName: Set
       type: regular
@@ -1725,46 +1733,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: 3f5bbd3b-ade5-4f25-810b-93c3142d0c30
-    type: regular
-    task:
-      id: 3f5bbd3b-ade5-4f25-810b-93c3142d0c30
-      version: -1
-      name: Extract process name from commandline
-      description: Extracts regex data from the provided text. The script support groups and looping.
-      scriptName: MatchRegexV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "38"
-    scriptarguments:
-      contextKey:
-        simple: ExtractedProcessName
-      data:
-        complex:
-          root: inputs.Commandline
-      regex:
-        simple: \\([^\\"]+\.(?:exe))
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2240,
-          "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1782,10 +1750,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2985,
+        "height": 2815,
         "width": 2850,
         "x": 60,
-        "y": -1140
+        "y": -970
       }
     }
   }
@@ -1795,13 +1763,9 @@ inputs:
   required: false
   description: The command line.
   playbookInputQuery:
-- key: ProcessImageName
-  value: {}
-  required: false
-  description: The Process Name.
-  playbookInputQuery:
 - key: StringSimilarityThreshold
-  value: {}
+  value:
+    simple: "0.5"
   required: false
   description: StringSimilarity automation threshold. Used by the Compare "Process Execution Arguments To LOLBAS Patterns" sub-playbook. This input controls the StringSimilarity automation threshold.
   playbookInputQuery:
