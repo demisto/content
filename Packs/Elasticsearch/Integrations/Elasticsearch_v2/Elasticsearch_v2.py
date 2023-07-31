@@ -51,10 +51,10 @@ TIME_FORMATS = {
     'yyyy-MM-dd': '%Y-%m-%d',
     'yyyy-MM-dd HH:mm:ss': '%Y-%m-%d %H:%M:%S',
     'yyyy-MM-dd HH:mm:ssZ': '%Y-%m-%d %H:%M:%SZ',
-    'yyyy-MM-dd HH:mm:ss.SSS': '%Y-%m-%d %H:%M:%S.f',
-    'yyyy-MM-dd HH:mm:ss.SSSZ': '%Y-%m-%d %H:%M:%S',
-    'yyyy-MM-dd HH:mm:ss.SSSSSS': '%Y-%m-%d %H:%M:%S',
-    'yyyy-MM-dd HH:mm:ss.SSSSSSZ': '%Y-%m-%d %H:%M:%S',
+    'yyyy-MM-dd HH:mm:ss.SSS': '%Y-%m-%d %H:%M:%S.%f',
+    'yyyy-MM-dd HH:mm:ss.SSSZ': '%Y-%m-%d %H:%M:%S.fZ',
+    'yyyy-MM-dd HH:mm:ss.SSSSSS': '%Y-%m-%d %H:%M:%S.%f',
+    'yyyy-MM-dd HH:mm:ss.SSSSSSZ': '%Y-%m-%d %H:%M:%S.fZ',
 }
 
 '''VARIABLES FOR FETCH INCIDENTS'''

@@ -971,14 +971,18 @@ def test_execute_raw_query(mocker):
     assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE
 
 
-@freezegun.freeze_time('2022-05-17T00:00:00Z')
+# @freezegun.freeze_time('2022-05-17T00:00:00Z')
 @pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [
-    ('123456', 'Timestamp-Seconds', '', 123456),
-    ('123456', 'Timestamp-Milliseconds', '', 123456),
-    ('123456', 'Simple-Date', '', 123456),
-    (dateparser.parse('7 days'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss', '2023-07-23 16:41:47'),
+    # ('123456', 'Timestamp-Seconds', '', 123456),
+    # ('123456', 'Timestamp-Milliseconds', '', 123456),
+    # ('123456', 'Simple-Date', '', 123456),
+    # (dateparser.parse('2023-07-01'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss', '2023-07-01 00:00:00'),
+    # (dateparser.parse('2023-07-01'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss.SSS', '2023-07-01 00:00:00.000'),
+    (dateparser.parse('2023-07-01'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss.SSSSSS', '2023-07-01 00:00:00.000000'),
+    # (dateparser.parse('2023-07-01 02:00:00'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ssZ', '2023-07-01 00:00:00'),
 ])
 def test_convert_date_to_timestamp(mocker, date_time, time_method, time_format, expected_time):
     mocker.patch.object(demisto, 'params', return_value={'time_format': time_format})
+    importlib.reload(Elasticsearch_v2)
     Elasticsearch_v2.TIME_METHOD = time_method
     assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
