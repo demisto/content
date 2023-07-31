@@ -1366,10 +1366,8 @@ class TestPanoramaEditRuleCommand:
             }
         }
         mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
-        try:
-            Panorama.panorama_edit_rule_command(args)
-        except Exception as exc:
-            pytest.fail(f'Got the error: {exc}')
+        Panorama.panorama_edit_rule_command(args)
+
 
     @staticmethod
     def test_edit_rule_to_disabled_flow(mocker, reset_device_group):
