@@ -420,7 +420,7 @@
                                 "id": "92c99e30-23df-11ee-a8b1-2b9eb3cfba06",
                                 "index": 1,
                                 "name": "Revoke Access Keys",
-                                "scriptId": "b016417a-eb0c-429c-82a6-e9ed68e81bbc",
+                                "scriptId": "APIKeyRevokeCTF",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -545,7 +545,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "CloudTrial Logs",
-                        "query": "74a00979-7fc3-49ac-86fa-783726ee683f",
+                        "query": "CloudTrailCTF",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
