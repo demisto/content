@@ -628,3 +628,18 @@ Update the status of an email to read / unread.
 #### Context Output
 
 There is no context output for this command.
+
+
+### msgraph-mail-auth-reset
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-mail-auth-reset`
+#### Input
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
