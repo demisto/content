@@ -8509,7 +8509,7 @@ def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips: str, reliability: str, rate_limit_retry_count: int, rate_limit_wait_seconds: int, should_error: bool = False) -> List[CommandResults]:
+def ip_command(ips: str, reliability: str, should_error: bool) -> List[CommandResults]:
     """
     Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
     Sets API execution metrics functionality (if supported) and adds them to the list of CommandResults.
@@ -8517,12 +8517,16 @@ def ip_command(ips: str, reliability: str, rate_limit_retry_count: int, rate_lim
     Args:
         - `ips` (``str``): Comma-separated list of IPs to perform the RDAP lookup for.
         - `reliability` (``str``): RDAP lookup source reliability.
-        - `rate_limit_retry_count` (``int``): Number of retries in case a rate limit error is encountered.
-        - `rate_limit_wait_seconds` (``int``): Number of seconds between retries in case a rate limit error is encountered.
         - `should_error` (``bool``): Whether to return an error entry if the lookup fails.
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
+
+    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
+                                      'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+    rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
+                                       'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
+    
 
     execution = ExecutionMetrics()
     results: List[CommandResults] = []
@@ -8749,16 +8753,9 @@ def main():
         results: List[CommandResults] = []
         if command == 'ip':
             ip = args.get('ip', '')
-            rate_limit_retry_count: int = arg_to_number(get_param_or_arg(
-                param_key='rate_limit_retry_count', arg_key='rate_limit_retry_count'), arg_name="rate_limit_retry_count") or RATE_LIMIT_RETRY_COUNT_DEFAULT
-            rate_limit_wait_seconds: int = arg_to_number(get_param_or_arg(
-                param_key='rate_limit_wait_seconds', arg_key="rate_limit_wait_seconds")) or RATE_LIMIT_WAIT_SECONDS_DEFAULT
-
             cmd_res = ip_command(
                 ips=ip,
                 reliability=reliability,
-                rate_limit_retry_count=rate_limit_retry_count,
-                rate_limit_wait_seconds=rate_limit_wait_seconds,
                 should_error=should_error
             )
 

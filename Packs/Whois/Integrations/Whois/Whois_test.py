@@ -198,11 +198,10 @@ def test_ip_command(mocker: MockerFixture):
     mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
     response = load_test_data('./test_data/ip_output.json')
     mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
+    mocker.patch.object(demisto, 'args', {'rate_limit_retry_count': 3, 'rate_limit_wait_seconds': 180})
     result = ip_command(
         ips='4.4.4.4,4.4.4.4',
         reliability=DBotScoreReliability.B,
-        rate_limit_retry_count=3,
-        rate_limit_wait_seconds=180,
         should_error=False
     )
     assert len(result) == 3
