@@ -5,6 +5,11 @@ Please configure only one of the following fields:
 
 For both instances, it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The oproxy url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the oproxy url, you may use a localhost url on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the url address bar in the response.
 
+**Notes**:
+
+1. Authentication is done using OAuth 2.0.
+2. OAuth 2.0 works for Jira OnPrem 8.22 and above.
+
 ### Cloud authentication
 
 Go to your [Developer console](https://developer.atlassian.com/console/myapps/) page, and choose the App you want to integrate with your instance. It must be of type OAuth 2.0. For creating a new app with type OAuth 2.0, click **Create** and choose **OAuth 2.0 integration** and follow the steps.
