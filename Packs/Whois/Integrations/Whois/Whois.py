@@ -8526,7 +8526,6 @@ def ip_command(ips: str, reliability: str, should_error: bool) -> List[CommandRe
                                       'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
     rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
                                        'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
-    
 
     execution = ExecutionMetrics()
     results: List[CommandResults] = []
