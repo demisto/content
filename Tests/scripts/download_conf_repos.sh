@@ -34,8 +34,7 @@ if [ "$?" != "0" ]; then
 fi
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
-cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
-cp -r ./content-test-conf/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
+
 
 if [[ "$NIGHTLY" == "true" || "$EXTRACT_PRIVATE_TESTDATA" == "true" ]]; then
     python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf
@@ -48,6 +47,9 @@ if [ "$?" != "0" ]; then
     echo "No such branch in infra: $UNDERSCORE_BRANCH , falling back to master"
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/infra.git
 fi
+cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
+cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
+
 mv ./infra/gcp ./gcp
 rm -rf ./infra
 
