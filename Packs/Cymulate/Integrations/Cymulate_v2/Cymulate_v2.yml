@@ -72,8 +72,8 @@ script:
       name: agent_name
       required: true
     - description: agent profile name to run simulation attacks.
-      name: agent_Profile_Name
-      required: true
+      name: agent_profile_name
+      required: false
     - auto: PREDEFINED
       description: whether to schedule the automated assessment periodically.
       name: schedule
@@ -218,8 +218,8 @@ script:
       name: agent_name
       required: true
     - description: agent profile name.
-      name: agent_Profile_Name
-      required: true
+      name: agent_profile_name
+      required: false
     - auto: PREDEFINED
       description: whether to schedule the automated assessment periodically.
       name: schedule
@@ -348,10 +348,14 @@ script:
   - arguments:
     - description: Browsing address
       name: browsing_address
+    - description: Browsing Agent profile name to run the assessment with.
+      name: browsing_Address_ProfileName
     - description: Agent email address.
       name: mail_address
     - description: EDR address
       name: edr_address
+    - description: EDR Agent profile name to run the assessment with.
+      name: edr_Address_ProfileName
     - description: The ID of the template to run the immediate threat assessment with. Can be retrieved using Cymulate's UI.
       name: template_id
       required: true
@@ -456,8 +460,8 @@ script:
       name: agent_name
       required: true
     - description: Agent profile name to run the assessment with.
-      name: agent_Profile_Name
-      required: true
+      name: agent_profile_name
+      required: false
     - description: The ID of the template to run the lateral movement with. Can be retrieved using Cymulate's UI, or using cymulate-lateral-movement-template-list command.
       name: template_id
       required: true

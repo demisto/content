@@ -933,7 +933,7 @@ def list_endpoint_security_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_endpoint_security_assessment_command(client: Client, template_id: str, agent_name: str,agent_Profile_Name: str,
+def start_endpoint_security_assessment_command(client: Client, template_id: str, agent_name: str,agent_profile_name: str,
                                                schedule: bool,
                                                schedule_loop: str) -> CommandResults:
     """Start a new endpoint security assessment.
@@ -942,7 +942,7 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the assessment with.
         agent_name (str): Agent's name to run simulation attacks with.
-        agent_Profile_Name (str): Agent profile name to run simulation attacks on
+        agent_profile_name (str): Agent profile name to run simulation attacks on
         schedule (bool): Whether to schedule the automated assessment periodically.
         schedule_loop (str): Loop size of the scheduled agent.
                              For example: to run the agent only once, use the value 'one-time'.
@@ -955,7 +955,7 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
     params = {
         'templateID': template_id,
         'agentName': agent_name,
-        'agentProfileName': agent_Profile_Name,
+        'agentProfileName': agent_profile_name,
         'schedule': schedule,
         'scheduleLoop': schedule_loop
     }
@@ -1283,7 +1283,7 @@ def list_lateral_movement_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_lateral_movement_assessment_command(client: Client, agent_name: str, template_id: str, agent_Profile_Name: str,
+def start_lateral_movement_assessment_command(client: Client, agent_name: str, template_id: str, agent_profile_name: str,
                                               upload_to_cymulate: bool, schedule: bool,
                                               schedule_loop: str) -> CommandResults:
     """Start a new lateral movement assessment.
@@ -1291,7 +1291,7 @@ def start_lateral_movement_assessment_command(client: Client, agent_name: str, t
     Args:
         client (Client): Cymulate client.
         agent_name (str): Agent name to run the assessment with.
-        agent_Profile_Name (str): Agent profile name to run simulation attacks on.
+        agent_profile_name (str): Agent profile name to run simulation attacks on.
         template_id (str): The ID of the template to run the lateral movement with.
         upload_to_cymulate (bool): Whether to upload the result to Cymulate.
         schedule (bool): Whether to schedule the automated assessment periodically.
@@ -1305,7 +1305,7 @@ def start_lateral_movement_assessment_command(client: Client, agent_name: str, t
     """
     params = {
         "agentName": agent_name,
-        "agentProfileName": agent_Profile_Name,
+        "agentProfileName": agent_profile_name,
         "templateID": template_id,
         "uploadResultsToCymulate": upload_to_cymulate,
         "schedule": schedule,
