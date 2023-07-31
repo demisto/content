@@ -2135,7 +2135,7 @@ def get_remote_incident_data(remote_incident_id: str):
     if 'status' in mirrored_data:
         mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
 
-    # mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('fine_score'))
+    mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('fine_score'))
 
     updated_object: dict[str, Any] = {'incident_type': 'incident'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
@@ -2293,17 +2293,15 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     modified_ids_to_mirror = []
 
     raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
-    for incident_id in raw_incidents:
-        modified_ids_to_mirror.append(str(incident_id))
+    modified_ids_to_mirror.extend(map(str, raw_incidents))
 
     raw_detections = get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
-    for detection_id in raw_detections:
-        modified_ids_to_mirror.append(str(detection_id))
+    modified_ids_to_mirror.extend(map(str, raw_detections))
+
     last_update_timestamp_idp_detections = last_update_utc.strftime(IDP_DATE_FORMAT)
     raw_idp_detections = get_idp_detections_ids(filter_arg=f"updated_timestamp:>'{last_update_timestamp_idp_detections}'"
                                                 "+product:'idp'").get('resources', [])
-    for raw_idp_detection in raw_idp_detections:
-        modified_ids_to_mirror.append(str(raw_idp_detection))
+    modified_ids_to_mirror.extend(map(str, raw_idp_detections))
 
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
