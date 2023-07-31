@@ -756,9 +756,10 @@ filter _raw_log ~= "\-\d+\:\sUPDATE\:"
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_name,
-    xdm.observer.version = new_img_version;
+    xdm.observer.name = observer_name;
+    //xdm.observer.version = new_img_version;
 
+// event IDs: 106101,120011,199009,199014,199015,199016,199017,199018,308001
 alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0))
 | filter event_id in (106101,120011,199009,199014,199015,199016,199017,199018,308001)
 | alter severity = arrayindex(regextract(_raw_log, "ASA\-[session]*\-*(\d+)\-\d+\:"),0),
@@ -771,4 +772,17 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*
     src_username = arrayindex(regextract(_raw_log ,"by\s(\S+)\sfrom\sssh"),0),
     protocol = uppercase(arrayindex(regextract(_raw_log ,"by\s\S+\sfrom\s([A-Za-z]+)\s"),0)),
     dst_ip = arrayindex(regextract(_raw_log ,"\(remote\s(\d+\.\d+\.\d+\.\d+)\)"),0),
-    outcome_reason = arrayindex(regextract(_raw_log ,"Reload\sreason\:\s\[([^\]]+)"),0)
+    outcome_reason = arrayindex(regextract(_raw_log ,"Reload\sreason\:\s\[([^\]]+)"),0),
+    network_rule = arrayindex(regextract(_raw_log , "for\s([A-Z]+)\slog"),0)
+| alter xdm.event.log_level = if(log_level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, uppercase(log_level)),
+    xdm.target.file.path = file_path,
+    xdm.event.description = message,
+    xdm.alert.severity = severity,
+    xdm.observer.name = observer_name,
+    xdm.target.file.size = to_integer(file_size),
+    xdm.alert.name = alert_name,
+    xdm.source.user.username = src_username,
+    xdm.network.application_protocol = protocol, // like ssh
+    xdm.target.ipv4 = dst_ip,
+    xdm.event.outcome_reason = outcome_reason,
+    xdm.network.rule = network_rule;
