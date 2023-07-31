@@ -13,12 +13,8 @@ ignore=BA101
 [file:MicrosoftDefenderEventCollector.yml]
 ignore=BA124
 
-[file:MicrosoftCloudAppSecurity_1_3.yml]
-ignore=MR108
-
-[file:MicrosoftDefenderModelingRules.yml]
-ignore=MR108
-
 [file:MicrosoftCloudAppSecurity.yml]
-ignore=PR101
+ignore=MR108,PR101
+
+
 
