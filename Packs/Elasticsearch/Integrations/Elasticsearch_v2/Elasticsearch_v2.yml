@@ -79,7 +79,7 @@ configuration:
   required: false
 - additionalinfo: Only if time filed type is Simple-date.
   defaultvalue: None
-  display: time format
+  display: Time format
   name: time_format
   options:
   - yyyy-MM-dd

@@ -25,6 +25,7 @@ The permissions required to use this integration depends on which operations you
     | Index time field (for sorting sort and limiting data) |  | False |
     | Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
     | Time field type |  | False |
+    | Time format |  | False |
     | Map JSON fields into labels |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | The maximum number of results to return per fetch. |  | False |
