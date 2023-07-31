@@ -1,4 +1,5 @@
 [MODEL:dataset="forcepoint_dlp_raw"]
+filter  _collector_type = "API" // API based logs modeling rules
 alter   xdm.observer.action=action,
         xdm.event.outcome = if(action in ("AUTHORIZED", "RELEASED", "AUDITED", "ENDPOINT_CONFIRM_CONTINUE"), XDM_CONST.OUTCOME_SUCCESS, action in ("QUARANTINED", "BLOCKED", "ENDPOINT_CONFIRM_ABORT"), XDM_CONST.OUTCOME_FAILED),
         xdm.observer.name=analyzed_by,
@@ -40,6 +41,6 @@ alter   xdm.observer.action=action,
         user_domain = arrayindex(regextract(username, "([^\\]+)\\"), 0),
 | alter xdm.source.user.domain = coalesce(nt_domain, user_domain),
         xdm.event.is_completed = if(uppercase(status) ~= "CLOSE|FALSE.POSITIVE", true, false),
-        xdm.event.tags = arraycreate(tag),
+        xdm.event.tags = arraycreate(`tag`),
         xdm.target.file.size=to_integer(transaction_size),
         xdm.source.sent_packets=to_integer(violation_triggers);
