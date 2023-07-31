@@ -903,6 +903,8 @@ def parse_attachment_as_dict(item_id, attachment):
             if isinstance(attachment, FileAttachment)
             else attachment.item.mime_content
         )
+        if isinstance(attachment_content, str):  # Strings must be encoded before hashing
+            attachment_content = attachment_content.encode()
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
@@ -2125,6 +2127,8 @@ def parse_incident_from_item(item):     # pragma: no cover
                 # save the attachment
                 if attachment.item.mime_content:
                     mime_content = attachment.item.mime_content
+                    if isinstance(mime_content, str) and not mime_content.isascii():
+                        mime_content = mime_content.encode()
                     attached_email = email.message_from_bytes(mime_content) if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content)
                     if attachment.item.headers:
@@ -2232,6 +2236,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
     """
     log_memory()
     last_run = get_last_run(client, last_run)
+    demisto.debug(f"get_last_run: {last_run=}")
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
         last_emails = fetch_last_emails(
@@ -2303,6 +2308,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter):
             ERROR_COUNTER: 0,
         }
 
+        demisto.debug(f'Set last run to: {new_last_run=}')
         demisto.setLastRun(new_last_run)
 
         if client.mark_as_read:
@@ -2347,6 +2353,7 @@ def fetch_last_emails(
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
+        demisto.debug(f"{first_fetch_ews_datetime=}")
     qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != 'mime_content'])
     qs = qs.filter().order_by("datetime_received")
     result = []

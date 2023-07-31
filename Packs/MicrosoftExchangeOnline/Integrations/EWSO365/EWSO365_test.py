@@ -533,6 +533,37 @@ def test_parse_incident_from_item():
     assert incident['attachment']
 
 
+@pytest.mark.parametrize("mime_content", [
+    "Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
+    "Hello, this is a sample email with ASCII characters",
+])
+def test_parse_incident_from_item_non_ascii(mime_content):
+    """
+    Given:
+        - Message item with attachment that contains non-ASCII characters or only ASCII characters.
+
+    When:
+        - Parsing incident from item
+
+    Verify:
+        - Parsing runs successfully
+        - Incident attachment is not empty
+    """
+    message = Message(
+        datetime_created=EWSDate(year=2021, month=1, day=25),
+        to_recipients=[],
+        attachments=[
+            ItemAttachment(
+                item=Item(mime_content=mime_content),
+                attachment_id=AttachmentId(),
+                last_modified_time=EWSDate(year=2021, month=1, day=25),
+            ),
+        ],
+    )
+    incident = parse_incident_from_item(message)
+    assert incident['attachment']
+
+
 def test_parse_incident_from_item_with_attachments():
     """
     Given:
