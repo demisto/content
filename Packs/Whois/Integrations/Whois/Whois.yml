@@ -58,15 +58,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Suppress Rate Limit errors
-  additionalinfo: "Whether Rate Limit errors should be suppressed or not."
-  defaultvalue: "false"
-  name: rate_limit_errors_suppressed
-  type: 8
-  section: Collect
-  advanced: true
-  hidden: false
-  required: false
 description: Provides data enrichment for domains.
 display: Whois
 name: Whois
@@ -465,9 +456,6 @@ script:
     - description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
       defaultValue: 120
       name: rate_limit_wait_seconds
-    - description: 'Whether Rate Limit errors should be supressed or not.'
-      defaultValue: 'false'
-      name: rate_limit_errors_suppressed
     description: Provides data enrichment for ips.
     name: ip
     outputs:
