@@ -806,3 +806,25 @@ def test_search_users_empty_userAccountControl(mocker):
     with patch('logging.Logger.info') as mock:
         Active_Directory_Query.search_users('dc', 1)
         mock.assert_called_with(expected_results)
+
+
+def test_test_credentials(mocker):
+    """
+    Given:
+        The 'userAccountControl' attribute was returned empty
+    When:
+        Run the 'ad-test-credentials' command
+    Then:
+        The result returns with successful connection
+    """
+    import Active_Directory_Query
+    args = {'username': 'username_test_credentials', 'password': 'password_test_credentials',
+            'ntlm': 'true'}
+    mocker.patch.object(demisto, 'args', return_value=args)
+
+    def mock_set_connection(server, ip, username, password, ntlm, value):
+        return None
+
+    with patch("Active_Directory_Query.set_connection", side_effect=mock_set_connection):
+        command_results = Active_Directory_Query.test_credentials(BASE_TEST_PARAMS['server_ip'])
+        assert command_results.readable_output == 'Credential with username username_test_credentials is successful'

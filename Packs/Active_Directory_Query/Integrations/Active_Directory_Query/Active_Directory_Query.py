@@ -1,7 +1,9 @@
-import demistomock as demisto
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
 
-from CommonServerPython import *
 from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef, \
     AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.extend import microsoft
@@ -1764,6 +1766,34 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
+def test_credentials(SERVER_IP):
+    args = demisto.args()
+    username = args.get('username')
+    server = Server(SERVER_IP, get_info='ALL')
+    if connection := set_connection(
+        server,
+        SERVER_IP,
+        username,
+        args.get('password'),
+        argToBoolean(args.get('ntlm')),
+        True,
+    ):
+        connection.unbind()
+    return CommandResults(
+        outputs_prefix='ActiveDirectory.ValidCredentials',
+        outputs_key_field='username',
+        outputs=username,
+        readable_output=f"Credential with username {username} is successful"
+    )
+
+
+def set_connection(server: Server, server_ip: str, username: str, password: str, ntlm_connection: bool, auto_bind: str | bool):
+    domain_name = server_ip + '\\' + username if '\\' not in username else username
+    # open socket and bind to server
+    return Connection(server, domain_name, password=password, authentication=NTLM, auto_bind=auto_bind) if ntlm_connection \
+        else Connection(server, user=username, password=password, auto_bind=auto_bind)
+
+
 def get_auto_bind_value(secure_connection, unsecure) -> str:
     """
         Returns the proper auto bind value according to the desirable connection type.
@@ -1833,15 +1863,8 @@ def main():
         auto_bind = get_auto_bind_value(SECURE_CONNECTION, UNSECURE)
 
         try:
-
-            if NTLM_AUTH:
-                # initialize connection to LDAP server with NTLM authentication
-                # user example: domain\user
-                domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-                conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM, auto_bind=auto_bind)
-            else:
-                # here username should be the user dn
-                conn = Connection(server, user=USERNAME, password=PASSWORD, auto_bind=auto_bind)
+            # user example: domain\user
+            conn = set_connection(server, SERVER_IP, USERNAME, PASSWORD, NTLM_AUTH, auto_bind)
 
         except Exception as e:
             err_msg = str(e)
@@ -1944,6 +1967,9 @@ def main():
 
         elif command == 'ad-delete-group':
             delete_group()
+
+        elif command == 'ad-test-credentials':
+            return return_results(test_credentials(SERVER_IP))
 
         # IAM commands
         elif command == 'iam-get-user':
