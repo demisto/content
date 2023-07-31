@@ -126,14 +126,16 @@
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_device_code",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 900
         },
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 500
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -200,7 +202,8 @@
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": [
@@ -676,11 +679,12 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
-            "timeout": 600,
+            "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
+            "timeout": 900,
             "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
             "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
@@ -688,7 +692,8 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod",
-            "is_mockable": false
+            "is_mockable": false,
+            "memory_threshold": 300
         },
         {
             "integrations": "CloudShark",
@@ -2086,7 +2091,7 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2149,7 +2154,8 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod v2",
             "instance_names": "ms_graph_security_prod_v2",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Graph",
@@ -4970,6 +4976,7 @@
         {
             "playbookID": "Microsoft Teams - Test",
             "fromversion": "5.0.0",
+            "memory_threshold": 300,
             "instance_names": "ms_teams_management_device_code",
             "integrations": [
                 "Microsoft Teams Management",
@@ -5191,7 +5198,8 @@
                 "ewso365_dev_team"
             ],
             "fromversion": "6.5.0",
-            "timeout": 600
+            "timeout": 600,
+            "memory_threshold": 300
         },
         {
             "integrations": "OpsGenieV3",
@@ -5663,7 +5671,11 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "EWS_O365_test": "Issue CIAC-6753"
+        "EWS_O365_test": "Issue CIAC-6753",
+        "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
+        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
