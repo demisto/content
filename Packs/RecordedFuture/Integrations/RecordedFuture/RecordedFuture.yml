@@ -63,7 +63,7 @@ configuration:
   - "On"
   - "Off"
 - display: Trust any certificate (not secure)
-  name: unsecure
+  name: insecure
   defaultvalue: "false"
   type: 8
   required: false

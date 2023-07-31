@@ -1,5 +1,5 @@
 Unique threat intel technology that automatically serves up relevant insights in real time.
-This integration was integrated and tested with version 2.4.1 of Recorded Future v2
+This integration was integrated and tested with version 2.4.3 of Recorded Future v2
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previo-us-version-of-this-integration-recorded-future-v2).

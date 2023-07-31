@@ -12,7 +12,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '2.4.2'
+__version__ = '2.4.3'
 
 
 # === === === === === === === === === === === === === === ===
@@ -452,7 +452,7 @@ def main() -> None:
     try:
         demisto_params = demisto.params()
         base_url = demisto_params.get('server_url', '').rstrip('/')
-        verify_ssl = not demisto_params.get('unsecure', False)
+        verify_ssl = not demisto_params.get('insecure', False)
         proxy = demisto_params.get('proxy', False)
 
         headers = {
