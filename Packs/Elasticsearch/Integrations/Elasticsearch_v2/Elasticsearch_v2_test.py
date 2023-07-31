@@ -8,7 +8,6 @@ import requests
 import unittest
 from unittest import mock
 import dateparser
-from freezegun import freeze_time
 
 """MOCKED RESPONSES"""
 
@@ -814,7 +813,7 @@ class GetMappingFields(unittest.TestCase):
         # Assert requests.get calls
         gmf = GetMapping()
         server_response = gmf.fetch_json('http://someurl.com/' + 'index' + '/_mapping')
-        assert server_response == MOC_ES7_SERVER_RESPONSE
+        self.assertEqual(server_response, MOC_ES7_SERVER_RESPONSE)
 
 
 class TestIncidentLabelMaker(unittest.TestCase):
@@ -837,7 +836,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
         ]
 
         labels = incident_label_maker(sources)
-        assert labels == expected_labels
+        self.assertEqual(labels, expected_labels)
 
     def test_complex_value(self):
         from Elasticsearch_v2 import incident_label_maker
@@ -863,16 +862,17 @@ class TestIncidentLabelMaker(unittest.TestCase):
         ]
 
         labels = incident_label_maker(sources)
-        assert labels == expected_labels
+        self.assertEqual(labels, expected_labels)
 
 
 @pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
                          [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
-                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                           {'range': {'time_field': {'gt': '2000-01-01T12:00:00.000000+00:00',
+                                                     'lt': '2000-02-01T12:00:00.000000+00:00'}}}),
                           (946728000000, '', '2.1.2000 12:00:00Z',
-                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': '2000-02-01T12:00:00.000000+00:00'}}}),
                           ('', '', '2.1.2000 12:00:00Z',
-                           {'range': {'time_field': {'lt': 949406400000}}}),
+                           {'range': {'time_field': {'lt': '2000-02-01T12:00:00.000000+00:00'}}}),
                           ])
 def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
     from Elasticsearch_v2 import get_time_range
