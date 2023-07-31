@@ -738,8 +738,7 @@ script:
   subtype: python3
   type: python
 fromversion: 6.9.0
-defaultmapperin: Cortex XDR - IR-mapper_CTF2
+defaultmapperin: XDR - Incoming Mapper - CTF2
 defaultclassifier: Cortex XDR Incident Handler - Classifier_CTF
-defaultmapperout: Cortex XDR - IR-out-mapper_CTF2
 tests:
 - No tests (auto formatted)
