@@ -813,7 +813,7 @@ class GetMappingFields(unittest.TestCase):
         # Assert requests.get calls
         gmf = GetMapping()
         server_response = gmf.fetch_json('http://someurl.com/' + 'index' + '/_mapping')
-        self.assertEqual(server_response, MOC_ES7_SERVER_RESPONSE)
+        assert server_response == MOC_ES7_SERVER_RESPONSE
 
 
 class TestIncidentLabelMaker(unittest.TestCase):
@@ -836,7 +836,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
         ]
 
         labels = incident_label_maker(sources)
-        self.assertEqual(labels, expected_labels)
+        assert labels == expected_labels
 
     def test_complex_value(self):
         from Elasticsearch_v2 import incident_label_maker
@@ -862,7 +862,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
         ]
 
         labels = incident_label_maker(sources)
-        self.assertEqual(labels, expected_labels)
+        assert labels == expected_labels
 
 
 @pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
