@@ -197,6 +197,7 @@ def fetch_events_command_sub(
     incidents = incidents_response["incidents"]
     for incident in incidents:
         if incident["id"] not in last_run_ids:
+            incident["_collector_type"] = "API"
             events.append(incident)
             new_last_run_ids[to_str_time(incident["event_time"])].add(incident["id"])
             if len(events) == max_fetch:
@@ -297,7 +298,8 @@ def main():
             utc_now=datetime.utcnow(),
         )
         if command == "test-module":
-            test_module_first_fetch: datetime = arg_to_datetime(DEFAULT_TEST_MODULE_SINCE_TIME, settings=DATEPARSER_SETTINGS)
+            test_module_first_fetch: datetime = arg_to_datetime(
+                DEFAULT_TEST_MODULE_SINCE_TIME, settings=DATEPARSER_SETTINGS)  # type: ignore[assignment]
             return_results(test_module_command(client, test_module_first_fetch))
 
         elif command == "forcepoint-dlp-get-events":
