@@ -441,7 +441,7 @@ slack-notify-nightly-build:
     - section_end "Lock Machine"
 
     - section_start "Clean Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
     - section_end "Clean Machine"
 
     - section_start "Install Packs and run Test-Module"
