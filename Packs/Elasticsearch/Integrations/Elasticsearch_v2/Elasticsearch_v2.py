@@ -66,7 +66,7 @@ FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
-TIME_FORMAT = TIME_FORMATS_DICT.get(param.get('time_format', '%Y-%m-%d %H:%M:%S'))
+TIME_FORMAT = TIME_FORMATS_DICT.get(param.get('time_format'), '%Y-%m-%d %H:%M:%S')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
 
