@@ -6,28 +6,21 @@ commonfields:
   id: DigitalGuardianARCEventCollector
   version: -1
 configuration:
-- display: Auth Server URL (e.g. https://SomeUrl.com)
+- display: Auth Server URL (e.g. https://authsrv.msp.digitalguardian.com)
   name: auth_server_url
   required: true
   type: 0
   section: Connect
-- display: Gateway Base URL (e.g. https://SomeUrl.com)
+- display: Gateway Base URL (e.g. https://accessgw-usw.msp.digitalguardian.com)
   name: gateway_base_url
   required: true
   type: 0
   section: Connect
 - display: Client ID
-  name: client_id
-  required: true
-  type: 0
-  section: Connect
-- displaypassword: Client Secret
-  additionalinfo: Client Secret
-  name: client_secret
-  required: true
-  section: Connect
-  hiddenusername: true
   type: 9
+  name: credentials
+  displaypassword: Client Secret
+  required: true
 - display: Export Profile
   additionalinfo: GUID of export profile, part of the export URL
   name: export_profile
@@ -50,7 +43,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: This is the Digital Guardian ARC event collector integration for XSIAM.
+description: Digital Guardian ARC event collector
 display: Digital Guardian ARC Event Collector
 name: DigitalGuardianARCEventCollector
 script:

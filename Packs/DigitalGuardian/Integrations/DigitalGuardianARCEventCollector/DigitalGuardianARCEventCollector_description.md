@@ -1,18 +1,13 @@
 ## Digital Guardian ARC Event Collector Help
 
-### Required Parameters
+**Important:** 
+This integration is supported by Palo Alto Networks. 
 
-API Client ID 
+### Configuration
+Event fetch interval should be set to "1 hour".
+System fails when fetching every "1 minute".
 
-API Client Secret 
-
-Gateway Base URL 
-
-Auth Server URL 
-
-Export Profile 
-
-### How to get them
+### How to get the configuration parameters
 API Client ID: 
 This is the Tenant ID and can be found in the ARC Tenant Settings 
 

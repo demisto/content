@@ -29,7 +29,7 @@
             "is_array": false
         },
         "inc_mtime": {
-            "type": "string",
+            "type": "datetime",
             "is_array": false
         },
         "dg_guid": {

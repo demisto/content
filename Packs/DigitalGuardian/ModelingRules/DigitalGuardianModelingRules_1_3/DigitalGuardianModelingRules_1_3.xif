@@ -7,4 +7,5 @@ alter
     xdm.target.user.username = inc_assign,
     xdm.event.type = dg_utype,
     xdm.source.user.username = inc_creator,
-    xdm.alert.subcategory = inc_state;
+    xdm.alert.subcategory = inc_state,
+    xdm.event.id = dg_guid;

@@ -42,7 +42,7 @@ class Client(BaseClient):
                 demisto.debug('Using cached token which is still valid')
                 demisto.debug(f'time-now: {time_now}\n valid token until: {valid_until}')
                 return token
-        sec = self.client_secret.get("password")
+        sec = self.client_secret
         response = self._http_request(
             method='POST',
             full_url=f'{self.auth_url}/as/token.oauth2',
@@ -218,8 +218,8 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     auth_url = params.get('auth_server_url')
     gateway_url = params.get('gateway_base_url')
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
+    client_id = params.get('credentials', {}).get('identifier', '')
+    client_secret = params.get('credentials', {}).get('password', '')
     export_profile = params.get('export_profile')
     verify_certificate = not params.get('insecure', False)
     base_url = urljoin(gateway_url, f'/rest/2.0/export_profiles/{export_profile}/export')
