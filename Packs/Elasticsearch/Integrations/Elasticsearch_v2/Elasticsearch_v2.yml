@@ -77,7 +77,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Only if time filed type is Simple-date.
+- additionalinfo: Only if time field type is Simple-date.
   defaultvalue: None
   display: Time format
   name: time_format
