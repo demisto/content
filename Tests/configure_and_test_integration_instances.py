@@ -84,6 +84,10 @@ class Running(IntEnum):
     WITH_LOCAL_SERVER = 2
 
 
+def get_custom_user_agent(build_number):
+    return f"demisto-py/dev (Build:{build_number})"
+
+
 class Server:
 
     def __init__(self):
@@ -92,9 +96,6 @@ class Server:
         self.password = None
         self.name = ''
         self.build_number = 'unknown'
-
-    def get_custom_user_agent(self):
-        return f"demisto-py/dev (Build:{self.build_number})"
 
 
 class CloudServer(Server):
@@ -126,8 +127,8 @@ class CloudServer(Server):
                                                  verify_ssl=False,
                                                  api_key=self.api_key,
                                                  auth_id=self.xdr_auth_id)
-        custom_user_agent = self.get_custom_user_agent()
-        logging.debug(f'Setting user agent on client to:{custom_user_agent}')
+        custom_user_agent = get_custom_user_agent(self.build_number)
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -157,8 +158,8 @@ class XSOARServer(Server):
                                                  verify_ssl=False,
                                                  username=self.user_name,
                                                  password=self.password)
-        custom_user_agent = self.get_custom_user_agent()
-        logging.debug(f"Setting user agent on client to '{custom_user_agent}'.")
+        custom_user_agent = get_custom_user_agent(self.build_number)
+        logging.debug(f"Setting user-agent on client to '{custom_user_agent}'.")
         self.__client.api_client.user_agent = custom_user_agent
         return self.__client
 
@@ -463,7 +464,7 @@ class Build(ABC):
             self: The build object
             modified_integrations_to_configure: Integrations to configure that are already exists
             new_integrations_to_configure: Integrations to configure that were created in this build
-            demisto_client: A demisto client
+            demisto_client_: A demisto client
 
         Returns:
             A tuple with two lists:
@@ -602,18 +603,16 @@ class XSOARBuild(Build):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
             configurations = {}
-            configure_types = []
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
                 configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
-            configure_types.append('docker hardening')
-            configure_types.append('marketplace')
+            configure_types = ['docker hardening', 'marketplace']
             configurations.update(MARKET_PLACE_CONFIGURATION)
 
-            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
+            error_msg = f"failed to set {' and '.join(configure_types)} configurations"
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
         if manual_restart:
@@ -690,7 +689,6 @@ class XSOARBuild(Build):
         Runs 'test-module' for given integration with mitmproxy
         In case the playback mode fails and this is a pre-update run - a record attempt will be executed.
         Args:
-            build: An object containing the current build info.
             instance: A dict containing the instance details
             pre_update: Whether this instance testing is before or after the content update on the server.
 
@@ -1694,7 +1692,9 @@ def run_git_diff(pack_name: str, build: Build) -> str:
     Returns:
         (str): The git diff output.
     """
-    compare_against = 'origin/master{}'.format('' if build.branch_name != 'master' else '~1')
+    compare_against = (
+        f"origin/master{'' if build.branch_name != 'master' else '~1'}"
+    )
     return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
@@ -1901,7 +1901,7 @@ def main():
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)
         logging.info("Installing packs in pre-update step")
-        build.install_packs(pack_ids=list(packs_to_install_in_pre_update), is_post_update=False)
+        build.install_packs(pack_ids=packs_to_install_in_pre_update)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(
             packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
