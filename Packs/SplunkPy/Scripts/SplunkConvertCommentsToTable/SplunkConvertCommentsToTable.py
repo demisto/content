@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 def main():
     incident = demisto.incident()
     splunkComments = []
-    demisto.debug(f"incidens: {incident}")
     if not incident:
         raise ValueError("Error - demisto.incident() expected to return current incident "
                          "from context but returned None")
@@ -19,8 +18,6 @@ def main():
         return CommandResults(readable_output='No comments were found in the notable')
 
     markdown = tableToMarkdown("", splunkComments, headers=['Comment', 'Comment time', 'Reviewer'])
-    demisto.debug(f"markdown {markdown}")
-
     return CommandResults(
         readable_output=markdown
     )

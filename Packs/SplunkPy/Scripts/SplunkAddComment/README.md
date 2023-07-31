@@ -16,7 +16,7 @@ Use this script to add a comment with a tag (the "Comment tag to Splunk" defined
 | **Argument Name** | **Description** |
 | --- | --- |
 | comment | comment to be added to the Splunk issue. |
-| tags | The comment tag. Use the comment entry tag \(defined in your instance configuration\) to mirror the comment to splunk. |
+| tag | The comment tag. Use the comment entry tag \(defined in your instance configuration\) to mirror the comment to splunk. |
 
 ## Outputs
 

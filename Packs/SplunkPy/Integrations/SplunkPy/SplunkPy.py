@@ -562,7 +562,6 @@ class Notable:
             'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
             'mirror_tags': [comment_tag_from_splunk, comment_tag_to_splunk]
         })
-        incident["rawJSON"] = json.dumps(notable_data)
         comment_entries = []
         labels = []
         if params.get('parseNotableEventsRaw'):
@@ -1295,7 +1294,6 @@ def get_remote_data_command(service: client.Service, args: dict,
         if handle_message(item):
             continue
         updated_notable = parse_notable(item, to_dict=True)
-
     if updated_notable.get('owner'):
         demisto.debug("owner field was found, changing according to mapping.")
         updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(

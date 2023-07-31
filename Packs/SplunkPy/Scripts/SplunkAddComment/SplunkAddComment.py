@@ -8,7 +8,7 @@ def add_comment(args: Dict[str, Any]) -> CommandResults:
     comment_body = args.get('comment', '')
 
     return CommandResults(
-        readable_output=comment_body, mark_as_note=True, tags=tags or None
+        readable_output=comment_body, mark_as_note=True, tags=tags
     )
 
 
