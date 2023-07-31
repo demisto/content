@@ -75,7 +75,7 @@ def test_module(dfir_iris):
             return 'ok'
         else:
             if response.status_code == 401:
-                return 'Authorization Error: make sure API Key is correctly set'
+                raise DemistoException('Authorization Error: make sure API Key is correctly set')
             else:
                 return f'Not able to connect to {dfir_iris.api_endpoint}'
 
