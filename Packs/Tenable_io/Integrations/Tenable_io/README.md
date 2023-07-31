@@ -1371,10 +1371,8 @@ Lists the filtering, sorting, and pagination capabilities available for scan rec
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of results to return. If "allResults" is defined, this argument is ignored. Default is 50. | Optional | 
-| allResults |  Whether to retrieve all results. If true, the "limit" argument will be ignored. Possible values are: true, false. Default is false. | Optional | 
+---
+There are no inputs for this command.
 
 #### Context Output
 
@@ -1389,7 +1387,7 @@ Lists the filtering, sorting, and pagination capabilities available for scan rec
 | TenableIO.ScanFilter.group_name | String | The group name associated with the scan filter. | 
 
 #### Command example
-```!tenable-io-list-scan-filters limit=2```
+```!tenable-io-list-scan-filters```
 #### Context Example
 ```json
 {

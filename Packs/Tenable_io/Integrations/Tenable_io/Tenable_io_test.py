@@ -525,7 +525,7 @@ def test_list_scan_filters_command(mocker):
     request = mocker.patch.object(BaseClient, '_http_request', return_value=test_data['response_json'])
     mock_demisto(mocker)
 
-    results = list_scan_filters_command(test_data['args'], MOCK_CLIENT)
+    results = list_scan_filters_command(MOCK_CLIENT)
 
     assert results.outputs == test_data['outputs']
     assert results.readable_output == test_data['readable_output']

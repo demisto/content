@@ -1170,15 +1170,10 @@ def scan_filters_human_readable(filters: list) -> str:
         removeNull=True)
 
 
-def list_scan_filters_command(args: dict[str, Any], client: Client) -> CommandResults:
+def list_scan_filters_command(client: Client) -> CommandResults:
 
     response_dict = client.list_scan_filters()
     filters = response_dict.get('filters', [])
-
-    if not argToBoolean(args['allResults']):
-        limit = arg_to_number(
-            args['limit'], arg_name='limit', required=True)
-        filters = filters[:limit]
 
     return CommandResults(
         outputs_prefix='TenableIO.ScanFilter',
@@ -1406,7 +1401,7 @@ def main():  # pragma: no cover
     elif command == 'tenable-io-export-vulnerabilities':
         return_results(export_vulnerabilities_command(args))
     elif command == 'tenable-io-list-scan-filters':
-        return_results(list_scan_filters_command(args, client))
+        return_results(list_scan_filters_command(client))
     elif command == 'tenable-io-get-scan-history':
         return_results(get_scan_history_command(args, client))
     elif command == 'tenable-io-export-scan':
