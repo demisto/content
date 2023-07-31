@@ -1156,9 +1156,9 @@ def get_waf_assessment_status_command(client: Client, assessment_id: str) -> Com
 
 def start_immediate_threat_assessment_command(client: Client, template_id: str,
                                               browsing_address: str = "",
-                                              browsing_Address_ProfileName : str ="",
+                                              browsing_address_profile_name : str ="",
                                               mail_address: str = "",
-                                              edr_Address_ProfileName: str = "",
+                                              edr_address_profile_name: str = "",
                                               edr_address: str = "") -> CommandResults:
     """Start a new immediate threats assessment.
 
@@ -1166,9 +1166,9 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the assessment with.
         browsing_address (str): Browsing address.
-        browsing_Address_ProfileName (str): browsing Agent profile name (Optional - required on SBA only)
+        browsing_address_profile_name (str): browsing Agent profile name (Optional - required on SBA only)
         mail_address (str): Agent email address.
-        edr_Address_ProfileName (str): EDR Agent profile name (Optional - required on SBA only)
+        edr_address_profile_name (str): EDR Agent profile name (Optional - required on SBA only)
         edr_address (str): EDR Agent address.
 
     Returns:
@@ -1183,8 +1183,8 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
         'templateID': template_id,
         'mailAddress': mail_address,
         'browsingAddress': browsing_address,
-        'browsingAddressProfileName': browsing_Address_ProfileName,
-        'edrAddressProfileName': edr_Address_ProfileName,
+        'browsingAddressProfileName': browsing_address_profile_name,
+        'edrAddressProfileName': edr_address_profile_name,
         'edrAddress': edr_address
     }
 

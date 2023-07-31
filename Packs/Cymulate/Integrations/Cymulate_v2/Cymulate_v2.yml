@@ -349,13 +349,13 @@ script:
     - description: Browsing address
       name: browsing_address
     - description: Browsing Agent profile name to run the assessment with.
-      name: browsing_Address_ProfileName
+      name: browsing_address_profile_name
     - description: Agent email address.
       name: mail_address
     - description: EDR address
       name: edr_address
     - description: EDR Agent profile name to run the assessment with.
-      name: edr_Address_ProfileName
+      name: edr_address_profile_name
     - description: The ID of the template to run the immediate threat assessment with. Can be retrieved using Cymulate's UI.
       name: template_id
       required: true
