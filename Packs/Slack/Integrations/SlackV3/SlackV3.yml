@@ -1,11 +1,4 @@
-<<<<<<< HEAD
 category: Messaging
-=======
-sectionOrder:
-- Connect
-- Collect
-category: Messaging and Conferencing
->>>>>>> origin/master
 commonfields:
   id: SlackV3
   version: -1
@@ -14,7 +7,6 @@ configuration:
   displaypassword: Bot Token
   hiddenusername: true
   name: bot_token
-<<<<<<< HEAD
   required: false
   type: 9
 - display: ""
@@ -23,28 +15,9 @@ configuration:
   name: app_token
   required: false
   type: 9
-=======
-  type: 9
-  hiddenusername: true
-  section: Connect
-  required: false
-- display: ''
-  displaypassword: App Token
-  name: app_token
-  type: 9
-  hiddenusername: true
-  section: Connect
-  required: false
->>>>>>> origin/master
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   type: 0
-<<<<<<< HEAD
-=======
-  section: Connect
-  advanced: true
-  required: false
->>>>>>> origin/master
 - defaultvalue: Low
   display: Minimum incident severity by which to send messages to Slack
   name: min_severity
@@ -55,17 +28,8 @@ configuration:
   - High
   - Critical
   type: 15
-<<<<<<< HEAD
 - display: Types of Notifications to Send.
   name: permitted_notifications
-=======
-  section: Collect
-  advanced: true
-  required: false
-- display: Types of Notifications to Send.
-  name: permitted_notifications
-  type: 16
->>>>>>> origin/master
   options:
   - incidentOpened
   - incidentChanged
@@ -75,140 +39,55 @@ configuration:
   - taskCompleted
   - incidentStatusChanged
   - failedFetchIncidents
-<<<<<<< HEAD
   required: false
   type: 16
-=======
-  - mentionNew
-  - mentionOld
-  section: Collect
-  advanced: true
-  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
-  required: false
->>>>>>> origin/master
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType
   type: 13
-<<<<<<< HEAD
-=======
-  section: Connect
-  required: false
->>>>>>> origin/master
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   type: 8
-<<<<<<< HEAD
 - additionalinfo: In some cases, events may not be processed fast enough. If you want to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted.
   defaultvalue: "true"
   display: Ignore event retries
-=======
-  section: Collect
-  advanced: true
-  required: false
-- display: Ignore event retries
->>>>>>> origin/master
   name: ignore_event_retries
   type: 8
-<<<<<<< HEAD
-=======
-  additionalinfo: In some cases, events may not be processed fast enough. If you want to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted.
-  defaultvalue: 'true'
-  section: Collect
-  advanced: true
-  required: false
->>>>>>> origin/master
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-<<<<<<< HEAD
-=======
-  section: Connect
-  advanced: true
-  required: false
->>>>>>> origin/master
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
-<<<<<<< HEAD
 - defaultvalue: "true"
-=======
-  section: Connect
-  advanced: true
-  required: false
-- defaultvalue: 'true'
->>>>>>> origin/master
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
-<<<<<<< HEAD
 - additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
   defaultvalue: "true"
-=======
-  section: Collect
-  required: false
-- defaultvalue: 'true'
->>>>>>> origin/master
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
-<<<<<<< HEAD
-=======
-  additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
-  section: Connect
-  advanced: true
-  required: false
->>>>>>> origin/master
 - defaultvalue: Cortex XSOAR
   display: Bot display name in Slack
   name: bot_name
   type: 0
-<<<<<<< HEAD
-=======
-  section: Connect
-  advanced: true
-  required: false
->>>>>>> origin/master
 - defaultvalue: https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png
   display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   type: 0
-<<<<<<< HEAD
 - defaultvalue: "60"
-=======
-  section: Connect
-  advanced: true
-  required: false
-- defaultvalue: '60'
->>>>>>> origin/master
   display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
   type: 0
-<<<<<<< HEAD
 - defaultvalue: "200"
   display: Number of objects to return in each paginated call
-=======
-  section: Connect
-  advanced: true
-  required: false
-- display: Number of objects to return in each paginated call
->>>>>>> origin/master
   name: paginated_count
   type: 0
-<<<<<<< HEAD
 - additionalinfo: Only supported in Cortex XSOAR V6.1 and above.
   display: Comma-separated list of tags to filter the messages sent from Cortex XSOAR.
   name: filtered_tags
-=======
-  defaultvalue: '200'
-  section: Collect
-  advanced: true
->>>>>>> origin/master
   required: false
 - display: Comma-separated list of tags to filter the messages sent from Cortex XSOAR.
   name: filtered_tags
   type: 0
-<<<<<<< HEAD
 - additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
   display: ""
   displaypassword: XSOAR API Key
@@ -219,25 +98,10 @@ configuration:
 - defaultvalue: "false"
   display: Enable DMs to the bot
   name: enable_dm
-=======
-  additionalinfo: Only supported in Cortex XSOAR V6.1 and above.
-  section: Collect
-  advanced: true
-  required: false
-- display: ''
-  displaypassword: XSOAR API Key
-  name: demisto_api_key
-  type: 9
-  hiddenusername: true
-  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
-  section: Connect
-  advanced: true
->>>>>>> origin/master
   required: false
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
-<<<<<<< HEAD
 - additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
   defaultvalue: "false"
   display: Disable Caching of Users and Channels
@@ -255,35 +119,6 @@ configuration:
   name: common_channels
   required: false
   type: 12
-=======
-  defaultvalue: 'false'
-  section: Collect
-  advanced: true
-  required: false
-- display: Disable Caching of Users and Channels
-  name: disable_caching
-  type: 8
-  additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
-  defaultvalue: 'false'
-  section: Collect
-  advanced: true
-  required: false
-- display: Extensive Logging
-  name: extensive_logging
-  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
-  type: 8
-  defaultvalue: 'false'
-  section: Connect
-  advanced: true
-  required: false
-- display: Common Channels
-  name: common_channels
-  type: 12
-  additionalinfo: For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID.
-  section: Collect
-  advanced: true
-  required: false
->>>>>>> origin/master
 description: Send messages and notifications to your Slack team.
 display: Slack v3
 name: SlackV3
@@ -300,21 +135,12 @@ script:
       - chat
       - none
     - auto: PREDEFINED
-<<<<<<< HEAD
       defaultValue: "true"
       description: Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true".
       name: autoclose
       predefined:
       - "true"
       - "false"
-=======
-      defaultValue: 'true'
-      description: Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true".
-      name: autoclose
-      predefined:
-      - 'true'
-      - 'false'
->>>>>>> origin/master
     - auto: PREDEFINED
       defaultValue: Both
       description: The mirroring direction.
@@ -335,7 +161,6 @@ script:
     - description: The topic of the channel.
       name: channelTopic
     - auto: PREDEFINED
-<<<<<<< HEAD
       defaultValue: "false"
       description: Whether to remove the Slack administrator (channel creator) from the mirrored channel.
       name: kickAdmin
@@ -349,21 +174,6 @@ script:
       predefined:
       - "true"
       - "false"
-=======
-      defaultValue: 'false'
-      description: Whether to remove the Slack administrator (channel creator) from the mirrored channel.
-      name: kickAdmin
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: Whether the mirrored channel should be private or not (true by default).
-      name: private
-      predefined:
-      - 'true'
-      - 'false'
->>>>>>> origin/master
     description: Mirrors the investigation between Slack and the Cortex XSOAR War Room.
     name: mirror-investigation
   - arguments:
@@ -379,21 +189,12 @@ script:
     - description: An entry ID to send as a link.
       name: entry
     - auto: PREDEFINED
-<<<<<<< HEAD
       defaultValue: "false"
       description: Whether to include a URL to the relevant component in Cortex XSOAR.
       name: ignoreAddURL
       predefined:
       - "true"
       - "false"
-=======
-      defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Cortex XSOAR.
-      name: ignoreAddURL
-      predefined:
-      - 'true'
-      - 'false'
->>>>>>> origin/master
     - description: The ID of the thread to which to reply. Can be retrieved from a previous send-notification command.
       name: threadID
     - description: A JSON string of Slack blocks to send in the message.
@@ -464,10 +265,6 @@ script:
     - contextPath: Slack.Channel.Name
       description: The name of the channel.
       type: String
-<<<<<<< HEAD
-=======
-    name: slack-create-channel
->>>>>>> origin/master
   - arguments:
     - default: true
       description: 'A CSV list of usernames or email addresses to invite to join the channel. For example: "user1, user2...".'
@@ -524,12 +321,8 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-<<<<<<< HEAD
   - arguments: []
     description: Returns the integration context as a file. Use this command for debug purposes only.
-=======
-  - description: Returns the integration context as a file. Use this command for debug purposes only.
->>>>>>> origin/master
     hidden: true
     name: slack-get-integration-context
   - arguments:
@@ -554,13 +347,8 @@ script:
       name: message
     - description: A JSON string of the block to send.
       name: blocks
-<<<<<<< HEAD
     - description: Whether to include a URL to the relevant component in XSOAR. Can be "true" or "false". Default value is "false".
       name: ignore_add_url
-=======
-    - name: ignore_add_url
-      description: Whether to include a URL to the relevant component in XSOAR. Can be "true" or "false". Default value is "false".
->>>>>>> origin/master
     description: Edit an existing Slack message.
     name: slack-edit-message
     outputs:
@@ -573,7 +361,6 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-<<<<<<< HEAD
   - arguments:
     - description: 'Supply this argument to only return channels with this name '
       name: name_filter
@@ -621,9 +408,6 @@ script:
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
   dockerimage: demisto/slackv3:1.0.0.48936
-=======
-  dockerimage: demisto/slackv3:1.0.0.63762
->>>>>>> origin/master
   longRunning: true
   runonce: false
   script: ''
