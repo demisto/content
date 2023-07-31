@@ -186,7 +186,7 @@ def get_pack_dependencies(client: demisto_client,
                     raise Exception("Failed to perform http request for pack {pack_id} dependencies to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to search for pack dependencies: {pack_id}, Sleeping for {sleep_interval} seconds.")
+            logging.debug(f"failed to search for pack dependencies: {pack_id}. Sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
     except Exception as e:
         logging.exception(f'The request to search for pack: {pack_id} dependencies has failed. Additional info: {str(e)}')
@@ -251,7 +251,7 @@ def search_pack(client: demisto_client,
                     raise Exception("Failed to perform http request to search pack {pack_id} to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to search for pack: {pack_display_name} With ID: {pack_id}, "
+            logging.debug(f"failed to search for pack: {pack_display_name} With ID: {pack_id}. "
                           f"Sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
     except Exception as e:
@@ -438,7 +438,7 @@ def install_packs(client: demisto_client,
                     raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
+            logging.debug(f"failed to install packs: {packs_to_install}. Sleeping for {sleep_interval} seconds.")
             sleep(sleep_interval)
     except Exception as e:
         logging.exception(f'The request to install packs: {packs_to_install} has failed. Additional info: {str(e)}')
@@ -500,19 +500,18 @@ def search_pack_and_its_dependencies(client: demisto_client,
                 else:
                     current_packs_to_install.append(dependency)
 
-        lock.acquire()
-        if one_pack_and_its_dependencies_in_batch:
-            pack_and_its_dependencies = \
-                {p['id']: p for p in current_packs_to_install if p['id'] not in packs_in_the_list_to_install}
-            if pack_and_its_dependencies:
-                packs_in_the_list_to_install += pack_and_its_dependencies
-                batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))  # type:ignore[union-attr]
-        else:
-            for pack in current_packs_to_install:
-                if pack['id'] not in packs_to_install:
-                    packs_to_install.append(pack['id'])
-                    installation_request_body.append(pack)
-        lock.release()
+        with lock:
+            if one_pack_and_its_dependencies_in_batch:
+                pack_and_its_dependencies = \
+                    {p['id']: p for p in current_packs_to_install if p['id'] not in packs_in_the_list_to_install}
+                if pack_and_its_dependencies:
+                    packs_in_the_list_to_install += pack_and_its_dependencies
+                    batch_packs_install_request_body.append(list(pack_and_its_dependencies.values()))  # type:ignore[union-attr]
+            else:
+                for pack in current_packs_to_install:
+                    if pack['id'] not in packs_to_install:
+                        packs_to_install.append(pack['id'])
+                        installation_request_body.append(pack)
 
 
 def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> str:
