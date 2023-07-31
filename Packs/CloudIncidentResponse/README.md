@@ -27,4 +27,22 @@ As part of this pack, you will also get an out-of-the-box layout to facilitate a
 
 For XSIAM, the playbooks are also included in the "Playbook Recommendation".
 
-![Cloud Token Theft Response](doc_files/Cloud_Token_Theft_Response.png)
+## Supported Use Cases
+
+### Cortex XSIAM Playbooks
+
+[Cloud Token Theft](https://xsoar.pan.dev/docs/reference/playbooks/cloud-token-theft-response)
+
+[Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/x-cloud-cryptomining)
+
+### Cortex XSOAR Playbooks
+
+[Cortex XDR - Cloud Token Theft](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---x-cloud-token-theft-response)
+
+[Cortex XDR - Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-cryptomining)
+
+### Investigative Playbooks
+
+[Cloud Threat Hunting - Persistence](https://xsoar.pan.dev/docs/reference/playbooks/cloud-threat-hunting---persistence)
+
+![Cloud Incident Response](doc_files/Cloud_Incident_Response.png)
