@@ -445,7 +445,7 @@ script:
       predefined:
       - ip
       - domain
-      - hash
+      - sha1
       required: true
       default: false
       isArray: false
