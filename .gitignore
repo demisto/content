@@ -93,7 +93,7 @@ test_runner.sh
 # log files
 demisto_sdk_debug.log
 demisto_sdk_debug.log.*
-extract_test_conf.log
+*.log
 
 # Ignore Modeling Rules test conf
 Packs/**/ModelingRules/**/**/*_testdata.json
