@@ -12,7 +12,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '2.4.1'
+__version__ = '2.4.2'
 
 
 # === === === === === === === === === === === === === === ===
@@ -156,6 +156,42 @@ class Client(BaseClient):
             timeout=60,
         )
 
+    def _key_extraction(self, data, keys_to_keep):
+        return {key: data[key] for key in set(data.keys()) & keys_to_keep}
+
+    def _clean_calling_context(self, calling_context):
+        calling_context_keys_to_keep = {"args", "command", "params", "context"}
+        context_keys_to_keep = {
+            "Incidents",
+            "IntegrationInstance",
+            "ParentEntry"
+        }
+        incidents_keys_to_keep = {
+            "name",
+            "type",
+            "id"
+        }
+        parent_entry_keys_to_keep = {
+            "entryTask",
+            "scheduled",
+            "recurrent"
+        }
+
+        if context := calling_context.get("context", None):
+            context = self._key_extraction(context, context_keys_to_keep)
+
+            if incidents := context.get("Incidents", {}):
+                incidents = [self._key_extraction(incident, incidents_keys_to_keep) for incident in incidents]
+                context["Incidents"] = incidents
+
+            if parent_entry := context.get("ParentEntry", {}):
+                parent_entry = self._key_extraction(parent_entry, parent_entry_keys_to_keep)
+                context["ParentEntry"] = parent_entry
+            calling_context["context"] = context
+
+        calling_context = self._key_extraction(calling_context, calling_context_keys_to_keep)
+        return calling_context
+
     def _get_writeback_data(self):
 
         if (
@@ -164,6 +200,7 @@ class Client(BaseClient):
         ):
             calling_context = copy.deepcopy(demisto.callingContext)
             calling_context.get('context', dict()).pop('ExecutionContext', None)
+            calling_context = self._clean_calling_context(calling_context)
             return calling_context
 
         return None

@@ -13,7 +13,7 @@ stages:
 
 
 include:
-  - local: .gitlab/ci/global.yml
+  - local: .gitlab/ci/.gitlab-ci.global.yml
 
 
 slack-notify:
