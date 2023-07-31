@@ -12,6 +12,12 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Port. If not specified, the default port is 389, or 636 for LDAPS.
+  name: port
+  defaultvalue: ""
+  type: 0
+  section: Connect
+  advanced: true
 - display: Username
   name: credentials
   type: 9
