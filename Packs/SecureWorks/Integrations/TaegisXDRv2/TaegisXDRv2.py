@@ -84,6 +84,8 @@ SHARELINK_TYPES = set((
 ))
 
 DEFAULT_FIRST_FETCH_INTERVAL = "1 day"
+
+
 """ CLIENT """
 
 
@@ -808,7 +810,7 @@ def fetch_incidents(
     fetch_type: str = "investigations",
     max_fetch: int = 15,
     include_assets: bool = True,
-    first_fetch_interval: str
+    first_fetch_interval: str = DEFAULT_FIRST_FETCH_INTERVAL,
 ):
     """
     Fetch Taegis Investigations or Alerts for the use with "Fetch Incidents"
@@ -822,7 +824,7 @@ def fetch_incidents(
     last_run = demisto.getLastRun()
     demisto.debug(f"Last Fetch Incident Run: {last_run}")
     now = datetime.now()
-    start_time = str(dateparser.parser(first_fetch_interval))  # Default start if first ever run
+    start_time = str(dateparser.parse(first_fetch_interval))  # Default start if first ever run
     if last_run and "start_time" in last_run:
         start_time = last_run.get("start_time")
 
@@ -1745,10 +1747,10 @@ def main():
             commands[command](
                 client=client,
                 env=environment,
-                first_fetch_interval=PARAMS.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL)
                 fetch_type=PARAMS.get("fetch_type"),
                 max_fetch=PARAMS.get("max_fetch"),
-                include_assets=PARAMS.get("include_assets")
+                include_assets=PARAMS.get("include_assets"),
+                first_fetch_interval=PARAMS.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL),
             )
         else:
             return_results(commands[command](client=client, env=environment, args=ARGS))
