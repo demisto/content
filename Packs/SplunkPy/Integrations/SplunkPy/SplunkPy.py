@@ -1351,10 +1351,12 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
 
         changed_data: dict[str, Any] = {field: None for field in OUTGOING_MIRRORED_FIELDS}
         for field in delta:
-            if field == 'owner':
+            if field == 'owner' and params.get('userMapping', False):
                 new_owner = mapper.get_splunk_user_by_xsoar(delta["owner"]) if mapper.should_map else None
                 if new_owner:
                     changed_data['owner'] = new_owner
+                else:
+                    demisto.error(f'New owner was not found while userMapping is enabled. Delta is {delta}')
             elif field in OUTGOING_MIRRORED_FIELDS:
                 changed_data[field] = delta[field]
 
