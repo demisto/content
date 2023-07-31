@@ -13,12 +13,10 @@ Open your Aruba ClearPass UI and follow these instructions:
 4. Click **Save**.
 
 ### Adding a Syslog Export Filter 
-2. From the **Syslog Export Filters** page, click **Add**.
-
+* ***[Product Documentation](https://www.arubanetworks.com/techdocs/ClearPass/6.8/PolicyManager/Content/CPPM_UserGuide/Admin/syslogExportFilters_add_syslog_filter_general.htm)***
 1. Navigate to **Administration** > **External Servers** > **Syslog Export Filters**.
-2. From the **Syslog Export Filters** page, click Add.
-   * Under **Export Event Format Type**, choose **Comma Event Format (CEF)**.
-
+2. From the **Syslog Export Filters** page, click **Add**.
+   * Under **Export Event Format Type**, choose the **Comma Event Format (CEF)**.
    * Under **Syslog Servers**, choose the relevant server config for XSIAM.
 3. Save your filter.
 
