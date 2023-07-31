@@ -101,6 +101,5 @@ def test_generate_password_zero_inputs(
         'min_symbols': min_symbols,
         'max_symbols': max_symbols,
     }
-    with pytest.raises(DemistoException) as e:
+    with pytest.raises(DemistoException, match=exception) as e:
         generate_password(args)
-    assert exception in str(e)
