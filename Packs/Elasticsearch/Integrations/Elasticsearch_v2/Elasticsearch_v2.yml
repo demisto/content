@@ -12,7 +12,7 @@ configuration:
   type: 0
   additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200.
   section: Connect
-- additionalinfo: Provide Username + Passoword instead of API key + API ID
+- additionalinfo: Provide Username + Password instead of API key + API ID
   display: Username for server login
   name: credentials
   type: 9
