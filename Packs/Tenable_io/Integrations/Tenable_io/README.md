@@ -1467,7 +1467,7 @@ Lists the individual runs of the specified scan.
 | TenableIO.ScanHistory.time_end | Number | The end time of the scan. | 
 | TenableIO.ScanHistory.scan_uuid | String | The UUID (Universally Unique Identifier) of the scan. | 
 | TenableIO.ScanHistory.id | Number | The ID of the scan history. | 
-| TenableIO.ScanHistory.is_archived | Boolean | Indicates whether the scan history is archived or not. | 
+| TenableIO.ScanHistory.is_archived | Boolean | Indicates whether the scan is archived or not. | 
 | TenableIO.ScanHistory.time_start | Number | The start time of the scan. | 
 | TenableIO.ScanHistory.visibility | String | The visibility of the scan. | 
 | TenableIO.ScanHistory.targets.custom | Boolean | Indicates whether custom targets were used in the scan. | 
