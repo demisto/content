@@ -42,6 +42,7 @@ jobs:
       run: |
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
+        source .venv/bin/activate
         demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
 
     - name: Create pull request
