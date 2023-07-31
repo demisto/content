@@ -1,4 +1,4 @@
 {
 	"breakingChanges": true,
-	"breakingChangesNotes": "When supplying a comma-separated list of domains or IPs to the `domain`,`ip` and `whois` commands, and one of the domains/IPs is invalid, the command will return results for the valid domains/IPs in addition to the error entry for the invalid domains/IPs"
+	"breakingChangesNotes": "As opposed to before where the Whois integration failed to finish analyzing a list of inputs if given one invalid domain/IP, the integration now returns a combination of both success results and errors "
 }

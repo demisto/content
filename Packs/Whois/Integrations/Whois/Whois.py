@@ -7247,14 +7247,15 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
         request_domain = domain
     # The following loop handles errno 104 - "connection reset by peer" by retry whois_request with the same arguments.
     # If the request fails due to other cause - there will not be another try
-    for attempt in range(3):
-        demisto.debug(f"Attempt {attempt} to get response for whois '{domain}' from '{target_server}'...")
+    attempts = 3
+    for attempt in range(attempts):
+        demisto.debug(f"Attempt {attempt}/{attempts} to get response for whois '{domain}' from '{target_server}'...")
         response = whois_request_get_response(request_domain, target_server)
         response_size = len(response.encode('utf-8'))
         demisto.debug(f"Response byte size: {response_size}")
 
         if response_size > 0:
-            demisto.debug(f"Response received for domain '{domain}' on {attempt} attempt")
+            demisto.debug(f"Response received for domain '{domain}' after {attempt} attempt(s)")
             break
 
     if not response:
@@ -8348,7 +8349,7 @@ def get_domain_from_query(query):
             domain = query[suffixless_query.rindex(".") + 1:]
         return domain
     except Exception:
-        demisto.error(f"Error parsing domain from query '{query}'...")
+        demisto.error(f"Error parsing domain from query '{query}'.")
         raise WhoisInvalidDomain(f"Can't parse domain from query '{query}'")
 
 
@@ -8512,7 +8513,7 @@ def ip_command(ips: str, reliability: str, rate_limit_retry_count: int, rate_lim
 
     Args:
         - `ips` (``str``): Comma-separated list of IPs to perform the RDAP lookup for.
-        - `reliability` (``DBotScoreReliability``): RDAP lookup source reliability.
+        - `reliability` (``str``): RDAP lookup source reliability.
         - `rate_limit_retry_count` (``int``): Number of retries in case a rate limit error is encountered.
         - `rate_limit_wait_seconds` (``int``): Number of seconds between retries in case a rate limit error is encountered.
         - `should_error` (``bool``): Whether to return an error entry if the lookup fails.
@@ -8572,7 +8573,7 @@ def ip_command(ips: str, reliability: str, rate_limit_retry_count: int, rate_lim
 
             output = {
                 'query': ip,
-                'raw': f"Query failed for {ip}: {e.__class__.__name__} {e}"
+                'raw': f"Query failed for {ip}: {e.__class__.__name__}, {e}"
             }
 
             execution = increment_metric(
@@ -8650,8 +8651,7 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             results.append(result)
 
         except Exception as e:
-            demisto.error(f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}'")
-
+            demisto.error(f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
@@ -8670,14 +8670,14 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             if should_error:
                 results.append(CommandResults(
                     outputs=output,
-                    readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.ERROR,
                     raw_response=str(e)
                 ))
             else:
                 results.append(CommandResults(
                     outputs=output,
-                    readable_output=f"{e.__class__.__name__} caught performing whois lookup with domain '{domain}': {e}",
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
                     entry_type=EntryType.WARNING,
                     raw_response=str(e)
                 ))
@@ -8759,29 +8759,26 @@ def main():
                 should_error=should_error
             )
 
-            results.extend(cmd_res)
+            results = cmd_res
 
         else:
             org_socket = socket.socket
             setup_proxy()
             if command == 'test-module':
                 results = test_command()
-            elif command == 'whois':
-                results.extend(whois_command(
-                    reliability=reliability,
-                    query=args.get("query"),  # type: ignore
-                    is_recursive=argToBoolean(args.get("recursive", 'false')),
-                    verbose=argToBoolean(args.get('verbose', 'false')),
-                    should_error=should_error
-                ))
+            elif command == 'whois' or command == "domain":
 
-            elif command == 'domain':
-                results.extend(whois_command(
+                is_recursive = argToBoolean(args.get("recursive", 'false'))
+                domain_to_query = args.get('domain')
+                verbose = argToBoolean(args.get('verbose', 'false'))
+
+                results = whois_command(
                     reliability=reliability,
-                    query=args.get('domain'),  # type: ignore
-                    is_recursive=argToBoolean(args.get("recursive", 'false')),
-                    should_error=should_error,
-                ))
+                    query=domain_to_query,  # type: ignore
+                    is_recursive=is_recursive,
+                    verbose=verbose,
+                    should_error=should_error
+                )
 
         return_results(results)
     except Exception as e:
