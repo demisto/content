@@ -21,6 +21,7 @@ from gevent.server import StreamServer
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from uvicorn.logging import AccessFormatter
 from urllib.parse import urlparse
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -426,7 +427,7 @@ class Client(BaseClient):
         """
         Check for last token generation and generate new token
         """
-        context_info = get_integration_context()
+        context_info = demisto.getIntegrationContext()
         if "tokenDetails" in context_info:
             self.access_token = context_info.get("tokenDetails", {}).get("accessToken")
             self.access_token_last_generation = context_info.get(
@@ -455,7 +456,6 @@ class Client(BaseClient):
         Generate access token from API token
         """
         new_access_token = None
-        current_token_dict = {}
         auth_token = "QSDK " + api_token
         self.qsdk_token = auth_token
         current_epoch = int(datetime.now().timestamp())
@@ -476,9 +476,12 @@ class Client(BaseClient):
             self.access_token = str(new_access_token)
             self.qsdk_token = f"QSDK {str(new_access_token)}"
             self.access_token_last_generation = current_epoch
-            current_token_dict["accessToken"] = str(new_access_token)
-            current_token_dict["accessTokenGenerationTime"] = str(current_epoch)
-            set_integration_context({"tokenDetails": current_token_dict})
+            current_token_dict = demisto.getIntegrationContext()
+            current_token_dict.update({"tokenDetails": {
+                "accessToken": str(new_access_token),
+                "accessTokenGenerationTime": str(current_epoch)
+            }})
+            demisto.setIntegrationContext(current_token_dict)
 
         except KeyError as error:
             demisto.debug(f"Could not generate access token [{error}]")
@@ -1158,7 +1161,7 @@ def fetch_incidents(
     max_fetch = demisto.params().get("max_fetch")
 
     events = client.get_events_list(
-        {} if (last_run is None) else last_run, first_fetch_time, max_fetch
+        None if (last_run is None) else last_run, first_fetch_time, max_fetch
     )
 
     current_date = datetime.utcnow()
@@ -1169,7 +1172,7 @@ def fetch_incidents(
 
     if events is None:
         demisto.info("There are no events")
-        return {}, None
+        return {"lastRun": str(seconds_since_epoch)}, None
     domain = client.get_host()
 
     events = sorted(events, key=lambda d: d.get("timeSource"))
@@ -1178,7 +1181,7 @@ def fetch_incidents(
 
     for event in events:
         if event.get("eventCodeString") == "14:337":
-            lasttimestamp = {"last_fetch": str(event.get("timeSource"))}
+            lasttimestamp = {"lastRun": str(int(event.get("timeSource")) + 1)}
             event_id = event[
                 field_mapper(Constants.event_id, Constants.source_fetch_incidents)
             ]
@@ -1211,7 +1214,7 @@ def fetch_incidents(
             incident.update(det)  # type: ignore
             out.append(incident)
     if lasttimestamp is None:
-        lasttimestamp = {"last_fetch": str(seconds_since_epoch)}
+        lasttimestamp = {"lastRun": str(seconds_since_epoch)}
     return lasttimestamp, out
 
 
@@ -1401,21 +1404,19 @@ def main() -> None:
             return_results("ok")
         elif command == "fetch-incidents":
             last_fetch, out = fetch_incidents(
-                client, last_run=demisto.getLastRun().get('last_fetch'), first_fetch_time=first_fetch_time
+                client, last_run=demisto.getLastRun().get('lastRun'), first_fetch_time=first_fetch_time
             )
+            demisto.setLastRun(last_fetch)
             if (out is None) or len(out) == 0:
                 demisto.incidents([])
             else:
-                current_date = datetime.utcnow()
-                epoch = datetime(1970, 1, 1)
-                seconds_since_epoch = (current_date - epoch).total_seconds()
+                seconds_since_epoch = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S') // 1000
                 client.create_incident(
                     out,
                     datetime.fromtimestamp(seconds_since_epoch),
                     incident_type,
                     True,
                 )
-            demisto.setLastRun(last_fetch)
         elif command == "long-running-execution":
             try:
                 """certificate_path = ""
