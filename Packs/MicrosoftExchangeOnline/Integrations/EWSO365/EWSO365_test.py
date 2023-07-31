@@ -13,9 +13,9 @@ from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_email
                      get_expanded_group, get_searchable_mailboxes, handle_html,
                      handle_transient_files, parse_incident_from_item, parse_item_as_dict)
 
-with open("test_data/commands_outputs.json", "r") as f:
+with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
-with open("test_data/raw_responses.json", "r") as f:
+with open("test_data/raw_responses.json") as f:
     RAW_RESPONSES = json.load(f)
 
 
