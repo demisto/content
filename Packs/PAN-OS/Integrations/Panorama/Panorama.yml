@@ -2392,10 +2392,6 @@ script:
         The time the log was generated from the timestamp and prior to it.
         For example "2019/08/11 01:10:44", will bring log before the specified date.
       name: time-generated
-    - description: |-
-        The time the log was generated from the timestamp and prior to it.
-        For example "2019/08/11 01:10:44", will bring log after the specified date.
-      name: time-generated-after
     - description: The source address.
       isArray: true
       name: addr-src
@@ -5940,8 +5936,12 @@ script:
       name: query
     - description: |-
         The time the log was generated from the timestamp and prior to it.
-        For example "2019/08/11 01:10:44".
+        For example "2019/08/11 01:10:44, will bring log before the specified date.".
       name: time-generated
+    - description: |-
+        The time the log was generated from the timestamp and prior to it.
+        For example "2019/08/11 01:10:44", will bring log after the specified date.
+      name: time-generated-after
     - description: The source address.
       isArray: true
       name: addr-src
