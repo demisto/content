@@ -288,7 +288,6 @@ def http_request(uri: str, method: str, headers: dict = {},
     """
     Makes an API call with the given arguments
     """
-    print(params)
     result = requests.request(
         method,
         uri,
@@ -5325,7 +5324,6 @@ def panorama_query_logs_command(args: dict):
     zone_dst = args.get('zone-dst')
     time_generated = args.get('time-generated')
     time_generated_after = args.get('time-generated-after')
-    print(f'************{time_generated_after=}********************')
     action = args.get('action')
     port_dst = args.get('port-dst')
     rule = args.get('rule')
