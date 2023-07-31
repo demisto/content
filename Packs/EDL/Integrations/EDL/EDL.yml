@@ -82,6 +82,8 @@ configuration:
   type: 9
   section: Connect
   required: false
+  hidden:
+    - marketplacev2
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
