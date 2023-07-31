@@ -72,8 +72,8 @@ script:
       name: agent_name
       required: true
     - description: agent profile name to run simulation attacks.
-      name: agent_profile_name
-      required: false
+      name: agent_Profile_Name
+      required: true
     - auto: PREDEFINED
       description: whether to schedule the automated assessment periodically.
       name: schedule
@@ -218,8 +218,8 @@ script:
       name: agent_name
       required: true
     - description: agent profile name.
-      name: agent_profile_name
-      required: false
+      name: agent_Profile_Name
+      required: true
     - auto: PREDEFINED
       description: whether to schedule the automated assessment periodically.
       name: schedule
@@ -456,7 +456,7 @@ script:
       name: agent_name
       required: true
     - description: Agent profile name to run the assessment with.
-      name: agent_profile_name
+      name: agent_Profile_Name
       required: true
     - description: The ID of the template to run the lateral movement with. Can be retrieved using Cymulate's UI, or using cymulate-lateral-movement-template-list command.
       name: template_id
