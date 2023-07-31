@@ -24,7 +24,7 @@ def options_handler():
     parser.add_argument('--service_account', help='Path to gcloud service account.')
     parser.add_argument('--gcs_locks_path', help='Path to lock repo.')
     parser.add_argument('--ci_job_id', help='the job id.')
-    parser.add_argument('--test_machines', help='the json contains all available machines.')
+    parser.add_argument('--test_machines', help='comma separated string contains all available machines.')
     parser.add_argument('--gitlab_status_token', help='gitlab token to get the job status.')
     parser.add_argument('--response_machine', help='file to update the chosen machine.')
     parser.add_argument('--lock_machine_name', help='a machine name to lock the specific machine')
