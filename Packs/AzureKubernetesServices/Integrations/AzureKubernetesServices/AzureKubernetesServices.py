@@ -56,6 +56,7 @@ class AKSClient:
             auth_code=auth_code,
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-ks",
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
@@ -275,11 +276,6 @@ def test_connection(client: AKSClient) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-ks-auth-start** to start the authentication process.'
-
-
 @logger
 def test_module(client):
     """
@@ -298,6 +294,7 @@ def test_module(client):
     elif params.get('auth_type') == 'Azure Managed Identities':
         test_connection(client=client)
         return 'ok'
+    return None
 
 
 def main() -> None:  # pragma: no cover
