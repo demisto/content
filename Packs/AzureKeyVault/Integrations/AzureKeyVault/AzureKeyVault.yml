@@ -960,6 +960,10 @@ script:
       type: Unknown
     - contextPath: AzureKeyVault.ResourceGroup.properties.provisioningState
       description: Resource group provisioning state.
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-key-vault-auth-reset
   dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
