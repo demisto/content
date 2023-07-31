@@ -14,9 +14,9 @@ configuration:
   advanced: true
 - display: Username
   name: credentials
+  type: 9
   section: Connect
   required: true
-  type: 9
   displaypassword: Password
 - display: NTLM authentication
   name: ntlm
@@ -764,7 +764,8 @@ script:
       name: basedn
     description: Updates attributes of an existing Active Directory group.
     name: ad-update-group
-  - arguments:
+  - name: ad-modify-password-never-expire
+    arguments:
     - name: username
       required: true
       description: The sAMAccountName of the user to modify.
