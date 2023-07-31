@@ -2742,9 +2742,6 @@ def conversation_replies():
     channel_id = args.get('channel_id')
     thread_id = args.get('thread_id')
     limit = args.get('limit')
-    # channel_id = demisto.args()['channel_id']
-    # thread_id = demisto.args()['thread_id']
-    # limit = demisto.args().get('limit')
     if limit is None:
         limit = 100
     body = {
