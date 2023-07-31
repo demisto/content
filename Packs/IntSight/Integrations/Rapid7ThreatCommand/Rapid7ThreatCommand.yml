@@ -51,7 +51,7 @@ configuration:
   - Phishing
   - BrandSecurity
   - ExploitableData
-  - VIP
+  - vip
   type: 16
   required: false
 - display: Minimum Alert Severity Level
@@ -2055,7 +2055,7 @@ script:
       description: Domain updated date.
       type: String
     description: Checks the reputation of a domain.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: "-"
