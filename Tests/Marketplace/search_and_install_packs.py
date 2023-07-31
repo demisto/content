@@ -157,6 +157,8 @@ def get_pack_dependencies(client: demisto_client,
                     _request_timeout=None,
                     response_type='object'
                 )
+                logging.info(f"Got response {status_code} for getting pack:{pack_id} dependencies")
+
                 if 200 <= status_code < 300:
                     dependencies_data: list = []
                     dependants_ids = [pack_id]
@@ -181,7 +183,7 @@ def get_pack_dependencies(client: demisto_client,
                     raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
             except (HTTPError, HTTPWarning) as http_ex:
                 if not attempt:
-                    raise Exception("Failed to perform http request to the server") from http_ex
+                    raise Exception("Failed to perform http request for pack {pack_id} dependencies to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
             logging.debug(f"failed to search for pack dependencies: {pack_id}, Sleeping for {sleep_interval} seconds.")
@@ -216,7 +218,7 @@ def search_pack(client: demisto_client,
     try:
         for attempt in range(attempts_count - 1, -1, -1):
             try:
-                logging.info(f"Searching for pack:{pack_display_name} With ID:{pack_id}, "
+                logging.info(f"Searching for pack: {pack_id}, {pack_display_name}, "
                              f"Attempt: {attempts_count - attempt}/{attempts_count}")
                 response_data, status_code, headers = demisto_client.generic_request_func(client,
                                                                                           path=f'/contentpacks/marketplace/'
@@ -225,19 +227,20 @@ def search_pack(client: demisto_client,
                                                                                           accept='application/json',
                                                                                           _request_timeout=None,
                                                                                           response_type='object')
+                logging.info(f"Got response {status_code} for search of pack:{pack_id}, {pack_display_name}")
                 if 200 <= status_code < 300:
                     if response_data and response_data.get('currentVersion'):
-                        logging.debug(f"Found pack: {pack_display_name} by its ID: {pack_id} in bucket!")
+                        logging.debug(f"Found pack: {pack_id}, {pack_display_name} in bucket!")
                         return {
                             'id': response_data.get('id'),
                             'version': response_data.get('currentVersion'),
                         }
-                    raise Exception(f"Did not find pack: {pack_display_name} by its ID: {pack_id} in bucket.")
+                    raise Exception(f"Did not find pack: {pack_id}, {pack_display_name} in bucket.")
 
                 if not attempt:
                     raise Exception(f"Got bad status code: {status_code}, headers: {headers}")
 
-                logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
+                logging.warning(f"Got bad status code: {status_code}, headers:{headers}")
 
             except ApiException as ex:
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
@@ -245,7 +248,7 @@ def search_pack(client: demisto_client,
                     raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
             except (HTTPError, HTTPWarning) as http_ex:
                 if not attempt:
-                    raise Exception("Failed to perform http request to the server") from http_ex
+                    raise Exception("Failed to perform http request to search pack {pack_id} to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
             logging.debug(f"failed to search for pack: {pack_display_name} With ID: {pack_id}, "
