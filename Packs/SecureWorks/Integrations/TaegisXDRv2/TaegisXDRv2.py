@@ -807,7 +807,8 @@ def fetch_incidents(
     env: str,
     fetch_type: str = "investigations",
     max_fetch: int = 15,
-    include_assets: bool = True
+    include_assets: bool = True,
+    first_fetch_interval: str
 ):
     """
     Fetch Taegis Investigations or Alerts for the use with "Fetch Incidents"
