@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -130
+          "y": -140
         }
       }
     note: false
@@ -102,40 +102,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: LOLBAS Feed
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
       - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: inputs.ProcessName
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -353,10 +327,14 @@ tasks:
       string_A:
         complex:
           root: inputs.Commandline
+          transformers:
+          - operator: uniq
       string_B:
         complex:
           root: foundIndicators.commands
           accessor: command
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -382,10 +360,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1205,
+        "height": 1215,
         "width": 1140,
         "x": 460,
-        "y": -130
+        "y": -140
       }
     }
   }

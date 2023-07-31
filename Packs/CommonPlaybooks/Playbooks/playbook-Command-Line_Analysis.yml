@@ -174,7 +174,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": 1610
+          "y": 1780
         }
       }
     note: false
@@ -250,7 +250,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 1080
+          "y": 1250
         }
       }
     note: false
@@ -287,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1440
+          "y": 1610
         }
       }
     note: false
@@ -580,7 +580,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": 1240
+          "y": 1410
         }
       }
     note: false
@@ -747,7 +747,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1240
+          "y": 1410
         }
       }
     note: false
@@ -936,7 +936,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 1240
+          "y": 1410
         }
       }
     note: false
@@ -1076,7 +1076,7 @@ tasks:
       {
         "position": {
           "x": 1810,
-          "y": 1240
+          "y": 1410
         }
       }
     note: false
@@ -1219,7 +1219,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 1440
+          "y": 1610
         }
       }
     note: false
@@ -1256,7 +1256,7 @@ tasks:
       {
         "position": {
           "x": 1380,
-          "y": 1440
+          "y": 1610
         }
       }
     note: false
@@ -1293,7 +1293,7 @@ tasks:
       {
         "position": {
           "x": 1810,
-          "y": 1440
+          "y": 1610
         }
       }
     note: false
@@ -1381,7 +1381,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 1240
+          "y": 1410
         }
       }
     note: false
@@ -1418,7 +1418,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 1440
+          "y": 1610
         }
       }
     note: false
@@ -1565,7 +1565,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "38"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1608,6 +1608,19 @@ tasks:
         complex:
           root: inputs.ProcessImageName
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedProcessName
+                iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: \
           - operator: uniq
       StringSimilarityThreashold:
         complex:
@@ -1623,7 +1636,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 910
+          "y": 1080
         }
       }
     note: false
@@ -1665,7 +1678,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 1240
+          "y": 1410
         }
       }
     note: false
@@ -1702,7 +1715,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 1440
+          "y": 1610
         }
       }
     note: false
@@ -1712,6 +1725,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 3f5bbd3b-ade5-4f25-810b-93c3142d0c30
+    type: regular
+    task:
+      id: 3f5bbd3b-ade5-4f25-810b-93c3142d0c30
+      version: -1
+      name: Extract process name from commandline
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      contextKey:
+        simple: ExtractedProcessName
+      data:
+        complex:
+          root: inputs.Commandline
+      regex:
+        simple: \\([^\\"]+\.(?:exe))
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1728,7 +1782,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2815,
+        "height": 2985,
         "width": 2850,
         "x": 60,
         "y": -1140
@@ -1782,7 +1836,6 @@ outputs:
 tests:
 - No tests
 fromversion: 6.0.0
-system: true
 marketplaces:
   - xsoar
   - marketplacev2
