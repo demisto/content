@@ -3,7 +3,7 @@ import pytest
 from freezegun import freeze_time
 from CommonServerPython import *
 import json
-from Tenable_io import Client, HEADERS
+from Tenable_io import Client
 # mypy: disable-error-code="operator"
 
 MOCK_PARAMS = {
@@ -50,7 +50,6 @@ MOCK_CLIENT = Client(
     verify=True,
     proxy=True,
     ok_codes=(200,),
-    headers=HEADERS
 )
 
 
@@ -466,8 +465,8 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
             {
                 'sort': 'name:asc,date:asc,status:asc',
                 'exclude_rollover': False,
-                'limit': None,
-                'offset': None
+                'limit': 50,
+                'offset': 0
             }
         ),
         # Test case 3: Sorting by multiple fields in different orders
@@ -480,8 +479,8 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
             {
                 'sort': 'name:asc,date:desc,status:asc',
                 'exclude_rollover': False,
-                'limit': None,
-                'offset': None
+                'limit': 50,
+                'offset': 0
             }
         )
     ]
@@ -655,105 +654,35 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
 
 
 @pytest.mark.parametrize(
-    'paginate_args, args, embeder, expected_result, expected_call_count, fail_message',
+    'args, expected_result',
     (
         (
-            #  when limit is smaller than api_limit, call multiple times:
             {
-                "api_limit": 5,
+                'page': '10',
+                'pageSize': '5',
+                'limit': '50'
             },
             {
-                "limit": 23
-            },
-            "{}",
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
-            5,
-            "@paginate did not paginate five times"
+                'limit': 5,
+                'offset': 45
+            }
         ),
         (
-            #  when limit is an exact multiple than api_limit, call multiple times:
             {
-                "api_limit": 5,
+                'limit': '50',
+                'page': '23'
             },
             {
-                "limit": 20
-            },
-            "{}",
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
-            4,
-            "@paginate did not paginate four times"
-        ),
-        (
-            #  when keys_to_pages is provided, extract the pages:
-            {
-                "keys_to_pages": ('a', 'b'),
-            },
-            {
-                "limit": 10
-            },
-            "{{'a': {{'b': {} }} }}",
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-            1,
-            "@paginate did not extract the pages"
-        ),
-        (
-            # when page_size and page are in args, don't use limit and get pages in respect to page_start_index:
-            {
-                "api_limit": 1,
-                "page_start_index": 0,
-            },
-            {
-                "page": 10,
-                "page_size": 5,
-                "limit": 50
-            },
-            "{}",
-            [50, 51, 52, 53, 54],
-            1,
-            "@paginate used limit or did not use page_start_index"
-        ),
-        (
-            # mixed bag:
-            {
-                "limit_arg_name": 'any',
-                "page_arg_name": 'fake_page',
-                "page_size_arg_name": 'fake_page_size',
-                "api_limit": 5,
-                "keys_to_pages": 'a',
-                "page_start_index": 1
-            },
-            {
-                "fake_page": 10,
-                "fake_page_size": 5,
-                "limit": 50,
-                "page_size": 23
-            },
-            "{{'a': {} }}",
-            [45, 46, 47, 48, 49],
-            1,
-            "@paginate failed mixed bag"
+                'limit': '50',
+                'offset': 0
+            }
         )
     )
 )
-def test_paginate(paginate_args, args, embeder, expected_result, expected_call_count, fail_message):
+def test_scan_history_pagination_params(args, expected_result):
 
-    from Tenable_io import paginate
+    from Tenable_io import scan_history_pagination_params
 
-    call_count = 0
+    result = scan_history_pagination_params(args)
 
-    @paginate(**paginate_args)
-    def pagination_func(args):
-        nonlocal call_count
-        call_count += 1
-        limit = int(args['limit'])
-        offset = int(args['offset'])
-        return eval(embeder.format(  # noqa: PGH001
-            list(range(
-                offset,
-                limit + offset
-            ))))
-
-    result = pagination_func(args)
-
-    assert result == expected_result, fail_message
-    assert call_count == expected_call_count
+    assert result == expected_result

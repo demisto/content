@@ -8,7 +8,7 @@
         "filterSearchType": "or",
         "filterName": "host.id,plugin.attributes.bid",
         "filterQuality": "eq,neq",
-        "filterValue": ".*,(.[0-9]0-9)*",
+        "filterValue": "01234567-abcd-ef01-2345-6789abcdef01,NUMBER",
         "assetId": "10"
     },
     "response_json": {
@@ -22,8 +22,8 @@
         ],
         "kwargs": {
             "params": {
-                "historyId": "19540157",
-                "historyUuid": "f7eaad37-23bd-4aac-a979-baab0e9a465b"
+                "history_id": "19540157",
+                "history_uuid": "f7eaad37-23bd-4aac-a979-baab0e9a465b"
             },
             "json_data": {
                 "format": "html",
@@ -32,10 +32,10 @@
                 "asset_id": "10",
                 "filter.0.filter": "host.id",
                 "filter.0.quality": "eq",
-                "filter.0.value": ".*",
+                "filter.0.value": "01234567-abcd-ef01-2345-6789abcdef01",
                 "filter.1.filter": "plugin.attributes.bid",
                 "filter.1.quality": "neq",
-                "filter.1.value": "(.[0-9]0-9)*"
+                "filter.1.value": "NUMBER"
             }
         }
     }

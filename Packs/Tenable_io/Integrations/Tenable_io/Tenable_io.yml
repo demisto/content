@@ -1088,7 +1088,17 @@ script:
     - contextPath: TenableIO.Vulnerability.indexed
       description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
       type: Date
-  - arguments: []
+  - arguments:
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of results to return. If "pageSize" is defined, this argument is ignored.
+    - name: allResults
+      description: 'Whether to retrieve all results. If true, the "limit" argument will be ignored.'
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
     description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints/commands that support them.
     name: tenable-io-list-scan-filters
     outputs:

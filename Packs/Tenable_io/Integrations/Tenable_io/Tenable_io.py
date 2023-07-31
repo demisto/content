@@ -15,93 +15,6 @@ from requests.exceptions import HTTPError
 urllib3.disable_warnings()
 
 
-def paginate(
-        limit_arg_name='limit',
-        page_arg_name='page',
-        page_size_arg_name='page_size',
-        api_limit=None,
-        keys_to_pages=None,
-        page_start_index=1):
-    """
-    Decorator for paginating an API in a request function.
-
-    :param limit_arg_name: The argument name in demisto.args() that specifies the number of results requested by the user.
-                           Will be ignored if both "page" and "page_size" are defined. Default is 'limit'.
-    :type limit_arg_name: str
-
-    :param page_arg_name: The argument name in demisto.args() that specifies the current page number. Default is 'page'.
-    :type page_arg_name: str
-
-    :param page_size_arg_name: The argument name in demisto.args() that specifies the size of each page. Default is 'page_size'.
-    :type page_size_arg_name: str
-
-    :param api_limit: The maximum limit supported by the API for a single request. Used only with "limit" when "page" and
-                      "page_size" are not defined. Use None if there is no API limit. Default is None.
-    :type api_limit: int | None
-
-    :param keys_to_pages: Key(s) to access the paginated data within the response dictionary. When the data is nested in multiple
-                          dictionaries, use a list of keys as a path to the data. The function will return the combined pages
-                          without surrounding dictionaries. Default is None.
-    :type keys_to_pages: Iterable | str | None
-
-    :param page_start_index: The starting page index. Default is 1.
-    :type page_start_index: int
-    """
-    def dec(func):
-        def inner(args, *arguments, **kwargs):
-            """
-            Inserts the keys "limit" and "offset" to args according to the page, page_size and limit in args.
-
-            Args:
-                args (dict): Command arguments (demisto.args()).
-                *arguments: Any additional arguments to the request function.
-                **kwargs: Additional keyword arguments to the request function.
-            """
-
-            keys = (
-                [keys_to_pages]
-                if isinstance(keys_to_pages, str)
-                # Could be None or iterable
-                else keys_to_pages or [])
-
-            def get_page(**page_args):
-                return dict_safe_get(
-                    func(args | page_args, *arguments, **kwargs),
-                    keys, return_type=list)
-
-            pages: list[Any] = []
-
-            page = arg_to_number(args.get(page_arg_name))
-            page_size = arg_to_number(args.get(page_size_arg_name))
-            if isinstance(page, int) and isinstance(page_size, int):
-                limit = page_size
-                offset = (page - page_start_index) * page_size
-
-            else:
-                limit = int(args[limit_arg_name])
-                offset = 0
-
-                if api_limit:
-                    for offset in range(0, limit - api_limit, api_limit):
-                        pages += get_page(
-                            limit=api_limit,
-                            offset=offset)
-
-                    # the remaining call can be less than OR equal the api_limit but not empty
-                    limit = limit % api_limit or api_limit
-                    offset += api_limit
-
-            pages += get_page(
-                limit=limit,
-                offset=offset)
-
-            return pages
-
-        return inner
-
-    return dec
-
-
 FIELD_NAMES_MAP = {
     'ScanType': 'Type',
     'ScanStart': 'StartTime',
@@ -277,13 +190,6 @@ class Client(BaseClient):
                 'GET', f'scans/{scan_id}/export/{file_id}/download',
                 resp_type='content'),
             EntryType.ENTRY_INFO_FILE)
-
-
-def sub_dict(d: dict, *keys):
-    return {
-        key: d.get(key)
-        for key in keys
-    }
 
 
 def flatten(d):
@@ -1297,6 +1203,22 @@ def scan_history_readable(history: list) -> str:
         removeNull=True)
 
 
+def scan_history_pagination_params(args: dict) -> dict:
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('pageSize'))
+    if isinstance(page, int) and isinstance(page_size, int):
+        return {
+            'limit': page_size,
+            'offset': (page - 1) * page_size
+        }
+
+    else:
+        return {
+            'limit': args.get('limit', 50),
+            'offset': 0
+        }
+
+
 def scan_history_params(args: dict) -> dict:
     sort_fields = argToList(args.get('sortFields'))
     sort_order = argToList(args.get('sortOrder'))
@@ -1310,21 +1232,15 @@ def scan_history_params(args: dict) -> dict:
             for field, order
             in zip(sort_fields, sort_order)),
         'exclude_rollover': args['excludeRollover'],
-    } | sub_dict(args, 'limit', 'offset')
+    } | scan_history_pagination_params(args)
 
 
-@paginate(
-    page_size_arg_name='pageSize',
-    keys_to_pages='history')
-def scan_history_request(args: dict[str, Any], client: Client):
-    return client.get_scan_history(
+def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandResults:
+
+    response_json = client.get_scan_history(
         args['scanId'],
         scan_history_params(args))
-
-
-def get_scan_history_command(*args) -> CommandResults:
-
-    history = scan_history_request(*args)
+    history = response_json.get('history', '')
 
     return CommandResults(
         outputs_prefix='TenableIO.ScanHistory',
@@ -1333,12 +1249,43 @@ def get_scan_history_command(*args) -> CommandResults:
         readable_output=scan_history_readable(history))
 
 
-def build_filter(filter_list: str | None, name: str) -> dict:
-    return {
-        f'filter.{i}.{name}': value
-        for i, value
-        in enumerate(argToList(filter_list))
-    }
+def build_filters(args: dict) -> dict:
+    '''
+    Makes filter args for the export scan endpoint by sequentially matching
+    the filterName, filterQuality and filterValue lists in args.
+    Example:
+        filterName:     name,description
+        filterQuality:  LETTER,NUMBER
+        filterValue:    test,test2
+        returns:
+        {
+            'filter.0.filter': 'name',
+            'filter.0.quality': 'LETTER',
+            'filter.0.value': 'test',
+            'filter.1.filter': 'description',
+            'filter.1.quality': 'NUMBER',
+            'filter.1.value': 'test2',
+
+    Raises a DemistoException if the lengths of the filter lists are not equal.
+    '''
+
+    filter_names = argToList(args.get('filterName'))
+    filter_qualities = argToList(args.get('filterQuality'))
+    filter_values = argToList(args.get('filterValue'))
+
+    if len({len(filter_names), len(filter_qualities), len(filter_values)}) != 1:
+        raise DemistoException('filterName, filterQuality and filterValue must be provided with the same length.')
+
+    result: dict = {}
+    zipped_filters = zip(filter_names, filter_qualities, filter_values)
+    for i, (name, quality, value) in enumerate(zipped_filters):
+        result |= {
+            f'filter.{i}.filter': name,
+            f'filter.{i}.quality': quality,
+            f'filter.{i}.value': value
+        }
+
+    return result
 
 
 def export_scan_body(args: dict) -> dict:
@@ -1353,20 +1300,18 @@ def export_scan_body(args: dict) -> dict:
         'chapters': chapters,
         'filter.search_type': args['filterSearchType'].lower(),
         'asset_id': args.get('assetId'),
-    } | build_filter(
-        args.get('filterName'), 'filter'
-    ) | build_filter(
-        args.get('filterQuality'), 'quality'
-    ) | build_filter(
-        args.get('filterValue'), 'value'
-    )
+    } | build_filters(args)
+
     return body
 
 
 def initiate_export_scan(args: dict, client: Client) -> str:
     return client.initiate_export_scan(
         args['scanId'],
-        params=sub_dict(args, 'historyId', 'historyUuid'),
+        params={
+            'history_id': args.get('historyId'),
+            'history_uuid': args.get('historyUuid')
+        },
         body=export_scan_body(args)
     ).get('file', '')
 
@@ -1388,10 +1333,11 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
     file_id = (
         args.get('fileId')
         or initiate_export_scan(args, client))
-
     demisto.debug(f'{file_id=}')
 
-    match client.check_export_scan_status(scan_id, file_id).get('status'):
+    status_response = client.check_export_scan_status(scan_id, file_id)
+    demisto.debug(f'{status_response=}')
+    match status_response.get('status'):
         case 'ready':
             return PollResult(
                 client.download_export_scan(
@@ -1408,8 +1354,7 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
                     'format': args['format'],  # not necessary but avoids confusion
                 })
 
-        case error:
-            demisto.debug(f'{error=}')
+        case _:
             raise DemistoException(
                 'Tenable IO encountered an error while exporting the scan report file.\n'
                 f'Scan ID: {scan_id}\n'
