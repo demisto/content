@@ -4,7 +4,6 @@ from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
 import dateparser
-from packaging.version import Version
 
 import pytz
 import urllib3
@@ -745,6 +744,16 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_major_version(version: str) -> int:
+    try:
+        if '.' not in version:
+            return int(version)
+        return int(version.split('.')[0])
+    except ValueError:
+        print_debug_msg(f'Could not parse version {version} to int')
+        return 17
 
 
 def get_remote_events(client: Client,
@@ -2822,7 +2831,8 @@ def qradar_reference_set_value_upsert_command(client: Client, params: dict, args
     """
     ref_name: str = args.get('ref_name', '')
     response = {}
-    use_old_api = (api_version := Version(params.get('api_version', ''))) and api_version.major <= 15
+    use_old_api = get_major_version(params.get('api_version', '')) <= 15
+
     if use_old_api or 'task_id' not in args:
         values: List[str] = argToList(args.get('value', ''))
         if not values:
@@ -2959,7 +2969,7 @@ def qradar_indicators_upload_command(client: Client, params: dict, args: dict) -
     """
     ref_name: str = args.get('ref_name', '')
     response = {}
-    use_old_api = (api_version := Version(params.get("api_version", ""))) and api_version.major <= 15
+    use_old_api = get_major_version(params.get('api_version', '')) <= 15
     if 'task_id' not in args or use_old_api:
         query = args.get('query')
         limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
