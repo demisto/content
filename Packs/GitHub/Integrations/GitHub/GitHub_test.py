@@ -454,6 +454,31 @@ def test_github_trigger_workflow(mocker):
     assert mocker_results.call_args[0][0].readable_output == 'Workflow triggered successfully.'
 
 
+def test_github_trigger_workflow_with_inputs(mocker):
+    """
+    Given:
+      - A workflow name and workflow inputs.
+    When:
+      - Calling the 'github_trigger_workflow_command' function
+    Then:
+      - Ensure workflow triggerd successfully.
+    """
+    GitHub.BASE_URL = 'https://github.com'
+    GitHub.USE_SSL = True
+    GitHub.TOKEN = '123456'
+    mock_args = {'owner': 'demisto', 'repository': 'test', 'workflow': 'nightly.yml',
+                 'inputs': '{\"release_changes\": \"* Fixed an issue.* Added a feature.\"}'}
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker_results = mocker.patch('GitHub.return_results')
+
+    with requests_mock.Mocker() as m:
+        m.post('https://github.com/repos/demisto/test/actions/workflows/nightly.yml/dispatches', status_code=204)
+        GitHub.github_trigger_workflow_command()
+
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args[0][0].readable_output == 'Workflow triggered successfully.'
+
+
 def test_github_list_workflow(mocker):
     """
     Given:
