@@ -1,6 +1,7 @@
 [INGEST:vendor="symantec", product="bluecoatproxysg", target_dataset="symantec_bluecoatproxysg_raw", no_hit=keep]
-alter
-    tmp_timestamp_extract = parse_timestamp("%Y-%m-%d %H:%M:%S" ,arraystring(regextract(_raw_log, "^([\S]+\s[\S]+)\s[\d]+"), ""))
+filter _raw_log ~= "^[\S]+\s+[\S]+\s+\d+"
+| alter
+    tmp_timestamp_extract = parse_timestamp("%Y-%m-%d %H:%M:%S" , arraystring(regextract(_raw_log, "^([\S]+\s+[\S]+)\s+\d+"), ""))
 | alter
     _time = tmp_timestamp_extract 
 | fields -tmp_timestamp_extract;
