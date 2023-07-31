@@ -174,7 +174,7 @@ validate-content-conf:
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
-      if [[ $MARKETPLACE_VERSION != "xsoar" ]] && [[ -n "$(ls -A content_packs)" ]];
+      if [[ $MARKETPLACE_VERSION != "xsoar" ]] && [[ -n "$(ls -A $ARTIFACTS_FOLDER/content_packs)" ]];
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
