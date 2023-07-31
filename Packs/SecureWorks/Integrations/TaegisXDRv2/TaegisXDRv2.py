@@ -83,7 +83,7 @@ SHARELINK_TYPES = set((
     "playbookExecutionId",
 ))
 
-
+DEFAULT_FIRST_FETCH_INTERVAL = "1 day"
 """ CLIENT """
 
 
