@@ -2,7 +2,7 @@
 {
     "aruba_clearpass_raw": {        
         "rt": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "cat": {
