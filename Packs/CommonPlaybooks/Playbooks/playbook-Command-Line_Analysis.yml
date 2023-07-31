@@ -1601,12 +1601,12 @@ tasks:
     scriptarguments:
       Commandline:
         complex:
-          root: inputs.ProcessImageName
+          root: inputs.Commandline
           transformers:
           - operator: uniq
       ProcessName:
         complex:
-          root: inputs.Commandline
+          root: inputs.ProcessImageName
           transformers:
           - operator: uniq
       StringSimilarityThreashold:
