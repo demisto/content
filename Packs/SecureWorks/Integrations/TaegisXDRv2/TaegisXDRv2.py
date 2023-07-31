@@ -821,7 +821,7 @@ def fetch_incidents(
     last_run = demisto.getLastRun()
     demisto.debug(f"Last Fetch Incident Run: {last_run}")
     now = datetime.now()
-    start_time = str(now - timedelta(days=1))  # Default start if first ever run
+    start_time = str(dateparser.parser(first_fetch_interval))  # Default start if first ever run
     if last_run and "start_time" in last_run:
         start_time = last_run.get("start_time")
 
