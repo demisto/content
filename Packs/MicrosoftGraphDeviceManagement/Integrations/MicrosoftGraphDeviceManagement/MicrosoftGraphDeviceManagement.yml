@@ -74,7 +74,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: Use a self deployed Azure Application
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self deployed Azure Application
   name: self_deployed
   type: 8
   required: false
@@ -911,7 +912,11 @@ script:
     - contextPath: MSGraphDeviceManagement.Device.PartnerReportedThreatState
       description: Indicates the threat state of a device when a Mobile Threat Defense partner is in use by the account and device. Read Only. Possible values are unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity, unresponsive, compromised, misconfigured.
       type: string
-  dockerimage: demisto/crypto:1.0.0.63672
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-device-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
   script: ''
   subtype: python3
   type: python
