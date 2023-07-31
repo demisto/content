@@ -339,3 +339,19 @@ You will be automatically redirected to a link with the following structure:
 and paste it in your instance configuration under the **Authorization code** parameter.
 
 
+### azure-log-analytics-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-log-analytics-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
