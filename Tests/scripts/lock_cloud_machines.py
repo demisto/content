@@ -1,4 +1,3 @@
-import json
 import time
 from typing import Any
 from Tests.scripts.utils import logging_wrapper as logging
