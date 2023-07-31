@@ -581,7 +581,6 @@ class HuntingQueryBuilder:
                 if not (device_id or device_name):
                     raise DemistoException(HuntingQueryBuilder.DEVICES_ARGS_ERR)
 
-
             elif query_purpose != 'powershell_execution_unsigned_files' \
                     and not (device_name or file_name or sha1 or sha256 or md5 or device_id):
                 raise DemistoException(HuntingQueryBuilder.ANY_ARGS_ERR)
@@ -1104,7 +1103,8 @@ class MsClient:
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
                  auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: str | None = None,
-                 private_key: str | None = None, managed_identities_client_id: str | None = None):
+                 private_key: str | None = None, managed_identities_client_id: str | None = None,
+                 alert_detectionsource_to_fetch: str | None = None):
 
         self.endpoint_type = endpoint_type
         if auth_type == 'Authorization Code':
