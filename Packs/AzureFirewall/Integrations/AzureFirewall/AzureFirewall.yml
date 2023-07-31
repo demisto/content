@@ -919,7 +919,7 @@ script:
       required: true
     description: Delete an IP group resource.
     name: azure-firewall-ip-group-delete
-  dockerimage: demisto/crypto:1.0.0.64970
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3
