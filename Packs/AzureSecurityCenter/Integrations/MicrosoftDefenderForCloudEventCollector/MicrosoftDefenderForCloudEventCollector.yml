@@ -100,6 +100,9 @@ script:
     - contextPath: MicrosoftDefenderForCloud.Alert.ID
       description: The alert ID.
       type: string
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: ms-defender-for-cloud-auth-reset
+    arguments: []
   dockerimage: demisto/crypto:1.0.0.61689
   isfetchevents: true
   script: '-'

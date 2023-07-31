@@ -211,7 +211,8 @@ class DefenderAuthenticator(BaseModel):
                     enc_key=self.credentials.get('password'),
                     scope=urljoin(self.scope_url, "/windowsatpservice/.default"),
                     verify=self.verify,
-                    self_deployed=True
+                    self_deployed=True,
+                    command_prefix="microsoft-365-defender",
                 )
 
             token = self.ms_client.get_access_token()
@@ -382,6 +383,9 @@ def main(command: str, params: dict):
 
             demisto.setLastRun(get_events.get_last_run(events))
             demisto.debug(f'Last run set to {demisto.getLastRun()}')
+
+        elif command == 'microsoft-365-defender-auth-reset':
+            return_results(reset_auth())
 
     # Log exceptions and return errors
     except Exception as e:

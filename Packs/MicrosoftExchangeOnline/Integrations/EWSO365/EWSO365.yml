@@ -956,6 +956,9 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: ews-auth-reset
+    arguments: []
   dockerimage: demisto/py3ews:1.0.0.66850
   isfetch: true
   script: ''

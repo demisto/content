@@ -1485,3 +1485,21 @@ To perform actions on mailboxes of other users, and to execute searches on the E
 |Impersonation|A single account needs to access multiple mailboxes.|Read more [here](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-configure-impersonation).|
 |eDiscovery|Search the Exchange server.|Read more [here](https://docs.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?view=exchserver-2019).|
 |Compliance Search|Perform searches across mailboxes and get an estimate of the results.|Read more [here](https://docs.microsoft.com/en-us/office365/securitycompliance/permissions-in-the-security-and-compliance-center).|
+
+
+### ews-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`ews-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

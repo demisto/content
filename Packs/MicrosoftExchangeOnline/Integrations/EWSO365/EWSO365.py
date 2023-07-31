@@ -198,6 +198,7 @@ class EWSClient:
             proxy=proxy,
             self_deployed=self_deployed,
             scope="https://outlook.office.com/.default",
+            command_prefix="ews",
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
@@ -2466,6 +2467,9 @@ def sub_main():     # pragma: no cover
         # special outputs commands
         elif command in special_output_commands:
             demisto.results(special_output_commands[command](client, **args))  # type: ignore[operator]
+
+        elif command == "ews-auth-reset":
+            return_results(reset_auth())
 
         # normal commands
         else:

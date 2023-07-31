@@ -212,7 +212,8 @@ class DefenderAuthenticator(BaseModel):
                     enc_key=self.client_secret,
                     scope=self.scope,
                     verify=self.verify,
-                    self_deployed=True
+                    self_deployed=True,
+                    command_prefix='microsoft-defender-cloud-apps'
                 )
 
             token = self.ms_client.get_access_token()
@@ -392,6 +393,9 @@ def main(command: str, demisto_params: dict):
 
         if command == 'test-module':
             return_results(test_module(get_events=get_events))
+
+        elif command == 'microsoft-defender-cloud-apps-auth-reset':
+            return_results(reset_auth())
 
         elif command in ('fetch-events', 'microsoft-defender-cloud-apps-get-events'):
             events = get_events.run()

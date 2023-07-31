@@ -57,3 +57,21 @@ Lists alerts for the subscription according to the specified filters.
 | MicrosoftDefenderForCloud.Alert.DetectedTimeUtc | date | The time the vendor detected the incident. |
 | MicrosoftDefenderForCloud.Alert.ReportedSeverity | string | The estimated severity of this alert. |
 | MicrosoftDefenderForCloud.Alert.ID | string | The alert ID. |
+
+
+### ms-defender-for-cloud-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`ms-defender-for-cloud-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

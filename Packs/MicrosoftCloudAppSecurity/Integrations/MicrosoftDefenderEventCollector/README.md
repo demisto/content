@@ -43,3 +43,21 @@ Returns a list of alerts.
 #### Context Output
 
 There is no context output for this command.
+
+
+### microsoft-defender-cloud-apps-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`microsoft-defender-cloud-apps-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

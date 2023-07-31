@@ -114,6 +114,9 @@ script:
       predefined:
       - 'false'
       - 'true'
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: microsoft-365-defender-auth-reset
+    arguments: []
   isfetchevents: true
   script: '-'
   type: python
