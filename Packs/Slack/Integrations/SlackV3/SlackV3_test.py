@@ -2388,6 +2388,25 @@ def test_send_request(mocker):
     assert channel_res == 'neat'
 
 
+def test_reset_user_session(mocker):
+    import SlackV3
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'admin.users.session.reset':
+            return {'ok': True}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(demisto, 'args', return_value={'user_id': 'U012A3CDE'})
+
+    res = SlackV3.user_session_reset()
+
+    # Assert
+    assert res == 'User session reset successfully.'
+
+
 def test_send_request_channel_id(mocker):
     """
     Given:
