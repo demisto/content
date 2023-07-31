@@ -83,12 +83,12 @@ configuration:
   name: time_format
   options:
   - yyyy-MM-dd
-  - yyyy-MM-dd HH:mm:ss
-  - yyyy-MM-dd HH:mm:ssZ
-  - yyyy-MM-dd HH:mm:ss.SSS
-  - yyyy-MM-dd HH:mm:ss.SSSZ
-  - yyyy-MM-dd HH:mm:ss.SSSSSS
-  - yyyy-MM-dd HH:mm:ss.SSSSSSZ
+  - yyyy-MM-ddTHH:mm:ss
+  - yyyy-MM-ddTHH:mm:ssZ
+  - yyyy-MM-ddTHH:mm:ss.SSS
+  - yyyy-MM-ddTHH:mm:ss.SSSZ
+  - yyyy-MM-ddTHH:mm:ss.SSSSSS
+  - yyyy-MM-ddTHH:mm:ss.SSSSSSZ
   type: 15
   required: false
 - defaultvalue: 'true'

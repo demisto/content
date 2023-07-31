@@ -46,16 +46,6 @@ HTTP_ERRORS = {
     503: '503 Service Unavailable'
 }
 
-TIME_FORMATS_DICT = {
-    'yyyy-MM-dd': '%Y-%m-%d',
-    'yyyy-MM-dd HH:mm:ss': '%Y-%m-%d %H:%M:%S',
-    'yyyy-MM-dd HH:mm:ssZ': '%Y-%m-%d %H:%M:%SZ',
-    'yyyy-MM-dd HH:mm:ss.SSS': '%Y-%m-%d %H:%M:%S.%f',
-    'yyyy-MM-dd HH:mm:ss.SSSZ': '%Y-%m-%d %H:%M:%S.%fZ',
-    'yyyy-MM-dd HH:mm:ss.SSSSSS': '%Y-%m-%d %H:%M:%S.%f',
-    'yyyy-MM-dd HH:mm:ss.SSSSSSZ': '%Y-%m-%d %H:%M:%S.%fZ',
-}
-
 '''VARIABLES FOR FETCH INCIDENTS'''
 param = demisto.params()
 TIME_FIELD = param.get('fetch_time_field', '')
@@ -66,11 +56,25 @@ FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
-TIME_FORMAT = TIME_FORMATS_DICT.get(param.get('time_format'), '%Y-%m-%d %H:%M:%S')
+TIME_FORMAT = param.get('time_format', 'yyyy-MM-ddTHH:mm:ss.SSSSSS')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
+
+
+def date_to_iso_format(date, time_format):
+    if time_format.count('T') == 0:
+        return date.date().isoformat()
+
+    str_time = ''
+    if time_format.count('S') == 0:
+        str_time = date.isoformat(timespec='seconds')
+    elif time_format.count('S') == 3:
+        str_time = date.isoformat(timespec='milliseconds')
+    elif time_format.count('S') == 6:
+        str_time = date.isoformat(timespec='microseconds')
+    return f'{str_time}Z' if 'Z' in time_format else str_time
 
 
 def convert_date_to_timestamp(date):
@@ -93,9 +97,7 @@ def convert_date_to_timestamp(date):
         return int(date.timestamp() * 1000)
 
     else:  # In case of 'Simple-Date'.
-        if param.get('time_format') in ('yyyy-MM-dd HH:mm:ss.SSS', 'yyyy-MM-dd HH:mm:ss.SSSZ'):
-            return date.strftime(TIME_FORMAT).replace('.000000', '.000')
-        return date.strftime(TIME_FORMAT)
+        return date_to_iso_format(date, TIME_FORMAT)
 
 
 def timestamp_to_date(timestamp_string):

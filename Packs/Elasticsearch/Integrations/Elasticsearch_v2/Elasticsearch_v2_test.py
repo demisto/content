@@ -1,8 +1,5 @@
 from datetime import datetime
 from unittest.mock import patch
-
-import dateparser
-
 import demistomock as demisto
 import importlib
 import Elasticsearch_v2
@@ -10,6 +7,8 @@ import pytest
 import requests
 import unittest
 from unittest import mock
+import dateparser
+from freezegun import freeze_time
 
 """MOCKED RESPONSES"""
 
@@ -974,15 +973,15 @@ def test_execute_raw_query(mocker):
     ('123456', 'Timestamp-Seconds', '', 123456),
     ('123456', 'Timestamp-Milliseconds', '', 123456),
     ('123456', 'Simple-Date', 'yyyy-MM-dd HH:mm:ss', 123456),
-    (dateparser.parse('2023-07-01'), 'Simple-Date', 'yyyy-MM-dd', '2023-07-01'),
-    (dateparser.parse('2023-07-01'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss', '2023-07-01 00:00:00'),
-    (dateparser.parse('2023-07-01'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss.SSS', '2023-07-01 00:00:00.000'),
-    (dateparser.parse('2023-07-01'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss.SSSSSS', '2023-07-01 00:00:00.000000'),
-    (dateparser.parse('2023-07-01 02:00:00'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ssZ', '2023-07-01 02:00:00Z'),
-    (dateparser.parse('2023-07-01 02:00:00'), 'Simple-Date', 'yyyy-MM-dd HH:mm:ss.SSSZ', '2023-07-01 02:00:00.000Z'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-dd', '2023-07-01'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss', '2023-07-01T00:00:00'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss.SSS', '2023-07-01T00:00:00.000'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss.SSSSSS', '2023-07-01T00:00:00.000000'),
+    (dateparser.parse('July 1, 2023 02:30'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ssZ', '2023-07-01T02:30:00Z'),
+    (dateparser.parse('July 1, 2023 02:00'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss.SSSZ', '2023-07-01T02:00:00.000Z'),
 ])
 def test_convert_date_to_timestamp(mocker, date_time, time_method, time_format, expected_time):
     mocker.patch.object(demisto, 'params', return_value={'time_format': time_format})
-    importlib.reload(Elasticsearch_v2)
     Elasticsearch_v2.TIME_METHOD = time_method
+    Elasticsearch_v2.TIME_FORMAT = time_format
     assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
