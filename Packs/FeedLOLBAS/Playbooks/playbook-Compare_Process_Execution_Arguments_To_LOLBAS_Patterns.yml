@@ -88,7 +88,7 @@ tasks:
     task:
       id: f0c62078-cd49-4a32-83f2-7e1db923d75f
       version: -1
-      name: Does Inputs and LOLBAS Feed integration exists?
+      name: Does input data exist?
       type: condition
       iscommand: false
       brand: ""
