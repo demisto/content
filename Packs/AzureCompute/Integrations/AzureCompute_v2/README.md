@@ -757,3 +757,19 @@ Creates a virtual machine network interface.
 >|ID|PrivateIPAddresses|Location|Name|NetworkSecurityGroup|
 >|---|---|---|---|---|
 >| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2 | 10.0.0.13 | eastus | test_nic2 | NA |
+### azure-vm-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`azure-vm-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
