@@ -1113,11 +1113,13 @@ def _get_return_command_for_artifact_analysis(artifact_analysis: dict):
             domain=artifact_analysis['artifact_value'],
             dbot_score=dbot_score
         )
-    else:
+    elif artifact_analysis['artifact_type'] == 'ip':
         indicator = Common.IP(
             ip=artifact_analysis['artifact_value'],
             dbot_score=dbot_score
         )
+    else:
+        return CommandResults()
 
     return CommandResults(indicator=indicator)
 
