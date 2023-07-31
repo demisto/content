@@ -10,7 +10,6 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from threading import Lock
 from time import sleep
-from typing import List
 
 import demisto_client
 from demisto_client.demisto_api.rest import ApiException
@@ -70,7 +69,7 @@ def get_pack_display_name(pack_id: str) -> str:
     """
     metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
     if pack_id and os.path.isfile(metadata_path):
-        with open(metadata_path, 'r') as json_file:
+        with open(metadata_path) as json_file:
             pack_metadata = json.load(json_file)
         return pack_metadata.get('name')
     return ''
@@ -86,7 +85,7 @@ def is_pack_hidden(pack_id: str) -> bool:
     """
     metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILENAME)
     if pack_id and os.path.isfile(metadata_path):
-        with open(metadata_path, 'r') as json_file:
+        with open(metadata_path) as json_file:
             pack_metadata = json.load(json_file)
             return pack_metadata.get('hidden', False)
     else:
@@ -110,7 +109,7 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
 
     for dependency in response_data:
         dependants = dependency.get('dependants', {})
-        for dependant in dependants.keys():
+        for dependant in dependants:
             is_required = dependants[dependant].get('level', '') == 'required'
             if dependant in dependants_ids and is_required and dependency.get('id') not in checked_packs:
                 dependencies_data.append({
@@ -176,10 +175,13 @@ def get_pack_dependencies(client: demisto_client,
 
                 logging.debug(f"Got bad status code: {status_code} from the server, headers:{headers}")
 
-            except (HTTPError, HTTPWarning, ApiException) as ex:
+            except ApiException as ex:
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     # Unknown exception reason, re-raise.
                     raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+            except (HTTPError, HTTPWarning) as http_ex:
+                if not attempt:
+                    raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
             logging.debug(f"failed to search for pack dependencies: {pack_id}, Sleeping for {sleep_interval} seconds.")
@@ -237,10 +239,13 @@ def search_pack(client: demisto_client,
 
                 logging.warning(f"Got bad status code: {status_code} from the server, headers:{headers}")
 
-            except (HTTPError, HTTPWarning, ApiException) as ex:
+            except ApiException as ex:
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     # Unknown exception reason, re-raise.
                     raise Exception(f"Got {ex.status} from server, message:{ex.body}, headers:{ex.headers}") from ex
+            except (HTTPError, HTTPWarning) as http_ex:
+                if not attempt:
+                    raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
             logging.debug(f"failed to search for pack: {pack_display_name} With ID: {pack_id}, "
@@ -254,7 +259,7 @@ def search_pack(client: demisto_client,
     return {}
 
 
-def find_malformed_pack_id(body: str) -> List:
+def find_malformed_pack_id(body: str) -> list:
     """
     Find the pack ID from the installation error message in the case the error is that the pack is not found or
     in case that the error is that the pack's version is invalid.
@@ -268,11 +273,7 @@ def find_malformed_pack_id(body: str) -> List:
     if body:
         with contextlib.suppress(json.JSONDecodeError):
             response_info = json.loads(body)
-            if error_info := response_info.get('error'):
-                errors_info = [error_info]
-            else:
-                # the errors are returned as a list of error
-                errors_info = response_info.get('errors', [])
+            errors_info = [error_info] if (error_info := response_info.get("error")) else response_info.get("errors", [])
             malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
             for error in errors_info:
                 if 'pack id: ' in error:
@@ -302,7 +303,7 @@ def handle_malformed_pack_ids(malformed_pack_ids, packs_to_install):
                             f'though it was not in the installation list')
 
 
-def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_path: str, pack_ids_to_install: List):
+def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_path: str, pack_ids_to_install: list):
     """
     Installs all the packs located in the artifacts folder of the BitHub actions build. Please note:
     The server always returns a 200 status even if the pack was not installed.
@@ -326,7 +327,7 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
 
 def install_packs_private(client: demisto_client,
                           host: str,
-                          pack_ids_to_install: List,
+                          pack_ids_to_install: list,
                           test_pack_path: str):
     """ Make a packs installation request.
 
