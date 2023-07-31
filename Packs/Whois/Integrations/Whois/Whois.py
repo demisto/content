@@ -8657,7 +8657,8 @@ def whois_command(reliability: str, query: str, is_recursive: bool, should_error
             results.append(result)
 
         except Exception as e:
-            demisto.error(f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+            demisto.error(
+                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
