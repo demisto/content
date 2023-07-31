@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -113,8 +114,7 @@ tasks:
       - "46"
     scriptarguments:
       report_id:
-        simple: 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal
-          Jujubox
+        simple: 699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3_VirusTotal Jujubox
     separatecontext: false
     view: |-
       {
@@ -758,6 +758,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -784,6 +785,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "45"
@@ -937,6 +939,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -966,6 +969,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -1070,6 +1074,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -1099,6 +1104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -1168,3 +1174,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: "5.5.0"
+description: Description

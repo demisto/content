@@ -381,8 +381,7 @@ outputs:
 - contextPath: File.Extension
   description: 'The file extension. For example: "xls".'
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in file
-    entries).
+  description: The file type, as determined by libmagic (same as displayed in file entries).
 fromversion: "5.5.0"
 tests:
 - VirusTotal Premium v3 TestPlaybook

@@ -40,23 +40,23 @@ configuration:
   name: ipThreshold
   defaultvalue: '10'
   type: 0
+  required: false
   hidden:
   - xsoar_on_prem
-  required: false
 - display: URL Threshold. Minimum number of positive results from VT scanners to consider the URL malicious.
   name: urlThreshold
   defaultvalue: '10'
   type: 0
-  hidden:
-    - xsoar
   required: false
+  hidden:
+  - xsoar
 - display: Domain Threshold. Minimum number of positive results from VT scanners to consider the domain malicious.
   name: domainThreshold
   defaultvalue: '10'
   type: 0
-  hidden:
-    - xsoar_saas
   required: false
+  hidden:
+  - xsoar_saas
 - display: Preferred Vendors List. CSV list of vendors who are considered more trustworthy.
   name: preferredVendors
   defaultvalue: ''
@@ -1632,7 +1632,7 @@ script:
       description: The analysis ID.
       type: String
 
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test

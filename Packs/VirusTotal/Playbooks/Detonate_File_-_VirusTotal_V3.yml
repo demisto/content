@@ -136,8 +136,7 @@ tasks:
       id: 4bff86d5-4513-4252-8ba3-a6dd17197646
       version: -1
       name: Send file to VirusTotal
-      description: Submits a file for scanning. Use vt-analysis-get to get the scan
-        results.
+      description: Submits a file for scanning. Use vt-analysis-get to get the scan results.
       script: VirusTotal (API v3)|||file-scan
       type: regular
       iscommand: true

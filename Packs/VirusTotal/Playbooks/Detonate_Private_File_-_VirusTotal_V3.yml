@@ -179,8 +179,7 @@ tasks:
       id: afd178af-4137-4f75-8982-9a3916f0ac23
       version: -1
       name: Send file to VirusTotal
-      description: Submits a file for private scanning. Use the vt-privatescanning-analysis-get
-        command to get the scan results.
+      description: Submits a file for private scanning. Use the vt-privatescanning-analysis-get command to get the scan results.
       script: VirusTotal (API v3)|||vt-privatescanning-file-scan
       type: regular
       iscommand: true
@@ -350,7 +349,7 @@ inputs:
     simple: ${File.EntryID}
   required: false
   description: Private file to be uploaded to VirusTotal.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: VirusTotal.Analysis.data.attributes.date
   description: Date of the analysis in epoch format.
@@ -389,3 +388,5 @@ outputs:
   description: The analysis ID.
   type: string
 fromversion: "5.5.0"
+tests:
+- virusTotal-test-playbook

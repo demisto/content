@@ -147,8 +147,7 @@ tasks:
       id: 38395312-3331-4d50-8d99-4cded41043fd
       version: -1
       name: Rescan
-      description: Rescans an already submitted file. This avoids having to upload
-        the file again. Use the vt-analysis-get command to get the scan results.
+      description: Rescans an already submitted file. This avoids having to upload the file again. Use the vt-analysis-get command to get the scan results.
       script: VirusTotal (API v3)|||file-rescan
       type: regular
       iscommand: true
