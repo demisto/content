@@ -81,7 +81,7 @@ def test_module(dfir_iris):
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            raise DemistoException('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
 
