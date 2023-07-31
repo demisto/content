@@ -19,7 +19,8 @@ from AnyMatch import main
     ({"alert": {"data": "x"}}, "x", 1, [True]),
     ("{'a':1,'c':2}", "{'a': 1}, {'b': 2}", 2, [False, False]),     # {'a':1} is not a part of {'a':1, or 'c':2}
     ("{'a': 1}, {'b': 2}", "{a:1}", 2, [False, False]),  # {a:1} is not a part of {'a': 1} or {'b': 2}
-    ("{'a':1,'c':2}", "'', '", 2, [True, True]),  # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in  'c': 2}
+    # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in  'c': 2}
+    ("{'a':1,'c':2}", "'', '", 2, [True, True]),
 ])
 def test_main(mocker, left, right, call_count, result):
     mocker.patch.object(demisto, 'args', return_value={'left': left, 'right': right})
