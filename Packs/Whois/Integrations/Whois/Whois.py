@@ -7311,6 +7311,7 @@ def get_root_server(domain):
         if tld in list(tlds.keys()):
             entry = tlds[tld]
             host = entry["host"]
+            demisto.debug(f"Found host '{host}' from domain '{domain}'")
             return host
         else:
             raise WhoisInvalidDomain(f"Can't parse the root server from domain '{domain}'")
@@ -8347,6 +8348,8 @@ def get_domain_from_query(query):
         # checks if query includes subdomain
         if suffixless_query.count(".") > 0:
             domain = query[suffixless_query.rindex(".") + 1:]
+
+        demisto.debug(f"Found domain '{domain}' from query")
         return domain
     except Exception:
         demisto.error(f"Error parsing domain from query '{query}'.")
