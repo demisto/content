@@ -3,12 +3,19 @@ sectionOrder:
 - Collect
 category: Messaging and Conferencing
 commonfields:
-  id: SlackV3-Gal
+  id: SlackV3
   version: -1
 configuration:
 - display: ''
   displaypassword: Bot Token
   name: bot_token
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- display: ''
+  displaypassword: User Token
+  name: user_token
   type: 9
   hiddenusername: true
   section: Connect
@@ -179,7 +186,7 @@ configuration:
   required: false
 description: Send messages and notifications to your Slack team.
 display: Slack v3
-name: SlackV3-Gal
+name: SlackV3
 script:
   commands:
   - arguments:

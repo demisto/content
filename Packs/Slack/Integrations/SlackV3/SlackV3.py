@@ -58,6 +58,7 @@ MAX_SAMPLES = 10
 
 ''' GLOBALS '''
 
+USER_TOKEN: str
 BOT_TOKEN: str
 APP_TOKEN: str
 PROXY_URL: Optional[str]
@@ -65,6 +66,7 @@ PROXIES: dict
 DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
 CLIENT: slack_sdk.WebClient
+USER_CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
@@ -118,8 +120,11 @@ def test_module():
         return_error("Invalid Bot Token.")
     if not APP_TOKEN.startswith("xapp"):
         return_error("Invalid App Token.")
+    if not USER_TOKEN.startswith("xoxp"):
+        return_error("Invalid User Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
+        USER_CLIENT.auth_test()  # type: ignore
     else:
         channel = get_conversation_by_name(DEDICATED_CHANNEL)
         if not channel:
@@ -2585,7 +2590,9 @@ def init_globals(command_name: str = ''):
     """
     Initializes global variables according to the integration parameters
     """
-    global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED
+
+    global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, USER_CLIENT, \
+        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, USER_TOKEN
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
@@ -2603,11 +2610,13 @@ def init_globals(command_name: str = ''):
 
     BOT_TOKEN = demisto.params().get('bot_token', {}).get('password', '')
     APP_TOKEN = demisto.params().get('app_token', {}).get('password', '')
+    USER_TOKEN = demisto.params().get('user_token', {}).get('password', '')
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel', None)
     ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
+    USER_CLIENT = slack_sdk.WebClient(token=USER_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
     INCIDENT_TYPE = demisto.params().get('incidentType')
@@ -2730,7 +2739,7 @@ def user_session_reset():
         'user_id': user_id,
     }
     try:
-        send_slack_request_sync(CLIENT, 'admin.users.session.reset', body=body)
+        send_slack_request_sync(USER_CLIENT, 'admin.users.session.reset', body=body)
         return_results(CommandResults(readable_output=f"The session was reset successfully to the user {user_id}."))
 
     except SlackApiError as slack_error:
@@ -2750,7 +2759,7 @@ def main() -> None:
     """
     Main
     """
-    global CLIENT, EXTENSIVE_LOGGING
+    global CLIENT, USER_CLIENT, EXTENSIVE_LOGGING
 
     commands = {
         'test-module': test_module,
