@@ -4,7 +4,7 @@ This integration was integrated and tested with version 1 of the OpenAI and Azur
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-openai).
 
-## Configure OpenAI on Cortex XSOAR
+## Configure OpenAI v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for OpenAI.
@@ -13,7 +13,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL: (e.g. https://api.openai.com/) |  | True |
-    | API Key | OpenAI API key | False |
+    | API Key | OpenAI API key | True |
     | Use Azure OpenAI? | Whether to use Azure OpenAI \(https://your-resource-name.openai.azure.com\) instead of standard OpenAI \(https://api.openai.com\) | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -68,7 +68,7 @@ Send prompt to OpenAI ChatGPT
             "Number of Completion Tokens": 371,
             "Number of Prompt Tokens": 101,
             "Number of Total Tokens": 472,
-            "id": "chatcmpl-7WS4T5dI4r0RR8ZRa19QCM0cERlKt"
+            "id": "chatcmpl-123"
         }
     }
 }
@@ -224,14 +224,9 @@ Summarize the data provided to the model
 
 >**Summary**: This guide provides best practices for optimizing the performance of Cortex XSOAR, a security orchestration, automation, and response platform. It includes configuration best practices, such as enabling signature verification on incoming SAML authentication tokens, restricting workers for all time searches, and database optimizations. Additionally, it provides help on playbook design and best practices, such as using Quiet Mode and disabling auto-extract on tasks that do not require it. It also provides instructions on how to configure a server to restrict the number of workers allowed to execute parallel searches, as well as how to audit index tuning and purge existing items. Additionally, it provides guidance on how to administer, tune, monitor, and maintain Cortex XSOAR for multi-tenant hosts and HA groups.
 
-## Breaking changes from the previous version of this integration - OpenAI
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *chatgpt-send-prompt* - this command was replaced by *openai-chatgpt*.
-
 ## Additional Considerations for this version
+* This integration combines two previously existing integrations: `OpenAI` and `OpenAi ChatGPT v3`.
+* The command *chatgpt-send-prompt* (in integration `OpenAi ChatGPT v3`) is now the *openai-chatgpt* commmand.
 * This integration supports both OpenAI (api.openai.com) and Azure OpenAI. Ensure you have the 'Use Azure OpenAI?' checkbox selected if you want to use Azure.
 * This integration supports both the Chat endpoint (via command *openai-chatgpt*) and Completions endpoint (via command *openai-completions*). Ensure you are using the intended command.
 * For longer inputs that would otherwise exceed the token limit, use commands *openai-answer-question* or *openai-summarize*. These commands embed the input so it can be queried more efficiently.

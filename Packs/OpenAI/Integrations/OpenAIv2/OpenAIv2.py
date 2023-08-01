@@ -15,6 +15,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
 from langchain.chains.summarize import load_summarize_chain
+from tempfile import NamedTemporaryFile
 
 urllib3.disable_warnings()
 
@@ -204,9 +205,12 @@ def load_unstructured_file(entry_id: str, text_splitter: RecursiveCharacterTextS
     """
     file = demisto.getFilePath(entry_id)
     file_path = file.get('path')
-    os.rename(file_path, f"{file_path}.txt")
+    with open(file_path, 'r') as f:
+        contents = f.read()
+    with NamedTemporaryFile() as tmp:
+        tmp.write(contents)
     # https://python.langchain.com/docs/modules/data_connection/document_loaders/integrations/unstructured_file
-    loader = UnstructuredFileLoader(file_path + ".txt")
+    loader = UnstructuredFileLoader(tmp.name)
     document = loader.load()
     docs = text_splitter.split_documents(document)
     return docs
@@ -299,7 +303,7 @@ def completions_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def answer_question_command(client: Client, args: dict) -> str:
+def answer_question_command(client: Client, args: dict) -> CommandResults:
     """
         Embed input data with LangChain, save to vectorstore, then use OpenAI LLM
         to answer a question based on the input data:
@@ -371,7 +375,7 @@ def answer_question_command(client: Client, args: dict) -> str:
     )
 
 
-def summarize_command(client: Client, args: dict) -> str:
+def summarize_command(client: Client, args: dict) -> CommandResults:
     """
         Summarize the provided input data using LangChain:
         https://python.langchain.com/docs/modules/chains/popular/summarize.html
@@ -446,33 +450,33 @@ def main() -> None:
         os.environ["OPENAI_API_BASE"] = base_url
 
     demisto.debug(f'Command being called is {command}')
-    # try:
-    client = Client(api_key=api_key, base_url=base_url, is_azure=is_azure, verify=verify, proxy=proxy, version=version)
+    try:
+        client = Client(api_key=api_key, base_url=base_url, is_azure=is_azure, verify=verify, proxy=proxy, version=version)
 
-    if command == 'test-module':
-        # This is the call made when clicking the integration Test button.
-        return_results(test_module(client, test_model))
+        if command == 'test-module':
+            # This is the call made when clicking the integration Test button.
+            return_results(test_module(client, test_model))
 
-    elif command == f'{PREFIX}-chatgpt':
-        return_results(chatgpt_send_prompt_command(client, **args))
+        elif command == f'{PREFIX}-chatgpt':
+            return_results(chatgpt_send_prompt_command(client, **args))
 
-    elif command == f'{PREFIX}-completions':
-        return_results(completions_command(client=client, args=args))
+        elif command == f'{PREFIX}-completions':
+            return_results(completions_command(client=client, args=args))
 
-    elif command == f'{PREFIX}-answer-question':
-        return_results(answer_question_command(client=client, args=args))
+        elif command == f'{PREFIX}-answer-question':
+            return_results(answer_question_command(client=client, args=args))
 
-    elif command == f'{PREFIX}-summarize':
-        return_results(summarize_command(client=client, args=args))
+        elif command == f'{PREFIX}-summarize':
+            return_results(summarize_command(client=client, args=args))
 
-    else:
-        raise NotImplementedError(f"command {command} is not implemented.")
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
 
     # Log exceptions and return errors
-    # except Exception as e:
-    #     demisto.error(traceback.format_exc())  # print the traceback
-    #     return_error("\n".join((f"Failed to execute {command} command.",
-    #                              "Error:", str(e))))
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error("\n".join((f"Failed to execute {command} command.",
+                                 "Error:", str(e))))
 
 
 ''' ENTRY POINT '''
