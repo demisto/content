@@ -2,7 +2,7 @@ args:
 - isArray: true
   name: url
   required: true
-- description: Checks URL for PII information. If found, is replace with "username@domain".
+- description: Script is designed to de-duplicate, decode, un-escape, whitelist and drop (images, logos and other non-clickables) URLs. Also checks URL for PII information. If found, is replace with "username@domain".
   name: domain
 - auto: PREDEFINED
   default: true
