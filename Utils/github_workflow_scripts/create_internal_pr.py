@@ -80,9 +80,15 @@ def main():
 
     # Unassign the tech writer from the merged PR
     content_roles = load_json(CONTENT_ROLES_PATH)
-    doc_reviewer = get_doc_reviewer(content_roles)
-    if doc_reviewer in assignees:
-        assignees.remove(doc_reviewer)
+    if content_roles:
+        doc_reviewer = get_doc_reviewer(content_roles)
+
+        if doc_reviewer and doc_reviewer in assignees:
+            print(f"Unassigning tech writer '{doc_reviewer}' from internal PR...")
+            assignees.remove(doc_reviewer)
+            print(f"Tech writer '{doc_reviewer}' unassigned")
+    else:
+        print(f"Unable to parse JSON from '{CONTENT_ROLES_PATH}'. Skipping tech writer unassignment.")
 
     pr.add_to_assignees(*assignees)
     print(f'{t.cyan}Assigned users {assignees}{t.normal}')

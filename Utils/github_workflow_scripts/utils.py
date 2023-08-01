@@ -4,7 +4,7 @@ import os
 import sys
 import json
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 from collections.abc import Generator, Iterable
 from pathlib import Path
 
@@ -207,7 +207,7 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
         sys.exit(1)
 
 
-def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
+def get_doc_reviewer(content_roles: dict[str, Any]) -> str | None:
     """
     Retrieve the doc reviewer from content roles JSON/`dict`.
 
@@ -216,6 +216,8 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
 
     Return:
         - `str` of document reviewer GitHub username.
+        If there's an error in retrieving the tech writer/doc reviewer,
+        an `None` is returned.
     """
 
     try:
@@ -223,15 +225,13 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
 
         if not isinstance(doc_reviewer, str) or not doc_reviewer:
             print(f"'{DOC_REVIEWER_KEY}' is not a string. Terminating...")
-            sys.exit(1)
+            return None
 
         if not DOC_REVIEWER_KEY or not DOC_REVIEWER_KEY:
-            print(f"No '{DOC_REVIEWER_KEY}' key specified or '{DOC_REVIEWER_KEY}' is empty")
-            sys.exit(1)
+            print(f"No '{DOC_REVIEWER_KEY}' key specified or is empty")
+            return None
 
         return doc_reviewer
     except KeyError as ke:
         print(f"Error parsing doc reviewer: {str(ke)}.")
-        sys.exit(1)
-
-
+        return None
