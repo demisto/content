@@ -1080,7 +1080,6 @@ class MicrosoftClient(BaseClient):
             data['scope'] = scope
 
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
-
         if refresh_token and not self.is_auth_code_reconfigured():
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
