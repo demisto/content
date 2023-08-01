@@ -2,7 +2,7 @@ args:
 - isArray: true
   name: url
   required: true
-- description: Script is designed to de-duplicate, decode, un-escape, whitelist and drop (images, logos and other non-clickables) URLs. Also checks URL for PII information. If found, is replace with "username@domain".
+- description: Checks URL for PII information. If found, is replaced with "username@domain".
   name: domain
 - auto: PREDEFINED
   default: true
@@ -35,3 +35,6 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+comment: Script is designed to de-duplicate, decode, un-escape, whitelist and drop
+  (images, logos and other non-clickables) URLs. Also checks URL for PII information.
+  If found, is replaced with "username@domain".
