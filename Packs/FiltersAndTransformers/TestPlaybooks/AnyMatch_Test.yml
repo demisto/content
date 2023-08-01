@@ -1,5 +1,5 @@
 id: AnyMatch_Test
-version: 240
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: AnyMatch_Test
 description: Testing the AnyMatch filter.
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -103,6 +104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -952,3 +954,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.9.0
