@@ -881,7 +881,6 @@ class MicrosoftClient(BaseClient):
         if self.is_auth_code_reconfigured() is True:
             integration_context.update({'auth_code': self.auth_code})
 
-
         set_integration_context(integration_context)
 
         if self.multi_resource:
