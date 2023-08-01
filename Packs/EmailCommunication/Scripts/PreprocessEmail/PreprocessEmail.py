@@ -101,7 +101,7 @@ def add_entries(email_reply, email_related_incident, async_call):
         email_related_incident: The related incident.
     """
     entries_str = json.dumps([{"Type": 1, "ContentsFormat": 'html', "Contents": email_reply, "tags": ['email-thread']}])
-    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident, 'async': async})
+    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident, 'async': async_call})
     if is_error(res):
         demisto.error(ERROR_TEMPLATE.format('addEntries', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('addEntries', res['Contents']))
