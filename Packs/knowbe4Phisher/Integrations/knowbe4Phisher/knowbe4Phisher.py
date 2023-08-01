@@ -347,7 +347,6 @@ def create_gql_request(readable_request: str) -> str:
     """
     format_desc = readable_request.splitlines()
     final = ""
-
     for line in format_desc:
         final += line + '\\n'
     return final[:-2]
@@ -718,7 +717,6 @@ def fetch_incidents_command(client: Client) -> None:
 
 def main(params: dict, args: dict, command: str) -> None:
     # get the service API url
-
     url = urljoin(params.get('url'), 'graphql')  # type: ignore
     if not params.get('apikey') or not (key := params.get('apikey', {}).get('password')):
         raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')

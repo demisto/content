@@ -11,4 +11,4 @@ With automatic prioritization for emails, PhishER helps your InfoSec and Securit
 - Gets specific message by ID
 - Allows adding comment to specific message
 - Updates Category, Severity and Status of specific message
-- Creates and delete tags for 
+- Creates and delete tags for specific message
