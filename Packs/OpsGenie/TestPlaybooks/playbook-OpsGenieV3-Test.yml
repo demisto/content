@@ -627,7 +627,7 @@ tasks:
       - - operator: inList
           left:
             value:
-              simple: OpsGenie.AddResponderAlert.action
+              simple: OpsGenie.AddResponderAlert.[1].action
             iscontext: true
           right:
             value:
@@ -635,36 +635,36 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpsGenie.AddResponderAlert.integrationId
+              simple: OpsGenie.AddResponderAlert.[1].integrationId
             iscontext: true
       - - operator: isTrue
           left:
             value:
-              simple: OpsGenie.AddResponderAlert.isSuccess
+              simple: OpsGenie.AddResponderAlert.[1].isSuccess
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpsGenie.AddResponderAlert.processedAt
+              simple: OpsGenie.AddResponderAlert.[1].processedAt
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: OpsGenie.AddResponderAlert.status
+              simple: OpsGenie.AddResponderAlert.[1].status
             iscontext: true
       - - operator: isTrue
           left:
             value:
-              simple: OpsGenie.AddResponderAlert.success
+              simple: OpsGenie.AddResponderAlert.[1].success
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: OpsGenie.AddResponderAlert.alertId
+              simple: OpsGenie.AddResponderAlert.[1].alertId
             iscontext: true
           right:
             value:
-              simple: OpsGenie.Alert.alertId
+              simple: OpsGenie.Alert.[1].alertId
             iscontext: true
     view: |-
       {
@@ -697,7 +697,7 @@ tasks:
       - '19'
     scriptarguments:
       alert-id:
-        simple: ${OpsGenie.Alert.[0].alertId}
+        simple: ${OpsGenie.Alert.alertId}
       escalation_name:
         simple: Integration Team_escalation
     separatecontext: false
@@ -737,7 +737,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: OpsGenie.EscalateAlert.action
+              simple: OpsGenie.EscalateAlert.[1].action
             iscontext: true
           right:
             value:
@@ -880,7 +880,7 @@ tasks:
       - '23'
     scriptarguments:
       alert-id:
-        simple: ${OpsGenie.Alert.[0].alertId}
+        simple: ${OpsGenie.Alert.alertId}
       tags:
         simple: '1'
     separatecontext: false
