@@ -12,6 +12,7 @@ description: |-
   - PingOne
   - Okta
   - AWS IAM
+  - Cortex XDR
 
   Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 starttaskid: "0"
@@ -70,6 +71,7 @@ tasks:
       - "32"
       - "42"
       - "55"
+      - "64"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1318,6 +1320,114 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 30472917-7825-4a09-89d8-b531bf61958c
+    type: title
+    task:
+      id: 30472917-7825-4a09-89d8-b531bf61958c
+      version: -1
+      name: Cortex XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: ed860996-40a3-4e32-8c7d-e4a961c6b7d5
+    type: condition
+    task:
+      id: ed860996-40a3-4e32-8c7d-e4a961c6b7d5
+      version: -1
+      name: Is Cortex XDR - IR integration enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "66"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 502e6412-583d-4385-85cd-239376609eb8
+    type: regular
+    task:
+      id: 502e6412-583d-4385-85cd-239376609eb8
+      version: -1
+      name: Get account risk score
+      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||xdr-list-risky-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      user_id:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1329,12 +1439,13 @@ view: |-
       "4_3_#default#": 0.1,
       "51_3_#default#": 0.1,
       "56_3_#default#": 0.1,
-      "58_3_#default#": 0.1
+      "58_3_#default#": 0.1,
+      "65_66_yes": 0.59
     },
     "paper": {
       "dimensions": {
         "height": 1495,
-        "width": 3800,
+        "width": 4220,
         "x": -1710,
         "y": -200
       }
@@ -1361,240 +1472,373 @@ inputs:
 outputs:
 - contextPath: Account
   description: The account object.
-  type: unknown
+  type: string
 - contextPath: ActiveDirectory.Users.sAMAccountName
   description: The user's SAM account name.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControl
   description: The user's account control flag.
+  type: string
 - contextPath: ActiveDirectory.Users.mail
   description: The user's email address.
+  type: string
 - contextPath: ActiveDirectory.Users.memberOf
   description: Groups the user is a member of.
+  type: string
 - contextPath: IAM
   description: Generic IAM output.
-  type: unknown
+  type: string
 - contextPath: IdentityIQ.Identity
   description: Identity asset from IdentityIQ.
-  type: unknown
+  type: string
 - contextPath: PingOne.Account
   description: Account in PingID.
-  type: unknown
+  type: string
 - contextPath: ActiveDirectory.Users.manager
   description: The manager of the user.
+  type: string
 - contextPath: IAM.Vendor.active
   description: When true, indicates that the employee's status is active in the 3rd-party integration.
+  type: string
 - contextPath: IAM.Vendor.brand
   description: Name of the integration.
+  type: string
 - contextPath: IAM.Vendor.details
   description: Provides the raw data from the 3rd-party integration.
+  type: string
 - contextPath: IAM.Vendor.email
   description: The employee's email address.
+  type: string
 - contextPath: IAM.Vendor.errorCode
   description: HTTP error response code.
+  type: string
 - contextPath: IAM.Vendor.errorMessage
   description: Reason why the API failed.
+  type: string
 - contextPath: IAM.Vendor.id
   description: The employee's user ID in the app.
+  type: string
 - contextPath: IAM.Vendor.instanceName
   description: Name of the integration instance.
+  type: string
 - contextPath: IAM.Vendor.success
   description: When true, indicates that the command was executed successfully.
+  type: string
 - contextPath: IAM.Vendor.username
   description: The employee's username in the app.
+  type: string
 - contextPath: IdentityIQ.Identity.userName
   description: The IdentityIQ username (primary ID).
+  type: string
 - contextPath: IdentityIQ.Identity.id
   description: The IdentityIQ internal ID (UUID).
+  type: string
 - contextPath: IdentityIQ.Identity.active
   description: Indicates whether the ID is active or inactive in IdentityIQ.
+  type: string
 - contextPath: IdentityIQ.Identity.lastModified
   description: Timestamp of when the identity was last modified.
+  type: string
 - contextPath: IdentityIQ.Identity.displayName
   description: The display name of the identity.
+  type: string
 - contextPath: IdentityIQ.Identity.emails
   description: Array of email objects.
+  type: string
 - contextPath: IdentityIQ.Identity.entitlements
   description: Array of entitlement objects that the identity has.
+  type: string
 - contextPath: IdentityIQ.Identity.roles
   description: Array of role objects that the identity has.
+  type: string
 - contextPath: IdentityIQ.Identity.capabilities
   description: Array of string representations of the IdentityIQ capabilities assigned to this identity.
+  type: string
 - contextPath: IdentityIQ.Identity.name
   description: Account name.
-  type: unknown
+  type: string
 - contextPath: IdentityIQ.Identity.name.formatted
   description: The display name of the identity.
+  type: string
 - contextPath: IdentityIQ.Identity.name.familyName
   description: The last name of the identity.
+  type: string
 - contextPath: IdentityIQ.Identity.name.givenName
   description: The first name of the identity.
+  type: string
 - contextPath: IdentityIQ.Identity.manager
   description: The account's manager returned from IdentityIQ.
-  type: unknown
+  type: string
 - contextPath: IdentityIQ.Identity.manager.userName
   description: The IdentityIQ username (primary ID) of the identity's manager.
+  type: string
 - contextPath: IdentityIQ.Identity.emails.type
   description: Type of the email being returned.
+  type: string
 - contextPath: IdentityIQ.Identity.emails.value
   description: The email address of the identity.
+  type: string
 - contextPath: IdentityIQ.Identity.emails.primary
   description: Indicates if this email address is the identity's primary email.
+  type: string
 - contextPath: PingOne.Account.ID
   description: PingOne account ID.
+  type: string
 - contextPath: PingOne.Account.Username
   description: PingOne account username.
+  type: string
 - contextPath: PingOne.Account.DisplayName
   description: PingOne account display name.
+  type: string
 - contextPath: PingOne.Account.Email
   description: PingOne account email.
+  type: string
 - contextPath: PingOne.Account.Enabled
   description: PingOne account enabled status.
+  type: string
 - contextPath: PingOne.Account.CreatedAt
   description: PingOne account create date.
+  type: string
 - contextPath: PingOne.Account.UpdatedAt
   description: PingOne account updated date.
+  type: string
 - contextPath: Account.PasswordChanged
   description: Timestamp for when the user's password was last changed.
+  type: string
 - contextPath: Account.StatusChanged
   description: Timestamp for when the user's status was last changed.
+  type: string
 - contextPath: Account.Activated
   description: Timestamp for when the user was activated.
+  type: string
 - contextPath: Account.Created
   description: Timestamp for when the user was created.
+  type: string
 - contextPath: Account.Status
   description: Okta account status.
+  type: string
 - contextPath: Account.Username
   description: The user SAM account name.
+  type: string
 - contextPath: Account.Email
   description: The user email address.
+  type: string
 - contextPath: Account.ID
   description: The user distinguished name.
+  type: string
 - contextPath: ActiveDirectory.Users.dn
   description: The user distinguished name.
+  type: string
 - contextPath: ActiveDirectory.Users.displayName
   description: The user display name.
+  type: string
 - contextPath: ActiveDirectory.Users.name
   description: The user common name.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields
   description: The user account control fields.
-  type: unknown
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SCRIPT
   description: Whether the login script is run. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.ACCOUNTDISABLE
   description: Whether the user account is disabled. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.HOMEDIR_REQUIRED
   description: Whether the home folder is required. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.LOCKOUT
   description: Whether the user is locked out. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_NOTREQD
   description: Whether the password is required. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_CANT_CHANGE
   description: Whether the user can change the password. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.ENCRYPTED_TEXT_PWD_ALLOWED
   description: Whether the user can send an encrypted password. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.TEMP_DUPLICATE_ACCOUNT
   description: Whether this is an account for users whose primary account is in another domain. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.NORMAL_ACCOUNT
   description: Whether this is a default account type that represents a typical user. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.INTERDOMAIN_TRUST_ACCOUNT
   description: Whether the account is permitted to trust a system domain that trusts other domains. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.WORKSTATION_TRUST_ACCOUNT
   description: Whether this is a computer account for a computer running Microsoft Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server, Microsoft Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
+  type: string
 - contextPath: Account.Manager
   description: The user manager.
+  type: string
 - contextPath: Account.Groups
   description: Groups for which the user is a member.
+  type: string
 - contextPath: Account.DisplayName
   description: The user display name.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.PARTIAL_SECRETS_ACCOUNT
   description: Whether the account is a read-only domain controller (RODC).
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.TRUSTED_TO_AUTH_FOR_DELEGATION
   description: Whether the account is enabled for delegation.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_REQ_PREAUTH
   description: Whether this account require Kerberos pre-authentication for logging on.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.USE_DES_KEY_ONLY
   description: Whether to restrict this principal to use only Data Encryption Standard (DES) encryption types for keys.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.NOT_DELEGATED
   description: Whether the security context of the user isn't delegated to a service even if the service account is set as trusted for Kerberos delegation.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.TRUSTED_FOR_DELEGATION
   description: Whether the service account (the user or computer account) under which a service runs is trusted for Kerberos delegation.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SMARTCARD_REQUIRED
   description: Whether to force the user to log in by using a smart card.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.MNS_LOGON_ACCOUNT
   description: Whether this is an MNS login account.
+  type: string
 - contextPath: ActiveDirectory.Users.userAccountControlFields.SERVER_TRUST_ACCOUNT
   description: Whether this is a computer account for a domain controller that is a member of this domain. Works for *Windows Server 2012 R2*.
+  type: string
 - contextPath: IAM.Vendor
   description: The returning results vendor.
-  type: unknown
+  type: string
 - contextPath: IAM.Vendor.action
   description: The command name.
+  type: string
 - contextPath: IAM.UserProfile
   description: The user profile.
+  type: string
 - contextPath: SailPointIdentityNow.Account
   description: The IdentityNow account object.
-  type: unknown
+  type: string
 - contextPath: SailPointIdentityNow.Account.id
   description: The IdentityNow internal ID (UUID).
+  type: string
 - contextPath: SailPointIdentityNow.Account.name
   description: Name of the identity on this account.
+  type: string
 - contextPath: SailPointIdentityNow.Account.identityId
   description: The IdentityNow internal identity ID.
+  type: string
 - contextPath: SailPointIdentityNow.Account.nativeIdentity
   description: The IdentityNow internal native identity ID.
+  type: string
 - contextPath: SailPointIdentityNow.Account.sourceId
   description: Source ID that maps this account.
+  type: string
 - contextPath: SailPointIdentityNow.Account.created
   description: Timestamp when the account was created.
+  type: string
 - contextPath: SailPointIdentityNow.Account.modified
   description: Timestamp when the account was last modified.
+  type: string
 - contextPath: SailPointIdentityNow.Account.attributes
   description: Map of variable number of attributes unique to this account.
+  type: string
 - contextPath: SailPointIdentityNow.Account.authoritative
   description: Indicates whether the account is the true source for this identity.
+  type: string
 - contextPath: SailPointIdentityNow.Account.disabled
   description: Indicates whether the account is disabled.
+  type: string
 - contextPath: SailPointIdentityNow.Account.locked
   description: Indicates whether the account is locked.
+  type: string
 - contextPath: SailPointIdentityNow.Account.systemAccount
   description: Indicates whether the account is a system account.
+  type: string
 - contextPath: SailPointIdentityNow.Account.uncorrelated
   description: Indicates whether the account is uncorrelated.
+  type: string
 - contextPath: SailPointIdentityNow.Account.manuallyCorrelated
   description: Indicates whether the account was manually correlated.
+  type: string
 - contextPath: SailPointIdentityNow.Account.hasEntitlements
   description: Indicates whether the account has entitlement.
+  type: string
 - contextPath: UserManagerEmail
   description: The email of the user's manager.
+  type: string
 - contextPath: UserManagerDisplayName
   description: The display name of the user's manager.
-  type: unknown
+  type: string
 - contextPath: MSGraphUser.ID
   description: User's ID.
+  type: string
 - contextPath: MSGraphUser.DisplayName
   description: User's display name.
+  type: string
 - contextPath: MSGraphUser.GivenName
   description: User's given name.
+  type: string
 - contextPath: MSGraphUser.JobTitle
   description: User's job title.
+  type: string
 - contextPath: MSGraphUser.Mail
   description: User's mail address.
+  type: string
 - contextPath: MSGraphUser.Surname
   description: User's surname.
+  type: string
 - contextPath: MSGraphUser.UserPrincipalName
   description: User's principal name.
+  type: string
 - contextPath: MSGraphUserManager.Manager.ID
   description: Manager's user ID.
+  type: string
 - contextPath: MSGraphUserManager.Manager.DisplayName
   description: User's display name.
+  type: string
 - contextPath: MSGraphUserManager.Manager.GivenName
   description: User's given name.
+  type: string
 - contextPath: MSGraphUserManager.Manager.Mail
   description: User's mail address.
+  type: string
 - contextPath: MSGraphUserManager.Manager.Surname
   description: User's surname.
+  type: string
 - contextPath: MSGraphUserManager.Manager.UserPrincipalName
   description: User's principal name.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser
+  description: The account object.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.type
+  description: Form of identification element.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.id
+  description: Identification value of the type field.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.score
+  description: The score assigned to the user.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons
+  description: The account risk objects.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.date created
+  description: Date when the incident was created.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.description
+  description: Description of the incident.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
+  description: The severity of the incident
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
+  description: The incident status
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
+  description: The score.
+  type: string
 tests:
 - Account Enrichment - Generic v2.1 - Test
 fromversion: 6.5.0

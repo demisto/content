@@ -27,13 +27,14 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* cs-falcon-search-device
-* cb-edr-sensors-list
-* ad-get-computer
-* xdr-get-endpoints
 * epo-find-system
-* endpoint
 * extrahop-devices-search
+* cb-edr-sensors-list
+* cs-falcon-search-device
+* xdr-list-risky-hosts
+* xdr-get-endpoints
+* ad-get-computer
+* endpoint
 
 ## Playbook Inputs
 
@@ -179,6 +180,16 @@ This playbook does not use any integrations.
 | Account | The account object of the endpoint that was enriched. | string |
 | Account.Username | The username in the relevant system. | string |
 | Account.Domain | The domain of the account. | string |
+| PaloAltoNetworksXDR.RiskyHost | The endpoint object. | string |
+| PaloAltoNetworksXDR.RiskyHost.type | Form of identification element. | string |
+| PaloAltoNetworksXDR.RiskyHost.id | Identification value of the type field. | string |
+| PaloAltoNetworksXDR.RiskyHost.score | The score assigned to the host. | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons | The endpoint risk objects. | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons.date created | Date when the incident was created. | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons.description | Description of the incident. | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons.severity | The severity of the incident | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons.status | The incident status | string |
+| PaloAltoNetworksXDR.RiskyHost.reasons.points | The score. | string |
 
 ## Playbook Image
 
