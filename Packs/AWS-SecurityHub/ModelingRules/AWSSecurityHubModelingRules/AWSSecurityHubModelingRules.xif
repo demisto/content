@@ -14,3 +14,4 @@ alter
         xdm.observer.product = ProductName,
         xdm.source.cloud.project = AwsAccountId,
         xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AWS;
+        
