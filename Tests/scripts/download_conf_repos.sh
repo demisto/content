@@ -32,10 +32,12 @@ if [ "$?" != "0" ]; then
     TEST_CONF_BRANCH="master"
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
 fi
+cp ./content-test-conf/secrets_build_scripts/google_secret_manager_handler.py ./Tests/scripts
+cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
+cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./Tests/scripts
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
-cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
-cp -r ./content-test-conf/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
+
 
 if [[ "$NIGHTLY" == "true" || "$EXTRACT_PRIVATE_TESTDATA" == "true" ]]; then
     python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf
@@ -48,6 +50,9 @@ if [ "$?" != "0" ]; then
     echo "No such branch in infra: $UNDERSCORE_BRANCH , falling back to master"
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/infra.git
 fi
+cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
+cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
+
 mv ./infra/gcp ./gcp
 rm -rf ./infra
 
