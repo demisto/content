@@ -211,7 +211,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Deletes the specified IAM user. The user must not belong to any groups or have any access keys, signing certificates, or attached policies.
-    name: aws-iam-delete-user
+    name: aws-iam-delete-user-ctf
   - arguments:
     - description: The name of the user whose password you want to update.
       name: userName
@@ -561,7 +561,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Removes the specified user from the specified group.
-    name: aws-iam-remove-user-from-group
+    name: aws-iam-remove-user-from-group-ctf
   - arguments:
     - description: The name of the IAM user to create a password for. The user must already exist.
       name: userName
