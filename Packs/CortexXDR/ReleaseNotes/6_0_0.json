@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"**Important Note**: The following playbook: **Cortex XDR - Cloud IAM User Access Investigation** moved to the 'Cloud Incident Response' pack. The 'Cloud Incident Response' pack will be installed as a dependency of the 'Cortex XDR' pack."}
