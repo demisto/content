@@ -16,13 +16,13 @@ args:
   - name: left
     required: true
     isArray: true
-    description: Value to check if it exists in the right side. can be a single value or a comma-separated list.
+    description: Value to check if it exists in the right side, fully or partially. can be a single value or a comma-separated list.
   - name: right
     required: true
     isArray: true
-    description: Value to check if it includes string or substrings from the left. can be a single value or a comma-separated list.
+    description: Value to check if it is equal to a string or substrings from the left. can be a single value or a comma-separated list.
 scripttarget: 0
 fromversion: 6.9.0
 tests:
-  - No tests (auto formatted)
+  AnyMatch_Test
 dockerimage: demisto/python3:3.10.12.66339
