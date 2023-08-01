@@ -450,6 +450,7 @@ def users_teams_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_id = str(args.get('user_id'))
 
     response = client.users_teams_request(user_id)
+
     output = {'id': user_id, 'teams': response}
     headers = ['id', 'orgId', 'name', 'email', 'avatarUrl', 'memberCount', 'permission']
 
@@ -486,6 +487,7 @@ def users_organization_command(client: Client, args: Dict[str, Any]) -> CommandR
 def user_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_id = str(args.get('user_id'))
     email = args.get('email')
+
     name = args.get('name')
     login = args.get('login')
     theme = args.get('theme')
