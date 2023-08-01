@@ -1,4 +1,3 @@
-import io
 import json
 from datetime import datetime
 
@@ -9,7 +8,7 @@ import TaniumThreatResponseV2
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -499,7 +498,7 @@ def test_deploy_intel(requests_mock):
                        json=api_raw_response)
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.deploy_intel(MOCK_CLIENT, {})
-    assert 'Successfully deployed intel.' == human_readable
+    assert human_readable == 'Successfully deployed intel.'
     assert api_raw_response == raw_response
 
 
