@@ -5,11 +5,11 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Column Header 1",
+            "displayName": "source",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "columnheader1",
+            "key": "source",
             "orgType": "",
             "required": false,
             "script": "",
@@ -18,11 +18,11 @@
             "width": 150
         },
         {
-            "displayName": "Column Header 2",
+            "displayName": "record_exists",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "columnheader2",
+            "key": "record_exists",
             "orgType": "",
             "required": false,
             "script": "",
@@ -31,11 +31,11 @@
             "width": 150
         },
         {
-            "displayName": "Column Header 3",
+            "displayName": "timestamp",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "columnheader3",
+            "key": "timestamp",
             "orgType": "",
             "required": false,
             "script": "",
@@ -47,9 +47,9 @@
     "content": true,
     "defaultRows": [
         {
-            "columnheader1": "source",
-            "columnheader2": "record_exists",
-            "columnheader3": "timestamp"
+            "columnheader1": "",
+            "columnheader2": "",
+            "columnheader3": ""
         },
         {},
         {}
@@ -73,5 +73,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.9.0"
 }
