@@ -1014,8 +1014,10 @@ description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
-files = []
-develop = false
+files = [
+    {file = "demisto_sdk-1.17.2-py3-none-any.whl", hash = "sha256:88656e1fbf99534763573928128e95e1df149574b2b166ee49bb9538a400a863"},
+    {file = "demisto_sdk-1.17.2.tar.gz", hash = "sha256:5712868df57e9c8bd3236a8e210bae7c9a41e3ecee5da859dd75dbc457434f31"},
+]
 
 [package.dependencies]
 autopep8 = "^1.6.0"
@@ -6596,4 +6598,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "abfa6242f78b82c3ef694219f03a7889baea6eb99af30afdeb2013778824f836"
+content-hash = "96ee0474c62ba57eba666848df3f93452cb9c8f0cba6f0152fa985dc20a6e303"
