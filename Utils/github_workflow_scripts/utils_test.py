@@ -237,7 +237,7 @@ def test_exit_get_content_reviewers(
 )
 def test_get_doc_reviewer(
     content_roles: dict[str, Any],
-    expected_doc_reviewer: str
+    expected_doc_reviewer: str | None
 ):
     """
     Test retrieval of doc reviewer.

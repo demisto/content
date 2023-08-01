@@ -2,8 +2,9 @@ name: Create Internal PR from Merged External PR
 on:
   pull_request_target:
     types: [closed]
-    branches:
-      - contrib/**
+    # TODO revert
+    # branches:
+    #   - contrib/**
 
 jobs:
   create_internal_pr:
