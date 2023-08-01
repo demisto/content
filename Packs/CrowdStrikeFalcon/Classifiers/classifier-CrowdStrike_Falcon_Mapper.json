@@ -343,7 +343,7 @@
                 "severity": {
 					"complex": {
 						"filters": [],
-						"root": "fine_score",
+						"root": "severity",
 						"transformers": [
 							{
 								"args": {
@@ -391,7 +391,7 @@
                     "simple": "behaviors.scenario"
                 },
                 "severity": {
-                    "simple": "fine_score"
+                    "simple": "severity"
                 }
             }
         }
