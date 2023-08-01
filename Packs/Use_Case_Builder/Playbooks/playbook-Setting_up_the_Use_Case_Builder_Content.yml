@@ -1,0 +1,282 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Setting up the Use Case Builder Content
+inputs: []
+name: Setting up the Use Case Builder Content
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: edcef372-28a5-430a-8963-fb1c6dd5f71f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: edcef372-28a5-430a-8963-fb1c6dd5f71f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      retry-count:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Getting Started with XSOAR
+      id: 46493bf1-c0c7-4e25-8037-54479522ebdb
+      iscommand: false
+      name: Downloading Getting Started Video
+      scriptName: GettingStartedWithXSOAR
+      tags:
+      - Getting Started with XSOAR
+      type: regular
+      version: -1
+    taskid: 46493bf1-c0c7-4e25-8037-54479522ebdb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: XSOARIncidentFlow
+      listTemplate:
+        simple: XSOARIncidentFlow
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
+        Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+        Available placeholders for example:
+        - ${incident.labels.Email/from}
+        - ${incident.name}
+        - ${object.value}
+        See incident Context Data menu for available placeholders
+
+        Note: Sending emails require an active  Mail Sender integration instance.
+      id: 73be8c66-f0f0-478c-8a8d-83c0f8034ffd
+      iscommand: false
+      name: Initializing Incident Flow
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      version: -1
+    taskid: 73be8c66-f0f0-478c-8a8d-83c0f8034ffd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      xsoarincidentflow:
+        simple: ${lists.XSOARIncidentFlow}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 2d307b76-af0a-4a23-8568-2b768a068bf0
+      iscommand: true
+      name: Display Incident Flow Html
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2d307b76-af0a-4a23-8568-2b768a068bf0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+      - "1"
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dee71615-3148-4bc7-87c4-ca08110b31fa
+      iscommand: false
+      name: Setting Use Case Development Deadline SLA and Timers
+      type: title
+      version: -1
+      description: ''
+    taskid: dee71615-3148-4bc7-87c4-ca08110b31fa
+    timertriggers:
+    - action: start
+      fieldname: usecasebuilderdevelopmentdeadline
+    - action: start
+      fieldname: usecasedevelopmenttimer
+    - action: pause
+      fieldname: usecasetestingtimer
+    - action: pause
+      fieldname: usecasepreproductiontimer
+    - action: pause
+      fieldname: usecaseproductiontimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ecc118e-02da-4b3e-87f1-1d44133ae5e3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 7ecc118e-02da-4b3e-87f1-1d44133ae5e3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      usecasedevelopmentstage:
+        simple: In Development
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 8b939430-e087-4ca9-85b5-ab4a190a4b3c
+      iscommand: true
+      name: Setting the use case development stage to In Development
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 8b939430-e087-4ca9-85b5-ab4a190a4b3c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

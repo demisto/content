@@ -18,7 +18,7 @@
     "openEnded": false,
     "ownerOnly": false,
     "required": false,
-    "script": "StopUseCaseDevelopmentTimer",
+    "script": "d74937a1-ad19-4fc2-8939-7940f89c1c6f",
     "sla": 129600,
     "system": false,
     "threshold": 1440,
@@ -27,5 +27,8 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "propagationLabels": [
+        "all"
+    ]
 }

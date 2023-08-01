@@ -19,3 +19,5 @@ def main(incident):
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     incident = demisto.incidents()[0]
     main(incident)
+
+register_module_line('StopUseCaseDevelopmentTimer', 'end', __line__())

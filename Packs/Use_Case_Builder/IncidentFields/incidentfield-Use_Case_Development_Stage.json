@@ -18,7 +18,7 @@
     "openEnded": false,
     "ownerOnly": false,
     "required": false,
-    "script": "UseCaseDevelopmentTimers",
+    "script": "42f1ade3-2f31-4def-8ce1-70454d3d8529",
     "selectValues": [
         "In Development",
         "Testing",
@@ -34,5 +34,8 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "propagationLabels": [
+        "all"
+    ]
 }

@@ -6,9 +6,8 @@ args:
 commonfields:
   id: DeleteAndExcludeIndicators
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.66339
 enabled: true
-comment: ''
 name: DeleteAndExcludeIndicators
 runas: DBotWeakRole
 runonce: false
@@ -20,3 +19,6 @@ type: python
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""

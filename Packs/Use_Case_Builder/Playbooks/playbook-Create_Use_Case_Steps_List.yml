@@ -1,0 +1,159 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Create Use Case Steps List
+inputs: []
+name: Create Use Case Steps List
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9dc3460a-cf6e-4241-873e-997f8d2c9ab5
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 9dc3460a-cf6e-4241-873e-997f8d2c9ab5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: |-
+          {
+              "id": "UseCaseSteps",
+              "version": -1,
+              "name": "UseCaseSteps",
+              "type": "json"
+          }
+      uri:
+        simple: /lists/save
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: 4f682230-b259-42f3-8963-36284d127bf7
+      iscommand: true
+      name: Setting the list as an json
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: 4f682230-b259-42f3-8963-36284d127bf7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 170
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 17c47d9c-a022-4538-82ef-f52ff650cd26
+      iscommand: false
+      name: Creating the actual list
+      scriptName: CreateUseCaseStepsList
+      type: regular
+      version: -1
+    taskid: 17c47d9c-a022-4538-82ef-f52ff650cd26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 310
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bd5734fc-d2a1-49c9-8889-f7aba40f129e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: bd5734fc-d2a1-49c9-8889-f7aba40f129e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 480
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 380,
+        "x": 760,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

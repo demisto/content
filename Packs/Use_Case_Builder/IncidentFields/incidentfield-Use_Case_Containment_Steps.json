@@ -4,16 +4,16 @@
         "Use Case Builder"
     ],
     "caseInsensitive": true,
-    "cliName": "usecasebuilderusecasecontainmentsteps",
+    "cliName": "usecasecontainmentsteps",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_usecasebuilderusecasecontainmentsteps",
+    "id": "incident_usecasecontainmentsteps",
     "isReadOnly": false,
     "locked": false,
-    "name": "Use Case Builder Use Case Containment Steps",
+    "name": "Use Case Containment Steps",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -44,5 +44,8 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "propagationLabels": [
+        "all"
+    ]
 }

@@ -1,9 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import urllib3
-
 # disable insecure warnings
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 WELCOME_MESSAGE = '''\n
 # Welcome to the XSOAR Use Case Builder!

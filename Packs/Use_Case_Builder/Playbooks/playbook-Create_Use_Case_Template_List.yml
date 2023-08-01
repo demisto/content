@@ -1,0 +1,159 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Create Use Case Template List
+inputs: []
+name: Create Use Case Template List
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5c113ede-87ee-4005-8556-a06f498e10ff
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5c113ede-87ee-4005-8556-a06f498e10ff
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: |-
+          {
+              "id": "UseCaseTemplate",
+              "version": -1,
+              "name": "UseCaseTemplate",
+              "type": "html"
+          }
+      uri:
+        simple: /lists/save
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: 1d8d4f53-5e8e-488a-83e3-6bc26225d083
+      iscommand: true
+      name: Setting the list as an html
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: 1d8d4f53-5e8e-488a-83e3-6bc26225d083
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 002e6d20-9405-466b-8f54-ae5e62240c90
+      iscommand: false
+      name: Creating the actual list
+      scriptName: CreateUseCaseTemplateList
+      type: regular
+      version: -1
+    taskid: 002e6d20-9405-466b-8f54-ae5e62240c90
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 63529643-68c2-4c96-83e6-c06aff696d1a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 63529643-68c2-4c96-83e6-c06aff696d1a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

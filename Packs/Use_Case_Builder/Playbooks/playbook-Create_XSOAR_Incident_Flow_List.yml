@@ -1,0 +1,159 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Create XSOAR Incident Flow List
+inputs: []
+name: Create XSOAR Incident Flow List
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 107a8439-fa83-4073-80f3-706f00b0031a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 107a8439-fa83-4073-80f3-706f00b0031a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: |-
+          {
+              "id": "XSOARIncidentFlow",
+              "version": -1,
+              "name": "XSOARIncidentFlow",
+              "type": "html"
+          }
+      uri:
+        simple: /lists/save
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: 9856d0d1-79d2-45a6-849d-ac5019506120
+      iscommand: true
+      name: Setting the list as an html
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: 9856d0d1-79d2-45a6-849d-ac5019506120
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 170
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9f610338-87ca-4058-8591-3ed3d7da1e6e
+      iscommand: false
+      name: Creating the actual list
+      scriptName: CreateXSOARIncidentFlowList
+      type: regular
+      version: -1
+    taskid: 9f610338-87ca-4058-8591-3ed3d7da1e6e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 310
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c0309e8f-1c05-47f4-86fb-e3ef56883439
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c0309e8f-1c05-47f4-86fb-e3ef56883439
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 480
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 380,
+        "x": 760,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

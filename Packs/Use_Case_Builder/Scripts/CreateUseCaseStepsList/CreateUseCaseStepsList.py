@@ -121,4 +121,5 @@ usecasestepsdata = """{
 }
 """
 
+
 demisto.executeCommand("createList", {"listName": "UseCaseSteps", "listData": usecasestepsdata})

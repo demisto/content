@@ -1,0 +1,834 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Takes the use case selected category and auto creates an example playbook
+id: Generate Playbooks Based On Category
+inputs: []
+name: Generate Playbooks Based On Category
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 87f05780-e198-4f9d-8604-e328355ebe36
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 87f05780-e198-4f9d-8604-e328355ebe36
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 1545,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: copiedplaybookjson=response
+      uri:
+        simple: /playbook/clone/Phishing%20-%20Generic%20v3
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: c33402cc-68c4-47c5-8bb5-8ee7f55b1213
+      iscommand: true
+      name: Copy the generic Phishing playbook
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: c33402cc-68c4-47c5-8bb5-8ee7f55b1213
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasecategory
+          operator: isEqualString
+          right:
+            value:
+              simple: Phishing
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasetype
+          operator: isEqualString
+          right:
+            value:
+              simple: Out-of-the-Box Use Case
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 062ad4b5-9103-4cb6-8f94-3a73e8881a89
+      iscommand: false
+      name: Is the category Phishing?
+      type: condition
+      version: -1
+    taskid: 062ad4b5-9103-4cb6-8f94-3a73e8881a89
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasecategory
+          operator: isEqualString
+          right:
+            value:
+              simple: Case Management
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasetype
+          operator: isEqualString
+          right:
+            value:
+              simple: Out-of-the-Box Use Case
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      retry-count:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f267b3eb-9179-4d27-830b-df8349e01a95
+      iscommand: false
+      name: Is the category Case Management
+      type: condition
+      version: -1
+    taskid: f267b3eb-9179-4d27-830b-df8349e01a95
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasecategory
+          operator: isEqualString
+          right:
+            value:
+              simple: Data Enrichment and Threat Intel
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasetype
+          operator: isEqualString
+          right:
+            value:
+              simple: Out-of-the-Box Use Case
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      retry-count:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 877c5aac-4e10-445b-8bc3-a8d91bc329e3
+      iscommand: false
+      name: Is the category Data Enrichment and Threat Intel?
+      type: condition
+      version: -1
+    taskid: 877c5aac-4e10-445b-8bc3-a8d91bc329e3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasecategory
+          operator: isEqualString
+          right:
+            value:
+              simple: Malware
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasetype
+          operator: isEqualString
+          right:
+            value:
+              simple: Out-of-the-Box Use Case
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      retry-count:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6b21258-3330-42ba-8285-f24ac3a3e96e
+      iscommand: false
+      name: Is the category Malware?
+      type: condition
+      version: -1
+    taskid: a6b21258-3330-42ba-8285-f24ac3a3e96e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 195
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasecategory
+          operator: isEqualString
+          right:
+            value:
+              simple: Network Security
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasetype
+          operator: isEqualString
+          right:
+            value:
+              simple: Out-of-the-Box Use Case
+      label: "yes"
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      retry-count:
+        simple: "0"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c4f0b18f-871b-48e7-8a64-e452b1a4f598
+      iscommand: false
+      name: Is the category Network Security?
+      type: condition
+      version: -1
+    taskid: c4f0b18f-871b-48e7-8a64-e452b1a4f598
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 195
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: copiedplaybookjson=response
+      uri:
+        simple: /playbook/clone/playbook/clone/Case%20Management%20-%20Generic
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: 583d5b8b-9b66-41fc-8e85-e3842b92d3bf
+      iscommand: true
+      name: Copy the generic Case Management playbook
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: 583d5b8b-9b66-41fc-8e85-e3842b92d3bf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: copiedplaybookjson=response
+      uri:
+        simple: /playbook/clone/TIM%20-%20Indicator%20Auto%20Processing
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: eb5bfab7-5ead-4460-84d6-808fd9e5a3e1
+      iscommand: true
+      name: Copy the generic Threat Intel Enrichment playbook
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: eb5bfab7-5ead-4460-84d6-808fd9e5a3e1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: copiedplaybookjson=response
+      uri:
+        simple: /playbook/clone/Ransomware%20Playbook%20-%20Manual
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: 9cfdf030-7693-4f74-8766-1d45db0424d4
+      iscommand: true
+      name: Copy the generic Ransomware playbook
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: 9cfdf030-7693-4f74-8766-1d45db0424d4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 370
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: copiedplaybookjson=response
+      uri:
+        simple: /playbook/clone/Block%20IP%20-%20Generic%20v3
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: c297ac6f-3ad1-478c-83e2-fccbf7f87a99
+      iscommand: true
+      name: Copy the generic Network Security playbook
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: c297ac6f-3ad1-478c-83e2-fccbf7f87a99
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 370
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Creating a new (blank) Use Case
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 3b095b88-9b28-41f2-8d56-781d6a268ce5
+      iscommand: false
+      name: Finished Cloning Playbooks
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 3b095b88-9b28-41f2-8d56-781d6a268ce5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 370
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.usecasetype
+          operator: isEqualString
+          right:
+            value:
+              simple: New Use Case
+      label: "yes"
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2c2bd62d-80f0-4a3b-810a-5007bbe2a312
+      iscommand: false
+      name: Is it a New Use Case?
+      type: condition
+      version: -1
+    taskid: 2c2bd62d-80f0-4a3b-810a-5007bbe2a312
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 195
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Not using OOTB Content
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 8b77722d-5c72-41d4-8247-85b0951b79d2
+      iscommand: false
+      name: Creating a new blank use case
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 8b77722d-5c72-41d4-8247-85b0951b79d2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 370
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4672b1b6-edf9-4d2e-8d31-c9d89810e302
+      iscommand: false
+      name: Running Use Case Generator
+      scriptName: UseCasePlaybookAutoGenerator
+      type: regular
+      version: -1
+    taskid: 4672b1b6-edf9-4d2e-8d31-c9d89810e302
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 545
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8a171102-45e7-4598-8b6e-3f58676fa04f
+      iscommand: false
+      name: Created Auto Generated Use Case
+      scriptName: PlaybookAutoGeneratorDynamicSectionMessage
+      type: regular
+      version: -1
+    taskid: 8a171102-45e7-4598-8b6e-3f58676fa04f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 895
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      usecasebuilderautogeneratorkey:
+        simple: "1"
+      usecasebuilderplaybookgeneratorkey:
+        simple: "1"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 65929244-888e-4188-85cc-4b8d04876a4f
+      iscommand: true
+      name: Setting up Auto Generation Information Section
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 65929244-888e-4188-85cc-4b8d04876a4f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2640,
+          "y": 720
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: copiedplaybookjson.name
+      value:
+        simple: ${incident.usecasename}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: faec8115-b5ba-4ae1-8f00-a1e2667be755
+      iscommand: false
+      name: Set new playbook Name
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: faec8115-b5ba-4ae1-8f00-a1e2667be755
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 600
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: copiedplaybookjson.nameRaw
+      value:
+        simple: ${incident.usecasename}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: a0c5a9ac-a0c6-4af7-8660-44f5045109de
+      iscommand: false
+      name: Set new playbook Raw Name
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: a0c5a9ac-a0c6-4af7-8660-44f5045109de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 750
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        complex:
+          root: copiedplaybookjson
+          transformers:
+          - operator: StringToArray
+      uri:
+        simple: /playbook/save
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: 2a569427-34b8-4fa3-8675-133122b983df
+      iscommand: true
+      name: Rename copied playbook
+      script: '|||core-api-post'
+      type: regular
+      version: -1
+    taskid: 2a569427-34b8-4fa3-8675-133122b983df
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_7_yes": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 2970,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

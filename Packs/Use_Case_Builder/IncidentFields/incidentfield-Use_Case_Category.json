@@ -20,12 +20,12 @@
     "ownerOnly": false,
     "required": false,
     "selectValues": [
-        "None",
         "Phishing",
         "Malware",
         "Case Management",
         "Data Enrichment and Threat Intel",
-        "Network Security"
+        "Network Security",
+        "Other"
     ],
     "sla": 0,
     "system": false,
@@ -35,5 +35,8 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "propagationLabels": [
+        "all"
+    ]
 }

@@ -1,0 +1,716 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Enrich entities using one or more integrations.
+id: Entity Enrichment - Generic v4
+inputs:
+- description: The IP addresses to enrich
+  key: IP
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Address
+      root: IP
+      transformers:
+      - operator: uniq
+- description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  key: InternalRange
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: File MD5 to enrich
+  key: MD5
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: MD5
+      root: File
+      transformers:
+      - operator: uniq
+- description: File SHA256 to enrich
+  key: SHA256
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: SHA256
+      root: File
+      transformers:
+      - operator: uniq
+- description: File SHA1 to enrich
+  key: SHA1
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: SHA1
+      root: File
+      transformers:
+      - operator: uniq
+- description: URL to enrich
+  key: URL
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Data
+      root: URL
+      transformers:
+      - operator: uniq
+- description: The email addresses to enrich
+  key: Email
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Email.Address
+      root: Account
+      transformers:
+      - operator: uniq
+- description: The hostname to enrich
+  key: Hostname
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Hostname
+      root: Endpoint
+      transformers:
+      - operator: uniq
+- description: The username to enrich
+  key: Username
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Username
+      root: Account
+      transformers:
+      - operator: uniq
+- description: The domain name to enrich
+  key: Domain
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: Name
+      root: Domain
+      transformers:
+      - operator: uniq
+- description: Determines whether the IP Enrichment - Generic playbook should convert IP addresses to hostnames using a DNS query. True - Resolves the IP addresses to hostnames. False - Does not resolve the IP addresses to hostnames.
+  key: ResolveIP
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: A CSV list of internal domains. The list will be used to determine whether an email address is internal or external.
+  key: InternalDomains
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: CVE ID to enrich.
+  key: CVE
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: ID
+      root: CVE
+- description: Should the system take safe screenshots of input URLs?
+  key: RasterizeURL
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+- description: Should the system perform SSL certificate verification on the URLs?
+  key: VerifyURL
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: "Define if you would like to use the !file, !ip, !domain, !endpoint commands. If you want to set only specific commands run reputation, please leave this as False and edit the values inside entity enrichment playbook \nNote: This input should be used whenever there is no auto-extract enabled in the investigation flow.\nPossible values: True / False."
+  key: UseReputationCommand
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+name: Entity Enrichment - Generic v4
+outputs:
+- contextPath: IP
+  description: The IP object.
+  type: unknown
+- contextPath: Endpoint
+  description: The endpoint object.
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname that was enriched.
+  type: string
+- contextPath: Endpoint.OS
+  description: The endpoint's operating system.
+  type: string
+- contextPath: Endpoint.IP
+  description: A list of endpoint IP addresses.
+- contextPath: Endpoint.MAC
+  description: A list of endpoint MAC addresses.
+- contextPath: Endpoint.Domain
+  description: The endpoint domain name.
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.SHA1
+  description: SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file.
+  type: string
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+  type: string
+- contextPath: File.Malicious
+  description: Whether the file is malicious.
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision.
+  type: string
+- contextPath: URL
+  description: The URL object.
+  type: uknown
+- contextPath: URL.Data
+  description: The enriched URL.
+  type: string
+- contextPath: URL.Malicious
+  description: Whether the detected URL was malicious.
+  type: unknown
+- contextPath: URL.Vendor
+  description: Vendor that labeled the URL as malicious.
+  type: string
+- contextPath: URL.Description
+  description: Additional information for the URL.
+  type: string
+- contextPath: Domain
+  description: The domain object.
+  type: unknown
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: Account.Email
+  description: The email of the account.
+  type: unknown
+- contextPath: Account.Email.NetworkType
+  description: The email account NetworkType (Internal/External).
+  type: string
+- contextPath: Account.Email.Distance
+  description: 'The object that contains the distance between the email domain and the compared domain. '
+  type: unknown
+- contextPath: Account.Email.Distance.Domain
+  description: The compared domain.
+  type: string
+- contextPath: Account.Email.Distance.Value
+  description: 'The distance between the email domain and the compared domain. '
+  type: number
+- contextPath: ActiveDirectory.Users
+  description: An object containing information about the user from Active Directory.
+  type: unknown
+- contextPath: ActiveDirectory.Users.sAMAccountName
+  description: The user's samAccountName.
+- contextPath: ActiveDirectory.Users.userAccountControl
+  description: The user's account control flag.
+- contextPath: ActiveDirectory.Users.mail
+  description: The user's email address.
+- contextPath: ActiveDirectory.Users.memberOf
+  description: Groups the user is a member of.
+- contextPath: CylanceProtectDevice
+  description: The device information about the hostname that was enriched using Cylance Protect v2.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+      - "18"
+      - "19"
+      - "22"
+      - "23"
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 99a641aa-56e3-4324-8a64-7575fba7c826
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 99a641aa-56e3-4324-8a64-7575fba7c826
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 70
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e90a6d2c-da12-47d0-8c44-f574cef43b11
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e90a6d2c-da12-47d0-8c44-f574cef43b11
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 871
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Enrich IP using one or more integrations.
+
+        IP enrichment includes:
+        * Resolve IP to Hostname (DNS)
+        * Threat information
+        * Separate internal and external addresses
+        * IP reputation
+        * For internal addresses, get host information
+      id: 4c52418e-647a-471f-81c7-08ba93c66257
+      iscommand: false
+      name: IP Enrichment - Generic v2
+      playbookId: IP Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: 4c52418e-647a-471f-81c7-08ba93c66257
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 225
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 062d86df-407a-4d82-850d-149fb846cf81
+      iscommand: false
+      name: File Enrichment - Generic v2
+      playbookId: File Enrichment - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 062d86df-407a-4d82-850d-149fb846cf81
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 225
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "False"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 58d7e4b1-b7d1-4dcd-82d9-a5ec804b94fb
+      iscommand: false
+      name: URL Enrichment - Generic v2
+      playbookId: URL Enrichment - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 58d7e4b1-b7d1-4dcd-82d9-a5ec804b94fb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 386
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Enrich domains using one or more integrations.
+        Domain enrichment includes:
+        * Threat information
+      id: 7d500426-f787-48df-80e3-342ae6e84213
+      iscommand: false
+      name: Domain Enrichment - Generic v2
+      playbookId: Domain Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: 7d500426-f787-48df-80e3-342ae6e84213
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 700
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: inputs.Email
+          transformers:
+          - operator: uniq
+      InternalDomains:
+        complex:
+          root: inputs.InternalDomains
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 384ff4cb-de92-464d-8b7e-ee1b3bd16c67
+      iscommand: false
+      name: Email Address Enrichment - Generic v2.1
+      playbookId: Email Address Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 384ff4cb-de92-464d-8b7e-ee1b3bd16c67
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 386
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "26"
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bb58f539-0bbd-4ef6-8bbc-7bdfe5b11003
+      iscommand: false
+      name: Account Enrichment - Generic v2.1
+      playbookId: Account Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+      description: ''
+    taskid: bb58f539-0bbd-4ef6-8bbc-7bdfe5b11003
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 545
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14f2f946-3bd8-44f5-832f-ca84e373e2be
+      iscommand: false
+      name: Endpoint Enrichment - Generic v2.1
+      playbookId: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 14f2f946-3bd8-44f5-832f-ca84e373e2be
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 545
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cve_id:
+        complex:
+          root: inputs.CVE
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook performs CVE Enrichment using the following integrations:
+        - VulnDB
+        - CVE Search
+        - IBM X-Force Exchange
+      id: cec5f740-c040-4074-8663-4b84bad1e72e
+      iscommand: false
+      name: CVE Enrichment - Generic v2
+      playbookId: CVE Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: cec5f740-c040-4074-8663-4b84bad1e72e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 700
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 866,
+        "width": 800,
+        "x": 70,
+        "y": 70
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

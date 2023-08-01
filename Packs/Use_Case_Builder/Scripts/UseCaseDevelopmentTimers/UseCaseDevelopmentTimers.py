@@ -3,29 +3,26 @@ from CommonServerPython import *  # noqa: F401
 
 
 def stop_all_timers_except_backlog():
-    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasepreproductiontimer",
-                      "usecasebuilderdevelopmentdeadline", "usecaseproductiontimer"]
+    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer",
+                      "usecasepreproductiontimer", "usecasebuilderdevelopmentdeadline", "usecaseproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("pauseTimer", {"timerField": timer})
 
 
 def stop_all_timers_except_production():
-    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasebacklogtimer",
-                      "usecasepreproductiontimer"]
+    timers_to_stop = ["usecasedevelopmenttimer", "usecasetestingtimer", "usecasebacklogtimer", "usecasepreproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("stopTimer", {"timerField": timer})
 
 
 def stop_all_timers_except_development():
-    timers_to_stop = ["usecasetestingtimer", "usecasepreproductiontimer", "usecasebacklogtimer",
-                      "usecaseproductiontimer"]
+    timers_to_stop = ["usecasetestingtimer", "usecasepreproductiontimer", "usecasebacklogtimer", "usecaseproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("pauseTimer", {"timerField": timer})
 
 
 def stop_all_timers_except_testing():
-    timers_to_stop = ["usecasedevelopmenttimer", "usecasepreproductiontimer", "usecasebacklogtimer",
-                      "usecaseproductiontimer"]
+    timers_to_stop = ["usecasedevelopmenttimer", "usecasepreproductiontimer", "usecasebacklogtimer", "usecaseproductiontimer"]
     for timer in timers_to_stop:
         demisto.executeCommand("pauseTimer", {"timerField": timer})
 
@@ -72,6 +69,9 @@ def main(incident):
     except Exception as e:  # error handling
         err_msg = f'Encountered an error while running the script: [{e}]'
         return_error(err_msg, error=e)
+
+# if __name__ in ('__main__', '__builtin__', 'builtins'):
+#   incident = demisto.incidents
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

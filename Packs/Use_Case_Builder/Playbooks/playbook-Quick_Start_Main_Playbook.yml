@@ -1,0 +1,1313 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Quick Start Main Playbook
+inputs:
+- description: You can use XSOAR, ServiceNow, Jira. Make sure to setup the ServiceNow and Jira integrations if you opt to choose these options.
+  key: Ticketing_type
+  playbookInputQuery:
+  required: false
+  value:
+    simple: XSOAR
+name: Quick Start Main Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0400796e-8606-4730-8f0f-352ba7c1e015
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0400796e-8606-4730-8f0f-352ba7c1e015
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CloseSimilar:
+        simple: ".8"
+      closeReason:
+        simple: Closed by Dedup Playbook within inc ${incident.id}
+      fromDate:
+        simple: 1 months ago
+      handleSimilar:
+        simple: Link and Close
+      limit:
+        simple: "200"
+      method:
+        simple: Fields
+      minimunIncidentSimilarity:
+        simple: "0.2"
+      query:
+        simple: -status:closed -category:job
+      showIncidentSimilarityForAllFields:
+        simple: "True"
+      similarTextField:
+        simple: ${Similar Fields.Answers.0}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
+      id: 01325181-16e0-4e4e-8d26-e08b84b65eeb
+      iscommand: false
+      name: Dedup - Generic v4
+      playbookId: Dedup - Generic v4
+      type: playbook
+      version: -1
+    taskid: 01325181-16e0-4e4e-8d26-e08b84b65eeb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1155
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: Which type of event generated this incident?
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: subclassification
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Which type of event generated this incident?
+        options: []
+        optionsarg:
+        - simple: Other
+        - simple: Port Scan
+        - simple: Malware
+        - simple: Remote Code Execution
+        - simple: CASB (Cloud Security)
+        - simple: Impossible Traveler
+        - simple: Multiple Failed Login Attempts
+        placeholder: Other
+        readonly: false
+        required: false
+        tooltip: Does this incident have a “subclassification” that would affect the steps taken later in this playbook?
+        type: multiSelect
+      sender: Your SOC team
+      title: Subclassification
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Which type of event generated this incident?
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70cae5af-e6a9-478b-8184-0fbf72601fc7
+      iscommand: false
+      name: Which type of event generated this incident?
+      type: collection
+      version: -1
+    taskid: 70cae5af-e6a9-478b-8184-0fbf72601fc7
+    timertriggers:
+    - action: start
+      fieldname: triagesla
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 485
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Do you want to look for existing incidents that are similar to this one?
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#default#':
+      - "14"
+      "Yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e971f1af-7731-41c3-81c9-e8a19314dea2
+      iscommand: false
+      name: Perform Deduplication?
+      type: condition
+      version: -1
+    taskid: e971f1af-7731-41c3-81c9-e8a19314dea2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 805
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    form:
+      description: Provide a CSV list of fields to evaluate for deduplication
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Provide a CSV list of fields to evaluate for deduplication
+        options: []
+        optionsarg: []
+        placeholder: name,commandline,URL
+        readonly: false
+        required: true
+        tooltip: Provide a CSV list of fields to evaluate for deduplication
+        type: shortText
+      sender: ""
+      title: Similar Fields
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e9bd26c0-dd76-44ea-8ca8-63536d8b5b0a
+      iscommand: false
+      name: Provide Similar Fields
+      type: collection
+      version: -1
+    taskid: e9bd26c0-dd76-44ea-8ca8-63536d8b5b0a
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 980
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f8c0fa47-f5d3-48c8-8c5c-67af4db194a8
+      iscommand: false
+      name: False Positive
+      type: title
+      version: -1
+      description: ''
+    taskid: f8c0fa47-f5d3-48c8-8c5c-67af4db194a8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2465
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ae28464a-42c9-456e-8239-3e4f3df9b23d
+      iscommand: false
+      name: Sub Classification
+      type: title
+      version: -1
+      description: ''
+    taskid: ae28464a-42c9-456e-8239-3e4f3df9b23d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c2d04d24-3171-43e0-86e4-2052c4b8249c
+      iscommand: false
+      name: Deduplication
+      type: title
+      version: -1
+      description: ''
+    taskid: c2d04d24-3171-43e0-86e4-2052c4b8249c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 660
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "28"
+      "Yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4408e0d6-64c3-4867-8e2a-d782b3c0542f
+      iscommand: false
+      name: Close as False Positive?
+      type: condition
+      version: -1
+    taskid: 4408e0d6-64c3-4867-8e2a-d782b3c0542f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2610
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: a8af0e6c-2db4-419f-808b-bfa71b0d921c
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: a8af0e6c-2db4-419f-808b-bfa71b0d921c
+    timertriggers:
+    - action: stop
+      fieldname: timetoremediate
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3280
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    form:
+      description: Choose the reason that this incident is being closed
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Choose the reason that this incident is being closed
+        options: []
+        optionsarg:
+        - {}
+        - simple: False Positive
+        - simple: False Positive - Rule Tuning Required
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: Choose the reason that this incident is being closed
+        type: singleSelect
+      sender: ""
+      title: Close Reason
+      totalanswers: 0
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Provide Close Reason
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: closeReason
+      value:
+        simple: False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8333bc35-e3e4-4114-8502-0ccb3900d885
+      iscommand: false
+      name: Select Close Reason
+      type: collection
+      version: -1
+    taskid: 8333bc35-e3e4-4114-8502-0ccb3900d885
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2930
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e14924e6-c389-494b-8a34-2011d43f2f88
+      iscommand: false
+      name: Ticketing
+      type: title
+      version: -1
+      description: ''
+    taskid: e14924e6-c389-494b-8a34-2011d43f2f88
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1330
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Ticketing_type
+          operator: isEqualString
+          right:
+            value:
+              simple: XSOAR
+      label: XSOAR
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Ticketing_type
+          operator: isEqualString
+          right:
+            value:
+              simple: ServiceNow
+      label: ServiceNow
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Ticketing_type
+          operator: isEqualString
+          right:
+            value:
+              simple: Jira
+      label: Jira
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Jira:
+      - "18"
+      ServiceNow:
+      - "17"
+      XSOAR:
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ceb72480-45e8-4611-8d78-4176a1a4beed
+      iscommand: false
+      name: What is  the selected Ticketing type?
+      type: condition
+      version: -1
+    taskid: ceb72480-45e8-4611-8d78-4176a1a4beed
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1475
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bed197bd-7df0-4fbf-8a35-b50c947753ca
+      iscommand: false
+      name: XSOAR Ticketing
+      type: title
+      version: -1
+      description: ''
+    taskid: bed197bd-7df0-4fbf-8a35-b50c947753ca
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1810
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eb934503-5eb7-4c28-826b-f61ffb526549
+      iscommand: false
+      name: ServiceNow Ticketing
+      type: title
+      version: -1
+      description: ''
+    taskid: eb934503-5eb7-4c28-826b-f61ffb526549
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1650
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 00e04a74-95d6-45d8-8f30-f231c5ec6800
+      iscommand: false
+      name: Jira Ticketing
+      type: title
+      version: -1
+      description: ''
+    taskid: 00e04a74-95d6-45d8-8f30-f231c5ec6800
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1650
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      caller_id:
+        simple: ${Ticket Info ServiceNow .Answers.0}
+      description:
+        simple: ${Ticket Info ServiceNow .Answers.1}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates new ServiceNow ticket.
+      id: 34bcf0f5-11a3-4aac-831a-a1aacc6106b2
+      iscommand: true
+      name: Create ServiceNow Ticket
+      script: '|||servicenow-create-ticket'
+      type: regular
+      version: -1
+    taskid: 34bcf0f5-11a3-4aac-831a-a1aacc6106b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1970
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignee:
+        simple: ${Ticket Info Jira .Answers.1}
+      summary:
+        simple: ${Ticket Info Jira .Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a new issue in Jira.
+      id: 66ea4e4d-ca54-45dd-8786-9f39884970dd
+      iscommand: true
+      name: Create Jira Ticket
+      script: '|||jira-create-issue'
+      type: regular
+      version: -1
+    taskid: 66ea4e4d-ca54-45dd-8786-9f39884970dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1970
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy:
+        simple: online
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      id: 2d9af23c-e2a1-4a66-8e7d-cdf860c99ec0
+      iscommand: false
+      name: AssignAnalystToIncident
+      scriptName: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 2d9af23c-e2a1-4a66-8e7d-cdf860c99ec0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1970
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    form:
+      description: Gathered required info to create a ServiceNow Ticket
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: description
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Provide info for field - description
+        options: []
+        optionsarg: []
+        placeholder: myDescription
+        readonly: false
+        required: false
+        tooltip: Provide required info to create a ServiceNow Ticket
+        type: shortText
+      - defaultrows: []
+        fieldassociated: userid
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Provide info for field - userID
+        options: []
+        optionsarg: []
+        placeholder: myUserId
+        readonly: false
+        required: false
+        tooltip: Provide required info to create a ServiceNow Ticket
+        type: shortText
+      sender: ""
+      title: Ticket Info ServiceNow
+      totalanswers: 0
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Provide info for ServiceNow Ticket
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7eed86c5-5be3-48ef-8d5b-cd6fe161032e
+      iscommand: false
+      name: Gathered required info to create a ServiceNow Ticket
+      type: collection
+      version: -1
+    taskid: 7eed86c5-5be3-48ef-8d5b-cd6fe161032e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1795
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    form:
+      description: Gathered required info to create a Jira Ticket
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: description
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Provide info for field - description
+        options: []
+        optionsarg: []
+        placeholder: myDescription
+        readonly: false
+        required: false
+        tooltip: Provide required info to create a ServiceNow Ticket
+        type: shortText
+      - defaultrows: []
+        fieldassociated: userid
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Provide info for field - userID
+        options: []
+        optionsarg: []
+        placeholder: myUserId
+        readonly: false
+        required: false
+        tooltip: Provide required info to create a ServiceNow Ticket
+        type: shortText
+      sender: ""
+      title: Ticket Info Jira
+      totalanswers: 0
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Provide info for Jira Ticket
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 34a9b3e1-1aad-4ae2-8c06-b4a822a6ce89
+      iscommand: false
+      name: Gathered required info to create a Jira Ticket
+      type: collection
+      version: -1
+    taskid: 34a9b3e1-1aad-4ae2-8c06-b4a822a6ce89
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1795
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9ed4aacf-9be3-4c37-8a66-29f11ee6158d
+      iscommand: false
+      name: Triage
+      type: title
+      version: -1
+      description: ''
+    taskid: 9ed4aacf-9be3-4c37-8a66-29f11ee6158d
+    timertriggers:
+    - action: start
+      fieldname: timetotriage
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 16298af9-b758-4184-8c93-2b7f75fe4a62
+      iscommand: false
+      name: Investigate
+      type: title
+      version: -1
+      description: ''
+    taskid: 16298af9-b758-4184-8c93-2b7f75fe4a62
+    timertriggers:
+    - action: stop
+      fieldname: timetotriage
+    - action: start
+      fieldname: timetoinvestigate
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2145
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb57fe9f-41d9-432c-8cc1-c373df86d9a6
+      iscommand: false
+      name: Remediation
+      type: title
+      version: -1
+      description: ''
+    taskid: fb57fe9f-41d9-432c-8cc1-c373df86d9a6
+    timertriggers:
+    - action: stop
+      fieldname: timetoinvestigate
+    - action: start
+      fieldname: timetoremediate
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2785
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19fb08ab-1b22-4c80-879f-91ac73512a4f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 19fb08ab-1b22-4c80-879f-91ac73512a4f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3455
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    form:
+      description: Choose the reason that this incident is being closed
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: closereason
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Choose the reason that this incident is being closed
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Close Reason
+      totalanswers: 0
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Provide Close Reason
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: closeReason
+      value:
+        simple: False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 7b2b6f5a-4a16-49e6-8fca-111e04e76ebf
+      iscommand: false
+      name: Select Close Reason
+      type: collection
+      version: -1
+    taskid: 7b2b6f5a-4a16-49e6-8fca-111e04e76ebf
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3105
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: ${Close Reason.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 2969cdab-812e-4e0f-8ac0-df90f39856ab
+      iscommand: true
+      name: Set incident close reason
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2969cdab-812e-4e0f-8ac0-df90f39856ab
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3105
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1b6478f9-6872-46e8-8f6a-52a42bdda3f4
+      iscommand: false
+      name: Quick Start Investigation
+      playbookId: Quick Start Investigation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1b6478f9-6872-46e8-8f6a-52a42bdda3f4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2280
+        }
+      }
+  "36":
+    continueonerrortype: ""
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e8a3c881-0b2a-41db-8007-e173366d9e2f
+      iscommand: false
+      name: Quick Start Remediation
+      playbookId: Quick Start Remediation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e8a3c881-0b2a-41db-8007-e173366d9e2f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2930
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3470,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

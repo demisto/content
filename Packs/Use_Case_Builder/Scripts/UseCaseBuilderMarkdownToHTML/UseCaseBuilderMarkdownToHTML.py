@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import markdown  # type: ignore
 from bs4 import BeautifulSoup
 
+
 ''' MAIN FUNCTION '''
 
 
@@ -32,7 +33,7 @@ def main():
         res = CommandResults(
             outputs_prefix='MarkdownToHTML',
             outputs_key_field='',
-            readable_output=output_list,    # type: ignore
+            readable_output=output_list,
             outputs={'HTML': output_list})
 
         return_results(res)

@@ -1,0 +1,1112 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Quick Start Investigation
+inputs:
+- description: Set to true if you want to extract indicators
+  key: enrichIndicators
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "true"
+- description: Set to true if you want to detonate URL in a sandbox
+  key: DetonateURL
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: Set to true if you want to detonate File in a sandbox
+  key: DetonateFile
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: Hunt for indicators from other sources
+  key: HuntForIndicators
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
+- description: Set to true to add exclusion list tuning step to the workflow
+  key: RefineExclusionList
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+name: Quick Start Investigation
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 68562ff6-5527-4f84-820a-7bc6e8eca453
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 68562ff6-5527-4f84-820a-7bc6e8eca453
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 80
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.enrichIndicators
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 40eb6b3f-a230-4084-8d04-da64e21a6d64
+      iscommand: false
+      name: Do we need to Enrich indicators?
+      type: condition
+      version: -1
+    taskid: 40eb6b3f-a230-4084-8d04-da64e21a6d64
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -217.5,
+          "y": 690
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.DetonateFile
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d39104c2-af31-4770-8164-58a05b1f76a8
+      iscommand: false
+      name: Do we need to detonate files in Sandbox?
+      type: condition
+      version: -1
+    taskid: d39104c2-af31-4770-8164-58a05b1f76a8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 690
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.DetonateURL
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 864d718c-8327-4ba9-851e-d9f94d66bb03
+      iscommand: false
+      name: Do we need to detonate URLs in sandbox?
+      type: condition
+      version: -1
+    taskid: 864d718c-8327-4ba9-851e-d9f94d66bb03
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 690
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9b9ecdfb-fa93-4534-8db7-3b20be34c50d
+      iscommand: false
+      name: Enrich Indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: 9b9ecdfb-fa93-4534-8db7-3b20be34c50d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 545
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b3afe32f-f277-4334-83d1-fae8960b4304
+      iscommand: false
+      name: Threat Hunting
+      type: title
+      version: -1
+      description: ''
+    taskid: b3afe32f-f277-4334-83d1-fae8960b4304
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.HuntForIndicators
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea123a1e-fd1e-4b43-8cbb-018c8a9313d5
+      iscommand: false
+      name: Hunt for indicators?
+      type: condition
+      version: -1
+    taskid: ea123a1e-fd1e-4b43-8cbb-018c8a9313d5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1185
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 2
+    reputationcalc: 2
+    scriptarguments:
+      ignore-outputs:
+        simple: "true"
+      text:
+        complex:
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 4e645c4f-ce06-40b7-8448-23646161caee
+      iscommand: true
+      name: Extract Indicators (Auto Extract Inline)
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 4e645c4f-ce06-40b7-8448-23646161caee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CVE:
+        complex:
+          accessor: ID
+          root: CVE
+      Domain:
+        complex:
+          accessor: Name
+          root: Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          accessor: Email.Address
+          root: Account
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          accessor: Hostname
+          root: Endpoint
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          accessor: Address
+          root: IP
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          accessor: MD5
+          root: File
+          transformers:
+          - operator: uniq
+      RasterizeURL:
+        simple: "True"
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          accessor: SHA1
+          root: File
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          accessor: SHA256
+          root: File
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          accessor: Data
+          root: URL
+          transformers:
+          - operator: uniq
+      UseReputationCommand:
+        simple: "False"
+      Username:
+        complex:
+          accessor: Username
+          root: Account
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "False"
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enrich entities using one or more integrations.
+      id: 2d94c86e-a9c4-464c-8ba5-71af56b67bcd
+      iscommand: false
+      name: Entity Enrichment - Generic v4
+      playbookId: Entity Enrichment - Generic v4
+      type: playbook
+      version: -1
+    taskid: 2d94c86e-a9c4-464c-8ba5-71af56b67bcd
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -217.5,
+          "y": 865
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Detonate file through active integrations that support file detonation
+      id: 7b228500-6dec-442d-82c6-9ee7cc8a1316
+      iscommand: false
+      name: Detonate File - Generic
+      playbookId: Detonate File - Generic
+      type: playbook
+      version: -1
+    taskid: 7b228500-6dec-442d-82c6-9ee7cc8a1316
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 865
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Detonate URL through active integrations that support URL detonation.
+      id: 740278a9-3a62-4f6a-85cc-e99448166a70
+      iscommand: false
+      name: detonate_url_-_generic
+      playbookId: detonate_url_-_generic
+      type: playbook
+      version: -1
+    taskid: 740278a9-3a62-4f6a-85cc-e99448166a70
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 865
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      id: 79083aa0-e194-4e63-808a-be9517cf63e6
+      iscommand: false
+      name: Threat Hunting - Generic
+      playbookId: Threat Hunting - Generic
+      type: playbook
+      version: -1
+    taskid: 79083aa0-e194-4e63-808a-be9517cf63e6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1360
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the Evaluate Severity - Set By Highest DBotScore playbook.
+      id: ff941839-b0d0-4262-8450-475eb930e232
+      iscommand: false
+      name: Calculate Severity - Standard
+      playbookId: Calculate Severity - Standard
+      type: playbook
+      version: -1
+    taskid: ff941839-b0d0-4262-8450-475eb930e232
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1680
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b7f28412-9bca-4163-8bbd-1cdfc35c525f
+      iscommand: false
+      name: Calculate Severity
+      type: title
+      version: -1
+      description: ''
+    taskid: b7f28412-9bca-4163-8bbd-1cdfc35c525f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1535
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SetSLAs
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the SetSLAs input is set to True, and if so moves to the sub-playbook to set the SLAs based on Severity.
+      id: a344c627-3c69-4e88-897b-8319a76eeea6
+      iscommand: false
+      name: Should we set SLAs based on Severity?
+      type: condition
+      version: -1
+    taskid: a344c627-3c69-4e88-897b-8319a76eeea6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2000
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CriticalRemediationSLA:
+        complex:
+          root: inputs.CriticalRemediationSLA
+      CriticalTimeToAssignSLA:
+        complex:
+          root: inputs.CriticalTimeToAssignSLA
+      HighRemediationSLA:
+        complex:
+          root: inputs.HighRemediationSLA
+      HighTimeToAssignSLA:
+        complex:
+          root: inputs.HighTimeToAssignSLA
+      LowRemediationSLA:
+        complex:
+          root: inputs.LowRemediationSLA
+      LowTimeToAssignSLA:
+        complex:
+          root: inputs.LowTimeToAssignSLA
+      MediumRemediationSLA:
+        complex:
+          root: inputs.MediumRemediationSLA
+      MediumTimeToAssignSLA:
+        complex:
+          root: inputs.MediumTimeToAssignSLA
+      SetIncidentSLAs:
+        complex:
+          root: inputs.SetIncidentSLAs
+      SetRemediationTimerSLA:
+        complex:
+          root: inputs.SetRemediationTimerSLA
+      SetTimeToAssignmentSLAs:
+        complex:
+          root: inputs.SetTimeToAssignmentSLAs
+      Severity:
+        complex:
+          accessor: severity
+          root: incident
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets the SLAs for Incidents, the Time to Assignment Timer, and the Remediation SLA Timer based on the Incident Severity.
+      id: e8acdd12-57a6-41ef-8ab6-8bb1ed0e67e8
+      iscommand: false
+      name: Case Management - Generic - Set SLAs based on Severity
+      playbookId: Case Management - Generic - Set SLAs based on Severity
+      type: playbook
+      version: -1
+    taskid: e8acdd12-57a6-41ef-8ab6-8bb1ed0e67e8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2175
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51c3c025-9628-4e09-884b-fdc58451eeb4
+      iscommand: false
+      name: Set SLAs
+      type: title
+      version: -1
+      description: ''
+    taskid: 51c3c025-9628-4e09-884b-fdc58451eeb4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1855
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e009059f-ffef-49cc-8830-f758c0713364
+      iscommand: false
+      name: Refine Indicator Exclusion List
+      type: title
+      version: -1
+      description: ''
+    taskid: e009059f-ffef-49cc-8830-f758c0713364
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2350
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: indicatorValue=value
+      ignore-outputs:
+        simple: "true"
+      query:
+        simple: ${incident.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.find.indicators
+      id: a749582a-37f3-4cab-817e-bf82ee9e5ad8
+      iscommand: true
+      name: Get related indicators
+      script: Builtin|||findIndicators
+      type: regular
+      version: -1
+    taskid: a749582a-37f3-4cab-817e-bf82ee9e5ad8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2670
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    form:
+      description: Select Indicator Values to be Excluded Permanently from XSOAR. Choose only values that you never want to extract as an indicator in XSOAR such as known benign like google.com for domain, your internal domains, private IPs etc.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Choose Indicators to be Deleted and Excluded from XSOAR
+        options: []
+        optionsarg:
+        - complex:
+            root: indicatorValue
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      sender: ""
+      title: Exclude Indicators
+      totalanswers: 0
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9467bf14-6609-4c36-8c3c-51de6760c971
+      iscommand: false
+      name: Select Indicator Values to be Excluded Permanently from XSOAR
+      type: collection
+      version: -1
+    taskid: 9467bf14-6609-4c36-8c3c-51de6760c971
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2845
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.RefineExclusionList
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e44d1445-4872-449e-87c9-81c48f53617a
+      iscommand: false
+      name: Do you want to refine exclusion list?
+      type: condition
+      version: -1
+    taskid: e44d1445-4872-449e-87c9-81c48f53617a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2495
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      indicatorValues:
+        complex:
+          accessor: "0"
+          root: Exclude Indicators.Answers
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+          - operator: Stringify
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 263feb0a-c3dd-49f8-8402-b9c678491cc4
+      iscommand: false
+      name: Delete and exclude selected indicators
+      scriptName: DeleteAndExcludeIndicators
+      type: regular
+      version: -1
+    taskid: 263feb0a-c3dd-49f8-8402-b9c678491cc4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3195
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Exclude Indicators.Answers
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: Exclude Indicators.Answers.0
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3bb8b29f-e18f-4fe3-8076-af20458d4f2c
+      iscommand: false
+      name: Are there indicators to be deleted and excluded?
+      type: condition
+      version: -1
+    taskid: 3bb8b29f-e18f-4fe3-8076-af20458d4f2c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3020
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 62ed7681-6563-4454-81ab-238d4ed2dfa4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 62ed7681-6563-4454-81ab-238d4ed2dfa4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 3370
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e52608ee-082c-4109-867c-e88ee3efadf7
+      iscommand: false
+      name: Extract Indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: e52608ee-082c-4109-867c-e88ee3efadf7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_6_#default#": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3355,
+        "width": 1977.5,
+        "x": -217.5,
+        "y": 80
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

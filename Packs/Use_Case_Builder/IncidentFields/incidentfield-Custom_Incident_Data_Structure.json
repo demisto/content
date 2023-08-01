@@ -1,5 +1,5 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "customincidentdatastructure",
     "closeForm": true,
@@ -23,5 +23,11 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "propagationLabels": [
+        "all"
+    ]
 }

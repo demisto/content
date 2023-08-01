@@ -1,8 +1,7 @@
 commonfields:
   id: CreateUseCaseTemplateList
   version: -1
-comment: ''
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.66339
 enabled: true
 name: CreateUseCaseTemplateList
 runas: DBotWeakRole
@@ -15,3 +14,6 @@ type: python
 fromversion: 6.10.0
 tests:
 - Run all tests
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""

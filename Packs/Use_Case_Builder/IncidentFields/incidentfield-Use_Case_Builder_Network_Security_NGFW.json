@@ -20,12 +20,14 @@
     "required": false,
     "sla": 0,
     "system": false,
-    "template": "# Network Security (Firewall)\n## Top Use Cases:\n\n- Create block/accept policies (Source, Destination, Port), for IP addresses and domains.\n- Add addresses and ports (services) to predefined groups, create groups, etc.\n- Support custom url categories.\n- Fetch network logs for a specific address for a configurable time frame.\n- URL filtering categorization change request\n- Built in blocked rule command for fast-blocking.\n- If there is a Management FW, allow the option to manage policy rules through it.\n\n## Network Security Firewall Integration Example: [Palo Alto Networks PAN-OS](https://xsoar.pan.dev/docs/reference/integrations/panorama)",
     "threshold": 72,
     "type": "markdown",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "propagationLabels": [
+        "all"
+    ]
 }

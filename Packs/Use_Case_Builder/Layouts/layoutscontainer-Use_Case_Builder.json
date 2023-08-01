@@ -39,10 +39,10 @@
                         "displayType": "CARD",
                         "h": 6,
                         "hideName": false,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-e19f3700-c402-11ed-9e57-8f1be96082a8",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-e19f3700-c402-11ed-9e57-8f1be96082a8",
                         "items": [
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "usecasename",
                                 "height": 106,
                                 "id": "e68c81a0-c402-11ed-9e57-8f1be96082a8",
@@ -52,7 +52,7 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "usecasepurpose",
                                 "height": 106,
                                 "id": "488c62a0-c424-11ed-bcd7-97106dc81161",
@@ -62,7 +62,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "trigger",
                                 "height": 106,
                                 "id": "e13ab7c0-c421-11ed-8008-f768c09b421a",
@@ -71,7 +71,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "incidentstructureandmapping",
                                 "height": 106,
                                 "id": "eb937db0-c421-11ed-8008-f768c09b421a",
@@ -80,7 +80,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "incidentresponseprocess",
                                 "height": 106,
                                 "id": "eeef04c0-c421-11ed-8008-f768c09b421a",
@@ -89,7 +89,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "enrichment",
                                 "height": 106,
                                 "id": "f5a8d200-c421-11ed-8008-f768c09b421a",
@@ -98,7 +98,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "manualsteps",
                                 "height": 106,
                                 "id": "fc620300-c421-11ed-8008-f768c09b421a",
@@ -108,7 +108,7 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "enduserinteractiveness",
                                 "height": 106,
                                 "id": "001d0f30-c422-11ed-8008-f768c09b421a",
@@ -118,7 +118,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "deduplicationlogic",
                                 "height": 106,
                                 "id": "04a2be60-c422-11ed-8008-f768c09b421a",
@@ -127,7 +127,7 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "endCol": 4,
                                 "fieldId": "thirdpartyintegrations",
                                 "height": 106,
                                 "id": "0c68f290-c422-11ed-8008-f768c09b421a",
@@ -137,10 +137,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "customincidentdatastructure",
+                                "fieldId": "customincidentdatastructures",
                                 "height": 53,
                                 "id": "15fae610-c422-11ed-8008-f768c09b421a",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -153,11 +153,12 @@
                         "w": 2,
                         "wrapLabels": true,
                         "x": 0,
-                        "y": 3
+                        "y": 3,
+                        "maxH": null
                     },
                     {
                         "h": 2,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-6c6f8fb0-c403-11ed-9e57-8f1be96082a8",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-6c6f8fb0-c403-11ed-9e57-8f1be96082a8",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
@@ -167,7 +168,8 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "description": "If you want to generate a use case using OOTB Content, select one of the use case categories below (Example, Phishing). Then Click the Generate Use Case Button",
@@ -175,7 +177,7 @@
                         "h": 1,
                         "hideItemTitleOnlyOne": false,
                         "hideName": true,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -219,13 +221,14 @@
                         "w": 2,
                         "wrapLabels": false,
                         "x": 0,
-                        "y": 2
+                        "y": 2,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-de3c3910-cb59-11ed-a2da-436f0b94c8ec",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-de3c3910-cb59-11ed-a2da-436f0b94c8ec",
                         "items": [
                             {
                                 "endCol": 2,
@@ -254,17 +257,18 @@
                         "w": 1,
                         "wrapLabels": true,
                         "x": 2,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
                         "h": 2,
                         "hideName": false,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-0c759100-cb5a-11ed-a2da-436f0b94c8ec",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-0c759100-cb5a-11ed-a2da-436f0b94c8ec",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "usecasebuilderusecasecontainmentsteps",
+                                "fieldId": "usecasecontainmentsteps",
                                 "height": 22,
                                 "id": "e3a10830-cb5a-11ed-b65c-030bc2f7f1a6",
                                 "index": 0,
@@ -280,14 +284,15 @@
                         "w": 1,
                         "wrapLabels": true,
                         "x": 2,
-                        "y": 7
+                        "y": 7,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-c3d72f10-cc9b-11ed-a2da-436f0b94c8ec",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-c3d72f10-cc9b-11ed-a2da-436f0b94c8ec",
                         "items": [
                             {
                                 "endCol": 2,
@@ -306,14 +311,15 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 2,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
                         "h": 1,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-d532ef40-d98b-11ed-8b8b-2dd91b5c16af",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-d532ef40-d98b-11ed-8b8b-2dd91b5c16af",
                         "items": [
                             {
                                 "endCol": 6,
@@ -332,31 +338,33 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 9
+                        "y": 9,
+                        "maxH": null
                     },
                     {
                         "h": 2,
                         "hideName": false,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-0df2d040-da02-11ed-a62e-fb60d2f387ac",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-0df2d040-da02-11ed-a62e-fb60d2f387ac",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Welcome to XSOAR",
-                        "query": "PlaybookAutoGeneratorDynamicSectionMessage",
+                        "query": "c605c3f4-25ad-4be8-8887-1c2e9e07da71",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-7b7b21c0-da1c-11ed-9edf-1d42c4d5d3c7",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-7b7b21c0-da1c-11ed-9edf-1d42c4d5d3c7",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -399,10 +407,329 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "hidden": true,
+                "id": "ertwnfqlln",
+                "name": "Use Case Definition Report",
+                "sections": [
+                    {
+                        "h": 6,
+                        "hideName": false,
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-e19f3700-c402-11ed-9e57-8f1be96082a8",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "usecasename",
+                                "height": 106,
+                                "id": "e68c81a0-c402-11ed-9e57-8f1be96082a8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "usecasepurpose",
+                                "height": 106,
+                                "id": "488c62a0-c424-11ed-bcd7-97106dc81161",
+                                "index": 1,
+                                "listId": "gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-e19f3700-c402-11ed-9e57-8f1be96082a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "usecaseenrichmentsteps",
+                                "height": 53,
+                                "id": "48cc8670-cb57-11ed-a2da-436f0b94c8ec",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "trigger",
+                                "height": 106,
+                                "id": "e13ab7c0-c421-11ed-8008-f768c09b421a",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "incidentstructureandmapping",
+                                "height": 106,
+                                "id": "eb937db0-c421-11ed-8008-f768c09b421a",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "incidentresponseprocess",
+                                "height": 106,
+                                "id": "eeef04c0-c421-11ed-8008-f768c09b421a",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "enrichment",
+                                "height": 106,
+                                "id": "f5a8d200-c421-11ed-8008-f768c09b421a",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "manualsteps",
+                                "height": 106,
+                                "id": "fc620300-c421-11ed-8008-f768c09b421a",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "enduserinteractiveness",
+                                "height": 106,
+                                "id": "001d0f30-c422-11ed-8008-f768c09b421a",
+                                "index": 8,
+                                "listId": "gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-e19f3700-c402-11ed-9e57-8f1be96082a8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "deduplicationlogic",
+                                "height": 106,
+                                "id": "04a2be60-c422-11ed-8008-f768c09b421a",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "thirdpartyintegrations",
+                                "height": 106,
+                                "id": "0c68f290-c422-11ed-8008-f768c09b421a",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "customincidentdatastructures",
+                                "height": 53,
+                                "id": "15fae610-c422-11ed-8008-f768c09b421a",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Use Case Definition",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 1,
+                        "displayType": "CARD",
+                        "wrapLabels": true
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": true,
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "customername",
+                                "height": 53,
+                                "id": "eab60ae0-e850-11ed-a517-45b7a9e96a13",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460"
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "usecasecategory",
+                                "height": 53,
+                                "id": "fc90f530-ca56-11ed-8ea3-95b783d87e42",
+                                "index": 0,
+                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "usecaseinitiator",
+                                "height": 53,
+                                "id": "ee2ffe20-cd6f-11ed-9d34-19d1f607e836",
+                                "index": 2,
+                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Classification",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0,
+                        "description": "",
+                        "wrapLabels": false
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-de3c3910-cb59-11ed-a2da-436f0b94c8ec",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "usecaserequiredmetricsandnotifications",
+                                "height": 22,
+                                "id": "4b13de60-cb57-11ed-a2da-436f0b94c8ec",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Analysis Sub Playbooks",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-0c759100-cb5a-11ed-a2da-436f0b94c8ec",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "usecasecontainmentsteps",
+                                "height": 22,
+                                "id": "e3a10830-cb5a-11ed-b65c-030bc2f7f1a6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Containment Subplaybooks",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": true,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-d532ef40-d98b-11ed-8b8b-2dd91b5c16af",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "usecaseslas",
+                                "height": 53,
+                                "id": "edcdc340-d98b-11ed-8b8b-2dd91b5c16af",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SLAs",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-7b7b21c0-da1c-11ed-9edf-1d42c4d5d3c7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "usecasepriority",
+                                "height": 53,
+                                "id": "2912bf80-e90b-11ed-9dc5-d18c030adc58",
+                                "index": 0,
+                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-7b7b21c0-da1c-11ed-9edf-1d42c4d5d3c7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "usecasedevelopmentstage",
+                                "height": 53,
+                                "id": "22927f40-e84f-11ed-8c14-711bf05ab2e9",
+                                "index": 1,
+                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-7b7b21c0-da1c-11ed-9edf-1d42c4d5d3c7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "usecasebuilderdevelopmentdeadline",
+                                "height": 53,
+                                "id": "6fcd36a0-da1d-11ed-9edf-1d42c4d5d3c7",
+                                "index": 2,
+                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-7b7b21c0-da1c-11ed-9edf-1d42c4d5d3c7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Use Case Development Deadline",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 13
+                    }
+                ],
+                "type": "custom",
+                "report": true
             },
             {
                 "hidden": false,
@@ -412,7 +739,7 @@
                     {
                         "h": 7,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-mimjkfjeok-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-kvrp35jwwn-ftol4yjpvj-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-9d2e8b10-d23b-11ed-b86b-397a28d9e92b",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-mimjkfjeok-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-kvrp35jwwn-ftol4yjpvj-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-ftol4yjpvj-sqdqs2kfxm-9d2e8b10-d23b-11ed-b86b-397a28d9e92b",
                         "items": [],
                         "maxH": null,
                         "maxW": 1,
@@ -420,6 +747,10 @@
                         "minW": 1,
                         "moved": false,
                         "name": "XSOAR in 5 minutes",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0,
                         "query": {
                             "categories": [],
                             "lastId": "",
@@ -430,18 +761,14 @@
                             "users": []
                         },
                         "queryType": "warRoomFilter",
-                        "static": false,
-                        "type": "invTimeline",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "type": "invTimeline"
                     },
                     {
                         "displayType": "ROW",
                         "h": 10,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-9fae1580-d2f5-11ed-bd38-c7053a2159de",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-9fae1580-d2f5-11ed-bd38-c7053a2159de",
                         "items": [
                             {
                                 "endCol": 4,
@@ -478,7 +805,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-0a7697a0-d2f8-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-0a7697a0-d2f8-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -508,7 +835,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-5577f8e0-d300-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-5577f8e0-d300-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -536,7 +863,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-5f2e3d40-d300-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-5f2e3d40-d300-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -564,7 +891,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-dd4f7200-d302-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-dd4f7200-d302-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -592,7 +919,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-de0bbd20-d302-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-de0bbd20-d302-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -620,7 +947,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-df705630-d302-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-df705630-d302-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -648,7 +975,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-01fd1800-d303-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-01fd1800-d303-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -678,7 +1005,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-0386c540-d303-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-0386c540-d303-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -706,7 +1033,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-04717360-d303-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-04717360-d303-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -734,7 +1061,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-0542f430-d303-11ed-8339-57a8ff7353df",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-0542f430-d303-11ed-8339-57a8ff7353df",
                         "items": [
                             {
                                 "endCol": 2,
@@ -762,7 +1089,7 @@
                         "h": 4,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
-                        "i": "6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-a3b11ed0-d303-11ed-af63-f198ecf1b034",
+                        "i": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-a3b11ed0-d303-11ed-af63-f198ecf1b034",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -797,7 +1124,6 @@
                 "report": false,
                 "sections": [
                     {
-                        "description": "This shows the typical XSOAR Incident process. Alerts are ingested and categorized via Incident type, then playbooks are run to enrich, calculate alert severity, send notifications, etc. Then an analyst will review prior to containing or performing remediation steps.",
                         "displayType": "ROW",
                         "h": 16,
                         "hideItemTitleOnlyOne": true,
@@ -816,16 +1142,17 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "XSOAR Incident Flow",
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "description": "This shows the typical XSOAR Incident process. Alerts are ingested and categorized via Incident type, then playbooks are run to enrich, calculate alert severity, send notifications, etc. Then an analyst will review prior to containing or performing remediation steps.",
+                        "maxH": null,
+                        "minW": 3
                     }
                 ],
                 "type": "custom"
@@ -834,13 +1161,9 @@
                 "hidden": false,
                 "id": "6llmfuetuv",
                 "name": "Best Practice",
-                "report": true,
                 "sections": [
                     {
-                        "displayType": "ROW",
                         "h": 5,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": true,
                         "i": "sqdqs2kfxm-6llmfuetuv-field-changed-6llmfuetuv-sqdqs2kfxm-6llmfuetuv-field-changed-6llmfuetuv-sqdqs2kfxm-a12dfaa0-e831-11ed-8c14-711bf05ab2e9",
                         "items": [
                             {
@@ -855,14 +1178,19 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "New Section",
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "displayType": "ROW",
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true
                     },
                     {
                         "displayType": "ROW",
@@ -881,8 +1209,10 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "New Section",
                         "static": false,
@@ -909,8 +1239,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "New Section",
                         "static": false,
@@ -919,16 +1251,18 @@
                         "y": 0
                     }
                 ],
-                "type": "custom"
+                "type": "custom",
+                "report": true
             },
             {
                 "hidden": false,
                 "id": "us0fyi1dhf",
                 "name": "Downloads",
+                "type": "custom",
                 "sections": [
                     {
                         "h": 9,
-                        "i": "sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-us0fyi1dhf-sqdqs2kfxm-4d4c0ad0-cfdb-11ed-9a2a-3d4d02bff60d",
+                        "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-us0fyi1dhf-sqdqs2kfxm-4d4c0ad0-cfdb-11ed-9a2a-3d4d02bff60d",
                         "items": [],
                         "maxH": null,
                         "maxW": 3,
@@ -949,14 +1283,13 @@
                         "x": 0,
                         "y": 0
                     }
-                ],
-                "type": "custom"
+                ]
             },
             {
-                "hidden": false,
                 "id": "warRoom",
                 "name": "War Room",
-                "type": "warRoom"
+                "type": "warRoom",
+                "hidden": false
             },
             {
                 "id": "workPlan",
@@ -973,6 +1306,7 @@
                 "hidden": true,
                 "id": "caseinfoid",
                 "name": "Incident Info",
+                "type": "custom",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -1262,8 +1596,7 @@
                         "x": 1,
                         "y": 2
                     }
-                ],
-                "type": "custom"
+                ]
             },
             {
                 "hidden": true,
@@ -1305,7 +1638,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_usecasebuilderusecasecontainmentsteps",
+                        "fieldId": "incident_usecasecontainmentsteps",
                         "isVisible": true
                     },
                     {
@@ -1338,776 +1671,14 @@
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
-                "type": ""
-            },
-            {
-                "description": "",
+                "type": "",
                 "fields": [
                     {
-                        "fieldId": "incident_occurred",
+                        "fieldId": "incident_customername",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dbotcreated",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotduedate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotmodified",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbottotaltime",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Timeline Information",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_accountmemberof",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_accountstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_additionalindicators",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_affectedhost",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_agentid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_agentsid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_agentversion",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_alertcategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_alertid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_alertname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_alertsource",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_alerttypeid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_analysisreport",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_appmessage",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_asn",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_asnname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_assigneduser",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_assignmentgroup",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_birthday",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_caller",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_campaignclosenotes",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_campaignemailbody",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_categories",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cloudaccountid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cmdline",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_commandline",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_comment",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_containmentsla",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_country",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_countrycode",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_countrycodenumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cvedescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cvelist",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cvereferencelinks",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_cvescore",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_description",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_destinationhostname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_destinationip",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_destinationnetworks",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_detecteduser",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_detectionsla",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_detectionurl",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceexternalip",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceexternalips",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_devicehash",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceinternalips",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_devicelocalip",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_devicemacaddress",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_devicemodel",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_devicename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceosname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceosversion",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceou",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_deviceusername",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_domainname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dsts",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletefrombrand",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletereason",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeleteresult",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletetype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_endpoint",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_endpointisolationstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_escalation",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_eventtype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_externalendtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_externalstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_externalsubcategoryname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_externalsystemid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filehash",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filemd5",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filenames",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filepath",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filepaths",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filerelationships",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filesha1",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filesha256",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_filesize",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_firstname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_fullname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_hostnames",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_huntresultscount",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_identitytable",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_incidentlink",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_incidentsinfo",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_incomingmirrorerror",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_investigationstage",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ipblockedstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ipreputation",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_isactive",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lastmirroredintime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_lastname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_logsource",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_macaddress",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_md5",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_mitretechniqueid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_mitretechniquename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_mobiledevicemodel",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_numberofrelatedincidents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_numberofsimilarfiles",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_objective",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_orglevel3",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_orgunit",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_os",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ostype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_outgoingmirrorerror",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentcmdline",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocess",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocesscmd",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocessfilepath",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocessids",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocessmd5",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocessname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocesspath",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_parentprocesssha256",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_passwordchangeddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_phonenumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_pid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_playbookdescription",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_policyactions",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processcmd",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processcreationtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processmd5",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processnames",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processpath",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processpaths",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_processsha256",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_protocol",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_protocolnames",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_registryhive",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_registryvalue",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_registryvaluetype",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_relatedreport",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_remediationsla",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_renderedhtml",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_rulename",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_samaccountname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_scenario",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_selectaction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_selectcampaignincidents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_selectedindicators",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_selectlowsimilarityincidents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sha1",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sha256",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sha512",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_similarincidents",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_similarincidentsdbot",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourcecategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourcecreatedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourcecreatetime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourceexternalips",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourcehostname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourceid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourcenetwork",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourcepriority",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sourceupdatedby",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ssdeep",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_state",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_subcategory",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_tactic",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_tacticid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_tags",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_target",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_teamname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_technique",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_techniqueid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_tenantname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_threatfamilyname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_threathuntingdetectedhostnames",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_threathuntingdetectedip",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_threatname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ticketacknowledgeddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ticketcloseddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ticketnumber",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_ticketopeneddate",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_timetoassignment",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_triagesla",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_urls",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_urlsslverification",
+                        "fieldId": "incident_usecasename",
                         "isVisible": true
                     },
                     {
@@ -2115,71 +1686,22 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_useraccountcontrol",
+                        "fieldId": "incident_usecasepurpose",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_usercreationtime",
+                        "fieldId": "incident_usecasetype",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_userengagementresponse",
+                        "fieldId": "incident_usecasepriority",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_users",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_usersid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_verdict",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdralertsearchresults",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrinvestigationresults",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrmanualseverity",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrmodificationtime",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrstarred",
+                        "fieldId": "incident_usecasedevelopmentstage",
                         "isVisible": true
                     }
-                ],
-                "isVisible": true,
-                "name": "Custom Fields",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
-            },
-            {
-                "description": "",
-                "fields": [
-                    {
-                        "fieldId": "incident_labels",
-                        "isVisible": true
-                    }
-                ],
-                "isVisible": true,
-                "name": "Labels",
-                "query": null,
-                "queryType": "",
-                "readOnly": true,
-                "type": "labels"
+                ]
             }
         ]
     },

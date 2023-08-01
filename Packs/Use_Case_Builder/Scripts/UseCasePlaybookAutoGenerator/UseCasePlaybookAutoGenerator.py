@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from typing import Dict, Any
 import traceback
 import json
 
@@ -19,13 +20,9 @@ class Playbook:
 
     # Adds headers for different playbook sections
     def addHeader(self, headerName):
-        self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId),
-                                                       "type": "title",
-                                                       "task": {"name": headerName,
-                                                                "isTitleTask": True,
-                                                                "type": "title"},
-                                                       "nextTasks": {"#none#": [str(self.currentTaskId + 1)]}}
-        # Adds header as next task in playbook
+        self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
+                                                       {"name": headerName, "isTitleTask": True, "type": "title"}, "nextTasks":
+                                                       {"#none#": [str(self.currentTaskId + 1)]}}  # Adds header as next task in playbook
         self.currentTaskId += 1  # Adds 1 to current task ID
 
     # Adds tasks within playbook
@@ -34,37 +31,28 @@ class Playbook:
         automationName = self.taskMapping[taskName]['name']  # Determine playbook/automation/command name
 
         if taskType == "playbook":
-            self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId),
-                                                           "type": taskType,
-                                                           "task": {"name": taskName,
-                                                                    "type": taskType,
-                                                                    "playbookId": automationName},
-                                                           "nextTasks": {"#none#": [str(self.currentTaskId + 1)]},
-                                                           "separateContext": True}    # type: ignore
+            self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": taskType, "task":
+                                                           {"name": taskName, "type": taskType, "playbookId": automationName},
+                                                           "nextTasks": {"#none#": [str(self.currentTaskId + 1)]}, "separateContext": True}  # Adds task to playbook
         elif taskType == 'command':
-            self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "regular",
-                                                           "task": {"name": taskName, "isCommand": True,
-                                                                    "type": "regular", "scriptId": automationName},
-                                                           "nextTasks": {"#none#": [
-                                                               str(self.currentTaskId + 1)]}}  # Adds task to playbook
+            self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "regular", "task":
+                                                           {"name": taskName, "isCommand": True,
+                                                               "type": "regular", "scriptId": automationName},
+                                                           "nextTasks": {"#none#": [str(self.currentTaskId + 1)]}}  # Adds task to playbook
 
         elif taskType == 'header':
-            self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId),
-                                                           "type": "title",
-                                                           "task": {"name": automationName,
-                                                                    "isTitleTask": True,
-                                                                    "type": "title"},
-                                                           "nextTasks": {"#none#": [str(self.currentTaskId + 1)]}}
-            # Adds header as next task in playbook
+            self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
+                                                           {"name": automationName, "isTitleTask": True, "type": "title"}, "nextTasks":
+                                                           {"#none#": [str(self.currentTaskId + 1)]}}  # Adds header as next task in playbook
 
         self.currentTaskId += 1  # Adds 1 to current task ID
 
     # Addes tasks to playbook based off of fields in incident
     def taskSection(self, section):
         try:
-            tasks = demisto.incident()['CustomFields'][
-                self.taskSectionDict[section]]  # Determines enrichment tasks defined in incident
-        except Exception:
+            # Determines enrichment tasks defined in incident
+            tasks = demisto.incident()['CustomFields'][self.taskSectionDict[section]]
+        except:
             tasks = "None"  # Sets default value if no enrichment tasks
 
         if tasks != "None":
@@ -85,37 +73,21 @@ class Playbook:
 
     # Adds closing header to playbook
     def endPlaybook(self):
-        self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId),
-                                                       "type": "title",
-                                                       "task": {"name": "Finished",
-                                                                "isTitleTask": True,
-                                                                "type": "title"},
-                                                       "nextTasks": {"#none#": []}}
+        self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
+                                                       {"name": "Finished", "isTitleTask": True, "type": "title"}, "nextTasks": {"#none#": []}}
 
     # Generates JSON to Post to API
     def createPlaybookJSON(self):
-        playbookJSON = [{"name": self.useCaseName,
-                         "startTaskId": "0",
-                         "tasks": self.playbookTasks,
-                         "view": {"linkLabelsPosition": {},
-                                  "paper": {"dimensions": {"height": 380, "width": 385, "x": 50, "y": 50}}}}]
+        playbookJSON = [{"name": self.useCaseName, "startTaskId": "0", "tasks": self.playbookTasks, "view":
+                         {"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 380, "width": 385, "x": 50, "y": 50}}}}]
         return playbookJSON
 
     def addTimers(self):
-        self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId),
-                                                       "type": "title",
-                                                       "task": {"name": "Start SLA Timers",
-                                                                "isTitleTask": True,
-                                                                "type": "title"},
-                                                       "nextTasks": {"#none#": [str(self.currentTaskId + 1)]},
-                                                       "timerTriggers": [{"action": "start",
-                                                                          "fieldName": "containmentsla"},    # type: ignore
-                                                                         {"action": "start",
-                                                                          "fieldName": "remediationsla"},    # type: ignore
-                                                                         {"action": "start",
-                                                                          "fieldName": "triagesla"},    # type: ignore
-                                                                         {"action": "start",
-                                                                          "fieldName": "timetoassignment"}]}    # type: ignore
+        self.playbookTasks[str(self.currentTaskId)] = {"id": str(self.currentTaskId), "type": "title", "task":
+                                                       {"name": "Start SLA Timers", "isTitleTask": True, "type": "title"}, "nextTasks":
+                                                       {"#none#": [str(self.currentTaskId + 1)]}, "timerTriggers": [{"action": "start",
+                                                                                                                     "fieldName": "containmentsla"}, {"action": "start", "fieldName": "remediationsla"},
+                                                                                                                    {"action": "start", "fieldName": "triagesla"}, {"action": "start", "fieldName": "timetoassignment"}]}  # Adds timer header as next playbook task
         self.currentTaskId += 1  # Adds 1 to current task ID
 
 

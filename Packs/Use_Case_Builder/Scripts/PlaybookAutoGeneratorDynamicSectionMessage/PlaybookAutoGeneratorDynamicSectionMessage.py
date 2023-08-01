@@ -8,10 +8,7 @@ def main():
     usecasegeneratorkey = incident.get('CustomFields', {}).get('usecasebuilderautogeneratorkey', 0)
 
     if not incident_name:
-        demisto.results(
-            "This tool will help you develop, track, and maintain your use cases. As well as quickly generate custom "
-            "playbooks to get you started on your automation journey! \n\nOnce you have created your use case, "
-            "head over to the Downloads tab to retrieve your use case document")
+        demisto.results("This tool will help you develop, track, and maintain your use cases. As well as quickly generate custom playbooks to get you started on your automation journey! \n\nOnce you have created your use case, head over to the Downloads tab to retrieve your use case document")
     elif usecasegeneratorkey is not None:
         message = f'**{incident_name}** - has been generated and is now available in your playbook collection'
 
