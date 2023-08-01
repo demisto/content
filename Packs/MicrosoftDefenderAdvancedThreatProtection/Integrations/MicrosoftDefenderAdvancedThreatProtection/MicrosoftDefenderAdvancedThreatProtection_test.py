@@ -1334,25 +1334,26 @@ QUERY_BUILDING_CASES = [
         }
     ),
     (
-        None, 'Informational', '5', False, '2022-02-17T14:39:01.391001Z', 'MDO',
+        None, 'Informational', '5', False, '2022-02-17T14:39:01.391001Z', 'Microsoft Defender for Office 365',
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
-                       "(detectionSource+eq+'MDO') and (severity+eq+'Informational')",
+                       "(detectionSource+eq+'OfficeATP') and (severity+eq+'Informational')",
             '$orderby': 'alertCreationTime asc', '$top': '5'
         }
     ),
     (
         'New', None, '5', False, '2022-02-17T14:39:01.391001Z', 'EDR',
         {
-            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (detectionSource+eq+'EDR') and (status+eq+'New')",
+            '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and (detectionSource+eq+'WindowsDefenderAtp') and "
+                       "(status+eq+'New')",
             '$orderby': 'alertCreationTime asc', '$top': '5'
         }
     ),
     (
-        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z', 'CustomDetection,CustomTI',
+        'New, Resolved', 'Informational,Low,Medium,High', '5', False, '2022-02-17T14:39:01.391001Z', 'Custom detection,Custom TI',
         {
             '$filter': "alertCreationTime+gt+2022-02-17T14:39:01.391001Z and "
-                       "((detectionSource+eq+'CustomDetection') or (detectionSource+eq+'CustomTI')) and "
+                       "((detectionSource+eq+'CustomDetection') or (detectionSource+eq+'CustomerTI')) and "
                        "((status+eq+'New') or (status+eq+'Resolved')) and "
                        "((severity+eq+'Informational') or (severity+eq+'Low') or (severity+eq+'Medium') "
                        "or (severity+eq+'High'))",

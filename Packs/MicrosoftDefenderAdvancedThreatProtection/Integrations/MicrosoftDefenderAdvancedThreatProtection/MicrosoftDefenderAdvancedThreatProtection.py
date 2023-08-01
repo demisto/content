@@ -63,6 +63,19 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "Unknown": None,
 }
 
+DETECTION_SOURCE_TO_API_VALUE = {  # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/alerts-queue
+    "Third-party sensors": "ThirdPartySensors",
+    "Antivirus": "WindowsDefenderAv",
+    "Automated investigation": "AutomatedInvestigation",
+    "Custom detection": "CustomDetection",
+    "Custom TI": "CustomerTI",
+    "EDR": "WindowsDefenderAtp",
+    "Microsoft 365 Defender": "MTP",
+    "Microsoft Defender for Office 365": "OfficeATP",
+    "Microsoft Defender Experts": "ThreatExperts",
+    "SmartScreen": "WindowsDefenderSmartScreen",
+}
+
 INTEGRATION_NAME = 'Microsoft Defender ATP'
 
 
@@ -3640,7 +3653,7 @@ def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
     filter_query = f'alertCreationTime+gt+{last_fetch_time}'
     if client.alert_detectionsource_to_fetch:
         sources = argToList(client.alert_detectionsource_to_fetch)
-        source_filter_list = [f"detectionSource+eq+'{source}'" for source in sources]
+        source_filter_list = [f"detectionSource+eq+'{DETECTION_SOURCE_TO_API_VALUE[source]}'" for source in sources]
         if len(source_filter_list) > 1:
             source_filter_list = list(map(lambda x: f"({x})", source_filter_list))
         filter_query = filter_query + " and (" + " or ".join(source_filter_list) + ")"

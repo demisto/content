@@ -136,11 +136,16 @@ configuration:
 - display: 'DetectionSource to filter out alerts for fetching as incidents.'
   name: fetch_detectionsource
   options:
-  - CustomDetection
-  - CustomreTI
-  - EDR
-  - MDO
   - Antivirus
+  - Automated investigation
+  - Custom detection
+  - Custom TI
+  - EDR
+  - Microsoft 365 Defender
+  - Microsoft Defender for Office 365
+  - Microsoft Defender Experts
+  - SmartScreen
+  - Third-party sensors
   type: 16
   section: Collect
   advanced: true
