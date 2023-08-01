@@ -1254,8 +1254,10 @@ script:
     - name: assetId
       description: The ID of the asset scanned.
     - name: fileId
+      description: ''
       hidden: true
     - name: hide_polling_output
+      description: ''
       hidden: true
     polling: true
     description: |
