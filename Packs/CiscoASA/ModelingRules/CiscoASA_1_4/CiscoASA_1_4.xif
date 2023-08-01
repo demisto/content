@@ -691,7 +691,16 @@ filter _raw_log ~= "\d+\-\d+\:\s\([\w\-\_]+\)"
 | call cisco_asa_main_fields_extraction
 | alter reason_code = to_integer(arrayindex(regextract(_raw_log ,"\(reason\scode\s\=\s(\d+)\)"),0)),
     dst_interface = arrayindex(regextract(_raw_log ,"[on|Testing]{2,}\s[i|I]nterface\s(\S+)"),0),
-    command_line = arrayindex(regextract(_raw_log ,"command\:\s\'([^\']+)\'"),0)
+    command_line = arrayindex(regextract(_raw_log ,"command\:\s\'([^\']+)\'"),0),
+    status1 = arrayindex(regextract(_raw_log ,"Switching\sto\s([A-Za-z]+)"),0),
+    status2 = arrayindex(regextract(_raw_log ,"transitioning\sto\s(\S+)\sstate"),0),
+    status3 = arrayindex(regextract(_raw_log ,"\,my\=([A-Za-z]+)"),0),
+    status4 = arrayindex(regextract(_raw_log ,"\s+my\sstate\s([A-Za-z]+)"),0),
+    status5 = arrayindex(regextract(_raw_log ,"Peer\sstate\s([^\.]+)"),0),
+    status6 = arrayindex(regextract(_raw_log ,"[Control|Data]+\schannel\sis\s([^\.]+)"),0),
+    status7 = arrayindex(regextract(_raw_log ,"Link\sstatus\s\'([^\']+)\'"),0),
+    status8 = arrayindex(regextract(_raw_log ,"state\sinformation\s[to|on]+\s[the]*\s*([A-Za-z]+)"),0)
+| alter status = uppercase(coalesce(status1,status2,status3,status4,status5, status6,status7,status8))
 | alter xdm.event.outcome_reason = coalesce(
         // for event if 103001
         if(
@@ -711,6 +720,7 @@ filter _raw_log ~= "\d+\-\d+\:\s\([\w\-\_]+\)"
     xdm.observer.name = observer_name,
     xdm.target.zone = dst_interface,
     xdm.target.interface = dst_interface,
+    xdm.target.resource.value = status,
     xdm.target.process.command_line = command_line;
 
 //722003 -  %ASA-x-xxxx: IP <src_ip>
@@ -753,13 +763,13 @@ filter _raw_log contains "Call-Home"
 // UPDATE:
 filter _raw_log ~= "\-\d+\:\sUPDATE\:"
 | call cisco_asa_main_fields_extraction
-/*| alter new_img_version = arrayindex(regextract(_raw_log ,"Image\sversion\sis\s(\S+)"),0),
-    asa_img = arrayindex(regextract(_raw_log ,"ASA\simage\s\'([^\']+)\'"),0)*/
+| alter //new_img_version = arrayindex(regextract(_raw_log ,"Image\sversion\sis\s(\S+)"),0),
+    asa_img = arrayindex(regextract(_raw_log ,"ASA\simage\s\'([^\']+)\'"),0)
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.observer.name = observer_name;
-    //xdm.observer.version = new_img_version;
+    xdm.observer.name = observer_name,
+    xdm.target.resource.name = asa_img;
 
 // event IDs: 106101,120011,199009,199014,199015,199016,199017,199018,308001
 alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0))
