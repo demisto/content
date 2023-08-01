@@ -56,14 +56,13 @@ def load_json(v: Any) -> dict:
             raise ValueError('headers are not valid Json object') from exc
     if isinstance(v, dict):
         return v
-    return None
 
 
 class IntegrationHTTPRequest(BaseModel):
     method: Method
     url: AnyUrl
     verify: bool = True
-    headers: dict = {}  # type: ignore[type-arg]
+    headers: dict = {}
     auth: HTTPBasicAuth | None
     data: Any = None
 
