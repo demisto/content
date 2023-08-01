@@ -1105,7 +1105,10 @@ tasks:
       val1:
         simple: Rapid7
       val2:
-        simple: "true"
+        complex:
+          root: "true"
+          transformers:
+          - operator: Stringify
       val3:
         simple: TIMESTAMP
     separatecontext: false
@@ -1195,7 +1198,10 @@ tasks:
       val1:
         simple: Rapid7
       val2:
-        simple: "false"
+        complex:
+          root: "false"
+          transformers:
+          - operator: Stringify
       val3:
         simple: TIMESTAMP
     separatecontext: false
