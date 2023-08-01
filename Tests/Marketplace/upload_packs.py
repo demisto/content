@@ -955,6 +955,8 @@ def get_images_data(packs_list: list, readme_images_dict: dict):
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
         if pack.uploaded_preview_images:
             pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
+        if pack.uploaded_dynamic_dashboard_images:
+            pack_image_data[pack.name][BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES] = pack.uploaded_dynamic_dashboard_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
@@ -1407,6 +1409,12 @@ def main():
         task_status = pack.upload_preview_images(storage_bucket, storage_base_path)
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
+            pack.cleanup()
+            continue
+
+        task_status = pack.upload_dynamic_dashboard_images(storage_bucket, storage_base_path)
+        if not task_status:
+            pack._status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 

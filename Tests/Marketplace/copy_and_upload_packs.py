@@ -456,6 +456,7 @@ def main():
         packs_for_current_marketplace.append(pack)
 
     # Starting iteration over packs
+    pack: Pack
     for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
@@ -482,6 +483,13 @@ def main():
             production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
         if not task_status:
             pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
+            pack.cleanup()
+            continue
+
+        task_status = pack.copy_dynamic_dashboard_images(
+            production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+        if not task_status:
+            pack.status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
