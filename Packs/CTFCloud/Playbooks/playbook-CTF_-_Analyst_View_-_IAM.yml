@@ -536,7 +536,7 @@ tasks:
         placeholder: ""
         readonly: false
         required: true
-        tooltip: The a project ID represnets our enviroment where the incident occured. Means you need to look for a long number string.
+        tooltip: The project ID is also named Account ID - and it's referred to the Cloud Project where the attack occurred. For more information - read about what is Amazon Resource Names (ARN).
         type: shortText
       sender: Your SOC team
       title: Let's Check our impacted asset
