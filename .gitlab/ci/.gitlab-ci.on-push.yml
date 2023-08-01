@@ -416,6 +416,7 @@ slack-notify-nightly-build:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
+    CLOUD_MACHINES_TYPE: "build"
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -435,13 +436,13 @@ slack-notify-nightly-build:
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
     - source CloudEnvVariables
     - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
     - section_end "Lock Machine"
 
     - section_start "Clean Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
     - section_end "Clean Machine"
 
     - section_start "Install Packs and run Test-Module"
@@ -518,7 +519,6 @@ xsiam_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
@@ -544,7 +544,6 @@ xsoar_ng_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS

@@ -1,37 +1,162 @@
 {
-    "description": "",
+    "description": "Mapper for Xpanse Alerts",
     "feed": false,
     "id": "Xpanse - Incoming Mapper",
     "mapping": {
         "Xpanse Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+				"Xpanse Alert ID": {
+					"complex": {
+						"filters": [],
+						"root": "external_id",
+						"transformers": []
+					}
+				},
+				"Xpanse Asset IDs": {
+					"complex": {
+						"filters": [],
+						"root": "asset_ids",
+						"transformers": []
+					}
+				},
+                "Xpanse Business Units": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "business_unit_hierarchies.[].[]",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
+				"Xpanse Country Code": {
+					"complex": {
+						"filters": [],
+						"root": "country_codes",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
+				"Xpanse Description": {
+					"complex": {
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					}
+				},
+				"Xpanse External ID": {
+					"complex": {
+						"filters": [],
+						"root": "external_id",
+						"transformers": []
+					}
+				},
+				"Xpanse Host Name": {
+					"complex": {
+						"filters": [],
+						"root": "domain_names",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
+				"Xpanse IP": {
+					"complex": {
+						"filters": [],
+						"root": "action_remote_ip",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {},
+									"defaultValue": {
+										"isContext": true,
+										"value": {
+											"simple": "ipv4_addresses[0]"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							}
+						]
+					}
+				},
+				"Xpanse Port": {
+					"complex": {
+						"filters": [],
+						"root": "action_remote_port",
+						"transformers": []
+					}
+				},
+				"Xpanse Progress Status": {
+					"complex": {
+						"filters": [],
+						"root": "resolution_status",
+						"transformers": []
+					}
+				},
+				"Xpanse Protocol": {
+					"complex": {
+						"filters": [],
+						"root": "port_protocol",
+						"transformers": []
+					}
+				},
+				"Xpanse Provider": {
+					"complex": {
+						"filters": [],
+						"root": "cloud_providers",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
+				"Xpanse Remediation Guidance": {
+					"complex": {
+						"filters": [],
+						"root": "remediation_guidance",
+						"transformers": []
+					}
+				},
+				"Xpanse Service ID": {
+					"complex": {
+						"filters": [],
+						"root": "service_ids",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				},
+				"Xpanse Tags": {
+					"complex": {
+						"filters": [],
+						"root": "original_tags",
+						"transformers": []
+					}
+				},
                 "Xpanse Category": {
                     "simple": "asm_alert_categories"
-                },
-                "Xpanse External ID": {
-                    "simple": "external_id"
-                },
-                "Xpanse Host Name": {
-                    "simple": "host_name"
-                },
-                "Xpanse IP": {
-                    "simple": "action_remote_ip"
-                },
-                "Xpanse Alert ID": {
-                    "simple": "alert_id"
-                },
-                "Xpanse Port": {
-                    "simple": "action_remote_port"
-                },
-                "Xpanse Progress Status": {
-                    "simple": "resolution_status"
-                },
-                "Xpanse Tags": {
-                    "simple": "tags"
                 }
             }
-        }
+		}
     },
     "name": "Xpanse - Incoming Mapper",
     "type": "mapping-incoming",
