@@ -8509,19 +8509,19 @@ def get_param_or_arg(param_key: str, arg_key: str):
     return demisto.params().get(param_key) or demisto.args().get(arg_key)
 
 
-def ip_command(ips: str, reliability: str, should_error: bool) -> List[CommandResults]:
+def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
     """
     Performs RDAP lookup for the IP(s) and returns a list of CommandResults.
     Sets API execution metrics functionality (if supported) and adds them to the list of CommandResults.
 
     Args:
-        - `ips` (``str``): Comma-separated list of IPs to perform the RDAP lookup for.
         - `reliability` (``str``): RDAP lookup source reliability.
         - `should_error` (``bool``): Whether to return an error entry if the lookup fails.
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
 
+    ips = demisto.args().get('ip', '1.1.1.1')
     rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
                                       'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
     rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
@@ -8610,20 +8610,104 @@ def ip_command(ips: str, reliability: str, should_error: bool) -> List[CommandRe
     return append_metrics(execution_metrics=execution, results=results)
 
 
-def whois_command(reliability: str, query: str, is_recursive: bool, should_error: bool = False, verbose: bool = False) -> List[CommandResults]:
+def whois_command(reliability: str) -> List[CommandResults]:
     """
     Runs Whois domain query.
-    If the `with_error` integration instance configuration is set, the command will terminate on the first error encountered.
 
     Arguments:
-        - `reliability` (``DBotScoreReliability``): The source reliability. Set in the integration instance settings.
-        - `query` (``str``): The domain(s) to run the lookup for. 
-        - `is_recursive` (``bool``): Whether to run the command recursively.
-        - `verbose` (``bool``): Whether the output should be verbose or not. It will add the JSON raw response to the context.
-        - `should_error` (``bool``): Whether to return an error entry if the lookup fails.
+        - `reliability` (``str``): The source reliability. Set in the integration instance settings.
     Returns:
         - `List[CommandResults]` with the command results and API execution metrics (if supported).
     """
+
+    args = demisto.args()
+    query = args.get("query", "paloaltonetworks.com")
+    is_recursive = argToBoolean(args.get("recursive", 'false'))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    should_error = argToBoolean(demisto.params().get('with_error', False))
+
+    demisto.info(f"whois command is called with the query '{query}'")
+
+    execution_metrics = ExecutionMetrics()
+    results: List[CommandResults] = []
+    for query in argToList(query):
+        domain = get_domain_from_query(query)
+
+        try:
+            whois_result = get_whois(domain, is_recursive=is_recursive)
+            execution_metrics.success += 1
+            md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+            context_res = {}
+            context_res.update(dbot_score)
+            context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
+
+            if verbose:
+                demisto.info('Verbose response')
+                whois_result['query'] = query
+                json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
+                context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
+
+            result = CommandResults(
+                outputs=context_res,
+                entry_type=EntryType.NOTE,
+                content_format=EntryFormat.MARKDOWN,
+                readable_output=tableToMarkdown('Whois results for {}'.format(domain), md),
+                raw_response=str(whois_result)
+            )
+
+            results.append(result)
+
+        except Exception as e:
+            demisto.error(
+                f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
+            execution_metrics = increment_metric(
+                execution_metrics=execution_metrics,
+                mapping=whois_exception_mapping,
+                caught_exception=type(e)
+            )
+
+            output = ({
+                outputPaths['domain']: {
+                    'Name': domain,
+                    'Whois': {
+                        'QueryStatus': f"Failed whois lookup: {e}"
+                    }
+                },
+            })
+
+            if should_error:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.ERROR,
+                    raw_response=str(e)
+                ))
+            else:
+                results.append(CommandResults(
+                    outputs=output,
+                    readable_output=f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}': {e}",
+                    entry_type=EntryType.WARNING,
+                    raw_response=str(e)
+                ))
+
+    return append_metrics(execution_metrics=execution_metrics, results=results)
+
+
+def domain_command(reliability: str) -> List[CommandResults]:
+    """
+    Runs Whois domain query.
+
+    Arguments:
+        - `reliability` (``str``): The source reliability. Set in the integration instance settings.
+    Returns:
+        - `List[CommandResults]` with the command results and API execution metrics (if supported).
+    """
+
+    args = demisto.args()
+    query = args.get("domain", "paloaltonetworks.com")
+    is_recursive = argToBoolean(args.get("recursive", 'false'))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    should_error = argToBoolean(demisto.params().get('with_error', False))
 
     demisto.info(f"whois command is called with the query '{query}'")
 
@@ -8738,7 +8822,6 @@ def setup_proxy():
 def main():
     demisto.debug(f"command is {demisto.command()}")
     command = demisto.command()
-    args: Dict[str, str] = demisto.args()
     should_error = argToBoolean(demisto.params().get('with_error', False))
 
     reliability = demisto.params().get('integrationReliability')
@@ -8752,33 +8835,22 @@ def main():
     try:
         results: List[CommandResults] = []
         if command == 'ip':
-            ip = args.get('ip', '')
-            cmd_res = ip_command(
-                ips=ip,
-                reliability=reliability,
-                should_error=should_error
-            )
-
-            results = cmd_res
+            results = ip_command(reliability=reliability, should_error=should_error)
 
         else:
             org_socket = socket.socket
             setup_proxy()
             if command == 'test-module':
                 results = test_command()
-            elif command == 'whois' or command == "domain":
 
-                is_recursive = argToBoolean(args.get("recursive", 'false'))
-                domain_to_query = args.get('domain')
-                verbose = argToBoolean(args.get('verbose', 'false'))
+            elif command == 'whois':
+                results = whois_command(reliability=reliability)
 
-                results = whois_command(
-                    reliability=reliability,
-                    query=domain_to_query,  # type: ignore
-                    is_recursive=is_recursive,
-                    verbose=verbose,
-                    should_error=should_error
-                )
+            elif command == "domain":
+                results = domain_command(reliability=reliability)
+
+            else:
+                raise NotImplementedError()
 
         return_results(results)
     except Exception as e:
