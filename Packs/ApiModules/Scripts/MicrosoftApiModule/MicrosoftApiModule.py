@@ -1363,7 +1363,7 @@ class MicrosoftClient(BaseClient):
 and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
-    def is_auth_code_reconfigured(self) -> str:
+    def is_auth_code_reconfigured(self) -> bool:
         return False if get_integration_context().get("auth_code") == self.auth_code else True
 
 class NotFoundError(Exception):
