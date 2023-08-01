@@ -1,6 +1,6 @@
 This filter accepts two inputs, left and right, each of which can be either a single value of any type (e.g., string, int, etc.) or a list of values. The filter iterates over each value in the left input and returns all values that exist within the right input, even if only a part of it exists. The matching process is case-insensitive, meaning it disregards letter case during the comparison.
 
-All inputs are treated either as a string or as a list of strings. (if it contains a comma). for example, {'a':1,'c':2} is treated as two strings: "{'a':1" and "{'c':2}".
+All inputs are treated either as a string or as a list of strings, if it contains a comma. Json on the other hand is always treated as one string.
 
 Since the comparison treats all inputs as strings, integers and strings are considered equal during the evaluation.
 
@@ -44,5 +44,6 @@ There are no outputs for this script.
 | bca              |    A                   | bca                                 | The filter is case-insensitive. |
 | {'alert' {'data': 'x'}}              | x  |{'alert' {'data': 'x'}}                              |
 | {'a':1},{'b':2} | {'a':1,'c':2}           | None                          |  `{'a':1,'c':2}`     is nat a part of a value from the left.  |
-| {'a':1},{'b':2} | {a:1}                   | [False, False]                           | `{a:1}` is not a part of any value from the left.                            |
+| {'a':1},{'b':2} | {a:1}                   | None                           | `{a:1}` is not a part of any value from the left.  |
+| {key1:value1, key2:value2}  | 1 |{key1:value1, key2:value2}|  A json is treated as a single string, even when there is a comma in it.
 | '','            | {'a':1,'c':2}           | '                     | `''` is not a part of `{'a':1,'c':2}`, but `'` is.|
