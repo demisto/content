@@ -379,11 +379,11 @@ def test_update_intel_doc_ioc(mocker, requests_mock):
                       json={'data': api_get_expected_response})
     requests_mock.put(BASE_URL + f'/plugin/products/detect3/api/v1/intels/{str(intel_doc_id)}',
                       json=api_update_expected_response,
-                      request_headers={'Content-Disposition': 'filename=file.ioc',
+                      request_headers={'Content-Disposition': 'attachment; filename=file.ioc',
                                        'Content-Type': 'application/xml'})
     requests_mock.put(BASE_URL + f'/plugin/products/threat-response/api/v1/intels/{str(intel_doc_id)}',
                       json={'data': api_update_expected_response},
-                      request_headers={'Content-Disposition': 'filename=file.ioc',
+                      request_headers={'Content-Disposition': 'attachment; filename=file.ioc',
                                        'Content-Type': 'application/xml'})
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.update_intel_doc(MOCK_CLIENT, {
@@ -412,7 +412,7 @@ def test_update_intel_doc_yara(mocker, requests_mock):
                       request_headers={'Content-Disposition': 'filename=test123456',
                                        'Content-Type': 'application/xml'}, json=api_update_expected_response)
     requests_mock.put(BASE_URL + f'/plugin/products/threat-response/api/v1/intels/{str(intel_doc_id)}',
-                      request_headers={'Content-Disposition': 'filename=test123456',
+                      request_headers={'Content-Disposition': 'attachment; filename=test123456',
                                        'Content-Type': 'application/xml'}, json={'data': api_update_expected_response})
 
     human_readable, outputs, raw_response = TaniumThreatResponseV2.update_intel_doc(MOCK_CLIENT, {

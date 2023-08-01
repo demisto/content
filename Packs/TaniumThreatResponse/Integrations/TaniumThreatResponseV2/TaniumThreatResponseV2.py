@@ -799,7 +799,7 @@ def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     raw_response = client.do_request('POST',
                                      '/plugin/products/'
                                      f'{client.get_threat_response_endpoint()}/api/v1/intels',
-                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
+                                     headers={'Content-Disposition': f'attachment; filename=file.{file_extension}',
                                               'Content-Type': 'application/xml'}, body=file_content)
 
     intel_doc = get_intel_doc_item(raw_response)
@@ -864,6 +864,7 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
         # in yara files the update will take place when the previous intrinsic_id is entered in the Content Disposition
         content_disposition = f'filename={intrinsic_id}'
 
+    content_disposition = f"attachment; {content_disposition}"
     raw_response = client.do_request('PUT', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/intels/{id_}',
