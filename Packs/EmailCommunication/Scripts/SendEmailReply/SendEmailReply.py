@@ -403,7 +403,7 @@ def create_file_data_json(attachment, field_name):
     return json.dumps(file_data)
 
 
-def get_reply_body(notes, incident_id, attachments):
+def get_reply_body(notes, incident_id, attachments, async_call):
     """ Get the notes and the incident id and return the reply body
     Args:
         notes (list): The notes of the email.
@@ -429,7 +429,7 @@ def get_reply_body(notes, incident_id, attachments):
 
         entry_note = json.dumps(
             [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
-        entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id})
+        entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id, async_call})
 
         entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
             {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
@@ -633,7 +633,7 @@ def format_body(new_email_body):
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
                         subject_include_incident_id, email_to_str, service_mail, email_latest_message,
-                        mail_sender_instance):
+                        mail_sender_instance, async_call):
     """
         Retrieve all entries in the EmailThreads context key
     Args:
@@ -662,7 +662,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
                                                'customFields': {'emailgeneratedcode': email_code}})
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
-        reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
+        reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments, async_call)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
         result = validate_email_sent(incident_id, email_subject, subject_include_incident_id, email_to_str, reply_body,
                                      service_mail, final_email_cc, '', reply_html_body, entry_id_list,
@@ -973,6 +973,8 @@ def main():
     email_selected_thread = custom_fields.get('emailselectedthread')
     subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
 
+    async_call = argToBoolean(args.get('async_call', False))
+
     if new_email_attachments:
         new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
     else:
@@ -982,7 +984,7 @@ def main():
         # This case is run when replying to an email from the 'Email Communication' layout
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
                             subject_include_incident_id, email_to_str, service_mail, email_latest_message,
-                            mail_sender_instance)
+                            mail_sender_instance, async_call)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message

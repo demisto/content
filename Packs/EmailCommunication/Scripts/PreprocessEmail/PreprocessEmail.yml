@@ -8,6 +8,13 @@ args:
 - name: CreateIncidentUntaggedEmail
   description: Allow the creation of an email for which we can't find an existing incident.
   defaultValue: 'true'
+- name: async_call
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Specify whether to do an async call
+  defaultValue: 'false'
 comment: |-
   Preprocessing script for email communication layout.
   This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".

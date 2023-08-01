@@ -24,6 +24,13 @@ args:
 - name: subject_include_incident_id
   description: Include the Incident ID within the email subject.
   defaultValue: 'false'
+- name: async_call
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Specify whether to do an async call
+  defaultValue: 'false'
 comment: |-
   Send email reply
   This automation runs using the default Limited User role, unless you explicitly change the permissions.

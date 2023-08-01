@@ -94,14 +94,14 @@ def get_entry_id_list(attachments, files):
     return entry_id_list
 
 
-def add_entries(email_reply, email_related_incident):
+def add_entries(email_reply, email_related_incident, async_call):
     """Add the entries to the related incident
     Args:
         email_reply: The email reply.
         email_related_incident: The related incident.
     """
     entries_str = json.dumps([{"Type": 1, "ContentsFormat": 'html', "Contents": email_reply, "tags": ['email-thread']}])
-    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident})
+    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident, 'async': async})
     if is_error(res):
         demisto.error(ERROR_TEMPLATE.format('addEntries', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('addEntries', res['Contents']))
@@ -380,6 +380,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
 
 
 def main():
+    args = demisto.args()
     incident = demisto.incident()
     attachments = incident.get('attachment', [])
     custom_fields = incident.get('CustomFields')
@@ -393,6 +394,8 @@ def main():
     email_received = custom_fields.get('emailreceived', '')
     email_replyto = custom_fields.get('emailreplyto', '')
     email_latest_message = custom_fields.get('emaillatestmessage', '')
+
+    async_call = argToBoolean(args.get('async_call', False))
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
@@ -419,7 +422,7 @@ def main():
                 "Incoming email related to Email Communication Incident"
                 f" {email_related_incident}. Appending a message there.")
             email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-            add_entries(email_reply, email_related_incident)
+            add_entries(email_reply, email_related_incident, async_call)
         else:
             # For all other incident types, add message details as context entry
             demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
