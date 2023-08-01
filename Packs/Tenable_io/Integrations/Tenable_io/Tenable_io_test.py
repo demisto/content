@@ -3,7 +3,6 @@ import pytest
 from freezegun import freeze_time
 from CommonServerPython import *
 import json
-from Tenable_io import Client
 # mypy: disable-error-code="operator"
 
 MOCK_PARAMS = {
@@ -45,12 +44,12 @@ EXPECTED_VULN_BY_ASSET_RESULTS = [
         'VulnerabilityState': 'Resurfaced'
     }
 ]
-MOCK_CLIENT = Client(
-    MOCK_PARAMS['url'],
-    verify=True,
-    proxy=True,
-    ok_codes=(200,),
-)
+MOCK_CLIENT_ARGS = {
+    'base_url': MOCK_PARAMS['url'],
+    'verify': True,
+    'proxy': True,
+    'ok_codes': (200,),
+}
 
 
 def load_json(filename):
@@ -518,14 +517,14 @@ def test_list_scan_filters_command(mocker):
     Then:
         - Verify that tenable-io-list-scan-filters command works as expected.
     '''
-    from Tenable_io import list_scan_filters_command
+    from Tenable_io import list_scan_filters_command, Client
 
     test_data = load_json('list_scan_filters')
 
     request = mocker.patch.object(BaseClient, '_http_request', return_value=test_data['response_json'])
     mock_demisto(mocker)
 
-    results = list_scan_filters_command(MOCK_CLIENT)
+    results = list_scan_filters_command(Client(**MOCK_CLIENT_ARGS))
 
     assert results.outputs == test_data['outputs']
     assert results.readable_output == test_data['readable_output']
@@ -546,7 +545,7 @@ def test_get_scan_history_command(mocker):
     Then:
         - Verify that tenable-io-get-scan-history command works as expected.
     '''
-    from Tenable_io import get_scan_history_command
+    from Tenable_io import get_scan_history_command, Client
 
     test_data = load_json('get_scan_history')
 
@@ -554,7 +553,7 @@ def test_get_scan_history_command(mocker):
         BaseClient, '_http_request', return_value=test_data['response_json'])
     mock_demisto(mocker)
 
-    results = get_scan_history_command(test_data['args'], MOCK_CLIENT)
+    results = get_scan_history_command(test_data['args'], Client(**MOCK_CLIENT_ARGS))
 
     assert results.outputs_prefix == 'TenableIO.ScanHistory'
     assert results.outputs_key_field == 'id'
@@ -577,13 +576,13 @@ def test_initiate_export_scan(mocker):
         - Initiate an export scan request.
     '''
 
-    from Tenable_io import initiate_export_scan
+    from Tenable_io import initiate_export_scan, Client
 
     test_data = load_json('initiate_export_scan')
     mock_demisto(mocker)
     request = mocker.patch.object(
         BaseClient, '_http_request', return_value=test_data['response_json'])
-    file = initiate_export_scan(test_data['args'], MOCK_CLIENT)
+    file = initiate_export_scan(test_data['args'], Client(**MOCK_CLIENT_ARGS))
 
     assert file == test_data['expected_file']
     assert request.call_args.args == tuple(test_data['called_with']['args'])
@@ -601,12 +600,14 @@ def test_download_export_scan(mocker):
     Then:
         - Initiate an export scan request.
     '''
+    from Tenable_io import Client
+
     mock_demisto(mocker)
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     request = mocker.patch.object(
         BaseClient, '_http_request', return_value=b'')
 
-    result = MOCK_CLIENT.download_export_scan('scan_id', 'file_id', 'HTML')
+    result = Client(**MOCK_CLIENT_ARGS).download_export_scan('scan_id', 'file_id', 'HTML')
 
     assert result == {
         'Contents': '',
@@ -642,7 +643,7 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
         - Return an error.
     '''
 
-    from Tenable_io import export_scan_command
+    from Tenable_io import export_scan_command, Client
 
     mock_demisto(mocker)
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
@@ -650,7 +651,7 @@ def test_export_scan_command_errors(mocker, args, response_json, message):
     mocker.patch.object(Client, 'initiate_export_scan', return_value={'file': 'file_id'})
 
     with pytest.raises(DemistoException, match=message):
-        export_scan_command(args, MOCK_CLIENT)
+        export_scan_command(args, Client(**MOCK_CLIENT_ARGS))
 
 
 @pytest.mark.parametrize(
