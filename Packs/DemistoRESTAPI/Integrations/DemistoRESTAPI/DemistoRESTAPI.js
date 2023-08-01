@@ -256,10 +256,7 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
 
 switch (command) {
     case 'test-module':
-        res = sendRequest('GET','user');
-        if (res.response.id == undefined){
-            throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
-        }
+        sendRequest('GET','user');
         return 'ok';
     case 'demisto-api-post':
         if(args.body)
