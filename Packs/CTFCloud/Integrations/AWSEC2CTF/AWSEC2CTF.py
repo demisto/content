@@ -3039,7 +3039,7 @@ def main():
         elif command == 'aws-ec2-stop-instances':
             stop_instances_command(args, aws_client)
 
-        elif command == 'aws-ec2-terminate-instances':
+        elif command == 'aws-ec2-terminate-instances-ctf':
             terminate_instances_command(args, aws_client)
 
         elif command == 'aws-ec2-create-volume':

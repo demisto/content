@@ -1373,7 +1373,7 @@ script:
       name: roleSessionDuration
     description: Shuts down one or more instances. This operation is idempotent; if you terminate an instance more than once, each call succeeds.
     execution: true
-    name: aws-ec2-terminate-instances
+    name: aws-ec2-terminate-instances-ctf
   - arguments:
     - description: The Availability Zone in which to create the volume. Use DescribeAvailabilityZones to list the Availability Zones that are currently available to you.
       name: availabilityZone

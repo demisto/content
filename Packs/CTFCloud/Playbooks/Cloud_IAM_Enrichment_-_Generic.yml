@@ -441,10 +441,10 @@ tasks:
       version: -1
       name: AWS IAM - Get user information
       description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
-      script: AWS - IAM_copy|||aws-iam-get-user
+      script: '|||aws-iam-get-user-ctf'
       type: regular
       iscommand: true
-      brand: AWS - IAM_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "13"
@@ -478,10 +478,10 @@ tasks:
       version: -1
       name: AWS IAM - List user access keys
       description: Returns information about the access key IDs associated with the specified IAM user.
-      script: AWS - IAM_copy|||aws-iam-list-access-keys-for-user
+      script: '|||aws-iam-list-access-keys-for-user-ctf'
       type: regular
       iscommand: true
-      brand: AWS - IAM_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -515,10 +515,10 @@ tasks:
       version: -1
       name: AWS IAM - List user groups
       description: Lists the IAM groups that the specified IAM user belongs to.
-      script: AWS - IAM_copy|||aws-iam-list-groups-for-user
+      script: '|||aws-iam-list-groups-for-user-ctf'
       type: regular
       iscommand: true
-      brand: AWS - IAM_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
@@ -552,10 +552,10 @@ tasks:
       version: -1
       name: AWS IAM - List user attached policies
       description: Lists all managed policies that are attached to the specified IAM user.
-      script: AWS - IAM_copy|||aws-iam-list-attached-user-policies
+      script: '|||aws-iam-list-attached-user-policies-ctf'
       type: regular
       iscommand: true
-      brand: AWS - IAM_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
@@ -589,10 +589,10 @@ tasks:
       version: -1
       name: AWS IAM - List user inline policies
       description: Lists the names of the inline policies embedded in the specified IAM user.
-      script: AWS - IAM_copy|||aws-iam-list-user-policies
+      script: '|||aws-iam-list-user-policies-ctf'
       type: regular
       iscommand: true
-      brand: AWS - IAM_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "18"

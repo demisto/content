@@ -136,7 +136,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
-    name: aws-iam-get-user
+    name: aws-iam-get-user-ctf
     outputs:
     - contextPath: AWS.IAM.Users.UserName
       description: The friendly name identifying the user.
@@ -299,7 +299,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Lists the IAM groups that the specified IAM user belongs to.
-    name: aws-iam-list-groups-for-user
+    name: aws-iam-list-groups-for-user-ctf
     outputs:
     - contextPath: AWS.IAM.Users.Groups.GroupName
       description: The friendly name that identifies the group.
@@ -387,7 +387,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: Returns information about the access key IDs associated with the specified IAM user.
-    name: aws-iam-list-access-keys-for-user
+    name: aws-iam-list-access-keys-for-user-ctf
     outputs:
     - contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
       description: The ID for this access key.
@@ -1331,7 +1331,7 @@ script:
     - description: Starting item of the next page to view. Retrieved from a previous run of the command (InlinePoliciesMarker).
       name: marker
     description: Lists the names of the inline policies embedded in the specified IAM user.
-    name: aws-iam-list-user-policies
+    name: aws-iam-list-user-policies-ctf
     outputs:
     - contextPath: AWS.IAM.UserPolicies.UserName
       description: The name (friendly name, not ARN) of the user to list attached policies for.
@@ -1356,7 +1356,7 @@ script:
     - description: Starting item of the next page to view. Can be retrieved from context (AttachedPoliciesMarker).
       name: marker
     description: Lists all managed policies that are attached to the specified IAM user.
-    name: aws-iam-list-attached-user-policies
+    name: aws-iam-list-attached-user-policies-ctf
     outputs:
     - contextPath: AWS.IAM.AttachedUserPolicies.UserName
       description: The name (friendly name, not ARN) of the user to list attached policies for.

@@ -1251,7 +1251,7 @@ def main():     # pragma: no cover
             create_user(args, client)
         elif command == 'aws-iam-create-login-profile':
             create_login_profile(args, client)
-        elif command == 'aws-iam-get-user':
+        elif command == 'aws-iam-get-user-ctf':
             get_user(args, client)
         elif command == 'aws-iam-list-users':
             list_users(args, client)
@@ -1265,13 +1265,13 @@ def main():     # pragma: no cover
             create_group(args, client)
         elif command == 'aws-iam-list-groups':
             list_groups(args, client)
-        elif command == 'aws-iam-list-groups-for-user':
+        elif command == 'aws-iam-list-groups-for-user-ctf':
             list_groups_for_user(args, client)
         elif command == 'aws-iam-create-access-key':
             create_access_key(args, client)
         elif command == 'aws-iam-update-access-key':
             update_access_key(args, client)
-        elif command == 'aws-iam-list-access-keys-for-user':
+        elif command == 'aws-iam-list-access-keys-for-user-ctf':
             list_access_key_for_user(args, client)
         elif command == 'aws-iam-list-policies':
             list_policies(args, client)
@@ -1339,9 +1339,9 @@ def main():     # pragma: no cover
             get_role_policy(args, client)
         elif command == 'aws-iam-get-policy':
             get_policy(args, client)
-        elif command == 'aws-iam-list-user-policies':
+        elif command == 'aws-iam-list-user-policies-ctf':
             list_user_policies(args, client)
-        elif command == 'aws-iam-list-attached-user-policies':
+        elif command == 'aws-iam-list-attached-user-policies-ctf':
             list_attached_user_policies(args, client)
         elif command == 'aws-iam-list-attached-group-policies':
             list_attached_group_policies(args, client)
