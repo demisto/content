@@ -7,7 +7,8 @@ from utils import (
     get_content_reviewers,
     CONTRIBUTION_REVIEWERS_KEY,
     CONTRIBUTION_SECURITY_REVIEWER_KEY,
-    DOC_REVIEWER_KEY
+    DOC_REVIEWER_KEY,
+    get_doc_reviewer
 )
 
 
@@ -225,7 +226,13 @@ def test_exit_get_content_reviewers(
             "CONTRIBUTION_TL": "tl1",
             "ON_CALL_DEVS": ["ocd1", "ocd2"],
             DOC_REVIEWER_KEY: "dr1"
-        }, "dr1")
+        }, "dr1"),
+        ({
+            "CONTRIBUTION_REVIEWERS": ["cr1", "cr2", "cr3", "cr4"],
+            "CONTRIBUTION_SECURITY_REVIEWER": "sr1",
+            "CONTRIBUTION_TL": "tl1",
+            "ON_CALL_DEVS": ["ocd1", "ocd2"],
+        }, None)
     ]
 )
 def test_get_doc_reviewer(
@@ -239,54 +246,13 @@ def test_get_doc_reviewer(
         - A ``dict[str, Any]``
 
     When:
-        - 4 content reviewers and 1 security reviewers provided, 1 doc reviewer
+        - Case A: 4 content reviewers and 1 security reviewers provided, 1 doc reviewer
+        - Case B: There's no ``DOC_REVIEWER`` key in `dict`.
 
     Then:
-        - 1 doc reviewer returned
+        - Case A: 1 doc reviewer returned.
+        - Case B: `None`.
     """
 
     actual_doc_reviewer = get_doc_reviewer(content_roles)
     assert actual_doc_reviewer == expected_doc_reviewer
-
-
-@pytest.mark.parametrize(
-    'content_roles',
-    [
-        ({
-            DOC_REVIEWER_KEY: [],
-        }),
-        ({
-            "CONTRIBUTION_REVIEWERS": ["cr1", "cr2"],
-        }),
-        ({
-            DOC_REVIEWER_KEY: ""
-        }),
-        ({
-            DOC_REVIEWER_KEY: None
-        })
-    ]
-)
-def test_exit_get_doc_reviewer(
-    content_roles: dict[str, Any]
-):
-    """
-    Test retrieval of content and security reviewers when the file/`dict`
-    has unexpected/incorrect structure.
-
-    Given:
-        - A ``dict[str, Any]``
-
-    When:
-        - Case A: Document reviewer specified as an array/list.
-        - Case B: Document reviewer key is not specified.
-        - Case C: Document reviewer is empty.
-        - Case D: Document reviewer is undefined.
-
-    Then:
-        - Case A-G: Result in `sys.exit(1)`.
-    """
-
-    with pytest.raises(SystemExit) as e:
-        get_doc_reviewer(content_roles)
-        assert e.type == SystemExit
-        assert e.value.code == 1
