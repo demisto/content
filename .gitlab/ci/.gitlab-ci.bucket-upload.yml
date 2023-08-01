@@ -493,7 +493,7 @@ upload-packs-to-xpanse-marketplace:
 upload-packs-to-xsoar-saas-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xsoar-saas-prepare-testing-bucket-upload-flow"] # "install-packs-in-xsoar-saas-dev"
+  needs: ["xsoar-saas-prepare-testing-bucket-upload-flow"] # "install-packs-in-xsoar-saas-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
