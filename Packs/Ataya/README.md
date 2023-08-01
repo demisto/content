@@ -24,7 +24,7 @@ Enable Webhook on Harmony Dashboard
 2. Navigate to **Organization** > **Setting** > **Webhook**.
 3. Right-click **+Webhook**, and fill the configuration related to Generic Webhook server.
 
-![](./doc_files/generic_webhook_config.png)
+![](./doc_files/harmony_webhook_config.png)
 
 
 ### Supported Published Events
