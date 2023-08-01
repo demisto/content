@@ -4,7 +4,7 @@ import os
 import sys
 import json
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 from collections.abc import Generator, Iterable
 from pathlib import Path
 
