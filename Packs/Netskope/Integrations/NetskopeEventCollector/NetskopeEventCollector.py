@@ -149,11 +149,11 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
         demisto.debug(f'Wait time is {wait_time} seconds')
 
         events.extend(results)
-        print_event_statistics_logs(events=events, event_type=event_type)
 
         if not results or len(results) < MAX_EVENTS_PAGE_SIZE:
             break
 
+    print_event_statistics_logs(events=events, event_type=event_type)
     # We mark this event type as successfully fetched
     client.fetch_status[event_type] = True
     return events, False

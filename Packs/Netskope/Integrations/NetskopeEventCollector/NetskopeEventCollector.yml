@@ -25,7 +25,7 @@ configuration:
   section: Collect
   type: 0
   hidden: true
-- additionalinfo: The maximum amount of events to retrieve for each event type. For more information about event types see the help section.
+- additionalinfo: The maximum amount of events to retrieve PER EACH EVENT TYPE type. For more information about event types see the help section.
   defaultvalue: '50000'
   display: Max events per fetch
   section: Collect
