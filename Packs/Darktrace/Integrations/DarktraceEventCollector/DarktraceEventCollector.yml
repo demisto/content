@@ -59,29 +59,16 @@ name: Darktrace Event Collector
 script:
   commands:
   - arguments:
-    - default: false
-      description: The number of events to return.
-      isArray: false
+    - description: The number of events to return.
       name: limit
       defaultValue: 10
-      required: false
-      secret: false
-    - default: false
-      description: The start time by which to filter events. Date format will be the same as in the first_fetch parameter.
-      isArray: false
+    - description: The start time by which to filter events. Date format will be the same as in the first_fetch parameter.
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The end time by which to filter events.
-      isArray: false
+    - description: The end time by which to filter events.
       name: end_time
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'true'
@@ -89,14 +76,14 @@ script:
       required: true
     description: Gets events from Darktrace.
     name: darktrace-get-events
-  isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
   isfetchevents: true
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
+marketplaces:
+- marketplacev2
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
