@@ -1129,7 +1129,7 @@ def _get_return_command_for_artifact_analysis(artifact_analysis: dict):
 ''' EXECUTION CODE '''
 
 
-def main():
+def main():  # pragma: no cover
     command = None
 
     try:
