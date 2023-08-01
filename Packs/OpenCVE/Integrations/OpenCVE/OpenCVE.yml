@@ -9,17 +9,14 @@ configuration:
   required: true
   type: 0
 - display: Username
-  name: username
-  required: true
-  type: 0
-- display: Password
-  name: password
+  displaypassword: Password
+  name: credentials
   required: true
   type: 9
-- name: integration_reliability
-  display: Source Reliability
-  additionalinfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A+ - 3rd party enrichment
+  display: Source Reliability
+  name: integration_reliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable

@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 from datetime import datetime, timedelta
 
 
@@ -894,8 +895,9 @@ def main():
     proxy = params.get('proxy', False)
     tlp = params.get('tlp_color', 'RED')
 
-    username = params.get('username')
-    password = params.get('password')
+    credentials = params.get('credentials')
+    username = credentials['identifier']
+    password = credentials['password']
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
