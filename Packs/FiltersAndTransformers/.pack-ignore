@@ -18,9 +18,3 @@ ignore=BA124
 [file:RegexGroups.yml]
 ignore=BA124
 
-[file:GreaterCidrNumAddresses.yml]
-ignore=RM109
-
-[file:LowerCidrNumAddresses.yml]
-ignore=RM109
-
