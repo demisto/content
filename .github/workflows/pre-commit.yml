@@ -37,7 +37,7 @@ jobs:
       run: |
         source .venv/bin/activate
         npm install
-        demisto-sdk pre-commit --sdk-ref 2131f4352205635c4a544126db33f49e8ac60148 -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
+        demisto-sdk pre-commit --sdk-ref 5b2c74b1d509330ba6c240856af661db74b5ed6c -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
