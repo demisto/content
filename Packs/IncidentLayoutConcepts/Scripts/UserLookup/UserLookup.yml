@@ -1,0 +1,27 @@
+args:
+- name: user
+- auto: PREDEFINED
+  name: addToContext
+  predefined:
+  - "true"
+  - "false"
+commonfields:
+  id: UserLookup
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.66339
+enabled: true
+name: UserLookup
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- concepts
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

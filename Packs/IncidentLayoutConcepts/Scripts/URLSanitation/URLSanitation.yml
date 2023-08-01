@@ -1,0 +1,37 @@
+args:
+- isArray: true
+  name: url
+  required: true
+- description: Checks URL for PII information. If found, is replace with "username@domain".
+  name: domain
+- auto: PREDEFINED
+  default: true
+  defaultValue: "true"
+  description: Remove URLs that end with png,jpg,bmp,tiff,gif and jpeg
+  name: purgeImageURLs
+  predefined:
+  - "true"
+  - "false"
+  required: true
+commonfields:
+  id: URLSanitation
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.66339
+enabled: true
+name: URLSanitation
+outputs:
+- contextPath: urlList
+  description: New list of URLs
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

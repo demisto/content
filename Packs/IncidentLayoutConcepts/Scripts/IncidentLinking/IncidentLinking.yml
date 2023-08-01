@@ -1,0 +1,35 @@
+args:
+- description: Specify the parent incident, if not specified will use current incident.
+  name: parent
+- description: Specify which incidents should be linked, supports a csv list.
+  name: linkedIncidents
+  required: true
+- defaultValue: No Comment
+  description: Comment to be added to the incident linking entry
+  name: comment
+- auto: PREDEFINED
+  default: true
+  defaultValue: link
+  name: action
+  predefined:
+  - link
+  - unlink
+commonfields:
+  id: IncidentLinking
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.66339
+enabled: true
+name: IncidentLinking
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,116 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Active Directory Query v2 (XSOAR Engineer Training)
+  version: -1
+configuration: []
+description: Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).
+display: Active Directory Query v2 (XSOAR Engineer Training)
+name: Active Directory Query v2 (XSOAR Engineer Training)
+script:
+  commands:
+  - arguments:
+    - description: The username (samAccountName) of the user to modify.
+      name: username
+      required: true
+    - description: Root (e.g., DC=domain,DC=com)
+      name: base-dn
+    description: Expires the password of an Active Directory user.
+    name: ad-expire-password
+  - arguments:
+    - description: The username of the account to unlock (sAMAccountName).
+      name: username
+      required: true
+    - description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
+      name: base-dn
+    description: Unlocks a previously locked Active Directory user account.
+    name: ad-unlock-account
+  - arguments:
+    - description: The username of the account to disable (sAMAccountName).
+      name: username
+      required: true
+    - description: The password to set for the user.
+      name: password
+      required: true
+    - description: Root. For example, DC=domain,DC=com. Base DN configured for the instance is used as default.
+      name: base-dn
+    description: Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
+    name: ad-set-new-password
+  - arguments:
+    - default: true
+      description: The Distinguished Name of the user in which to return information.
+      name: dn
+    - description: The name of the user to return information.
+      name: name
+    - description: Adds AD attributes of the resulting objects to the default attributes.
+      name: attributes
+    - description: Queries users by custom field type.
+      name: custom-field-type
+    - description: Queries users by custom field data (relevant only if the `custom-field-type` argument is provided).
+      name: custom-field-data
+    - description: Queries users by the samAccountName attribute.
+      name: username
+    - defaultValue: "20"
+      description: The maximum number of objects to return. Default is 20.
+      name: limit
+    - description: Queries by the user's email address.
+      name: email
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to include verbose translation for UserAccountControl flags. Default is false.
+      name: user-account-control-out
+      predefined:
+      - "true"
+      - "false"
+    description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+    name: ad-get-user
+    outputs:
+    - contextPath: ActiveDirectory.Users.dn
+      description: The distinguished name of the user.
+      type: string
+    - contextPath: ActiveDirectory.Users.displayName
+      description: The display name of the user.
+      type: string
+    - contextPath: ActiveDirectory.Users.name
+      description: The common name of the user.
+      type: string
+    - contextPath: ActiveDirectory.Users.sAMAccountName
+      description: The sAMAccountName of the user.
+      type: string
+    - contextPath: ActiveDirectory.Users.userAccountControl
+      description: The account control flag of the user.
+      type: number
+    - contextPath: ActiveDirectory.Users.mail
+      description: The email address of the user.
+      type: string
+    - contextPath: ActiveDirectory.Users.manager
+      description: The manager of the user.
+      type: string
+    - contextPath: ActiveDirectory.Users.memberOf
+      description: Groups for which the user is a member.
+      type: string
+    - contextPath: Account.DisplayName
+      description: The display name of the user.
+      type: string
+    - contextPath: Account.Groups
+      description: Groups for which the user is a member.
+      type: string
+    - contextPath: Account.Manager
+      description: The manager of the user.
+      type: string
+    - contextPath: Account.ID
+      description: The distinguished name of the user.
+      type: string
+    - contextPath: Account.Username
+      description: The samAccountName of the user.
+      type: string
+    - contextPath: Account.Email
+      description: The email address of the user.
+      type: string
+  dockerimage: demisto/ldap:1.0.0.56666
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

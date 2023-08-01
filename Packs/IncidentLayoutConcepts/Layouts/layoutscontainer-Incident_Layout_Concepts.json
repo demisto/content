@@ -1,0 +1,457 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "0fo0rxpeq4",
+                "name": "Analyst ToolBox",
+                "sections": [
+                    {
+                        "description": "This is sections uses button to allow analyst to execute actions.  Use cases to use this approach. \n - Action buttons based on conditional field checks. Only supports Incident Fields. \n - Action button that require analyst input. \n\nCan be used with a custom wrapper script to mark results as notes. If not, output can be viewed in the warroom. ",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "0fo0rxpeq4-caseinfoid-0fo0rxpeq4-3975cb50-0342-11ee-bff9-775d99eabdcb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 22,
+                                "id": "41a8d930-14a8-11ee-8fa2-09c8e1607f8a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "username": {
+                                        "simple": "${incident.username}"
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "username"
+                                                }
+                                            },
+                                            "operator": "isExists",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 44,
+                                "id": "b3e3f510-0342-11ee-bff9-775d99eabdcb",
+                                "index": 1,
+                                "name": "Enrich User Information",
+                                "scriptId": "Active Directory Query v2 (XSOAR Engineer Training)|||ad-get-user",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "email": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "name": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "username": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "74e71ee0-0343-11ee-bff9-775d99eabdcb",
+                                "index": 2,
+                                "name": "Lookup User Information",
+                                "scriptId": "Active Directory Query v2 (XSOAR Engineer Training)|||ad-get-user",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Button Based Commands",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "This sections shows the command output.\n\n_It will not show the outputs of commands from the \"Button Based Commands\" section unless configured with a wrapper script._\n\n - Using the \"notes\" type sections since the entries are sorted by date.",
+                        "h": 7,
+                        "i": "0fo0rxpeq4-caseinfoid-0fo0rxpeq4-3a98b590-0344-11ee-bff9-775d99eabdcb",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Command Outputs",
+                        "static": false,
+                        "type": "notes",
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "This sections uses markdown links to enable analyst to run command. Since this section in based on a script the conditional check can be customized to exact requirements.  Use cases to use this approach.\n - Action based links on conditional check. Conditional check can included checking context data, installed modules, logged in user, etc. \n\n_Note that this approach does not support analyst input_",
+                        "h": 4,
+                        "i": "0fo0rxpeq4-caseinfoid-0fo0rxpeq4-75381320-0345-11ee-bff9-775d99eabdcb",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Link Based Commands",
+                        "query": "toolBox_Section",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "klrnnjwymz",
+                "name": "Analyst Guidance",
+                "sections": [
+                    {
+                        "description": "You can provide analyst guidance by adding descriptions to your sections header. These sections allow markdown formatting.\n\n**Bold** _Italics_ +Underlined+ ~~Strikethrough~~\n - Bullets\n1. Numbered lists\n\n{{background:#fd0800}}(Coloured Text)\n[External Link](http://google.com)",
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "0fo0rxpeq4-95e71770-0349-11ee-bff9-775d99eabdcb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "name",
+                                "height": 22,
+                                "id": "4a17a1b0-034a-11ee-bff9-775d99eabdcb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "4e4015b0-034a-11ee-bff9-775d99eabdcb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "phase",
+                                "height": 22,
+                                "id": "8252f030-034e-11ee-bff9-775d99eabdcb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Section Guidance ",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "i": "0fo0rxpeq4-7fbba050-034a-11ee-bff9-775d99eabdcb",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Guidance inside task detatils",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "You can include documentation inside the incident layout. Depending on your environment this documentation can be grabbed from a XSOAR List, Confluence, ServiceNow, etc. Once you have the documentation is can be markdown formatted and displayed inside the incident layout. \n\nIn this example I've stored the documentation inside a XSOAR List. The documentation displayed is based on the value of the Phase field, so at the playbook proceeds the displayed document will change. \n\nYou can include links to external systems and to actions on the incident. ",
+                        "h": 6,
+                        "i": "0fo0rxpeq4-20177f40-034d-11ee-bff9-775d99eabdcb",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Additional Analyst Guidance",
+                        "query": "SOP_Documentation",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "nrkpq28xvi",
+                "name": "Layout Lookup",
+                "sections": [
+                    {
+                        "description": "This section allows you to embed a function, but control the input, output and action with layout elements. \n\n**Inputs** - Can be user, indicator, asset, search query\n**Outputs** - Can be formatted as text, table or chart(needs a dynamic sections)\n**Action** - Save to context, send a notification, create a new indicator, etc.",
+                        "displayType": "CARD",
+                        "h": 6,
+                        "hideName": false,
+                        "i": "0fo0rxpeq4-nrkpq28xvi-0fo0rxpeq4-0b216170-04db-11ee-876f-a3d742eb9b41",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "userlookup",
+                                "height": 53,
+                                "id": "ac4cec70-04dd-11ee-876f-a3d742eb9b41",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lookupoutput",
+                                "height": 106,
+                                "id": "ad867de0-04dd-11ee-876f-a3d742eb9b41",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "body": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "cc": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "029db430-04dc-11ee-876f-a3d742eb9b41",
+                                "index": 2,
+                                "listId": "0fo0rxpeq4-0b216170-04db-11ee-876f-a3d742eb9b41",
+                                "name": "Send Notification to User",
+                                "scriptId": "Gmail Single User|||send-mail",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "user": {
+                                        "simple": "${incident.userlookup}"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "e906f400-04db-11ee-876f-a3d742eb9b41",
+                                "index": 0,
+                                "listId": "0fo0rxpeq4-0b216170-04db-11ee-876f-a3d742eb9b41",
+                                "name": "Search",
+                                "scriptId": "UserLookup",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Layout Lookup",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "zkpnuxxeqy",
+                "name": "Advanced Incident Linking",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "0fo0rxpeq4-zkpnuxxeqy-0fo0rxpeq4-8e959790-10fe-11ee-8da3-3d0ab90e4804",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "incidentlinkinggrid",
+                                "height": 106,
+                                "id": "999dfe70-10fe-11ee-8da3-3d0ab90e4804",
+                                "index": 0,
+                                "listId": "0fo0rxpeq4-zkpnuxxeqy-0fo0rxpeq4-8e959790-10fe-11ee-8da3-3d0ab90e4804",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "0fo0rxpeq4-18571380-13cc-11ee-9ecb-db7f5eabb89e",
+                        "items": [
+                            {
+                                "args": {
+                                    "action": {
+                                        "simple": "link"
+                                    },
+                                    "comment": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "1d111920-13cc-11ee-9ecb-db7f5eabb89e",
+                                "index": 0,
+                                "name": "Link Incident",
+                                "scriptId": "IncidentLinking",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "action": {
+                                        "simple": "unlink"
+                                    },
+                                    "comment": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "86e09a90-14a5-11ee-8fa2-09c8e1607f8a",
+                                "index": 1,
+                                "name": "Unlink Incident",
+                                "scriptId": "IncidentLinking",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Linking Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Incident Layout Concepts",
+    "name": "Incident Layout Concepts",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

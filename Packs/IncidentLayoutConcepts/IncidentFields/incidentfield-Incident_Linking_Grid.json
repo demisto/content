@@ -1,0 +1,75 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "incidentlinkinggrid",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "id",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Relationship",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "relationship",
+            "orgType": "singleSelect",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "Child of",
+                "Parent of"
+            ],
+            "type": "singleSelect",
+            "width": 150
+        },
+        {
+            "displayName": "Comment",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "comment",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_incidentlinkinggrid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Incident Linking Grid",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

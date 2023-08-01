@@ -1,0 +1,1 @@
+This is an example integration that returns mocked data for the purposes of demonstrations / training / testing.  Absolutely 1000% do not use this in production for obvious reasons. 

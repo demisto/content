@@ -1,0 +1,21 @@
+commonfields:
+  id: toolBox_Section
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.66339
+enabled: true
+name: toolBox_Section
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- concepts
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

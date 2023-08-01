@@ -1,0 +1,21 @@
+{
+    "name": "Incident Layout Concepts",
+    "description": "This pack contains multiple approaches to unique incident layout concepts.\n\nAnalyst Toolbox - This shows how to use buttons and dynamic sections to enable analysts to run automations without needing to understand how they work.\n\nAnalyst Guidance - This layout shows how to provide analyst guidance via section and task markdown sections. It also shows how to use XSOAR list to load SOP documentation into the incident layout.\n\nLayout Lookup - This layout shows how to use a layout tab as a function with fields as inputs/outputs and buttons running different actions.\n\nAdvanced Linking - This layout shows how to build a custom incident linking function.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jeremy Fernandes",
+    "url": "",
+    "email": "",
+    "created": "2023-08-01T08:02:15Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "jeremyaf"
+    ]
+}
