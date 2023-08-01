@@ -27,22 +27,56 @@ As part of this pack, you will also get an out-of-the-box layout to facilitate a
 
 For XSIAM, the playbooks are also included in the "Playbook Recommendation".
 
-## Supported Use Cases
+## Supported Products
 
-### Cortex XSIAM Playbooks
+The Cloud Incident Response Pack supports the following products:
 
-[Cloud Token Theft](https://xsoar.pan.dev/docs/reference/playbooks/cloud-token-theft-response)
+- Cortex XSIAM
+- Cortex XDR
 
-[Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/x-cloud-cryptomining)
+## Playbooks
 
-### Cortex XSOAR Playbooks
+The pack consists of three comprehensive playbooks tailored for handling common cloud security incidents. Each playbook is available in two versions, one for Cortex XDR and one for Cortex XSIAM, allowing users to leverage the specific capabilities of their preferred platform.
 
-[Cortex XDR - Cloud Token Theft](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---x-cloud-token-theft-response)
+### 1. Cloud Token Theft
 
-[Cortex XDR - Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-cryptomining)
+The Cloud Token Theft playbook is designed to guide security analysts through the response process in cases of compromised cloud access tokens. These tokens are crucial for accessing cloud resources and are often targeted by attackers to gain unauthorized access.
+
+#### Playbook for Cortex XSIAM
+- [Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cloud-token-theft-response)
+
+#### Playbook for Cortex XDR
+- [Cortex XDR - Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---x-cloud-token-theft-response)
+
+### 2. Cryptojacking Response
+
+The Cryptojacking Response playbook assists security teams in detecting and mitigating cryptojacking incidents, where attackers illicitly use an organization's cloud resources to mine cryptocurrencies.
+
+#### Playbook for Cortex XSIAM
+- [Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/x-cloud-cryptomining)
+
+#### Playbook for Cortex XDR
+- [Cortex XDR - Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-cryptomining)
+
+### 3. IAM User Investigation
+
+The IAM User Investigation playbook provides step-by-step instructions for investigating suspicious activities related to IAM (Identity and Access Management) users in the cloud environment. It aids in identifying potential account compromises and unauthorized access.
+
+#### Playbook for Cortex XSIAM
+- [Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cloud-iam-user-access-investigation)
+
+#### Playbook for Cortex XDR
+- [Cortex XDR - Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-iam-user-access-investigation)
 
 ### Investigative Playbooks
 
-[Cloud Threat Hunting - Persistence](https://xsoar.pan.dev/docs/reference/playbooks/cloud-threat-hunting---persistence)
+* [Cloud Response - Generic](https://xsoar.pan.dev/docs/reference/playbooks/cloud-response---generic)
+* [Cloud Threat Hunting - Persistence](https://xsoar.pan.dev/docs/reference/playbooks/cloud-threat-hunting---persistence)
+* [Cloud Enrichment - Generic](https://xsoar.pan.dev/docs/reference/playbooks/cloud-enrichment---generic)
+
+## How to Use the Playbooks
+
+Each playbook is provided in a user-friendly format, detailing the necessary actions, procedures, and tools required for effective incident response. To use the playbooks, follow the respective links provided above for the Cortex XDR or Cortex XSIAM version.
+
 
 ![Cloud Incident Response](doc_files/Cloud_Incident_Response.png)
