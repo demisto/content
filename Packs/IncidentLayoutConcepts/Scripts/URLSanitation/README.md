@@ -1,4 +1,4 @@
-
+Script is designed to de-duplicate, decode, un-escape, whitelist and drop (images, logos and other non-clickables) URLs
 
 ## Script Data
 
