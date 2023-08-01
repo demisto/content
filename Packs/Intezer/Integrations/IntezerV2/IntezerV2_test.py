@@ -1955,7 +1955,7 @@ def test_enrich_dbot_and_display_alert_results_artifact_analyses(requests_mock, 
     alert.status = AlertStatusCode.FINISHED
     alert.intezer_alert_url = 'some_url'
     alert.family_name = None
-    malicious_ip = 'http://12.123.12.123'
+    malicious_ip = 'some_ip'
     mocker.patch.object(Alert, 'result', return_value={'scans': [{'artifact_analysis': {'artifact_type': 'ip',
                                                                                         'artifact_value': malicious_ip,
                                                                                         'family_name': 'Vobfus',
