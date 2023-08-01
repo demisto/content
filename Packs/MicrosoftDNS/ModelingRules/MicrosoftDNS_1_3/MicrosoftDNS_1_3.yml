@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: Microsoft_DNS
+id: Microsoft_DNS_1_3
 name: Microsoft DNS
 rules: ''
 schema: ''

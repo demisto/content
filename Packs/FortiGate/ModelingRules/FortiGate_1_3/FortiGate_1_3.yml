@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: Fortinet_FortiGate_modeling_rule
+id: Fortinet_FortiGate_modeling_rule_1_3
 name: Fortinet FortiGate Modeling Rule
 rules: ''
 schema: ''

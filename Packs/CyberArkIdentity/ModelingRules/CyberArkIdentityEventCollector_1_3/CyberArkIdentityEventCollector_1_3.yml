@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-id: CyberArkIdentityEventCollector
+id: CyberArkIdentityEventCollector_1_3
 name: CyberArkIdentityEventCollector
 rules: ''
 schema: ''
