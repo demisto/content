@@ -636,6 +636,7 @@ handle-dev-secrets:
     - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
   allow_failure: true
+
 xsoar_server_master-test_playbooks_results:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
