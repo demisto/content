@@ -4249,7 +4249,7 @@ def main() -> None:  # pragma: no cover
             'qradar-create-reference-set-value',
             'qradar-update-reference-set-value',
         ]:
-            return_results(qradar_reference_set_value_upsert_command(client, args))
+            return_results(qradar_reference_set_value_upsert_command(client, params, args))
 
         elif command in [
             'qradar-reference-set-value-delete',
