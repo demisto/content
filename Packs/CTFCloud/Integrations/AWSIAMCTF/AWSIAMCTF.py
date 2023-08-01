@@ -1257,7 +1257,7 @@ def main():     # pragma: no cover
             list_users(args, client)
         elif command == 'aws-iam-update-user':
             update_user(args, client)
-        elif command == 'aws-iam-delete-user':
+        elif command == 'aws-iam-delete-user-ctf':
             delete_user(args, client)
         elif command == 'aws-iam-update-login-profile':
             update_login_profile(args, client)
@@ -1287,7 +1287,7 @@ def main():     # pragma: no cover
             add_user_to_group(args, client)
         elif command == 'aws-iam-delete-group':
             delete_group(args, client)
-        elif command == 'aws-iam-remove-user-from-group':
+        elif command == 'aws-iam-remove-user-from-group-ctf':
             remove_user_from_group(args, client)
         elif command == 'aws-iam-delete-access-key':
             delete_access_key(args, client)
