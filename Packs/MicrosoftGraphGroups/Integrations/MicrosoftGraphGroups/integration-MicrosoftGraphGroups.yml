@@ -1,0 +1,2514 @@
+category: Authentication & Identity Management
+commonfields:
+  id: Microsoft Graph Groups_dev
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- name: creds_auth_id
+  type: 9
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  section: Connect
+  required: false
+- name: creds_tenant_id
+  type: 9
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  section: Connect
+  required: false
+- name: _auth_id
+  type: 0
+  display: ID
+  hidden: true
+  required: false
+- display: Token
+  name: _tenant_id
+  type: 0
+  hidden: true
+  required: false
+- name: credentials
+  type: 9
+  displaypassword: Key or Client Secret
+  hiddenusername: true
+  required: false
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  type: 4
+  hidden: true
+  required: false
+- displaypassword: Certificate Thumbprint
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  name: credentials_certificate_thumbprint
+  hiddenusername: true
+  type: 9
+  required: false
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  name: private_key
+  type: 14
+  display: Private Key
+  required: false
+- display: Use Azure Managed Identities
+  name: use_managed_identities
+  type: 8
+  additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+  required: false
+- name: managed_identities_client_id
+  type: 9
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
+  name: self_deployed
+  type: 8
+  required: false
+- display: Key (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+  name: enc_key
+  type: 4
+  hidden: true
+  additionalinfo: Use the "Key" parameter instead.
+  required: false
+- display: ID (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+  name: auth_id
+  type: 4
+  hidden: true
+  additionalinfo: Use the "ID" parameter instead
+  required: false
+- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated) section)
+  name: tenant_id
+  type: 4
+  hidden: true
+  additionalinfo: Use the "Token" parameter instead.
+  required: false
+- display: Suppress Errors for Non Found Groups
+  name: handle_error
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- display: Application redirect URI (for Authorization Code flow mode)
+  name: redirect_uri
+  type: 0
+  section: Connect
+  required: false
+- name: creds_auth_code
+  type: 9
+  displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
+  hiddenusername: true
+  required: false
+- display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
+  name: auth_code
+  type: 4
+  hidden: true
+  section: Connect
+  required: false
+description: Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
+display: Azure Active Directory Groups_dev
+name: Microsoft Graph Groups_dev
+script:
+  commands:
+  - arguments:
+    - description: Sorts groups in an organization by the field values. For example, displayName.
+      name: order_by
+    - description: The URL to the next results page.
+      name: next_link
+    - defaultValue: '100'
+      description: Sets the page size of the results.
+      name: top
+    - description: Filters group results. For example, startswith(displayName,'J'), groupTypes/any(c:c+eq+'Unified').
+      name: filter
+    description: Provides a list of groups.
+    name: msgraph-groups-list-groups
+    outputs:
+    - contextPath: MSGraphGroups.Classification
+      description: A classification for the group (such as low, medium or high business impact).
+      type: String
+    - contextPath: MSGraphGroups.CreatedDateTime
+      description: The timestamp when the group was created.
+      type: String
+    - contextPath: MSGraphGroups.DeletedDateTime
+      description: The timestamp when the group was deleted.
+      type: String
+    - contextPath: MSGraphGroups.Description
+      description: An optional description for the group.
+      type: String
+    - contextPath: MSGraphGroups.GroupTypes
+      description: "Specifies the group type and its membership.\nIf the group collection contains a Unified value, the group is an Office 365 group; otherwise it's a security group.\nIf the collection includes DynamicMembership, the group has dynamic membership; otherwise, membership is static."
+      type: String
+    - contextPath: MSGraphGroups.ID
+      description: The unique identifier for the group.
+      type: String
+    - contextPath: MSGraphGroup.IsAssignableToRole
+      description: Whether the group assigned to a specific role.
+      type: String
+    - contextPath: MSGraphGroup.Mail
+      description: The SMTP address for the group. For example, "serviceadmins@contoso.onmicrosoft.com".
+      type: String
+    - contextPath: MSGraphGroup.MailEnabled
+      description: Specifies whether the group is mail-enabled.
+      type: Boolean
+    - contextPath: MSGraphGroup.MailNickname
+      description: The mail alias for the group, which is unique in the organization.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesDomainName
+      description: Contains the on-premises domain FQDN. Also called dnsDomainName, which is synchronized from the on-premises directory.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesLastSyncDateTime
+      description: Indicates the last time at which the group was synced with the on-premises directory. The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is '2019-01-01T00:00:00Z'.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesSyncEnabled
+      description: "Whether this group is synced from an on-premises directory (true). This group was originally synced from an on-premises directory but is no longer synced (false). Null if this object has never been synced from an on-premises directory (default).\n"
+      type: String
+    - contextPath: MSGraphGroup.ProxyAddresses
+      description: 'Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
+      type: String
+    - contextPath: MSGraphGroup.RenewedDateTime
+      description: Timestamp of when the group was last renewed, which represents the time and date information using ISO 8601 format. Always in UTC time. For example, midnight UTC on Jan 1, 2019 is '2019-01-01T00:00:00Z'.
+      type: String
+    - contextPath: MSGraphGroup.SecurityEnabled
+      description: Specifies whether the group is a security group.
+      type: Boolean
+    - contextPath: MSGraphGroup.Visibility
+      description: 'Specifies the visibility of an Office 365 group. Can be: "Private", "Public", or "Hiddenmembership". Blank values are treated as public.'
+      type: String
+    - contextPath: MSGraphGroupsNextLink.GroupsNextLink
+      description: The URL of the next results page.
+      type: String
+  - arguments:
+    - description: The ID of the group.
+      name: group_id
+      required: true
+    description: Returns details of a group.
+    name: msgraph-groups-get-group
+    outputs:
+    - contextPath: MSGraphGroups.Classification
+      description: A classification for the group (such as low, medium or high business impact).
+      type: String
+    - contextPath: MSGraphGroups.CreatedDateTime
+      description: The timestamp when the group was created.
+      type: String
+    - contextPath: MSGraphGroups.DeletedDateTime
+      description: The timestamp when the group was deleted.
+      type: String
+    - contextPath: MSGraphGroups.Description
+      description: An optional description for the group.
+      type: String
+    - contextPath: MSGraphGroups.GroupTypes
+      description: "Specifies the group type and its membership.\nIf the group collection contains a Unified value, the group is an Office 365 group; otherwise it's a security group.\nIf the collection includes DynamicMembership, the group has dynamic membership; otherwise, membership is static."
+      type: String
+    - contextPath: MSGraphGroups.ID
+      description: The unique identifier for the group.
+      type: String
+    - contextPath: MSGraphGroup.IsAssignableToRole
+      description: Whether the group assigned to a specific role.
+      type: String
+    - contextPath: MSGraphGroup.Mail
+      description: The SMTP address for the group. For example, "serviceadmins@contoso.onmicrosoft.com".
+      type: String
+    - contextPath: MSGraphGroup.MailEnabled
+      description: Specifies whether the group is mail-enabled.
+      type: Boolean
+    - contextPath: MSGraphGroup.MailNickname
+      description: The mail alias for the group, unique in the organization.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesDomainName
+      description: Contains the on-premises domain FQDN. Also called dnsDomainName, which is synchronized from the on-premises directory.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesLastSyncDateTime
+      description: Indicates the last time at which the group was synced with the on-premises directory.The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is '2019-01-01T00:00:00Z'.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesSyncEnabled
+      description: "Whether the group is synced from an on-premises directory (true). This group was originally synced from an on-premises directory but is no longer synced (false). Null if this object has never been synced from an on-premises directory (default).\n"
+      type: String
+    - contextPath: MSGraphGroup.ProxyAddresses
+      description: 'Email addresses for the group that directs to the same group mailbox. For example: ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
+      type: String
+    - contextPath: MSGraphGroup.RenewedDateTime
+      description: The timestamp of when the group was last renewed. This cannot be modified directly and is only updated via the renew service action. The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is '2019-01-01T00:00:00Z'.
+      type: String
+    - contextPath: MSGraphGroup.SecurityEnabled
+      description: Specifies whether the group is a security group.
+      type: Boolean
+    - contextPath: MSGraphGroup.Visibility
+      description: 'Specifies the visibility of an Office 365 group. Possible values are: Private, Public, or Hiddenmembership. Blank values are treated as public.'
+      type: String
+  - arguments:
+    - description: The display name of the group.
+      name: display_name
+      required: true
+    - auto: PREDEFINED
+      description: Set to true for mail-enabled groups. False for groups without an email.
+      name: mail_enabled
+      predefined:
+      - 'false'
+      - 'true'
+    - description: The mail alias for the group.
+      name: mail_nickname
+      required: true
+    - auto: PREDEFINED
+      description: Set to true for security groups. False for non security groups (regular groups).
+      name: security_enabled
+      predefined:
+      - 'false'
+      - 'true'
+      required: true
+    description: Create a group.
+    name: msgraph-groups-create-group
+    outputs:
+    - contextPath: MSGraphGroups.Classification
+      description: A classification for the group (such as low, medium or high business impact).
+      type: String
+    - contextPath: MSGraphGroups.CreatedDateTime
+      description: The timestamp when the group was created.
+      type: String
+    - contextPath: MSGraphGroups.DeletedDateTime
+      description: The timestamp when the group was deleted.
+      type: String
+    - contextPath: MSGraphGroups.Description
+      description: An optional description for the group.
+      type: String
+    - contextPath: MSGraphGroups.GroupTypes
+      description: "Specifies the group type and its membership.\nIf the group collection contains a Unified value, the group is an Office 365 group; otherwise it's a security group.\nIf the group collection includes DynamicMembership, the group has dynamic membership; otherwise, membership is static."
+      type: String
+    - contextPath: MSGraphGroups.ID
+      description: The unique identifier for the group.
+      type: String
+    - contextPath: MSGraphGroup.IsAssignableToRole
+      description: Whether the group is assigned to a specific role.
+      type: String
+    - contextPath: MSGraphGroup.Mail
+      description: The SMTP address for the group. For example, "serviceadmins@contoso.onmicrosoft.com".
+      type: String
+    - contextPath: MSGraphGroup.MailEnabled
+      description: Specifies whether the group is mail-enabled.
+      type: Boolean
+    - contextPath: MSGraphGroup.MailNickname
+      description: The mail alias for the group, unique in the organization.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesDomainName
+      description: Contains the on-premises domain FQDN. Also called dnsDomainName, which is synchronized from the on-premises directory.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesLastSyncDateTime
+      description: Indicates the last time at which the group was synced with the on-premises directory.The Timestamp type represents date and time information using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2019 is '2019-01-01T00:00:00Z'.
+      type: String
+    - contextPath: MSGraphGroup.OnPremisesSyncEnabled
+      description: "Whether this group is synced from an on-premises directory (true). This group was originally synced from an on-premises directory but is no longer synced (false). Null if this object has never been synced from an on-premises directory (default).\n"
+      type: String
+    - contextPath: MSGraphGroup.ProxyAddresses
+      description: 'Email addresses for the group that directs to the same group mailbox. For example, ["SMTP: example@demisto.com", "smtp: example@demisto.com"].'
+      type: String
+    - contextPath: MSGraphGroup.RenewedDateTime
+      description: "Timestamp of when the group was last renewed. This cannot be modified directly and is only updated via the renew service action. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
+      type: String
+    - contextPath: MSGraphGroup.SecurityEnabled
+      description: Specifies whether the group is a security group.
+      type: Boolean
+    - contextPath: MSGraphGroup.Visibility
+      description: 'Specifies the visibility of an Office 365 group. Possible values are: Private, Public, or Hiddenmembership; blank values are treated as public.'
+      type: String
+  - arguments:
+    - description: The group ID.
+      name: group_id
+      required: true
+    description: Deletes a group.
+    name: msgraph-groups-delete-group
+    outputs:
+    - contextPath: MSGraphGroups.ID
+      description: The unique identifier for the group.
+      type: String
+    - contextPath: MSGraphGroup.Deleted
+      description: Specifies whether the group was deleted.
+      type: Boolean
+  - arguments:
+    - description: The group ID.
+      name: group_id
+      required: true
+    - description: The URL for the next results page.
+      name: next_link
+    - defaultValue: '100'
+      description: Sets the page size of results.
+      name: top
+    - description: Filters members results. For example, startswith(displayName,'user').
+      name: filter
+    - description: Retrieves the total count of matching resources.
+      name: count
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+    description: Lists group members.
+    name: msgraph-groups-list-members
+    outputs:
+    - contextPath: MSGraphGroups.Members.BussinessPhones
+      description: The telephone numbers for the user.
+      type: String
+    - contextPath: MSGraphGroups.Members.GivenName
+      description: The given name (first name) of the user.
+      type: String
+    - contextPath: MSGraphGroups.Members.MobilePhone
+      description: The primary mobile telephone number for the user.
+      type: String
+    - contextPath: MSGraphGroups.Members.DisplayName
+      description: "The name displayed in the address book for the user.\nUsually the combination of the user's first name, middle initial and last name."
+      type: String
+    - contextPath: MSGraphGroups.Members.UserPrincipalName
+      description: "The user principal name (UPN) of the user.\nThe UPN is an Internet-style login name for the user based on the Internet standard RFC 822.\nBy convention, this should map to the user's email name.\nThe general format is alias@domain, where the domain must be present in the tenant’s collection of verified domains."
+      type: Unknown
+    - contextPath: MSGraphGroups.Members.OfficeLocation
+      description: The office location in the user's place of business.
+      type: String
+    - contextPath: MSGraphGroups.Members.Mail
+      description: The SMTP address for the user. For example, "jeff@contoso.onmicrosoft.com".
+      type: String
+    - contextPath: MSGraphGroups.Members.PreferredLanguage
+      description: The preferred language for the user. Should follow ISO 639-1 Code. For example, "en-US".
+      type: String
+    - contextPath: MSGraphGroups.Members.Surname
+      description: The user's surname (family name or last name).
+      type: String
+    - contextPath: MSGraphGroups.Members.JobTitle
+      description: The user’s job title.
+      type: String
+    - contextPath: MSGraphGroups.Members.ID
+      description: The unique identifier for the user.
+      type: String
+    - contextPath: MSGraphGroups.MembersNextLink
+      description: The URL to the next results page.
+      type: String
+  - arguments:
+    - description: The group ID.
+      name: group_id
+      required: true
+    - description: The user ID.
+      name: user_id
+      required: true
+    description: Add a member to a group.
+    name: msgraph-groups-add-member
+  - arguments:
+    - description: The group ID.
+      name: group_id
+      required: true
+    - description: The user ID.
+      name: user_id
+      required: true
+    description: Removes a member from a group.
+    name: msgraph-groups-remove-member
+  - description: Generate the login url used for Authorization code flow.
+    name: msgraph-groups-generate-login-url
+    arguments: []
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-groups-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
+  runonce: false
+  script: >
+    register_module_line('Microsoft Graph Groups_dev', 'start', __line__())
+
+    ### pack version: 1.1.25
+
+
+    import urllib3
+
+
+
+    ### GENERATED CODE ###: from MicrosoftApiModule import *  # noqa: E402
+
+    # This code was inserted in place of an API module.
+
+    register_module_line('MicrosoftApiModule', 'start', __line__(), wrapper=-3)
+
+
+
+    # pylint: disable=E9010, E9011
+
+    import traceback
+
+
+
+    import requests
+
+    import re
+
+    import base64
+
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+
+
+    class Scopes:
+        graph = 'https://graph.microsoft.com/.default'
+        security_center = 'https://api.securitycenter.windows.com/.default'
+        security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
+        management_azure = 'https://management.azure.com/.default'  # resource_manager
+
+
+    class Resources:
+        graph = 'https://graph.microsoft.com/'
+        security_center = 'https://api.securitycenter.microsoft.com/'
+        management_azure = 'https://management.azure.com/'  # resource_manager
+        manage_office = 'https://manage.office.com/'
+
+
+    # authorization types
+
+    OPROXY_AUTH_TYPE = 'oproxy'
+
+    SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
+
+
+    # grant types in self-deployed authorization
+
+    CLIENT_CREDENTIALS = 'client_credentials'
+
+    AUTHORIZATION_CODE = 'authorization_code'
+
+    REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
+
+    DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
+
+    REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
+
+    REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
+
+    SESSION_STATE = 'session_state'
+
+
+    # Deprecated, prefer using AZURE_CLOUDS
+
+    TOKEN_RETRIEVAL_ENDPOINTS = {
+        'com': 'https://login.microsoftonline.com',
+        'gcc': 'https://login.microsoftonline.us',
+        'gcc-high': 'https://login.microsoftonline.us',
+        'dod': 'https://login.microsoftonline.us',
+        'de': 'https://login.microsoftonline.de',
+        'cn': 'https://login.chinacloudapi.cn',
+    }
+
+
+    # Deprecated, prefer using AZURE_CLOUDS
+
+    GRAPH_ENDPOINTS = {
+        'com': 'https://graph.microsoft.com',
+        'gcc': 'https://graph.microsoft.us',
+        'gcc-high': 'https://graph.microsoft.us',
+        'dod': 'https://dod-graph.microsoft.us',
+        'de': 'https://graph.microsoft.de',
+        'cn': 'https://microsoftgraph.chinacloudapi.cn'
+    }
+
+
+    # Deprecated, prefer using AZURE_CLOUDS
+
+    GRAPH_BASE_ENDPOINTS = {
+        'https://graph.microsoft.com': 'com',
+        # can't create an entry here for 'gcc' as the url is the same for both 'gcc' and 'gcc-high'
+        'https://graph.microsoft.us': 'gcc-high',
+        'https://dod-graph.microsoft.us': 'dod',
+        'https://graph.microsoft.de': 'de',
+        'https://microsoftgraph.chinacloudapi.cn': 'cn'
+    }
+
+
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
+        "Worldwide": "com",
+        "US Geo Proximity": "geo-us",
+        "EU Geo Proximity": "geo-eu",
+        "UK Geo Proximity": "geo-uk",
+        "US GCC": "gcc",
+        "US GCC-High": "gcc-high",
+        "DoD": "dod",
+    }
+
+
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM = "Custom"
+
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE = "com"
+
+
+    # https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
+
+    # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
+
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
+        "com": "https://api.securitycenter.microsoft.com",
+        "geo-us": "https://api.securitycenter.microsoft.com",
+        "geo-eu": "https://api-eu.securitycenter.microsoft.com",
+        "geo-uk": "https://api-uk.securitycenter.microsoft.com",
+        "gcc": "https://api-gcc.securitycenter.microsoft.us",
+        "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+        "dod": "https://api-gov.securitycenter.microsoft.us",
+    }
+
+
+    # https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints
+
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
+        'com': 'https://login.microsoftonline.com',
+        'geo-us': 'https://login.microsoftonline.com',
+        'geo-eu': 'https://login.microsoftonline.com',
+        'geo-uk': 'https://login.microsoftonline.com',
+        'gcc': 'https://login.microsoftonline.us',
+        'gcc-high': 'https://login.microsoftonline.us',
+        'dod': 'https://login.microsoftonline.us',
+    }
+
+
+    # https://learn.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints
+
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS = {
+        'com': 'https://graph.microsoft.com',
+        'geo-us': 'https://graph.microsoft.com',
+        'geo-eu': 'https://graph.microsoft.com',
+        'geo-uk': 'https://graph.microsoft.com',
+        'gcc': 'https://graph.microsoft.com',
+        'gcc-high': 'https://graph.microsoft.us',
+        'dod': 'https://dod-graph.microsoft.us',
+    }
+
+
+    MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
+        'com': 'https://securitycenter.onmicrosoft.com',
+        'geo-us': 'https://securitycenter.onmicrosoft.com',
+        'geo-eu': 'https://securitycenter.onmicrosoft.com',
+        'geo-uk': 'https://securitycenter.onmicrosoft.com',
+        'gcc': 'https://securitycenter.onmicrosoft.us',
+        'gcc-high': 'https://securitycenter.onmicrosoft.us',
+        'dod': 'https://securitycenter.onmicrosoft.us',
+    }
+
+
+    # Azure Managed Identities
+
+    MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
+
+    MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
+
+    TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
+                                 }  # See: https://login.microsoftonline.com/error?code=
+
+
+    class CloudEndpointNotSetException(Exception):
+        pass
+
+
+    class CloudSuffixNotSetException(Exception):
+        pass
+
+
+    class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+
+        def __init__(self,  # pylint: disable=unused-argument
+                     management=None,
+                     resource_manager=None,
+                     sql_management=None,
+                     batch_resource_id=None,
+                     gallery=None,
+                     active_directory=None,
+                     active_directory_resource_id=None,
+                     active_directory_graph_resource_id=None,
+                     microsoft_graph_resource_id=None,
+                     active_directory_data_lake_resource_id=None,
+                     vm_image_alias_doc=None,
+                     media_resource_id=None,
+                     ossrdbms_resource_id=None,
+                     log_analytics_resource_id=None,
+                     app_insights_resource_id=None,
+                     app_insights_telemetry_channel_resource_id=None,
+                     synapse_analytics_resource_id=None,
+                     attestation_resource_id=None,
+                     portal=None,
+                     keyvault=None):
+            # Attribute names are significant. They are used when storing/retrieving clouds from config
+            self.management = management
+            self.resource_manager = resource_manager
+            self.sql_management = sql_management
+            self.batch_resource_id = batch_resource_id
+            self.gallery = gallery
+            self.active_directory = active_directory
+            self.active_directory_resource_id = active_directory_resource_id
+            self.active_directory_graph_resource_id = active_directory_graph_resource_id
+            self.microsoft_graph_resource_id = microsoft_graph_resource_id
+            self.active_directory_data_lake_resource_id = active_directory_data_lake_resource_id
+            self.vm_image_alias_doc = vm_image_alias_doc
+            self.media_resource_id = media_resource_id
+            self.ossrdbms_resource_id = ossrdbms_resource_id
+            self.log_analytics_resource_id = log_analytics_resource_id
+            self.app_insights_resource_id = app_insights_resource_id
+            self.app_insights_telemetry_channel_resource_id = app_insights_telemetry_channel_resource_id
+            self.synapse_analytics_resource_id = synapse_analytics_resource_id
+            self.attestation_resource_id = attestation_resource_id
+            self.portal = portal
+            self.keyvault = keyvault
+
+        def has_endpoint_set(self, endpoint_name):
+            try:
+                # Can't simply use hasattr here as we override __getattribute__ below.
+                # Python 3 hasattr() only returns False if an AttributeError is raised, but we raise
+                # CloudEndpointNotSetException. This exception is not a subclass of AttributeError.
+                getattr(self, endpoint_name)
+                return True
+            except Exception:  # pylint: disable=broad-except
+                return False
+
+        def __getattribute__(self, name):
+            val = object.__getattribute__(self, name)
+            if val is None:
+                raise CloudEndpointNotSetException("The endpoint '{}' for this cloud is not set but is used.")
+            return val
+
+
+    class AzureCloudSuffixes:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+
+        def __init__(self,  # pylint: disable=unused-argument
+                     storage_endpoint=None,
+                     storage_sync_endpoint=None,
+                     keyvault_dns=None,
+                     mhsm_dns=None,
+                     sql_server_hostname=None,
+                     azure_datalake_store_file_system_endpoint=None,
+                     azure_datalake_analytics_catalog_and_job_endpoint=None,
+                     acr_login_server_endpoint=None,
+                     mysql_server_endpoint=None,
+                     postgresql_server_endpoint=None,
+                     mariadb_server_endpoint=None,
+                     synapse_analytics_endpoint=None,
+                     attestation_endpoint=None):
+            # Attribute names are significant. They are used when storing/retrieving clouds from config
+            self.storage_endpoint = storage_endpoint
+            self.storage_sync_endpoint = storage_sync_endpoint
+            self.keyvault_dns = keyvault_dns
+            self.mhsm_dns = mhsm_dns
+            self.sql_server_hostname = sql_server_hostname
+            self.mysql_server_endpoint = mysql_server_endpoint
+            self.postgresql_server_endpoint = postgresql_server_endpoint
+            self.mariadb_server_endpoint = mariadb_server_endpoint
+            self.azure_datalake_store_file_system_endpoint = azure_datalake_store_file_system_endpoint
+            self.azure_datalake_analytics_catalog_and_job_endpoint = azure_datalake_analytics_catalog_and_job_endpoint
+            self.acr_login_server_endpoint = acr_login_server_endpoint
+            self.synapse_analytics_endpoint = synapse_analytics_endpoint
+            self.attestation_endpoint = attestation_endpoint
+
+        def __getattribute__(self, name):
+            val = object.__getattribute__(self, name)
+            if val is None:
+                raise CloudSuffixNotSetException("The suffix '{}' for this cloud is not set but is used.")
+            return val
+
+
+    class AzureCloud:  # pylint: disable=too-few-public-methods
+        """ Represents an Azure Cloud instance """
+
+        def __init__(self,
+                     origin,
+                     name,
+                     abbreviation,
+                     endpoints=None,
+                     suffixes=None):
+            self.name = name
+            self.abbreviation = abbreviation
+            self.origin = origin
+            self.endpoints = endpoints or AzureCloudEndpoints()
+            self.suffixes = suffixes or AzureCloudSuffixes()
+
+
+    AZURE_WORLDWIDE_CLOUD = AzureCloud(
+        'Embedded',
+        'AzureCloud',
+        'com',
+        endpoints=AzureCloudEndpoints(
+            management='https://management.core.windows.net/',
+            resource_manager='https://management.azure.com/',
+            sql_management='https://management.core.windows.net:8443/',
+            batch_resource_id='https://batch.core.windows.net/',
+            gallery='https://gallery.azure.com/',
+            active_directory='https://login.microsoftonline.com',
+            active_directory_resource_id='https://management.core.windows.net/',
+            active_directory_graph_resource_id='https://graph.windows.net/',
+            microsoft_graph_resource_id='https://graph.microsoft.com/',
+            active_directory_data_lake_resource_id='https://datalake.azure.net/',
+            vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+            media_resource_id='https://rest.media.azure.net',
+            ossrdbms_resource_id='https://ossrdbms-aad.database.windows.net',
+            app_insights_resource_id='https://api.applicationinsights.io',
+            log_analytics_resource_id='https://api.loganalytics.io',
+            app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.azure.com/v2/track',
+            synapse_analytics_resource_id='https://dev.azuresynapse.net',
+            attestation_resource_id='https://attest.azure.net',
+            portal='https://portal.azure.com',
+            keyvault='https://vault.azure.net',
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint='core.windows.net',
+            storage_sync_endpoint='afs.azure.net',
+            keyvault_dns='.vault.azure.net',
+            mhsm_dns='.managedhsm.azure.net',
+            sql_server_hostname='.database.windows.net',
+            mysql_server_endpoint='.mysql.database.azure.com',
+            postgresql_server_endpoint='.postgres.database.azure.com',
+            mariadb_server_endpoint='.mariadb.database.azure.com',
+            azure_datalake_store_file_system_endpoint='azuredatalakestore.net',
+            azure_datalake_analytics_catalog_and_job_endpoint='azuredatalakeanalytics.net',
+            acr_login_server_endpoint='.azurecr.io',
+            synapse_analytics_endpoint='.dev.azuresynapse.net',
+            attestation_endpoint='.attest.azure.net'))
+
+    AZURE_US_GCC_CLOUD = AzureCloud(
+        'Embedded',
+        'AzureUSGovernment',
+        'gcc',
+        endpoints=AzureCloudEndpoints(
+            management='https://management.core.usgovcloudapi.net/',
+            resource_manager='https://management.usgovcloudapi.net/',
+            sql_management='https://management.core.usgovcloudapi.net:8443/',
+            batch_resource_id='https://batch.core.usgovcloudapi.net/',
+            gallery='https://gallery.usgovcloudapi.net/',
+            active_directory='https://login.microsoftonline.us',
+            active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+            active_directory_graph_resource_id='https://graph.windows.net/',
+            microsoft_graph_resource_id='https://graph.microsoft.us/',
+            vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+            media_resource_id='https://rest.media.usgovcloudapi.net',
+            ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+            app_insights_resource_id='https://api.applicationinsights.us',
+            log_analytics_resource_id='https://api.loganalytics.us',
+            app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+            synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+            portal='https://portal.azure.us',
+            keyvault='https://vault.usgovcloudapi.net',
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint='core.usgovcloudapi.net',
+            storage_sync_endpoint='afs.azure.us',
+            keyvault_dns='.vault.usgovcloudapi.net',
+            mhsm_dns='.managedhsm.usgovcloudapi.net',
+            sql_server_hostname='.database.usgovcloudapi.net',
+            mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+            postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+            mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+            acr_login_server_endpoint='.azurecr.us',
+            synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+    AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
+        'Embedded',
+        'AzureUSGovernment',
+        'gcc-high',
+        endpoints=AzureCloudEndpoints(
+            management='https://management.core.usgovcloudapi.net/',
+            resource_manager='https://management.usgovcloudapi.net/',
+            sql_management='https://management.core.usgovcloudapi.net:8443/',
+            batch_resource_id='https://batch.core.usgovcloudapi.net/',
+            gallery='https://gallery.usgovcloudapi.net/',
+            active_directory='https://login.microsoftonline.us',
+            active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+            active_directory_graph_resource_id='https://graph.windows.net/',
+            microsoft_graph_resource_id='https://graph.microsoft.us/',
+            vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+            media_resource_id='https://rest.media.usgovcloudapi.net',
+            ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+            app_insights_resource_id='https://api.applicationinsights.us',
+            log_analytics_resource_id='https://api.loganalytics.us',
+            app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+            synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+            portal='https://portal.azure.us',
+            keyvault='https://vault.usgovcloudapi.net',
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint='core.usgovcloudapi.net',
+            storage_sync_endpoint='afs.azure.us',
+            keyvault_dns='.vault.usgovcloudapi.net',
+            mhsm_dns='.managedhsm.usgovcloudapi.net',
+            sql_server_hostname='.database.usgovcloudapi.net',
+            mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+            postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+            mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+            acr_login_server_endpoint='.azurecr.us',
+            synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+    AZURE_DOD_CLOUD = AzureCloud(
+        'Embedded',
+        'AzureUSGovernment',
+        'dod',
+        endpoints=AzureCloudEndpoints(
+            management='https://management.core.usgovcloudapi.net/',
+            resource_manager='https://management.usgovcloudapi.net/',
+            sql_management='https://management.core.usgovcloudapi.net:8443/',
+            batch_resource_id='https://batch.core.usgovcloudapi.net/',
+            gallery='https://gallery.usgovcloudapi.net/',
+            active_directory='https://login.microsoftonline.us',
+            active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+            active_directory_graph_resource_id='https://graph.windows.net/',
+            microsoft_graph_resource_id='https://dod-graph.microsoft.us/',
+            vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+            media_resource_id='https://rest.media.usgovcloudapi.net',
+            ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+            app_insights_resource_id='https://api.applicationinsights.us',
+            log_analytics_resource_id='https://api.loganalytics.us',
+            app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+            synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+            portal='https://portal.azure.us',
+            keyvault='https://vault.usgovcloudapi.net',
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint='core.usgovcloudapi.net',
+            storage_sync_endpoint='afs.azure.us',
+            keyvault_dns='.vault.usgovcloudapi.net',
+            mhsm_dns='.managedhsm.usgovcloudapi.net',
+            sql_server_hostname='.database.usgovcloudapi.net',
+            mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+            postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+            mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+            acr_login_server_endpoint='.azurecr.us',
+            synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+
+    AZURE_GERMAN_CLOUD = AzureCloud(
+        'Embedded',
+        'AzureGermanCloud',
+        'de',
+        endpoints=AzureCloudEndpoints(
+            management='https://management.core.cloudapi.de/',
+            resource_manager='https://management.microsoftazure.de',
+            sql_management='https://management.core.cloudapi.de:8443/',
+            batch_resource_id='https://batch.cloudapi.de/',
+            gallery='https://gallery.cloudapi.de/',
+            active_directory='https://login.microsoftonline.de',
+            active_directory_resource_id='https://management.core.cloudapi.de/',
+            active_directory_graph_resource_id='https://graph.cloudapi.de/',
+            microsoft_graph_resource_id='https://graph.microsoft.de',
+            vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+            media_resource_id='https://rest.media.cloudapi.de',
+            ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
+            portal='https://portal.microsoftazure.de',
+            keyvault='https://vault.microsoftazure.de'
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint='core.cloudapi.de',
+            keyvault_dns='.vault.microsoftazure.de',
+            mhsm_dns='.managedhsm.microsoftazure.de',
+            sql_server_hostname='.database.cloudapi.de',
+            mysql_server_endpoint='.mysql.database.cloudapi.de',
+            postgresql_server_endpoint='.postgres.database.cloudapi.de',
+            mariadb_server_endpoint='.mariadb.database.cloudapi.de'))
+
+    AZURE_CHINA_CLOUD = AzureCloud(
+        'Embedded',
+        'AzureChinaCloud',
+        'cn',
+        endpoints=AzureCloudEndpoints(
+            management='https://management.core.chinacloudapi.cn/',
+            resource_manager='https://management.chinacloudapi.cn',
+            sql_management='https://management.core.chinacloudapi.cn:8443/',
+            batch_resource_id='https://batch.chinacloudapi.cn/',
+            gallery='https://gallery.chinacloudapi.cn/',
+            active_directory='https://login.chinacloudapi.cn',
+            active_directory_resource_id='https://management.core.chinacloudapi.cn/',
+            active_directory_graph_resource_id='https://graph.chinacloudapi.cn/',
+            microsoft_graph_resource_id='https://microsoftgraph.chinacloudapi.cn',
+            vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+            media_resource_id='https://rest.media.chinacloudapi.cn',
+            ossrdbms_resource_id='https://ossrdbms-aad.database.chinacloudapi.cn',
+            app_insights_resource_id='https://api.applicationinsights.azure.cn',
+            log_analytics_resource_id='https://api.loganalytics.azure.cn',
+            app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.azure.cn/v2/track',
+            synapse_analytics_resource_id='https://dev.azuresynapse.azure.cn',
+            portal='https://portal.azure.cn',
+            keyvault='https://vault.azure.cn',
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint='core.chinacloudapi.cn',
+            keyvault_dns='.vault.azure.cn',
+            mhsm_dns='.managedhsm.azure.cn',
+            sql_server_hostname='.database.chinacloudapi.cn',
+            mysql_server_endpoint='.mysql.database.chinacloudapi.cn',
+            postgresql_server_endpoint='.postgres.database.chinacloudapi.cn',
+            mariadb_server_endpoint='.mariadb.database.chinacloudapi.cn',
+            acr_login_server_endpoint='.azurecr.cn',
+            synapse_analytics_endpoint='.dev.azuresynapse.azure.cn'))
+
+
+    AZURE_CLOUD_NAME_MAPPING = {
+        "Worldwide": "com",
+        "Germany": "de",
+        "China": "cn",
+        "US GCC": "gcc",
+        "US GCC-High": "gcc-high",
+        "DoD": "dod",
+    }
+
+
+    AZURE_CLOUD_NAME_CUSTOM = "Custom"
+
+
+    AZURE_CLOUDS = {
+        "com": AZURE_WORLDWIDE_CLOUD,
+        "gcc": AZURE_US_GCC_CLOUD,
+        "gcc-high": AZURE_US_GCC_HIGH_CLOUD,
+        "dod": AZURE_DOD_CLOUD,
+        "de": AZURE_GERMAN_CLOUD,
+        "cn": AZURE_CHINA_CLOUD,
+    }
+
+
+
+    class AzureCloudNames:
+        WORLDWIDE = "com"
+        GERMANY = "de"
+        CHINA = "cn"
+        US_GCC = "gcc"
+        US_GCC_HIGH = "gcc-high"
+        DOD = "dod"
+        CUSTOM = "custom"
+
+
+    def create_custom_azure_cloud(origin: str,
+                                  name: str | None = None,
+                                  abbreviation: str | None = None,
+                                  defaults: AzureCloud | None = None,
+                                  endpoints: dict | None = None,
+                                  suffixes: dict | None = None):
+        defaults = defaults or AzureCloud(origin, name, abbreviation)
+        endpoints = endpoints or {}
+        suffixes = suffixes or {}
+        return AzureCloud(
+            origin,
+            name or defaults.name,
+            abbreviation or defaults.abbreviation,
+            endpoints=AzureCloudEndpoints(
+                management=endpoints.get('management', defaults.endpoints.management),
+                resource_manager=endpoints.get('resource_manager', defaults.endpoints.resource_manager),
+                sql_management=endpoints.get('sql_management', defaults.endpoints.sql_management),
+                batch_resource_id=endpoints.get('batch_resource_id', defaults.endpoints.batch_resource_id),
+                gallery=endpoints.get('gallery', defaults.endpoints.gallery),
+                active_directory=endpoints.get('active_directory', defaults.endpoints.active_directory),
+                active_directory_resource_id=endpoints.get('active_directory_resource_id',
+                                                           defaults.endpoints.active_directory_resource_id),
+                active_directory_graph_resource_id=endpoints.get(
+                    'active_directory_graph_resource_id', defaults.endpoints.active_directory_graph_resource_id),
+                microsoft_graph_resource_id=endpoints.get('microsoft_graph_resource_id',
+                                                          defaults.endpoints.microsoft_graph_resource_id),
+                active_directory_data_lake_resource_id=endpoints.get(
+                    'active_directory_data_lake_resource_id', defaults.endpoints.active_directory_data_lake_resource_id),
+                vm_image_alias_doc=endpoints.get('vm_image_alias_doc', defaults.endpoints.vm_image_alias_doc),
+                media_resource_id=endpoints.get('media_resource_id', defaults.endpoints.media_resource_id),
+                ossrdbms_resource_id=endpoints.get('ossrdbms_resource_id', defaults.endpoints.ossrdbms_resource_id),
+                app_insights_resource_id=endpoints.get('app_insights_resource_id', defaults.endpoints.app_insights_resource_id),
+                log_analytics_resource_id=endpoints.get('log_analytics_resource_id', defaults.endpoints.log_analytics_resource_id),
+                app_insights_telemetry_channel_resource_id=endpoints.get(
+                    'app_insights_telemetry_channel_resource_id', defaults.endpoints.app_insights_telemetry_channel_resource_id),
+                synapse_analytics_resource_id=endpoints.get(
+                    'synapse_analytics_resource_id', defaults.endpoints.synapse_analytics_resource_id),
+                attestation_resource_id=endpoints.get('attestation_resource_id', defaults.endpoints.attestation_resource_id),
+                portal=endpoints.get('portal', defaults.endpoints.portal),
+                keyvault=endpoints.get('keyvault', defaults.endpoints.keyvault),
+            ),
+            suffixes=AzureCloudSuffixes(
+                storage_endpoint=suffixes.get('storage_endpoint', defaults.suffixes.storage_endpoint),
+                storage_sync_endpoint=suffixes.get('storage_sync_endpoint', defaults.suffixes.storage_sync_endpoint),
+                keyvault_dns=suffixes.get('keyvault_dns', defaults.suffixes.keyvault_dns),
+                mhsm_dns=suffixes.get('mhsm_dns', defaults.suffixes.mhsm_dns),
+                sql_server_hostname=suffixes.get('sql_server_hostname', defaults.suffixes.sql_server_hostname),
+                mysql_server_endpoint=suffixes.get('mysql_server_endpoint', defaults.suffixes.mysql_server_endpoint),
+                postgresql_server_endpoint=suffixes.get('postgresql_server_endpoint', defaults.suffixes.postgresql_server_endpoint),
+                mariadb_server_endpoint=suffixes.get('mariadb_server_endpoint', defaults.suffixes.mariadb_server_endpoint),
+                azure_datalake_store_file_system_endpoint=suffixes.get(
+                    'azure_datalake_store_file_system_endpoint', defaults.suffixes.azure_datalake_store_file_system_endpoint),
+                azure_datalake_analytics_catalog_and_job_endpoint=suffixes.get(
+                    'azure_datalake_analytics_catalog_and_job_endpoint',
+                    defaults.suffixes.azure_datalake_analytics_catalog_and_job_endpoint),
+                acr_login_server_endpoint=suffixes.get('acr_login_server_endpoint', defaults.suffixes.acr_login_server_endpoint),
+                synapse_analytics_endpoint=suffixes.get('synapse_analytics_endpoint', defaults.suffixes.synapse_analytics_endpoint),
+                attestation_endpoint=suffixes.get('attestation_endpoint', defaults.suffixes.attestation_endpoint),
+            ))
+
+
+    def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None):
+        # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
+        log_message_append = ""
+        if is_gcc:  # Backward compatible.
+            endpoint_type = "US GCC"
+            log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
+        elif endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type:
+            # When the integration was configured before our Azure Cloud support, the value will be None.
+            if not url:
+                if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+                    raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+                raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
+        endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(endpoint_type, 'com')
+        url = url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+        demisto.info(f"Using url:{url}, endpoint type:{endpoint_type}{log_message_append}")
+        return endpoint_type, url
+
+
+    def get_azure_cloud(params, integration_name):
+        azure_cloud_arg = params.get('azure_cloud')
+        if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
+            # Backward compatibility before the azure cloud settings.
+            if 'server_url' in params:
+                return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                                 endpoints={'resource_manager': params.get('server_url')
+                                                            or 'https://management.azure.com'})
+            if 'azure_ad_endpoint' in params:
+                return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                                 endpoints={
+                                                     'active_directory': params.get('azure_ad_endpoint')
+                                                     or 'https://login.microsoftonline.com'
+                                                 })
+
+        # There is no need for backward compatibility support, as the integration didn't support it to begin with.
+        return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
+
+
+    class MicrosoftClient(BaseClient):
+        def __init__(self, tenant_id: str = '',
+                     auth_id: str = '',
+                     enc_key: str | None = '',
+                     token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
+                     app_name: str = '',
+                     refresh_token: str = '',
+                     auth_code: str = '',
+                     scope: str = '{graph_endpoint}/.default',
+                     grant_type: str = CLIENT_CREDENTIALS,
+                     redirect_uri: str = 'https://localhost/myapp',
+                     resource: str | None = '',
+                     multi_resource: bool = False,
+                     resources: list[str] = None,
+                     verify: bool = True,
+                     self_deployed: bool = False,
+                     timeout: int | None = None,
+                     azure_ad_endpoint: str = '{endpoint}',
+                     azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
+                     endpoint: str = "__NA__",  # Deprecated
+                     certificate_thumbprint: str | None = None,
+                     retry_on_rate_limit: bool = False,
+                     private_key: str | None = None,
+                     managed_identities_client_id: str | None = None,
+                     managed_identities_resource_uri: str | None = None,
+                     base_url: str | None = None,
+                     command_prefix: str | None = "command_prefix",
+                     *args, **kwargs):
+            """
+            Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
+            It also provides common logic to handle responses from Microsoft.
+            Args:
+                tenant_id: If self deployed it's the tenant for the app url, otherwise (oproxy) it's the token
+                auth_id: If self deployed it's the client id, otherwise (oproxy) it's the auth id and may also
+                contain the token url
+                enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
+                refresh_token: The current used refresh token.
+                scope: The scope of the application (only if self deployed)
+                resource: The resource of the application (only if self deployed)
+                multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
+                resources: Resources of the application (for multi-resource mode)
+                verify: Demisto insecure parameter
+                self_deployed: Indicates whether the integration mode is self deployed or oproxy
+                timeout: Connection timeout
+                azure_ad_endpoint: Custom endpoint to Azure Active Directory URL
+                azure_cloud: Azure Cloud.
+                certificate_thumbprint: Certificate's thumbprint that's associated to the app
+                private_key: Private key of the certificate
+                managed_identities_client_id: The Azure Managed Identities client id
+                managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
+                retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
+                                     retry the request using a scheduled command.
+                base_url: Optionally override the calculated Azure endpoint, used for self-deployed and backward-compatibility with
+                          integration that supported national cloud before the *azure_cloud* parameter.
+                command_prefix: The prefix for all integration commands.
+            """
+            self.command_prefix = command_prefix
+            if endpoint != "__NA__":
+                # Backward compatible.
+                self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
+            else:
+                self.azure_cloud = azure_cloud
+
+            super().__init__(*args, verify=verify, base_url=base_url, **kwargs)  # type: ignore[misc]
+
+            self.retry_on_rate_limit = retry_on_rate_limit
+            if retry_on_rate_limit and (429 not in self._ok_codes):
+                self._ok_codes = self._ok_codes + (429,)
+            if not self_deployed:
+                auth_id_and_token_retrieval_url = auth_id.split('@')
+                auth_id = auth_id_and_token_retrieval_url[0]
+                if len(auth_id_and_token_retrieval_url) != 2:
+                    self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
+                else:
+                    self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
+
+                self.app_name = app_name
+                self.auth_id = auth_id
+                self.enc_key = enc_key
+                self.refresh_token = refresh_token
+
+            else:
+                self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
+                                                                      endpoint=self.azure_cloud.endpoints.active_directory
+                                                                      .rstrip("/"))
+                self.client_id = auth_id
+                self.client_secret = enc_key
+                self.auth_code = auth_code
+                self.grant_type = grant_type
+                self.resource = resource
+                self.scope = scope.format(graph_endpoint=self.azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"))
+                self.redirect_uri = redirect_uri
+                if certificate_thumbprint and private_key:
+                    try:
+                        import msal  # pylint: disable=E0401
+                        self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
+                            private_key,
+                            'RS256',
+                            certificate_thumbprint
+                        ).create_normal_assertion(audience=self.token_retrieval_url, issuer=self.client_id)
+                    except ModuleNotFoundError:
+                        raise DemistoException('Unable to use certificate authentication because `msal` is missing.')
+                else:
+                    self.jwt = None
+
+            self.tenant_id = tenant_id
+            self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
+            self.verify = verify
+            self.azure_ad_endpoint = azure_ad_endpoint.format(
+                endpoint=self.azure_cloud.endpoints.active_directory.rstrip("/"))
+            self.timeout = timeout  # type: ignore
+
+            self.multi_resource = multi_resource
+            if self.multi_resource:
+                self.resources = resources if resources else []
+                self.resource_to_access_token: dict[str, str] = {}
+
+            # for Azure Managed Identities purpose
+            self.managed_identities_client_id = managed_identities_client_id
+            self.managed_identities_resource_uri = managed_identities_resource_uri
+
+        def is_command_executed_from_integration(self):
+            ctx = demisto.callingContext.get('context', {})
+            executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
+
+            if executed_commands:
+                return executed_commands[0].get('moduleBrand', "") != 'Scripts'
+
+            return True
+
+        def http_request(
+                self, *args, resp_type='json', headers=None,
+                return_empty_response=False, scope: str | None = None,
+                resource: str = '', overwrite_rate_limit_retry=False, **kwargs):
+            """
+            Overrides Base client request function, retrieves and adds to headers access token before sending the request.
+
+            Args:
+                resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
+                headers: Headers to add to the request.
+                return_empty_response: Return the response itself if the return_code is 206.
+                scope: A scope to request. Currently, will work only with self-deployed app.
+                resource (str): The resource identifier for which the generated token will have access to.
+                overwrite_rate_limit_retry : Skip rate limit retry
+            Returns:
+                Response from api according to resp_type. The default is `json` (dict or list).
+            """
+            if 'ok_codes' not in kwargs and not self._ok_codes:
+                kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
+            token = self.get_access_token(resource=resource, scope=scope)
+            default_headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+
+            if headers:
+                default_headers.update(headers)
+
+            if self.timeout:
+                kwargs['timeout'] = self.timeout
+
+            should_http_retry_on_rate_limit = self.retry_on_rate_limit and not overwrite_rate_limit_retry
+            if should_http_retry_on_rate_limit and not kwargs.get('error_handler'):
+                kwargs['error_handler'] = self.handle_error_with_metrics
+
+            response = super()._http_request(  # type: ignore[misc]
+                *args, resp_type="response", headers=default_headers, **kwargs)
+
+            if should_http_retry_on_rate_limit and self.is_command_executed_from_integration():
+                self.create_api_metrics(response.status_code)
+            # 206 indicates Partial Content, reason will be in the warning header.
+            # In that case, logs with the warning header will be written.
+            if response.status_code == 206:
+                demisto.debug(str(response.headers))
+            is_response_empty_and_successful = (response.status_code == 204)
+            if is_response_empty_and_successful and return_empty_response:
+                return response
+
+            # Handle 404 errors instead of raising them as exceptions:
+            if response.status_code == 404:
+                try:
+                    error_message = response.json()
+                except Exception:
+                    error_message = 'Not Found - 404 Response'
+                raise NotFoundError(error_message)
+
+            if should_http_retry_on_rate_limit and response.status_code == 429 and is_demisto_version_ge('6.2.0'):
+                command_args = demisto.args()
+                ran_once_flag = command_args.get('ran_once_flag')
+                demisto.info(f'429 MS rate limit for command {demisto.command()}, where ran_once_flag is {ran_once_flag}')
+                # We want to retry on rate limit only once
+                if ran_once_flag:
+                    try:
+                        error_message = response.json()
+                    except Exception:
+                        error_message = 'Rate limit reached on retry - 429 Response'
+                    demisto.info(f'Error in retry for MS rate limit - {error_message}')
+                    raise DemistoException(error_message)
+
+                else:
+                    demisto.info(f'Scheduling command {demisto.command()}')
+                    command_args['ran_once_flag'] = True
+                    return_results(self.run_retry_on_rate_limit(command_args))
+                    sys.exit(0)
+
+            try:
+                if resp_type == 'json':
+                    return response.json()
+                if resp_type == 'text':
+                    return response.text
+                if resp_type == 'content':
+                    return response.content
+                if resp_type == 'xml':
+                    try:
+                        import defusedxml.ElementTree as defused_ET
+                        defused_ET.fromstring(response.text)
+                    except ImportError:
+                        demisto.debug('defused_ET is not supported, using ET instead.')
+                        ET.fromstring(response.text)
+                return response
+            except ValueError as exception:
+                raise DemistoException(f'Failed to parse json object from response: {response.content}', exception)
+
+        def get_access_token(self, resource: str = '', scope: str | None = None) -> str:
+            """
+            Obtains access and refresh token from oproxy server or just a token from a self deployed app.
+            Access token is used and stored in the integration context
+            until expiration time. After expiration, new refresh token and access token are obtained and stored in the
+            integration context.
+
+            Args:
+                resource (str): The resource identifier for which the generated token will have access to.
+                scope (str): A scope to get instead of the default on the API.
+
+            Returns:
+                str: Access token that will be added to authorization header.
+            """
+            demisto.debug("testenes get access token")
+            integration_context = get_integration_context()
+            demisto.debug(f"testenes get_integration context: {integration_context}")
+            refresh_token = integration_context.get('current_refresh_token', '')
+            # Set keywords. Default without the scope prefix.
+            access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
+            valid_until_keyword = f'{scope}_valid_until' if scope else 'valid_until'
+
+            access_token = integration_context.get(resource) if self.multi_resource else integration_context.get(access_token_keyword)
+
+            valid_until = integration_context.get(valid_until_keyword)
+
+            if access_token and valid_until and self.epoch_seconds() < valid_until and not self.is_auth_code_reconfigured():
+                return access_token
+
+            if self.auth_type == OPROXY_AUTH_TYPE:
+                if self.multi_resource:
+                    for resource_str in self.resources:
+                        access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
+                        self.resource_to_access_token[resource_str] = access_token
+                        self.refresh_token = refresh_token
+                else:
+                    access_token, expires_in, refresh_token = self._oproxy_authorize(scope=scope)
+
+            else:
+                access_token, expires_in, refresh_token = self._get_self_deployed_token(
+                    refresh_token, scope, integration_context)
+            demisto.debug("testenes 866")
+            time_now = self.epoch_seconds()
+            time_buffer = 5  # seconds by which to shorten the validity period
+            if expires_in - time_buffer > 0:
+                # err on the side of caution with a slightly shorter access token validity period
+                expires_in = expires_in - time_buffer
+            valid_until = time_now + expires_in
+            integration_context.update({
+                access_token_keyword: access_token,
+                valid_until_keyword: valid_until,
+                'current_refresh_token': refresh_token
+            })
+
+            # Add resource access token mapping
+            if self.multi_resource:
+                integration_context.update(self.resource_to_access_token)
+
+            if self.is_auth_code_reconfigured() is True:
+                integration_context.update({'auth_code': self.auth_code})
+                
+
+            set_integration_context(integration_context)
+            demisto.debug(f'testenes get_access_token:getintegrationcontext: {get_integration_context()}')
+
+            if self.multi_resource:
+                return self.resource_to_access_token[resource]
+
+            return access_token
+
+        def _raise_authentication_error(self, oproxy_response: requests.Response):
+            """
+            Raises an exception for authentication error with the Oproxy server.
+            Args:
+                oproxy_response: Raw response from the Oproxy server to parse.
+            """
+            msg = 'Error in Microsoft authorization.'
+            try:
+                demisto.info(
+                    f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} '
+                    f'{oproxy_response.text}'
+                )
+                msg += f" Status: {oproxy_response.status_code},"
+                search_microsoft_response = re.search(r'{.*}', oproxy_response.text)
+                microsoft_response = self.extract_microsoft_error(json.loads(search_microsoft_response.group())) \
+                    if search_microsoft_response else ""
+                err_str = microsoft_response or oproxy_response.text
+                if err_str:
+                    msg += f' body: {err_str}'
+                err_response = oproxy_response.json()
+                server_msg = err_response.get('message', '') or f'{err_response.get("title", "")}. {err_response.get("detail", "")}'
+                if server_msg:
+                    msg += f' Server message: {server_msg}'
+            except Exception as ex:
+                demisto.error(f'Failed parsing error response - Exception: {ex}')
+            raise Exception(msg)
+
+        def _oproxy_authorize_build_request(self, headers: dict[str, str], content: str,
+                                            scope: str | None = None, resource: str = ''
+                                            ) -> requests.Response:
+            """
+            Build the Post request sent to the Oproxy server.
+            Args:
+                headers: The headers of the request.
+                content: The content for the request (usually contains the refresh token).
+                scope: A scope to add to the request. Do not use it.
+                resource: Resource to get.
+
+            Returns: The response from the Oproxy server.
+
+            """
+            return requests.post(
+                self.token_retrieval_url,
+                headers=headers,
+                json={
+                    'app_name': self.app_name,
+                    'registration_id': self.auth_id,
+                    'encrypted_token': self.get_encrypted(content, self.enc_key),
+                    'scope': scope,
+                    'resource': resource
+                },
+                verify=self.verify
+            )
+
+        def _oproxy_authorize(self, resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
+            """
+            Gets a token by authorizing with oproxy.
+            Args:
+                scope: A scope to add to the request. Do not use it.
+                resource: Resource to get.
+            Returns:
+                tuple: An access token, its expiry and refresh token.
+            """
+            content = self.refresh_token or self.tenant_id
+            headers = self._add_info_headers()
+            oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
+
+            if not oproxy_response.ok:
+                self._raise_authentication_error(oproxy_response)
+
+            # Oproxy authentication succeeded
+            try:
+                gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
+                demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+                parsed_response = oproxy_response.json()
+            except ValueError:
+                raise Exception(
+                    'There was a problem in retrieving an updated access token.\n'
+                    'The response from the Oproxy server did not contain the expected content.'
+                )
+
+            return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
+                    parsed_response.get('refresh_token', ''))
+
+        def _get_self_deployed_token(self,
+                                     refresh_token: str = '',
+                                     scope: str | None = None,
+                                     integration_context: dict | None = None
+                                     ) -> tuple[str, int, str]:
+            if self.managed_identities_client_id:
+
+                if not self.multi_resource:
+                    return self._get_managed_identities_token()
+
+                expires_in = -1  # init variable as an int
+                for resource in self.resources:
+                    access_token, expires_in, refresh_token = self._get_managed_identities_token(resource=resource)
+                    self.resource_to_access_token[resource] = access_token
+                return '', expires_in, refresh_token
+
+            if self.grant_type == AUTHORIZATION_CODE:
+                if not self.multi_resource:
+                    return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
+                else:
+                    expires_in = -1  # init variable as an int
+                    for resource in self.resources:
+                        access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                          resource)
+                        self.resource_to_access_token[resource] = access_token
+
+                    return '', expires_in, refresh_token
+            elif self.grant_type == DEVICE_CODE:
+                return self._get_token_device_code(refresh_token, scope, integration_context)
+            else:
+                # by default, grant_type is CLIENT_CREDENTIALS
+                if self.multi_resource:
+                    expires_in = -1  # init variable as an int
+                    for resource in self.resources:
+                        access_token, expires_in, refresh_token = self._get_self_deployed_token_client_credentials(
+                            resource=resource)
+                        self.resource_to_access_token[resource] = access_token
+                    return '', expires_in, refresh_token
+                return self._get_self_deployed_token_client_credentials(scope=scope)
+
+        def _get_self_deployed_token_client_credentials(self, scope: str | None = None,
+                                                        resource: str | None = None) -> tuple[str, int, str]:
+            """
+            Gets a token by authorizing a self deployed Azure application in client credentials grant type.
+
+            Args:
+                scope: A scope to add to the headers. Else will get self.scope.
+                resource: A resource to add to the headers. Else will get self.resource.
+            Returns:
+                tuple: An access token and its expiry.
+            """
+            data = {
+                'client_id': self.client_id,
+                'client_secret': self.client_secret,
+                'grant_type': CLIENT_CREDENTIALS
+            }
+
+            if self.jwt:
+                data.pop('client_secret', None)
+                data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                data['client_assertion'] = self.jwt
+
+            # Set scope.
+            if self.scope or scope:
+                data['scope'] = scope if scope else self.scope
+
+            if self.resource or resource:
+                data['resource'] = resource or self.resource  # type: ignore
+
+            response_json: dict = {}
+            try:
+                response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+                if response.status_code not in {200, 201}:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+
+            access_token = response_json.get('access_token', '')
+            expires_in = int(response_json.get('expires_in', 3595))
+
+            return access_token, expires_in, ''
+
+        def _get_self_deployed_token_auth_code(
+                self, refresh_token: str = '', resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
+            """
+            Gets a token by authorizing a self deployed Azure application.
+            Returns:
+                tuple: An access token, its expiry and refresh token.
+            """
+            demisto.debug("testenes _get_self_deployed_token_auth_code")
+            data = assign_params(
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                resource=resource if resource else self.resource,
+                redirect_uri=self.redirect_uri
+            )
+
+            if self.jwt:
+                data.pop('client_secret', None)
+                data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                data['client_assertion'] = self.jwt
+
+            if scope:
+                data['scope'] = scope
+
+            refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
+
+            demisto.debug(f"testenes  integration context: {self.is_auth_code_reconfigured()}")
+            demisto.debug(f"testenes  auth_code in integration settings: {self.auth_code}")
+            if refresh_token and not self.is_auth_code_reconfigured():
+                demisto.debug("testenes found refresh token")
+                data['grant_type'] = REFRESH_TOKEN
+                data['refresh_token'] = refresh_token
+            else:
+                demisto.debug("testenes not found refresh token")
+                if SESSION_STATE in self.auth_code:
+                    raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                     'without any additional info and without the "session_state" query parameter.')
+                data['grant_type'] = AUTHORIZATION_CODE
+                data['code'] = self.auth_code
+                demisto.debug(f"testenes integration_context: {get_integration_context()}")
+                # may need to reset the context here
+                #set_integration_context({'auth_code': self.auth_code})
+                demisto.debug(f"testenes data: {data}")
+                demisto.debug(f"testenes integration_context: {get_integration_context()}")
+
+            response_json: dict = {}
+            try:
+                response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+                if response.status_code not in {200, 201}:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+
+            access_token = response_json.get('access_token', '')
+            expires_in = int(response_json.get('expires_in', 3595))
+            refresh_token = response_json.get('refresh_token', '')
+
+            return access_token, expires_in, refresh_token
+
+        def _get_managed_identities_token(self, resource=None):
+            """
+            Gets a token based on the Azure Managed Identities mechanism
+            in case user was configured the Azure VM and the other Azure resource correctly
+            """
+            try:
+                # system assigned are restricted to one per resource and is tied to the lifecycle of the Azure resource
+                # see https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+                use_system_assigned = (self.managed_identities_client_id == MANAGED_IDENTITIES_SYSTEM_ASSIGNED)
+                resource = resource or self.managed_identities_resource_uri
+
+                demisto.debug('try to get Managed Identities token')
+
+                params = {'resource': resource}
+                if not use_system_assigned:
+                    params['client_id'] = self.managed_identities_client_id
+
+                response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={'Metadata': 'True'}).json()
+                access_token = response_json.get('access_token')
+                expires_in = int(response_json.get('expires_in', 3595))
+                if access_token:
+                    return access_token, expires_in, ''
+
+                err = response_json.get('error_description')
+            except Exception as e:
+                err = f'{str(e)}'
+
+            return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+            return None
+
+        def _get_token_device_code(
+            self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
+        ) -> tuple[str, int, str]:
+            """
+            Gets a token by authorizing a self deployed Azure application.
+
+            Returns:
+                tuple: An access token, its expiry and refresh token.
+            """
+            data = {
+                'client_id': self.client_id,
+                'scope': scope
+            }
+
+            if refresh_token:
+                data['grant_type'] = REFRESH_TOKEN
+                data['refresh_token'] = refresh_token
+            else:
+                data['grant_type'] = DEVICE_CODE
+                if integration_context:
+                    data['code'] = integration_context.get('device_code')
+
+            response_json: dict = {}
+            try:
+                response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+                if response.status_code not in {200, 201}:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+
+            access_token = response_json.get('access_token', '')
+            expires_in = int(response_json.get('expires_in', 3595))
+            refresh_token = response_json.get('refresh_token', '')
+
+            return access_token, expires_in, refresh_token
+
+        def _get_refresh_token_from_auth_code_param(self) -> str:
+            refresh_prefix = "refresh_token:"
+            if self.auth_code.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
+                demisto.debug("Using refresh token set as auth_code")
+                return self.auth_code[len(refresh_prefix):]
+            return ''
+
+        def run_retry_on_rate_limit(self, args_for_next_run: dict):
+            return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
+                                  scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
+                                                                     args=args_for_next_run))
+
+        def handle_error_with_metrics(self, res):
+            self.create_api_metrics(res.status_code)
+            self.client_error_handler(res)
+
+        def create_api_metrics(self, status_code):
+            execution_metrics = ExecutionMetrics()
+            ok_codes = (200, 201, 202, 204, 206)
+
+            if not execution_metrics.is_supported() or demisto.command() in ['test-module', 'fetch-incidents']:
+                return
+            if status_code == 429:
+                execution_metrics.quota_error += 1
+            elif status_code in ok_codes:
+                execution_metrics.success += 1
+            else:
+                execution_metrics.general_error += 1
+            return_results(execution_metrics.metrics)
+
+        def error_parser(self, error: requests.Response) -> str:
+            """
+
+            Args:
+                error (requests.Response): response with error
+
+            Returns:
+                str: string of error
+
+            """
+            try:
+                response = error.json()
+                demisto.error(str(response))
+                err_str = self.extract_microsoft_error(response)
+                if err_str:
+                    return err_str
+                # If no error message
+                raise ValueError
+            except ValueError:
+                return error.text
+
+        def extract_microsoft_error(self, response: dict) -> str | None:
+            """
+            Extracts the Microsoft error message from the JSON response.
+
+            Args:
+                response (dict): JSON response received from the microsoft server.
+
+            Returns:
+                str or None: Extracted Microsoft error message if found, otherwise returns None.
+            """
+            inner_error = response.get('error', {})
+            error_codes = response.get("error_codes", [""])
+            err_desc = response.get('error_description', '')
+
+            if isinstance(inner_error, dict):
+                err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
+            else:
+                err_str = inner_error
+                re_search = re.search(REGEX_SEARCH_ERROR_DESC, err_desc)
+                err_str += f". \n{re_search['desc']}" if re_search else ""
+
+            if err_str:
+                if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                    err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
+                               f"to reset the authentication process."
+                return err_str
+            # If no error message
+            return None
+
+        @staticmethod
+        def epoch_seconds(d: datetime = None) -> int:
+            """
+            Return the number of seconds for given date. If no date, return current.
+
+            Args:
+                d (datetime): timestamp
+            Returns:
+                 int: timestamp in epoch
+            """
+            if not d:
+                d = MicrosoftClient._get_utcnow()
+            return int((d - MicrosoftClient._get_utcfromtimestamp(0)).total_seconds())
+
+        @staticmethod
+        def _get_utcnow() -> datetime:
+            return datetime.utcnow()
+
+        @staticmethod
+        def _get_utcfromtimestamp(_time) -> datetime:
+            return datetime.utcfromtimestamp(_time)
+
+        @staticmethod
+        def get_encrypted(content: str, key: str | None) -> str:
+            """
+            Encrypts content with encryption key.
+            Args:
+                content: Content to encrypt
+                key: encryption key from oproxy
+
+            Returns:
+                timestamp: Encrypted content
+            """
+
+            def create_nonce():
+                return os.urandom(12)
+
+            def encrypt(string, enc_key):
+                """
+                Encrypts string input with encryption key.
+                Args:
+                    string: String to encrypt
+                    enc_key: Encryption key
+
+                Returns:
+                    bytes: Encrypted value
+                """
+                # String to bytes
+                try:
+                    enc_key = base64.b64decode(enc_key)
+                except Exception as err:
+                    return_error(f"Error in Microsoft authorization: {str(err)}"
+                                 f" Please check authentication related parameters.", error=traceback.format_exc())
+
+                # Create key
+                aes_gcm = AESGCM(enc_key)
+                # Create nonce
+                nonce = create_nonce()
+                # Create ciphered data
+                data = string.encode()
+                ct = aes_gcm.encrypt(nonce, data, None)
+                return base64.b64encode(nonce + ct)
+
+            now = MicrosoftClient.epoch_seconds()
+            encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+            return encrypted
+
+        @staticmethod
+        def _add_info_headers() -> dict[str, str]:
+            # pylint: disable=no-member
+            headers = {}
+            try:
+                headers = get_x_content_info_headers()
+            except Exception as e:
+                demisto.error(f'Failed getting integration info: {str(e)}')
+
+            return headers
+
+        def device_auth_request(self) -> dict:
+            response_json = {}
+            try:
+                response = requests.post(
+                    url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
+                    data={
+                        'client_id': self.client_id,
+                        'scope': self.scope
+                    },
+                    verify=self.verify
+                )
+                if not response.ok:
+                    return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                                 f' body: {self.error_parser(response)}')
+                response_json = response.json()
+            except Exception as e:
+                return_error(f'Error in Microsoft authorization: {str(e)}')
+            set_integration_context({'device_code': response_json.get('device_code')})
+            return response_json
+
+        def start_auth(self, complete_command: str) -> str:
+            response = self.device_auth_request()
+            message = response.get('message', '')
+            re_search = re.search(REGEX_SEARCH_URL, message)
+            url = re_search['url'] if re_search else None
+            user_code = response.get('user_code')
+
+            return f"""### Authorization instructions
+    1. To sign in, use a web browser to open the page [{url}]({url})
+
+    and enter the code **{user_code}** to authenticate.
+
+    2. Run the **{complete_command}** command in the War Room."""
+
+        def is_auth_code_reconfigured(self) -> str:
+            return False if get_integration_context().get("auth_code") == self.auth_code else True
+
+    class NotFoundError(Exception):
+        """Exception raised for 404 - Not Found errors.
+
+        Attributes:
+            message -- explanation of the error
+        """
+
+        def __init__(self, message):
+            self.message = message
+
+
+    def get_azure_managed_identities_client_id(params: dict) -> str | None:
+        """
+        Extract the Azure Managed Identities from the demisto params
+
+        Args:
+            params (dict): the demisto params
+
+        Returns:
+            Optional[str]: if the use_managed_identities are True
+            the managed_identities_client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+            will return, otherwise - None
+
+        """
+        auth_type = params.get('auth_type') or params.get('authentication_type')
+        if params and (argToBoolean(params.get('use_managed_identities') or auth_type == 'Azure Managed Identities')):
+            client_id = params.get('managed_identities_client_id', {}).get('password')
+            return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+        return None
+
+
+    def generate_login_url(client: MicrosoftClient,
+                           login_url: str = "https://login.microsoftonline.com/") -> CommandResults:
+        missing = []
+        if not client.client_id:
+            missing.append("client_id")
+        if not client.tenant_id:
+            missing.append("tenant_id")
+        if not client.scope:
+            missing.append("scope")
+        if not client.redirect_uri:
+            missing.append("redirect_uri")
+        if missing:
+            raise DemistoException("Please make sure you entered the Authorization configuration correctly. "
+                                   f"Missing:{','.join(missing)}")
+
+        login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
+                                       f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
+                                       f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
+
+        result_msg = f"""### Authorization instructions
+    1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+
+    You will be automatically redirected to a link with the following structure:
+
+    ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+
+    2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+
+    and paste it in your instance configuration under the **Authorization code** parameter.
+        """
+        return CommandResults(readable_output=result_msg)
+
+
+    def get_from_args_or_params(args: dict[str, Any], params: dict[str, Any], key: str) -> Any:
+        """
+        Get a value from args or params, if the value is provided in both args and params, the value from args will be used.
+        if the value is not provided in args or params, an exception will be raised.
+        this function is used in commands that have a value that can be provided in the instance parameters or in the command,
+        e.g in azure-key-vault-delete 'subscription_id' can be provided in the instance parameters or in the command.
+        Args:
+            args (Dict[str, Any]): Demisto args.
+            params (Dict[str, Any]): Demisto params
+            key (str): Key to get.
+        """
+        if value := args.get(key, params.get(key)):
+            return value
+        else:
+            raise Exception(f'No {key} was provided. Please provide a {key} either in the \
+    instance configuration or as a command argument.')
+
+
+
+    def azure_tag_formatter(arg):
+        """
+        Formats a tag argument to the Azure format
+        Args:
+            arg (str): Tag argument as string
+        Returns:
+            str: Tag argument in Azure format
+        """
+        try:
+            tag = json.loads(arg)
+            tag_name = next(iter(tag))
+            tag_value = tag[tag_name]
+            return f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
+        except Exception as e:
+            raise Exception(
+                """Invalid tag format, please use the following format: '{"key_name":"value_name"}'""",
+                e,
+            ) from e
+
+
+    def reset_auth() -> CommandResults:
+        """
+        This command resets the integration context.
+        After running the command, a new token/auth-code will need to be given by the user to regenerate the access token.
+        :return: Message about resetting the authorization process.
+        """
+        demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
+        set_integration_context({})
+        return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
+                                              'and then click **Test** to validate the credentials and connection.')
+
+    register_module_line('MicrosoftApiModule', 'end', __line__(), wrapper=1)
+
+    ### END GENERATED CODE ###
+
+
+    # Disable insecure warnings
+
+
+    urllib3.disable_warnings()
+
+
+    INTEGRATION_CONTEXT_NAME = 'MSGraphGroups'
+
+    NO_OUTPUTS: dict = {}
+
+    APP_NAME = 'ms-graph-groups'
+
+
+
+    def camel_case_to_readable(text: str) -> str:
+        """'camelCase' -> 'Camel Case'
+
+        Args:
+            text: the text to transform
+
+        Returns:
+            A Camel Cased string.
+        """
+        if text == 'id':
+            return 'ID'
+        return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
+
+
+    def parse_outputs(groups_data: dict[str, str]) -> tuple[dict, dict]:
+        """Parse group data as received from Microsoft Graph API into Demisto's conventions
+
+        Args:
+            groups_data: a dictionary containing the group data
+
+        Returns:
+            A Camel Cased dictionary with the relevant fields.
+            groups_readable: for the human readable
+            groups_outputs: for the entry context
+        """
+        # Unnecessary fields, dropping as to not load the incident context.
+        fields_to_drop = ['@odata.context', '@odata.nextLink', '@odata.deltaLink', '@odata.type', '@removed',
+                          'resourceProvisioningOptions', 'securityIdentifier', 'onPremisesSecurityIdentifier',
+                          'onPremisesNetBiosName', 'onPremisesProvisioningErrors', 'onPremisesSamAccountName',
+                          'resourceBehaviorOptions', 'creationOptions', 'preferredDataLocation']
+        if isinstance(groups_data, list):
+            groups_readable, groups_outputs = [], []
+            for group_data in groups_data:
+                group_readable = {camel_case_to_readable(i): j for i, j in group_data.items() if i not in fields_to_drop}
+                if '@removed' in group_data:
+                    group_readable['Status'] = 'deleted'
+                groups_readable.append(group_readable)
+                groups_outputs.append({k.replace(' ', ''): v for k, v in group_readable.copy().items()})
+
+            return groups_readable, groups_outputs
+
+        group_readable = {camel_case_to_readable(i): j for i, j in groups_data.items() if i not in fields_to_drop}
+        if '@removed' in groups_data:
+            group_readable['Status'] = 'deleted'
+        group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
+
+        return group_readable, group_outputs
+
+
+    class MsGraphClient:
+        """
+          Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
+          """
+
+        def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy,
+                     self_deployed, handle_error, redirect_uri=None, auth_code=None,
+                     certificate_thumbprint: str | None = None, private_key: str | None = None,
+                     managed_identities_client_id: str | None = None):
+            grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+            resource = None if self_deployed else ''
+            self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                                             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
+                                             redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,
+                                             resource=resource, certificate_thumbprint=certificate_thumbprint,
+                                             private_key=private_key,
+                                             managed_identities_client_id=managed_identities_client_id,
+                                             managed_identities_resource_uri=Resources.graph,
+                                             command_prefix="msgraph-groups",
+                                             )
+
+            self.handle_error = handle_error
+
+        def test_function(self):
+            """Performs basic GET request to check if the API is reachable and authentication is successful.
+
+            Returns:
+                ok if successful.
+            """
+            self.ms_client.http_request(method='GET', url_suffix='groups', params={'$orderby': 'displayName'})
+            demisto.results('ok')
+
+        def list_groups(self, order_by: str = None, next_link: str = None, top: int = None, filter_: str = None):
+            """Returns all groups by sending a GET request.
+
+            Args:
+                order_by: the group fields to order by the response.
+                next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
+                    docs.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
+                top: sets the page size of results.
+                filter_: filters results.
+            Returns:
+                Response from API.
+            """
+            if next_link:  # pagination
+                return self.ms_client.http_request(method='GET', full_url=next_link)
+            # default value = 100
+            params = {'$top': top}
+            if order_by:
+                params['$orderby'] = order_by  # type: ignore
+            if filter_:
+                params['$filter'] = filter_  # type: ignore
+            return self.ms_client.http_request(
+                method='GET',
+                url_suffix='groups',
+                params=params)
+
+        def get_group(self, group_id: str) -> dict:
+            """Returns a single group by sending a GET request.
+
+            Args:
+                group_id: the group id.
+
+            Returns:
+                Response from API.
+            """
+            group = self.ms_client.http_request(method='GET', url_suffix=f'groups/{group_id}')
+            return group
+
+        def create_group(self, properties: dict[str, Any | None]) -> dict:
+            """Create a single group by sending a POST request.
+
+            Args:
+                properties: the group properties.
+
+            Returns:
+                Response from API.
+            """
+            group = self.ms_client.http_request(method='POST', url_suffix='groups', json_data=properties)
+            return group
+
+        def delete_group(self, group_id: str):
+            """Delete a single group by sending a DELETE request.
+
+            Args:
+                group_id: the group id to delete.
+            """
+            #  If successful, this method returns 204 No Content response code.
+            #  It does not return anything in the response body.
+            #  Using resp_type="text" to avoid parsing error in the calling method.
+            self.ms_client.http_request(method='DELETE', url_suffix=f'groups/{group_id}', resp_type="text")
+
+        def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None):
+            """List all group members by sending a GET request.
+
+            Args:
+                group_id: the group id to list its members.
+                next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
+                    docs.microsoft.com/en-us/graph/api/group-list-members?view=graph-rest-1.0
+                top: sets the page size of results.
+                filter_: filters results.
+            Returns:
+                Response from API.
+            """
+            headers = {}
+
+            if next_link:  # pagination
+                return self.ms_client.http_request(method='GET', full_url=next_link)
+            params = {'$top': top}
+
+            if filter_:
+                params['$filter'] = filter_  # type: ignore
+
+            if count := demisto.args().get('count'):
+                params['$count'] = count
+                headers['ConsistencyLevel'] = 'eventual'
+
+            return self.ms_client.http_request(
+                method='GET',
+                url_suffix=f'groups/{group_id}/members',
+                params=params,
+                headers=headers)
+
+        def add_member(self, group_id: str, properties: dict[str, str]):
+            """Add a single member to a group by sending a POST request.
+            Args:
+                group_id: the group id to add the member to.
+                properties: the member properties.
+            """
+            #  If successful, this method returns 204 No Content response code.
+            #  It does not return anything in the response body.
+            #  Using resp_type="text" to avoid parsing error in the calling method.
+            self.ms_client.http_request(
+                method='POST',
+                url_suffix=f'groups/{group_id}/members/$ref',
+                json_data=properties,
+                resp_type="text")
+
+        def remove_member(self, group_id: str, user_id: str):
+            """Remove a single member to a group by sending a DELETE request.
+            Args:
+                group_id: the group id to add the member to.
+                user_id: the user id to remove.
+            """
+            #  If successful, this method returns 204 No Content response code.
+            #  It does not return anything in the response body.
+            #  Using resp_type="text" to avoid parsing error in the calling method.
+            self.ms_client.http_request(
+                method='DELETE',
+                url_suffix=f'groups/{group_id}/members/{user_id}/$ref', resp_type="text")
+
+
+    def suppress_errors_with_404_code(func):
+        def wrapper(client: MsGraphClient, args: dict):
+            try:
+                return func(client, args)
+            except NotFoundError:
+                if client.handle_error:
+                    human_readable = f'#### Group id -> {args.get("group_id")} does not exist'
+                    return human_readable, None, None
+                raise
+        return wrapper
+
+
+    def test_function_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """Performs a basic GET request to check if the API is reachable and authentication is successful.
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Tuple.
+        """
+        client.test_function()
+        return 'ok', {}, {}
+
+
+    def list_groups_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """Lists all groups and return outputs in Demisto's format.
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        order_by = args.get('order_by')
+        next_link = args.get('next_link')
+        top = args.get('top')
+        filter_ = args.get('filter')
+        groups = client.list_groups(order_by, next_link, top, filter_)
+
+        groups_readable, groups_outputs = parse_outputs(groups['value'])
+
+        next_link_response = ''
+        if '@odata.nextLink' in groups:
+            next_link_response = groups['@odata.nextLink']
+
+        if next_link_response:
+            entry_context = {f'{INTEGRATION_CONTEXT_NAME}NextLink': {'GroupsNextLink': next_link_response},
+                             f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
+            title = 'Groups (Note that there are more results. Please use the next_link argument to see them. The value ' \
+                    'can be found in the context under MSGraphGroupsNextLink.GroupsNextLink): '
+        else:
+            entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
+            title = 'Groups:'
+
+        human_readable = tableToMarkdown(name=title, t=groups_readable,
+                                         headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail'],
+                                         removeNull=True)
+
+        return human_readable, entry_context, groups
+
+
+    @suppress_errors_with_404_code
+
+    def get_group_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """Get a group by group id and return outputs in Demisto's format.
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        group_id = str(args.get('group_id'))
+        group = client.get_group(group_id)
+
+        group_readable, group_outputs = parse_outputs(group)
+        human_readable = tableToMarkdown(name="Groups:", t=group_readable,
+                                         headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail',
+                                                  'Security Enabled', 'Visibility'],
+                                         removeNull=True)
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(obj.ID === {group_id})': group_outputs}
+        return human_readable, entry_context, group
+
+
+    def create_group_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """Create a group and return outputs in Demisto's format.
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        required_properties = {
+            'displayName': str(args.get('display_name')),
+            'mailNickname': str(args.get('mail_nickname')),
+            'mailEnabled': args.get('mail_enabled') == 'true',
+            'securityEnabled': args.get('security_enabled')
+        }
+
+        # create the group
+        group = client.create_group(required_properties)
+
+        # display the new group and it's properties
+        group_readable, group_outputs = parse_outputs(group)
+        human_readable = tableToMarkdown(name=f"{required_properties['displayName']} was created successfully:",
+                                         t=group_readable,
+                                         headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail',
+                                                  'Security Enabled', 'Mail Enabled'],
+                                         removeNull=True)
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_outputs}
+        return human_readable, entry_context, group
+
+
+    @suppress_errors_with_404_code
+
+    def delete_group_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """Delete a group by group id and return outputs in Demisto's format
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        group_id = str(args.get('group_id'))
+        client.delete_group(group_id)
+
+        # get the group data from the context
+        group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
+        if isinstance(group_data, list):
+            group_data = group_data[0]
+
+        # add a field that indicates that the group was deleted
+        group_data['Deleted'] = True  # add a field with the members to the group
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
+
+        human_readable = f'Group: "{group_id}" was deleted successfully.'
+        return human_readable, entry_context, NO_OUTPUTS
+
+
+    @suppress_errors_with_404_code
+
+    def list_members_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """List a group members by group id. return outputs in Demisto's format.
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        group_id = str(args.get('group_id'))
+        next_link = args.get('next_link')
+        top = args.get('top')
+        filter_ = args.get('filter')
+        members = client.list_members(group_id, next_link, top, filter_)
+
+        if not members['value']:
+            human_readable = f'The group {group_id} has no members.'
+            return human_readable, NO_OUTPUTS, NO_OUTPUTS
+
+        members_readable, members_outputs = parse_outputs(members['value'])
+
+        # get the group data from the context
+        group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
+        if not group_data:
+            return_error('Could not find group data in the context, please run "!msgraph-groups-get-group" to retrieve group data.')
+        if isinstance(group_data, list):
+            group_data = group_data[0]
+
+        if '@odata.nextLink' in members:
+            next_link_response = members['@odata.nextLink']
+            group_data['Members'] = members_outputs  # add a field with the members to the group
+            group_data['MembersNextLink'] = next_link_response
+            entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
+            title = f'Group {group_id} members ' \
+                    f'(Note that there are more results. Please use the next_link argument to see them. The value can be ' \
+                    f'found in the context under {INTEGRATION_CONTEXT_NAME}.MembersNextLink): '
+        else:
+            group_data['Members'] = members_outputs  # add a field with the members to the group
+            entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
+            title = f'Group {group_id} members:'
+
+        human_readable = tableToMarkdown(name=title, t=members_readable,
+                                         headers=['ID', 'Display Name', 'Job Title', 'Mail'],
+                                         removeNull=True)
+
+        return human_readable, entry_context, members
+
+
+    @suppress_errors_with_404_code
+
+    def add_member_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """Add a member to a group by group id and user id. return outputs in Demisto's format.
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        group_id = str(args.get('group_id'))
+        user_id = str(args.get('user_id'))
+        required_properties = {
+            "@odata.id": f'https://graph.microsoft.com/v1.0/users/{user_id}'}
+        client.add_member(group_id, required_properties)
+
+        human_readable = f'User {user_id} was added to the Group {group_id} successfully.'
+        return human_readable, NO_OUTPUTS, NO_OUTPUTS
+
+
+    @suppress_errors_with_404_code
+
+    def remove_member_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+        """Remove a member from a group by group id and user id. return outputs in Demisto's format.
+
+        Args:
+            client: Client object with request
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs.
+        """
+        group_id = str(args.get('group_id'))
+        user_id = str(args.get('user_id'))
+        client.remove_member(group_id, user_id)
+
+        human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
+        return human_readable, NO_OUTPUTS, NO_OUTPUTS
+
+
+    def main():
+        """
+        PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        params: dict = demisto.params()
+        base_url = params.get('url', '').rstrip('/') + '/v1.0/'
+        tenant = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
+        auth_and_token_url = params.get('creds_auth_id', {}).get('password', '') or params.get('auth_id') or params.get('_auth_id')
+        enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')
+        verify = not params.get('insecure', False)
+        redirect_uri = params.get('redirect_uri', '')
+        auth_code = params.get('creds_auth_code', {}).get('password', '') or params.get('auth_code', '')
+        proxy = params.get('proxy')
+        handle_error: bool = argToBoolean(params.get('handle_error', 'true'))
+        certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
+            'password', '') or params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        managed_identities_client_id = get_azure_managed_identities_client_id(params)
+        self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
+
+        if not managed_identities_client_id:
+            if not self_deployed and not enc_key:
+                raise DemistoException('Key must be provided. For further information see '
+                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+            elif self_deployed and auth_code and not redirect_uri:
+                raise DemistoException('Please provide both Application redirect URI and Authorization code '
+                                       'for Authorization Code flow, or None for the Client Credentials flow')
+            elif not enc_key and not (certificate_thumbprint and private_key):
+                raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+            if not auth_and_token_url:
+                raise Exception('Authentication ID must be provided.')
+            if not tenant:
+                raise Exception('Token must be provided.')
+
+        commands = {
+            'test-module': test_function_command,
+            'msgraph-groups-list-groups': list_groups_command,
+            'msgraph-groups-get-group': get_group_command,
+            'msgraph-groups-create-group': create_group_command,
+            'msgraph-groups-delete-group': delete_group_command,
+            'msgraph-groups-list-members': list_members_command,
+            'msgraph-groups-add-member': add_member_command,
+            'msgraph-groups-remove-member': remove_member_command
+        }
+        command = demisto.command()
+        LOG(f'Command being called is {command}')
+
+        try:
+            client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
+                                                  app_name=APP_NAME, base_url=base_url, verify=verify, proxy=proxy,
+                                                  self_deployed=self_deployed, redirect_uri=redirect_uri,
+                                                  auth_code=auth_code, handle_error=handle_error,
+                                                  certificate_thumbprint=certificate_thumbprint,
+                                                  private_key=private_key,
+                                                  managed_identities_client_id=managed_identities_client_id)
+            if command == 'msgraph-groups-generate-login-url':
+                return_results(generate_login_url(client.ms_client))
+            if command == 'msgraph-groups-auth-reset':
+                return_results(reset_auth())
+            else:
+                human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+                return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+
+        except Exception as err:
+            return_error(str(err))
+
+
+    if __name__ in ['__main__', 'builtin', 'builtins']:
+        main()
+
+    register_module_line('Microsoft Graph Groups_dev', 'end', __line__())
+  subtype: python3
+  type: python
+  nativeimage:
+  - '8.2'
+  - '8.3'
+  - candidate
+tests:
+- Microsoft Graph Groups - Test
+fromversion: 5.0.0
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXNSR0IArs4c6QAAC+9JREFUeAHtWXtwVNUZP+c+du9udiGB8DBjImkFWrRTpB1ardToQAVEyggZx9ZSBOQ5FAgJFGw1UssrD94BeQz4oB3hj7ZDBdERqUPRGW1x6kyAgI0ELIRHXvu+ex/9fQub7i7ZZBXoxJlzmMve+53vO4/f9zwnjIkmEBAICAQEAgIBgYBAQCAgEBAICAQEAgIBgYBAQCAgEBAICAQEAgIBgYBA4CYQ4JnInnrcm+tUXOWyxBxWJwJOzrnpZ4e3L22MuCw2Ro8wOx07p5k5M7nGlj/3Y3YhHZ+g3xwCSibi3JJ6MJvPcckSt+z0NuGSOQvIhmXbzO90s+lSelZGCo5GGYuE2GasQSg4E0V8BZ6MFGy54YlRFgyZdhZpL32TmG1Zum1Cd2HG4MFpGynYspjOLPwT7bYhkJGCb9vsYuAOEVi6dGlvy7LyWluVpq1bf/9Fh0wZEruNgouLix35+YU/kmVb1XU9vH79+qPYQ4fevXjx4sG2bd9Fe7xy5crxXbt2XYa8q6CgAOFevlNR+PTVq1c3ZIhBd2KTysrKSg3DXKiqan+PJ/IBFvfAzSxQuhnhWyk7cODAHEmy/yTLyiGnU3uvpKRkeEfjz5gxQ4V1v64o6iF6cnJyfkB8hYWFOZzLT7nd2qhw2BjckWx3p8Fwx2FPq2G8qmkay7HPXVgz6Yhj33csWLBgGL1/mX10Gw+mRWNDZjQatR0Oh4QN/hKkD1M3k52d/SDKgO/Dy01FUWTIxIqCNWvW/GfhwoWj/f5or1AocCRV7uvwjZrkYU1TWSQS3lhZWfFifM3Y13AY/V8NI1oH2oNxeia/3UrBOGWRtV6MRKIK3ieVlpa+UFlZeSlxIwhfz0qShPLNPovfQYl9a9eu/Vvid8q7NG3atOzc3FwT4bs1pa/9E57i3rZtW7CdgBeieb1et8/nC6b2JfJNmTIlu3///nzVqlU0/g3pZcyYMc6hQ4d6WltbIzU1Nf5EWXq3LCOmD1mWk/aMcO0FrU80qp9IlenqOyN3P1ncs1CLap/KMkcVnX5IHKOY6Y9u2lJ6OeBV2BIdlXS6Fq+iDYvdVz6W1S5btqyfrkdPwYobZJl9oGmuGYGAf1Z1dfXL8THmzp17V1aWp9YwrMOcWyqs+tFgMDBu3bp1bwJcrXfv3Fdsm/dDCf/0xo0bz5Mc5eb8/Py5AOgpOPs3YDg4CPCPkKefRCi0TJP9kaCVZQkh0V6JiHB3OBwaBQWcgYHdi5xexpj5MKIGUgC/inW/i2FXVFRUfBZfF0LnJEVxzuPc/g5oEoY9iwgzacOGDaeJZ968eXe6XK4yy+JjMVc/zOtH8DkWDodXo9b4aM6cOfkul+cPkB8Eo+2L/TVAqZewj/VY6z1Op/qEaVqDIOfDGk6Zpl3v97f+HMaGg2bnLaMcLAUZtzlXVXCrONymexT028yW4YdIpYCmiwfZRJW05JyCTcoI07sjcGM49DN79+6V41sASD9D+HbbtrEDG00yNQrraA/ACB+CktwkU1RUrqHwet3t9lSQckF6C4o6CKAKgsGgF0rA2NYI0B8xDPtVjHkvHr/T6WSU72AUhx0OZTL46wH0XiiuBUY1Fd9vLVmypIDmQN6cANpejDME/a8Agc22LbVhPb2on/jQ/47D4fwV5HxQMsbhZwDQRE3TDi1a9OvvZWVlQVEmKeu614OLW9g/RxqSDKzdpLEgDzUwA2x4MmuxkNAVq8vdGlHCkX9y03LhwiMtu6TITDODDVhpKBRh/8KSk5SQKohoEMWWQsl02wHwP5Yk+QiseOTRo/+gIuoYeSL2NzUUCtWfP3/+7fz8gvnJcti2ZesEABQTm3fYsLZfuFxZT8AjTyK8jY97FIXSxsbGEIVLRI0wlNFX141/NzVdnQxZX3NzM4dhHFJVR59wOPK7qqqq52kuihJ9+khvuN1Z40Oh4AKQSgyDjfN6Ne7zta1GtKmMr6m4uNxB76Zp/gb830I02tPQ0DB13759OtFRLa9DlJofjYaWIxo8BtIjKCw3uN3ueT5foAphfhPxUYMRHUa9cRg5+DhqjaIYMcP/MlLwhJH7m/PYHS9ItqFw6Rp4HY0vWwoPMsfnb7TdY4a97LRppVcwuaUBd29uYpfKkwbjjEIPwuMOADzKNINT0H0sL69wlMvlvBshuRwghUpKytJGn7iC4QHFNDTC26q4cul79+7dLfQ7ZMgQL7yNQwmWYURe3LlzZxPRMXchPP1+hNCr8MoNRKMGufCiRYtqEGHGQ6SIaOj/BBEDN3PyXCjC39bWtn/r1q1f7NtXrmOcLBjlKBiliWhRFVcuycGIa1AQz0YgGk7n3pUrV14FOeY9shyrnIkt3mJ7xTzpvSvOmfKbkYJ7SwP7RRyOP0uSAi+6oXZoH1J2uFgooG6G6UadMltgtQfXdpb2F8rBMACjt4N9F8Ta9g680JkYABwAyGfBNxGgLkPImgqQIuGwvSeRt6N3hPcYGVEgD8qg4iVp/EQZAMwNw/DDi8/F6ZDJRVh1QvGfobBKKsigsIvgZ5LEe1DR1Nx8ZYck9RmAHD4ToX2L18tfgiduHDx48Ira2loPjDQHMkGs6WJ8fPpFeG6CwtrwmoWI4cUvKfiWt7RecMNMNtRhmYx38lC/hRoGYTd2AQkJUmLaB7ZixeJVymTISRJVmQDxNQDdC7l1GYx7JIA9WFOz9kwKe9pPeFkI3gzv4n3TMqED/UlWi28/lGvCuHoFAnmuRFnLknIQLmE0vNXj8Rjk1VVVFaUw/KGBQKjMtk0dIbn85MnTM+vq6hApbEpBGkJvduI4mMOLGsMDWgBneV9iX7p34NBpyutILnMFdyR9m2nBoPIaLD8AFcyDorIA1vZMpoQCYqFMktj7pGBZdsxHVCAwY23GjHI3jj4qvLZDwFpaWupRztSiMOrft69/clyOfqHbZ1AbwCisdxFyTVTIPYhOVXV1dUUlvPV5KAIebo84ePBgBN8fojiEiDqT+OIN3vu0y6VpMKK/IzzHUkO8L/UXESW2H8jEisfU/s6+MwrRnQ1wK/tQJKmw7PY1bd68sq6kZNE78OgJCNm1TU1Nh+PzAUDlGpD/+5sVPF4BoAo5H/EFg9Y61Hs/BZCjCgoKj6KweRP9DpxSHpLl7Al4J++i+VTijzfySlwu/NYwpH2qKm9ELr0f4NZhvh8iooxGTj0Bw8HYjMFIVqJSzoYS3sfaNRjjdPDCw633qB+KXY5CbQRC9XzUDd9EPPsY54tvozp/EinnMmTKwRY3NJn2BPEkx8NcF8GLCloahj28jLHPIvxXkQHRHJ21pIE6Y7zdffBUOgogV/LTqHDjG4b3SVsQmgEuryHgE9ZRD1BPY7OxCwMAgPOtVYeH8m1s4zU11eeQtscA4L04PhVgbAr1c+GdjX6/vw0KRmiWTiLXn8A4SUcPXJr8BVXrBHjYUchMxLGmHL/DcXp71efTx9LNGa0FCjkLJT0K8Lfgqca3ExVz6fHjx3dQP6rh47haH4Mq/gD2UETjIO8/hqn348ZqNDz/E+K73i5gr9iTlJSPcdlTi7Ffwjyg82ex3sdxtsfau24xS++K7SfbTxYyVf4UDpKFvwemZZdQZPnDjk1v5+TqPJuV0J8M0zUAR0Ppts7u806IFVkcRYsDec1OrDZJvqioSDty5EjSaFSIUa6G0imNxxZFNCiOw7KJ1m4kNAZCaR9N69lDVS3/ihUrGomGFpuTXjqSIToanzXruTyvV9cQQZrjlfa1rmv/z549O6dnz545Pl/UDASuNqYYYjsrXea0tIS8brfclnpDR0zYpzJgwAAlEAhEKfy3C15/oT1gHk99ff3VPXv2UIHWZetOCu5ysYLhyyPQbUL0l1+6kMgEAaHgTFD6GvO0V6yd7cGSdZSnboXjjNBpDsblM47BdA+D22iUp3jSNcrBURsVbMpddDp+Qf9qCGSk4IAn54K3NUB/CelEZTgAYA26qZ7Tcd/h0NmBcMotc+ISFRwo0KwAZ5/H3sR/AgGBgEBAICAQEAgIBAQCAgGBgEBAICAQEAgIBAQCAgGBgEBAICAQEAgIBAQCAgGBwP8Zgf8CqLeLzH1CkPwAAAAASUVORK5CYII=
+detaileddescription: "# Authentication\nYou can authenticate either by Azure Active Directory applications or by Azure Managed Identities.\n## Authentication based on Azure Active Directory applications\n\nMicrosoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.\n\nThere are two application authentication methods available:\n\n * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)\n * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)\n\nDepending on the authentication method that you use, the integration parameters might change.\n\nTo allow access to Azure Active Directory Groups, an administrator has to approve the Cortex XSOAR app using an admin consent flow, by clicking this [link](https://oproxy.demisto.ninja/ms-graph-groups).\nAfter authorizing the Cortex XSAOR app, you will get an ID, Token, and Key which needs to be added to the integration instance configuration's corresponding fields.\n\n\n## Authentication Based on Azure Managed Identities\n##### Note: This option is relevant only if the integration is running on Azure VM.\nFollow one of these steps for authentication based on Azure Managed Identities:\n\n- ##### To use System Assigned Managed Identity\n   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.\n\n- ##### To use User Assigned Managed Identity\n   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.\n   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.\n   3. Select the **Use Azure Managed Identities** checkbox.\n\nFor more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).\n\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-groups-dev)"

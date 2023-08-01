@@ -847,7 +847,7 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        if access_token and valid_until and self.epoch_seconds() < valid_until:
+        if access_token and valid_until and self.epoch_seconds() < valid_until and not self.is_auth_code_reconfigured():
             return access_token
 
         if self.auth_type == OPROXY_AUTH_TYPE:
@@ -877,6 +877,10 @@ class MicrosoftClient(BaseClient):
         # Add resource access token mapping
         if self.multi_resource:
             integration_context.update(self.resource_to_access_token)
+
+        if self.is_auth_code_reconfigured() is True:
+            integration_context.update({'auth_code': self.auth_code})
+
 
         set_integration_context(integration_context)
 
@@ -1076,7 +1080,8 @@ class MicrosoftClient(BaseClient):
             data['scope'] = scope
 
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
-        if refresh_token:
+
+        if refresh_token and not self.is_auth_code_reconfigured():
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
@@ -1360,6 +1365,8 @@ class MicrosoftClient(BaseClient):
 and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
+    def is_auth_code_reconfigured(self) -> str:
+        return False if get_integration_context().get("auth_code") == self.auth_code else True
 
 class NotFoundError(Exception):
     """Exception raised for 404 - Not Found errors.
