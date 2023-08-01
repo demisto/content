@@ -1,10 +1,9 @@
 """
     QRadar v3 integration for Cortex XSOAR - Unit Tests file
 """
-import io
 import json
 from datetime import datetime
-from typing import Dict, Callable
+from collections.abc import Callable
 import copy
 
 import QRadar_v3  # import module separately for mocker
@@ -57,7 +56,7 @@ QRadar_v3.EVENTS_SEARCH_RETRY_SECONDS = 0
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -148,9 +147,9 @@ def test_flatten_nested_geolocation_values(dict_key, inner_keys, expected):
                            {'Name': {'Value': '192.168.0.1', 'LastUser': 'admin'}}),
                           (asset_enrich_data['assets'][0]['properties'], FULL_ASSET_PROPERTIES_NAMES_MAP,
                            {'ComplianceNotes': {'Value': 'note', 'LastUser': 'Adam'}}),
-                          ([], FULL_ASSET_PROPERTIES_NAMES_MAP, dict())
+                          ([], FULL_ASSET_PROPERTIES_NAMES_MAP, {})
                           ])
-def test_enrich_asset_properties(properties, properties_to_enrich_dict: Dict, expected):
+def test_enrich_asset_properties(properties, properties_to_enrich_dict: dict, expected):
     """
     Given:
      - Properties of an asset.
@@ -491,7 +490,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
          3,
          ),
     ])
-def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_search_response: Dict,
+def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode, mock_search_response: dict,
                                     poll_events_response, events_limit):
     """
     Given:
@@ -708,7 +707,7 @@ def test_create_incidents_from_offenses():
                                                {'offense_name': 'offense2'}],
                               },
                               None,
-                              dict()
+                              {}
                               ),
                              (get_offense_closing_reasons,
                               'closing_reasons_list',
@@ -718,7 +717,7 @@ def test_create_incidents_from_offenses():
                                                {'offense_name': 'offense2'}],
                               },
                               None,
-                              dict()
+                              {}
                               ),
                              (get_domain_names,
                               'domains_list',
@@ -728,7 +727,7 @@ def test_create_incidents_from_offenses():
                                               {'offense_name': 'offense2'}],
                               },
                               None,
-                              dict()
+                              {}
                               ),
                              (get_rules_names,
                               'rules_list',
@@ -738,7 +737,7 @@ def test_create_incidents_from_offenses():
                                                {'offense_name': 'offense2'}],
                               },
                               None,
-                              dict()
+                              {}
                               ),
                              (get_offense_addresses,
                               'get_addresses',
@@ -749,7 +748,7 @@ def test_create_incidents_from_offenses():
                                   'is_destination_addresses': False
                               },
                               None,
-                              dict()
+                              {}
                               ),
                              (get_offense_addresses,
                               'get_addresses',
@@ -760,7 +759,7 @@ def test_create_incidents_from_offenses():
                                   'is_destination_addresses': True
                               },
                               None,
-                              dict()
+                              {}
                               ),
                              (enrich_assets_results,
                               'domains_list',
@@ -815,7 +814,6 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_reference_sets_list_command, 'reference_sets_list'),
                              (qradar_reference_set_create_command, 'reference_set_create'),
                              (qradar_reference_set_delete_command, 'reference_set_delete'),
-                             (qradar_reference_set_value_upsert_command, 'reference_set_value_upsert'),
                              (qradar_reference_set_value_delete_command, 'reference_set_value_delete'),
                              (qradar_domains_list_command, 'domains_list'),
                              (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
@@ -825,7 +823,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr'),
                              (qradar_remote_network_deploy_execution_command, 'remote_network_deploy_execution'),
                          ])
-def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str):
     """
     Given:
      - Command function.
@@ -837,7 +835,7 @@ def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults]
     Then:
      - Ensure that the expected CommandResults object is returned by the command function.
     """
-    args = command_test_data[command_name].get('args', dict())
+    args = command_test_data[command_name].get('args', {})
     response = command_test_data[command_name]['response']
     expected = command_test_data[command_name]['expected']
     expected_command_results = CommandResults(
@@ -847,10 +845,7 @@ def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults]
         raw_response=response
     )
     mocker.patch.object(client, command_name, return_value=response)
-    if command_func == qradar_search_create_command:
-        results = command_func(client, {}, args)
-    else:
-        results = command_func(client, args)
+    results = command_func(client, {}, args) if command_func == qradar_search_create_command else command_func(client, args)
 
     assert results.outputs_prefix == expected_command_results.outputs_prefix
     assert results.outputs_key_field == expected_command_results.outputs_key_field
@@ -863,7 +858,7 @@ def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults]
                           (qradar_offense_update_command, 'offense_update', 'enrich_offenses_result'),
                           (qradar_assets_list_command, 'assets_list', 'enrich_assets_results')
                           ])
-def test_commands_with_enrichment(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str,
+def test_commands_with_enrichment(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str,
                                   enrichment_func_name: str):
     """
     Given:
@@ -878,7 +873,7 @@ def test_commands_with_enrichment(mocker, command_func: Callable[[Client, Dict],
     """
     response = command_test_data[command_name]['response']
     expected = command_test_data[command_name]['expected']
-    args = command_test_data[command_name].get('args', dict())
+    args = command_test_data[command_name].get('args', {})
     enriched_response = command_test_data[command_name][enrichment_func_name]
     expected_command_results = CommandResults(
         outputs_prefix=expected.get('outputs_prefix'),
@@ -916,20 +911,20 @@ def test_get_modified_remote_data_command(mocker):
                              'last_update': 1})
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
-    result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
+    result = get_modified_remote_data_command(client, {}, command_test_data['get_modified_remote_data']['args'])
     assert {int(id_) for id_ in expected.modified_incident_ids} == {int(id_) for id_ in result.modified_incident_ids}
 
 
 @pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',
                          [
-                             (dict(), command_test_data['get_remote_data']['response'],
+                             ({}, command_test_data['get_remote_data']['response'],
                               command_test_data['get_remote_data']['enrich_offenses_result'],
                               None,
                               GetRemoteDataResponse(
                                   sanitize_outputs(command_test_data['get_remote_data']['enrich_offenses_result'])[0],
                                   [])),
 
-                             (dict(), command_test_data['get_remote_data']['closed'],
+                             ({}, command_test_data['get_remote_data']['closed'],
                               command_test_data['get_remote_data']['enrich_closed_offense'],
                               None,
                               GetRemoteDataResponse(
@@ -982,7 +977,7 @@ def test_get_modified_remote_data_command(mocker):
                                       'ContentsFormat': EntryFormat.JSON
                                   }]))
                          ])
-def test_get_remote_data_command(mocker, params, offense: Dict, enriched_offense, note_response,
+def test_get_remote_data_command(mocker, params, offense: dict, enriched_offense, note_response,
                                  expected: GetRemoteDataResponse):
     """
     Given:
@@ -1050,7 +1045,7 @@ def test_validate_long_running_params():
      - Ensure that error is thrown.
     """
     from QRadar_v3 import validate_long_running_params, LONG_RUNNING_REQUIRED_PARAMS
-    for param_name, param_value in LONG_RUNNING_REQUIRED_PARAMS.items():
+    for param_name, _param_value in LONG_RUNNING_REQUIRED_PARAMS.items():
         params_without_required_param = {k: v for k, v in LONG_RUNNING_REQUIRED_PARAMS.items() if k is not param_name}
         with pytest.raises(DemistoException):
             validate_long_running_params(params_without_required_param)
@@ -1061,7 +1056,7 @@ def test_validate_long_running_params():
                              (qradar_ips_source_get_command, 'source_ip'),
                              (qradar_ips_local_destination_get_command, 'local_destination')
                          ])
-def test_ip_commands(mocker, command_func: Callable[[Client, Dict], CommandResults], command_name: str):
+def test_ip_commands(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str):
     """
     Given:
      - Command function.
@@ -1073,7 +1068,7 @@ def test_ip_commands(mocker, command_func: Callable[[Client, Dict], CommandResul
     Then:
      - Ensure that the expected CommandResults object is returned by the command function.
     """
-    args = dict()
+    args = {}
     response = ip_command_test_data[command_name]['response']
     expected = ip_command_test_data[command_name]['expected']
     expected_command_results = CommandResults(
@@ -1510,3 +1505,9 @@ def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter
     error_message = verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name)
 
     assert error_message == expected
+
+
+@pytest.mark.parametrize("api_version", ("14.0", "15.0", "16.2", "17.0", "17.8"))
+def test_reference_set_upsert_commands(api_version):
+    qradar_reference_set_value_upsert_command(client, {"api_version": api_version}, {
+                                              "ref_name": "test_ref", "values": "test1,test2,test3"})
