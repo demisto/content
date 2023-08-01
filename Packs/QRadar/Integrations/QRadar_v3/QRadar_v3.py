@@ -3009,7 +3009,7 @@ def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -
         else:
             response = client.reference_set_entries(ref_name, indicator_values, fields)
             args["task_id"] = response.get('task_id')
-            args["indicators_data"] = indicators_data
+        args["indicators_data"] = indicators_data
     if not use_old_api:
         response = client.get_reference_data_bulk_task_status(args["task_id"])
 
@@ -3018,7 +3018,7 @@ def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -
             # get the reference set data
             response = client.reference_sets_list(ref_name=ref_name)
 
-        outputs = sanitize_outputs(response)
+        outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
 
         reference_set_hr = tableToMarkdown(f'Indicators Upload For Reference Set {ref_name}', outputs)
         indicators_uploaded_hr = tableToMarkdown('Indicators Uploaded', args["indicators_data"])
@@ -3026,7 +3026,7 @@ def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -
         return PollResult(CommandResults(
             readable_output=f'{reference_set_hr}\n{indicators_uploaded_hr}',
             outputs_prefix='QRadar.Reference',
-            outputs_key_field='name',
+            outputs_key_field='Name',
             outputs=outputs,
             raw_response=response
         ))

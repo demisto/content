@@ -31,8 +31,9 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_remote_network_cidr_create_command, get_cidrs_indicators, verify_args_for_remote_network_cidr, \
     qradar_remote_network_cidr_list_command, verify_args_for_remote_network_cidr_list, is_positive, \
     qradar_remote_network_cidr_delete_command, qradar_remote_network_cidr_update_command, \
-    qradar_remote_network_deploy_execution_command, migrate_integration_ctx, enrich_offense_with_events, \
-    perform_long_running_loop, validate_integration_context, FetchMode, MIRRORED_OFFENSES_FETCHED_CTX_KEY
+    qradar_remote_network_deploy_execution_command, qradar_indicators_upload_command, migrate_integration_ctx, \
+    enrich_offense_with_events, perform_long_running_loop, validate_integration_context, FetchMode, \
+    MIRRORED_OFFENSES_FETCHED_CTX_KEY, IndicatorsSearcher
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
@@ -823,6 +824,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_remote_network_cidr_list_command, 'get_remote_network_cidr'),
                              (qradar_remote_network_cidr_update_command, 'create_and_update_remote_network_cidr'),
                              (qradar_remote_network_deploy_execution_command, 'remote_network_deploy_execution'),
+                             (qradar_indicators_upload_command, 'reference_set_bulk_load')
                          ])
 def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str):
     """
@@ -851,6 +853,14 @@ def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults]
         results = command_func(client, {}, args)
     elif command_func == qradar_reference_set_value_upsert_command:
         results = command_func(args, client, {"api_version": "14"})
+    elif command_func == qradar_indicators_upload_command:
+        mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version", return_value={
+            "iocs": [{"value": "test1", "indicator_type": "ip"},
+                     {"value": "test2", "indicator_type": "ip"},
+                     {"value": "test3", "indicator_type": "ip"}]})
+        mocker.patch.object(client, "reference_sets_list")
+        results = command_func(args, client, {"api_version": "14"})
+
     else:
         results = command_func(client, args)
 
@@ -1543,3 +1553,26 @@ def test_reference_set_upsert_commands_new_api(mocker, api_version, status):
     else:
         assert results.readable_output == 'Reference set test_ref is still being updated in task 1234'
         assert results.scheduled_command._args.get('task_id') == 1234
+
+
+def test_indicators_upload(mocker, api_version):
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"})
+    mocker.patch.object(client, "reference_sets_list")
+    mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version", return_value={
+                        "iocs": [{"value": "test1", "indicator_type": "ip"}, {"value": "test2", "indicator_type": "ip"}]})
+    if api_version == "14.0":
+        response = command_test_data["reference_set_bulk_load"]["response"]
+        mocker.patch.object(client, "reference_set_bulk_load", return_value=response)
+        results = qradar_indicators_upload_command({"ref_name": "test_ref", }, client, {"api_version": api_version})
+        expected = command_test_data["reference_set_bulk_load"]['expected']
+        expected_command_results = CommandResults(
+            outputs_prefix=expected.get('outputs_prefix'),
+            outputs_key_field=expected.get('outputs_key_field'),
+            outputs=expected.get('outputs'),
+            raw_response=response
+        )
+
+        assert results.outputs_prefix == expected_command_results.outputs_prefix
+        assert results.outputs_key_field == expected_command_results.outputs_key_field
+        assert results.outputs == expected_command_results.outputs
+        assert results.raw_response == expected_command_results.raw_response
