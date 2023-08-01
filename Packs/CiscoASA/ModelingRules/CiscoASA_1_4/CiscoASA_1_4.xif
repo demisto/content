@@ -798,6 +798,6 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*
     xdm.source.user.username = src_username,
     xdm.network.application_protocol = protocol, // like ssh
     xdm.target.ipv4 = dst_ip,
-    xdm.source.ipv4 = src_ip
+    xdm.source.ipv4 = src_ip,
     xdm.event.outcome_reason = outcome_reason,
     xdm.network.rule = network_rule;
