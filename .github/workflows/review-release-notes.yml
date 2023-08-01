@@ -42,4 +42,4 @@ jobs:
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Release notes found in PR: ${release_notes}. Starting docs review..."
-          poetry run demisto-sdk doc-review --release-notes --use-git --use-packs-known-words --known-words ./Tests/known_words.txt --console_log_threshold INFO
+          poetry run demisto-sdk doc-review --release-notes --use-git --known-words ./Tests/known_words.txt --console_log_threshold INFO
