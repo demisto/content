@@ -2290,7 +2290,7 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
-    modified_ids_to_mirror = []
+    modified_ids_to_mirror: list = []
 
     raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
     modified_ids_to_mirror.extend(map(str, raw_incidents))
@@ -5528,7 +5528,7 @@ def main():
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
-        elif demisto.command() == 'cs-falcon-search-device':
+        elif command == 'cs-falcon-search-device':
             return_results(search_device_command())
         elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
@@ -5670,11 +5670,11 @@ def main():
             return_results(get_detection_for_incident_command(args.get('incident_id')))
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(args))
-        elif demisto.command() == 'get-modified-remote-data':
+        elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(args))
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(args))
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
         elif command == 'cs-falcon-spotlight-search-vulnerability':
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
