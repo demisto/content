@@ -859,7 +859,7 @@ inputs:
   playbookInputQuery:
 - key: ApiVersion
   value:
-    simple: "18"
+    simple: "17"
   required: false
   description: The API version for the timestamp format changes between versions 
   playbookInputQuery:
