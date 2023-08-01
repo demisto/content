@@ -97,13 +97,33 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
     logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
 
-    install_packs_from_content_packs_to_install_path(servers=servers,
-                                                     pack_ids=list(pack_ids_with_valid_min_server_version),
-                                                     marketplace_tag_name=XSOAR_MP)
+    for b in batch(list(pack_ids_with_valid_min_server_version), batch_size=20):
+        logging.info(f'installing packs in batch: {b}')
+        install_packs_from_content_packs_to_install_path(servers=servers,
+                                                         pack_ids=b,
+                                                         marketplace_tag_name=XSOAR_MP)
     logging.success(
         f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
         f'in {[server.internal_ip for server in servers]}'
     )
+
+
+def batch(iterable, batch_size=1):
+    """Gets an iterable and yields slices of it.
+
+    Args:
+        iterable (list): list or other iterable object.
+        batch_size (int): the size of batches to fetch
+
+    Return:
+        (list): Iterable slices of given
+    """
+    current_batch = iterable[:batch_size]
+    not_batched = iterable[batch_size:]
+    while current_batch:
+        yield current_batch
+        current_batch = not_batched[:batch_size]
+        not_batched = not_batched[batch_size:]
 
 
 def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str):

@@ -1,11 +1,14 @@
+# Linux Events Collection
 This pack includes XSIAM content.
 
 ## Collect Events from Vendor
 
 In order to use the collector, you can use one of the following options to collect events from the vendor:
 
-- [Broker VM](#broker-vm)
-- [XDRC (XDR Collector)](#xdrc-xdr-collector)
+- [Linux Events Collection](#linux-events-collection)
+  - [Collect Events from Vendor](#collect-events-from-vendor)
+    - [Broker VM](#broker-vm)
+    - [XDRC (XDR Collector)](#xdrc-xdr-collector)
 
 In either option, you will need to configure the vendor and product for this specific collector.
 
@@ -19,6 +22,10 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set:
    - vendor as linux
    - product as linux
+
+* Pay attention: Timestamp parsing is configured for **mmm dd HH:MM:SS** format in UTC timezone.
+                 This can be done by running the following command on the relevant Linux server:
+                 `sudo timedatectl set-timezone UTC`
 
 ### XDRC (XDR Collector)
 

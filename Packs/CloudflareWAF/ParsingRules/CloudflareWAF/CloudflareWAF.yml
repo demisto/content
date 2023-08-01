@@ -1,5 +1,5 @@
-name: Cloudflare WAF
-id: Cloudflare_WAF
+name: Cloudflare WAF Parsing Rule
+id: Cloudflare_WAF_ParsingRule
 fromversion: 8.2.0
 tags: []
 rules: ''

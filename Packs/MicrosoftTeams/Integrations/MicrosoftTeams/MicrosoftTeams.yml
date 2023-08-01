@@ -294,7 +294,7 @@ script:
     - description: The meeting subject.
       name: subject
       required: true
-    - description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.
+    - description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith. Note, when using Authorization Code Flow, the member must be the user who initiated the login request.
       name: member
       required: true
     description: Creates a new meeting in Microsoft Teams.
@@ -711,7 +711,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.63824
+  dockerimage: demisto/teams:1.0.0.66853
   longRunning: true
   longRunningPort: true
   script: ''
