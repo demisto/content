@@ -1,0 +1,77 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "asmenrichmentstatus",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Column Header 1",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "columnheader1",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Column Header 2",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "columnheader2",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Column Header 3",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "columnheader3",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {
+            "columnheader1": "source",
+            "columnheader2": "record_exists",
+            "columnheader3": "timestamp"
+        },
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asmenrichmentstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ASM - Enrichment Status",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

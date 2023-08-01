@@ -6,15 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 79287192-57c1-419d-8e5d-5110e3c0d19d
+    taskid: 21391673-cebd-400b-8989-02d88f323781
     type: start
     task:
-      id: 79287192-57c1-419d-8e5d-5110e3c0d19d
+      id: 21391673-cebd-400b-8989-02d88f323781
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -20
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f7b252ab-182c-4f77-8035-cb8baf61d7fe
+    taskid: 93e61b69-6e58-48eb-8160-04750182141d
     type: condition
     task:
-      id: f7b252ab-182c-4f77-8035-cb8baf61d7fe
+      id: 93e61b69-6e58-48eb-8160-04750182141d
       version: -1
       name: Is Qualys enabled and input value defined?
       description: Determines if the "Qualys" integration instance is enabled in order to find assets and asset tags.
@@ -48,7 +48,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "19"
       "yes":
       - "4"
     separatecontext: false
@@ -91,7 +91,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 200
+          "y": 130
         }
       }
     note: false
@@ -103,22 +103,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7a3f0ee0-ca23-48b2-8a86-c0b5b631c133
+    taskid: 8591339a-58df-48e1-8e54-5c4948d95821
     type: title
     task:
-      id: 7a3f0ee0-ca23-48b2-8a86-c0b5b631c133
+      id: 8591339a-58df-48e1-8e54-5c4948d95821
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -90,
+          "x": -70,
           "y": 1860
         }
       }
@@ -131,10 +131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: abc941ff-0750-4058-86f7-fba9281454d4
+    taskid: f61534f8-5f56-46d6-8351-95f5ae4d5e83
     type: regular
     task:
-      id: abc941ff-0750-4058-86f7-fba9281454d4
+      id: f61534f8-5f56-46d6-8351-95f5ae4d5e83
       version: -1
       name: Lookup host information in Qualys
       description: View host information in the Qualys account.
@@ -161,7 +161,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 420
+          "y": 350
         }
       }
     note: false
@@ -173,16 +173,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0aac4b11-16b6-434c-81d4-983cd44f0306
+    taskid: e0b7e13b-0ef6-4324-804c-18d37e723886
     type: title
     task:
-      id: 0aac4b11-16b6-434c-81d4-983cd44f0306
+      id: e0b7e13b-0ef6-4324-804c-18d37e723886
       version: -1
       name: Service Owner
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -191,8 +191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 1020
+          "x": 250,
+          "y": 1060
         }
       }
     note: false
@@ -204,16 +204,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1cce5351-3c43-43f8-8cd4-88804138045a
+    taskid: ed7f441b-883a-4c3d-8682-a17253f7b2c5
     type: title
     task:
-      id: 1cce5351-3c43-43f8-8cd4-88804138045a
+      id: ed7f441b-883a-4c3d-8682-a17253f7b2c5
       version: -1
       name: Set Field
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -225,7 +225,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 875
+          "y": 895
         }
       }
     note: false
@@ -237,16 +237,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: bd27c1b6-ad5a-49df-8e6f-daacc1d99cd6
+    taskid: c0ab571b-27f7-4b2f-8412-282c82312aa7
     type: title
     task:
-      id: bd27c1b6-ad5a-49df-8e6f-daacc1d99cd6
+      id: c0ab571b-27f7-4b2f-8412-282c82312aa7
       version: -1
       name: System IDs
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -255,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 1020
+          "x": 690,
+          "y": 1060
         }
       }
     note: false
@@ -268,16 +268,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 738c4cc5-4224-494e-891b-cee59f9c66c6
+    taskid: 1f5e5f5f-2229-4f6f-8e1d-712160673572
     type: title
     task:
-      id: 738c4cc5-4224-494e-891b-cee59f9c66c6
+      id: 1f5e5f5f-2229-4f6f-8e1d-712160673572
       version: -1
       name: Tags
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -286,8 +286,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1020
+          "x": 1110,
+          "y": 1060
         }
       }
     note: false
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ecef182d-7a7e-4187-844d-00430c5734c8
+    taskid: d5811782-f9a0-4134-8385-4a59f15bde38
     type: condition
     task:
-      id: ecef182d-7a7e-4187-844d-00430c5734c8
+      id: d5811782-f9a0-4134-8385-4a59f15bde38
       version: -1
       name: Was a host found?
       description: Check whether the last command returned Qualys asset information or not.
@@ -311,9 +311,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "19"
       "yes":
-      - "6"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -332,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 620
+          "y": 530
         }
       }
     note: false
@@ -344,10 +344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b84c2754-5a66-4bf0-87ae-e33de557dc10
+    taskid: 9650c653-3053-4740-8c9e-5ed3562ed28f
     type: condition
     task:
-      id: b84c2754-5a66-4bf0-87ae-e33de557dc10
+      id: 9650c653-3053-4740-8c9e-5ed3562ed28f
       version: -1
       name: Was an owner found?
       description: Check whether the last command has owner or not.
@@ -376,7 +376,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
+          "x": 250,
           "y": 1210
         }
       }
@@ -389,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 41654fb9-5f2c-48dd-846c-7229a2026f0e
+    taskid: b1cce451-d215-4b81-87a7-07f2699d2836
     type: regular
     task:
-      id: 41654fb9-5f2c-48dd-846c-7229a2026f0e
+      id: b1cce451-d215-4b81-87a7-07f2699d2836
       version: -1
       name: Set service owner grid field
       description: |-
@@ -430,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 1550
+          "x": 250,
+          "y": 1590
         }
       }
     note: false
@@ -443,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: c9ea0811-9235-4f86-855a-4251768eaa0f
+    taskid: 6efa5b66-fdc5-4b03-802a-99cad0b42c63
     type: regular
     task:
-      id: c9ea0811-9235-4f86-855a-4251768eaa0f
+      id: 6efa5b66-fdc5-4b03-802a-99cad0b42c63
       version: -1
       name: Get current time
       description: |
@@ -463,8 +463,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 1390
+          "x": 250,
+          "y": 1430
         }
       }
     note: false
@@ -476,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 19398867-1034-45cc-8e62-5aefce2c07cc
+    taskid: b02d9e73-e796-4d1d-871f-762de59071d3
     type: regular
     task:
-      id: 19398867-1034-45cc-8e62-5aefce2c07cc
+      id: b02d9e73-e796-4d1d-871f-762de59071d3
       version: -1
       name: Set tags grid field
       description: |-
@@ -526,8 +526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1550
+          "x": 1110,
+          "y": 1590
         }
       }
     note: false
@@ -539,10 +539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3d03c93b-f332-4352-83be-9d03f26d00c6
+    taskid: e6aad327-ab80-439e-83a6-5f96331f4b27
     type: condition
     task:
-      id: 3d03c93b-f332-4352-83be-9d03f26d00c6
+      id: e6aad327-ab80-439e-83a6-5f96331f4b27
       version: -1
       name: Was a tag present?
       description: Check whether the last command returned Qualys host with one or more tags.
@@ -571,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1205
+          "x": 1110,
+          "y": 1210
         }
       }
     note: false
@@ -584,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 593c4414-ea87-4320-848a-b547f5be9343
+    taskid: 2f36d8bf-1c06-45f3-84be-087c520a322d
     type: regular
     task:
-      id: 593c4414-ea87-4320-848a-b547f5be9343
+      id: 2f36d8bf-1c06-45f3-84be-087c520a322d
       version: -1
       name: Set system IDs grid field (Host id)
       description: |-
@@ -612,14 +612,104 @@ tasks:
           root: Qualys.Endpoint
           accessor: ID
       val3:
-        simple: N/A
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 1210
+          "x": 690,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c737255d-4571-477a-8887-b29ea923efc1
+    type: regular
+    task:
+      id: c737255d-4571-477a-8887-b29ea923efc1
+      version: -1
+      name: Set ASM - Enrichment Status
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Qualys
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ea5e1f1e-027e-47ab-8765-0eec317445d0
+    type: regular
+    task:
+      id: ea5e1f1e-027e-47ab-8765-0eec317445d0
+      version: -1
+      name: Set ASM - Enrichment Status
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Qualys
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 730
         }
       }
     note: false
@@ -631,13 +721,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_2_#default#": 0.36,
+      "9_17_yes": 0.47
+    },
     "paper": {
       "dimensions": {
-        "height": 1875,
-        "width": 1630,
-        "x": -90,
-        "y": 50
+        "height": 1945,
+        "width": 1560,
+        "x": -70,
+        "y": -20
       }
     }
   }

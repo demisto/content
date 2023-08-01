@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1e6e3546-a913-49f4-8390-37c6f1c846cd
+    taskid: 6395a66d-a0ac-4c07-8324-2335ae7029f7
     type: start
     task:
-      id: 1e6e3546-a913-49f4-8390-37c6f1c846cd
+      id: 6395a66d-a0ac-4c07-8324-2335ae7029f7
       version: -1
       name: ""
       iscommand: false
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -780
+          "y": -880
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6a4c4953-b741-4186-87dc-06f3c7dcd968
+    taskid: f2d28f63-f0cf-497e-8598-3e0008ad8616
     type: title
     task:
-      id: 6a4c4953-b741-4186-87dc-06f3c7dcd968
+      id: f2d28f63-f0cf-497e-8598-3e0008ad8616
       version: -1
       name: |
         Done
@@ -52,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 930
+          "x": 120,
+          "y": 1140
         }
       }
     note: false
@@ -65,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1cba9edb-42cf-4c17-8cea-a776dd711a17
+    taskid: 0f91d545-fe90-4b59-8943-5f24a675c341
     type: condition
     task:
-      id: 1cba9edb-42cf-4c17-8cea-a776dd711a17
+      id: 0f91d545-fe90-4b59-8943-5f24a675c341
       version: -1
       name: Is Tenable.io enabled and is Input value defined?
       description: Determines if the Tenable.io integration instance is configured and Input values are defined to pull enrichment data.
@@ -77,7 +77,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "27"
       "yes":
       - "12"
     separatecontext: false
@@ -120,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -620
+          "y": -740
         }
       }
     note: false
@@ -132,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 66b187a8-92db-469b-8243-641526cb006b
+    taskid: dd57b1e8-5a14-4426-8512-575b56aa5fe5
     type: regular
     task:
-      id: 66b187a8-92db-469b-8243-641526cb006b
+      id: dd57b1e8-5a14-4426-8512-575b56aa5fe5
       version: -1
       name: Lookup asset information by IP
       description: Retrieves details for the specified asset to include custom attributes.
@@ -158,7 +158,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -430
+          "y": -500
         }
       }
     note: false
@@ -170,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 437efb16-4215-44aa-89c4-87148838cb2d
+    taskid: 7ef293a4-98f1-4044-8faf-03a62f105d98
     type: condition
     task:
-      id: 437efb16-4215-44aa-89c4-87148838cb2d
+      id: 7ef293a4-98f1-4044-8faf-03a62f105d98
       version: -1
       name: Was an asset found?
       description: Check whether the last command returned Tenable.io asset information or not.
@@ -182,9 +182,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "27"
       "yes":
-      - "20"
+      - "26"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -203,7 +203,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -280
+          "y": -310
         }
       }
     note: false
@@ -215,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d039ae60-9081-472a-83d3-09526336f07c
+    taskid: 5f6aec55-359b-48db-8163-b6d54511d2f4
     type: regular
     task:
-      id: d039ae60-9081-472a-83d3-09526336f07c
+      id: 5f6aec55-359b-48db-8163-b6d54511d2f4
       version: -1
       name: Extract indicators
       description: commands.local.cmd.extract.indicators
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 195
+          "y": 425
         }
       }
     note: false
@@ -252,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 5a06357a-0edf-4690-8033-7ce9fa3105f9
+    taskid: b50ddd91-131f-4313-8587-d5c2e6fe374a
     type: condition
     task:
-      id: 5a06357a-0edf-4690-8033-7ce9fa3105f9
+      id: b50ddd91-131f-4313-8587-d5c2e6fe374a
       version: -1
       name: Was an email found?
       description: Check whether the last command extracted an email address or not.
@@ -285,7 +285,7 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 350
+          "y": 600
         }
       }
     note: false
@@ -297,10 +297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 3ce425ac-3790-4088-8100-383ed561d6e5
+    taskid: 5f874b24-9866-4276-827b-482ad9bda603
     type: regular
     task:
-      id: 3ce425ac-3790-4088-8100-383ed561d6e5
+      id: 5f874b24-9866-4276-827b-482ad9bda603
       version: -1
       name: Set service owner grid field
       description: |-
@@ -337,7 +337,7 @@ tasks:
       {
         "position": {
           "x": 1460,
-          "y": 680
+          "y": 930
         }
       }
     note: false
@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 452db193-38f4-44cf-8106-9098ac140c47
+    taskid: 6ed6af27-c120-42b6-803f-e064b69a26d3
     type: regular
     task:
-      id: 452db193-38f4-44cf-8106-9098ac140c47
+      id: 6ed6af27-c120-42b6-803f-e064b69a26d3
       version: -1
       name: Get current time
       description: |
@@ -370,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 1460,
-          "y": 520
+          "y": 770
         }
       }
     note: false
@@ -382,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: e941467f-126f-48fd-8bfd-c8eb51e9d5d2
+    taskid: 8a0828de-d7ad-4e43-812f-b232aa3a28f2
     type: title
     task:
-      id: e941467f-126f-48fd-8bfd-c8eb51e9d5d2
+      id: 8a0828de-d7ad-4e43-812f-b232aa3a28f2
       version: -1
       name: Service Owner
       type: title
@@ -401,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 70
+          "y": 280
         }
       }
     note: false
@@ -413,10 +413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 936be9fa-e6f3-419c-8d90-bba5d8ebba6f
+    taskid: 9508fdb5-a929-42aa-8c86-d3ecb42da92b
     type: title
     task:
-      id: 936be9fa-e6f3-419c-8d90-bba5d8ebba6f
+      id: 9508fdb5-a929-42aa-8c86-d3ecb42da92b
       version: -1
       name: Set Field
       type: title
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -75
+          "y": 115
         }
       }
     note: false
@@ -446,10 +446,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: ea922958-5a92-4d8a-8a08-34ff798e1aca
+    taskid: dd9fc021-ef0e-4c45-8b05-b97c7ffe6ae0
     type: title
     task:
-      id: ea922958-5a92-4d8a-8a08-34ff798e1aca
+      id: dd9fc021-ef0e-4c45-8b05-b97c7ffe6ae0
       version: -1
       name: System IDs
       type: title
@@ -465,7 +465,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 70
+          "y": 280
         }
       }
     note: false
@@ -477,10 +477,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a6af0733-ca71-40b1-89dd-eaba6fc20973
+    taskid: 77cd9de1-4064-4174-89a0-0abccac470d9
     type: regular
     task:
-      id: a6af0733-ca71-40b1-89dd-eaba6fc20973
+      id: 77cd9de1-4064-4174-89a0-0abccac470d9
       version: -1
       name: Set system IDs grid field (Asset_id)
       description: |-
@@ -523,7 +523,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 195
+          "y": 425
         }
       }
     note: false
@@ -535,10 +535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 635f0b91-39cd-44fe-8476-83430d12e96f
+    taskid: 798b0e60-7afe-46cb-8962-885a56ebe811
     type: title
     task:
-      id: 635f0b91-39cd-44fe-8476-83430d12e96f
+      id: 798b0e60-7afe-46cb-8962-885a56ebe811
       version: -1
       name: Tags
       type: title
@@ -554,7 +554,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 70
+          "y": 280
         }
       }
     note: false
@@ -566,10 +566,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 85760b5e-dfe3-4a4c-8472-779ef4f9ae5e
+    taskid: cdf162a8-b4d2-4fb8-858e-c153bef32826
     type: regular
     task:
-      id: 85760b5e-dfe3-4a4c-8472-779ef4f9ae5e
+      id: cdf162a8-b4d2-4fb8-858e-c153bef32826
       version: -1
       name: Set tags grid field
       description: |-
@@ -603,7 +603,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 520
+          "y": 730
         }
       }
     note: false
@@ -615,10 +615,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 2fd8ef98-d7b0-4986-8ee2-23129d649998
+    taskid: 93aafad2-28d9-49e6-82a4-58a3882cab31
     type: condition
     task:
-      id: 2fd8ef98-d7b0-4986-8ee2-23129d649998
+      id: 93aafad2-28d9-49e6-82a4-58a3882cab31
       version: -1
       name: Was a tag present?
       description: Check whether the last command returned Tenable.io asset with one or more tags.
@@ -648,7 +648,97 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 195
+          "y": 425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 85cbe1ca-ffde-40c0-899f-d5f6103d1c99
+    type: regular
+    task:
+      id: 85cbe1ca-ffde-40c0-899f-d5f6103d1c99
+      version: -1
+      name: Set ASM enrichment status to true
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Tenable.io
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e1bdcc91-0fbc-4503-8b56-4a957f4c678e
+    type: regular
+    task:
+      id: e1bdcc91-0fbc-4503-8b56-4a957f4c678e
+      version: -1
+      name: Set ASM enrichment status to false
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Tenable.io
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": -60
         }
       }
     note: false
@@ -661,16 +751,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_2_#default#": 0.19,
-      "13_2_#default#": 0.2,
-      "15_2_#default#": 0.2
+      "13_26_yes": 0.58,
+      "15_2_#default#": 0.2,
+      "25_2_#default#": 0.34
     },
     "paper": {
       "dimensions": {
-        "height": 1775,
-        "width": 1740,
-        "x": 100,
-        "y": -780
+        "height": 2085,
+        "width": 1720,
+        "x": 120,
+        "y": -880
       }
     }
   }
@@ -718,5 +808,3 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-contentitemexportablefields:
-  contentitemfields: {}
