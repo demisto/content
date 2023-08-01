@@ -1046,7 +1046,7 @@ tasks:
       secret:
         complex:
           accessor: "1"
-          root: Find the missing incident and answer the questions below .Answers
+          root: Find the missing incident and answer the questions below.Answers
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -1466,7 +1466,7 @@ tasks:
       secret:
         complex:
           accessor: "2"
-          root: Find the missing incident and answer the questions below .Answers
+          root: Find the missing incident and answer the questions below.Answers
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -1506,7 +1506,7 @@ tasks:
       secret:
         complex:
           accessor: "0"
-          root: Find the missing incident and answer the questions below .Answers
+          root: Find the missing incident and answer the questions below.Answers
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -1877,7 +1877,7 @@ tasks:
       secret:
         complex:
           accessor: "3"
-          root: Find the missing incident and answer the questions below .Answers
+          root: Find the missing incident and answer the questions below.Answers
           transformers:
           - operator: LastArrayElement
     separatecontext: false
