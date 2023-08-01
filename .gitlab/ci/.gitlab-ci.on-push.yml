@@ -23,7 +23,7 @@ trigger-private-build:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
   script:
-    - echo "====Trigger Private Build===="
+    - echo "====Trigger Private Build==== "
     - |
       if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t $GITHUB_TOKEN --repo demisto/content-private -b $CI_COMMIT_BRANCH) ]; then
         PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
