@@ -1,30 +1,31 @@
 id: QRadar Indicator Hunting V2
 version: -1
-fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
 name: QRadar Indicator Hunting V2
 description: 'The Playbook queries QRadar SIEM for indicators such as file hashes, IP addresses, domains, or urls. '
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: a2b99d88-69c8-4a87-8d60-74d21ca2db74
     type: start
     task:
       id: a2b99d88-69c8-4a87-8d60-74d21ca2db74
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '55'
+      - "55"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 50
+          "x": 1875,
+          "y": -120
         }
       }
     note: false
@@ -35,8 +36,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 30250b5a-c4ae-4477-8d7d-aa586c6a5c2f
     type: title
     task:
@@ -45,17 +46,17 @@ tasks:
       name: Hash Search
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '8'
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 370
+          "x": 842.5,
+          "y": 350
         }
       }
     note: false
@@ -66,8 +67,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: b4ad1b02-a07b-4f3b-8949-2389d2c0c08e
     type: title
     task:
@@ -76,17 +77,17 @@ tasks:
       name: IP Search
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2895,
-          "y": 690
+          "x": 1875,
+          "y": 360
         }
       }
     note: false
@@ -97,8 +98,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: b2482cd1-e6f4-45ab-84c4-0faf3d9e96ae
     type: title
     task:
@@ -107,17 +108,17 @@ tasks:
       name: Domain/Url Search
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3775,
-          "y": 690
+          "x": 2775,
+          "y": 350
         }
       }
     note: false
@@ -128,8 +129,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: b3700546-6a71-4c26-89dc-6ac3ffe0439a
     type: condition
     task:
@@ -139,15 +140,15 @@ tasks:
       description: Is there an IP on which to search?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '164'
-      'yes':
-      - '50'
+      - "166"
+      "yes":
+      - "50"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -157,8 +158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2895,
-          "y": 835
+          "x": 1875,
+          "y": 490
         }
       }
     note: false
@@ -169,8 +170,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: 4ca411b2-9118-4c88-80ba-fd45cf7dc4d4
     type: condition
     task:
@@ -180,17 +181,17 @@ tasks:
       description: Is there a hash on which to search?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '164'
-      'yes':
-      - '26'
-      - '27'
-      - '38'
+      - "166"
+      "yes":
+      - "26"
+      - "27"
+      - "38"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -210,8 +211,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 515
+          "x": 842.5,
+          "y": 475
         }
       }
     note: false
@@ -222,8 +223,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 8a910c41-e636-4df8-873d-55961fd9f5ff
     type: condition
     task:
@@ -233,15 +234,15 @@ tasks:
       description: Is there a domain or URL on which to search?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '164'
-      'yes':
-      - '11'
+      - "166"
+      "yes":
+      - "11"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -251,8 +252,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3775,
-          "y": 835
+          "x": 2775,
+          "y": 475
         }
       }
     note: false
@@ -263,8 +264,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '11':
-    id: '11'
+  "11":
+    id: "11"
     taskid: 2afade2a-c653-4db2-8fc2-7dc20abba4f6
     type: condition
     task:
@@ -274,15 +275,15 @@ tasks:
       description: Is there a custom domain or url field?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '56'
-      'yes':
-      - '57'
+      - "56"
+      "yes":
+      - "57"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -292,8 +293,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3887.5,
-          "y": 1010
+          "x": 2775,
+          "y": 660
         }
       }
     note: false
@@ -304,8 +305,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: 9dbc1709-6693-4705-8a81-90432e69bbc5
     type: condition
     task:
@@ -315,15 +316,15 @@ tasks:
       description: Is there a custom MD5 field?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '64'
-      'yes':
-      - '65'
+      - "64"
+      "yes":
+      - "65"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -333,8 +334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 367.5,
-          "y": 1010
+          "x": -1385,
+          "y": 950
         }
       }
     note: false
@@ -345,8 +346,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: 9719193a-aa81-4017-8fe3-9b9c54f7c510
     type: condition
     task:
@@ -356,15 +357,15 @@ tasks:
       description: Is there an MD5 on which to search?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '164'
-      'yes':
-      - '21'
+      - "166"
+      "yes":
+      - "21"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -374,8 +375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 255,
-          "y": 835
+          "x": -1385,
+          "y": 775
         }
       }
     note: false
@@ -386,8 +387,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
+  "26":
+    id: "26"
     taskid: 37b3d830-4401-42fa-8c4a-ec9952bf39fd
     type: title
     task:
@@ -396,17 +397,17 @@ tasks:
       name: MD5 Search
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 255,
-          "y": 690
+          "x": -1385,
+          "y": 650
         }
       }
     note: false
@@ -417,8 +418,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 2f6a1090-e0b8-4485-8185-83165e489c33
     type: title
     task:
@@ -427,17 +428,17 @@ tasks:
       name: SHA1 Search
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '29'
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 690
+          "x": -505,
+          "y": 650
         }
       }
     note: false
@@ -448,8 +449,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: eab04f66-1e17-4945-8f72-a5cdda1bc308
     type: condition
     task:
@@ -459,15 +460,15 @@ tasks:
       description: Is there a SHA1 hash on which to search?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '164'
-      'yes':
-      - '31'
+      - "166"
+      "yes":
+      - "31"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -477,8 +478,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 835
+          "x": -515,
+          "y": 775
         }
       }
     note: false
@@ -489,8 +490,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '31':
-    id: '31'
+  "31":
+    id: "31"
     taskid: d6eb18bc-0884-47a5-829b-d1ae0060d3bc
     type: condition
     task:
@@ -500,15 +501,15 @@ tasks:
       description: Was there a custom SHA1 field?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '62'
-      'yes':
-      - '63'
+      - "62"
+      "yes":
+      - "63"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -519,8 +520,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1247.5,
-          "y": 1010
+          "x": -505,
+          "y": 940
         }
       }
     note: false
@@ -531,8 +532,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '38':
-    id: '38'
+  "38":
+    id: "38"
     taskid: 7a308843-7a82-4f8a-8273-bc8c81ac4d39
     type: title
     task:
@@ -541,17 +542,17 @@ tasks:
       name: SHA256 Search
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '39'
+      - "39"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2015,
-          "y": 690
+          "x": 372.5,
+          "y": 650
         }
       }
     note: false
@@ -562,8 +563,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '39':
-    id: '39'
+  "39":
+    id: "39"
     taskid: d4834696-2334-462e-8fbb-d978b9079097
     type: condition
     task:
@@ -573,15 +574,15 @@ tasks:
       description: Is there a SHA256 hash on which to search?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '164'
-      'yes':
-      - '41'
+      - "166"
+      "yes":
+      - "41"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -591,8 +592,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2015,
-          "y": 835
+          "x": 372.5,
+          "y": 775
         }
       }
     note: false
@@ -603,8 +604,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '41':
-    id: '41'
+  "41":
+    id: "41"
     taskid: 9202b39d-89cd-4fde-83a5-4912e2a7913b
     type: condition
     task:
@@ -614,15 +615,15 @@ tasks:
       description: Is there a custom SHA256 field?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '60'
-      'yes':
-      - '61'
+      - "60"
+      "yes":
+      - "61"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -633,8 +634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2127.5,
-          "y": 1010
+          "x": 372.5,
+          "y": 950
         }
       }
     note: false
@@ -645,8 +646,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '50':
-    id: '50'
+  "50":
+    id: "50"
     taskid: e9557ca0-59b9-4011-85df-20107a011f2c
     type: condition
     task:
@@ -656,15 +657,15 @@ tasks:
       description: Is there a custom IP field?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '59'
-      'yes':
-      - '58'
+      - "59"
+      "yes":
+      - "58"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -675,8 +676,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3007.5,
-          "y": 1010
+          "x": 1575,
+          "y": 660
         }
       }
     note: false
@@ -687,8 +688,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '55':
-    id: '55'
+  "55":
+    id: "55"
     taskid: a9fa4f2d-8daf-456c-8d88-7c1c7eb830b4
     type: condition
     task:
@@ -698,14 +699,10 @@ tasks:
       description: Is Qradar enabled?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '164'
-      'yes':
-      - '2'
-      - '5'
-      - '6'
+      "yes":
+      - "176"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -736,8 +733,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 195
+          "x": 1875,
+          "y": 15
         }
       }
     note: false
@@ -748,8 +745,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '56':
-    id: '56'
+  "56":
+    id: "56"
     taskid: caed8241-b8b1-4f34-8f29-2177fdb3e10f
     type: title
     task:
@@ -758,17 +755,17 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '102'
+      - "102"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3570,
-          "y": 1185
+          "x": 2570,
+          "y": 845
         }
       }
     note: false
@@ -779,8 +776,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '57':
-    id: '57'
+  "57":
+    id: "57"
     taskid: 148ec15e-e700-43d9-80a1-6867e0e697c4
     type: title
     task:
@@ -789,7 +786,7 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
@@ -798,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4000,
-          "y": 1345
+          "x": 3000,
+          "y": 840
         }
       }
     note: false
@@ -810,8 +807,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '58':
-    id: '58'
+  "58":
+    id: "58"
     taskid: b376ca7c-0ef3-4ce6-8188-27c49b3d14f3
     type: title
     task:
@@ -820,7 +817,7 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
@@ -829,8 +826,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3120,
-          "y": 1345
+          "x": 2100,
+          "y": 840
         }
       }
     note: false
@@ -841,8 +838,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '59':
-    id: '59'
+  "59":
+    id: "59"
     taskid: 352bb2ce-fe56-4415-805b-d15436205a16
     type: title
     task:
@@ -851,17 +848,17 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '101'
+      - "101"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2690,
-          "y": 1185
+          "x": 1670,
+          "y": 840
         }
       }
     note: false
@@ -872,8 +869,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '60':
-    id: '60'
+  "60":
+    id: "60"
     taskid: 7c514669-525a-41e6-89b3-4b03683cd2cd
     type: title
     task:
@@ -882,17 +879,17 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '100'
+      - "100"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1185
+          "x": 170,
+          "y": 1125
         }
       }
     note: false
@@ -903,8 +900,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '61':
-    id: '61'
+  "61":
+    id: "61"
     taskid: 3fb63155-a852-454d-8c8a-7e77db25eb7f
     type: title
     task:
@@ -913,7 +910,7 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
@@ -922,8 +919,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 1345
+          "x": 600,
+          "y": 1125
         }
       }
     note: false
@@ -934,8 +931,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '62':
-    id: '62'
+  "62":
+    id: "62"
     taskid: 3aae3e82-5aad-4f67-83df-46ed41175b6d
     type: title
     task:
@@ -944,17 +941,17 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '99'
+      - "99"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1185
+          "x": -710,
+          "y": 1125
         }
       }
     note: false
@@ -965,8 +962,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '63':
-    id: '63'
+  "63":
+    id: "63"
     taskid: 289810bf-110b-4c31-8ebc-907f334ad50a
     type: title
     task:
@@ -975,7 +972,7 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
@@ -984,8 +981,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 1345
+          "x": -280,
+          "y": 1125
         }
       }
     note: false
@@ -996,8 +993,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '64':
-    id: '64'
+  "64":
+    id: "64"
     taskid: ce8af6fc-bdde-4ba4-8df1-81430d419c3b
     type: title
     task:
@@ -1006,17 +1003,17 @@ tasks:
       name: QRadar query without custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '98'
+      - "98"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1185
+          "x": -1590,
+          "y": 1125
         }
       }
     note: false
@@ -1027,8 +1024,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '65':
-    id: '65'
+  "65":
+    id: "65"
     taskid: dc5b8a0d-79f6-4865-8e9c-3a2638bbd6c7
     type: title
     task:
@@ -1037,14 +1034,17 @@ tasks:
       name: QRadar query with custom fields
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
+    nexttasks:
+      '#none#':
+      - "181"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1185
+          "x": -1160,
+          "y": 1125
         }
       }
     note: false
@@ -1055,8 +1055,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '98':
-    id: '98'
+  "98":
+    id: "98"
     taskid: dff6c803-c9df-4549-89ce-8713862e29fe
     type: regular
     task:
@@ -1067,13 +1067,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
       - "173"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: FileMD5
       value:
@@ -1090,8 +1090,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1330
+          "x": -1590,
+          "y": 1290
         }
       }
     note: false
@@ -1102,8 +1102,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '99':
-    id: '99'
+  "99":
+    id: "99"
     taskid: e5f785bb-75ea-4ff2-87e2-7ed44fdcf134
     type: regular
     task:
@@ -1114,13 +1114,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
       - "171"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: FileSHA1
       value:
@@ -1137,8 +1137,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1330
+          "x": -710,
+          "y": 1290
         }
       }
     note: false
@@ -1149,8 +1149,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '100':
-    id: '100'
+  "100":
+    id: "100"
     taskid: 6cc731ba-436e-4959-887e-973dffd05aa4
     type: regular
     task:
@@ -1161,13 +1161,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
       - "168"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: FileSHA256
       value:
@@ -1184,8 +1184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1330
+          "x": 170,
+          "y": 1270
         }
       }
     note: false
@@ -1196,8 +1196,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '101':
-    id: '101'
+  "101":
+    id: "101"
     taskid: 9699d2e9-2d1f-48ba-85fc-144e59bcf3a1
     type: regular
     task:
@@ -1208,13 +1208,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
       - "167"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: IPAddress
       value:
@@ -1231,8 +1231,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2690,
-          "y": 1330
+          "x": 1670,
+          "y": 1000
         }
       }
     note: false
@@ -1243,8 +1243,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '102':
-    id: '102'
+  "102":
+    id: "102"
     taskid: 2e9bf4dc-56ce-4125-86b0-66f99fdf4651
     type: regular
     task:
@@ -1255,13 +1255,13 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
       - "174"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: DomainURL
       value:
@@ -1278,8 +1278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3570,
-          "y": 1330
+          "x": 2570,
+          "y": 990
         }
       }
     note: false
@@ -1290,27 +1290,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '120':
-    id: '120'
-    taskid: 18826ca1-7cd0-41cd-8274-cf442c0acc18
+  "120":
+    id: "120"
+    taskid: f1aaa2dc-6ab1-408e-8851-d73171be6244
     type: title
     task:
-      id: 18826ca1-7cd0-41cd-8274-cf442c0acc18
+      id: f1aaa2dc-6ab1-408e-8851-d73171be6244
       version: -1
       name: Sort internal and external IP addresses
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '124'
+      - "124"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1912.5,
-          "y": 2700
+          "x": 1875,
+          "y": 2640
         }
       }
     note: false
@@ -1321,8 +1321,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '123':
-    id: '123'
+  "123":
+    id: "123"
     taskid: 777b2d48-c9f0-433d-8de3-7b015ba4c472
     type: regular
     task:
@@ -1333,13 +1333,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '165'
+      - "165"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: QRadar.DetectedExternalIPs
       value:
@@ -1353,7 +1353,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'no'
+                  simple: "no"
           accessor: Address
           transformers:
           - operator: uniq
@@ -1361,8 +1361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2025,
-          "y": 3370
+          "x": 2080,
+          "y": 3280
         }
       }
     note: false
@@ -1373,8 +1373,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '124':
-    id: '124'
+  "124":
+    id: "124"
     taskid: 62deb054-e2c8-4fc9-88c5-ecc24d8fd88f
     type: condition
     task:
@@ -1384,15 +1384,15 @@ tasks:
       description: Are there detected IP addresses?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '165'
-      'yes':
-      - '142'
+      - "165"
+      "yes":
+      - "142"
     separatecontext: false
     conditions:
-    - label: 'yes'
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1402,8 +1402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1912.5,
-          "y": 2845
+          "x": 1875,
+          "y": 2775
         }
       }
     note: false
@@ -1414,8 +1414,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '142':
-    id: '142'
+  "142":
+    id: "142"
     taskid: 1b6be11a-d587-4ef8-8784-8541d2761d85
     type: regular
     task:
@@ -1426,10 +1426,10 @@ tasks:
       scriptName: IsIPInRanges
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '143'
+      - "143"
     scriptarguments:
       ip:
         simple: ${QRadar.DetectedIPs}
@@ -1439,8 +1439,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2025,
-          "y": 3020
+          "x": 2080,
+          "y": 2950
         }
       }
     note: false
@@ -1451,8 +1451,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '143':
-    id: '143'
+  "143":
+    id: "143"
     taskid: 61ca426a-bbab-45f5-8594-a0cadbd399b7
     type: regular
     task:
@@ -1463,13 +1463,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '123'
+      - "123"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: QRadar.DetectedInternalIPs
       value:
@@ -1483,7 +1483,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: 'yes'
+                  simple: "yes"
           accessor: Address
           transformers:
           - operator: uniq
@@ -1491,8 +1491,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2025,
-          "y": 3195
+          "x": 2080,
+          "y": 3115
         }
       }
     note: false
@@ -1503,77 +1503,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '160':
-    id: '160'
-    taskid: 4fcf0a94-21e8-457f-8353-fb411daaa4f9
+  "161":
+    id: "161"
+    taskid: f7b5c63c-7cbb-4907-8317-2dd39f6ed397
     type: regular
     task:
-      id: 4fcf0a94-21e8-457f-8353-fb411daaa4f9
-      version: -1
-      name: Set detected source and destination IP addresses
-      description: Sets a value into the context with the given context key
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '161'
-    scriptarguments:
-      append:
-        simple: 'true'
-      key:
-        simple: QRadar.DetectedIPs
-      value:
-        complex:
-          root: ${
-          accessor: =[]}
-          transformers:
-          - operator: GetValuesOfMultipleFields
-            args:
-              key:
-                value:
-                  simple: QRadar.Search.Result.events
-                iscontext: true
-              list:
-                value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1912.5,
-          "y": 2000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '161':
-    id: '161'
-    taskid: 99ac1978-a22e-435b-8618-5665028eb567
-    type: regular
-    task:
-      id: 99ac1978-a22e-435b-8618-5665028eb567
+      id: f7b5c63c-7cbb-4907-8317-2dd39f6ed397
       version: -1
       name: Set detected usernames
       description: Sets a value into the context with the given context key
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '162'
+      - "163"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: QRadar.DetectedUsers
       value:
@@ -1585,7 +1533,7 @@ tasks:
             args:
               key:
                 value:
-                  simple: QRadar.Search.Result.events
+                  simple: QRadar.SearchEvents.Events
                 iscontext: true
               list:
                 value:
@@ -1595,8 +1543,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1912.5,
-          "y": 2175
+          "x": 2305,
+          "y": 2290
         }
       }
     note: false
@@ -1607,27 +1555,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '162':
-    id: '162'
-    taskid: d784e176-a435-41da-8f4e-f942c98113da
+  "162":
+    id: "162"
+    taskid: 1a600002-c821-46b1-82ac-d8b5ece75e26
     type: regular
     task:
-      id: d784e176-a435-41da-8f4e-f942c98113da
+      id: 1a600002-c821-46b1-82ac-d8b5ece75e26
       version: -1
       name: Get hostnames from assets
-      description: List all assets found in the model
-      script: '|||qradar-get-assets'
+      description: Retrieves assets list.
+      script: '|||qradar-assets-list'
       type: regular
       iscommand: true
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '163'
+      - "161"
     scriptarguments:
       filter:
         complex:
-          root: ${QRadar
-          accessor: DetectedIPs}
+          root: QRadar
+          accessor: DetectedIPs
           transformers:
           - operator: concat
             args:
@@ -1642,13 +1590,13 @@ tasks:
               separator:
                 value:
                   simple: ' OR '
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
-          "x": 1912.5,
-          "y": 2350
+          "x": 2305,
+          "y": 2130
         }
       }
     note: false
@@ -1659,92 +1607,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '163':
-    id: '163'
-    taskid: 54d01140-65d2-4f08-84bd-19a9971a6a9d
+  "163":
+    id: "163"
+    taskid: 7b5105b2-a7fe-4909-8226-8afb3bbcdee4
     type: regular
     task:
-      id: 54d01140-65d2-4f08-84bd-19a9971a6a9d
+      id: 7b5105b2-a7fe-4909-8226-8afb3bbcdee4
       version: -1
       name: Set detected hostnames from assets
       description: Sets a value into the context with the given context key
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '120'
+      - "120"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: QRadar.DetectedInternalHosts
       value:
         complex:
-          root: ${QRadar
-          accessor: Asset.Name.Value}
+          root: QRadar.Asset.Name
+          accessor: Value
           transformers:
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1912.5,
-          "y": 2525
+          "x": 2305,
+          "y": 2460
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerrortype: ""
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '164':
-    id: '164'
-    taskid: 9eb57759-542b-4581-804b-c754380a32c4
-    type: condition
-    task:
-      id: 9eb57759-542b-4581-804b-c754380a32c4
-      version: -1
-      name: Have results been detected?
-      description: Is domain or url detected by QRadar?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '165'
-      'yes':
-      - '166'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: QRadar.Search.Result
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1800,
-          "y": 1680
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '165':
-    id: '165'
+  "165":
+    id: "165"
     taskid: b35aeb4f-d9f1-41f6-850a-a4b482a2bb8c
     type: title
     task:
@@ -1753,14 +1660,14 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1800,
-          "y": 3545
+          "x": 1875,
+          "y": 3455
         }
       }
     note: false
@@ -1771,8 +1678,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '166':
-    id: '166'
+  "166":
+    id: "166"
     taskid: 5590f9d8-8ff3-4775-8bd0-16d911adb755
     type: title
     task:
@@ -1781,17 +1688,17 @@ tasks:
       name: Set detecetd Values
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '160'
+      - "178"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1912.5,
-          "y": 1855
+          "x": 1875,
+          "y": 1640
         }
       }
     note: false
@@ -1818,7 +1725,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -1893,8 +1800,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2690,
-          "y": 1505
+          "x": 1670,
+          "y": 1175
         }
       }
     note: false
@@ -1919,7 +1826,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -1994,8 +1901,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1505
+          "x": 170,
+          "y": 1445
         }
       }
     note: false
@@ -2020,7 +1927,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2110,8 +2017,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 1505
+          "x": 600,
+          "y": 1445
         }
       }
     note: false
@@ -2136,7 +2043,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2226,8 +2133,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 1505
+          "x": -280,
+          "y": 1465
         }
       }
     note: false
@@ -2252,7 +2159,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2327,8 +2234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
-          "y": 1505
+          "x": -710,
+          "y": 1465
         }
       }
     note: false
@@ -2353,7 +2260,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2443,8 +2350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3120,
-          "y": 1505
+          "x": 2100,
+          "y": 1175
         }
       }
     note: false
@@ -2461,7 +2368,7 @@ tasks:
     task:
       id: e4a747c0-ca2e-4a51-859d-e33a002a979b
       version: -1
-      name: Arad3
+      name: Qradar Full Search on MD5
       description: Polling command to search for events of a specific offense.
       script: '|||qradar-search-retrieve-events'
       type: regular
@@ -2469,7 +2376,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2544,8 +2451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1505
+          "x": -1590,
+          "y": 1465
         }
       }
     note: false
@@ -2570,7 +2477,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2647,8 +2554,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3570,
-          "y": 1505
+          "x": 2570,
+          "y": 1165
         }
       }
     note: false
@@ -2673,7 +2580,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "164"
+      - "166"
     scriptarguments:
       interval_in_seconds:
         simple: "1"
@@ -2727,20 +2634,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.InvestigationIPFields
-                iscontext: true
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: ','
-              suffix: {}
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: inputs.InvestigationUserFields
+                  simple: inputs.QradarURLDomainField
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -2767,8 +2661,254 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4000,
-          "y": 1505
+          "x": 3000,
+          "y": 1175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 82ef281a-644a-4657-8453-50ca8ce25bdd
+    type: title
+    task:
+      id: 82ef281a-644a-4657-8453-50ca8ce25bdd
+      version: -1
+      name: Indicator Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1875,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: 116782ab-603b-493c-8079-e003e251ab6c
+    type: condition
+    task:
+      id: 116782ab-603b-493c-8079-e003e251ab6c
+      version: -1
+      name: Has query results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "120"
+      "yes":
+      - "182"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar.SearchEvents
+                accessor: Events
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1875,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    id: "181"
+    taskid: b4328ddc-50db-4488-8444-48fcac80a903
+    type: regular
+    task:
+      id: b4328ddc-50db-4488-8444-48fcac80a903
+      version: -1
+      name: QRadar Full Search on MD5
+      description: Polling command to search for events of a specific offense.
+      script: '|||qradar-search-retrieve-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "166"
+    scriptarguments:
+      interval_in_seconds:
+        simple: "1"
+      polling:
+        simple: "true"
+      query_expression:
+        complex:
+          root: inputs.QradarMD5Field
+          transformers:
+          - operator: ProductJoin
+            args:
+              join:
+                value:
+                  simple: "="
+              list2:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ''' OR "'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: "="
+              replaceWith:
+                value:
+                  simple: '" = '''
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ' from events where "'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'DATEFORMAT(devicetime,''dd-MM-yyyy hh:mm''),LOGSOURCENAME(logsourceid),CATEGORYNAME(category),QIDNAME(qid) '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ''' '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'select '
+              suffix:
+                value:
+                  simple: inputs.TimeFrame
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 1465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "182":
+    id: "182"
+    taskid: 5414f421-9773-4d5b-83da-d723d429bfdb
+    type: regular
+    task:
+      id: 5414f421-9773-4d5b-83da-d723d429bfdb
+      version: -1
+      name: Set detected source and destination IP addresses
+      description: Sets a value into the context with the given context key
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "162"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: QRadar.DetectedIPs
+      value:
+        complex:
+          root: ${
+          accessor: =[]}
+          transformers:
+          - operator: GetValuesOfMultipleFields
+            args:
+              key:
+                value:
+                  simple: QRadar.SearchEvents.Events
+                iscontext: true
+              list:
+                value:
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2305,
+          "y": 1950
         }
       }
     note: false
@@ -2781,13 +2921,22 @@ tasks:
 system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "11_56_#default#": 0.61,
+      "124_165_#default#": 0.65,
+      "22_166_#default#": 0.1,
+      "29_166_#default#": 0.12,
+      "39_166_#default#": 0.19,
+      "55_176_yes": 0.44,
+      "8_166_#default#": 0.1,
+      "9_166_#default#": 0.25
+    },
     "paper": {
       "dimensions": {
-        "height": 3560,
-        "width": 4330,
-        "x": 50,
-        "y": 50
+        "height": 3640,
+        "width": 4970,
+        "x": -1590,
+        "y": -120
       }
     }
   }
@@ -2893,5 +3042,4 @@ tests:
 - test_Qradar_v2
 - QRadar_v3-test
 - QRadar Indicator Hunting Test
-contentitemexportablefields:
-  contentitemfields: {}
+fromversion: 5.0.0
