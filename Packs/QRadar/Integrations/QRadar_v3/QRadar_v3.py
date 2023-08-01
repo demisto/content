@@ -2810,7 +2810,7 @@ def qradar_reference_set_delete_command(client: Client, args: dict) -> CommandRe
 
 
 @polling_function(name='qradar-reference-set-value-upsert', requires_polling_arg=False)
-def qradar_reference_set_value_upsert_command(client: Client, params: dict, args: dict) -> PollResult:
+def qradar_reference_set_value_upsert_command(args: dict, client: Client, params: dict) -> PollResult:
     """
     Update or insert new value to a reference set from QRadar service.
     possible arguments:
@@ -2864,9 +2864,13 @@ def qradar_reference_set_value_upsert_command(client: Client, params: dict, args
             raw_response=response
         )
         return PollResult(command_results, continue_to_poll=False)
-    return PollResult(response=CommandResults(readable_output=f"Task {args['task_id']} is still running."),
-                      continue_to_poll=True,
-                      args_for_next_run=args)
+    return PollResult(
+        partial_result=CommandResults(
+            readable_output=f'Reference set {ref_name} is still being updated in task {args["task_id"]}'),
+        continue_to_poll=True,
+        args_for_next_run=args,
+        response=None
+    )
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
@@ -2949,7 +2953,7 @@ def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
 
 
 @polling_function(name='qradar-indicators-upload', requires_polling_arg=False)
-def qradar_indicators_upload_command(client: Client, params: dict, args: dict) -> PollResult:
+def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -> PollResult:
     """
     Uploads list of indicators from Demisto to a reference set in QRadar service.
     possible arguments:
@@ -3026,8 +3030,12 @@ def qradar_indicators_upload_command(client: Client, params: dict, args: dict) -
             outputs=outputs,
             raw_response=response
         ))
-    return PollResult(CommandResults(readable_output=f'Indicators upload for reference set {ref_name} is in progress'),
-                      continue_to_poll=True, args_for_next_run=args)
+    return PollResult(
+        partial_result=CommandResults(
+            readable_output=f'Reference set {ref_name} is still being updated in task {args["task_id"]}'),
+        continue_to_poll=True,
+        args_for_next_run=args,
+        response=None)
 
 
 def flatten_nested_geolocation_values(geolocation_dict: dict, dict_key: str, nested_value_keys: List[str]) -> dict:
@@ -4249,7 +4257,7 @@ def main() -> None:  # pragma: no cover
             'qradar-create-reference-set-value',
             'qradar-update-reference-set-value',
         ]:
-            return_results(qradar_reference_set_value_upsert_command(client, params, args))
+            return_results(qradar_reference_set_value_upsert_command(args, client, params))
 
         elif command in [
             'qradar-reference-set-value-delete',
@@ -4265,7 +4273,7 @@ def main() -> None:  # pragma: no cover
             return_results(qradar_domains_list_command(client, args))
 
         elif command in ['qradar-indicators-upload', 'qradar-upload-indicators']:
-            return_results(qradar_indicators_upload_command(client, params, args))
+            return_results(qradar_indicators_upload_command(args, client, params))
 
         elif command == 'qradar-geolocations-for-ip':
             return_results(qradar_geolocations_for_ip_command(client, args))

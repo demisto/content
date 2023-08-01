@@ -815,6 +815,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_reference_set_create_command, 'reference_set_create'),
                              (qradar_reference_set_delete_command, 'reference_set_delete'),
                              (qradar_reference_set_value_delete_command, 'reference_set_value_delete'),
+                             (qradar_reference_set_value_upsert_command, 'reference_set_bulk_load'),
                              (qradar_domains_list_command, 'domains_list'),
                              (qradar_geolocations_for_ip_command, 'geolocations_for_ip'),
                              (qradar_log_sources_list_command, 'log_sources_list'),
@@ -835,6 +836,7 @@ def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults]
     Then:
      - Ensure that the expected CommandResults object is returned by the command function.
     """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"})
     args = command_test_data[command_name].get('args', {})
     response = command_test_data[command_name]['response']
     expected = command_test_data[command_name]['expected']
@@ -845,7 +847,12 @@ def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults]
         raw_response=response
     )
     mocker.patch.object(client, command_name, return_value=response)
-    results = command_func(client, {}, args) if command_func == qradar_search_create_command else command_func(client, args)
+    if command_func == qradar_search_create_command:
+        results = command_func(client, {}, args)
+    elif command_func == qradar_reference_set_value_upsert_command:
+        results = command_func(args, client, {"api_version": "14"})
+    else:
+        results = command_func(client, args)
 
     assert results.outputs_prefix == expected_command_results.outputs_prefix
     assert results.outputs_key_field == expected_command_results.outputs_key_field
@@ -1507,7 +1514,32 @@ def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter
     assert error_message == expected
 
 
-@pytest.mark.parametrize("api_version", ("14.0", "15.0", "16.2", "17.0", "17.8"))
-def test_reference_set_upsert_commands(api_version):
-    qradar_reference_set_value_upsert_command(client, {"api_version": api_version}, {
-                                              "ref_name": "test_ref", "values": "test1,test2,test3"})
+@pytest.mark.parametrize("api_version", ("16.2", "17.0"))
+@pytest.mark.parametrize("status", ("COMPLETED", "IN_PROGRESS"))
+def test_reference_set_upsert_commands_new_api(mocker, api_version, status):
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"})
+    mocker.patch.object(client, "reference_set_entries", return_value={"id": 1234})
+    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": status})
+    response = command_test_data["reference_set_bulk_load"]['response']
+    mocker.patch.object(client, "reference_sets_list", return_value=response)
+
+    results = qradar_reference_set_value_upsert_command({
+        "ref_name": "test_ref", "value": "test1,test2,test3"}, client, {"api_version": api_version})
+    if status == "COMPLETED":
+
+        expected = command_test_data["reference_set_bulk_load"]['expected']
+        expected_command_results = CommandResults(
+            outputs_prefix=expected.get('outputs_prefix'),
+            outputs_key_field=expected.get('outputs_key_field'),
+            outputs=expected.get('outputs'),
+            raw_response=response
+        )
+
+        assert results.outputs_prefix == expected_command_results.outputs_prefix
+        assert results.outputs_key_field == expected_command_results.outputs_key_field
+        assert results.outputs == expected_command_results.outputs
+        assert results.raw_response == expected_command_results.raw_response
+
+    else:
+        assert results.readable_output == 'Reference set test_ref is still being updated in task 1234'
+        assert results.scheduled_command._args.get('task_id') == 1234
