@@ -1,3 +1,4 @@
+
 import contextlib
 from functools import lru_cache
 import base64
@@ -16,7 +17,7 @@ import demisto_client
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.commands.common import tools
 from demisto_sdk.commands.content_graph.common import PACK_METADATA_FILENAME
-from google.cloud.storage import Bucket
+from google.cloud.storage import Bucket  # noqa
 from packaging.version import Version
 from urllib3.exceptions import HTTPWarning, HTTPError
 
@@ -178,7 +179,12 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         create_dependencies_data_structure(response_data, next_call_dependants_ids, dependencies_data, checked_packs)
 
 
-def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> dict | None:
+def get_pack_dependencies(client: demisto_client,
+                          pack_id: str,
+                          lock: Lock,
+                          attempts_count: int = 5,
+                          sleep_interval: int = 60,
+                          ) -> dict | None:
     """
     Get pack's required dependencies.
 
@@ -186,6 +192,8 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
         client (demisto_client): The configured client to use.
         pack_id (str): ID of the pack to get dependencies for.
         lock (Lock): A lock object.
+        attempts_count (int): The number of attempts to install the packs.
+        sleep_interval (int): The sleep interval, in seconds, between request retry attempts.
 
     Returns:
         dict | None: API response data for the /search/dependencies endpoint. None if the request failed.
@@ -198,30 +206,42 @@ def get_pack_dependencies(client: demisto_client, pack_id: str, lock: Lock) -> d
     logging.debug(f"Fetching dependencies for pack '{pack_id}'.\n"
                   f"Sending POST request to {api_endpoint} with body: {json.dumps(body)}")
 
-    try:
-        response_data, _, _ = demisto_client.generic_request_func(
-            client,
-            path=api_endpoint,
-            method='POST',
-            body=body,
-            accept='application/json',
-            _request_timeout=None,
-            response_type='object',
-        )
+    for attempt in range(attempts_count - 1, -1, -1):
+        logging.info(f"Fetching dependencies information for '{pack_id}' using Marketplace API "
+                     f"(Attempt {attempts_count - attempt}/{attempts_count})")
+        try:
+            response_data = demisto_client.generic_request_func(
+                client,
+                path=api_endpoint,
+                method='POST',
+                body=body,
+                accept='application/json',
+                _request_timeout=None,
+                response_type='object',
+            )[0]
 
-        logging.debug(f"Succeeded to fetch dependencies for pack '{pack_id}'.\nResponse: '{json.dumps(response_data)}'")
-        return response_data
+            logging.debug(f"Succeeded to fetch dependencies for pack '{pack_id}'.\nResponse: '{json.dumps(response_data)}'")
+            return response_data
 
-    except ApiException as ex:
-        with lock:
-            SUCCESS_FLAG = False
-        logging.exception(f"API request to fetch dependencies of pack '{pack_id}' has failed.\n"
-                          f"Response code '{ex.status}'\nResponse: '{ex.body}'\nResponse Headers: '{ex.headers}'")
+        except Exception as ex:
+            if isinstance(ex, ApiException):
+                logging.warning(f"API request to fetch dependencies of pack '{pack_id}' has failed.\n"
+                                f"Response code '{ex.status}'\nResponse: '{ex.body}'\nResponse Headers: '{ex.headers}'")
 
-    except Exception as ex:
-        with lock:
-            SUCCESS_FLAG = False
-        logging.exception(f"API call to fetch dependencies of '{pack_id}' has failed.\nError: {ex}.")
+            elif isinstance(ex, (HTTPError, HTTPWarning)):
+                logging.warning(f"Failed to perform HTTP request : {ex}")
+
+            else:
+                logging.warning(f"API call to fetch dependencies of '{pack_id}' has failed.\nError: {ex}.")
+
+            if attempt:  # There are remaining retry attempts
+                logging.debug(f"Sleeping for {sleep_interval} seconds and retrying...")
+                time.sleep(sleep_interval)
+
+            else:  # No retry attempts remaining
+                logging.error(f"All {attempts_count} attempts have failed.")
+                with lock:
+                    SUCCESS_FLAG = False
 
     return None
 
@@ -406,7 +426,7 @@ def install_packs(client: demisto_client,
                     raise Exception("Failed to perform http request to the server") from http_ex
 
             # There are more attempts available, sleep and retry.
-            logging.debug(f"Failed to install packs: {packs_to_install}, sleeping for {sleep_interval} seconds.")
+            logging.debug(f"Failed to install packs: {packs_to_install}. Sleeping for {sleep_interval} seconds.")
             time.sleep(sleep_interval)
     except Exception as e:
         logging.exception(f'The request to install packs: {packs_to_install} has failed. Additional info: {str(e)}')
@@ -504,33 +524,30 @@ def search_pack_and_its_dependencies(client: demisto_client,
             else:
                 current_packs_to_install.append(dependency)
 
-    lock.acquire()
+    with lock:
+        if not multithreading:
+            if batch_packs_install_request_body is None:
+                batch_packs_install_request_body = []
+            if pack_and_its_dependencies := {
+                p['id']: p
+                for p in current_packs_to_install
+                if p['id'] not in collected_dependencies
+            }:
+                collected_dependencies += pack_and_its_dependencies
+                pack_and_its_dependencies_as_list = [
+                    get_pack_installation_request_data(pack_id=pack['id'], pack_version=pack['extras']['pack']['currentVersion'])
+                    for pack in list(pack_and_its_dependencies.values())
+                ]
+                packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
+                batch_packs_install_request_body.append(pack_and_its_dependencies_as_list)
 
-    if not multithreading:
-        if batch_packs_install_request_body is None:
-            batch_packs_install_request_body = []
-        if pack_and_its_dependencies := {
-            p['id']: p
-            for p in current_packs_to_install
-            if p['id'] not in collected_dependencies
-        }:
-            collected_dependencies += pack_and_its_dependencies
-            pack_and_its_dependencies_as_list = [
-                get_pack_installation_request_data(pack_id=pack['id'], pack_version=pack['extras']['pack']['currentVersion'])
-                for pack in list(pack_and_its_dependencies.values())
-            ]
-            packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
-            batch_packs_install_request_body.append(pack_and_its_dependencies_as_list)
-
-    else:  # multithreading
-        for pack in current_packs_to_install:
-            if pack['id'] not in packs_to_install:
-                packs_to_install.append(pack['id'])
-                installation_request_body.append(
-                    get_pack_installation_request_data(pack_id=pack['id'],
-                                                       pack_version=pack['extras']['pack']['currentVersion']))
-
-    lock.release()
+        else:  # multithreading
+            for pack in current_packs_to_install:
+                if pack['id'] not in packs_to_install:
+                    packs_to_install.append(pack['id'])
+                    installation_request_body.append(
+                        get_pack_installation_request_data(pack_id=pack['id'],
+                                                           pack_version=pack['extras']['pack']['currentVersion']))
 
 
 def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> str:
@@ -731,7 +748,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     """
     host = hostname or client.api_client.configuration.host
 
-    logging.info(f'Starting to search and install packs in server: {host}')
+    logging.info(f'Starting search for packs to install on: {host}')
 
     packs_to_install: list = []  # Packs we want to install, to avoid duplications
     installation_request_body: list = []  # Packs to install, in the request format
