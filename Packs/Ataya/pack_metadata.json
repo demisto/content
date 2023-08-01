@@ -1,10 +1,10 @@
 {
     "name": "Ataya",
-    "description": "Ataya",
+    "description": "Integrate with Ataya Harmony for manage the 5G UE session",
     "support": "partner",
     "currentVersion": "1.0.0",
-    "author": "Ataya",
-    "url": "",
+    "author": "Ataya Inc.",
+    "url": "https://ataya.io",
     "email": "",
     "categories": [
         "Network Security"
@@ -18,6 +18,16 @@
         "xsoar",
         "marketplacev2"
     ],
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "name": "Base"
+        },
+        "GenericWebhook": {
+            "mandatory": true,
+            "name": "Generic Webhook"
+        }
+    },
     "githubUser": [
         "tony19911010"
     ]
