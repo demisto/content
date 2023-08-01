@@ -3,7 +3,7 @@ sectionOrder:
 - Collect
 category: Messaging and Conferencing
 commonfields:
-  id: SlackV3
+  id: SlackV3-Gal
   version: -1
 configuration:
 - display: ''
@@ -179,7 +179,7 @@ configuration:
   required: false
 description: Send messages and notifications to your Slack team.
 display: Slack v3
-name: SlackV3
+name: SlackV3-Gal
 script:
   commands:
   - arguments:
@@ -418,6 +418,12 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
+  - arguments:
+    - description: The user id of the user.
+      name: user_id
+      required: true
+    description: Reset user session token in Slack
+    name: slack-user-session-reset
   dockerimage: demisto/slackv3:1.0.0.63762
   longRunning: true
   runonce: false
