@@ -644,7 +644,7 @@ class Client(BaseClient):
         return self.http_request(
             method='PATCH',
             url_suffix='/reference_data_collections/set_entries',
-            json_data=[{"collection_id": set_id, "value": indicator, "source": source}
+            json_data=[{"collection_id": set_id, "value": str(indicator), "source": source}
                        for indicator in indicators],  # type: ignore[arg-type]
             additional_headers=headers
         )
