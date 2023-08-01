@@ -19,3 +19,5 @@ ignore=IF115
 [file:CybersixgillActionableAlertStatusUpdate.yml]
 ignore=BA124
 
+[known_words]
+Cybersixgill
