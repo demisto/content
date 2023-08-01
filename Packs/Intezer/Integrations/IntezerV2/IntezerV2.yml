@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: Intezer v2
+  id: Intezer v2 - almog
   version: -1
 configuration:
 - display: API Key
@@ -22,8 +22,8 @@ configuration:
   type: 8
   required: false
 description: Malware detection and analysis based on code reuse
-display: Intezer v2
-name: Intezer v2
+display: Intezer v2 - almog
+name: Intezer v2 - almog
 script:
   commands:
   - name: intezer-submit-alert

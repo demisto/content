@@ -1,9 +1,14 @@
 import tempfile
 import uuid
 from http import HTTPStatus
+from unittest.mock import patch
 
 import intezer_sdk.errors
 import pytest
+from intezer_sdk.alerts import Alert
+from intezer_sdk.analysis import FileAnalysis
+from intezer_sdk.analysis import UrlAnalysis
+from intezer_sdk.consts import AlertStatusCode
 
 from CommonServerPython import *
 
@@ -24,6 +29,7 @@ from IntezerV2 import check_is_available
 from IntezerV2 import submit_alert_command
 from IntezerV2 import submit_suspected_phishing_email_command
 from IntezerV2 import get_alert_result_command
+from IntezerV2 import enrich_dbot_and_display_alert_results
 from intezer_sdk import consts
 from intezer_sdk.api import IntezerApi
 
@@ -1917,3 +1923,156 @@ def test_get_alert_response_command_alert_success(requests_mock, mocker):
 
     # Assert
     assert command_result.readable_output == 'test'
+
+
+def test_enrich_dbot_and_display_alert_results_no_scans(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.scans = []
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+    mocker.patch.object(Alert, 'result', return_value={'scans': [],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    assert results_mock.call_count == 1
+
+
+def test_enrich_dbot_and_display_alert_results_artifact_analyses(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.scans = []
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+    malicious_ip = 'http://12.123.12.123'
+    mocker.patch.object(Alert, 'result', return_value={'scans': [{'artifact_analysis': {'artifact_type': 'ip',
+                                                                                        'artifact_value': malicious_ip,
+                                                                                        'family_name': 'Vobfus',
+                                                                                        'verdict': 'malicious'},
+                                                                  'collection_status': 'collected', 'scan_type': 'artifact'}],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    first_result: CommandResults = results_mock.call_args.args[0][0]
+    assert len(results_mock.call_args.args[0]) == 2
+    assert first_result.indicator.dbot_score.indicator_type == 'ip'
+    assert first_result.indicator.dbot_score.indicator == malicious_ip
+    assert first_result.indicator.dbot_score.score == Common.DBotScore.BAD
+
+
+def test_enrich_dbot_and_display_alert_results_file_analysis(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+
+    analysis_id = '123'
+    root_sub_analysis = '456'
+    analysis = FileAnalysis(api=intezer_api)
+    analysis.analysis_id = analysis_id
+    analysis.analysis_type = 'file'
+    sha256 = 'a' * 64
+    md5 = 'b' * 32
+    sha1 = 'c' * 40
+    analysis._report = {'analysis_id': analysis_id, 'analysis_time': 'Mon, 24 Jul 2023 15:45:58 GMT',
+                        'analysis_url': f'https://analyze.intezer.com/analyses/{analysis_id}',
+                        'file_name': 'body-html.html', 'is_private': True,
+                        'sha256': sha256,
+                        'sub_verdict': 'inconclusive', 'verdict': 'unknown'}
+
+    alert.scans = [analysis]
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses',
+        json={'sub_analyses': [{
+            'sha256': sha256,
+            'source': 'root',
+            'sub_analysis_id': root_sub_analysis
+        }]
+        }
+    )
+
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/sub-analyses/{root_sub_analysis}/metadata',
+        json={
+            'file_type': 'non executable',
+            'md5': md5,
+            'sha1': sha1,
+            'sha256': sha256,
+            'size_in_bytes': 838,
+            'ssdeep': '12:dfhfgjh:sdfghfgjfgh'
+        }
+    )
+
+    mocker.patch.object(Alert, 'result', return_value={'scans': [{'scan_type': 'file', 'file_analysis': analysis.result()}],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    first_result: CommandResults = results_mock.call_args.args[0][0]
+    assert len(results_mock.call_args.args[0]) == 2
+    assert first_result.indicator.dbot_score.indicator_type == 'file'
+    assert first_result.indicator.dbot_score.indicator == sha256
+    assert first_result.indicator.dbot_score.score == Common.DBotScore.NONE
+    assert first_result.indicator.md5 == md5
+    assert first_result.indicator.sha1 == sha1
+    assert first_result.indicator.sha256 == sha256
+
+
+def test_enrich_dbot_and_display_alert_results_url_analysis(requests_mock, mocker):
+    # Arrange
+    _setup_access_token(requests_mock)
+    alert_id = '123'
+    alert = Alert(alert_id, api=intezer_api)
+    alert.status = AlertStatusCode.FINISHED
+    alert.intezer_alert_url = 'some_url'
+    alert.family_name = None
+
+    analysis_id = '123'
+    analysis = UrlAnalysis(api=intezer_api)
+    analysis.analysis_id = analysis_id
+    url = 'https://www.google.com'
+    analysis._report = {'analysis_id': analysis_id, 'analysis_time': 'Mon, 24 Jul 2023 15:45:58 GMT',
+                        'analysis_url': f'https://analyze.intezer.com/analyses/{analysis_id}',
+                        'scanned_url': url, 'submitted_url': url,
+                        'summary': {'verdict_type': 'malicious'}}
+
+    alert.scans = [analysis]
+
+    mocker.patch.object(Alert, 'result', return_value={'scans': [{'scan_type': 'file', 'file_analysis': analysis.result()}],
+                                                       'triage_result': {'alert_verdict_display': 'dangerous',
+                                                                         'risk_category_display': 'malicious'}})
+
+    # Act
+    with patch('IntezerV2.return_results') as results_mock:
+        enrich_dbot_and_display_alert_results(alert, intezer_api)
+
+    # Assert
+    first_result: CommandResults = results_mock.call_args.args[0][0]
+    assert len(results_mock.call_args.args[0]) == 2
+    assert first_result.indicator.dbot_score.indicator_type == 'url'
+    assert first_result.indicator.dbot_score.indicator == url
+    assert first_result.indicator.dbot_score.score == Common.DBotScore.BAD
