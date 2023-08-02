@@ -109,6 +109,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: string
   dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
