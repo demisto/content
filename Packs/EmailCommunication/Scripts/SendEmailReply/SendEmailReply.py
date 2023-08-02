@@ -403,7 +403,7 @@ def create_file_data_json(attachment, field_name):
     return json.dumps(file_data)
 
 
-def get_reply_body(notes, incident_id, attachments, async_call):
+def get_reply_body(notes, incident_id, attachments, async_call=False):
     """ Get the notes and the incident id and return the reply body
     Args:
         notes (list): The notes of the email.
@@ -633,7 +633,7 @@ def format_body(new_email_body):
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
                         subject_include_incident_id, email_to_str, service_mail, email_latest_message,
-                        mail_sender_instance, async_call):
+                        mail_sender_instance, async_call=False):
     """
         Retrieve all entries in the EmailThreads context key
     Args:
@@ -984,7 +984,7 @@ def main():
         # This case is run when replying to an email from the 'Email Communication' layout
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
                             subject_include_incident_id, email_to_str, service_mail, email_latest_message,
-                            mail_sender_instance, async_call)
+                            mail_sender_instance, async_call=False)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message

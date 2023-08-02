@@ -94,7 +94,7 @@ def get_entry_id_list(attachments, files):
     return entry_id_list
 
 
-def add_entries(email_reply, email_related_incident, async_call):
+def add_entries(email_reply, email_related_incident, async_call=False):
     """Add the entries to the related incident
     Args:
         email_reply: The email reply.

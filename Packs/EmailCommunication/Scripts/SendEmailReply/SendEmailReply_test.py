@@ -531,7 +531,7 @@ def test_single_thread_reply(email_code, mocker):
     - Validate that if no email_code is provided, 'get_unique_code' is called to generate one
     """
 
-    def get_reply_body_side_effect(notes, incident_id, attachments):  # noqa
+    def get_reply_body_side_effect(notes, incident_id, attachments, async_call):  # noqa
         return 'Email body.', '<html><body>Email body.</body></html>'
 
     from SendEmailReply import single_thread_reply
