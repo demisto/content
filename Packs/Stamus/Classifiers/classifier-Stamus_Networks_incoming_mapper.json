@@ -62,5 +62,5 @@
     "name": "Stamus Networks incoming mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.9.0"
 }

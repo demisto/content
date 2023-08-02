@@ -2,7 +2,7 @@ id: Stamus Networks - Get Extra Data
 version: -1
 name: Stamus Networks - Get Extra Data
 description: Get Extra Information from a Declaration of Compromise
-fromversion: "6.8.0"
+fromversion: "6.9.0"
 starttaskid: "0"
 tasks:
   "0":
