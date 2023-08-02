@@ -1026,7 +1026,7 @@ def fetch_incidents(
     last_run: dict[str, str],
     first_fetch_time: str
 ) -> tuple[dict[str, str], list[dict[str, Any]]]:
-    date_format = "%Y-%m-%dT%H:%M:%S"
+    date_format = "%Y-%m-%dT%H:%M:%S.%f"
     last_fetched = last_run.get("last_fetched")
     last_page_str: str = last_run.get("last_page", "")
     if last_fetched is None:

@@ -524,6 +524,7 @@ script:
         Comma-separated list of string tags for tagging the entity.
         For example:
         label1,label2,label3
+      isArray: true
       name: tags
     - description: The ID of the policy to assign to the new entity. Can be retrieved running the zerofox-get-policy-types command.
       name: policy_id

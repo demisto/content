@@ -30,7 +30,7 @@ from ZeroFox import (
 BASE_URL = "https://api.zerofox.com"
 OK_CODES = (200, 201)
 FETCH_LIMIT = 10
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 def load_json(file: str):
@@ -75,7 +75,7 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
     last_run: dict = {}
-    first_fetch_time = "2023-06-01T00:00:00"
+    first_fetch_time = "2023-06-01T00:00:00.000000"
     first_fetch_time_parsed = parse_date(
         first_fetch_time,
         date_formats=(DATE_FORMAT,),
@@ -118,7 +118,7 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
     requests_mock.get("/1.0/alerts/", json=alerts_response)
     client = build_zf_client()
     last_run: dict = {}
-    first_fetch_time = "2023-06-01T00:00:00"
+    first_fetch_time = "2023-06-01T00:00:00.000000"
     first_fetch_time_parsed = parse_date(
         first_fetch_time,
         date_formats=(DATE_FORMAT,),
@@ -171,10 +171,10 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     client = build_zf_client()
     last_page_saved = 4
     last_run = {
-        "last_fetched": "2023-07-01T12:34:56",
+        "last_fetched": "2023-07-01T12:34:56.000000",
         "last_page": str(last_page_saved),
     }
-    first_fetch_time = "2023-06-01T00:00:00"
+    first_fetch_time = "2023-06-01T00:00:00.000000"
     spy = mocker.spy(client, "list_alerts")
 
     next_run, incidents = fetch_incidents(
