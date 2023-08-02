@@ -784,12 +784,25 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*
     src_username = arrayindex(regextract(_raw_log ,"by\s(\S+)\sfrom\sssh"),0),
     protocol = uppercase(arrayindex(regextract(_raw_log ,"by\s\S+\sfrom\s([A-Za-z]+)\s"),0)),
     dst_ip = arrayindex(regextract(_raw_log ,"\(remote\s(\d+\.\d+\.\d+\.\d+)\)"),0),
-    outcome_reason = arrayindex(regextract(_raw_log ,"Reload\sreason\:\s\[([^\]]+)"),0),
+    outcome_reason1 = arrayindex(regextract(_raw_log ,"Reload\sreason\:\s\[([^\]]+)"),0),
+    outcome_reason2 = arrayindex(regextract(_raw_log ,"reason\:\s([A-Za-z]+)"),0),
     network_rule = arrayindex(regextract(_raw_log , "for\s([A-Z]+)\slog"),0),
-    src_ip = arrayindex(regextract(_raw_log ,"\(from\s(\d+\.\d+\.\d+\.\d+)\)"),0)
+    src_ip = arrayindex(regextract(_raw_log ,"\(from\s(\d+\.\d+\.\d+\.\d+)\)"),0),
+    status_1 = arrayindex(regextract(_raw_log ,"state\:\s(\w+)"),0),
+//
+    status_2 = arrayindex(regextract(_raw_log ,"entered\s(\S+)\sstate"),0),
+    port_mode = arrayindex(regextract(_raw_log ,"mode\sfor\s\S+\sset\sto\s([A-Z]+)"),0),
+    ethernet_name = arrayindex(regextract(_raw_log ,"([A-Za-z0-9]+\/\d+)"),0),
+    mac_address = arrayindex(regextract(_raw_log , "MAC\s([A-Za-z0-9\:]{5,})\s"),0),
+    operation_sub_type = arrayindex(regextract(_raw_log , "MAC\s[A-Za-z0-9\:]+\s([A-Z]+)"),0),
+    pid = to_integer(arrayindex(regextract(_raw_log , "pid\s\=\s(\d+)\s"),0)),
+    cmd_line = arrayindex(regextract(_raw_log , "cmdline\s\=\s(\S+)"),0),
+    target_file_path = arrayindex(regextract(_raw_log ,"[A-Z]+\sFILES\s(\S+)"),0)
+| alter status = coalesce(status_1, status_2 ),
+    outcome_reason = coalesce(outcome_reason1 , outcome_reason2 )
 | alter xdm.event.log_level = if(log_level = "Informational", XDM_CONST.LOG_LEVEL_INFORMATIONAL, uppercase(log_level)),
     xdm.event.original_event_type = to_string(event_id),
-    xdm.target.file.path = file_path,
+    xdm.target.file.path = coalesce(file_path,target_file_path),
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.observer.name = observer_name,
@@ -800,4 +813,11 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*
     xdm.target.ipv4 = dst_ip,
     xdm.source.ipv4 = src_ip,
     xdm.event.outcome_reason = outcome_reason,
-    xdm.network.rule = network_rule;
+    xdm.target.resource.value = status,
+    xdm.target.resource.type = port_mode,
+    xdm.target.resource.name = ethernet_name,
+    xdm.target.host.mac_addresses = arraycreate(mac_address),
+    xdm.network.rule = network_rule,
+    xdm.event.operation_sub_type = operation_sub_type,
+    xdm.source.process.pid = pid,
+    xdm.target.process.command_line = cmd_line;
