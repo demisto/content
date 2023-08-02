@@ -823,39 +823,16 @@ def list_device_groups_names():
     """
     Get device group names in the Panorama
     """
-    params = {
-        'action': 'get',
-        'type': 'config',
-        'xpath': "/config/devices/entry/device-group/entry",
-        'key': API_KEY
-    }
-
-    result = http_request(
-        URL,
-        'GET',
-        params=params
+    device_group_names = get_device_groups_names()
+    
+    command_results = CommandResults(
+        outputs_prefix='Panorama.DeviceGroupNames',
+        outputs_key_field='Group Name',
+        outputs=device_group_names,
+        readable_output=tableToMarkdown('Device Group Names:', device_group_names, ['Group Name']),
     )
 
-    device_groups = result['response']['result']['entry']
-    device_group_names = []
-    if isinstance(device_groups, dict):
-        # only one device group in the panorama
-        device_group_names.append(device_groups.get('@name'))
-    else:
-        for device_group in device_groups:
-            device_group_names.append(device_group.get('@name'))
-
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': device_group_names,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Device Group Names:', device_group_names, ['Group Name']),
-        'EntryContext': {
-            "DeviceGroupNames": device_group_names
-        }
-    }
-    )
+    return_results(command_results)
 
 
 def device_group_test():
