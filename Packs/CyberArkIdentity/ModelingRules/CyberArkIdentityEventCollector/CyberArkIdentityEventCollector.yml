@@ -1,6 +1,0 @@
-fromversion: 3.3.0
-id: CyberArkIdentityEventCollector
-name: CyberArkIdentityEventCollector
-rules: ''
-schema: ''
-toversion: 6.9.9

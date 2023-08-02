@@ -1,0 +1,76 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "incidentrdpachehuntingstringssimilarity",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Found String",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "foundstring",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "MITRE ATT\u0026CK Tool",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "mitreattcktool",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 173
+        },
+        {
+            "displayName": "Similarity Ratio",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "similarityratio",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_rdpachehunting_stringssimilarity",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "RDPCacheHunting Strings Similarity",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}
