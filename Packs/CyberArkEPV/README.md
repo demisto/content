@@ -82,7 +82,7 @@ To create or configure the Broker VM, use the information described [here](https
    | :---          | :---                    
    | `Protocol`    | Should be aligned with the protocol defined in the *SyslogServerProtocol* parameter in the `[SYSLOG]` section of the *DBParm.ini* configuration file on the Cyber-Ark Vault server (see [Set up the Syslog Configuration](#Set-up-the-Syslog-Configuration)).   
    | `Port`        | Should be aligned with the protocol defined in the *SyslogServerPort* parameter in the `[SYSLOG]` section of the *DBParm.ini* configuration file on the Cyber-Ark Vault server (see [Set up the Syslog Configuration](#Set-up-the-Syslog-Configuration)).   
-   | `Format`      | Select **_CEF_**. 
+   | `Format`      | Select **CEF**. 
    | `Vendor`      | Select **Auto-Detect** (Would be determined automatically from the CEF header *Vendor* field). 
    | `Product`     | Select **Auto-Detect** (Would be determined automatically from the CEF header *Product* field). 
 
