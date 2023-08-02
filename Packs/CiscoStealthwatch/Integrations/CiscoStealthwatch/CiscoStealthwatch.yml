@@ -283,7 +283,7 @@ script:
     - contextPath: CiscoStealthwatch.SecurityEventResults.hitCount
       description: The hit count of the security event.
       type: str
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3
