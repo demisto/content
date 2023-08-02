@@ -1,8 +1,5 @@
 [file:Hurukai.yml]
-ignore=IN126,BA124,BA125
-
-[file:README.md]
-BA125
+ignore=IN126,BA124
 
 [known_words]
 harfanglab
@@ -28,4 +25,3 @@ evtx
 logs
 filesystem
 downloadfile
-
