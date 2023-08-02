@@ -1824,13 +1824,16 @@ def get_modified_remote_data_command(client: Client,
     time_filter = handle_time_filter(time_from=last_update,
                                      time_to='now')
     filters = argToList(params.get('filters'))
-    # According to the PM of prisma cloud this filter provide us with all the alerts that their status has been changed
+    # According to the PM of prisma cloud the following filter provide us with all the alerts that their status has been changed
     # It is not yet documented in the Prisma Cloud API reference - for more info see this issue:
     # https://jira-hq.paloaltonetworks.local/browse/CIAC-5504
     filters.append('timeRange.type=ALERT_STATUS_UPDATED')
+    filters.extend(['alert.status=dismissed', 'alert.status=snoozed', 'alert.status=resolved'])
     # Removes the 'alert.status=open' filter to retrieve all relevant statuses (open, resolved, dismissed and snoozed)
-    if 'alert.status=open' in set(filters):
-        filters.remove('alert.status=open')
+    # if 'alert.status=open' in set(filters):
+    #     filters.remove('alert.status=open')
+
+    # TODO: Need to think about the logic here - of the filters.
 
     # TODO: what next_token is used for? need to check if I need to implement it.
     response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
@@ -1884,6 +1887,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
 
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    # TODO: there is a chance I need to remove this func cause we don't mapping out xsoar fields
     """
     Returns the list of fields to map in outgoing mirroring.
 
