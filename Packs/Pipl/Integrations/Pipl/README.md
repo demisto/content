@@ -37,6 +37,7 @@ Search for required query
 | Account.Names | unknown | Full names | 
 | Account.Phones | unknown | Phone numbers | 
 | Account.Usernames | unknown | Online platforms usernames | 
+
 ### email
 
 ***
@@ -62,3 +63,8 @@ Searches for information regarding given email address
 | Account.Names | unknown | Full names | 
 | Account.Phones | unknown | Phone numbers | 
 | Account.Usernames | unknown | Online platforms usernames | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Score | Number | The actual DBot score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
