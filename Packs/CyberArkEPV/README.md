@@ -29,7 +29,9 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
                 <xsl:with-param name="string" select="IsoTimestamp" />
             </xsl:call-template>
             <!-- End of IsoTimestamp mapping section -->
-      ``` 
+      ```
+      See The following screenshot for a demonstration of the updated XSL file: 
+    ![xsl_with_timestamp_mapping](https://raw.githubusercontent.com/demisto/content/154dcc181602e725897c9e29e33145a1625b88bb/Packs/CyberArkEPV/docs_imgs/config_isotimestamp_mapping.png)
 4. Save the changes.
 #### Set up the DBParm.ini Syslog Configuration
 1. Navigate to the *Conf* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Conf*).
