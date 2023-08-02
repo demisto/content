@@ -133,6 +133,23 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: 'DetectionSource to filter out alerts for fetching as incidents.'
+  name: fetch_detectionsource
+  options:
+  - Antivirus
+  - Automated investigation
+  - Custom detection
+  - Custom TI
+  - EDR
+  - Microsoft 365 Defender
+  - Microsoft Defender for Office 365
+  - Microsoft Defender Experts
+  - SmartScreen
+  - Third-party sensors
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
@@ -5492,7 +5509,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.67448
   isfetch: true
   runonce: false
   script: '-'
