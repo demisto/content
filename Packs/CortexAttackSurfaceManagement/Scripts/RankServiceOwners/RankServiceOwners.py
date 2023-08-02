@@ -42,8 +42,8 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
     The default cache is a subdirectory of /tmp directory will cache persistently across interactions.
     Data saved to /var/lib/demisto will be lost betwen interactions (not cached).
     """
-    REMOTE_GCS_BUCKET = "xpanse-service-ownership-ml-models-dev"
-    REMOTE_GCS_PATH = ""  # ok for this to be empty string
+    remote_gcs_bucket = "xpanse-service-ownership-ml-models-dev"
+    remote_gcs_path = ""  # ok for this to be empty string
 
     os.makedirs(cache_path, exist_ok=True)
     cached_file_path = os.path.join(cache_path, file_name)
@@ -51,14 +51,16 @@ def load_pickled_xpanse_object(file_name: str, cache_path: str = "/tmp/xpanse-ml
     # check that file is not empty; if authorization fails it will
     # create the cache_path but the file will be empty
     if not (os.path.exists(cached_file_path) and os.path.getsize(cached_file_path)):
-        remote_path = posixpath.join(REMOTE_GCS_PATH, file_name)
+        # The relevant infrastructure-related service account needs to be granted
+        # read access to the GCS bucket, or at least the resource at `remote_path`
+        remote_path = posixpath.join(remote_gcs_path, file_name)
 
-        demisto.info(f"Starting download of '{file_name}' from gs://{REMOTE_GCS_BUCKET}/{remote_path}")
+        demisto.info(f"Starting download of '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}")
         client = google.cloud.storage.client.Client()
-        bucket = client.bucket(REMOTE_GCS_BUCKET)
+        bucket = client.bucket(remote_gcs_bucket)
         blob = bucket.blob(remote_path)
         blob.download_to_filename(cached_file_path)
-        demisto.info(f"Downloaded '{file_name}' from gs://{REMOTE_GCS_BUCKET}/{remote_path}")
+        demisto.info(f"Downloaded '{file_name}' from gs://{remote_gcs_bucket}/{remote_path}")
 
     else:
         demisto.info(f"Found '{file_name}' locally")
