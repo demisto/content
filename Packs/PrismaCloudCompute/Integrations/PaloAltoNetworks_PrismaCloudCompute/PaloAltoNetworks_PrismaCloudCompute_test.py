@@ -1370,7 +1370,7 @@ def test_get_waas_policies(mocker):
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_waas_policies, PrismaCloudComputeClient
 
-    with open("test_data/get_waas_policies.json", "r") as f:
+    with open("test_data/get_waas_policies.json") as f:
         d = json.load(f)
 
     mocker.patch.object(PrismaCloudComputeClient, 'get_waas_policies', return_value=d)
@@ -1399,7 +1399,7 @@ def test_update_waas_policies(mocker):
     mocker.patch.object(PrismaCloudComputeClient, 'update_waas_policies',
                         return_value=type('Response', (object,), {"status_code": 200}))
 
-    with open("test_data/update_waas_policy.json", "r") as f:
+    with open("test_data/update_waas_policy.json") as f:
         policy = json.load(f)
 
     client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
@@ -1426,7 +1426,7 @@ def test_get_audit_firewall_container_alerts(mocker):
     """
     from PaloAltoNetworks_PrismaCloudCompute import get_audit_firewall_container_alerts, PrismaCloudComputeClient
 
-    with open("test_data/get_audit_firewall_container_alerts.json", "r") as f:
+    with open("test_data/get_audit_firewall_container_alerts.json") as f:
         d = json.load(f)
 
     mocker.patch.object(PrismaCloudComputeClient, 'get_firewall_audit_container_alerts', return_value=d)
