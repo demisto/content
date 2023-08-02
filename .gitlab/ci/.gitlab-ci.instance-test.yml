@@ -18,5 +18,7 @@ test_instances:
     - !reference [.ssh-config-setup]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" || EXIT_CODE=$?
     - ./Tests/scripts/instance_test.sh || EXIT_CODE=$?
+    - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - section_end "Destroy instances"
     - exit "$EXIT_CODE"
