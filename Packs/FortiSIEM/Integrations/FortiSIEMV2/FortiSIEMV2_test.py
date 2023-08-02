@@ -657,3 +657,15 @@ def test_fetch_incidents_with_pagination(post_mock):
     assert len(incidents) == 5
     assert updated_last_run['create_time'] == 1646237070000
     assert updated_last_run['last_incidents'] == [9, 10, 11, 12, 13]
+
+
+@pytest.mark.parametrize('nested_attr, expected_result', [
+    ('key:value', ('key', 'value')),
+    ('key:value:extra', ('key', 'value')),
+    ('', (None, None)),
+    ('key', (None, None)),
+])
+def test_format_nested_incident_attribute(nested_attr, expected_result):
+    from FortiSIEMV2 import format_nested_incident_attribute
+
+    assert format_nested_incident_attribute(nested_attr) == expected_result
