@@ -1096,7 +1096,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.67228
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.67595
   runonce: true
   script: '-'
   type: powershell
