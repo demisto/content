@@ -457,11 +457,14 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
         last_fetch = last_run.get('last_fetch')
         fetch_start_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
 
+    # the start time must be no more than 7 days in the past
+    fetch_start_datetime = max(fetch_start_datetime, dateparser.parse("7 days ago"))
     fetch_end_datetime = get_fetch_end_time_based_on_start_time(fetch_start_datetime)
 
     # The API expects strings of format YYYY:DD:MMTHH:MM:SS
     fetch_start_time_str = fetch_start_datetime.strftime(DATE_FORMAT)
     fetch_end_time_str = fetch_end_datetime.strftime(DATE_FORMAT)
+    demisto.debug(f"get_fetch_start_and_end_time: {fetch_start_time_str=}, {fetch_end_time_str=}")
     return fetch_start_time_str, fetch_end_time_str
 
 
@@ -514,12 +517,14 @@ def content_records_to_incidents(content_records, start_time, end_time):
 
 
 def fetch_incidents(client, last_run, first_fetch_datetime):
+    demisto.debug(f"fetch_incidents: {last_run=}, {first_fetch_datetime=}")
     start_time, end_time = get_fetch_start_and_end_time(last_run, first_fetch_datetime)
     content_types_to_fetch = get_content_types_to_fetch(client)
     content_records = get_all_content_records_of_specified_types(client, content_types_to_fetch, start_time, end_time)
     filtered_content_records = filter_records(content_records, demisto.params())
     incidents, last_fetch = content_records_to_incidents(filtered_content_records, start_time, end_time)
     next_run = {'last_fetch': last_fetch}
+    demisto.debug(f"fetch_incidents: {next_run=}")
     return next_run, incidents
 
 
