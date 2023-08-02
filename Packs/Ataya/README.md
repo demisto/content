@@ -1,7 +1,7 @@
 # Ataya Harmony Interface for Cortex XSOAR of Palo Alto Networks
 
 ## Summary
-The Webhook interface can be turned on the Ataya's Harmony Platform. Once done, the Ataya's 5G core network will publish the session starting event for all clients to XSOAR, which can notify the Palo Alto firewall gateway to control client connections.
+The Webhook interface can be enabled in the Ataya's Harmony Platform. Once done, the Ataya's 5G core network will publish the clients’ session events to XSOAR, which can notify the Palo Alto firewall gateway to apply the desired policy to the client connections.
 
 ## Requirement
 The following content is necessary for complete the integration.
