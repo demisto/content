@@ -56,6 +56,10 @@
         "type": "string",
         "is_array": false
       },
+      "cs6Label": {
+        "type": "string",
+        "is_array": false
+      },
       "dvc": {
         "type": "string",
         "is_array": false
