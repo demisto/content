@@ -17,7 +17,7 @@ configuration:
   type: 4
   hidden: true
   required: false
-- display: Tenant name
+- displaypassword: Tenant name
   name: cred_tenant_name
   type: 9
   hiddenusername: true
@@ -27,7 +27,7 @@ configuration:
   type: 4
   hidden: true
   required: false
-- display: Token
+- displaypassword: Token
   name: cred_token
   type: 9
   hiddenusername: true
