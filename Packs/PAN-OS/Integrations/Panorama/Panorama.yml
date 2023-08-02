@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Panorama
   version: -1
@@ -6,82 +9,80 @@ configuration:
 - display: Server URL (e.g., https://192.168.0.1)
   name: server
   required: true
-  section: Connect
   type: 0
-- display: ''
-  displaypassword: API Key
-  hiddenusername: true
-  name: credentials
-  required: false
   section: Connect
+- displaypassword: API Key
+  name: credentials
   type: 9
-- advanced: true
-  defaultvalue: '443'
+  hiddenusername: true
+  section: Connect
+  required: false
+- defaultvalue: '443'
   display: Port (e.g 443)
   name: port
-  required: false
-  section: Connect
   type: 0
-- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
+  section: Connect
   advanced: true
+  required: false
+- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
   display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
-  required: false
-  section: Connect
   type: 0
+  section: Connect
+  advanced: true
+  required: false
 - additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
   display: Vsys - Firewall instances only
   name: vsys
-  required: false
-  section: Connect
   type: 0
-- advanced: true
-  display: Template - Panorama instances only
+  section: Connect
+  required: false
+- display: Template - Panorama instances only
   name: template
-  required: false
-  section: Connect
   type: 0
-- additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
+  section: Connect
   advanced: true
+  required: false
+- additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
   display: Use URL Filtering for auto enrichment
   name: use_url_filtering
-  required: false
-  section: Collect
   type: 8
-- advanced: true
-  display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
+  section: Collect
+  advanced: true
+  required: false
+- display: URL Filtering Additional suspicious categories. CSV list of categories that will be considered suspicious.
   name: additional_suspicious
-  required: false
-  section: Collect
   type: 12
-- advanced: true
-  display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
+  section: Collect
+  advanced: true
+  required: false
+- display: URL Filtering Additional malicious categories. CSV list of categories that will be considered malicious.
   name: additional_malicious
-  required: false
-  section: Collect
   type: 12
-- advanced: true
-  display: Trust any certificate (not secure)
+  section: Collect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
   name: insecure
-  required: false
-  section: Connect
   type: 8
-- advanced: true
-  display: Use system proxy settings
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
   name: proxy
-  required: false
-  section: Connect
   type: 8
-- additionalinfo: Use the "API Key (Recommended)" parameter instead.
-  advanced: true
-  display: API Key (Deprecated)
-  hidden: true
-  name: key
-  required: false
   section: Connect
-  type: 4
-- additionalinfo: Reliability of the source providing the intelligence data.
   advanced: true
+  required: false
+- display: API Key (Deprecated)
+  name: key
+  type: 4
+  hidden: true
+  additionalinfo: Use the "API Key (Recommended)" parameter instead.
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: integrationReliability
@@ -93,53 +94,51 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
-  section: Collect
   type: 15
-- advanced: true
-  defaultvalue: indicatorType
-  display: ''
+  section: Collect
+  advanced: true
+  required: false
+- defaultvalue: indicatorType
   name: feedExpirationPolicy
+  display: ''
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  section: Collect
   type: 17
-- advanced: true
-  defaultvalue: '20160'
-  display: ''
-  name: feedExpirationInterval
-  required: false
   section: Collect
+  advanced: true
+  required: false
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
   type: 1
+  section: Collect
+  advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
-  section: Collect
   type: 8
+  section: Collect
+  required: false
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
-  section: Collect
   type: 0
-- additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
-  defaultvalue: '100'
+  section: Collect
+  required: false
+- defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
+  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
   name: max_fetch
-  required: false
-  section: Collect
   type: 0
-- additionalinfo: |-
-    Select which log types to fetch.
-    Selecting 'All' will use all the log type queries in the fetch.
-    To choose a specific set of queries, select their log types from the dropdown (make sure the 'All' option is unselected).
-  advanced: true
-  display: Log Type
+  section: Collect
+  required: false
+- display: Log Type
   name: log_types
+  type: 16
+  additionalinfo: "Select which log types to fetch.\nSelecting 'All' will use all the log type queries in the fetch.\nTo choose a specific set of queries, select their log types from the dropdown (make sure the 'All' option is unselected)."
   options:
   - Traffic
   - Threat
@@ -150,86 +149,70 @@ configuration:
   - Wildfire
   - Decryption
   - All
-  required: false
   section: Connect
-  type: 16
-- additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   advanced: true
-  display: Traffic Log Type Query
+  required: false
+- display: Traffic Log Type Query
   name: traffic_query
-  required: false
-  section: Collect
+  additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
-- additionalinfo: "Threat Log Type query example: (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  section: Collect
   advanced: true
-  display: Threat Log Type Query
+  required: false
+- display: Threat Log Type Query
   name: threat_query
-  required: false
-  section: Collect
+  additionalinfo: "Threat Log Type query example: (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
-- additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  section: Collect
   advanced: true
-  display: URL Log Type Query
+  required: false
+- display: URL Log Type Query
   name: url_query
-  required: false
-  section: Collect
+  additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
-- additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  section: Collect
   advanced: true
-  display: Data Log Type Query
+  required: false
+- display: Data Log Type Query
   name: data_query
-  required: false
-  section: Collect
+  additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
-- additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  section: Collect
   advanced: true
-  display: Correlation Log Type Query
+  required: false
+- display: Correlation Log Type Query
   name: correlation_query
-  required: false
-  section: Collect
+  additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
-- additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity}). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  section: Collect
   advanced: true
-  display: System Log Type Query
+  required: false
+- display: System Log Type Query
   name: system_query
-  required: false
-  section: Collect
+  additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity}). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
-- additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole)). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  section: Collect
   advanced: true
-  display: Wildfire Submission Log Type Query
+  required: false
+- display: Wildfire Submission Log Type Query
   name: wildfire_query
-  required: false
-  section: Collect
+  additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole)). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
-- additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination})). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
+  section: Collect
   advanced: true
-  display: Decryption Log Type Query
-  name: decryption_query
   required: false
-  section: Collect
+- display: Decryption Log Type Query
+  name: decryption_query
+  additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination})). \nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
   type: 12
+  section: Collect
+  advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
-  section: Connect
   type: 13
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
+  section: Connect
   required: false
-  type: 19
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ''
-    fromServerVersion: ''
-    itemVersion: ''
-    packID: 79487780-048c-403d-87ad-ad5834cd486b
-    packName: Pan-os new command
-    prevname: ''
-    propagationLabels:
-    - all
-    toServerVersion: ''
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -297,14 +280,14 @@ script:
       name: query
     - description: The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter.
       name: vsys
-    deprecated: true
     description: Runs any command supported in the API.
+    deprecated: true
     name: panorama
   - arguments:
     - description: The firewall managed by Panorama from which to retrieve the predefined threats.
       name: target
-    deprecated: true
     description: Gets the predefined threats list from a firewall or Panorama and stores it as a JSON file in the context.
+    deprecated: true
     name: panorama-get-predefined-threats-list
     outputs:
     - contextPath: File.Size
@@ -363,8 +346,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    deprecated: true
     description: Commits a configuration to the Palo Alto firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+    deprecated: true
     name: panorama-commit
     outputs:
     - contextPath: Panorama.Commit.JobID
@@ -395,8 +378,8 @@ script:
       name: description
     - description: The serial number for a virtual system commit. If provided, the commit will be a virtual system commit.
       name: serial_number
-    deprecated: true
     description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi- tenancy), use the device group argument with the device group associated with the tenant ID.
+    deprecated: true
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -485,8 +468,8 @@ script:
       name: device-group
     - description: The tag for which to filter the list of addresses.
       name: tag
-    deprecated: true
     description: Returns a list of addresses.
+    deprecated: true
     name: panorama-list-addresses
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -516,8 +499,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Returns address details for the supplied address name.
+    deprecated: true
     name: panorama-get-address
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -559,14 +542,14 @@ script:
       isArray: true
       name: tag
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: Whether to create the tag if it does not exist.
+      defaultValue: 'false'
       name: create_tag
       predefined:
       - 'true'
       - 'false'
-    deprecated: true
     description: Creates an address object.
+    deprecated: true
     name: panorama-create-address
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -596,8 +579,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes an address object.
+    deprecated: true
     name: panorama-delete-address
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -611,8 +594,8 @@ script:
       name: device-group
     - description: The tag for which to filter the address groups.
       name: tag
-    deprecated: true
     description: Returns a list of address groups.
+    deprecated: true
     name: panorama-list-address-groups
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -642,8 +625,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Gets details for the specified address group.
+    deprecated: true
     name: panorama-get-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -690,8 +673,8 @@ script:
     - description: The tags for the address group.
       isArray: true
       name: tags
-    deprecated: true
     description: Creates a static or dynamic address group.
+    deprecated: true
     name: panorama-create-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -732,8 +715,8 @@ script:
     - description: The numerical threat ID.
       name: threat_id
       required: true
-    deprecated: true
     description: Sets a vulnerability signature to block mode.
+    deprecated: true
     name: panorama-block-vulnerability
     outputs:
     - contextPath: Panorama.Vulnerability.ID
@@ -748,8 +731,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes an address group.
+    deprecated: true
     name: panorama-delete-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -780,8 +763,8 @@ script:
     - description: The tag of the address group to edit.
       isArray: true
       name: tags
-    deprecated: true
     description: Edits a static or dynamic address group.
+    deprecated: true
     name: panorama-edit-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -810,8 +793,8 @@ script:
       name: device-group
     - description: The tag for which to filter the services.
       name: tag
-    deprecated: true
     description: Returns a list of addresses.
+    deprecated: true
     name: panorama-list-services
     outputs:
     - contextPath: Panorama.Services.Name
@@ -841,8 +824,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Returns service details for the supplied service name.
+    deprecated: true
     name: panorama-get-service
     outputs:
     - contextPath: Panorama.Services.Name
@@ -890,8 +873,8 @@ script:
     - description: The tags for the new service.
       isArray: true
       name: tags
-    deprecated: true
     description: Creates a service.
+    deprecated: true
     name: panorama-create-service
     outputs:
     - contextPath: Panorama.Services.Name
@@ -921,8 +904,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes a service.
+    deprecated: true
     name: panorama-delete-service
     outputs:
     - contextPath: Panorama.Services.Name
@@ -937,8 +920,8 @@ script:
     - description: The tags for which to filter the service groups.
       isArray: true
       name: tag
-    deprecated: true
     description: Returns a list of service groups.
+    deprecated: true
     name: panorama-list-service-groups
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -959,8 +942,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Returns details for the specified service group.
+    deprecated: true
     name: panorama-get-service-group
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -988,8 +971,8 @@ script:
     - description: The tags for which to filter service groups.
       isArray: true
       name: tags
-    deprecated: true
     description: Creates a service group.
+    deprecated: true
     name: panorama-create-service-group
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -1010,8 +993,8 @@ script:
       required: true
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes a service group.
+    deprecated: true
     name: panorama-delete-service-group
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -1053,8 +1036,8 @@ script:
       required: true
     - description: The device group for which to return addresses for the custom URL category (Panorama instances).
       name: device-group
-    deprecated: true
     description: Returns information for a custom URL category.
+    deprecated: true
     name: panorama-get-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -1095,8 +1078,8 @@ script:
     - description: The list of categories. Relevant from PAN-OS v9.x.
       isArray: true
       name: categories
-    deprecated: true
     description: Creates a custom URL category.
+    deprecated: true
     name: panorama-create-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -1122,8 +1105,8 @@ script:
       name: name
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes a custom URL category.
+    deprecated: true
     name: panorama-delete-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -1150,8 +1133,8 @@ script:
     - description: A comma-separated list of categories to add to the custom URL category.
       isArray: true
       name: categories
-    deprecated: true
     description: Adds or removes sites to and from a custom URL category.
+    deprecated: true
     name: panorama-edit-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -1203,8 +1186,8 @@ script:
       isArray: true
       name: url
       required: true
-    deprecated: true
     description: Returns a URL category from URL filtering. This command is only available on firewall devices.
+    deprecated: true
     name: panorama-get-url-category-from-cloud
     outputs:
     - contextPath: Panorama.URLFilter.URL
@@ -1218,8 +1201,8 @@ script:
       isArray: true
       name: url
       required: true
-    deprecated: true
     description: Returns a URL category from URL filtering. This command is only available on firewall devices.
+    deprecated: true
     name: panorama-get-url-category-from-host
     outputs:
     - contextPath: Panorama.URLFilter.URL
@@ -1234,8 +1217,8 @@ script:
       required: true
     - description: The device group for which to return addresses for the URL filter (Panorama instances).
       name: device-group
-    deprecated: true
     description: Returns information for a URL filtering rule.
+    deprecated: true
     name: panorama-get-url-filter
     outputs:
     - contextPath: Panorama.URLFilter.Name
@@ -1287,8 +1270,8 @@ script:
       name: description
     - description: The device group for which to return addresses for the URL filter (Panorama instances).
       name: device-group
-    deprecated: true
     description: Creates a URL filtering rule.
+    deprecated: true
     name: panorama-create-url-filter
     outputs:
     - contextPath: Panorama.URLFilter.Name
@@ -1336,8 +1319,8 @@ script:
       predefined:
       - add
       - remove
-    deprecated: true
     description: Edits a URL filtering rule.
+    deprecated: true
     name: panorama-edit-url-filter
     outputs:
     - contextPath: Panorama.URLFilter.Name
@@ -1367,9 +1350,9 @@ script:
       required: true
     - description: The device group for which to return addresses for the URL filter (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes a URL filtering rule.
     name: panorama-delete-url-filter
+    deprecated: true
     outputs:
     - contextPath: Panorama.URLFilter.Name
       description: The URL filter rule name.
@@ -1380,8 +1363,8 @@ script:
   - arguments:
     - description: The device group for which to return addresses for the EDL (Panorama instances).
       name: device-group
-    deprecated: true
     description: Returns a list of external dynamic lists.
+    deprecated: true
     name: panorama-list-edls
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1411,8 +1394,8 @@ script:
       required: true
     - description: The device group for which to return addresses for the EDL (Panorama instances).
       name: device-group
-    deprecated: true
     description: Returns information for an external dynamic list.
+    deprecated: true
     name: panorama-get-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1464,8 +1447,8 @@ script:
       name: description
     - description: The device group for which to return addresses for the EDL (Panorama instances).
       name: device-group
-    deprecated: true
     description: Creates an external dynamic list.
+    deprecated: true
     name: panorama-create-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1505,8 +1488,8 @@ script:
     - description: The element value.
       name: element_value
       required: true
-    deprecated: true
     description: Modifies an element of an external dynamic list.
+    deprecated: true
     name: panorama-edit-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1533,8 +1516,8 @@ script:
       required: true
     - description: The device group for which to return addresses for the EDL (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes an external dynamic list.
+    deprecated: true
     name: panorama-delete-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1560,8 +1543,8 @@ script:
       name: location
     - description: The Vsys of the EDL. Required when refreshing an EDL object which is configured on Panorama.
       name: vsys
-    deprecated: true
     description: Refreshes the specified external dynamic list.
+    deprecated: true
     name: panorama-refresh-edl
   - arguments:
     - description: The name of the rule to create.
@@ -1615,8 +1598,8 @@ script:
       isArray: true
       name: application
     - description: A comma-separated list of source users for the rule to create.
-      isArray: true
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -1647,10 +1630,10 @@ script:
       - bottom
     - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
-    deprecated: true
     description: Creates a policy rule.
     execution: true
     name: panorama-create-rule
+    deprecated: true
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: The rule name.
@@ -1748,9 +1731,9 @@ script:
       - bottom
     - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
-    deprecated: true
     description: Creates a custom block policy rule.
     execution: true
+    deprecated: true
     name: panorama-custom-block-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1800,9 +1783,9 @@ script:
       - post-rulebase
     - description: The device group for which to return addresses for the rule (Panorama instances).
       name: device-group
-    deprecated: true
     description: Changes the location of a policy rule.
     execution: true
+    deprecated: true
     name: panorama-move-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1850,9 +1833,9 @@ script:
       - replace
       - add
       - remove
-    deprecated: true
     description: Edits a policy rule.
     execution: true
+    deprecated: true
     name: panorama-edit-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1906,9 +1889,9 @@ script:
       - post-rulebase
     - description: The device group for which to return addresses for the rule (Panorama instances).
       name: device-group
-    deprecated: true
     description: Deletes a policy rule.
     execution: true
+    deprecated: true
     name: panorama-delete-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1925,8 +1908,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    deprecated: true
     description: Returns a list of applications.
+    deprecated: true
     name: panorama-list-applications
     outputs:
     - contextPath: Panorama.Applications.Name
@@ -1954,8 +1937,8 @@ script:
     - description: The job ID to check.
       name: job_id
       required: true
-    deprecated: true
     description: Returns commit status for a configuration.
+    deprecated: true
     name: panorama-commit-status
     outputs:
     - contextPath: Panorama.Commit.JobID
@@ -1974,8 +1957,8 @@ script:
     - description: The job ID to check.
       name: job_id
       required: true
-    deprecated: true
     description: Returns the push status for a configuration.
+    deprecated: true
     name: panorama-push-status
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -2021,8 +2004,8 @@ script:
       name: deviceName
     - description: The session ID of the PCAP. See the Panorama XML API documentation.
       name: sessionID
-    deprecated: true
     description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
+    deprecated: true
     name: panorama-get-pcap
     outputs:
     - contextPath: File.Size
@@ -2071,8 +2054,8 @@ script:
       name: serialNumber
     - description: The password for Panorama. Relevant for the 'dlp-pcap' PCAP type.
       name: password
-    deprecated: true
     description: Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
+    deprecated: true
     name: panorama-list-pcaps
   - arguments:
     - description: The tag for which to register IP addresses.
@@ -2091,8 +2074,8 @@ script:
       - 'false'
     - description: The timeout value to automatically unregister the IPs. Only applicable for PAN-OS 9.x and higher. Cannot be used with persistent set to true.
       name: timeout
-    deprecated: true
     description: Registers IP addresses to a tag.
+    deprecated: true
     name: panorama-register-ip-tag
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
@@ -2109,8 +2092,8 @@ script:
       isArray: true
       name: IPs
       required: true
-    deprecated: true
     description: Unregisters IP addresses from a tag.
+    deprecated: true
     name: panorama-unregister-ip-tag
   - arguments:
     - description: The tag for which to register users.
@@ -2120,8 +2103,8 @@ script:
       isArray: true
       name: Users
       required: true
-    deprecated: true
     description: Registers users to a tag. This command is only available for PAN-OS version 9.x and higher.
+    deprecated: true
     name: panorama-register-user-tag
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
@@ -2138,8 +2121,8 @@ script:
       isArray: true
       name: Users
       required: true
-    deprecated: true
     description: Unregisters users from a tag. This command is only available for PAN-OS version 9.x and higher.
+    deprecated: true
     name: panorama-unregister-user-tag
   - arguments:
     - description: Specifies the match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab, when viewing the logs.
@@ -2168,8 +2151,8 @@ script:
       name: to_port
     - description: The action for the query.
       name: action
-    deprecated: true
     description: Deprecated. Use the pan-os-query-logs command instead.
+    deprecated: true
     name: panorama-query-traffic-logs
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -2182,8 +2165,8 @@ script:
     - description: The job ID of the query.
       name: job_id
       required: true
-    deprecated: true
     description: Deprecated. Use the pan-os-check-logs-status command instead.
+    deprecated: true
     name: panorama-check-traffic-logs-status
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -2196,8 +2179,8 @@ script:
     - description: The job ID of the query.
       name: job_id
       required: true
-    deprecated: true
     description: Deprecated. Use the pan-os-get-logs command instead.
+    deprecated: true
     name: panorama-get-traffic-logs
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -2274,8 +2257,8 @@ script:
       name: device-group
     - description: The tag to filter the rules.
       name: tag
-    deprecated: true
     description: Returns a list of predefined security rules.
+    deprecated: true
     name: panorama-list-rules
     outputs:
     - contextPath: Panorama.SecurityRule.Location
@@ -2442,8 +2425,8 @@ script:
     - defaultValue: '100'
       description: The maximum number of logs to retrieve. The maximum is 5000.
       name: number_of_logs
-    deprecated: true
     description: Queries logs in Panorama.
+    deprecated: true
     name: panorama-query-logs
     outputs:
     - contextPath: Panorama.Monitor.JobID
@@ -2460,8 +2443,8 @@ script:
       isArray: true
       name: job_id
       required: true
-    deprecated: true
     description: Checks the status of a log query.
+    deprecated: true
     name: panorama-check-logs-status
     outputs:
     - contextPath: Panorama.Monitor.JobID
@@ -2657,13 +2640,13 @@ script:
     - description: The source user.
       name: source-user
     - description: The target number of the firewall. Used only on a Panorama instance.
-      isArray: true
       name: target
-    - description: The target vsys of the firewall. Used only on a Panorama instance.
       isArray: true
+    - description: The target vsys of the firewall. Used only on a Panorama instance.
       name: vsys
-    deprecated: true
+      isArray: true
     description: Checks whether a session matches a specified security policy. This command is only available on firewall instances.
+    deprecated: true
     name: panorama-security-policy-match
     outputs:
     - contextPath: Panorama.SecurityPolicyMatch.Query
@@ -2730,8 +2713,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    deprecated: true
     description: Lists the static routes of a virtual router.
+    deprecated: true
     name: panorama-list-static-routes
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2770,8 +2753,8 @@ script:
       required: true
     - description: The template to use to run the command. Overrides the template parameter (Panorama instances).
       name: template
-    deprecated: true
     description: Returns the specified static route of a virtual router.
+    deprecated: true
     name: panorama-get-static-route
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2826,8 +2809,8 @@ script:
       name: interface
     - description: The template to use to run the command. Overrides the template parameter (Panorama instances).
       name: template
-    deprecated: true
     description: Adds a static route.
+    deprecated: true
     name: panorama-add-static-route
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2863,8 +2846,8 @@ script:
       required: true
     - description: The template to use to run the command. Overrides the template parameter (Panorama instances).
       name: template
-    deprecated: true
     description: Deletes a static route.
+    deprecated: true
     name: panorama-delete-static-route
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2897,8 +2880,8 @@ script:
   - arguments:
     - description: The serial number of the target device.
       name: target
-    deprecated: true
     description: Shows the firewall device software version.
+    deprecated: true
     name: panorama-show-device-version
     outputs:
     - contextPath: Panorama.Device.Info.Devicename
@@ -2916,8 +2899,8 @@ script:
   - arguments:
     - description: The device to which to download the content update.
       name: target
-    deprecated: true
     description: Downloads the latest content update.
+    deprecated: true
     name: panorama-download-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Download.JobID
@@ -2932,8 +2915,8 @@ script:
     - description: The job ID to check.
       name: job_id
       required: true
-    deprecated: true
     description: Checks the download status of a content update.
+    deprecated: true
     name: panorama-content-update-download-status
     outputs:
     - contextPath: Panorama.Content.Download.JobID
@@ -2948,8 +2931,8 @@ script:
   - arguments:
     - description: The device on which to install the content update.
       name: target
-    deprecated: true
     description: Installs the latest content update.
+    deprecated: true
     name: panorama-install-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -2964,8 +2947,8 @@ script:
     - description: The job ID of the content installation.
       name: job_id
       required: true
-    deprecated: true
     description: Gets the installation status of the content update.
+    deprecated: true
     name: panorama-content-update-install-status
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -2980,8 +2963,8 @@ script:
   - arguments:
     - description: The target device from which to get the PAN-OS software version.
       name: target
-    deprecated: true
     description: Checks the PAN-OS software version from the repository.
+    deprecated: true
     name: panorama-check-latest-panos-software
   - arguments:
     - description: The target device from which to download the PAN-OS software version.
@@ -2989,8 +2972,8 @@ script:
     - description: The target version number to install.
       name: target_version
       required: true
-    deprecated: true
     description: Downloads the target PAN-OS software version to install on the target device.
+    deprecated: true
     name: panorama-download-panos-version
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
@@ -3005,9 +2988,9 @@ script:
     - description: The job ID to check.
       name: job_id
       required: true
-    deprecated: true
     description: Gets the download status of the target PAN-OS software.
     name: panorama-download-panos-status
+    deprecated: true
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
       description: The job ID of the PAN-OS download.
@@ -3024,8 +3007,8 @@ script:
     - description: The target PAN-OS version to install.
       name: target_version
       required: true
-    deprecated: true
     description: Installs the target PAN-OS version on the specified target device.
+    deprecated: true
     name: panorama-install-panos-version
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
@@ -3040,8 +3023,8 @@ script:
     - description: The job ID to check.
       name: job_id
       required: true
-    deprecated: true
     description: Gets the installation status of the PAN-OS software.
+    deprecated: true
     name: panorama-install-panos-status
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
@@ -3056,15 +3039,15 @@ script:
   - arguments:
     - description: The target device on which to reboot the firewall.
       name: target
-    deprecated: true
     description: Reboots the firewall device.
+    deprecated: true
     name: panorama-device-reboot
   - arguments:
     - description: The IP address from which to return information.
       name: ip_address
       required: true
-    deprecated: true
     description: Gets location information for an IP address.
+    deprecated: true
     name: panorama-show-location-ip
     outputs:
     - contextPath: Panorama.Location.IP.country_code
@@ -3080,8 +3063,8 @@ script:
       description: Whether the IP address was found.
       type: String
   - arguments: []
-    deprecated: true
     description: Gets information about available PAN-OS licenses and their statuses.
+    deprecated: true
     name: panorama-get-licenses
     outputs:
     - contextPath: Panorama.License.Authcode
@@ -3120,8 +3103,8 @@ script:
       - virus
       - vulnerability
       - wildfire-analysis
-    deprecated: true
     description: Gets information for the specified security profile.
+    deprecated: true
     name: panorama-get-security-profiles
     outputs:
     - contextPath: Panorama.Spyware.Name
@@ -3278,8 +3261,8 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    deprecated: true
     description: Applies a security profile to specific rules or rules with a specific tag.
+    deprecated: true
     name: panorama-apply-security-profile
   - arguments:
     - auto: PREDEFINED
@@ -3288,8 +3271,8 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    deprecated: true
     description: Get SSL decryption rules.
+    deprecated: true
     name: panorama-get-ssl-decryption-rules
     outputs:
     - contextPath: Panorama.SSLRule.From
@@ -3335,8 +3318,8 @@ script:
     - description: The template name.
       name: template
       required: true
-    deprecated: true
     description: Retrieves the Wildfire configuration.
+    deprecated: true
     name: panorama-get-wildfire-configuration
     outputs:
     - contextPath: Panorama.WildFire.Name
@@ -3352,12 +3335,12 @@ script:
     - description: The URL filtering profile name. Get the name by running the get-security-profiles command.
       name: profile_name
       required: true
-    deprecated: true
     description: Sets default categories to block in the URL filtering profile.
+    deprecated: true
     name: panorama-url-filtering-block-default-categories
   - arguments: []
-    deprecated: true
     description: Gets anti-spyware best practices.
+    deprecated: true
     name: panorama-get-anti-spyware-best-practice
     outputs:
     - contextPath: Panorama.Spyware.BotentDomain.Name
@@ -3394,8 +3377,8 @@ script:
       description: The botnet domain max version.
       type: String
   - arguments: []
-    deprecated: true
     description: Gets file-blocking best practices.
+    deprecated: true
     name: panorama-get-file-blocking-best-practice
     outputs:
     - contextPath: Panorama.FileBlocking.Rule.Action
@@ -3411,8 +3394,8 @@ script:
       description: The rule name.
       type: String
   - arguments: []
-    deprecated: true
     description: Get anti-virus best practices.
+    deprecated: true
     name: panorama-get-antivirus-best-practice
     outputs:
     - contextPath: Panorama.Antivirus.Decoder.Action
@@ -3425,8 +3408,8 @@ script:
       description: The WildFire action.
       type: String
   - arguments: []
-    deprecated: true
     description: Gets vulnerability-protection best practices.
+    deprecated: true
     name: panorama-get-vulnerability-protection-best-practice
     outputs:
     - contextPath: Panorama.Vulnerability.Rule.Action
@@ -3454,8 +3437,8 @@ script:
       description: The vendor ID.
       type: String
   - arguments: []
-    deprecated: true
     description: Views WildFire best practices.
+    deprecated: true
     name: panorama-get-wildfire-best-practice
     outputs:
     - contextPath: Panorama.WildFire.Analysis
@@ -3486,8 +3469,8 @@ script:
       description: The WildFire schedule recurring.
       type: String
   - arguments: []
-    deprecated: true
     description: Views URL filtering best practices.
+    deprecated: true
     name: panorama-get-url-filtering-best-practice
     outputs:
     - contextPath: Panorama.URLFilter.Category.Action
@@ -3518,50 +3501,50 @@ script:
     - description: The template name.
       name: template
       required: true
-    deprecated: true
     description: Enforces wildfire best practices to upload files to the maximum size, forwards all file types, and updates the schedule.
+    deprecated: true
     name: panorama-enforce-wildfire-best-practice
   - arguments:
     - description: The name of the profile to create.
       name: profile_name
       required: true
-    deprecated: true
     description: Creates an antivirus best practice profile.
+    deprecated: true
     name: panorama-create-antivirus-best-practice-profile
   - arguments:
     - description: The profile name to create.
       name: profile_name
       required: true
-    deprecated: true
     description: Creates an anti-spyware best practice profile.
+    deprecated: true
     name: panorama-create-anti-spyware-best-practice-profile
   - arguments:
     - description: The profile name.
       name: profile_name
       required: true
-    deprecated: true
     description: Creates a vulnerability protection best practice profile.
+    deprecated: true
     name: panorama-create-vulnerability-best-practice-profile
   - arguments:
     - description: The profile name.
       name: profile_name
       required: true
-    deprecated: true
     description: Creates a URL filtering best practice profile.
+    deprecated: true
     name: panorama-create-url-filtering-best-practice-profile
   - arguments:
     - description: The name of the profile.
       name: profile_name
       required: true
-    deprecated: true
     description: Creates a file blocking best practice profile.
+    deprecated: true
     name: panorama-create-file-blocking-best-practice-profile
   - arguments:
     - description: The name of the profile.
       name: profile_name
       required: true
-    deprecated: true
     description: Creates a WildFire analysis best practice profile.
+    deprecated: true
     name: panorama-create-wildfire-best-practice-profile
   - arguments:
     - description: The template to use when running the command. Overrides the template parameter (Panorama instances). If not given, will use the integration parameter.
@@ -3570,8 +3553,8 @@ script:
       name: template_stack
     - description: "The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. "
       name: vsys
-    deprecated: true
     description: Shows the user ID interface configuration.
+    deprecated: true
     name: panorama-show-user-id-interfaces-config
     outputs:
     - contextPath: Panorama.UserInterfaces.Name
@@ -3590,8 +3573,8 @@ script:
       name: template_stack
     - description: "The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. "
       name: vsys
-    deprecated: true
     description: Shows the zones configuration.
+    deprecated: true
     name: panorama-show-zones-config
     outputs:
     - contextPath: Panorama.Zone.Name
@@ -3616,8 +3599,8 @@ script:
       name: template_stack
     - description: "The name of the virtual system to be configured. Will use the configured VSYS parameter if exists. If given a value, will override the VSYS parameter. If neither the VSYS parameter and this argument are entered, will default to 'vsys1'. "
       name: vsys
-    deprecated: true
     description: Retrieves list of user ID agents configured in the system.
+    deprecated: true
     name: panorama-list-configured-user-id-agents
     outputs:
     - contextPath: Panorama.UserIDAgents.Name
@@ -3665,8 +3648,8 @@ script:
       - anti-virus
       - content
       required: true
-    deprecated: true
     description: Uploads a content file to Panorama.
+    deprecated: true
     name: panorama-upload-content-update-file
     outputs:
     - contextPath: Panorama.Content.Upload.Status
@@ -3695,8 +3678,8 @@ script:
       - yes
       - no
       required: true
-    deprecated: true
     description: Installs a specific content update file.
+    deprecated: true
     name: panorama-install-file-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -3754,21 +3737,21 @@ script:
       name: reporttype
     - description: The report name.
       name: reportname
-    - auto: PREDEFINED
-      defaultValue: config
+    - defaultValue: 'config'
       description: The request type, for example export, import, log, config.
       name: type
       predefined:
-      - keygen
-      - config
-      - commit
-      - op
-      - report
-      - log
-      - import
-      - export
-      - user-id
-      - version
+      - 'keygen'
+      - 'config'
+      - 'commit'
+      - 'op'
+      - 'report'
+      - 'log'
+      - 'import'
+      - 'export'
+      - 'user-id'
+      - 'version'
+      auto: PREDEFINED
     - description: The time the PCAP was received on the firewall. Used for threat PCAPs.
       name: search-time
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance. This argument will work only with op type commands.
@@ -3848,26 +3831,27 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: Whether to use polling.
+      defaultValue: 'false'
       name: polling
       predefined:
       - 'true'
       - 'false'
-    - deprecated: true
-      description: commit job ID to use in polling commands. (automatically filled by polling).
+    - description: commit job ID to use in polling commands. (automatically filled by polling).
       name: commit_job_id
-    - defaultValue: '120'
-      description: The timeout (in seconds) when polling.
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
       name: timeout
-    - defaultValue: '10'
-      description: The interval (in seconds) when polling.
+      defaultValue: '120'
+    - description: The interval (in seconds) when polling.
       name: interval_in_seconds
-    - deprecated: true
-      description: whether to hide the polling result (automatically filled by polling).
+      defaultValue: '10'
+    - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
+      deprecated: true
     description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
     name: pan-os-commit
+    polling: true
     outputs:
     - contextPath: Panorama.Commit.JobID
       description: The job ID to commit.
@@ -3878,7 +3862,6 @@ script:
     - contextPath: Panorama.Commit.Description
       description: The commit description from the the command input.
       type: String
-    polling: true
   - arguments:
     - default: true
       description: The device group to which to push (Panorama instances).
@@ -3902,26 +3885,27 @@ script:
     - description: The serial number for a virtual system commit. If provided, the commit will be a virtual system commit.
       name: serial_number
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: Whether to use polling.
+      defaultValue: 'false'
       name: polling
       predefined:
       - 'true'
       - 'false'
-    - deprecated: true
-      description: push job ID to use in polling commands. (automatically filled by polling).
+    - description: push job ID to use in polling commands. (automatically filled by polling).
       name: push_job_id
-    - defaultValue: '120'
-      description: The timeout (in seconds) when polling.
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
       name: timeout
-    - defaultValue: '10'
-      description: The interval (in seconds) when polling.
+      defaultValue: '120'
+    - description: The interval (in seconds) when polling.
       name: interval_in_seconds
-    - deprecated: true
-      description: whether to hide the polling result (automatically filled by polling).
+      defaultValue: '10'
+    - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
+      deprecated: true
     description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID. Validates if a push has been successful if polling="true".
     name: pan-os-push-to-device-group
+    polling: true
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
       description: The device group in which the policies were pushed.
@@ -3941,7 +3925,6 @@ script:
     - contextPath: Panorama.Push.Details
       description: The job ID details.
       type: String
-    polling: true
   - arguments:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
@@ -4053,6 +4036,7 @@ script:
     - auto: PREDEFINED
       description: The element to change.
       name: element_to_change
+      required: true
       predefined:
       - fqdn
       - ip_netmask
@@ -4060,7 +4044,6 @@ script:
       - ip_wildcard
       - description
       - tag
-      required: true
     - description: The value of the element that needs to be changed. Can be a list when element_to_change == 'tag' only.
       isArray: true
       name: element_value
@@ -5051,9 +5034,9 @@ script:
       required: true
     - description: The device group for which to return addresses for the EDL (Panorama instances).
       name: device-group
-    - auto: PREDEFINED
-      description: The type of the EDL. Required when refreshing an EDL object which is configured on Panorama.
+    - description: The type of the EDL. Required when refreshing an EDL object which is configured on Panorama.
       name: edl_type
+      auto: PREDEFINED
       predefined:
       - ip
       - url
@@ -5069,20 +5052,20 @@ script:
       name: rulename
     - description: The description of the rule to create.
       name: description
-    - auto: PREDEFINED
-      description: The action for the rule.
+    - description: The action for the rule.
       name: action
+      auto: PREDEFINED
       predefined:
       - allow
       - deny
       - drop
       required: true
     - description: A comma-separated list of address object names, address group object names, or EDL object names.
-      isArray: true
       name: source
-    - description: A comma-separated list of address object names, address group object names, or EDL object names.
       isArray: true
+    - description: A comma-separated list of address object names, address group object names, or EDL object names.
       name: destination
+      isArray: true
     - description: A comma-separated list of source zones.
       isArray: true
       name: source_zone
@@ -5116,8 +5099,8 @@ script:
       isArray: true
       name: application
     - description: A comma-separated list of source users for the rule to create.
-      isArray: true
       name: source_user
+      isArray: true
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -5211,17 +5194,17 @@ script:
       - edl
       required: true
     - description: A comma-separated list of object values for the object_type argument.
-      isArray: true
       name: object_value
       required: true
+      isArray: true
     - auto: PREDEFINED
-      defaultValue: both
       description: The direction to block. This argument is not applicable for the "custom-url-category" object_type.
       name: direction
       predefined:
       - to
       - from
       - both
+      defaultValue: both
     - auto: PREDEFINED
       description: The pre-rule or post-rule (Panorama instances).
       name: pre_post
@@ -5352,7 +5335,6 @@ script:
     - description: The device group in which the rule belongs to.
       name: device-group
     description: Edits a policy rule.
-    execution: true
     name: pan-os-edit-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -5394,6 +5376,7 @@ script:
     - contextPath: Panorama.SecurityRule.Tags
       description: The tags for the rule.
       type: String
+    execution: true
   - arguments:
     - description: The name of the rule to delete.
       name: rulename
@@ -5407,7 +5390,6 @@ script:
     - description: The device group for which to return addresses for the rule (Panorama instances).
       name: device-group
     description: Deletes a policy rule.
-    execution: true
     name: pan-os-delete-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -5416,11 +5398,12 @@ script:
     - contextPath: Panorama.SecurityRule.DeviceGroup
       description: The device group for the rule (Panorama instances).
       type: string
+    execution: true
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether to list predefined applications.
+    - description: Whether to list predefined applications.
       name: predefined
+      auto: PREDEFINED
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
@@ -5430,8 +5413,8 @@ script:
       name: name_match
     - description: When specified, the results returned in the list are limited to applications whose names contain the specified string.
       name: name_contain
-    - auto: PREDEFINED
-      description: The application risk (1 to 5).
+    - description: The application risk (1 to 5).
+      auto: PREDEFINED
       name: risk
       predefined:
       - '1'
@@ -5439,24 +5422,24 @@ script:
       - '3'
       - '4'
       - '5'
-    - auto: PREDEFINED
-      description: The application category.
+    - description: The application category.
+      auto: PREDEFINED
       name: category
       predefined:
-      - collaboration
-      - business-systems
-      - networking
-      - media
+      - 'collaboration'
+      - 'business-systems'
+      - 'networking'
+      - 'media'
     - description: The application sub-category.
       name: sub_category
-    - auto: PREDEFINED
-      description: The application technology.
+    - description: The application technology.
+      auto: PREDEFINED
       name: technology
       predefined:
-      - browser-based
-      - client-server
-      - network-protocol
-      - peer-to-peer
+      - 'browser-based'
+      - 'client-server'
+      - 'network-protocol'
+      - 'peer-to-peer'
     - description: "A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'."
       name: characteristics
     - defaultValue: '50'
@@ -5536,15 +5519,15 @@ script:
       description: The job ID warnings
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The type of packet capture.
+    - description: The type of packet capture.
       name: pcapType
+      required: true
+      auto: PREDEFINED
       predefined:
       - application-pcap
       - filter-pcap
       - threat-pcap
       - dlp-pcap
-      required: true
     - description: The serial number of the firewall to download the PCAP from, relevant only for Panorama instances.
       name: serialNumber
     - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
@@ -5600,14 +5583,14 @@ script:
       description: The SSDeep hash of the file.
       type: string
   - arguments:
-    - auto: PREDEFINED
-      description: The type of packet capture.
+    - description: The type of packet capture.
       name: pcapType
+      required: true
+      auto: PREDEFINED
       predefined:
       - application-pcap
       - filter-pcap
       - dlp-pcap
-      required: true
     - description: The serial number of the firewall to download the PCAP from.
       name: serialNumber
     - description: The password for Panorama. Relevant for the 'dlp-pcap' PCAP type.
@@ -5622,10 +5605,10 @@ script:
       isArray: true
       name: IPs
       required: true
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: Whether the IP addresses remain registered to the tag after the device reboots ('true':persistent, 'false':non-persistent).
+    - description: Whether the IP addresses remain registered to the tag after the device reboots ('true':persistent, 'false':non-persistent).
       name: persistent
+      auto: PREDEFINED
+      defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
@@ -5655,10 +5638,11 @@ script:
       name: tag
       required: true
     - description: A comma-separated list of users to register.
-      isArray: true
       name: Users
+      isArray: true
       required: true
-    - description: Timeout value to automatically unregister the users (in seconds). Only applicable to PAN-OS 9.x and higher.
+    - description: |-
+        Timeout value to automatically unregister the users (in seconds). Only applicable to PAN-OS 9.x and higher.
       name: timeout
     description: Registers users to a tag. This command is only available for PAN-OS version 9.x and above.
     name: pan-os-register-user-tag
@@ -5720,7 +5704,6 @@ script:
     - description: The job ID of the query.
       name: job_id
       required: true
-    deprecated: true
     description: Deprecated. Use the pan-os-check-logs-status command instead.
     name: pan-os-check-traffic-logs-status
     outputs:
@@ -5730,11 +5713,11 @@ script:
     - contextPath: Panorama.TrafficLogs.Status
       description: The status of the traffic logs query.
       type: String
+    deprecated: true
   - arguments:
     - description: The job ID of the query.
       name: job_id
       required: true
-    deprecated: true
     description: Deprecated. Use the pan-os-get-logs command instead.
     name: pan-os-get-traffic-logs
     outputs:
@@ -5801,21 +5784,22 @@ script:
     - contextPath: Panorama.TrafficLogs.Logs.BytesSent
       description: The log bytes sent.
       type: String
+    deprecated: true
   - arguments:
-    - auto: PREDEFINED
-      description: The rules location. Mandatory for Panorama instances.
+    - description: The rules location. Mandatory for Panorama instances.
       name: pre_post
+      auto: PREDEFINED
       predefined:
       - pre-rulebase
       - post-rulebase
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
-    - deprecated: true
-      description: The tag to filter the rules.
+    - description: The tag to filter the rules.
       name: tag
+      deprecated: true
     - description: A comma-separated list of tags by which to filter the rules.
-      isArray: true
       name: tags
+      isArray: true
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     - description: The name of the rule to retrieve. If not mentioned, will retrieve all the rules.
@@ -5935,9 +5919,10 @@ script:
       description: Represents the type of the security rule (e.g., pre-rule, post-rule, intra-zone, inter-zone).
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The log type.
+    - description: The log type.
       name: log-type
+      required: true
+      auto: PREDEFINED
       predefined:
       - threat
       - traffic
@@ -5947,7 +5932,6 @@ script:
       - corr
       - system
       - decryption
-      required: true
     - description: The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
       name: query
     - description: |-
@@ -5988,24 +5972,24 @@ script:
       description: The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000.
       name: number_of_logs
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: Whether to use polling.
+      defaultValue: 'false'
       name: polling
       predefined:
       - 'true'
       - 'false'
-    - deprecated: true
-      description: Job ID to use in polling commands. (automatically filled by polling).
+    - description: Job ID to use in polling commands. (automatically filled by polling).
       name: query_log_job_id
-    - defaultValue: '120'
-      description: The timeout (in seconds) when polling.
+      deprecated: true
+    - description: The timeout (in seconds) when polling.
       name: timeout
-    - defaultValue: '10'
-      description: The interval (in seconds) when polling.
+      defaultValue: '120'
+    - description: The interval (in seconds) when polling.
       name: interval_in_seconds
-    - deprecated: true
-      description: whether to hide the polling result (automatically filled by polling).
+      defaultValue: '10'
+    - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
+      deprecated: true
     description: The query logs in Panorama.
     name: pan-os-query-logs
     outputs:
@@ -6174,8 +6158,8 @@ script:
     polling: true
   - arguments:
     - description: The job ID of the query.
-      isArray: true
       name: job_id
+      isArray: true
       required: true
     description: Checks the status of a logs query.
     name: pan-os-check-logs-status
@@ -6188,12 +6172,12 @@ script:
       type: String
   - arguments:
     - description: The job ID of the query.
-      isArray: true
       name: job_id
       required: true
-    - defaultValue: 'true'
-      description: Whether to auto-enrich the War Room entry. If "true", entry is not auto-enriched. If "false", entry is auto-extracted.
+      isArray: true
+    - description: Whether to auto-enrich the War Room entry. If "true", entry is not auto-enriched. If "false", entry is auto-extracted.
       name: ignore_auto_extract
+      defaultValue: 'true'
     description: Retrieves the data of a logs query.
     name: pan-os-get-logs
     outputs:
@@ -6373,11 +6357,11 @@ script:
     - description: The source user.
       name: source-user
     - description: The target number of the firewall. Used only on a Panorama instance.
-      isArray: true
       name: target
-    - description: The target VSYS of the firewall. Used only on a Panorama instance.
       isArray: true
+    - description: The target VSYS of the firewall. Used only on a Panorama instance.
       name: vsys
+      isArray: true
     description: Checks whether a session matches a specified security policy. This command is only available on firewall instances.
     name: pan-os-security-policy-match
     outputs:
@@ -6438,10 +6422,10 @@ script:
       required: true
     - description: The template to use to run the command. Overrides the template parameter (Panorama instances).
       name: template
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether to show an uncommitted configuration. Default is "false".
+    - description: Whether to show an uncommitted configuration. Default is "false".
       name: show_uncommitted
+      auto: PREDEFINED
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
@@ -6956,9 +6940,10 @@ script:
       description: The rule name.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The security profile type.
+    - description: The security profile type.
       name: profile_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - data-filtering
       - file-blocking
@@ -6967,7 +6952,6 @@ script:
       - virus
       - vulnerability
       - wildfire-analysis
-      required: true
     - description: The rule name to apply.
       name: rule_name
       required: true
@@ -6985,9 +6969,10 @@ script:
     description: Applies a security profile to specific rules or rules with a specific tag.
     name: pan-os-apply-security-profile
   - arguments:
-    - auto: PREDEFINED
-      description: The security profile type.
+    - description: The security profile type.
       name: profile_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - data-filtering
       - file-blocking
@@ -6996,7 +6981,6 @@ script:
       - virus
       - vulnerability
       - wildfire-analysis
-      required: true
     - description: The rule name to apply.
       name: rule_name
       required: true
@@ -7011,9 +6995,9 @@ script:
     description: Removes a security profile to specific rules or rules with a specific tag.
     name: pan-os-remove-security-profile
   - arguments:
-    - auto: PREDEFINED
-      description: The location of the rules. Mandatory for Panorama instances.
+    - description: The location of the rules. Mandatory for Panorama instances.
       name: pre_post
+      auto: PREDEFINED
       predefined:
       - pre-rulebase
       - post-rulebase
@@ -7076,11 +7060,11 @@ script:
       description: The schedule that is recurring.
       type: String
   - arguments:
-    - description: The URL filtering profile name. Gets the name by running the get-security-profiles command.
-      name: profile_name
+    - name: profile_name
+      description: The URL filtering profile name. Gets the name by running the get-security-profiles command.
       required: true
-    description: Sets default categories to block in the URL filtering profile.
     name: pan-os-url-filtering-block-default-categories
+    description: Sets default categories to block in the URL filtering profile.
   - arguments: []
     description: Get anti-spyware best practices.
     name: pan-os-get-anti-spyware-best-practice
@@ -7119,16 +7103,16 @@ script:
       description: The botnet domain max version.
       type: String
   - arguments:
-    - description: The name of the anti spyware profile. If the profile exists, the command will operate on it, otherwise, if a new name is given, a new anti-spyware profile will be created.
-      name: anti_spyware_profile_name
+    - name: anti_spyware_profile_name
+      description: The name of the anti spyware profile. If the profile exists, the command will operate on it, otherwise, if a new name is given, a new anti-spyware profile will be created.
       required: true
-    - description: The EDL name to link to the profile.
-      name: dns_signature_source
+    - name: dns_signature_source
+      description: The EDL name to link to the profile.
       required: true
-    - description: The IPv4 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
-      name: ipv4_sinkhole_address
-    - description: The IPv6 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
-      name: ipv6_sinkhole_address
+    - name: ipv4_sinkhole_address
+      description: The IPv4 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
+    - name: ipv6_sinkhole_address
+      description: The IPv6 sinkhole address. Only relevant when the action arguemnt is set to 'sinkhole'.
     - auto: PREDEFINED
       description: The action on the DNS queries.
       name: action
@@ -7139,15 +7123,16 @@ script:
       - sinkhole
       required: true
     - auto: PREDEFINED
-      defaultValue: disable
       description: Allows capturing packets on match. Select "single-packet" to capture the first packet of the session or "extended-capture" to set between 1-50 packets. Packet capture can be very CPU intensive and can degrade firewall performance. Only use this feature when necessary and make sure you turn it off after you collect the required packets.
       name: packet_capture
       predefined:
       - disable
       - single-packet
       - extended-capture
+      defaultValue: disable
     description: Enables assigning EDL to the anti-spyware profile under "DNS Signature Policies".
     name: pan-os-apply-dns-signature-policy
+    outputs: []
   - arguments: []
     description: Gets file-blocking best practices.
     name: pan-os-get-file-blocking-best-practice
@@ -7397,14 +7382,14 @@ script:
     - description: Entry ID of the file to upload.
       name: entryID
       required: true
-    - auto: PREDEFINED
-      description: The category of the content.
+    - description: The category of the content.
       name: category
+      required: true
+      auto: PREDEFINED
       predefined:
       - wildfire
       - anti-virus
       - content
-      required: true
     description: Uploads a content file to Panorama.
     name: pan-os-upload-content-update-file
     outputs:
@@ -7418,14 +7403,14 @@ script:
     - description: The update file name to be installed on PAN-OS.
       name: version_name
       required: true
-    - auto: PREDEFINED
-      description: The category of the content.
+    - description: The category of the content.
       name: category
+      required: true
+      auto: PREDEFINED
       predefined:
       - wildfire
       - anti-virus
       - content
-      required: true
     - auto: PREDEFINED
       defaultValue: no
       description: Skips the file validity check with the PAN-OS update server. Use this option for air-gapped networks and only if you trust the content file.
@@ -7653,8 +7638,8 @@ script:
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
-      description: The ID of the PAN-OS host.
       type: String
+      description: The ID of the PAN-OS host.
     - contextPath: PANOS.DeviceGroupOp.serial
       description: The serial number of the firewall.
       type: String
@@ -7668,8 +7653,8 @@ script:
       description: The state of the last commit.
       type: String
     - contextPath: PANOS.DeviceGroupOp.name
-      description: The device group name.
       type: String
+      description: The device group name.
   - arguments:
     - description: The string by which to filter the results to only show specific hostnames or serial numbers.
       name: device_filter_string
@@ -7677,8 +7662,8 @@ script:
     name: pan-os-platform-get-template-stacks
     outputs:
     - contextPath: PANOS.TemplateStackOp.hostid
-      description: The ID of the PAN-OS host.
       type: String
+      description: The ID of the PAN-OS host.
     - contextPath: PANOS.TemplateStackOp.serial
       description: The serial number of the firewall.
       type: String
@@ -7689,8 +7674,8 @@ script:
       description: The firewall hostname.
       type: String
     - contextPath: PANOS.TemplateStackOp.last_commit_all_state_tpl
-      description: The state of the last commit.
       type: String
+      description: The state of the last commit.
     - contextPath: PANOS.TemplateStackOp.name
       description: The template stack name.
       type: String
@@ -7703,8 +7688,8 @@ script:
     name: pan-os-platform-get-global-counters
     outputs:
     - contextPath: PANOS.ShowCounters.Summary.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.ShowCounters.Summary.name
       description: The human readable counter name.
       type: String
@@ -7753,8 +7738,8 @@ script:
     name: pan-os-platform-get-bgp-peers
     outputs:
     - contextPath: PANOS.ShowBGPPeers.Summary.hostid
-      description: The host ID
       type: String
+      description: The host ID
     - contextPath: PANOS.ShowBGPPeers.Summary.peer
       description: The name of the Border Gateway Protocol (BGP) peer.
       type: String
@@ -7765,8 +7750,8 @@ script:
       description: The total number of accepted routes from the peer.
       type: String
     - contextPath: PANOS.ShowBGPPeers.Result.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.ShowBGPPeers.Result.peer
       description: The name of the Border Gateway Protocol (BGP) peer.
       type: String
@@ -7812,8 +7797,8 @@ script:
     name: pan-os-platform-get-available-software
     outputs:
     - contextPath: PANOS.SoftwareVersions.Summary.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.SoftwareVersions.Summary.version
       description: The software version in Major.Minor.Maint format.
       type: String
@@ -7827,20 +7812,20 @@ script:
       description: The size of the software in KB.
       type: String
     - contextPath: PANOS.SoftwareVersions.Summary.release_notes
-      description: The link to version release notes on PAN knowledge base.
       type: String
+      description: The link to version release notes on PAN knowledge base.
     - contextPath: PANOS.SoftwareVersions.Summary.downloaded
+      type: Boolean
       description: True if the software version is present on the system.
-      type: Boolean
     - contextPath: PANOS.SoftwareVersions.Summary.current
+      type: Boolean
       description: True if this is the currently installed software on the system.
-      type: Boolean
     - contextPath: PANOS.SoftwareVersions.Summary.latest
+      type: Boolean
       description: True if this is the most recently released software for this platform.
-      type: Boolean
     - contextPath: PANOS.SoftwareVersions.Summary.uploaded
-      description: True if the software version has been uploaded to the system.
       type: Boolean
+      description: True if the software version has been uploaded to the system.
   - arguments:
     - description: The string by which to filter the results to only show specific hostnames or serial numbers.
       name: device_filter_string
@@ -7850,8 +7835,8 @@ script:
     name: pan-os-platform-get-ha-state
     outputs:
     - contextPath: PANOS.HAState.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.HAState.active
       description: Whether this is the active firewall in a pair. "True" if standalone as well.
       type: Boolean
@@ -7872,12 +7857,13 @@ script:
       name: id
     - description: The target number of the firewall. Used only on a Panorama instance.
       name: target
-    description: Gets all the jobs from the devices in the environment, or a single job when the ID is specified.
+    description: >-
+      Gets all the jobs from the devices in the environment, or a single job when the ID is specified.
     name: pan-os-platform-get-jobs
     outputs:
     - contextPath: PANOS.JobStatus.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.JobStatus.id
       description: The ID of the job.
       type: String
@@ -7891,26 +7877,26 @@ script:
       description: The status of the job.
       type: String
     - contextPath: PANOS.JobStatus.result
+      type: String
       description: The result of the job.
-      type: String
     - contextPath: PANOS.JobStatus.user
+      type: String
       description: The user who initiated the job.
-      type: String
     - contextPath: PANOS.JobStatus.tenq
+      type: String
       description: The time the job was queued into the system.
-      type: String
     - contextPath: PANOS.JobStatus.stoppable
+      type: String
       description: Whether the job can be stopped after it started.
-      type: String
     - contextPath: PANOS.JobStatus.description
+      type: String
       description: The job description.
-      type: String
     - contextPath: PANOS.JobStatus.positionInQ
+      type: String
       description: The position of the job in the current job queue.
-      type: String
     - contextPath: PANOS.JobStatus.progress
-      description: The numerical progress of the job.
       type: String
+      description: The numerical progress of the job.
   - arguments:
     - description: The software version to upgrade to, for example, 9.1.2.
       name: version
@@ -7926,8 +7912,8 @@ script:
     name: pan-os-platform-download-software
     outputs:
     - contextPath: PANOS.DownloadStatus.Summary.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.DownloadStatus.Summary.started
       description: Whether the download process started.
       type: String
@@ -7935,17 +7921,18 @@ script:
     - description: The serial number, or IP address for a Panorama instance, to reboot.
       name: target
       required: true
-    description: |
-      Reboots the given device by host ID. Warning: This command has no confirmation and the device will immediately reboot. This command can be disruptive.
-    execution: true
+    description: >
+      Reboots the given device by host ID. Warning: This command has no confirmation and the device
+      will immediately reboot. This command can be disruptive.
     name: pan-os-platform-reboot
     outputs:
     - contextPath: PANOS.RestartStatus.Summary.hostid
-      description: The host ID
       type: String
+      description: The host ID
     - contextPath: PANOS.RestartStatus.Summary.started
       description: Whether the download process started.
       type: String
+    execution: true
   - arguments:
     - description: The serial number, or IP address for a Panorama instance, to reboot.
       name: target
@@ -7963,14 +7950,14 @@ script:
     - description: The serial number, or IP address for a Panorama instance, to reboot.
       name: target
       required: true
-    - auto: PREDEFINED
-      description: The new state.
+    - description: The new state.
       name: state
+      required: true
+      auto: PREDEFINED
       predefined:
       - functional
       - peer
       - suspend
-      required: true
     description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
     name: pan-os-platform-update-ha-state
     outputs:
@@ -7999,8 +7986,8 @@ script:
       description: The total number of matching issues.
       type: Number
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: The parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8040,8 +8027,8 @@ script:
       description: The total number of matching issues.
       type: Number
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: The parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8087,8 +8074,8 @@ script:
     name: pan-os-hygiene-check-spyware-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      description: The description of the check.
       type: String
+      description: The description of the check.
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check.
       type: String
@@ -8099,8 +8086,8 @@ script:
       description: The total number of matching issues.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8120,8 +8107,8 @@ script:
     name: pan-os-hygiene-check-url-filtering-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      description: The description of the check.
       type: String
+      description: The description of the check.
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check.
       type: String
@@ -8132,8 +8119,8 @@ script:
       description: The total number of matching issues.
       type: String
     - contextPath: PANOS.ConfigurationHygiene.Result.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.ConfigurationHygiene.Result.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8153,8 +8140,8 @@ script:
     name: pan-os-hygiene-conforming-url-filtering-profiles
     outputs:
     - contextPath: PANOS.PanosObject.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.PanosObject.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8219,8 +8206,8 @@ script:
     name: pan-os-hygiene-check-security-zones
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      description: The description of the check.
       type: String
+      description: The description of the check.
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check.
       type: String
@@ -8252,8 +8239,8 @@ script:
     name: pan-os-hygiene-check-security-rules
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
-      description: The description of the check.
       type: String
+      description: The description of the check.
     - contextPath: PANOS.ConfigurationHygiene.Summary.issue_code
       description: The shorthand code for this hygiene check.
       type: String
@@ -8287,8 +8274,8 @@ script:
     name: pan-os-hygiene-fix-log-forwarding
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
-      description: The host ID.
       type: String
+      description: The host ID.
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8313,8 +8300,8 @@ script:
     name: pan-os-hygiene-fix-security-zone-log-settings
     outputs:
     - contextPath: PANOS.ConfigurationHygieneFix.hostid
-      description: The host ID
       type: String
+      description: The host ID
     - contextPath: PANOS.ConfigurationHygieneFix.container_name
       description: What parent container (DG, Template, VSYS) this object belongs to.
       type: String
@@ -8483,22 +8470,22 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    - auto: PREDEFINED
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Whether to show the un-committed rules or not.
       name: show_uncommitted
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the NAT rules.
       name: disabled
+      auto: PREDEFINED
       predefined:
       - yes
       - no
-    - auto: PREDEFINED
-      description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
+    - description: The type of the NAT rules to retrieve. If not mentioned, will retrieve all the NAT rules.
       name: nat_type
+      auto: PREDEFINED
       predefined:
       - ipv4
       - nat64
@@ -8575,91 +8562,92 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    - auto: PREDEFINED
-      defaultValue: ipv4
-      description: The NAT type in which the rule will be created.
-      name: nat_type
+    - defaultValue: 'ipv4'
+      auto: PREDEFINED
       predefined:
       - ipv4
       - nat64
       - nptv6
-    - defaultValue: any
-      description: A comma-separated list of source zones.
+      description: The NAT type in which the rule will be created.
+      name: nat_type
+    - description: A comma-separated list of source zones.
       isArray: true
       name: source_zone
+      defaultValue: 'any'
     - description: The destination zone.
       name: destination_zone
-    - defaultValue: any
-      description: The destination interface for the rule.
+    - description: The destination interface for the rule.
       name: destination_interface
-    - defaultValue: any
-      description: The service in which the rule will be created with.
+      defaultValue: 'any'
+    - description: The service in which the rule will be created with.
       name: service
-    - defaultValue: any
-      description: A comma-separated list of address object names, address group object names, or EDL object names.
+      defaultValue: 'any'
+    - description: A comma-separated list of address object names, address group object names, or EDL object names.
       isArray: true
       name: source_address
-    - defaultValue: any
-      description: A comma-separated list of address object names, address group object names, or EDL object names.
+      defaultValue: 'any'
+    - description: A comma-separated list of address object names, address group object names, or EDL object names.
       isArray: true
       name: destination_address
-    - auto: PREDEFINED
-      defaultValue: none
-      description: The source translation type in which the rule will be created.
-      name: source_translation_type
+      defaultValue: 'any'
+    - defaultValue: 'none'
+      auto: PREDEFINED
       predefined:
       - static-ip
       - dynamic-ip
       - dynamic-ip-and-port
       - none
-    - auto: PREDEFINED
-      defaultValue: translated-address
-      description: The source translation address type in which the rule will be created.
-      name: source_translated_address_type
+      description: The source translation type in which the rule will be created.
+      name: source_translation_type
+    - defaultValue: 'translated-address'
+      auto: PREDEFINED
       predefined:
       - translated-address
       - interface-address
+      description: The source translation address type in which the rule will be created.
+      name: source_translated_address_type
     - description: A comma-separated list of source translation addresses. If source_translation_type == static_ip, must be a single value.
       isArray: true
       name: source_translated_address
     - description: The source translation interface.
       name: source_translated_interface
     - auto: PREDEFINED
-      defaultValue: none
-      description: The destination translation type.
-      name: destination_translation_type
+      defaultValue: 'none'
       predefined:
       - static_ip
       - dynamic_ip
       - none
+      description: The destination translation type.
+      name: destination_translation_type
     - description: A comma-separated list of destination translated addresses.
       isArray: true
       name: destination_translated_address
     - description: The destination translated port.
       name: destination_translated_port
-    - auto: PREDEFINED
-      description: The destination translation distribution method.
+    - description: The destination translation distribution method.
       name: destination_translation_distribution_method
+      auto: PREDEFINED
       predefined:
       - round-robin
       - source-ip-hash
       - ip-modulo
       - ip-hash
       - least-sessions
-    - auto: PREDEFINED
-      description: Whether to use negate destination.
+    - description: Whether to use negate destination.
       name: negate_destination
+      auto: PREDEFINED
       predefined:
       - yes
       - no
-    - auto: PREDEFINED
-      description: The DNS rewrite direction.
+    - description: The DNS rewrite direction.
       name: destination_dns_rewrite_direction
+      auto: PREDEFINED
       predefined:
       - forward
       - reverse
     description: Creates a new NAT rule in a Panorama/firewall instance.
     name: pan-os-create-nat-rule
+    outputs: []
   - arguments:
     - description: The name of the NAT rule to delete. Can be retrieved from the pan-os-list-nat-rules command.
       name: rulename
@@ -8674,6 +8662,7 @@ script:
       - post-rulebase
     description: Deletes a NAT rule.
     name: pan-os-delete-nat-rule
+    outputs: []
   - arguments:
     - description: The name of the NAT rule to edit. Can be retrieved from the pan-os-list-nat-rules command.
       name: rulename
@@ -8687,16 +8676,17 @@ script:
       - pre-rulebase
       - post-rulebase
     - auto: PREDEFINED
-      defaultValue: replace
       description: The operation to perform on the rule.
       name: behavior
       predefined:
       - replace
       - add
       - remove
+      defaultValue: 'replace'
     - auto: PREDEFINED
       description: The element to change.
       name: element_to_change
+      required: true
       predefined:
       - tags
       - service
@@ -8718,22 +8708,22 @@ script:
       - destination_translation_dynamic_ip
       - destination_translation_dynamic_distribution_method
       - disabled
-      required: true
     - description: The value of the element to change. Can be a list for certain elements.
       isArray: true
       name: element_value
       required: true
     description: Edits a NAT rule.
     name: pan-os-edit-nat-rule
+    outputs: []
   - arguments:
     - description: The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers.
       name: virtual_router
     - description: The template that the virtual router is part of. Use only for Panorama instances.
       name: template
-    - auto: PREDEFINED
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Whether to show the un-committed virtual routers or not.
       name: show_uncommitted
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -8849,9 +8839,9 @@ script:
     - description: The priority of the profile. (1-255).
       name: priority
       required: true
-    - auto: PREDEFINED
-      description: The action of the profile.
+    - description: The action of the profile.
       name: action
+      auto: PREDEFINED
       predefined:
       - redist
       - no-redist
@@ -8862,14 +8852,14 @@ script:
       isArray: true
       name: filter_ospf_tag
     - auto: PREDEFINED
-      description: A comma-separated list of path types for the OSPF.
-      isArray: true
-      name: filter_ospf_path_type
       predefined:
       - ext-1
       - ext-2
       - inter-area
       - intra-area
+      description: A comma-separated list of path types for the OSPF.
+      isArray: true
+      name: filter_ospf_path_type
     - description: A comma-separated list of community filters for the BGP. 32-bit value in decimal or hex or in AS:VAL format where AS and VAL are each in 0 - 65535 range. (Max 10 values).
       isArray: true
       name: filter_bgp_community
@@ -8878,6 +8868,7 @@ script:
       name: filter_bgp_extended_community
     description: Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
     name: pan-os-create-redistribution-profile
+    outputs: []
   - arguments:
     - description: The name of the redistribution-profile to edit.
       name: name
@@ -8890,6 +8881,7 @@ script:
     - auto: PREDEFINED
       description: The element to change.
       name: element_to_change
+      required: true
       predefined:
       - filter_type
       - filter_destination
@@ -8902,21 +8894,21 @@ script:
       - filter_ospf_path_type
       - filter_bgp_community
       - filter_bgp_extended_community
-      required: true
     - description: The value of the element to change. Can be a list for all the elements except priority and action.
       isArray: true
       name: element_value
       required: true
     - auto: PREDEFINED
-      defaultValue: replace
       description: The operation to perform on the profile.
       name: behavior
       predefined:
       - replace
       - add
       - remove
+      defaultValue: 'replace'
     description: Edits a redistribution-profile in a virtual-router.
     name: pan-os-edit-redistribution-profile
+    outputs: []
   - arguments:
     - description: The name of the redistribution-profile to delete.
       name: name
@@ -8928,6 +8920,7 @@ script:
       name: template
     description: Deletes a redistribution-profile from a virtual-router.
     name: pan-os-delete-redistribution-profile
+    outputs: []
   - arguments:
     - description: The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules.
       name: rulename
@@ -8939,22 +8932,22 @@ script:
       predefined:
       - pre-rulebase
       - post-rulebase
-    - auto: PREDEFINED
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Whether to show the un-committed rules or not.
-      name: show_uncommitted
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
-      description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
+      name: show_uncommitted
+    - description: Whether to retrieve the disabled rules. If not mentioned, will retrieve all the PBF rules.
       name: disabled
+      auto: PREDEFINED
       predefined:
       - yes
       - no
-    - auto: PREDEFINED
-      description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
+    - description: The action of the PBF rules to retrieve. If not mentioned, will retrieve all the PBF rules.
       name: action
+      auto: PREDEFINED
       predefined:
       - discard
       - forward
@@ -9034,63 +9027,63 @@ script:
     - description: A comma-separated list of source zones.
       isArray: true
       name: source_zone
-    - defaultValue: any
-      description: A comma-separated list of source addresses.
+    - description: A comma-separated list of source addresses.
       isArray: true
       name: source_address
-    - defaultValue: any
-      description: A comma-separated list of source users.
+      defaultValue: 'any'
+    - description: A comma-separated list of source users.
       name: source_user
-    - defaultValue: any
-      description: A comma-separated list of services.
+      defaultValue: 'any'
+    - description: A comma-separated list of services.
       isArray: true
       name: service
-    - defaultValue: any
-      description: A comma-separated list of destination addresses.
+      defaultValue: 'any'
+    - description: A comma-separated list of destination addresses.
       isArray: true
       name: destination_address
-    - defaultValue: any
-      description: A comma-separated list of applications.
+      defaultValue: 'any'
+    - description: A comma-separated list of applications.
       isArray: true
       name: application
+      defaultValue: 'any'
     - auto: PREDEFINED
-      description: The action that the rule will be created with.
-      name: action
       predefined:
       - forward
       - discard
       - no-pbf
+      description: The action that the rule will be created with.
+      name: action
       required: true
     - description: The egress interface the rule will be created with. Must be provided if action == forward.
       name: egress_interface
-    - auto: PREDEFINED
-      defaultValue: none
-      description: The next-hop. Relevant only when action = forward.
-      name: nexthop
+    - defaultValue: 'none'
+      auto: PREDEFINED
       predefined:
       - ip-address
       - fqdn
       - none
+      description: The next-hop. Relevant only when action = forward.
+      name: nexthop
     - description: The next-hop value when action = forward. Could be an IP address or FQDN. Required when nexthop is not none.
       name: nexthop_value
-    - auto: PREDEFINED
-      defaultValue: no
-      description: Whether to enforce symmetric return.
+    - description: Whether to enforce symmetric return.
+      defaultValue: 'no'
       name: enforce_symmetric_return
+      auto: PREDEFINED
       predefined:
       - yes
       - no
-    - auto: PREDEFINED
-      defaultValue: no
+    - defaultValue: 'no'
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
       description: Whether to negate the source.
       name: negate_source
-      predefined:
-      - yes
-      - no
-    - auto: PREDEFINED
-      defaultValue: no
-      description: Whether to negate the destination.
+    - description: Whether to negate the destination.
       name: negate_destination
+      defaultValue: 'no'
+      auto: PREDEFINED
       predefined:
       - yes
       - no
@@ -9099,6 +9092,7 @@ script:
       name: nexthop_address_list
     description: Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
     name: pan-os-create-pbf-rule
+    outputs: []
   - arguments:
     - description: The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command.
       name: rulename
@@ -9114,6 +9108,7 @@ script:
     - auto: PREDEFINED
       description: The element to change.
       name: element_to_change
+      required: true
       predefined:
       - source_zone
       - source_address
@@ -9131,19 +9126,18 @@ script:
       - action_forward_discard
       - action_forward_no_pbf
       - disabled
-      required: true
     - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
       isArray: true
       name: element_value
       required: true
     - auto: PREDEFINED
-      defaultValue: replace
       description: The operation to perform on the PBF rule.
       name: behavior
       predefined:
       - replace
       - add
       - remove
+      defaultValue: 'replace'
     description: Edits a PBF rule.
     name: pan-os-edit-pbf-rule
   - arguments:
@@ -9165,10 +9159,10 @@ script:
       name: name
     - description: The device-group that the nat-rules are part of.
       name: device-group
-    - auto: PREDEFINED
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Whether to show the un-committed application-groups or not.
       name: show_uncommitted
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -9224,14 +9218,14 @@ script:
       required: true
     - description: The device-group in which the application-group should be created. Only for a Panorama instance.
       name: device-group
-    - auto: PREDEFINED
-      defaultValue: add
-      description: The action to perform on the application-group.
+    - description: The action to perform on the application-group.
       name: action
-      predefined:
-      - add
-      - remove
       required: true
+      auto: PREDEFINED
+      predefined:
+      - 'add'
+      - 'remove'
+      defaultValue: 'add'
     description: Edits an application-group.
     name: pan-os-edit-application-group
     outputs:
@@ -9252,14 +9246,15 @@ script:
       name: device-group
     description: Deletes an application-group
     name: pan-os-delete-application-group
+    outputs: []
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: No
-      description: Whether to include shared tags in the list.
+    - description: Whether to include shared tags in the list.
       name: include_shared_tags
+      auto: PREDEFINED
       predefined:
-      - Yes
-      - No
+      - 'Yes'
+      - 'No'
+      defaultValue: 'No'
     - description: The device group that the tags are part of.
       name: device-group
     description: Returns a list of tags from Panorama.
@@ -9286,20 +9281,20 @@ script:
       required: true
     - description: The device group that the tag will be part of.
       name: device-group
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Whether to disable overriding the tag.
+    - description: Whether to disable overriding the tag (Panorama instances).
       name: disable_override
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether the tag should be generated in a shared location.
+    - description: Whether the tag should be generated in a shared location.
       name: is_shared
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
+      defaultValue: 'false'
     - description: The comment for the tag.
       name: comment
     description: Creates a new tag in Panorama.
@@ -9312,9 +9307,9 @@ script:
       name: new_name
     - description: The device group of the tag.
       name: device-group
-    - auto: PREDEFINED
-      description: Whether to disable overriding the tag.
+    - description: Whether to disable overriding the tag (Panorama instances).
       name: disable_override
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -9338,3 +9333,11 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
+tests:
+- palo_alto_firewall_test_pb
+- palo_alto_panorama_test_pb
+- PAN-OS-firewall-topology-test-pb
+- PAN-OS-panorama-topology-test-pb
+defaultmapperin: Panorama Mapper
+defaultclassifier: Panorama Classifier
