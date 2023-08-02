@@ -3197,14 +3197,12 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar Indicator Hunting Test",
-            "instance_names": "test",
             "timeout": 12000,
             "fromversion": "6.0.0"
         },
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar - Get Offense Logs Test",
-            "instance_names": "test",
             "timeout": 600,
             "fromversion": "6.0.0"
         },
@@ -3784,7 +3782,6 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "instance_names": "test",
             "timeout": 600
         },
         {
