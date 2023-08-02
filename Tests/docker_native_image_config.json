@@ -148,9 +148,7 @@
          "id": "Intezer v2",
          "reason": "Lint and UT depend on intezer-sdk package",
          "ignored_native_images": [
-            "native:dev",
-            "native:ga",
-            "native:maintenance"
+            "native:8.3"
          ]
       }
    ],
