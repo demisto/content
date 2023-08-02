@@ -889,13 +889,13 @@ def get_alerts_command(client: Client, args: dict) -> CommandResults | None:
 
 def main():
     params: dict[str, Any] = demisto.params()
-    args: dict[str, Any] = demisto.args()
+    args: dict = demisto.args()
     url = params.get('url', 'https://www.opencve.io')
     verify_ssl: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     tlp = params.get('tlp_color', 'RED')
 
-    credentials = params.get('credentials')
+    credentials: Any = params.get('credentials')
     username = credentials['identifier']
     password = credentials['password']
 

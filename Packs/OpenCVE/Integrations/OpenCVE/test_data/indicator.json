@@ -1,0 +1,221 @@
+{
+    "CVE(val.ID && val.ID == obj.ID)": {
+        "ID": "CVE-2019-0708",
+        "CVSS": {
+            "Score": 9.8,
+            "Version": "3.0",
+            "Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "Table": [
+                {
+                    "metrics": "Scope",
+                    "value": "Unchanged (U)"
+                },
+                {
+                    "metrics": "Attack Vector",
+                    "value": "Network (N)"
+                },
+                {
+                    "metrics": "Integrity",
+                    "value": "High (H)"
+                },
+                {
+                    "metrics": "User Interaction",
+                    "value": "None (N)"
+                },
+                {
+                    "metrics": "Attack Complexity",
+                    "value": "Low (L)"
+                },
+                {
+                    "metrics": "Availability Impact",
+                    "value": "High (H)"
+                },
+                {
+                    "metrics": "Privileges Required",
+                    "value": "None (N)"
+                }
+            ]
+        },
+        "Published": "2019-05-16T19:29:00",
+        "Modified": "2021-06-03T18:15:00",
+        "Description": "A remote code execution vulnerability exists in Remote Desktop Services formerly known as Terminal Services when an unauthenticated attacker connects to the target system using RDP and sends specially crafted requests, aka 'Remote Desktop Services Remote Code Execution Vulnerability'.",
+        "Relationships": [
+            {
+                "Relationship": "targets",
+                "EntityA": "CVE-2019-0708",
+                "EntityAType": "cve",
+                "EntityB": "Microsoft",
+                "EntityBType": "identity"
+            },
+            {
+                "Relationship": "targets",
+                "EntityA": "CVE-2019-0708",
+                "EntityAType": "cve",
+                "EntityB": "Windows server 2008",
+                "EntityBType": "software"
+            },
+            {
+                "Relationship": "targets",
+                "EntityA": "CVE-2019-0708",
+                "EntityAType": "cve",
+                "EntityB": "Windows 7",
+                "EntityBType": "software"
+            },
+            {
+                "Relationship": "targets",
+                "EntityA": "CVE-2019-0708",
+                "EntityAType": "cve",
+                "EntityB": "Windows server 2003",
+                "EntityBType": "software"
+            },
+            {
+                "Relationship": "targets",
+                "EntityA": "CVE-2019-0708",
+                "EntityAType": "cve",
+                "EntityB": "Windows xp",
+                "EntityBType": "software"
+            },
+            {
+                "Relationship": "targets",
+                "EntityA": "CVE-2019-0708",
+                "EntityAType": "cve",
+                "EntityB": "Windows vista",
+                "EntityBType": "software"
+            }
+        ],
+        "Tags": [
+            "Windows server 2003",
+            "Microsoft",
+            "Windows xp",
+            "CWE-416",
+            "Windows server 2008",
+            "Windows vista",
+            "Windows 7"
+        ],
+        "TrafficLightProtocol": "red",
+        "Publications": [
+            {
+                "source": null,
+                "title": "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2019-0708",
+                "link": "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2019-0708",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "https://cert-portal.siemens.com/productcert/pdf/ssa-932041.pdf",
+                "link": "https://cert-portal.siemens.com/productcert/pdf/ssa-932041.pdf",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "https://cert-portal.siemens.com/productcert/pdf/ssa-832947.pdf",
+                "link": "https://cert-portal.siemens.com/productcert/pdf/ssa-832947.pdf",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "https://cert-portal.siemens.com/productcert/pdf/ssa-616199.pdf",
+                "link": "https://cert-portal.siemens.com/productcert/pdf/ssa-616199.pdf",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "https://cert-portal.siemens.com/productcert/pdf/ssa-433987.pdf",
+                "link": "https://cert-portal.siemens.com/productcert/pdf/ssa-433987.pdf",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "https://cert-portal.siemens.com/productcert/pdf/ssa-406175.pdf",
+                "link": "https://cert-portal.siemens.com/productcert/pdf/ssa-406175.pdf",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "https://cert-portal.siemens.com/productcert/pdf/ssa-166360.pdf",
+                "link": "https://cert-portal.siemens.com/productcert/pdf/ssa-166360.pdf",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "http://www.huawei.com/en/psirt/security-advisories/huawei-sa-20190529-01-windows-en",
+                "link": "http://www.huawei.com/en/psirt/security-advisories/huawei-sa-20190529-01-windows-en",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "http://www.huawei.com/en/psirt/security-notices/huawei-sn-20190515-01-windows-en",
+                "link": "http://www.huawei.com/en/psirt/security-notices/huawei-sn-20190515-01-windows-en",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "http://packetstormsecurity.com/files/153133/Microsoft-Windows-Remote-Desktop-BlueKeep-Denial-Of-Service.html",
+                "link": "http://packetstormsecurity.com/files/153133/Microsoft-Windows-Remote-Desktop-BlueKeep-Denial-Of-Service.html",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "http://packetstormsecurity.com/files/153627/Microsoft-Windows-RDP-BlueKeep-Denial-Of-Service.html",
+                "link": "http://packetstormsecurity.com/files/153627/Microsoft-Windows-RDP-BlueKeep-Denial-Of-Service.html",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "http://packetstormsecurity.com/files/154579/BlueKeep-RDP-Remote-Windows-Kernel-Use-After-Free.html",
+                "link": "http://packetstormsecurity.com/files/154579/BlueKeep-RDP-Remote-Windows-Kernel-Use-After-Free.html",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "http://packetstormsecurity.com/files/155389/Microsoft-Windows-7-x86-BlueKeep-RDP-Use-After-Free.html",
+                "link": "http://packetstormsecurity.com/files/155389/Microsoft-Windows-7-x86-BlueKeep-RDP-Use-After-Free.html",
+                "timestamp": null
+            },
+            {
+                "source": null,
+                "title": "http://packetstormsecurity.com/files/162960/Microsoft-RDP-Remote-Code-Execution.html",
+                "link": "http://packetstormsecurity.com/files/162960/Microsoft-RDP-Remote-Code-Execution.html",
+                "timestamp": null
+            }
+        ],
+        "VulnerableProducts": [
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_server_2003:-:sp2:*:*:*:*:x64:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_7:-:sp1:*:*:*:*:*:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_server_2008:r2:sp1:*:*:*:*:itanium:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_server_2003:r2:sp2:*:*:*:*:*:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_vista:-:sp2:*:*:*:*:*:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_server_2008:r2:sp1:*:*:*:*:x64:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_xp:-:sp2:*:*:professional:*:x64:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_server_2008:-:sp2:*:*:*:*:*:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_server_2003:-:sp2:*:*:*:*:x86:*"
+            },
+            {
+                "CPE": "cpe:2.3:o:microsoft:windows_xp:-:sp3:*:*:*:*:x86:*"
+            }
+        ]
+    },
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        "Indicator": "CVE-2019-0708",
+        "Type": "cve",
+        "Vendor": null,
+        "Score": 0
+    }
+}
