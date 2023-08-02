@@ -120,11 +120,12 @@ def test_module():
         return_error("Invalid Bot Token.")
     if not APP_TOKEN.startswith("xapp"):
         return_error("Invalid App Token.")
-    if not USER_TOKEN.startswith("xoxp"):
+    if USER_TOKEN and not USER_TOKEN.startswith("xoxp"):
         return_error("Invalid User Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
-        USER_CLIENT.auth_test()  # type: ignore
+        if USER_TOKEN:
+            USER_CLIENT.auth_test()
     else:
         channel = get_conversation_by_name(DEDICATED_CHANNEL)
         if not channel:
