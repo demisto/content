@@ -64,7 +64,7 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
 4. Restart the Vault server to apply the configuration changes. 
 
 ### Remarks
-Cyber-Ark Vault supports additional Syslog configuration settings such as forwarding audit events to *multiple* Syslog servers, each server with it's own unique set of syslog parameters. For additional details refer to the [Cyber-Ark Vault documentation](https://docs.cyberark.com/PAS/Latest/en/Content/PASIMP/Integrating-with-SIEM-Applications.htm?tocpath=End%20user%7CReports%20and%20Audits%7C_____6).
+CyberArk Vault supports additional syslog configuration settings such as forwarding audit events to *multiple* syslog servers, each server with it's own unique set of syslog parameters. For additional details, refer to the [CyberArk Vault documentation](https://docs.cyberark.com/PAS/Latest/en/Content/PASIMP/Integrating-with-SIEM-Applications.htm?tocpath=End%20user%7CReports%20and%20Audits%7C_____6).
 
 
 ## Collect Events from Vendor
