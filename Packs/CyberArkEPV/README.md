@@ -19,7 +19,7 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
 #### Set up the XSL Translator
 1. Navigate to the *Syslog* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Syslog*). This folder contains predefined XSL samples. 
 2. Make a copy of the *Arcsight.sample.xsl* sample file, and rename it with a meaningful name, for example: *XSIAM.xsl*.
-3. If you wish to include the events' timestamps in the events that would be sent to Cortex XSIAM, open the copied XSL file for editing, and right above the mapping section for *cn1Label* and *cn1* fields, add the following section, which maps the *IsoTimestamp* XML field into the CEF message *cs6* field and the constant string "IsoTimestamp" to the *cs6Label* field: 
+3. To include the events' timestamps in the events that will be sent to Cortex XSIAM, open the copied XSL file for editing, and above the mapping section for *cn1Label* and *cn1* fields, add the following section, which maps the *IsoTimestamp* XML field into the CEF message *cs6* field and the constant string "IsoTimestamp" to the *cs6Label* field: 
       ```XML        
             <!-- Start of IsoTimestamp mapping section -->
             cs6Label=IsoTimestamp 
