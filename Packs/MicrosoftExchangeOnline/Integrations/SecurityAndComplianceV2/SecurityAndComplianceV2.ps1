@@ -21,6 +21,30 @@ Import-Module ExchangeOnlineManagement
 
 #### HELPER FUNCTIONS ####
 
+function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
+    $integration_context = @{
+        "DeviceCode" = $client.device_code
+        "DeviceCodeExpiresIn" = $client.device_code_expires_in
+        "DeviceCodeCreationTime" = $client.device_code_creation_time
+        "AccessToken" = $client.access_token
+        "RefreshToken" = $client.refresh_token
+        "AccessTokenExpiresIn" = $client.access_token_expires_in
+        "AccessTokenCreationTime" = $client.access_token_creation_time
+    }
+
+    SetIntegrationContext $integration_context
+    <#
+        .DESCRIPTION
+        Update integration context from OAuth2DeviceCodeClient client
+
+        .EXAMPLE
+        UpdateIntegrationContext $client
+
+        .PARAMETER search_name
+        OAuth2DeviceCodeClient client.
+    #>
+}
+
 function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_results) {
     $parsed_success_results = New-Object System.Collections.Generic.List[System.Object]
     if ($success_results) {
@@ -240,24 +264,328 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
     #>
 }
 
+#### OAuth Client - Access Token Management ####
+class OAuth2DeviceCodeClient {
+    [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
+    [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
+    [string]$device_code
+    [int]$device_code_expires_in
+    [int]$device_code_creation_time
+    [string]$access_token
+    [string]$refresh_token
+    [int]$access_token_expires_in
+    [int]$access_token_creation_time
+    [bool]$insecure
+    [bool]$proxy
+
+    OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
+                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
+        $this.device_code = $device_code
+        $this.device_code_expires_in = $device_code_expires_in
+        $this.device_code_creation_time = $device_code_creation_time
+        $this.access_token = $access_token
+        $this.refresh_token = $refresh_token
+        $this.access_token_expires_in = $access_token_expires_in
+        $this.access_token_creation_time = $access_token_creation_time
+        $this.insecure = $insecure
+        $this.proxy = $proxy
+        <#
+            .DESCRIPTION
+            OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
+
+            .DESCRIPTION
+            Its not recomended to create an object using the constructor, Use static method CreateClientFromIntegrationContext() instead.
+
+            OAuth2DeviceCodeClient states are:
+                1. Getting device-code (Will be used in stage 2) and user-code (Will be used by the user to authorize permissions) from Microsoft application.
+                2. Getting access-token and refresh-token - after use authorize (Using stage 1 - device code)
+                3. Refresh access-token if access-token is expired.
+
+            .PARAMETER device_code
+            A long string used to verify the session between the client and the authorization server.
+            The client uses this parameter to request the access token from the authorization server.
+
+            .PARAMETER device_code_expires_in
+            The number of seconds before the device_code and user_code expire. (15 minutes)
+
+            .PARAMETER access_token
+            Opaque string, Issued for the scopes that were requested.
+
+            .PARAMETER refresh_token
+            Opaque string, Issued if the original scope parameter included offline_access. (Valid for 90 days)
+
+            .PARAMETER access_token_expires_in
+            Number of seconds before the included access token is valid for. (Usally - 60 minutes)
+
+            .PARAMETER access_token_creation_time
+            Unix time of access token creation (Used for knowing when to refresh the token).
+
+            .PARAMETER access_token_expires_in
+            Number of seconds before the included access token is valid for. (Usally - 60 minutes)
+
+            .PARAMETER insecure
+            Wheter to trust any TLS/SSL Certificate) or not.
+
+            .PARAMETER proxy
+            Wheter to user system proxy configuration or not.
+
+            .NOTES
+            1. Application id - a0c73c16-a7e3-4564-9a95-2bdf47383716 , This is well-known application publicly managed by Microsoft and will not work in on-premise enviorment.
+
+            .LINK
+            https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code
+        #>
+    }
+
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
+        $ic = GetIntegrationContext
+        $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
+
+        return $client
+        <#
+            .DESCRIPTION
+            Static method which create object (factory method) from populated values in integration context.
+
+            .EXAMPLE
+            [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext()
+
+            .OUTPUTS
+            OAuth2DeviceCodeClient initialized object.
+        #>
+    }
+
+    [PSObject]AuthorizationRequest() {
+        # Reset object-properties
+        $this.device_code = $null
+        $this.device_code_expires_in = $null
+        $this.device_code_creation_time = $null
+        # Get device-code and user-code
+        $params = @{
+            "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
+            "Method" = "Post"
+            "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+            "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
+            "NoProxy" = !$this.proxy
+            "SkipCertificateCheck" = $this.insecure
+        }
+        $response = Invoke-WebRequest @params
+        $response_body = ConvertFrom-Json $response.Content
+        # Update object properties
+        $this.device_code = $response_body.device_code
+        $this.device_code_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
+        $this.device_code_expires_in = [int]::Parse($response_body.expires_in)
+
+        return $response_body
+
+        <#
+            .DESCRIPTION
+            Reset values populated in instance context and getting new device-code and user-code.
+
+            .EXAMPLE
+            $client.AuthorizationRequest()
+
+            .OUTPUTS
+            psobject - Raw body response.
+
+            .LINK
+            https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code#device-authorization-request
+        #>
+    }
+
+    [psobject]AccessTokenRequest() {
+        # Get new token using device-code
+        try {
+            $params = @{
+                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "Method" = "Post"
+                "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+                "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
+                "NoProxy" = !$this.proxy
+                "SkipCertificateCheck" = $this.insecure
+            }
+            $response = Invoke-WebRequest @params
+            $response_body = ConvertFrom-Json $response.Content
+        }
+        catch {
+            $response_body = ConvertFrom-Json $_.ErrorDetails.Message
+            if ($response_body.error -eq "authorization_pending" -or $response_body.error -eq "invalid_grant") {
+                $error_details = "Please run command !$script:COMMAND_PREFIX-auth-start , before running this command."
+            }
+            elseif ($response_body.error -eq "expired_token") {
+                $error_details = "At least $($this.access_token_expires_in) seconds have passed from executing !$script:COMMAND_PREFIX-auth-start, Please run the ***$script:COMMAND_PREFIX-auth-start*** command again."
+            } else {
+                $error_details = $response_body
+            }
+
+            throw "Unable to get access token for your account, $error_details"
+        }
+        # Update object properties
+        $this.access_token = $response_body.access_token
+        $this.refresh_token = $response_body.refresh_token
+        $this.access_token_expires_in = [int]::Parse($response_body.expires_in)
+        $this.access_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
+
+        return $response_body
+
+        <#
+            .DESCRIPTION
+            Getting access-token and refresh-token from Microsoft application based on the device-code we go from AuthorizationRequest() method.
+
+            .EXAMPLE
+            $client.AccessTokenRequest()
+
+            .OUTPUTS
+            psobject - Raw body response.
+
+            .LINK
+            https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code#authenticating-the-user
+        #>
+    }
+
+    [psobject]RefreshTokenRequest() {
+        # Get new token using refresh token
+        try {
+            $params = @{
+                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "Method" = "Post"
+                "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+                "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
+                "NoProxy" = !$this.proxy
+                "SkipCertificateCheck" = $this.insecure
+            }
+            $response = Invoke-WebRequest @params
+            $response_body = ConvertFrom-Json $response.Content
+        }
+        catch {
+            $response_body = ConvertFrom-Json $_.ErrorDetails.Message
+            $error_details = "Unable to refresh access token for your account"
+
+            # AADSTS50173 points to password change https://login.microsoftonline.com/error?code=50173.
+            # In that case, the integration context should be overwritten and the user should execute the auth process from the begining.
+            if ($response_body.error_description -like "*AADSTS50173*") {
+                $this.ClearContext()
+                $error_details = "The account password has been changed or reset. Please run !$script:COMMAND_PREFIX-auth-start to re-authenticate"
+            }
+            elseif ($response_body.error -eq "invalid_grant") {
+                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start"
+            }
+            throw "$error_details. Full error message: $response_body"
+        }
+
+        # Update object properties
+        $this.access_token = $response_body.access_token
+        $this.refresh_token = $response_body.refresh_token
+        $this.access_token_expires_in = [int]::Parse($response_body.expires_in)
+        $this.access_token_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
+
+        return $response_body
+
+        <#
+            .DESCRIPTION
+            Getting new access-token and refresh-token from Microsoft application based on the refresh-token we got from AccessTokenRequest() method.
+
+            .EXAMPLE
+            $client.RefreshTokenRequest()
+
+            .OUTPUTS
+            PSObject - Raw body response.
+
+            .LINK
+            https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-implicit-grant-flow#refreshing-tokens
+        #>
+    }
+
+    [bool]IsDeviceCodeExpired(){
+        if (!$this.device_code){
+            return $true
+        }
+        $current_time = [int][double]::Parse((Get-Date -UFormat %s)) - 30
+        $valid_until = $this.device_code_creation_time + $this.access_token_expires_in
+
+        return $current_time -gt $valid_until
+
+        <#
+            .DESCRIPTION
+            Check if device-code expired.
+
+            .EXAMPLE
+            $client.IsDeviceCodeExpired()
+
+            .OUTPUTS
+            bool - True If device-code expired else False.
+
+            .LINK
+            https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-configurable-token-lifetimes#configurable-token-lifetime-properties-after-the-retirement
+        #>
+    }
+
+    [bool]IsAccessTokenExpired(){
+        if (!$this.access_token){
+            return $true
+        }
+        $current_time = [int][double]::Parse((Get-Date -UFormat %s)) - 30
+        $valid_until = $this.access_token_creation_time + $this.access_token_expires_in
+
+        return $current_time -gt $valid_until
+        <#
+            .DESCRIPTION
+            Check if access-token expired.
+
+            .EXAMPLE
+            $client.IsAccessTokenExpired()
+
+            .OUTPUTS
+            bool - True If access-token expired else False.
+
+            .LINK
+            https://docs.microsoft.com/en-us/azure/active-directory/develop/active-directory-configurable-token-lifetimes#configurable-token-lifetime-properties-after-the-retirement
+        #>
+    }
+
+    RefreshTokenIfExpired(){
+        if ($this.access_token -and $this.IsAccessTokenExpired()) {
+            $this.RefreshTokenRequest()
+        }
+        <#
+            .DESCRIPTION
+            Refresh access token if expired, with offset of 30 seconds.
+
+            .EXAMPLE
+            $client.RefreshTokenIfExpired()
+        #>
+    }
+    ClearContext(){
+        $this.access_token = $null
+        $this.refresh_token = $null
+        $this.access_token_expires_in = $null
+        $this.access_token_creation_time = $null
+        UpdateIntegrationContext $this
+        <#
+            .DESCRIPTION
+            Clear the token fields from the integration context on password change case.
+
+            .EXAMPLE
+            $client.ClearContext()
+        #>
+
+    }
+}
+
 #### Security And Compliance client ####
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Class')]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Class')]
 class SecurityAndComplianceClient {
-    [SecureString]$delegated_password
+    [string]$access_token
     [string]$upn
     [string]$tenant_id
     [string]$connection_uri
     [string]$azure_ad_authorization_endpoint_uri_base
     [string]$azure_ad_authorization_endpoint_uri
 
-    SecurityAndComplianceClient([string]$delegated_password, [string]$upn, [string]$tenant_id, [string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
+    SecurityAndComplianceClient([string]$access_token, [string]$upn, [string]$tenant_id, [string]$connection_uri, [string]$azure_ad_authorization_endpoint_uri_base) {
 
-        if ($delegated_password) {
-            $this.delegated_password = ConvertTo-SecureString -String $delegated_password -AsPlainText -Force
-        } else {
-            $this.delegated_password = $null
-        }
+        $this.access_token = $access_token
 
         $this.upn = $upn
 
@@ -285,16 +613,19 @@ class SecurityAndComplianceClient {
     }
 
     CreateDelegatedSession([string]$CommandName){
-        if ($null -eq $this.delegated_password) {
-            ReturnError "Error: For this command, delegated access is required." | Out-Null
+        $cmd_params = @{
+            "UserPrincipalName" = $this.upn
+            "Organization" = $this.organization
+            "AccessToken" = $this.access_token
+            "ConnectionUri" = $this.connection_uri
+            "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
         }
-        $delegated_cred = New-Object System.Management.Automation.PSCredential ($this.upn, $this.delegated_password)
-        if ($this.azure_ad_authorization_endpoint_uri -and $this.connection_uri) {
-            Connect-IPPSSession -Credential $delegated_cred -CommandName $CommandName -WarningAction:SilentlyContinue -ConnectionUri $this.connection_uri -AzureADAuthorizationEndpointUri $this.azure_ad_authorization_endpoint_uri | Out-Null
-        } else {
-            Connect-IPPSSession -Credential $delegated_cred -CommandName $CommandName -WarningAction:SilentlyContinue | Out-Null
-        }
+        Write-Host "Attempting to connect"
+        write-host ("Access Token is {0}" -f $this.access_token)
+        Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -Verbose | Out-Null
+        Write-Host "Connected to EXO"
     }
+
 
     DisconnectSession(){
         Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
@@ -1092,12 +1423,53 @@ class SecurityAndComplianceClient {
 
 #### COMMAND FUNCTIONS ####
 
-function TestModuleCommand ([SecurityAndComplianceClient]$cs_client) {
-    $cs_client.ListSearchActions() | Out-Null
-
+function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
+    if ($cs_client.password) {
+        $cs_client.ListSearchActions() | Out-Null
+    }
+    else {
+        throw "Fill password for basic auth or use command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization (MFA enabled accounts)."
+    }
     $raw_response = $null
     $human_readable = "ok"
     $entry_context = $null
+
+    return $human_readable, $entry_context, $raw_response
+}
+
+function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
+    $raw_response = $client.AuthorizationRequest()
+    $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
+1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
+2. Run the **!$script:COMMAND_PREFIX-auth-complete** command in the War Room.
+3. Run the **!$script:COMMAND_PREFIX-auth-test** command in the War Room to test the completion of the authorization process and the configured parameters."
+    $entry_context = @{}
+
+    return $human_readable, $entry_context, $raw_response
+}
+
+function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
+    # Verify that user run start before complete
+    if (!$client.device_code) {
+        throw "Please run !o365-sc-auth-start and follow the command instructions"
+    }
+    $raw_response = $client.AccessTokenRequest()
+    $human_readable = "Your account **successfully** authorized!"
+    $entry_context = @{}
+
+    return $human_readable, $entry_context, $raw_response
+}
+
+function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
+    $raw_response = $oclient.RefreshTokenRequest()
+    $human_readable = "**Test ok!**"
+    $entry_context = @{}
+    try {
+        $cs_client.CreateSession()
+    }
+    finally {
+        $cs_client.CloseSession()
+    }
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -1432,8 +1804,27 @@ function Main {
     try {
         $Demisto.Debug("Command being called is $Command")
 
+        # Creating Compliance and search client
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+
+        # Executing oauth2 commands
+        switch ($command) {
+            "$script:COMMAND_PREFIX-auth-start" {
+                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+            }
+            "$script:COMMAND_PREFIX-auth-complete" {
+                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+            }
+        }
+
+        # Refreshing tokens if expired
+        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
+        {
+            $oauth2_client.RefreshTokenIfExpired()
+        }
+
         $cs_client = [SecurityAndComplianceClient]::new(
-            $integration_params.delegated_auth.password,
+            $oauth2_client.access_token,
             $integration_params.delegated_auth.identifier,
             $integration_params.tenant_id,
             $integration_params.connection_uri,
@@ -1444,6 +1835,9 @@ function Main {
         switch ($command) {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $cs_client
+            }
+            "$script:COMMAND_PREFIX-auth-test" {
+                ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
             }
             "$script:COMMAND_PREFIX-new-search" {
                 ($human_readable, $entry_context, $raw_response) = NewSearchCommand $cs_client $command_arguments
@@ -1506,6 +1900,10 @@ function Main {
                 ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleDeleteCommand $cs_client $command_arguments
             }
         }
+
+        # Updating integration context if access token changed
+        UpdateIntegrationContext $oauth2_client
+
         # Return results to Demisto Server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
         if ($file_entry) {
