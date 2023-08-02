@@ -238,7 +238,7 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                      'behaviors.technique', 'device.hostname']
 
-CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'severity', 'status', 'tactics', 'techniques', 'objectives', 'tags', 'hosts.hostname']
+CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives', 'tags', 'hosts.hostname']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -549,25 +549,25 @@ def incident_to_incident_context(incident):
     if incident.get('status'):
         incident['status'] = STATUS_NUM_TO_TEXT.get(incident.get('status'))
 
-    incident_id = str(incident.get('incident_id'))
     incident_context = {
-        'name': f'Incident ID: {incident_id}',
+        'name': f'Incident ID: {incident.get("incident_id")}',
         'occurred': str(incident.get('start')),
-        'rawJSON': json.dumps(incident)
+        'rawJSON': json.dumps(incident),
+        'severity': severity_string_to_int(incident.get('fine_score'))
     }
     return incident_context
 
 
 def idp_detection_to_incident_context(idp_detection):
     """
-            Creates an incident context of an IDP detection.
+        Creates an incident context of an IDP detection.
 
-            :type idp_detection: ``dict``
-            :param idp_detection: Single IDP detection object
+        :type idp_detection: ``dict``
+        :param idp_detection: Single IDP detection object
 
-            :return: Incident context representation of an IDP detection.
-            :rtype ``dict``
-        """
+        :return: Incident context representation of an IDP detection.
+        :rtype ``dict``
+    """
     add_mirroring_fields(idp_detection)
     if status := idp_detection.get('status'):
         idp_detection['status'] = status
@@ -2134,8 +2134,6 @@ def get_remote_incident_data(remote_incident_id: str):
 
     if 'status' in mirrored_data:
         mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
-
-    mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('fine_score'))
 
     updated_object: dict[str, Any] = {'incident_type': 'incident'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
