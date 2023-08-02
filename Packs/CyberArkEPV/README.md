@@ -49,7 +49,7 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
 
  See [*DBPARM.ini file parameters*](https://docs.cyberark.com/PAS/Latest/en/Content/PASIMP/Integrating-with-SIEM-Applications.htm#DBPARMinifileparameters) for a complete list of the possible *DBPARM.ini* file syslog parameters.
 
- Bellow is a sample *\[SYSLOG\]* configuration section for the *DBParm.ini* file: 
+ Below is a sample *\[SYSLOG\]* configuration section for the *DBParm.ini* file: 
  
   ```BASH        
             [SYSLOG]
