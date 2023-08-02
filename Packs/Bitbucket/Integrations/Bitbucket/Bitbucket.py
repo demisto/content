@@ -1537,7 +1537,7 @@ def workspace_member_list_command(client: Client, args: Dict) -> CommandResults:
         Args:
             client: A Bitbucket client.
             args: Demisto args.
-        Returnsf:
+        Returns:
             A CommandResult object with the requested list.
     """
     limit = arg_to_number(args.get('limit', 50)) or 50
