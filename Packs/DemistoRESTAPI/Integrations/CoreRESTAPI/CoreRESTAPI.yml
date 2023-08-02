@@ -270,6 +270,7 @@ script:
     outputs:
     - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
       contextPath: IsFileExists
+  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0
