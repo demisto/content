@@ -56,7 +56,7 @@ def main():
         body += f'## Contributor\r\n@{merged_pr_author}\r\n\r\n'
     body += merged_pr.body
     base_branch = 'master'
-    head_branch = merged_pr.base.ref
+    head_branch = "CIAC-7524-test-branch"
     pr = content_repo.create_pull(title=title, body=body, base=base_branch, head=head_branch, draft=False)
     print(f'{t.cyan}Internal PR Created - {pr.html_url}{t.normal}')
 
