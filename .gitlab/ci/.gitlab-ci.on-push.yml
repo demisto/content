@@ -620,7 +620,7 @@ test-upload-flow:
     - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
 
-handle-dev-secrets:
+merge-dev-secrets:
   tags:
     - gke
   extends:
