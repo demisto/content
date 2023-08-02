@@ -1287,10 +1287,7 @@ tasks:
       val1:
         simple: AWS S3
       val2:
-        complex:
-          root: "true"
-          transformers:
-          - operator: Stringify
+        simple: "true"
       val3:
         simple: TIMESTAMP
     separatecontext: false
@@ -1335,10 +1332,7 @@ tasks:
       val1:
         simple: AWS
       val2:
-        complex:
-          root: "true"
-          transformers:
-          - operator: Stringify
+        simple: "true"
       val3:
         simple: TIMESTAMP
     separatecontext: false
@@ -1495,10 +1489,7 @@ tasks:
       val1:
         simple: AWS
       val2:
-        complex:
-          root: "false"
-          transformers:
-          - operator: Stringify
+        simple: "false"
       val3:
         simple: TIMESTAMP
     separatecontext: false
@@ -1543,10 +1534,7 @@ tasks:
       val1:
         simple: AWS S3
       val2:
-        complex:
-          root: "false"
-          transformers:
-          - operator: Stringify
+        simple: "false"
       val3:
         simple: TIMESTAMP
     separatecontext: false

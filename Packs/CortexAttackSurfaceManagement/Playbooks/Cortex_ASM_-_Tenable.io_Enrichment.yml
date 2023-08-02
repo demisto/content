@@ -684,10 +684,7 @@ tasks:
       val1:
         simple: Tenable.io
       val2:
-        complex:
-          root: "true"
-          transformers:
-          - operator: Stringify
+        simple: "true"
       val3:
         simple: TIMESTAMP
     separatecontext: false
@@ -732,10 +729,7 @@ tasks:
       val1:
         simple: Tenable.io
       val2:
-        complex:
-          root: "false"
-          transformers:
-          - operator: Stringify
+        simple: "false"
       val3:
         simple: TIMESTAMP
     separatecontext: false
