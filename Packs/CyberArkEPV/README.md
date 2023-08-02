@@ -7,7 +7,7 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
-This section describes the necessary steps to configure Syslog forwarding of vault audit logs such as user activity and safe activity events from Cyber-Ark EPV to Cortex XSIAM.
+This section describes the steps required to configure Syslog forwarding of vault audit logs, such as user activity and safe activity events, from CyberArk EPV to Cortex XSIAM.
 
 ### General Overview
 The Cyber-Ark vault event logs are generated in [XML](https://en.wikipedia.org/wiki/XML) format. 
