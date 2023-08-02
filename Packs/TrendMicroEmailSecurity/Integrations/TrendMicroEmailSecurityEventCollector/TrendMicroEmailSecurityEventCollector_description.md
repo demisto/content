@@ -1,13 +1,12 @@
 ## Trend Micro Email Security Event Collector
 Use this integration to collect operation logs from Trend Micro Email Security.
-You can also use the ***trend-micro-get-events*** command to manually collect events.
 
 In order to use this integration, you need to enter your Trend Micro Email Security credentials in the relevant integration instance parameters.
 
-### For the service URL parameter:
+### For the Server URL parameter:
 
-The value of service URL varies according to your location:
-| **Location** | **Service Root URL** |
+The value of Server URL varies according to your location:
+| **Location** | **Server Root URL** |
 | --- | --- |
 | North America, Latin America and Asia Pacific | api.tmes.trendmicro.com |
 | Europe, the Middle East and Africa | api.tmes.trendmicro.eu |
@@ -17,16 +16,10 @@ The value of service URL varies according to your location:
 | India | api.tmes-in.trendmicro.com |
 
 
-### For API Key parameter:
+### To obtain API Key:
 
 1. Go to **Administration** > **Service Integration**.
 2. On the API Access tab, click **Add** to generate a key.
 The API Key is the global unique identifier for your application to authenticate its access to Trend Micro Email Security. It must be used together with the administrator account that created it. A new API Key is enabled by default.
 
 For more information about API Keys see [here](https://docs.trendmicro.com/en-us/enterprise/trend-micro-email-security-online-help/configuring-administ/service-integration/api-access/obtaining-an-api-key.aspx)
-
-
-
-### Max Fetch
-Note: During an integration fetch, there are three types of events available, When the maximum fetch parameter is set to 1000, 1000 logs will be retrieved for each type, resulting in a total of 3000 logs.
-

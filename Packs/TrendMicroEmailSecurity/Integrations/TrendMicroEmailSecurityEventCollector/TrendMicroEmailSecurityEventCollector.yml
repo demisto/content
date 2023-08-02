@@ -6,8 +6,8 @@ commonfields:
   id: Trend Micro Email Security Event Collector
   version: -1
 configuration:
-- display: Service URL
-  defaultvalue: https://<serviceURL>
+- display: Server URL
+  defaultvalue: https://<ServerURL>
   name: url
   required: true
   type: 0
@@ -29,12 +29,13 @@ configuration:
   type: 8
   section: Connect
 - display: Hide sensitive details from email
+  additionalinfo: "Don't insert to dataset the following returned fields: subject, filename, sha256"
   name: hide_sensitive
   required: false
   defaultvalue: 'true'
   type: 8
   section: Collect
-- display: The maximum number of events per fetch.
+- display: The maximum number of events per fetch per event type.
   additionalinfo: The maximum number of events to fetch every time fetch is executed.
   defaultvalue: "5000"
   name: max_fetch

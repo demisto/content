@@ -259,6 +259,14 @@ def test_managing_set_last_run(
     new_event_ids_suspected: list,
     expected_results: dict,
 ):
+    """
+    Given:
+        -
+    When:
+        -
+    Then:
+        -
+    """
     events = load_event_for_test(event_key)
     dedup = Deduplicate([], EventType.ACCEPTED_TRAFFIC)
     dedup.is_fetch_time_moved = is_fetch_time_moved
@@ -572,23 +580,24 @@ def test_deduplicate(
 
 
 @pytest.mark.parametrize(
-    "event",
+    "event, len_before_add_missing_fields",
     [
-        {
+        ({
             "subject": "test",
             "timestamp": "test"
-        },
-        {}
+        }, 2),
+        ({}, 0)
     ]
 )
-def test_add_missing_fields_to_event(event: dict):
+def test_add_missing_fields_to_event(event: dict, len_before_add_missing_fields: int):
     """
     Givent:
-        - The event
+        - The event with missing fields
     When:
         - run `add_missing_fields_to_event` function
     Then:
         - Ensure all fields are included in the event
     """
+    assert len(event) == len_before_add_missing_fields
     add_missing_fields_to_event(event)
     assert len(event) == 27

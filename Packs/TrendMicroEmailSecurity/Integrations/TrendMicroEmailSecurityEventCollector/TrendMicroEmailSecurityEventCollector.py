@@ -1,12 +1,11 @@
 from enum import Enum
 import demistomock as demisto
-import urllib3
+from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import base64
 
-# Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
+disable_warnings()
 
 """ CONSTANTS """
 
@@ -197,9 +196,9 @@ class Deduplicate:
         """
         if not self.last_event_ids_suspected:
             return False
-        elif convert_datetime_to_without_milliseconds(event["genTime"]) != time_from:
+        if convert_datetime_to_without_milliseconds(event["genTime"]) != time_from:
             return False
-        elif self.generate_id_for_event(event) not in self.last_event_ids_suspected:
+        if self.generate_id_for_event(event) not in self.last_event_ids_suspected:
             return False
         return True
 
@@ -239,18 +238,19 @@ def managing_set_last_run(
             last_run[
                 f"fetched_event_ids_of_{event_type.value}"
             ] = deduplicate.new_event_ids_suspected
-        demisto.debug(f"There is Events, {last_run=}")
+        demisto.debug(f"Events found, {last_run=}")
 
     return last_run
 
 
 def remove_sensitive_from_events(event: dict) -> dict:
-    event.pop("subject", None)
+    if event.get("subject", None):
+        event["subject"] = "Hidden (sensitive data)"
 
     if (attachments := event.get("attachments")) and isinstance(attachments, list):
         for attachment in attachments:
-            if isinstance(attachment, dict):
-                attachment.pop("fileName", None)
+            if isinstance(attachment, dict) and attachment.get("fileName", None):
+                attachment["fileName"] = "Hidden (sensitive data)"
 
     return event
 
@@ -301,13 +301,14 @@ def fetch_by_event_type(
         except NoContentException:
             next_token = None
             demisto.debug(
-                f"No content returned from api, {start=}, {end=}, {event_type.value=}"
+                f"No {event_type.value} content returned from api, {start=}, {end=}"
             )
             break
 
         if res.get("logs"):
             # Iterate over each event log, update their `type` and `_time` fields
-            for event in res.get("logs"):
+            for event in res["logs"]:
+                event["genTime"] = convert_datetime_to_without_milliseconds(event["genTime"])
                 deduplicate_management.update_suspected_duplicate_events_list(
                     event, start
                 )
@@ -322,6 +323,7 @@ def fetch_by_event_type(
                     events_res.append(event)
 
         else:  # no logs
+            demisto.debug(f"No logs were returned for {event_type.value} type")
             next_token = None
             break
 
@@ -332,7 +334,7 @@ def fetch_by_event_type(
             demisto.debug(f"No `nextToken` for {event_type.value=}")
             break
 
-    demisto.debug(f"Done fetching {event_type.value=}, got {len(events_res)} events")
+    demisto.debug(f"Done fetching {event_type.value}, got {len(events_res)} events")
     return events_res, deduplicate_management
 
 
@@ -340,7 +342,7 @@ def set_first_fetch(start_time: str = None) -> str:
     """
     set the start time of the first time of the fetch
     """
-    if first_fetch := arg_to_datetime(start_time or "1 hours"):
+    if first_fetch := arg_to_datetime(start_time or "72 hours"):
         return first_fetch.strftime(DATE_FORMAT_EVENT)
     raise ValueError("Failed to convert `str` to `datetime` object")
 
@@ -361,9 +363,11 @@ def test_module(client: Client):
                 "end": datetime.now().strftime(DATE_FORMAT_EVENT),
             },
         )
+        demisto.debug("Log returned")
     except NoContentException:
         # This type of error is raised when events are not returned, but the API call was successful,
         # therefore `ok` will be returned
+        demisto.debug("No logs returned")
         pass
 
     return "ok"
@@ -470,7 +474,7 @@ def main() -> None:  # pragma: no cover
 
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug("The events were pushed to XSIAM")
+            demisto.debug(f"{len(events)} events were pushed to XSIAM")
 
             if should_update_last_run:
                 demisto.setLastRun(last_run)
