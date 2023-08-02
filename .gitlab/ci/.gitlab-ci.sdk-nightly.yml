@@ -208,7 +208,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - section_end "Destroy instances"
     - job-done
 
