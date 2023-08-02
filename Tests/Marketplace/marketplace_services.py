@@ -3633,7 +3633,7 @@ class Pack:
                 logging.exception(f"Failed uploading {self.name} pack dynamic dashboard image. Additional info: {e}")
                 return False
 
-        self._uploaded_dynamic_dashboard_images.append(image_storage_path)
+            self._uploaded_dynamic_dashboard_images.append(image_storage_path)
 
         return True
 
