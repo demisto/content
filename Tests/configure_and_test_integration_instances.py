@@ -331,14 +331,14 @@ class Build(ABC):
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         pass
 
-    def install_packs(self, pack_ids: list | None = None, multithreading=True, is_post_update: bool = False) -> bool:
+    def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
         """
         Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and their dependencies.
         Args:
             pack_ids (list | None, optional): Packs to install on the server.
                 If no packs provided, installs packs that were provided by the previous step of the build.
             multithreading (bool): Whether to install packs in parallel or not.
-            is_post_update (bool): Whether the installation is in post update mode. Defaults to False.
+            production_bucket (bool): Whether the installation is using production bucket for packs metadata. Defaults to True.
 
         Returns:
             bool: Whether packs installed successfully
@@ -353,7 +353,7 @@ class Build(ABC):
                                                                           client=server.client,
                                                                           hostname=hostname,
                                                                           multithreading=multithreading,
-                                                                          is_post_update=is_post_update)
+                                                                          production_bucket=production_bucket)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
             except Exception:
@@ -552,7 +552,7 @@ class Build(ABC):
         """
         self.set_marketplace_url(self.servers, self.branch_name, self.ci_build_number, self.marketplace_tag_name,
                                  self.artifacts_folder, self.marketplace_buckets)
-        installed_content_packs_successfully = self.install_packs(is_post_update=True)
+        installed_content_packs_successfully = self.install_packs(production_bucket=False)
         return installed_content_packs_successfully
 
     def create_and_upload_test_pack(self, packs_to_install: list = None):
@@ -800,7 +800,7 @@ class CloudBuild(Build):
         Collects all existing test playbooks, saves them to test_pack.zip
         Uploads test_pack.zip to server
         """
-        success = self.install_packs(multithreading=False, is_post_update=False)
+        success = self.install_packs(multithreading=False, production_bucket=True)
         if not success:
             logging.error('Failed to install content packs, aborting.')
             sys.exit(1)

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from urllib.error import HTTPError
 
 import requests
 import urllib3.request
@@ -13,14 +14,42 @@ from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
 
-BASE_URL = 'http://123-fake-api.com'
-API_KEY = 'test-api-key'
-
 
 def load_json_file(directory: str, file_name: str):
     with open(Path(__file__).parent / 'test_data' / directory / file_name) as json_file:
         json_data = json.load(json_file)
     return json_data
+
+
+@pytest.fixture(autouse=True)
+def mock_sleep(mocker):
+    """
+    Mock time.sleep function.
+    """
+    mocker.patch("time.sleep", return_value=None)
+
+
+@pytest.fixture(autouse=True)
+def mock_environment_variables(mocker):
+    """
+    Mock environment variables.
+
+    Note:
+        Works only if the environment variables are fetched in the code using the custom 'get_env_var' function.
+    """
+    def env_side_effect(env_name: str):
+        if env_name == "CI_SERVER_URL":
+            return "https://example.com"
+
+        elif env_name == "GITLAB_API_READ_TOKEN":
+            return "API_KEY"
+
+        elif env_name == "LAST_UPLOAD_COMMIT":
+            return "COMMIT_HASH"
+
+        return None
+
+    mocker.patch("Tests.Marketplace.search_and_install_packs.get_env_var", side_effect=env_side_effect)
 
 
 MOCK_HELLOWORLD_SEARCH_RESULTS = load_json_file('search_dependencies', "HelloWorld_1.2.19.json")
@@ -95,7 +124,7 @@ class MockLock:
 
 
 @pytest.mark.parametrize('use_multithreading', [True, False])
-def test_search_and_install_packs_and_their_dependencies(mocker, monkeypatch, use_multithreading: bool):
+def test_search_and_install_packs_and_their_dependencies(mocker, use_multithreading: bool):
     """
     Given
     - Valid pack ids.
@@ -106,8 +135,6 @@ def test_search_and_install_packs_and_their_dependencies(mocker, monkeypatch, us
     - Ensure packs & their dependency search requests are valid.
     - Ensure packs & their dependency installation requests are valid.
     """
-    monkeypatch.setenv("LAST_UPLOAD_COMMIT", "X")
-
     good_pack_ids = [
         'HelloWorld',
         'AzureSentinel'
@@ -124,7 +151,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker, monkeypatch, us
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
                                                                                       client=client,
                                                                                       multithreading=use_multithreading,
-                                                                                      is_post_update=False)
+                                                                                      production_bucket=True)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' in installed_packs
     assert 'TestPack' in installed_packs
@@ -133,38 +160,36 @@ def test_search_and_install_packs_and_their_dependencies(mocker, monkeypatch, us
     installed_packs, _ = script.search_and_install_packs_and_their_dependencies(pack_ids=bad_pack_ids,
                                                                                 client=client,
                                                                                 multithreading=use_multithreading,
-                                                                                is_post_update=False)
+                                                                                production_bucket=True)
     assert bad_pack_ids[0] not in installed_packs
 
 
 @pytest.mark.parametrize('error_code,use_multithreading',
                          [
-                             (400, True), (400, False),
-                             (500, True), (500, False),
+                             (400, False), (400, True),
+                             (500, False), (500, True),
                          ])
-def test_search_and_install_packs_and_their_dependencies_with_error(mocker, monkeypatch, error_code, use_multithreading: bool):
+def test_search_and_install_packs_and_their_dependencies_with_error(mocker, error_code, use_multithreading: bool):
     """
-    Given
-    - Error when searching for a pack
-    When
-    - Running integrations configuration tests.
-    Then
-    - Ensure a flag is raised
+    Given:
+      The API call to Marketplace API has failed (returned an error code).
+
+    When:
+        Running 'get_pack_dependencies' function.
+
+    Then:
+        Ensure the function returns a 'success' value of 'False'.
     """
-    monkeypatch.setenv("LAST_UPLOAD_COMMIT", "X")
-
-    good_pack_ids = ['HelloWorld']
-
     client = MockClient()
-    mock_response = HTTPResponse(status=error_code, body=b"Error")
 
     mocker.patch.object(script, 'install_packs')
-    mocker.patch.object(urllib3.request.RequestMethods, 'request', return_value=mock_response)
+    mocker.patch.object(script, 'fetch_pack_metadata_from_gitlab', return_value={"hidden": False})
+    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(status=error_code))
 
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
-                                                                                      client=client,
-                                                                                      multithreading=use_multithreading,
-                                                                                      is_post_update=False)
+    _, success = script.search_and_install_packs_and_their_dependencies(pack_ids=['HelloWorld'],
+                                                                        client=client,
+                                                                        multithreading=use_multithreading,
+                                                                        production_bucket=True)
     assert success is False
 
 
@@ -251,15 +276,15 @@ def test_is_pack_deprecated_locally(mocker):
     mocker.patch("demisto_sdk.commands.common.tools.get_pack_metadata", return_value=mock_pack_metadata)
 
     # Check missing "hidden" field results in a default value of False
-    assert not script.is_pack_deprecated("pack_id", check_locally=True)
+    assert not script.is_pack_deprecated("pack_id", production_bucket=False)
 
     # Check normal case of hidden pack
     mock_pack_metadata["hidden"] = True
-    assert script.is_pack_deprecated("pack_id", check_locally=True)
+    assert script.is_pack_deprecated("pack_id", production_bucket=False)
 
     # Check normal case of non-hidden pack
     mock_pack_metadata["hidden"] = False
-    assert not script.is_pack_deprecated("pack_id", check_locally=True)
+    assert not script.is_pack_deprecated("pack_id", production_bucket=False)
 
 
 def test_is_pack_deprecated_using_gitlab_api(mocker):
@@ -275,15 +300,15 @@ def test_is_pack_deprecated_using_gitlab_api(mocker):
 
     # Check missing "hidden" field results in a default value of False
     mocker.patch("Tests.Marketplace.search_and_install_packs.fetch_pack_metadata_from_gitlab", return_value=mock_pack_metadata)
-    assert not script.is_pack_deprecated("pack_id", check_locally=False, commit_hash="X")
+    assert not script.is_pack_deprecated("pack_id", production_bucket=True, commit_hash="X")
 
     # Check normal case of hidden pack
     mock_pack_metadata["hidden"] = True
-    assert script.is_pack_deprecated("pack_id", check_locally=False, commit_hash="X")
+    assert script.is_pack_deprecated("pack_id", production_bucket=True, commit_hash="X")
 
     # Check normal case of non-hidden pack
     mock_pack_metadata["hidden"] = False
-    assert not script.is_pack_deprecated("pack_id", check_locally=False, commit_hash="X")
+    assert not script.is_pack_deprecated("pack_id", production_bucket=True, commit_hash="X")
 
 
 def test_is_pack_deprecated_using_marketplace_api_data():
@@ -301,32 +326,23 @@ def test_is_pack_deprecated_using_marketplace_api_data():
     }
 
     # Check missing "hidden" field results in a default value of False
-    assert not script.is_pack_deprecated("pack_id", check_locally=False, pack_api_data=mock_pack_api_data)
+    assert not script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
 
     # Check normal case of hidden pack
     mock_pack_api_data["extras"]["pack"]["deprecated"] = True
-    assert script.is_pack_deprecated("pack_id", check_locally=False, pack_api_data=mock_pack_api_data)
+    assert script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
 
     # Check normal case of non-hidden pack
     mock_pack_api_data["extras"]["pack"]["deprecated"] = False
-    assert not script.is_pack_deprecated("pack_id", check_locally=False, pack_api_data=mock_pack_api_data)
+    assert not script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
 
 
-def test_fetch_pack_metadata_from_gitlab(mocker, monkeypatch):
+def test_fetch_pack_metadata_from_gitlab(mocker):
     """
     Given: An ID of a pack
     When: Fetching the pack's metadata from GitLab's API
     Then: Validate that the API call is valid and that the content is properly parsed
     """
-    def env_side_effect(env_name: str):
-        if env_name == "CI_SERVER_URL":
-            return "https://server.com"
-
-        elif env_name == "GITLAB_API_READ_TOKEN":
-            return "API_KEY"
-
-    mocker.patch("Tests.Marketplace.search_and_install_packs.get_env_var", side_effect=env_side_effect)
-
     mock_response = requests.Response()
     mock_response.status_code = 200
     requests_mock = mocker.patch.object(requests.Session, "get", return_value=mock_response)
@@ -336,7 +352,7 @@ def test_fetch_pack_metadata_from_gitlab(mocker, monkeypatch):
     mock_response._content = json.dumps(mock_response_data).encode("utf-8")
     assert script.fetch_pack_metadata_from_gitlab(pack_id="TestPack", commit_hash="COMMIT_HASH")["hidden"]  # Value is True
 
-    # clear cache
+    # Clear cache
     script.fetch_pack_metadata_from_gitlab.cache_clear()
 
     # Non-hidden pack case
@@ -346,7 +362,7 @@ def test_fetch_pack_metadata_from_gitlab(mocker, monkeypatch):
 
     # Assert API call is valid
     requests_mock.assert_called_with(
-        "https://server.com/api/v4/projects/2596/repository/files/Packs%2FTestPack%2Fpack_metadata.json",
+        "https://example.com/api/v4/projects/2596/repository/files/Packs%2FTestPack%2Fpack_metadata.json",
         headers={"PRIVATE-TOKEN": "API_KEY"},
         params={"ref": "COMMIT_HASH"},
     )
@@ -392,7 +408,6 @@ class TestInstallPacks:
         """
         http_resp = MockHttpRequest(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
-        mocker.patch('time.sleep', return_value=None)
         client = MockClient()
         assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack3'}])
 
@@ -409,7 +424,6 @@ class TestInstallPacks:
         """
         http_resp = MockHttpRequest(MALFORMED_PACK_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
-        mocker.patch('time.sleep', return_value=None)
         client = MockClient()
         assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack2'}])
 

@@ -51,7 +51,7 @@ def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketpl
                                                                      client=server.client,
                                                                      hostname=hostname,
                                                                      multithreading=use_multithreading,
-                                                                     is_post_update=True)
+                                                                     production_bucket=False)
         if not success:
             raise Exception('Failed to search and install packs and their dependencies.')
 

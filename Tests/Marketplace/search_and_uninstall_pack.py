@@ -287,7 +287,7 @@ def reset_core_pack_version(client: demisto_client, unremovable_packs: list):
                                                                  client=client,
                                                                  hostname=host,
                                                                  multithreading=False,
-                                                                 is_post_update=False)
+                                                                 production_bucket=True)
     return success
 
 

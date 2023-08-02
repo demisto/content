@@ -30,13 +30,16 @@ from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils import logging_wrapper as logging
 
-PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
+PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'  # noqa: E501
                                      r'+\.zip$')
 SUCCESS_FLAG = True
 WLM_TASK_FAILED_ERROR_CODE = 101704
 
 GITLAB_SESSION = Session()
-GITLAB_PACK_METADATA_URL = '{gitlab_url}/api/v4/projects/2596/repository/files/Packs%2F{pack_id}%2Fpack_metadata.json'
+CONTENT_PROJECT_ID = "2596"
+PACKS_DIR = "Packs"
+PACK_METADATA_FILE = Pack.USER_METADATA
+GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
 
 
 @lru_cache
@@ -87,31 +90,42 @@ def fetch_pack_metadata_from_gitlab(pack_id: str, commit_hash: str) -> dict:
     return json.loads(file_data)
 
 
-def is_pack_deprecated(pack_id: str, check_locally: bool = True,
+def is_pack_deprecated(pack_id: str, production_bucket: bool = True,
                        commit_hash: str | None = None, pack_api_data: dict | None = None) -> bool:
     """
     Check whether a pack is deprecated or not.
     If an error is encountered, and status can't be checked properly,
-    the deprecated status will be set to a default value of False.
+    the deprecation status will be set to a default value of False.
 
     Note:
-        If 'check_locally' is False, one of 'master_commit_hash' or 'pack_api_data' must be provided in order to determine
-        whether the pack is deprecated or not.
-        'commit_hash' is used to fetch pack's metadata from a specific commit hash (usually 'master'),
+        If 'production_bucket' is True, one of 'master_commit_hash' or 'pack_api_data' must be provided
+        in order to determine whether the pack is deprecated or not.
+        'commit_hash' is used to fetch pack's metadata from a specific commit hash (ex: production bucket's last commit)
         'pack_api_data' is the API data of a specific pack item (and not the complete response with a list of packs).
 
     Args:
         pack_id (str): ID of the pack to check.
-        check_locally (bool): Whether to check locally ('pack_metadata.json' file) or not.
-        commit_hash (str, optional): Commit hash of the master branch to use if 'check_locally' is False.
+        production_bucket (bool): Whether we want to check deprecation status on production bucket.
+            Otherwise, deprecation status will be determined by checking the local 'pack_metadata.json' file.
+        commit_hash (str, optional): Commit hash branch to use if 'production_bucket' is False.
             If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
-        pack_api_data (dict | None, optional): Marketplace API data to use if 'check_locally' is False.
+        pack_api_data (dict | None, optional): Marketplace API data to use if 'production_bucket' is False.
             Needs to be the API data of a specific pack item (and not the complete response with a list of packs).
 
     Returns:
         bool: True if the pack is deprecated, False otherwise
     """
-    if check_locally:
+    if production_bucket:
+        if pack_api_data:
+            return pack_api_data['extras']['pack'].get('deprecated', False)
+
+        elif commit_hash:
+            return fetch_pack_metadata_from_gitlab(pack_id=pack_id, commit_hash=commit_hash).get('hidden', False)
+
+        else:
+            raise ValueError("Either 'master_commit_hash' or 'pack_api_data' must be provided.")
+
+    else:  # Check locally
         pack_metadata_path = Path(PACKS_FOLDER) / pack_id / PACK_METADATA_FILENAME
 
         if not pack_metadata_path.is_file():
@@ -130,16 +144,6 @@ def is_pack_deprecated(pack_id: str, check_locally: bool = True,
                             "Note that this might result in an unexpected behavior.")
             return False
 
-    else:
-        if pack_api_data:
-            return pack_api_data['extras']['pack'].get('deprecated', False)
-
-        elif commit_hash:
-            return fetch_pack_metadata_from_gitlab(pack_id=pack_id, commit_hash=commit_hash).get('hidden', False)
-
-        else:
-            raise ValueError("If not checking locally, either 'master_commit_hash' or 'pack_api_data' must be provided.")
-
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
     """
@@ -154,7 +158,8 @@ def get_pack_id_from_error_with_gcp_path(error: str) -> str:
     return error.split('/packs/')[1].split('.zip')[0].split('/')[0]
 
 
-def create_dependencies_data_structure(response_data: dict, dependants_ids: list, dependencies_data: list, checked_packs: list):
+def create_dependencies_data_structure(response_data: dict, dependants_ids: list,
+                                       dependencies_data: list, checked_packs: list):
     """
     Recursively create packs' dependencies data structure for installation requests (only required and uninstalled).
 
@@ -170,7 +175,8 @@ def create_dependencies_data_structure(response_data: dict, dependants_ids: list
         dependants = dependency.get('dependants', {})
         for dependant in dependants:
             is_required = dependants[dependant].get('level', '') == 'required'
-            if dependant in dependants_ids and is_required and dependency['id'] not in checked_packs:
+
+            if all((dependant in dependants_ids, is_required, dependency['id'] not in checked_packs)):
                 dependencies_data.append(dependency)
                 next_call_dependants_ids.append(dependency['id'])
                 checked_packs.append(dependency['id'])
@@ -201,7 +207,7 @@ def get_pack_dependencies(client: demisto_client,
     global SUCCESS_FLAG
 
     api_endpoint = "/contentpacks/marketplace/search/dependencies"
-    body = [{"id": pack_id}]  # Not specifying a "version" key will result in the latest version of the pack being fetched.
+    body = [{"id": pack_id}]  # Not specifying a "version" key will return the latest version of the pack.
 
     logging.debug(f"Fetching dependencies for pack '{pack_id}'.\n"
                   f"Sending POST request to {api_endpoint} with body: {json.dumps(body)}")
@@ -442,15 +448,19 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      installation_request_body: list,
                                      lock: Lock,
                                      collected_dependencies: list,
-                                     is_post_update: bool,
+                                     production_bucket: bool,
                                      commit_hash: str,
                                      multithreading: bool = True,
                                      batch_packs_install_request_body: list | None = None,
                                      ):
     """
-    Searches for the pack of the specified file path, as well as its dependencies,
-    and updates the list of packs to be installed accordingly.
-    Deprecated packs don't have their tests collected, and are not installed in the build process.
+    Update 'packs_to_install' (a pointer to a list that's reused and updated by the function on every iteration)
+    with 'pack_id' and its dependencies, if 'pack_id' is not deprecated.
+    The way deprecation status is determined depends on the 'production_bucket' flag.
+
+    If 'production_bucket' is True, deprecation status is determined by checking the 'pack_metadata.json' file
+    in the commit hash that was used for the last upload. If it's False, the deprecation status is checking the
+    'pack_metadata.json' file locally (with changes applied on the branch).
 
     Args:
         client (demisto_client): The configured client to use.
@@ -459,7 +469,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
         collected_dependencies (list): list of packs that are already in the list to install
-        is_post_update (bool): Whether the installation is done in post-update or not (pre-update otherwise).
+        production_bucket (bool): Whether pack deprecation status  is determined using production bucket.
         commit_hash (str): Commit hash to use for checking pack's deprecations status if GitLab's API is used.
             If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
         multithreading (bool): Whether to install packs in parallel or not.
@@ -467,25 +477,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
     """
-    # On pre-update, we use current production data, so we don't want to check locally with branch changes, and we can't use
-    # Marketplace API data because the pack is not uploaded in to the bucket, resulting in API responses of "item not found".
-    # To solve that, we fetch the 'pack_metadata.json' file from the master branch using GitLab's API.
-    if not is_post_update:  # (pre-update)
-        try:
-            is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=False, commit_hash=commit_hash)
-
-        except Exception as ex:
-            logging.error(f"Failed to check deprecation status of pack '{pack_id}' using GitLab's API.\n"
-                          f"Error: {ex}\n")
-            logging.warning("Deprecation status will be checked locally instead.\n"
-                            "Note that this may result in a false positive if pack's deprecation status was changed.")
-            is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=True)
-
-    # On post-update, we want to check for deprecation status locally before making the API call,
-    # because if the pack has been deprecated, the test upload flow won't upload the pack to the bucket,
-    # and the Marketplace API call for the pack will fail.
-    else:  # (post-update)
-        is_deprecated = is_pack_deprecated(pack_id=pack_id, check_locally=True)
+    is_deprecated = is_pack_deprecated(pack_id=pack_id, production_bucket=production_bucket, commit_hash=commit_hash)
 
     if is_deprecated:
         logging.warning(f"Pack '{pack_id}' is deprecated (hidden) and will not be installed.")
@@ -494,7 +486,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
     api_data = get_pack_dependencies(client, pack_id, lock)
 
     if not api_data:
-        return  # If an error response was returned, error information has already been logged on 'get_pack_dependencies'.
+        return  # Error information already logged on 'get_pack_dependencies'.
 
     pack_api_data = api_data['packs'][0]
 
@@ -512,9 +504,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
         for dependency in dependencies_data:
             dependency_id = dependency['id']
-            # If running on pre-update, we check for deprecation using API data.
-            # if running on post-update, we check for deprecation locally on the branch.
-            is_deprecated = is_pack_deprecated(pack_id=dependency_id, check_locally=is_post_update, pack_api_data=dependency)
+            is_deprecated = is_pack_deprecated(pack_id=dependency_id,
+                                               production_bucket=production_bucket, pack_api_data=dependency)
 
             if is_deprecated:
                 logging.critical(f"Pack '{pack_id}' depends on pack '{dependency_id}' which is a deprecated pack.")
@@ -613,7 +604,7 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
 
     # Add deprecated packs to IGNORED_FILES list:
     for pack_id in os.listdir(PACKS_FULL_PATH):
-        if is_pack_deprecated(pack_id=pack_id, check_locally=True):
+        if is_pack_deprecated(pack_id=pack_id, production_bucket=False):
             logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
             IGNORED_FILES.append(pack_id)
 
@@ -730,7 +721,7 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
                                                     client: demisto_client, hostname: str | None = None,
                                                     multithreading: bool = True,
-                                                    is_post_update: bool = False):
+                                                    production_bucket: bool = True):
     """
     Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
@@ -741,7 +732,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         hostname (str): Hostname of instance. Using for logs.
         multithreading (bool): Whether to use multithreading to install packs in parallel.
             If multithreading is used, installation requests will be sent in batches of each pack and its dependencies.
-        is_post_update (bool): Whether the installation is in post update mode. Defaults to False.
+        production_bucket (bool): Whether the installation is in post update mode. Defaults to False.
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
         A flag that indicates if the operation succeeded or not.
@@ -755,10 +746,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     batch_packs_install_request_body: list = []  # List of lists of packs to install if not using multithreading .
     # Each list contain one pack and its dependencies.
     collected_dependencies: list = []  # List of packs that are already in the list to install.
-    master_commit_hash = os.getenv("LAST_UPLOAD_COMMIT")
-
-    if not master_commit_hash:
-        raise ValueError("Required 'LAST_UPLOAD_COMMIT' environment variable is missing.")
+    master_commit_hash = get_env_var("LAST_UPLOAD_COMMIT")
 
     lock = Lock()
 
@@ -768,19 +756,17 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         'installation_request_body': installation_request_body,
         'lock': lock,
         'collected_dependencies': collected_dependencies,
-        'is_post_update': is_post_update,
+        'production_bucket': production_bucket,
         'multithreading': multithreading,
         'batch_packs_install_request_body': batch_packs_install_request_body,
         'commit_hash': master_commit_hash,
     }
 
-    if is_post_update:
-        logging.info("Detected post-update run mode. "
-                     "Pack deprecation status will be determined using local pack metadata.")
+    if production_bucket:
+        logging.debug("Packs deprecation status will be determined by their status on our production bucket.")
 
     else:
-        logging.info("Detected pre-update run mode. "
-                     "Pack deprecation status will be determined using Marketplace API.")
+        logging.debug("Packs deprecation status will be determined by the local branch and its changes.")
 
     if not multithreading:
         for pack_id in pack_ids:
