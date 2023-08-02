@@ -6,7 +6,6 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple
 
 import urllib3
 from demisto_sdk.commands.test_content.constants import SSH_USER
@@ -15,7 +14,9 @@ from scp import SCPClient, SCPException
 
 from Tests.scripts.utils.log_util import install_logging
 
-urllib3.disable_warnings() # Disable insecure warnings
+urllib3.disable_warnings()  # Disable insecure warnings
+
+DEFAULT_TTL = "300"
 
 
 def options_handler():
@@ -35,25 +36,21 @@ def chmod_logs(server_ip: str) -> bool:
         logging.exception(f'Failed changing permissions of folder /var/log/demisto on server {server_ip}')
     return False
 
-def progress(filename: bytes, size: int, sent: int, peer_name: Tuple[str, int]):
-    logging.info(f"({peer_name[0]}:{peer_name[1]}) {filename}'s progress: {float(sent) / float(size) * 100:.2f}%")
+
+def progress(filename: bytes, size: int, sent: int, peer_name: tuple[str, int]):
+    logging.info(f"({peer_name[0]}:{peer_name[1]}) {filename!r}'s progress: {float(sent) / float(size) * 100:.2f}%")
 
 
 def download_logs(server_ip: str, artifacts_dir: str, role: str, ssh: SSHClient) -> bool:
-    # scp_string = f"scp {SSH_USER}@{server_ip}:/var/log/demisto/server.log " \
-    #              f"{artifacts_dir}/ || echo 'WARN: Failed downloading server.log'"
     try:
         logging.info(f'Downloading server logs from server {server_ip}')
         with SCPClient(ssh.get_transport(), progress4=progress) as scp:
             scp.get("/var/log/demisto/server.log", (Path(artifacts_dir) / f"server_{role}_{server_ip}.log").as_posix())
-
-        # subprocess.check_output(scp_string, shell=True)  # noqa: S602
         return True
-    except subprocess.CalledProcessError:
-        logging.exception(f'Failed downloading server logs from server {server_ip}')
     except SCPException:
         logging.exception(f'Failed downloading server logs from server {server_ip}')
     return False
+
 
 def shutdown(server_ip: str, ttl: int | None = None) -> bool:
     try:
@@ -69,7 +66,7 @@ def shutdown(server_ip: str, ttl: int | None = None) -> bool:
 def main():
     install_logging('Destroy_instances.log')
     options = options_handler()
-    time_to_live = int(os.getenv('TIME_TO_LIVE'))
+    time_to_live = int(os.getenv('TIME_TO_LIVE') or DEFAULT_TTL)
     tests_path = Path('./Tests')
     start_time = datetime.utcnow()
     logging.info(f"Starting destroy instances - environment from {options.env_file}, TTL:{time_to_live} seconds, "
