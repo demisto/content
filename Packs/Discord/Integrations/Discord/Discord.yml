@@ -38,8 +38,12 @@ script:
     description: Get message details
     name: discord-get-message
     outputs:
-    - contextPath: Discord.Details
+    - contextPath: Discord.Details.id
       description: Message Details
+    - contextPath: Discord.Details.content
+    - contextPath: Discord.Details.channel_id
+    - contextPath: Discord.Details.Auther_ID
+    - contextPath: Discord.Details.Auther_User
   dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: ''

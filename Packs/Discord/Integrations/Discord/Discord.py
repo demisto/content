@@ -47,10 +47,22 @@ def get_message(api_key, channel_id, message_id):
         raise DemistoException(
             f'Test Error in API call to Discord: {response.status_code} - {response.reason}.\nFull response: {response.text}')
     details = response.json()
+    msg_id = details['id']
+    msg = details['content']
+    channel_id = details['channel_id']
+    autherid = details['author']['id']
+    auther_user = details['author']['username']
+    alert = {
+        'id': msg_id,
+        'content': msg,
+        'channel_id': channel_id,
+        'Auther_ID': autherid,
+        'Auther_User': auther_user
+    }
     command_results = CommandResults(
         outputs_prefix='Discord.Details',
         outputs_key_field='id',
-        outputs=details
+        outputs=alert
     )
     return_results(command_results)
 
