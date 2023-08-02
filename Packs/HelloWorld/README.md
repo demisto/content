@@ -12,6 +12,7 @@ The purpose of this pack is to learn how to build a Cortex XSOAR content pack.
 - Searches HelloWorld alerts.
 - Updates the status for an alert.
 - Returns IP information and reputation.
+- Provides a way to test PRs.
 
 As part of this pack, you get an out-of-the-box automation, classifiers, incident fields and a Hello World layout. In addition there are two playbooks:
 - A playbook that will handle the alerts coming from the Hello World service.
