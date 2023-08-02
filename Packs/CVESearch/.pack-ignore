@@ -13,7 +13,6 @@ ignore=RM104
 [file:CVESearchV2.yml]
 ignore=IN154
 
-
 [known_words]
 CPE
 CPEs
