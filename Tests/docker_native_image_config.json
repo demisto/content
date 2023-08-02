@@ -146,7 +146,7 @@
       },
       {
          "id": "Intezer v2",
-         "reason": "This script is supposed to run inside a container, does not support podman",
+         "reason": "Lint and UT depend on intezer-sdk package",
          "ignored_native_images": [
             "native:dev",
             "native:ga",
