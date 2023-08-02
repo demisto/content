@@ -827,7 +827,7 @@ script:
     - contextPath: CyCognito.Asset.discoverability
       description: Quantifies an asset's level of exposure.
       type: String
-  dockerimage: demisto/pycountry:1.0.0.63741
+  dockerimage: demisto/pycountry:1.0.0.66907
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
