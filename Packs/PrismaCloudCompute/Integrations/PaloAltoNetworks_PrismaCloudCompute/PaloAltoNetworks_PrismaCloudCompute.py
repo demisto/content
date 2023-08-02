@@ -514,6 +514,7 @@ def test_module(client):
     return 'ok'
 
 
+@logger
 def is_command_is_fetch():
     """
     Rules wether the executed command is fetch_incidents or classifier
@@ -543,6 +544,7 @@ def fetch_incidents(client):
     """
     incidents = []
     if is_command_is_fetch():
+        demisto.debug("is_command_is_fetch = true, calling list_incidents")
         alerts = client.list_incidents()
 
         if alerts:
@@ -595,15 +597,24 @@ def fetch_incidents(client):
                     'severity': severity,
                     'rawJSON': json.dumps(a)
                 })
+
+        demisto.debug("Setting last run to 'id': 'a'")
         demisto.setLastRun({"id": "a"})
+
         ctx = demisto.getIntegrationContext()
+        demisto.debug(f"Integration Context before update = {ctx}")
+
         incidents_to_update = incidents or ctx.get('fetched_incidents_list')
         ctx.update({'fetched_incidents_list': incidents_to_update})
         demisto.setIntegrationContext(ctx)
+        demisto.debug(f"Integration Context after update = {ctx}")
+
         return incidents
 
     else:
-        return demisto.getIntegrationContext().get('fetched_incidents_list', [])
+        ctx = demisto.getIntegrationContext().get('fetched_incidents_list', [])
+        demisto.debug(f"Integration Context (is_command_is_fetch = false) = {ctx}")
+        return ctx
 
 
 def parse_limit_and_offset_values(limit: str, offset: str = "0") -> tuple[int, int]:
