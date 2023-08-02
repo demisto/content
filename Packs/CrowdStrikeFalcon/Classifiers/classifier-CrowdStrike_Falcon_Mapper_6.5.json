@@ -344,7 +344,7 @@
                 "severity": {
                     "complex": {
                         "filters": [],
-                        "root": "severity",
+                        "root": "fine_score",
                         "transformers": [
                             {
                                 "args": {
@@ -660,7 +660,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "severity"
+                                            "simple": "fine_score"
                                         }
                                     }
                                 },
@@ -910,7 +910,7 @@
                 "severity": {
                     "complex": {
                         "filters": [],
-                        "root": "severity",
+                        "root": "fine_score",
                         "transformers": [
                             {
                                 "args": {
