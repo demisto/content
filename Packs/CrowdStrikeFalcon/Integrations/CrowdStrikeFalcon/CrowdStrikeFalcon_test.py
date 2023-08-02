@@ -3924,7 +3924,7 @@ def test_get_remote_incident_data(mocker):
     incident_entity = input_data.response_incident.copy()
     mocker.patch('CrowdStrikeFalcon.get_incidents_entities', return_value={'resources': [incident_entity.copy()]})
     mirrored_data, updated_object = get_remote_incident_data(input_data.remote_incident_id)
-    incident_entity['status'] = 'New'
+    incident_entity |= {'status': 'New', 'severity': 0}
     assert mirrored_data == incident_entity
     assert updated_object == {'state': 'closed', 'status': 'New', 'tags': ['Objective/Keep Access'],
                               'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident'}
