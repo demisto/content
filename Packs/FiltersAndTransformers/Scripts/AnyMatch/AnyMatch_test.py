@@ -6,7 +6,7 @@ from AnyMatch import main
 # a comma separated string that will be converted to a list in the script.
 
 
-@pytest.mark.parametrize('left,right, call_count,result', [
+@pytest.mark.parametrize('left,right, call_count,expected_result', [
     (123, 1, 1, [True]),
     ("2", "25,10", 1, [False]),
     ("1, '2'", "1,2,3", 2, [True, True]),    # a part of '2' is in '1,2,3'
@@ -20,13 +20,13 @@ from AnyMatch import main
     ("{'a':1,'c':2}", "{'a': 1}, {'b': 2}", 2, [False, False]),     # {'a':1} is not a part of {'a':1, or 'c':2}
     ("{'a': 1}, {'b': 2}", "{a:1}", 2, [False, False]),  # {a:1} is not a part of {'a': 1} or {'b': 2}
     # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in  'c': 2}
-    ("{'a':1,'c':2}", "'', '", 2, [True, True]),
+    ("{'a':1,'c':2}", "'', '", 2, [True, True]),    # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in 'c':2}
 ])
-def test_main(mocker, left, right, call_count, result):
+def test_main(mocker, left, right, call_count, expected_result):
     mocker.patch.object(demisto, 'args', return_value={'left': left, 'right': right})
     mocker.patch.object(demisto, 'results')
     main()
     assert demisto.results.call_count == call_count
-    for i in range(len(result)):
+    for i in range(len(expected_result)):
         results = demisto.results.call_args_list[i][0][0]
-        assert results == result[i]
+        assert results == expected_result[i]
