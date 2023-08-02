@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
 import json
-import base64
 
 
 def send_message(api_key, channel_id, text):
@@ -17,7 +16,7 @@ def send_message(api_key, channel_id, text):
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     if not response.ok:
         raise DemistoException(
-            f'Test Error in API call to Discord: {response.status_code} - {response.reason}.\nFull response: {response.text}')
+            f'Error in API call to Discord: {response.status_code} - {response.reason}.\nFull response: {response.text}')
     message_id = response.json()['id']
     content = response.json()['content']
     channel_id = response.json()['channel_id']
@@ -45,7 +44,7 @@ def get_message(api_key, channel_id, message_id):
     response = requests.get(url, headers=headers)
     if not response.ok:
         raise DemistoException(
-            f'Test Error in API call to Discord: {response.status_code} - {response.reason}.\nFull response: {response.text}')
+            f'Error in API call to Discord: {response.status_code} - {response.reason}.\nFull response: {response.text}')
     details = response.json()
     msg_id = details['id']
     msg = details['content']
