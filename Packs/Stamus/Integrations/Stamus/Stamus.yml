@@ -190,5 +190,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.9.0
+defaultmapperin: Stamus Networks incoming mapper
 tests:
 - No tests (auto formatted)
