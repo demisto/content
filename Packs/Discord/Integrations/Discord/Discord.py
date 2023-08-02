@@ -12,19 +12,21 @@ def send_message(api_key, channel_id, text):
         'Content-Type': 'application/json'
     }
     payload = {
-        "content": "Your message content here",
+        "content": text,
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
+    if not response.ok:
+        raise DemistoException(
+            f'Test Error in API call to Discord: {response.status_code} - {response.reason}.\nFull response: {response.text}')
     message_id = response.json()['id']
     content = response.json()['content']
     channel_id = response.json()['channel_id']
-    alerts = [
-        {
-            'id': message_id,
-            'content': content,
-            'channel_id': channel_id
-        },
-    ]
+    alerts = {
+        'id': message_id,
+        'content': content,
+        'channel_id': channel_id
+    }
+
     command_results = CommandResults(
         outputs_prefix='Discord.Message',
         outputs_key_field='id',
@@ -41,6 +43,9 @@ def get_message(api_key, channel_id, message_id):
         'Content-Type': 'application/json'
     }
     response = requests.get(url, headers=headers)
+    if not response.ok:
+        raise DemistoException(
+            f'Test Error in API call to Discord: {response.status_code} - {response.reason}.\nFull response: {response.text}')
     details = response.json()
     command_results = CommandResults(
         outputs_prefix='Discord.Details',
@@ -52,8 +57,6 @@ def get_message(api_key, channel_id, message_id):
 
 def test_module(api_key):
     url = 'https://discord.com/api/v9/users/@me'
-    # Combine the username and the API key with a colon
-
     headers = {
         'Authorization': 'Bot ' + api_key,
         'Content-Type': 'application/json'
