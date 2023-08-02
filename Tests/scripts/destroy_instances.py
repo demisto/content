@@ -9,7 +9,7 @@ from pathlib import Path
 
 import urllib3
 from demisto_sdk.commands.test_content.constants import SSH_USER
-from paramiko import SSHClient
+from paramiko import SSHClient, AutoAddPolicy, SSHException
 from scp import SCPClient, SCPException
 
 from Tests.scripts.utils.log_util import install_logging
@@ -84,12 +84,18 @@ def main():
         server_ip = env["InstanceDNS"]
         logging.info(f'{i}/{len(servers_list)} - Downloading server log from {readable_role}, ip:{server_ip} and destroying it')
 
+        success &= chmod_logs(server_ip)
+
         with SSHClient() as ssh:
             ssh.load_system_host_keys()
-            ssh.connect(server_ip)
+            ssh.set_missing_host_key_policy(AutoAddPolicy())
 
-            success &= chmod_logs(server_ip)
-            download_logs(server_ip, options.artifacts_dir, role, ssh)
+            try:
+                ssh.connect(server_ip, username=SSH_USER)
+                success &= download_logs(server_ip, options.artifacts_dir, role, ssh)
+            except SSHException:
+                logging.exception(f"Unable to SSH to server:{server_ip}")
+                success = False
 
             if time_to_live:
                 logging.info(f'Time to live was set to {time_to_live} minutes')
