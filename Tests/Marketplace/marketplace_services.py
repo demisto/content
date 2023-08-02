@@ -94,7 +94,6 @@ class Pack:
         self._reademe_images = []
         self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
         self._uploaded_preview_images = []  # list of all preview images that were uploaded for the pack
-        self._uploaded_dynamic_dashboard_images = []
         self._support_details = None  # initialized in enhance_pack_attributes function
         self._author = None  # initialized in enhance_pack_attributes function
         self._certification = None  # initialized in enhance_pack_attributes function
@@ -375,15 +374,9 @@ class Pack:
 
     @property
     def uploaded_preview_images(self):
-        """ str: the list of uploaded preview images
+        """ str: the list of uploaded integration images
         """
         return self._uploaded_preview_images
-
-    @property
-    def uploaded_dynamic_dashboard_images(self):
-        """ str: the list of uploaded integration svg images for the dynamic dashboard
-        """
-        return self._uploaded_dynamic_dashboard_images
 
     @property
     def is_missing_dependencies(self):
@@ -3594,49 +3587,6 @@ class Pack:
 
         return True
 
-    def upload_dynamic_dashboard_images(self, storage_bucket, storage_base_path):
-        """ Uploads pack dynamic dashboard images to gcs.
-        Args:
-            storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
-            storage_base_path (str): The target destination of the upload in the target bucket.
-        Returns:
-            bool: whether the operation succeeded.
-        """
-        pack_storage_root_path = os.path.join(storage_base_path, 'images')
-
-        local_dynamic_dashboard_image_dir = os.path.join(PACKS_FOLDER, self.name, PackFolders.INTEGRATIONS.value)
-        if not os.path.isdir(local_dynamic_dashboard_image_dir):
-            logging.debug(f"Could not find dynamic dashboard images for pack {self.name}")
-            return True
-
-        dynamic_dashboard_image_relative_paths = glob.glob(os.path.join(local_dynamic_dashboard_image_dir, '*/*.svg'))
-        if not dynamic_dashboard_image_relative_paths:
-            logging.debug(f"Could not find dynamic dashboard images in pack {local_dynamic_dashboard_image_dir}")
-            return True
-
-        logging.debug(f"Found dynamic dashboard image: {dynamic_dashboard_image_relative_paths}")
-        for dynamic_dashboard_image in dynamic_dashboard_image_relative_paths:
-            integration_dir = Path(dynamic_dashboard_image).parts[:-1]
-            integration_yaml_path = glob.glob(os.path.join(*integration_dir, '*.yml'))
-
-            with open(integration_yaml_path[0]) as pack_file:
-                integration_yaml_content = yaml.safe_load(pack_file)
-
-            image_storage_path = os.path.join(pack_storage_root_path,
-                                              f"{integration_yaml_content.get('commonfields', {}).get('id', '')}.svg")
-            pack_image_blob = storage_bucket.blob(image_storage_path)
-
-            try:
-                with open(dynamic_dashboard_image, "rb") as image_file:
-                    pack_image_blob.upload_from_file(image_file)
-            except Exception as e:
-                logging.exception(f"Failed uploading {self.name} pack dynamic dashboard image. Additional info: {e}")
-                return False
-
-        self._uploaded_dynamic_dashboard_images.append(image_storage_path)
-
-        return True
-
     def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's preview image from the build bucket to the production bucket
 
@@ -3689,62 +3639,6 @@ class Pack:
         else:
             if num_copied_images == 0:
                 logging.info(f"No added/modified preview images were detected in {self._pack_name} pack.")
-            else:
-                logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
-
-        return task_status
-
-    def copy_dynamic_dashboard_images(self, production_bucket, build_bucket, images_data, storage_base_path,
-                                      build_bucket_base_path):
-        """ Copies pack's dynamic dashboard image from the build bucket to the production bucket
-
-        Args:
-            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
-            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
-            images_data (dict): The images data structure from Prepare Content step
-            storage_base_path (str): The target destination of the upload in the target bucket.
-            build_bucket_base_path (str): The path of the build bucket in gcp.
-        Returns:
-            bool: Whether the operation succeeded.
-
-        """
-        task_status = True
-        num_copied_images = 0
-        err_msg = f"Failed copying {self._pack_name} pack dynamic dashboard images."
-        pc_uploaded_dynamic_dashboard_images = images_data.get(self._pack_name,
-                                                               {}).get(BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES, [])
-
-        for image_name in pc_uploaded_dynamic_dashboard_images:
-            build_bucket_image_path = os.path.join(build_bucket_base_path, 'images', os.path.basename(image_name))
-            build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
-
-            if not build_bucket_image_blob.exists():
-                logging.error(f"Found changed/added dynamic dashboard image {image_name} in content repo but "
-                              f"{build_bucket_image_path} does not exist in build bucket")
-                task_status = False
-            else:
-                logging.info(f"Copying {self._pack_name} pack dynamic dashboard image: {image_name}")
-                try:
-                    copied_blob = build_bucket.copy_blob(
-                        blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(storage_base_path, 'images', os.path.basename(image_name))
-                    )
-                    if not copied_blob.exists():
-                        logging.error(f"Copy {self._pack_name} dynamic dashboard image: {build_bucket_image_blob.name} "
-                                      f"blob to {copied_blob.name} blob failed.")
-                        task_status = False
-                    else:
-                        num_copied_images += 1
-
-                except Exception as e:
-                    logging.exception(f"{err_msg}. Additional Info: {str(e)}")
-                    return False
-
-        if not task_status:
-            logging.error(err_msg)
-        else:
-            if num_copied_images == 0:
-                logging.info(f"No added/modified dynamic dashboard images were detected in {self._pack_name} pack.")
             else:
                 logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 

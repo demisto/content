@@ -55,7 +55,6 @@ class BucketUploadFlow(object):
     README_IMAGES = 'readme_images'
     INTEGRATIONS = 'integrations'
     PREVIEW_IMAGES = 'preview_images'
-    DYNAMIC_DASHBOARD_IMAGES = 'dynamic_dashboard_images'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     # Different upload job names relate to different CI platforms:
@@ -350,7 +349,6 @@ class PackStatus(enum.Enum):
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
-    FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD = "Failed to upload pack dynamic dashboard images to gcs"
     FAILED_README_IMAGE_UPLOAD = "Failed to upload readme images to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"

@@ -11,7 +11,7 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, store_successful_and_failed_packs_in_ci_artifacts, \
     get_upload_data
-from Tests.Marketplace.marketplace_constants import XSIAM_MP, PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
+from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PACKS_FULL_PATH, IGNORED_FILES
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 from Tests.scripts.utils import logging_wrapper as logging
@@ -456,7 +456,6 @@ def main():
         packs_for_current_marketplace.append(pack)
 
     # Starting iteration over packs
-    pack: Pack
     for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
@@ -485,14 +484,6 @@ def main():
             pack.status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
-
-        if marketplace == XSIAM_MP:
-            task_status = pack.copy_dynamic_dashboard_images(
-                production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
-            if not task_status:
-                pack.status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
-                pack.cleanup()
-                continue
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
             production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
