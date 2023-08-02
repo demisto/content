@@ -1,5 +1,6 @@
-id: ExabeamDataLake-test
-version: -1
+id: a7ad1fea-3671-45e6-8e6e-85f147c6e8df
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
 name: ExabeamDataLake-test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -75,12 +75,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3c8f1c69-6ffb-4ab3-84ce-833a1cd579a5
+    taskid: 31be7cfe-b20a-458d-81fe-c7b1772b7fbd
     type: regular
     task:
-      id: 3c8f1c69-6ffb-4ab3-84ce-833a1cd579a5
+      id: 31be7cfe-b20a-458d-81fe-c7b1772b7fbd
       version: -1
-      name: exabeam-data-lake-query
+      name: 'exabeam-data-lake-query limit = 2 '
       description: all result from exabeam data lake query (max 10,000).
       script: '|||exabeam-data-lake-query'
       type: regular
@@ -112,12 +112,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7c6ea773-8ea2-4b53-8fdd-6d771fe58fc9
+    taskid: 2f56528d-cbc8-4a13-8ffd-721cb81e22c8
     type: condition
     task:
-      id: 7c6ea773-8ea2-4b53-8fdd-6d771fe58fc9
+      id: 2f56528d-cbc8-4a13-8ffd-721cb81e22c8
       version: -1
-      name: Verify Output
+      name: Verify Output has length of 2
       type: condition
       iscommand: false
       brand: ""
@@ -164,7 +164,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -196,5 +195,3 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
-fromversion: 6.9.0
-description: ''

@@ -5,7 +5,8 @@ from CommonServerUserPython import *
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # ISO8601 format with UTC, default in XSOAR
+
 HEADERS = {"Accept": "application/json", "Csrf-Token": "nocheck"}
 
 """ CLIENT CLASS """
@@ -151,12 +152,12 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
         }
     )
 
-    response = client.query_datalake_request(search_query).get("response", [{}])
+    response = client.query_datalake_request(search_query).get("responses", [{}])
 
     if error := response[0].get("error"):
         raise DemistoException(f"Error in query: {error['root_cause'][0]['reason']}")
 
-    data_response = response[0].get("hits", {}).get("hits")
+    data_response = response[0].get("hits", {}).get("hits", [])
 
     table_to_markdown = [_parse_entry(entry) for entry in data_response]
 
