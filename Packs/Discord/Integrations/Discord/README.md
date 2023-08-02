@@ -59,8 +59,8 @@ Get message details
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Discord.Details.id | unknown | Message Details | 
-| Discord.Details.content | unknown |  | 
-| Discord.Details.channel_id | unknown |  | 
-| Discord.Details.Auther_ID | unknown |  | 
-| Discord.Details.Auther_User | unknown |  | 
+| Discord.Details.id | unknown | Message ID | 
+| Discord.Details.content | unknown | Message Content | 
+| Discord.Details.channel_id | unknown | Message Channel ID | 
+| Discord.Details.Auther_ID | unknown | Message Auther ID | 
+| Discord.Details.Auther_User | unknown | Message Auther User | 
