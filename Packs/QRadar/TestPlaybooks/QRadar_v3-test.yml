@@ -1138,7 +1138,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "2"
       - - operator: containsGeneral
           left:
             value:
