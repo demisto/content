@@ -264,7 +264,7 @@ xpanse-prepare-testing-bucket:
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - echo Going to sleep for 15 minutes to allow server finish indexing
-    - sleep 900
+    - sleep 900 |pv -t --format "Sleeping... %t %e" -i 10
 
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
