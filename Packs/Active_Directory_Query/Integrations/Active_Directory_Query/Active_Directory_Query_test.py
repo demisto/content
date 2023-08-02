@@ -808,7 +808,7 @@ def test_search_users_empty_userAccountControl(mocker):
         mock.assert_called_with(expected_results)
 
 
-def test_test_credentials(mocker):
+def test_test_credentials_command(mocker):
     """
     Given:
         The 'userAccountControl' attribute was returned empty
@@ -822,9 +822,14 @@ def test_test_credentials(mocker):
             'ntlm': 'true'}
     mocker.patch.object(demisto, 'args', return_value=args)
 
-    def mock_set_connection(server, ip, username, password, ntlm, value):
-        return None
+    class MockConnection:
+        def unbind(self):
+            pass
 
-    with patch("Active_Directory_Query.set_connection", side_effect=mock_set_connection):
-        command_results = Active_Directory_Query.test_credentials(BASE_TEST_PARAMS['server_ip'])
+    def mock_set_connection(server, ip, username, password, ntlm, value):
+        return MockConnection()
+
+    with patch("Active_Directory_Query.set_connection", side_effect=mock_set_connection), \
+            patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind):
+        command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'])
         assert command_results.readable_output == 'Credential with username username_test_credentials is successful'

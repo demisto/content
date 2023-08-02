@@ -1766,7 +1766,7 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def test_credentials(SERVER_IP):
+def test_credentials_command(SERVER_IP):
     args = demisto.args()
     username = args.get('username')
     server = Server(SERVER_IP, get_info='ALL')
@@ -1779,6 +1779,8 @@ def test_credentials(SERVER_IP):
         True,
     ):
         connection.unbind()
+    else:
+        raise DemistoException(f"Credential with username {username} was not successful")
     return CommandResults(
         outputs_prefix='ActiveDirectory.ValidCredentials',
         outputs_key_field='username',
@@ -1969,7 +1971,7 @@ def main():
             delete_group()
 
         elif command == 'ad-test-credentials':
-            return return_results(test_credentials(SERVER_IP))
+            return return_results(test_credentials_command(SERVER_IP))
 
         # IAM commands
         elif command == 'iam-get-user':
