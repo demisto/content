@@ -11,7 +11,7 @@ configuration:
   required: true
   type: 4
   section: Connect
-- additionalinfo: Select the region based on the location of the chronicle backstory instance. If region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
+- additionalinfo: Select the region based on the location of the chronicle backstory instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
   defaultvalue: General
   display: Region
   name: region
@@ -151,7 +151,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
-- additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}. Enter in a comma separated format to add multiples. Entered rules have precedence over the "Fetch all rules detections" checkbox. This parameter is mandatory when fetching Curated Rule Detection alerts.'
+- additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}). Enter in a comma-separated format to add multiples. Entered rules have precedence over the "Fetch all rules detections" checkbox. This parameter is mandatory when fetching Curated Rule Detection alerts.'
   display: Detections to fetch by Rule ID or Version ID
   name: fetch_detection_by_ids
   type: 0
@@ -3643,7 +3643,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10000'
-      description: Specify the maximum number of assets aliases to fetch. You can specify between 1 and 10000.
+      description: Specify the maximum number of asset aliases to fetch. You can specify between 1 and 10000.
       isArray: false
       name: page_size
       required: false
@@ -3808,7 +3808,7 @@ script:
       description: The name of the command to which the value of the nextPageToken corresponds.
       type: String
     - contextPath: GoogleChronicleBackstory.Token.nextPageToken
-      description: A page token that can be provided to the next call to view the next page of Rules. Absent if this is the last page.
+      description: A page token that can be provided to the next call to view the next page of rules. Absent if this is the last page.
       type: String
   - arguments:
     - default: false
@@ -3837,7 +3837,7 @@ script:
       secret: false
     - default: false
       defaultValue: '10000'
-      description: Specify the maximum number of users aliases to fetch. You can specify between 1 and 10000.
+      description: Specify the maximum number of user aliases to fetch. You can specify between 1 and 10000.
       isArray: false
       name: page_size
       required: false
@@ -4024,7 +4024,7 @@ script:
         secret: false
       - default: false
         description: |-
-          Start time of the time range to return detections for, filtering by the detection field specified in the list_basis parameter. If not specified, the start time is treated as open-ended.
+          Start time of the time range to return detections for, filtered by the detection field specified in the list_basis parameter. If not specified, the start time is treated as open-ended.
           Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
           Example: 2023-05-01T00:00:00Z, 2023-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2023 04:45:33, 15 Jun.
         isArray: false
@@ -4033,7 +4033,7 @@ script:
         secret: false
       - default: false
         description: |-
-          End time of the time range to return detections for, filtering by the detection field specified by the list_basis parameter. If not specified, the end time is treated as open-ended.
+          End time of the time range to return detections for, filtered by the detection field specified by the list_basis parameter. If not specified, the end time is treated as open-ended.
           Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
           Example: 2023-05-01T00:00:00Z, 2023-05-01, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2021 04:45:33, 15 Jun.
         isArray: false
@@ -4088,10 +4088,10 @@ script:
       description: The time period the detection was found in.
       type: Date
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.lastUpdatedTime
-      description: The time period the detection was updated.
+      description: The time period of when the detection was last updated.
       type: Date
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.riskScore
-      description: Risk score of detection.
+      description: Risk score of the detection.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.severity
       description: Severity of the detection ("INFORMATIONAL" or "LOW" or "HIGH").
@@ -4112,13 +4112,13 @@ script:
       description: The value for a field specified in the rule, for MULTI_EVENT rules.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.outcomes.key
-      description: The key for a field specified in the outcomes of detection, for "MULTI_EVENT" rules.
+      description: The key for a field specified in the outcomes of the detection, for "MULTI_EVENT" rules.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.outcomes.source
-      description: The source for a field specified in the outcomes of detection, for "MULTI_EVENT" rules.
+      description: The source for a field specified in the outcomes of the detection, for "MULTI_EVENT" rules.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.outcomes.value
-      description: The value for a field specified in the outcomes of detection, for "MULTI_EVENT" rules.
+      description: The value for a field specified in the outcomes of the detection, for "MULTI_EVENT" rules.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.ruleLabels.key
       description: The key for a field specified in the Chronicle rule metadata.
@@ -4208,10 +4208,10 @@ script:
       description: Associated country or region for IP Geolocation.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.latitude
-      description: Latitude coordinate of the region for IP Geolocation.
+      description: Latitude coordinates of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionCoordinates.longitude
-      description: Longitude coordinate of the region for IP Geolocation.
+      description: Longitude coordinates of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipGeoArtifact.location.regionLatitude
       description: Latitude of the region for IP Geolocation.
@@ -4235,22 +4235,22 @@ script:
       description: Associated organization name with a network connection for IP Geolocation.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.countryOrRegion
-      description: Associated country or region for IP location.
+      description: Associated country or region for the IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.latitude
-      description: Latitude coordinate of the region for IP location.
+      description: Latitude coordinates of the region for the IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionCoordinates.longitude
-      description: Longitude coordinate of the region for IP location.
+      description: Longitude coordinates of the region for IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLatitude
-      description: Latitude of the region for IP location.
+      description: Latitude of the region for the IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.regionLongitude
-      description: Longitude of the region for IP location.
+      description: Longitude of the region for the IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.ipLocation.state
-      description: Associated state of IP location.
+      description: Associated state of the IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.labels.key
       description: The key for a field specified in the principal labels of the event.
@@ -4259,13 +4259,13 @@ script:
       description: The value for a field specified in the principal labels of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.countryOrRegion
-      description: Associated country or region for principal location.
+      description: Associated country or region for the principal location.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.latitude
-      description: Latitude coordinate of the region for the principal location.
+      description: Latitude coordinates of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionCoordinates.longitude
-      description: Longitude coordinate of the region for the principal location.
+      description: Longitude coordinates of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.regionLatitude
       description: Latitude of the region for the principal location.
@@ -4274,7 +4274,7 @@ script:
       description: Longitude of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.location.state
-      description: Associated state of principal location.
+      description: Associated state of the principal location.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.resource.attribute.cloud.project.name
       description: Associated name of the project specified in the principal resource.
@@ -4316,7 +4316,7 @@ script:
       description: MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.principal.url
       description: Standard URL.
@@ -4634,7 +4634,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.intermediary.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.intermediary.url
       description: Standard URL.
@@ -4769,7 +4769,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.src.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.src.url
       description: Standard URL.
@@ -4904,7 +4904,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.observer.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.observer.url
       description: Standard URL.
@@ -5039,7 +5039,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.about.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.about.url
       description: Standard URL.
@@ -5198,7 +5198,7 @@ script:
       description: Seconds elapsed since the client began the address acquisition/renewal process.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.network.dhcp.sname
-      description: Name of the server which the client has requested to boot from.
+      description: Name of the server that the client has requested to boot from.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.network.dhcp.transactionId
       description: Client transaction ID.
@@ -5360,7 +5360,7 @@ script:
       description: Specify a security category.
       type: String
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.categoryDetails
-      description: Specify a security category details.
+      description: Specify the security category details.
       type: Unknown
     - contextPath: GoogleChronicleBackstory.CuratedRuleDetections.collectionElements.references.securityResult.detectionFields.key
       description: The key for a field specified in the security result, for MULTI_EVENT rules.
@@ -5508,10 +5508,10 @@ script:
       description: Associated country or region for IP Geolocation.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.latitude
-      description: Latitude coordinate of the region for IP Geolocation.
+      description: Latitude coordinates of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionCoordinates.longitude
-      description: Longitude coordinate of the region for IP Geolocation.
+      description: Longitude coordinates of the region for IP Geolocation.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipGeoArtifact.location.regionLatitude
       description: Latitude of the region for IP Geolocation.
@@ -5535,22 +5535,22 @@ script:
       description: Associated organization name with a network connection for IP Geolocation.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.countryOrRegion
-      description: Associated country or region for IP location.
+      description: Associated country or region for the IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.latitude
-      description: Latitude coordinate of the region for IP location.
+      description: Latitude coordinates of the region for the IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionCoordinates.longitude
-      description: Longitude coordinate of the region for IP location.
+      description: Longitude coordinates of the region for the IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionLatitude
-      description: Latitude of the region for IP location.
+      description: Latitude of the region for the IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.regionLongitude
-      description: Longitude of the region for IP location.
+      description: Longitude of the region for the IP location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.ipLocation.state
-      description: Associated state of IP location.
+      description: Associated state of the IP location.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.labels.key
       description: The key for a field specified in the principal labels of the event.
@@ -5562,10 +5562,10 @@ script:
       description: Associated country or region for the principal location.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.location.regionCoordinates.latitude
-      description: Latitude coordinate of the region for the principal location.
+      description: Latitude coordinates of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.location.regionCoordinates.longitude
-      description: Longitude coordinate of the region for the principal location.
+      description: Longitude coordinates of the region for the principal location.
       type: Number
     - contextPath: GoogleChronicleBackstory.Events.principal.location.regionLatitude
       description: Latitude of the region for the principal location.
@@ -5616,7 +5616,7 @@ script:
       description: MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.url
       description: Standard URL.
@@ -5754,7 +5754,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.application
       description: Application of the target related to the event.
@@ -5934,7 +5934,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.url
       description: Standard URL.
@@ -6069,7 +6069,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.url
       description: Standard URL.
@@ -6204,7 +6204,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.url
       description: Standard URL.
@@ -6339,7 +6339,7 @@ script:
       description: One or more MAC addresses associated with a device.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.administrativeDomain
-      description: Domain which the device belongs to (for example, the Windows domain).
+      description: Domain that the device belongs to (for example, the Windows domain).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.url
       description: Standard URL.
@@ -6498,7 +6498,7 @@ script:
       description: Seconds elapsed since the client began the address acquisition/renewal process.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dhcp.sname
-      description: Name of the server which the client has requested to boot from.
+      description: Name of the server that  the client has requested to boot from.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dhcp.transactionId
       description: Client transaction ID.
@@ -6660,7 +6660,7 @@ script:
       description: Specify a security category.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.categoryDetails
-      description: Specify a security category details.
+      description: Specify the security category details.
       type: Unknown
     - contextPath: GoogleChronicleBackstory.Events.securityResult.detectionFields.key
       description: The key for a field specified in the security result, for MULTI_EVENT rules.
@@ -6698,7 +6698,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Events.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.65453
+  dockerimage: demisto/googleapi-python3:1.0.0.67173
   isfetch: true
   runonce: false
   script: '-'
