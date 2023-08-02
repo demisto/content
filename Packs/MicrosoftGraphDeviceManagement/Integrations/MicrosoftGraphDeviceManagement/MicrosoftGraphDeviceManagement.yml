@@ -78,7 +78,6 @@ configuration:
   display: Use a self deployed Azure Application
   name: self_deployed
   type: 8
-  origin: master
   required: false
 description: Microsoft Intune is a Microsoft cloud-based management solution that provides for mobile device and operating system management.
 display: Microsoft Endpoint Manager (Intune)
