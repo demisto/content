@@ -18,8 +18,8 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
 
 #### Set up the XSL Translator
 1. Navigate to the *Syslog* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Syslog*). This folder contains predefined XSL samples. 
-2. Make a copy of the *Arcsight.sample.xsl* sample file, and rename it as *XSIAM.xsl*.
-3. If you wish to include the events' timestamps, open the *XSIAM.xsl* file for editing, and right above the mapping section for *cn1Label* and *cn1* fields, add the following section which maps the *IsoTimestamp* XML field into the CEF message *cs6* field, and the constant string "IsoTimestamp" to the *cs6Label* field: 
+2. Make a copy of the *Arcsight.sample.xsl* sample file, and rename it with a meaningful name, for example: *XSIAM.xsl*.
+3. If you wish to include the events' timestamps in the events that would be sent to Cortex XSIAM, open the copied XSL file for editing, and right above the mapping section for *cn1Label* and *cn1* fields, add the following section, which maps the *IsoTimestamp* XML field into the CEF message *cs6* field and the constant string "IsoTimestamp" to the *cs6Label* field: 
       ```XML        
             <!-- Start of IsoTimestamp mapping section -->
             cs6Label=IsoTimestamp 
@@ -33,7 +33,7 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
       See The following screenshot for a demonstration of the updated XSL file: 
     ![xsl_with_timestamp_mapping](https://raw.githubusercontent.com/demisto/content/fcf4535d373df78bded4b1bedacdd505d25cc095/Packs/CyberArkEPV/doc_files/config_isotimestamp_mapping.png)
 4. Save the changes.
-#### Set up the DBParm.ini Syslog Configuration
+#### Set up the Syslog Configuration
 1. Navigate to the *Conf* subfolder under the CyberArk Vault server installation folder (*PrivateArk\Server\Conf*).
 2. Copy the *\[SYSLOG\]* section from the *DBParm.sample.ini* sample file, and paste it at the bottom of the *DBParm.ini* file. 
 3. Set the following parameters under the copied *\[SYSLOG\]* section in the *DBParm.ini* file
@@ -61,7 +61,7 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
             UseLegacySyslogFormat=No
             SendMonitoringMessage=no
 ``` 
-1. Restart the Vault server to apply the configuration changes. 
+4. Restart the Vault server to apply the configuration changes. 
 
 ### Remarks
 Cyber-Ark Vault supports additional Syslog configuration settings such as forwarding audit events to *multiple* Syslog servers, each server with it's own unique set of syslog parameters. For additional details refer to the [Cyber-Ark Vault documentation](https://docs.cyberark.com/PAS/Latest/en/Content/PASIMP/Integrating-with-SIEM-Applications.htm?tocpath=End%20user%7CReports%20and%20Audits%7C_____6).
@@ -80,8 +80,8 @@ To create or configure the Broker VM, use the information described [here](https
 4. Set the following parameters for the Syslog configuration:
    | Parameter     | Value    
    | :---          | :---                    
-   | `Protocol`    | Should be aligned with the protocol defined in the *SyslogServerProtocol* parameter in the `[SYSLOG]` section of the *DBParm.ini* configuration file on the Cyber-Ark Vault server (see [Set up the DBParm.ini Syslog Configuration](#Set-up-the-DBParm.ini-Syslog-Configuration)).   
-   | `Port`        | Should be aligned with the protocol defined in the *SyslogServerPort* parameter in the `[SYSLOG]` section of the *DBParm.ini* configuration file on the Cyber-Ark Vault server (see [Set up the DBParm.ini Syslog Configuration](#Set-up-the-DBParm.ini-Syslog-Configuration)).   
+   | `Protocol`    | Should be aligned with the protocol defined in the *SyslogServerProtocol* parameter in the `[SYSLOG]` section of the *DBParm.ini* configuration file on the Cyber-Ark Vault server (see [Set up the Syslog Configuration](#Set-up-the-Syslog-Configuration)).   
+   | `Port`        | Should be aligned with the protocol defined in the *SyslogServerPort* parameter in the `[SYSLOG]` section of the *DBParm.ini* configuration file on the Cyber-Ark Vault server (see [Set up the Syslog Configuration](#Set-up-the-Syslog-Configuration)).   
    | `Format`      | Select **_CEF_**. 
    | `Vendor`      | Select **Auto-Detect** (Would be determined automatically from the CEF header *Vendor* field). 
    | `Product`     | Select **Auto-Detect** (Would be determined automatically from the CEF header *Product* field). 
