@@ -1,0 +1,25 @@
+[MODEL: dataset=aruba_clearpass_raw]
+filter cat ~= "[s|S]ession"
+| alter
+	dst_ip_v4 = if(dst !~= ":", dst, null),
+	dst_ip_v6 = if(dst ~= ":", dst, null),
+	dvc_ip_v4 = if(dvc !~= ":", dvc, null),
+	dvc_ip_v6 = if(dvc ~= ":", dvc, null),
+	src_ip_v4 = if(src !~= ":", src, null),
+	src_ip_v6 = if(src ~= ":", src, null)
+| alter
+	xdm.target.ipv4 = dst_ip_v4,
+	xdm.target.ipv6 = dst_ip_v6,
+	xdm.source.host.ipv4_addresses = arraycreate(dvc_ip_v4),
+	xdm.source.host.ipv6_addresses = arraycreate(dvc_ip_v6),
+	xdm.source.ipv4 = src_ip_v4,
+	xdm.source.ipv6 = src_ip_v6,
+	xdm.event.type = cat,
+	xdm.target.host.mac_addresses = arraycreate(dmac),
+	xdm.event.description = dpriv,
+	xdm.target.user.username = duser,
+	xdm.event.original_event_type = cefName,
+	xdm.alert.severity = cefSeverity,
+	xdm.observer.version = cefDeviceVersion,
+	xdm.event.id = cefDeviceEventClassId,
+	xdm.target.process.name = destinationServiceName;

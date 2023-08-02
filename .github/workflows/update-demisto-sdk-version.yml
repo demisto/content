@@ -27,9 +27,9 @@ jobs:
       uses: Gr1N/setup-poetry@v8
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
-        fetch-depth: 1
+        fetch-depth: 0
         token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
 
     - name: Setup python
@@ -42,6 +42,8 @@ jobs:
       run: |
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
+        source .venv/bin/activate
+        demisto-sdk pre-commit --no-validate --no-secrets --no-unit-tests
 
     - name: Create pull request
       run: |
