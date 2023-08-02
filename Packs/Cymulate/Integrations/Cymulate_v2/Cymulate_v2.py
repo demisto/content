@@ -6,8 +6,6 @@ import json
 import traceback
 import urllib3
 
-from CommonServerPython import *  # pylint: disable=unused-wildcard-import
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -695,8 +693,7 @@ def list_exfiltration_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_exfiltration_assessment_command(client: Client, template_id: str, agent_name: str, agent_profile_name: str,
-                                          schedule: bool, schedule_loop: str) -> CommandResults:
+def start_exfiltration_assessment_command(client: Client, template_id: str, agent_name: str, schedule: bool, schedule_loop: str, agent_profile_name: str=None) -> CommandResults:
     """Start a new exfiltration assessment.
 
     Args:
@@ -713,6 +710,8 @@ def start_exfiltration_assessment_command(client: Client, template_id: str, agen
                         containing the start assessment data.
 
     """
+    if agent_profile_name is not None:
+        agent_profile_name = agent_profile_name.replace("\"","")
     params = {
         'templateID': template_id,
         'agentName': agent_name,
@@ -933,9 +932,9 @@ def list_endpoint_security_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_endpoint_security_assessment_command(client: Client, template_id: str, agent_name: str,agent_profile_name: str,
+def start_endpoint_security_assessment_command(client: Client, template_id: str, agent_name: str,
                                                schedule: bool,
-                                               schedule_loop: str) -> CommandResults:
+                                               schedule_loop: str,agent_profile_name: str=None) -> CommandResults:
     """Start a new endpoint security assessment.
 
     Args:
@@ -951,7 +950,8 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the start assessment data.
     """
-
+    if agent_profile_name is not None:
+        agent_profile_name = agent_profile_name.replace("\"","")
     params = {
         'templateID': template_id,
         'agentName': agent_name,
@@ -1283,9 +1283,9 @@ def list_lateral_movement_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_lateral_movement_assessment_command(client: Client, agent_name: str, template_id: str, agent_profile_name: str,
+def start_lateral_movement_assessment_command(client: Client, agent_name: str, template_id: str,
                                               upload_to_cymulate: bool, schedule: bool,
-                                              schedule_loop: str) -> CommandResults:
+                                              schedule_loop: str, agent_profile_name: str=None) -> CommandResults:
     """Start a new lateral movement assessment.
 
     Args:
@@ -1303,6 +1303,8 @@ def start_lateral_movement_assessment_command(client: Client, agent_name: str, t
                         containing the start assessment data.
 
     """
+    if agent_profile_name is not None:
+        agent_profile_name = agent_profile_name.replace("\"","")
     params = {
         "agentName": agent_name,
         "agentProfileName": agent_profile_name,
