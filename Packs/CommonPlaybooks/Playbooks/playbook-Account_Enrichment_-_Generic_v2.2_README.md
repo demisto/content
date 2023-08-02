@@ -6,7 +6,7 @@ Supported integrations:
 - PingOne
 - Okta
 - AWS IAM
-- Cortex XDR
+- Cortex XDR (account enrichment and reputation)
 
 Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 
@@ -29,15 +29,15 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* aws-iam-get-user
-* okta-get-user
-* ad-get-user
-* msgraph-user-get
 * pingone-get-user
-* xdr-list-risky-users
-* iam-get-user
-* identityiq-search-identities
 * identitynow-get-accounts
+* ad-get-user
+* identityiq-search-identities
+* msgraph-user-get
+* okta-get-user
+* iam-get-user
+* aws-iam-get-user
+* xdr-list-risky-users
 * msgraph-user-get-manager
 
 ## Playbook Inputs

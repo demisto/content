@@ -6,7 +6,7 @@ Supported integrations:
 - Cylance Protect v2
 - CrowdStrike Falcon
 - ExtraHop Reveal(x)
-- Cortex XDR
+- Cortex XDR (endpoint enrichment and reputation)
 - Endpoint reputation using !endpoint command
 
 ## Dependencies
@@ -27,14 +27,14 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* epo-find-system
-* extrahop-devices-search
-* cb-edr-sensors-list
-* cs-falcon-search-device
-* xdr-list-risky-hosts
-* xdr-get-endpoints
 * ad-get-computer
+* epo-find-system
 * endpoint
+* extrahop-devices-search
+* xdr-get-endpoints
+* cs-falcon-search-device
+* cb-edr-sensors-list
+* xdr-list-risky-hosts
 
 ## Playbook Inputs
 
@@ -195,4 +195,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2.1_6_8.png)
+![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2.1.png)

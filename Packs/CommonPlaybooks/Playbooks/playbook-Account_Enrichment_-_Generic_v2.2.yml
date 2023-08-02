@@ -12,7 +12,7 @@ description: |-
   - PingOne
   - Okta
   - AWS IAM
-  - Cortex XDR
+  - Cortex XDR (account enrichment and reputation)
 
   Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 starttaskid: "0"

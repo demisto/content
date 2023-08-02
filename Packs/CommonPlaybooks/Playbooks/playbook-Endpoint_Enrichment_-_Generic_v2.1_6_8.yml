@@ -12,7 +12,7 @@ description: |-
   - Cylance Protect v2
   - CrowdStrike Falcon
   - ExtraHop Reveal(x)
-  - Cortex XDR
+  - Cortex XDR (endpoint enrichment and reputation)
   - Endpoint reputation using !endpoint command
 starttaskid: "0"
 tasks:
