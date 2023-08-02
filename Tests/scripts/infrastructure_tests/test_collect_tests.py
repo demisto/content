@@ -108,6 +108,7 @@ class MockerCases:
     R = CollectTestsMocker(TEST_DATA / 'R')
     S = CollectTestsMocker(TEST_DATA / 'S')
     T = CollectTestsMocker(TEST_DATA / 'T')
+    U = CollectTestsMocker(TEST_DATA / 'U')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -242,6 +243,9 @@ NIGHTLY_TESTS: tuple = (
     # only parsing rule component exists, expect the pack to be collected for installation
     (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      None),
+
+    (MockerCases.U, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
+     None, None),
 )
 
 
