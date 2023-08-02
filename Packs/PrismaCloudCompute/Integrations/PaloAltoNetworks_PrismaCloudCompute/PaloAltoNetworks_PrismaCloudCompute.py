@@ -584,7 +584,7 @@ def fetch_incidents(client):
             elif alert_type in (ALERT_TYPE_COMPLIANCE, ALERT_TYPE_AUDIT):
                 # E.g. "Prisma Cloud Compute Alert - Incident"
                 name += camel_case_transformer(a.get('type'))
-                    # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
+                # E.g. "Prisma Cloud Compute Alert - Image Compliance" \ "Prisma Compute Alert - Host Runtime Audit"
                 if a.get('type') != "incident":
                     name += f' {camel_case_transformer(alert_type)}'
 
