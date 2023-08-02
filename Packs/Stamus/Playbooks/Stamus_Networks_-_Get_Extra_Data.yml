@@ -120,9 +120,9 @@ tasks:
       iscommand: true
       brand: ""
     scriptarguments:
-      key:
+      indicator_key:
         simple: src_ip
-      value:
+      indicator_value:
         simple: ${StamusIntegration.RelatedEvents.src_ip}
     separatecontext: false
     continueonerrortype: ""
