@@ -27,8 +27,11 @@ You can execute these commands from the Cortex XSIAM CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ## Known limitations
+
 This integration does not have a fetch limit parameter due to the limitations of the API functionality.
+
 1. The collector fetches all events between the current time and the last time it was fetched during every fetch operation.
+
 - If the command is run for the first time, all events from ***first_fetch*** until the current time be fetched in one execution.
 It is possible that the above limitations may cause the fetch to take some time. You may need to increase the collector time out value in the server configuration if the collector fetch times out.
 

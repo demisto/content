@@ -21,7 +21,7 @@ The EWS integration can be used for the following use cases.
 
     1.  Use the `ews-search-mailbox` command to search for all emails in a specific folder within the target mailbox.  
         Use the query argument to narrow the search for emails sent from a specific account and more.
-    *   This command retrieve the _ItemID_ field for each email item listed in the results. The `ItemID` can be used in the `ews-get-items` command in order to get more information about the email item itself.
+  *   This command retrieve the _ItemID_ field for each email item listed in the results. The `ItemID` can be used in the `ews-get-items` command in order to get more information about the email item itself.
 *   Get email attachment information.  
     Use the `ews-get-attachment` command to retrieve information on one attachment or all attachments of a message at once. It supports both file attachments and item attachments (e.g., email messages).
 
@@ -37,9 +37,9 @@ The EWS integration can be used for the following use cases.
 2.  Search for EWS O365.
 3.  Click **Add instance** to create and configure a new integration instance.
     *   **Name**: a textual name for the integration instance.
-    *   **ID / Application ID**: ID recieved from https://oproxy.demisto.ninja/ms-ews-o365 app registration, or a self deployed Application ID.
-    *   **Token / Tenant ID**: Token recieved from https://oproxy.demisto.ninja/ms-ews-o365 app registration, or a self deployed Application Tenant ID.
-    *   **Key / Application Secret**: Key recieved from https://oproxy.demisto.ninja/ms-ews-o365 app registration, or a self deployed Application Secret.
+    *   **ID / Application ID**: ID recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application ID.
+    *   **Token / Tenant ID**: Token recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application Tenant ID.
+    *   **Key / Application Secret**: Key recieved from <https://oproxy.demisto.ninja/ms-ews-o365> app registration, or a self deployed Application Secret.
     *   **Email Address**: Mailbox to run commands on, and to fetch incidents from. This argument can take various user accounts in your organization. Usually is used as phishing mailbox.  
         Note: To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information on impersonation rights see ‘Additional Information’ section below.
     *   **Name of the folder from which to fetch incidents**: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
@@ -54,10 +54,13 @@ The EWS integration can be used for the following use cases.
 4.  Click **Test** to validate the URLs, token, and connection.
 
 ## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 ### Required Permissions for self deployed Azure Applications
+
 #### Office 365 Exchange Online
+
 **full_access_as_app** - To set this permission follow [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 You can't manage the **Office 365 Exchange Online** app permissions via the Azure portal.
 
@@ -592,7 +595,7 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 |changekey|culture|datetimeCreated|datetimeReceived|datetimeSent|displayName|emailAddresses|fileAs|fileAsMapping|givenName|id|importance|itemClass|lastModifiedName|lastModifiedTime|postalAddressIndex|sensitivity|subject|uniqueBody|webClientReadFormQueryString|
 |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
-|EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N|en-US|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|some@dev.microsoft.com|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name||https://outlook.office365.com/owa/?ItemID=***|
+|EABYACAADcsxRwRjq/zTrN6vWSzKAK1Dl3N|en-US|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|2019-08-05T12:35:36Z|Contact Name|some@dev.microsoft.com|Contact Name|LastCommaFirst|Contact Name|AHSNNK3NQNcasnc3SAS/zTrN6vWSzK4OWAAAAAAEOAADrxRwRjq/zTrNFSsfsfVWAAK1KsF3AAA=|Normal|IPM.Contact|John Smith|2019-08-05T12:35:36Z|None|Normal|Contact Name||<https://outlook.office365.com/owa/?ItemID>=***|
 
 ##### Context Example
 
@@ -1399,6 +1402,7 @@ Mail sent successfully
 
 
 ### 20\. ews-get-items-as-eml
+
 ***
 Retrieves items by item ID and uploads its content as an EML file.
 
@@ -1406,6 +1410,7 @@ Retrieves items by item ID and uploads its content as an EML file.
 #### Base Command
 
 `ews-get-items-as-eml`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1432,7 +1437,9 @@ Retrieves items by item ID and uploads its content as an EML file.
 
 
 ### 21\. reply-mail
+
 ***
+
 ##### Required Permissions
 
 Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
@@ -1441,6 +1448,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 #### Base Command
 
 `reply-mail`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1462,11 +1470,13 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 There is no context output for this command.
 
 #### Command Example
+
 ```!reply-mail item_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGFeAAA= body=hello subject=hi to="avishai@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
 
 >### Sent email
+
 >|attachments|from|subject|to|
 >|---|---|---|---|
 >|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |

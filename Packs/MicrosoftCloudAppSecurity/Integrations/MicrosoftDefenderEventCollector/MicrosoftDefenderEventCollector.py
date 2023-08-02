@@ -56,6 +56,7 @@ def load_json(v: Any) -> dict:
             raise ValueError('headers are not valid Json object') from exc
     if isinstance(v, dict):
         return v
+    return None
 
 
 class IntegrationHTTPRequest(BaseModel):
@@ -187,7 +188,6 @@ class IntegrationGetEvents(ABC):
     @abstractmethod
     def _iter_events(self):
         """Create iterators with Yield"""
-        pass
 
 
 # END COPY OF SiemApiModule

@@ -121,7 +121,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.66893
+  dockerimage: demisto/pydantic-jwt3:1.0.0.67590
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
