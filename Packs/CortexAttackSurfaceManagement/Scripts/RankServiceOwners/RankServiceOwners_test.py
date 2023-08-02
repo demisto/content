@@ -1,21 +1,23 @@
 import demistomock as demisto  # noqa: F401
+
+from contextlib import nullcontext as does_not_raise
+import dill as pickle
+import numpy as np
 import pytest
 import unittest
-from RankServiceOwners import (
-    score,
-    main,
-    _canonicalize,
-    aggregate,
-    _get_k,
-    OwnerFeaturizationPipeline,
-    load_pickled_xpanse_object,
-    featurize,
-    normalize_scores,
-)
-from contextlib import nullcontext as does_not_raise
-import numpy as np
 from unittest.mock import Mock
-import dill as pickle
+
+from RankServiceOwners import (
+    OwnerFeaturizationPipeline,
+    _canonicalize,
+    _get_k,
+    aggregate,
+    featurize,
+    load_pickled_xpanse_object,
+    main,
+    normalize_scores,
+    score,
+)
 
 
 def test_load_pickled_xpanse_object(tmp_path):
