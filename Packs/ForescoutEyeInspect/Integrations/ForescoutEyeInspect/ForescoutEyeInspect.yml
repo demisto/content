@@ -21,30 +21,36 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Default is 50. Maximum is 200.
   defaultvalue: 50
   display: Maximum incidents per fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, like 12 hours, 7 days).
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 description: Delivers flexible and scalable OT/ICS asset visibility.
 display: Forescout EyeInspect
 name: ForescoutEyeInspect
@@ -1107,7 +1113,7 @@ script:
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_mac_addresses
       description: The MAC addresses associated to the host.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
   runonce: false
   script: "-"

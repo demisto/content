@@ -16,51 +16,60 @@ configuration:
   displaypassword: API Token (see detailed instructions)
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Token (See detailed instructions)
   name: apitoken
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow creating users
   name: create-user-enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow updating users
   name: update-user-enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable-user-enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable-user-enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create-if-not-exists
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: User Profile - Okta (Incoming)
   display: Incoming Mapper
   name: mapper-in
@@ -78,19 +87,23 @@ configuration:
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta apps you wish to sync to XSOAR. Further information about IAM configuration is detailed in the Help (the "?" icon).
   defaultvalue: 'true'
   display: Query only application events configured in IAM Configuration
@@ -98,17 +111,20 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: 'Use a query filter expression in SCIM format. Note: make sure the "Query only application events configured in IAM Configuration" is unchecked to use this parameter. See the Help (the "?" icon) to learn more about the filter parameter.'
   display: Fetch Query Filter (Okta system log events)
   name: fetch_query_filter
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 0 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 description: Integrate with Okta's Identity Access Management service to execute CRUD operations to employee lifecycle processes.
 display: Okta IAM
 name: Okta IAM

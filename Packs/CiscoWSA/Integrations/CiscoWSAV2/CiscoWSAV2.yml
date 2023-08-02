@@ -21,15 +21,17 @@ configuration:
   display: Use system proxy settings
   defaultvalue: 'false'
   type: 8
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   defaultvalue: 'false'
   type: 8
+  required: false
 script:
   type: python
   subtype: python3
   script: '-'
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   commands:
   - name: cisco-wsa-access-policy-list
     description: |-

@@ -34,10 +34,12 @@ configuration:
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Connects to Illumio Core APIs to perform investigative and restorative actions.
 display: Illumio Core
 name: IllumioCore
@@ -1398,7 +1400,7 @@ script:
     - contextPath: Illumio.Rule.resolve_labels_as.consumers
       description: Consumers resolve labels.
       type: String
-  dockerimage: demisto/illumio:1.0.0.63702
+  dockerimage: demisto/illumio:1.0.0.65903
   runonce: false
   script: '-'
   subtype: python3

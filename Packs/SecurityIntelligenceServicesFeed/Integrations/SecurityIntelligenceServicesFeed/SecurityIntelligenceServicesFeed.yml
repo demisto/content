@@ -26,6 +26,7 @@ configuration:
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -36,6 +37,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -58,6 +60,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -66,17 +69,21 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   type: 1
   display: ''
+  required: false
 - defaultvalue: '5'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: The historical indicators available in the time-range provided will be fetched.
   defaultvalue: 1 day
   display: First Fetch Time Range (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
@@ -87,14 +94,17 @@ configuration:
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: A PassiveTotal with Security Intelligence Services Feed provides you with newly observed Domain, Malware, Phishing, Content and Scam Blacklist with Hourly ingestion available.
 display: Security Intelligence Services Feed
 name: SecurityIntelligenceServicesFeed
@@ -118,7 +128,7 @@ script:
       name: search
     description: Gets indicators from Security Intelligence Services feed. Note- Indicators will fetch from the latest found object.
     name: sis-get-indicators
-  dockerimage: demisto/boto3py3:1.0.0.64385
+  dockerimage: demisto/boto3py3:1.0.0.67319
   feed: true
   runonce: false
   script: '-'

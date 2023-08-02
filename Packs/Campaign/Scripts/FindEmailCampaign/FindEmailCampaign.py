@@ -150,7 +150,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         if invalid_context_keys:
             return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
 
-        incident_df = incidents_df[context_keys]  # lgtm [py/hash-unhashable-value]
+        incident_df = incidents_df[list(context_keys)]  # lgtm [py/hash-unhashable-value]
         if not SELF_IN_CONTEXT:
             incident_df = incident_df[incident_df['id'] != incident_id]
 

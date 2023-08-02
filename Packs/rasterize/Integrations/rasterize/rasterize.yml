@@ -7,18 +7,22 @@ configuration:
   display: Return Errors
   name: with_error
   type: 8
+  required: false
 - defaultvalue: '0'
   display: Time to wait before taking a screen shot (in seconds)
   name: wait_time
   type: 0
+  required: false
 - defaultvalue: '180'
   display: Maximum time to wait for a page to load (in seconds)
   name: max_page_load_time
   type: 0
+  required: false
 - display: Chrome options (Advanced. See [?])
   name: chrome_options
   type: 0
   additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
+  required: false
 - display: Rasterize Mode
   name: rasterize_mode
   type: 15
@@ -29,9 +33,11 @@ configuration:
   - Headless CLI - Preferred
   - Headless CLI - Only
   additionalinfo: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. A "Preferred" rasterizing mode will fall back to the other rasterizing mode if it fails.
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize

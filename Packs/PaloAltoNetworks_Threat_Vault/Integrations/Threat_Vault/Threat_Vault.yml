@@ -7,6 +7,7 @@ configuration:
   display: API Key
   name: api_key
   type: 4
+  required: false
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -20,12 +21,15 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Deprecated. Use Threat Vault v2 instead.
 display: Palo Alto Networks Threat Vault (Deprecated)
 name: Palo Alto Networks Threat Vault

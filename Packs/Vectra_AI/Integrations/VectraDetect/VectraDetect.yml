@@ -30,22 +30,27 @@ configuration:
   name: insecure    # Do not change
   type: 8    # Boolean checkbox
   additionalinfo: When checked, no SSL certificates check will be done when interracting with the Vectra Detect API. It's insecure. (Default - unchecked)
+  required: false
 - display: Use system proxy settings
   name: use_proxy    # Do not change
   type: 8    # Boolean checkbox
   additionalinfo: Use the system proxy settings to reach with the Vectra Detect API.
+  required: false
 - display: Fetch incidents
   name: isFetch    # Do not change
   type: 8    # Boolean checkbox
+  required: false
 - display: Incident type
   name: incidentType    # Do not change
   type: 13    # special use - automatically added - Incident type single select dropdown
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch    # Do not change
   type: 0    # Short Text
   additionalinfo: How far back in time you want to fetch alerts. (default - 7 days)
   defaultvalue: 7 days
 
+  required: false
 - display: Entity types to fetch
   name: fetch_entity_types
   type: 16    # Mutiple select dropdown
@@ -56,24 +61,28 @@ configuration:
   - Detections
   defaultvalue: Accounts,Hosts
 
+  required: false
 - display: Hosts fetch query
   name: hosts_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Hosts matching this fetch query will be fetched. Will be used only if "Hosts" is selected in the "Entity types to fetch". (default - host.threat:>=50)
   defaultvalue: host.threat:>=50
 
+  required: false
 - display: Accounts fetch query
   name: accounts_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Accounts matching this fetch query will be fetched. Will be used only if "Accounts" is selected in the "Entity types to fetch". (default - account.threat:>=50)
   defaultvalue: account.threat:>=50
 
+  required: false
 - display: Detections fetch query
   name: detections_fetch_query
   type: 0    # Short text
   additionalinfo: Only "active" Detections matching this fetch query will be fetched. Will be used only if "Detections" is selected in the "Entity types to fetch". (default - detection.threat:>=50 AND detection.certainty:>=50)
   defaultvalue: detection.threat:>=50 AND detection.certainty:>=50
 
+  required: false
 - display: Max created incidents per fetch
   name: max_fetch
   type: 0    # Short Text
@@ -81,11 +90,12 @@ configuration:
   defaultvalue: 50
 
 
+  required: false
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   commands:
     # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments

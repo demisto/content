@@ -296,6 +296,7 @@ class Client(BaseClient):
         self.threatCategoryList = None
         self.ipReputationLevelList = None
         self.ipAbuseVelocityList = None
+        self.ipCategoriesList = None
         self.limit = None
         self.proxy = proxy
         self.span_fetch_threadpool = 10
@@ -311,8 +312,34 @@ class Client(BaseClient):
     def set_ip_reputation_level_list(self, ipReputationLevelList):
         self.ipReputationLevelList = ipReputationLevelList
 
+    def set_ip_categories_list(self, ipCategoriesList):
+        _ipCategoriesList = []
+        for ipCategory in ipCategoriesList:
+            if ipCategory == "Unknown":
+                _ipCategoriesList.append("IP_LOCATION_TYPE_UNSPECIFIED")
+            elif ipCategory == "Anonymous VPN":
+                _ipCategoriesList.append("IP_LOCATION_TYPE_ANONYMOUS_VPN")
+            elif ipCategory == "Hosting Provider":
+                _ipCategoriesList.append("IP_LOCATION_TYPE_HOSTING_PROVIDER")
+            elif ipCategory == "Public Proxy":
+                _ipCategoriesList.append("IP_LOCATION_TYPE_PUBLIC_PROXY")
+            elif ipCategory == "TOR Exit Node":
+                _ipCategoriesList.append("IP_LOCATION_TYPE_TOR_EXIT_NODE")
+            elif ipCategory == "BOT":
+                _ipCategoriesList.append("IP_LOCATION_TYPE_BOT")
+            else:
+                error = f"Unknown ipCategory {ipCategory} specified."
+                raise DemistoException(error)
+        self.ipCategoriesList = _ipCategoriesList
+
     def set_ip_abuse_velocity_list(self, ipAbuseVelocityList):
-        self.ipAbuseVelocityList = ipAbuseVelocityList
+        _ipAbuseVelocityList = []
+        for ipAbuseVelocity in ipAbuseVelocityList:
+            if ipAbuseVelocity == "UNKNOWN":
+                _ipAbuseVelocityList.append("IP_ABUSE_VELOCITY_UNSPECIFIED")
+            else:
+                _ipAbuseVelocityList.append(ipAbuseVelocity)
+        self.ipAbuseVelocityList = _ipAbuseVelocityList
 
     def set_span_fetch_threadpool(self, span_fetch_threadpool):
         self.span_fetch_threadpool = span_fetch_threadpool
@@ -397,6 +424,7 @@ class Client(BaseClient):
         threatCategory_clause = None
         ipReputationLevel_clause = None
         ipAbuseVelocity_clause = None
+        ipCategories_clause = None
 
         if self.environments is not None:
             environment_clause = Helper.construct_key_expression(
@@ -424,6 +452,11 @@ class Client(BaseClient):
                 "ipReputationLevel", self.ipReputationLevelList
             )
 
+        if self.ipCategoriesList is not None and len(self.ipCategoriesList) > 0:
+            ipCategories_clause = Helper.construct_key_expression(
+                "ipCategories", self.ipCategoriesList
+            )
+
         if self.ipAbuseVelocityList is not None and len(self.ipAbuseVelocityList) > 0:
             ipAbuseVelocity_clause = Helper.construct_key_expression(
                 "ipAbuseVelocity", self.ipAbuseVelocityList
@@ -434,6 +467,7 @@ class Client(BaseClient):
             securityScoreCategory_clause,
             threatCategory_clause,
             ipReputationLevel_clause,
+            ipCategories_clause,
             ipAbuseVelocity_clause,
         )
         demisto.info("Limit set to: " + str(self.limit))
@@ -642,6 +676,7 @@ def main() -> None:
         ipAbuseVelocityList = demisto.params().get("ipAbuseVelocity")
         limit = int(demisto.params().get("max_fetch", 100))
         span_fetch_threadpool = int(demisto.params().get("span_fetch_threadpool", 10))
+        ipCategoriesList = demisto.params().get("ipCategories")
 
         _env = demisto.params().get("environment")
 
@@ -663,6 +698,7 @@ def main() -> None:
         client.set_ip_abuse_velocity_list(ipAbuseVelocityList)
         client.set_environments(environments)
         client.set_span_fetch_threadpool(span_fetch_threadpool)
+        client.set_ip_categories_list(ipCategoriesList)
         client.set_limit(limit)
 
         if demisto.command() == "test-module":

@@ -14,34 +14,43 @@ configuration:
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: new,open
   display: 'Fetch incidents of the following status:'
   name: fetch_status
   type: 0
+  required: false
 - defaultvalue: '0'
   display: 'Fetch incidents with priority greater or equal to:'
   name: fetch_priority
   type: 0
+  required: false
 - defaultvalue: Incident Reports
   display: Queue name to fetch incidents from
   name: fetch_queue
   type: 0
+  required: false
 - display: Referer request header
   name: referer
   type: 0
+  required: false
 - defaultvalue: '0'
   display: Fetch incidents limit (the max amount of incidents per fetch iteration)
   name: fetch_limit
   type: 0
+  required: false
 description: Request Tracker for Incident Response is a ticketing system which provides pre-configured queues and workflows designed for incident response teams.
 display: RTIR
 name: RTIR

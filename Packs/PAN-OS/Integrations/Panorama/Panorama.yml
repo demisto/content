@@ -9327,7 +9327,7 @@ script:
     name: pan-os-list-device-groups
     outputs:
     - contextPath: DeviceGroupNames
-  dockerimage: demisto/pan-os-python:1.0.0.63723
+  dockerimage: demisto/pan-os-python:1.0.0.66894
   isfetch: true
   runonce: false
   script: ''

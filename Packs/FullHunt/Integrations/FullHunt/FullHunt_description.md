@@ -1,8 +1,8 @@
 # FullHunt.io
 This section explains how to configure the instance of FullHuntIO in Cortex XSOAR.
 1. Please go to http://fullhunt.io/user/settings in order to get your account API key.
-2. Copy and paste the key in the integration credentials field
-3. Click the test button to run the "test-module" function of the integration
+2. Copy and paste the key in the integration credentials field.
+3. Click the test button to test integration's configuration.
 
 [View API Documentation](https://api-docs.fullhunt.io/#introduction)
 

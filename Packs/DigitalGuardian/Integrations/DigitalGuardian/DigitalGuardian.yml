@@ -35,20 +35,24 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use Digital Guardian Integration to fetch incidents and to programmatically add or remove entries from watchlists and component lists.
 display: Digital Guardian
 name: Digital Guardian

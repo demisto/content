@@ -1,3 +1,6 @@
+from pytest import raises
+
+
 def create_client():
     import os
     from RecordedFutureLists import Client, __version__
@@ -150,6 +153,22 @@ class TestRFClient:
 
         mock_return_error.assert_called_once_with(message='mock error')
 
+    def test_call_raising_demisto_exception(self, mocker):
+        from CommonServerPython import DemistoException
+        import demistomock as demisto
+
+        mock_command_name = 'command_name'
+        mock_command_args = {'arg1': 'arg1_value', 'arg2': 'arg2_value'}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+        client = create_client()
+        mocked_http_request = mocker.patch.object(client, "_http_request")
+        mocked_http_request.side_effect = DemistoException(
+            "Some exception as a side effect"
+        )
+        raises(DemistoException, client._call, "mocked")
+
     def test_call_response_processing_404(self, mocker):
         """
         Test _call() response processing.
@@ -219,7 +238,14 @@ class TestRFClient:
 
         # Mock demisto command and args.
         mock_command_name = 'command_name'
-        mock_command_args = {'list_name': 'arg1_value', 'entity_types': 'arg2_value'}
+        mock_command_args = {
+            'list_names': 'arg1_value,arg1_value2',
+            'contains': 'arg2_value',
+        }
+        mock_call_args = {
+            'list_names': ['arg1_value', 'arg1_value2'],
+            'contains': ['arg2_value'],
+        }
 
         mocker.patch.object(demisto, 'command', return_value=mock_command_name)
         mocker.patch.object(demisto, 'args', return_value=mock_command_args)
@@ -234,7 +260,39 @@ class TestRFClient:
         response = client.list_search()
 
         mock_call.assert_called_once_with(
-            demisto_args=mock_command_args, url_suffix='/v2/lists/search'
+            demisto_args=mock_call_args, url_suffix='/v2/lists/search'
+        )
+
+        assert response == mock_call_response
+
+    def test_entites_fetch(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+        mock_command_args = {
+            'list_ids': 'arg1_value,arg1_value2',
+        }
+        mock_call_args = {'list_ids': ['arg1_value', 'arg1_value2']}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
+
+        response = client.entity_fetch()
+
+        mock_call.assert_called_once_with(
+            demisto_args=mock_call_args, url_suffix='/v2/lists/entities/lookup'
         )
 
         assert response == mock_call_response
@@ -269,7 +327,7 @@ class TestRFClient:
             client, '_call', return_value=mock_call_response
         )
 
-        response = client.entity_add()
+        response = client.entity_operation(operation="add")
         mock_call.assert_called_once_with(
             demisto_args=mock_command_args,
             url_suffix=f'/v2/lists/{mocked_list_id}/entities/add',
@@ -307,10 +365,48 @@ class TestRFClient:
             client, '_call', return_value=mock_call_response
         )
 
-        response = client.entity_add()
+        response = client.entity_operation(operation="add")
         mock_call.assert_called_once_with(
             demisto_args=mock_command_args,
             url_suffix=f'/v2/lists/{mocked_list_id}/entities/add',
+        )
+
+        assert response == mock_call_response
+
+    def test_entity_remove_ids(self, mocker):
+        import os
+        import demistomock as demisto
+
+        # This is needed for CommonServerPython module to not add demisto.params() into callingContext.
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        mocked_list_id = "mockvalue"
+        mocked_entity_type = "mock"
+        mocked_entity_ids = "mockedmalwarename"
+        mocked_freetext_names = ""
+        mock_command_args = {
+            'list_id': mocked_list_id,
+            'entity_type': mocked_entity_type,
+            'entity_ids': mocked_entity_ids,
+            'freetext_names': mocked_freetext_names,
+        }
+        # Mock demisto command and args.
+        mock_command_name = 'command_name'
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {'response': {'data': 'mock response'}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
+
+        response = client.entity_operation(operation="remove")
+        mock_call.assert_called_once_with(
+            demisto_args=mock_command_args,
+            url_suffix=f'/v2/lists/{mocked_list_id}/entities/remove',
         )
 
         assert response == mock_call_response
@@ -342,12 +438,7 @@ class TestRFClient:
 
         mock_call_response = {'response': {'data': 'mock response'}}
         mocker.patch.object(client, '_call', return_value=mock_call_response)
-        raised = False
-        try:
-            client.entity_add()
-        except ValueError:
-            raised = True
-        assert raised
+        raises(ValueError, client.entity_operation, operation="add")
 
     def test_entity_add_invalid_none(self, mocker):
         import os
@@ -379,7 +470,7 @@ class TestRFClient:
 
         raised = False
         try:
-            client.entity_add()
+            client.entity_operation(operation="add")
         except ValueError:
             raised = True
         assert raised
@@ -531,6 +622,34 @@ class TestActions:
 
         assert result == mock_process_result_actions_return_value
 
+    def test_list_entities_command_with_result_actions(self, mocker):
+        from RecordedFutureLists import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_lists_list_search = mocker.patch.object(
+            client, 'entity_fetch', return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = 'mocked_process_return_value'
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value,
+        )
+
+        result = actions.entities_get_command()
+
+        mock_client_lists_list_search.assert_called_once_with()
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
     def test_entity_add_command_with_result_action(self, mocker):
         from RecordedFutureLists import Actions
 
@@ -539,7 +658,7 @@ class TestActions:
         mock_response = 'mock_response'
 
         mock_client_entity_add = mocker.patch.object(
-            client, 'entity_add', return_value=mock_response
+            client, 'entity_operation', return_value=mock_response
         )
 
         actions = Actions(client)
@@ -555,7 +674,37 @@ class TestActions:
 
         result = actions.entity_add_command()
 
-        mock_client_entity_add.assert_called_once_with()
+        mock_client_entity_add.assert_called_once_with("add")
+
+        mock_process_result_actions.assert_called_once_with(response=mock_response)
+
+        assert result == mock_process_result_actions_return_value
+
+    def test_entity_remove_command_with_result_action(self, mocker):
+        from RecordedFutureLists import Actions
+
+        client = create_client()
+
+        mock_response = 'mock_response'
+
+        mock_client_entity_add = mocker.patch.object(
+            client, 'entity_operation', return_value=mock_response
+        )
+
+        actions = Actions(client)
+
+        mock_process_result_actions_return_value = (
+            'mock_process_result_actions_return_value'
+        )
+        mock_process_result_actions = mocker.patch.object(
+            actions,
+            '_process_result_actions',
+            return_value=mock_process_result_actions_return_value,
+        )
+
+        result = actions.entity_remove_command()
+
+        mock_client_entity_add.assert_called_once_with("remove")
 
         mock_process_result_actions.assert_called_once_with(response=mock_response)
 

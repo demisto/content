@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.3.78",
+    "currentVersion": "2.3.84",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -273,6 +273,10 @@
         "McAfee-TIE": {
             "mandatory": false,
             "display_name": "McAfee Threat Intelligence Exchange"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
         },
         "FiltersAndTransformers": {
             "mandatory": true,

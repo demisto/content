@@ -15,12 +15,15 @@ configuration:
   display: Use OAuth Login
   name: use_oauth
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: ServiceNow CMDB is a service‑centric foundation that proactively analyzes service‑impacting changes, identifies issues, and eliminates outages.
 display: ServiceNow CMDB
 name: ServiceNow CMDB
@@ -252,7 +255,7 @@ script:
     name: servicenow-cmdb-oauth-login
   - description: Test the instance configuration when using OAuth authorization.
     name: servicenow-cmdb-oauth-test
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

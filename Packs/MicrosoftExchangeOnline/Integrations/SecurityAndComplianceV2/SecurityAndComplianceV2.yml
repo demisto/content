@@ -13,6 +13,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Certificate
   name: certificate
   type: 4
@@ -20,6 +21,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: UPN/Email
   additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
   name: delegated_auth
@@ -32,12 +34,14 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: The application ID from the Azure portal
   name: app_id
   type: 0
   section: Connect
   advanced: true
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -45,11 +49,13 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Connection URI
   name: connection_uri
   type: 0
@@ -57,6 +63,7 @@ configuration:
   additionalinfo: Please refer to the documentation for a list of known endpoints.
   section: Connect
   advanced: true
+  required: false
 - display: AzureADAuthorizedEndpointURI Base
   name: azure_ad_authorized_endpoint_uri_base
   type: 0
@@ -64,6 +71,7 @@ configuration:
   defaultvalue: https://login.microsoftonline.com
   section: Connect
   advanced: true
+  required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
@@ -1082,7 +1090,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.49044
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.67228
   runonce: true
   script: '-'
   type: powershell
