@@ -3,7 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-from typing import Any, Dict, Optional
+from typing import Any
+from MicrosoftApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 
@@ -16,10 +17,10 @@ class MsGraphClient:
                  tenant_id: str,
                  verify: bool,
                  proxy: bool,
-                 certificate_thumbprint: Optional[str] = None,
-                 private_key: Optional[str] = None,
+                 certificate_thumbprint: str | None = None,
+                 private_key: str | None = None,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
-                 managed_identities_client_id: Optional[str] = None,
+                 managed_identities_client_id: str | None = None,
                  ):
         client_args = {
             'base_url': 'https://graph.microsoft.com',
@@ -37,6 +38,7 @@ class MsGraphClient:
             'certificate_thumbprint': certificate_thumbprint,
             'managed_identities_client_id': managed_identities_client_id,
             'managed_identities_resource_uri': Resources.graph,
+            'command_prefix': "msgraph-api",
         }
         if not (app_secret and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
@@ -49,8 +51,8 @@ class MsGraphClient:
             resource: str,
             http_method: str = 'GET',
             api_version: str = 'v1.0',
-            odata: Optional[str] = None,
-            request_body: Optional[Dict] = None,
+            odata: str | None = None,
+            request_body: dict | None = None,
     ):
         url_suffix = urljoin(api_version, resource)
         if odata:
@@ -63,6 +65,7 @@ class MsGraphClient:
         )
         if res.content:
             return res.json()
+        return None
 
 
 def start_auth(client: MsGraphClient) -> CommandResults:  # pragma: no cover
@@ -78,7 +81,7 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
 def test_module(client: MsGraphClient,
                 app_secret: str,
                 tenant_id: str,
-                managed_identities_client_id: Optional[str]) -> str:  # pragma: no cover
+                managed_identities_client_id: str | None) -> str:  # pragma: no cover
     if (app_secret and tenant_id) or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'
@@ -92,7 +95,7 @@ def test_command(client: MsGraphClient) -> CommandResults:  # pragma: no cover
     return CommandResults(readable_output='```✅ Success!```')
 
 
-def generic_command(client: MsGraphClient, args: Dict[str, Any]) -> CommandResults:
+def generic_command(client: MsGraphClient, args: dict[str, Any]) -> CommandResults:
     request_body = args.get('request_body')
     results: dict
     if request_body and isinstance(request_body, str):
@@ -176,11 +179,11 @@ def main() -> None:  # pragma: no cover
             return_results(complete_auth(client))
         elif command == 'msgraph-api-test':
             return_results(test_command(client))
+        elif command == 'msgraph-api-auth-reset':
+            return_results(reset_auth())
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

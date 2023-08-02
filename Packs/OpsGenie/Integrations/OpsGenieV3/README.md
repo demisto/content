@@ -49,7 +49,8 @@ Create an alert in Opsgenie.
 | tags | Comma-separated list of tags to add. | Optional | 
 | priority | Incident priority. Possible values are: P1, P2, P3, P4, P5. Default is P3. | Optional | 
 | source | Display name of the request source. Defaults to IP address of the request sender. | Optional | 
-| note | Additional alert note. | Optional | 
+| note | Additional alert note. | Optional |
+| details | Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01". | Optional |
 
 
 #### Context Output
@@ -1839,3 +1840,31 @@ Removed the following commands in this version:
   * *OpsGenieV2.CloseAlert.status* - replaced by *OpsGenie.ClosedAlert.status*.
   * *OpsGenieV2.CloseAlert.success* - replaced by *OpsGenie.ClosedAlert.success*.
   
+### opsgenie-get-team-routing-rules
+
+***
+Lists team routing rules.
+
+#### Base Command
+
+`opsgenie-get-team-routing-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| team_id | The ID of the team from Opsgenie. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OpsGenie.TeamRoutingRule.name | unknown | Name of the routing rule. | 
+| OpsGenie.TeamRoutingRule.order | unknown | Order of the routing rule. | 
+| OpsGenie.TeamRoutingRule.id | unknown | ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.timezone | unknown | Timezone of the routing rule. | 
+| OpsGenie.TeamRoutingRule.teamId | unknown | Team ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.customerId | unknown | Customer ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.id | unknown | Notify ID of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.name | unknown | Notify name of the routing rule. | 
+| OpsGenie.TeamRoutingRule.notify.type | unknown | Notify type of the routing rule. | 
