@@ -11,6 +11,10 @@ from sqlalchemy.sql import text
 from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
+import io
+import os
+from contextlib import redirect_stderr, redirect_stdout
+
 FETCH_DEFAULT_LIMIT = '50'
 
 try:
@@ -36,8 +40,9 @@ class Client:
     """
 
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
-                 database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, verify_certificate=True,
-                 pool_ttl=DEFAULT_POOL_TTL):
+                 database: str, connect_parameters: str, ssl_connect: bool, realm: str, use_pool=False,
+                 verify_certificate=True, pool_ttl=DEFAULT_POOL_TTL, use_kerberos: bool = False,
+                 kerberos_conf: str = '', tds_version: str = ''):
         self.dialect = dialect
         self.host = host
         self.username = username
@@ -48,6 +53,13 @@ class Client:
         self.ssl_connect = ssl_connect
         self.use_pool = use_pool
         self.pool_ttl = pool_ttl
+        self.use_kerberos = use_kerberos
+        self.kerberos_conf = kerberos_conf
+        self.realm = realm
+        self.tds_version = tds_version
+        if self.use_kerberos:
+            # self.save_kerberos_conf()
+            self.init_kerberos(user_id=username, realm=realm, password=password)
         self.connection = self._create_engine_and_connect()
 
     @staticmethod
@@ -106,6 +118,35 @@ class Client:
             setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
         return cache
 
+    def save_kerberos_conf(self):
+        if self.kerberos_conf:
+            kerberos_conf_path = '/etc/krb5.conf'
+            with open(kerberos_conf_path, 'wb') as file:
+                file.write(self.kerberos_conf.encode())
+
+    @staticmethod
+    def init_kerberos(user_id, realm, password):
+
+        demisto.info(f"kinit debug: starting process with os system")
+        err_code = os.system(f"echo '{password}' | kinit -V {user_id}@{realm} > kinit_out.txt 2> kinit_errors.txt")
+        demisto.info(f"kinit debug: ended with err_code: {err_code}")
+
+        with open("kinit_out.txt", 'r') as kinit_err:
+            kinit_out_str = kinit_err.read()
+
+        demisto.info(f"kinit debug: output was: {kinit_out_str}")
+
+        with open("kinit_errors.txt", 'r') as kinit_err:
+            kinit_err_str = kinit_err.read()
+
+        demisto.info(f"kinit debug: error was:\n{kinit_err_str}")
+
+        if int(err_code) != 0:
+            raise ConnectionError(f"Could not connect via kerberos: {kinit_err_str}")
+
+        else:
+            demisto.info(f"kinit debug: successfully connected.")
+
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
@@ -120,6 +161,12 @@ class Client:
                      port=self.port,
                      database=self.dbname,
                      query=self.connect_parameters)
+
+        if self.use_kerberos:
+            db_url = f'mssql+pyodbc://{self.realm}\\{self.username}:{self.password}@{self.host}:{self.port}/{self.dbname}?trusted_connection=yes&driver=FreeTDS&tds_version={self.tds_version}'
+            #db_url = f'mssql+pyodbc://{self.realm}\\{self.username}:{self.password}@{self.host}/{self.dbname}?trusted_connection=yes&driver=FreeTDS&tds_version={self.tds_version}'
+            #db_url = f'mssql+pyodbc://{self.realm}\\{self.username}@{self.host}:{self.port}/{self.dbname}?trusted_connection=yes&driver=FreeTDS&tds_version={self.tds_version}'
+            #db_url = f'mssql+pyodbc://@{self.host}:{self.port}/{self.dbname}?trusted_connection=yes&driver=FreeTDS&tds_version={self.tds_version}'
         if self.ssl_connect:
             if self.dialect == 'PostgreSQL':
                 ssl_connection = {'sslmode': 'require'}
@@ -134,7 +181,7 @@ class Client:
             engine = cache.get(cache_key, None)
             if engine is None:  # (first time or expired) need to initialize
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
-                cache[cache_key] = engine
+                # cache[cache_key] = engine
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
@@ -203,6 +250,12 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     msg = ''
     params = demisto.params()
 
+    if client.use_kerberos:
+        demisto.info("1 kerberos debug: selecting 1")
+        result, headers = client.sql_query_execute_request('SELECT 1', [])
+        demisto.info(f"1 kerberos test result: {result}")
+        demisto.info(f"1 kerberos test headers: {headers}")
+
     if params.get('isFetch'):
 
         if not params.get('query'):
@@ -262,6 +315,12 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
 
             if params.get('incident_name') and params.get('incident_name') not in headers:
                 msg += f'Invalid Incident Name, *{params.get("incident_name")}* does not exist in the table. '
+
+    elif client.use_kerberos:
+        demisto.info("2 kerberos debug: selecting 1")
+        result, headers = client.sql_query_execute_request('SELECT 1', [])
+        demisto.info(f"2 kerberos test result: {result}")
+        demisto.info(f"2 kerberos test headers: {headers}")
 
     return msg if msg else 'ok', {}, []
 
@@ -524,9 +583,13 @@ def main():
         host = params.get('host')
         database = params.get('dbname') or ''  # Use or to make sure we don't have "None" as a database
         ssl_connect = params.get('ssl_connect')
+        realm = params.get('realm', '')
+        use_kerberos = params.get('kerberos')
         connect_parameters = params.get('connect_parameters')
         use_pool = params.get('use_pool', False)
         verify_certificate: bool = not params.get('insecure', False)
+        kerberos_conf = params.get('kerberos_conf', '')
+        tds_version = params.get('tds_version', '7.4')
         pool_ttl = int(params.get('pool_ttl') or DEFAULT_POOL_TTL)
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
@@ -534,8 +597,10 @@ def main():
         LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
-                        ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
-                        pool_ttl=pool_ttl)
+                        ssl_connect=ssl_connect, realm=realm,
+                        use_pool=use_pool, verify_certificate=verify_certificate,
+                        pool_ttl=pool_ttl, use_kerberos=use_kerberos,
+                        kerberos_conf=kerberos_conf, tds_version=tds_version)
         commands: Dict[str, Callable[[Client, Dict[str, str], str], Tuple[str, Dict[Any, Any], List[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,
