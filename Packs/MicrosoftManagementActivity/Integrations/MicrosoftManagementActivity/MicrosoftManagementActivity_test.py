@@ -737,6 +737,7 @@ def test_generate_login_url(mocker):
     res = MicrosoftManagementActivity.return_results.call_args[0][0].readable_output
     assert expected_url in res
 
+
 @freeze_time('2023-08-09')
 def test_fetch_start_time(mocker):
     """
