@@ -27,6 +27,7 @@ More information can be found [here](https://docs.tanium.com/threat_response/thr
 **Note:**
 Make sure to send the logs in UTC time. 
 Don't modify the value type of the "Timestamp" field. This field is set to UTC by default.
+The supported time format is yyyy-MM-ddThh:mm:ss.nnnZ (2022-01-01T10:00:00.000Z). The relevant field is "Timestamp".
 
 ### Tanium Integrity Monitor logs
 In order to forward Tanium integrity monitor logs, follow the below steps.
@@ -63,7 +64,8 @@ More information can be found [here](https://docs.tanium.com/integrity_monitor/i
 
 **Note:**
 Make sure to send the logs in UTC time. 
-Don't modify the value type of the "Event Time" field. This field is set to UTC by default.
+Modify the value type of the "Event Time" field to "Date/Time" and select "ISO 8601 UTC (Zulu)".
+The supported time format is yyyy-MM-ddThh:mm:ssZ (2021-01-15T10:00:00Z). The relevant field is "Event Time".
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
