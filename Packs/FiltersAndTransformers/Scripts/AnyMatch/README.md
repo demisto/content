@@ -14,7 +14,7 @@ Since the comparison treats all inputs as strings, integers and strings are cons
 | -------------------- | --------------- |
 | Script Type          | python3         |
 | Tags                 | filter          |
-| Cortex XSOAR Version | 6.9.0          |
+| Cortex XSOAR Version | 6.9.0           |
 
 ## Inputs
 
