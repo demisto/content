@@ -20,9 +20,17 @@ from AnyMatch import main
     ("{'a':1,'c':2}", "{'a': 1}, {'b': 2}", 2, [False, False]),     # {'a':1} is not a part of {'a':1, or 'c':2}
     ("{'a': 1}, {'b': 2}", "{a:1}", 2, [False, False]),  # {a:1} is not a part of {'a': 1} or {'b': 2}
     # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in  'c': 2}
-    ("{'a':1,'c':2}", "'', '", 2, [True, True]),    # although '' is not a part of {'a':1,'c':2}, but ' is in {'a': 1 and in 'c':2}
+    ("{'a':1,'c':2}", "'', '", 2, [True, True]),
 ])
 def test_main(mocker, left, right, call_count, expected_result):
+    """
+    Given:
+        left and right arguments.
+    When:
+        Running AnyMatch script.
+    Then:
+        Validate the results are as expected.
+    """
     mocker.patch.object(demisto, 'args', return_value={'left': left, 'right': right})
     mocker.patch.object(demisto, 'results')
     main()
