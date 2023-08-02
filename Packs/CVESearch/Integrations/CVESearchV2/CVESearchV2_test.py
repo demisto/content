@@ -5,14 +5,13 @@ from CommonServerPython import DemistoException, argToList
 import pytest
 
 BASE_URL = 'https://cve.circl.lu/api/'
-DEFAULT_RELIABILITY = 'B - Usually reliable'
 
 
 def test_wrong_path():
     bad_url = 'https://cve.bad_url'
     client = Client(base_url=bad_url)
     try:
-        cve_command(client, {"cve_id": 'cve-2000-1234'}, reliability=DEFAULT_RELIABILITY)
+        cve_command(client, {"cve_id": 'cve-2000-1234'})
         assert False, 'Bad url- Exception should by raised'
     except DemistoException as err:
         expected_exception_message = 'Verify that the server URL parameter is correct'
@@ -23,7 +22,7 @@ def test_bad_cve_id():
     bad_cve_id = 'CVE-bad-cve'
     client = Client(base_url=BASE_URL)
     try:
-        cve_command(client, {'cve_id': bad_cve_id}, reliability=DEFAULT_RELIABILITY)
+        cve_command(client, {'cve_id': bad_cve_id})
         assert False, 'Bad url- Exception should by raised'
     except DemistoException as e:
         assert str(e) == f'"{bad_cve_id}" is not a valid cve ID'
@@ -67,36 +66,5 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
         url_for_mock = os.path.join('https://cve.circl.lu/api/cve', cve)
         requests_mock.get(url_for_mock, json=response)
     client = Client(base_url=BASE_URL)
-    command_results = cve_command(client, cve_id_arg, reliability=DEFAULT_RELIABILITY)
+    command_results = cve_command(client, cve_id_arg)
     assert len(command_results) == expected
-
-
-@pytest.mark.parametrize("reliability",
-                         ["A+ - 3rd party enrichment",
-                          "A - Completely reliable",
-                          "B - Usually reliable",
-                          "C - Fairly reliable",
-                          "D - Not usually reliable",
-                          "E - Unreliable",
-                          "F - Reliability cannot be judged"])
-def test_cve_different_reliability(requests_mock, reliability):
-    """
-    Given:
-        - Different source reliability param
-    When:
-        - Running cve command
-    Then:
-        - Ensure the reliability specified is returned.
-    """
-    cve = "cve-2000-1234"
-    test_file = "response.json"
-    test_path_data = os.path.join(os.getcwd(), 'test_data', test_file)
-    with open(test_path_data) as js:
-        response = json.load(js)
-
-    url_for_mock = os.path.join('https://cve.circl.lu/api/cve', cve)
-    requests_mock.get(url_for_mock, json=response)
-    client = Client(base_url=BASE_URL)
-    response = cve_command(client, {'cve_id': cve}, reliability=reliability)
-
-    assert response[0].indicator.dbot_score.reliability == reliability

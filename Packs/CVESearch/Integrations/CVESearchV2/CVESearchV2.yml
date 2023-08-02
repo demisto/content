@@ -17,21 +17,6 @@ configuration:
   name: insecure
   type: 8
   required: false
-  type: 8
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  display: Source Reliability
-  name: integration_reliability
-  options:
-  - A+ - 3rd party enrichment
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: false
-  type: 15
 description: Deprecated. Use CIRCL CVE Search instead.
 display: CVE Search v2 (Deprecated)
 name: CVE Search v2
@@ -70,9 +55,6 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
-    - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data.
-      type: string
   - arguments:
     - default: true
       description: 'The CVE ID. For example: CVE-2014-1234.'
@@ -109,9 +91,6 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
-    - contextPath: DBotScore.Reliability
-      description: Reliability of the source providing the intelligence data.
-      type: string
   dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'

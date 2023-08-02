@@ -52,7 +52,6 @@ Retruns the latest updated CVEs.
 | DBotScore.Score | Number | The indicator score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 
 ##### Command Example
@@ -115,8 +114,6 @@ Search CVE by ID
 | DBotScore.Score | Number | The indicator score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
-
 
 
 ##### Command Example
