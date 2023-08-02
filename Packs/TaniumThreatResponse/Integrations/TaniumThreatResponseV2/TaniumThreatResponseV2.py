@@ -6,7 +6,7 @@ import json
 import os
 import traceback
 import urllib.parse
-from typing import Any
+from typing import Any, List, Tuple
 from datetime import datetime
 
 import urllib3
@@ -49,7 +49,7 @@ class Client(BaseClient):
         self.session = ''
         self.api_token = api_token
         self.api_version = api_version
-        super().__init__(base_url, **kwargs)
+        super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method: str, url_suffix: str, data: dict = None, params: dict = None, resp_type: str = 'json',
                    headers: dict = None, body: Any = None):  # pragma: no cover
@@ -171,7 +171,7 @@ def convert_to_int(int_to_parse: Any) -> Optional[int]:
     return res
 
 
-def are_filters_match_response_content(all_filter_arguments: list[tuple[list, str]], api_response: dict) -> bool:
+def are_filters_match_response_content(all_filter_arguments: List[Tuple[list, str]], api_response: dict) -> bool:
     """
     Verify whether any filter arguments of a command match the api response content.
 
@@ -204,7 +204,7 @@ def filter_to_tanium_api_syntax(filter_str):  # pragma: no cover
         raise ValueError('Invalid filter argument.')
 
 
-def get_file_data(entry_id: str) -> tuple[str, str, str]:
+def get_file_data(entry_id: str) -> Tuple[str, str, str]:
     """ Gets a file name and content from the file's entry ID.
 
         :type entry_id: ``str``
@@ -218,7 +218,7 @@ def get_file_data(entry_id: str) -> tuple[str, str, str]:
     file = demisto.getFilePath(entry_id)
     file_path = file.get('path')
     file_name = file.get('name')
-    with open(file_path) as f:
+    with open(file_path, 'r') as f:
         file_content = f.read()
     return file_name, file_path, file_content
 
@@ -553,7 +553,7 @@ def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_t
 ''' INTEL DOCS COMMANDS FUNCTIONS '''
 
 
-def get_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def get_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Gets a single intel doc from a given id.
 
         :type client: ``Client``
@@ -591,7 +591,7 @@ def get_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[lis
     return human_readable, outputs, raw_response
 
 
-def get_intel_docs(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def get_intel_docs(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Gets a single intel doc from a given id.
 
         :type client: ``Client``
@@ -634,7 +634,7 @@ def get_intel_docs(client: Client, data_args: dict) -> tuple[str, dict, Union[li
     return human_readable, outputs, raw_response
 
 
-def get_intel_docs_labels_list(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def get_intel_docs_labels_list(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Gets the labels list of a given intel doc.
 
         :type client: ``Client``
@@ -672,7 +672,7 @@ def get_intel_docs_labels_list(client: Client, data_args: dict) -> tuple[str, di
     return human_readable, outputs, raw_response
 
 
-def add_intel_docs_label(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def add_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Creates a new label (given label ID) association for an identified intel document (given intel-doc ID).
 
         :type client: ``Client``
@@ -723,7 +723,7 @@ def add_intel_docs_label(client: Client, data_args: dict) -> tuple[str, dict, Un
     return human_readable, outputs, raw_response
 
 
-def remove_intel_docs_label(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def remove_intel_docs_label(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Removes a label (given label ID) association for an identified intel document (given intel-doc ID).
 
         :type client: ``Client``
@@ -776,7 +776,7 @@ def remove_intel_docs_label(client: Client, data_args: dict) -> tuple[str, dict,
     return human_readable, outputs, raw_response
 
 
-def create_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def create_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Adds a new intel-doc to the system by providing its document contents with an appropriate content-type header.
 
         :type client: ``Client``
@@ -799,7 +799,7 @@ def create_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[
     raw_response = client.do_request('POST',
                                      '/plugin/products/'
                                      f'{client.get_threat_response_endpoint()}/api/v1/intels',
-                                     headers={'Content-Disposition': f'attachment; filename=file.{file_extension}',
+                                     headers={'Content-Disposition': f'filename=file.{file_extension}',
                                               'Content-Type': 'application/xml'}, body=file_content)
 
     intel_doc = get_intel_doc_item(raw_response)
@@ -817,7 +817,7 @@ def create_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[
     return human_readable, outputs, raw_response
 
 
-def update_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Updates the contents of an existing intel document by providing the document contents with an appropriate
         content-type header.
 
@@ -864,7 +864,6 @@ def update_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[
         # in yara files the update will take place when the previous intrinsic_id is entered in the Content Disposition
         content_disposition = f'filename={intrinsic_id}'
 
-    content_disposition = f"attachment; {content_disposition}"
     raw_response = client.do_request('PUT', '/plugin/products/'
                                             f'{client.get_threat_response_endpoint()}'
                                             f'/api/v1/intels/{id_}',
@@ -927,7 +926,7 @@ def start_quick_scan(client, data_args):
     return human_readable, outputs, raw_response
 
 
-def deploy_intel(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def deploy_intel(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Deploys intel using the service account context.
 
         :type client: ``Client``
@@ -956,7 +955,7 @@ def deploy_intel(client: Client, data_args: dict) -> tuple[str, dict, Union[list
     return human_readable, {}, raw_response
 
 
-def get_deploy_status(client: Client, data_args: dict) -> tuple[str, dict, Union[list, dict]]:
+def get_deploy_status(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Displays status of last intel deployment.
 
         :type client: ``Client``
@@ -987,7 +986,7 @@ def get_deploy_status(client: Client, data_args: dict) -> tuple[str, dict, Union
 ''' ALERTS COMMANDS FUNCTIONS '''
 
 
-def get_alerts(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get alerts from tanium.
 
         :type client: ``Client``
@@ -1039,7 +1038,7 @@ def get_alerts(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def get_alert(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_alert(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get alert by id.
 
         :type client: ``Client``
@@ -1067,7 +1066,7 @@ def get_alert(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def alert_update_state(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Update alert status by alert ids.
 
         :type client: ``Client``
@@ -1101,7 +1100,7 @@ def alert_update_state(client, data_args) -> tuple[str, dict, Union[list, dict]]
 ''' SANPSHOTS COMMANDS FUNCTIONS '''
 
 
-def list_snapshots(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def list_snapshots(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ List all snapshots at the system.
 
         :type client: ``Client``
@@ -1137,7 +1136,7 @@ def list_snapshots(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def create_snapshot(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def create_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Create new snapshot of the connection.
 
         :type client: ``Client``
@@ -1170,7 +1169,7 @@ def create_snapshot(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return hr, outputs, raw_response
 
 
-def delete_snapshot(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def delete_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Delete exsisting snapshot from the system.
 
         :type client: ``Client``
@@ -1188,7 +1187,7 @@ def delete_snapshot(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return f'Snapshot {",".join(snapshot_ids)} deleted successfully.', {}, {}
 
 
-def delete_local_snapshot(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def delete_local_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Delete local snapshot from the system.
 
         :type client: ``Client``
@@ -1208,7 +1207,7 @@ def delete_local_snapshot(client, data_args) -> tuple[str, dict, Union[list, dic
 ''' CONNECTIONS COMMANDS FUNCTIONS '''
 
 
-def get_connections(client, command_args) -> tuple[str, dict, Union[list, dict]]:
+def get_connections(client, command_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     Implement the 'tanium-tr-list-connections' command - Get list of user connections.
 
@@ -1264,7 +1263,7 @@ def get_connections(client, command_args) -> tuple[str, dict, Union[list, dict]]
     return output_table, outputs, raw_response
 
 
-def create_connection(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def create_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Create new connection.
 
         :type client: ``Client``
@@ -1292,7 +1291,7 @@ def create_connection(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return f'Initiated connection request to {connection_id.decode("utf-8")}.', outputs, {}
 
 
-def close_connection(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def close_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Close exsisting connection
 
         :type client: ``Client``
@@ -1309,7 +1308,7 @@ def close_connection(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return f'Connection `{cid}` closed successfully.', {}, {}
 
 
-def delete_connection(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def delete_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Delete exsisting connection
 
         :type client: ``Client``
@@ -1326,7 +1325,7 @@ def delete_connection(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return f'Connection `{cid}` deleted successfully.', {}, {}
 
 
-def get_events_by_connection(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_events_by_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ List all events in the given connection.
 
         :type client: ``Client``
@@ -1381,7 +1380,7 @@ def get_events_by_connection(client, data_args) -> tuple[str, dict, Union[list, 
 ''' RESPONSE ACTIONS COMMANDS FUNCTIONS'''
 
 
-def get_response_actions(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_response_actions(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ List all Response Actions based on the filters provided
 
         :type client: ``Client``
@@ -1426,7 +1425,7 @@ def get_response_actions(client, data_args) -> tuple[str, dict, Union[list, dict
     return human_readable, outputs, raw_response
 
 
-def response_action_gather_snapshot(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def response_action_gather_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Creates a "gatherSnapshot" Response Action for the specified host.
 
         :type client: ``Client``
@@ -1471,7 +1470,7 @@ def response_action_gather_snapshot(client, data_args) -> tuple[str, dict, Union
 ''' LABELS COMMANDS FUNCTIONS '''
 
 
-def get_labels(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """List all labels.
 
         :type client: ``Client``
@@ -1502,7 +1501,7 @@ def get_labels(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def get_label(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get label by label id.
 
         :type client: ``Client``
@@ -1531,7 +1530,7 @@ def get_label(client, data_args) -> tuple[str, dict, Union[list, dict]]:
 ''' FILES COMMANDS FUNCTIONS '''
 
 
-def get_file_downloads(client, command_args) -> tuple[str, dict, Union[list, dict]]:
+def get_file_downloads(client, command_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     Implement the 'tanium-tr-list-file-downloads' command - get a list of all file evidences.
 
@@ -1604,7 +1603,7 @@ def get_downloaded_file(client, data_args):
     demisto.results(fileResult(filename, file_content))
 
 
-def get_file_download_info(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_file_download_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get file download info by file id.
 
         :type client: ``Client``
@@ -1632,7 +1631,7 @@ def get_file_download_info(client, data_args) -> tuple[str, dict, Union[list, di
     return human_readable, outputs, raw_response
 
 
-def request_file_download(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def request_file_download(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Request file download at the given path.
 
         :type client: ``Client``
@@ -1669,7 +1668,7 @@ def request_file_download(client, data_args) -> tuple[str, dict, Union[list, dic
     return hr, outputs, raw_response
 
 
-def delete_file_download(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def delete_file_download(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Delete file download from tanium system.
 
         :type client: ``Client``
@@ -1686,7 +1685,7 @@ def delete_file_download(client, data_args) -> tuple[str, dict, Union[list, dict
     return f'Delete request of file with ID {file_id} has been sent successfully.', {}, {}
 
 
-def list_files_in_dir(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def list_files_in_dir(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ List all files in the given directory path.
 
         :type client: ``Client``
@@ -1730,7 +1729,7 @@ def list_files_in_dir(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def get_file_info(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_file_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get file info by file path.
 
         :type client: ``Client``
@@ -1769,7 +1768,7 @@ def get_file_info(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def delete_file_from_endpoint(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def delete_file_from_endpoint(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Delete file by file path from connection.
 
         :type client: ``Client``
@@ -1791,7 +1790,7 @@ def delete_file_from_endpoint(client, data_args) -> tuple[str, dict, Union[list,
 ''' PROCESS COMMANDS FUNCTIONS '''
 
 
-def get_process_info(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_process_info(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get process info
 
         :type client: ``Client``
@@ -1819,7 +1818,7 @@ def get_process_info(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def get_events_by_process(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_events_by_process(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get events by type by proccess.
 
         :type client: ``Client``
@@ -1853,7 +1852,7 @@ def get_events_by_process(client, data_args) -> tuple[str, dict, Union[list, dic
     return human_readable, outputs, raw_response
 
 
-def get_process_children(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_process_children(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get all process childrens data
 
         :type client: ``Client``
@@ -1883,7 +1882,7 @@ def get_process_children(client, data_args) -> tuple[str, dict, Union[list, dict
     return human_readable, outputs, raw_response
 
 
-def get_parent_process(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_parent_process(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get parent process data, using ptid
 
         :type client: ``Client``
@@ -1911,7 +1910,7 @@ def get_parent_process(client, data_args) -> tuple[str, dict, Union[list, dict]]
     return human_readable, outputs, raw_response
 
 
-def get_process_tree(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_process_tree(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get all proccess related data - process tree
 
         :type client: ``Client``
@@ -1948,7 +1947,7 @@ def get_process_tree(client, data_args) -> tuple[str, dict, Union[list, dict]]:
 ''' EVIDENCE COMMANDS FUNCTIONS '''
 
 
-def list_evidence(client, commands_args) -> tuple[str, dict, Union[list, dict]]:
+def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     Implement the 'tanium-tr-event-evidence-list' command - get combined evidence across all types.
 
@@ -2000,7 +1999,7 @@ def list_evidence(client, commands_args) -> tuple[str, dict, Union[list, dict]]:
     return table_output, outputs, raw_response
 
 
-def event_evidence_get_properties(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def event_evidence_get_properties(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get evidences properties
 
         :type client: ``Client``
@@ -2020,7 +2019,7 @@ def event_evidence_get_properties(client, data_args) -> tuple[str, dict, Union[l
     return human_readable, outputs, evidence_properties
 
 
-def get_evidence_by_id(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_evidence_by_id(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get evidence by id
 
         :type client: ``Client``
@@ -2052,7 +2051,7 @@ def get_evidence_by_id(client, data_args) -> tuple[str, dict, Union[list, dict]]
     return human_readable, outputs, raw_response
 
 
-def create_evidence(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def create_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Create evidence from event, using client id and process table id
 
         :type client: ``Client``
@@ -2094,7 +2093,7 @@ def create_evidence(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return 'Evidence have been created.', {}, {}
 
 
-def delete_evidence(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def delete_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Delete event evidence from tanuim, using evidence ids.
 
         :type client: ``Client``
@@ -2112,7 +2111,7 @@ def delete_evidence(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return f'Evidence {",".join(evidence_ids)} has been deleted successfully.', {}, {}
 
 
-def get_task_by_id(client, data_args) -> tuple[str, dict, Union[list, dict]]:
+def get_task_by_id(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     """ Get task status by task id.
 
         :type client: ``Client``
@@ -2141,7 +2140,7 @@ def get_task_by_id(client, data_args) -> tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def get_system_status(client, command_args) -> tuple[str, dict, Union[list, dict]]:
+def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict]]:
     """
     Implement the 'tanium-tr-get-system-status' command - get system status, to get client-id for
     `create-connection` command.
@@ -2315,7 +2314,7 @@ def main():
             error_msg = str(e)
             if command in COMMANDS_DEPEND_ON_CONNECTIVITY:
                 error_msg += DEPENDENT_COMMANDS_ERROR_MSG
-            return_error(f'Error in Tanium Threat Response Integration: {error_msg}', traceback.format_exc())
+            return_error('Error in Tanium Threat Response Integration: {}'.format(error_msg), traceback.format_exc())
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

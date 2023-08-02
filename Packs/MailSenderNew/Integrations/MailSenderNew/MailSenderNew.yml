@@ -109,7 +109,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.65389
 tests:
 - Mail Sender (New) Test
 fromversion: 5.0.0

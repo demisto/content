@@ -9,44 +9,35 @@ At the end of the playbook, it sets a possible verdict for the command line, bas
 3. Found suspicious parameters
 4. Usage of malicious tools
 5. Indication of network activity
-6. Indication of suspicious LOLBIN execution
 
 Note: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check "For Each Input".
 
 ## Dependencies
-
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-
-* Compare Process Execution Arguments To LOLBAS Patterns
+This playbook does not use any sub-playbooks.
 
 ### Integrations
-
 This playbook does not use any integrations.
 
 ### Scripts
-
-* DeleteContext
 * Set
-* Base64Decode
 * MatchRegexV2
+* DeleteContext
+* Base64Decode
 
 ### Commands
-
 * extractIndicators
 
 ## Playbook Inputs
-
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Commandline | The command line. |  | Optional |
-| StringSimilarityThreshold | StringSimilarity automation threshold. Used by the Compare "Process Execution Arguments To LOLBAS Patterns" sub-playbook. This input controls the StringSimilarity automation threshold. | 0.5 | Optional |
+| Commandline | The command line. |  | Required |
 
 ## Playbook Outputs
-
 ---
 
 | **Path** | **Description** | **Type** |
@@ -62,7 +53,5 @@ This playbook does not use any integrations.
 | Domain | The domain object. | unknown |
 
 ## Playbook Image
-
 ---
-
 ![Command-Line Analysis](../doc_files/Command-Line_Analysis.png)

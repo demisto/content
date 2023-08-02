@@ -60,7 +60,7 @@ script:
       defaultValue: 300
     description: Gets events from Zoom.
     name: zoom-get-events
-  dockerimage: demisto/pyjwt3:1.0.0.67573
+  dockerimage: demisto/pyjwt3:1.0.0.63826
   isfetchevents: true
   script: '-'
   subtype: python3

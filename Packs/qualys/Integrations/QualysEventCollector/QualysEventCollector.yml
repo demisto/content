@@ -102,7 +102,7 @@ script:
       name: vm_scan_date_after
     description: Gets host detections from Qualys.
     name: qualys-get-host-detections
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.63474
   isfetchevents: true
   runonce: false
   script: ''
