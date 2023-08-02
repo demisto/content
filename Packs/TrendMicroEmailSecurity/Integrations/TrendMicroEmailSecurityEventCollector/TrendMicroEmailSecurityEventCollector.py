@@ -12,6 +12,35 @@ disable_warnings()
 VENDOR = "trend_micro"
 PRODUCT = "email_security"
 DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%SZ"
+ALL_FIELDS = {
+    "action",
+    "mailID",
+    "sender",
+    "genTime",
+    "logType",
+    "subject",
+    "tlsInfo",
+    "senderIP",
+    "direction",
+    "eventType",
+    "messageID",
+    "recipient",
+    "domainName",
+    "headerFrom",
+    "policyName",
+    "eventSubtype",
+    "policyAction",
+    "deliveredTo",
+    "attachments",
+    "recipients",
+    "headerTo",
+    "details",
+    "timestamp",
+    "size",
+    "deliveryTime",
+    "reason",
+    "embeddedUrls",
+}
 
 
 class EventType(str, Enum):
@@ -82,46 +111,17 @@ class Client(BaseClient):
 
 
 def add_missing_fields_to_event(event: dict):
-    for field in (
-        "action",
-        "mailID",
-        "sender",
-        "genTime",
-        "logType",
-        "subject",
-        "tlsInfo",
-        "senderIP",
-        "direction",
-        "eventType",
-        "messageID",
-        "recipient",
-        "domainName",
-        "headerFrom",
-        "policyName",
-        "eventSubtype",
-        "policyAction",
-        "deliveredTo",
-        "attachments",
-        "recipients",
-        "headerTo",
-        "details",
-        "timestamp",
-        "size",
-        "deliveryTime",
-        "reason",
-        "embeddedUrls",
-    ):
-        if field not in event:
-            event[field] = None
+    for field in tuple(ALL_FIELDS.difference(event.keys())):
+        event[field] = None
 
 
 def convert_datetime_to_without_milliseconds(time_: str) -> str:
-    return time_.strip("Z").split(".")[0] + "Z"
+    return parse_date_string(time_).strftime(DATE_FORMAT_EVENT)
 
 
 class Deduplicate:
     def __init__(self, last_ids_fetched: list[str], event_type: EventType) -> None:
-        self.is_fetch_time_moved: bool = False
+        self.is_fetch_time_advanced: bool = False
         self.new_event_ids_suspected: list[str] = []
         self.last_event_ids_suspected: list[str] = last_ids_fetched
         self.event_type: EventType = event_type
@@ -134,22 +134,20 @@ class Deduplicate:
         latest_time_event = max(
             events,
             key=lambda event: datetime.strptime(
-                convert_datetime_to_without_milliseconds(event["genTime"]),
+                event["genTime"],
                 DATE_FORMAT_EVENT,
             ),
         )
-        return convert_datetime_to_without_milliseconds(latest_time_event["genTime"])
+        return latest_time_event["genTime"]
 
     def update_suspected_duplicate_events_list(self, event: dict, start: str):
         """
         Adds the ID of the event as long as genTime is equal to start
         """
-        if not self.is_fetch_time_moved and (
-            convert_datetime_to_without_milliseconds(event["genTime"]) == start
-        ):
+        if not self.is_fetch_time_advanced and (event["genTime"] == start):
             self.new_event_ids_suspected.append(self.generate_id_for_event(event))
         else:
-            self.is_fetch_time_moved = True
+            self.is_fetch_time_advanced = True
             self.new_event_ids_suspected = []
 
     def get_events_with_duplication_risk(
@@ -161,8 +159,7 @@ class Deduplicate:
         """
         return list(
             filter(
-                lambda event: convert_datetime_to_without_milliseconds(event["genTime"])
-                == latest_time,
+                lambda event: event["genTime"] == latest_time,
                 events,
             )
         )
@@ -196,7 +193,7 @@ class Deduplicate:
         """
         if not self.last_event_ids_suspected:
             return False
-        if convert_datetime_to_without_milliseconds(event["genTime"]) != time_from:
+        if event["genTime"] != time_from:
             return False
         if self.generate_id_for_event(event) not in self.last_event_ids_suspected:
             return False
@@ -225,7 +222,7 @@ def calculate_last_run(
         demisto.debug(f"No Events, No update the last_run for {event_type.value} type")
     else:
         # Time of one of the events that returned later than the `start`
-        if deduplicate.is_fetch_time_moved:
+        if deduplicate.is_fetch_time_advanced:
             latest_time = deduplicate.get_last_time_event(events)
             last_run[f"time_{event_type.value}_from"] = latest_time
             last_run[
@@ -308,7 +305,11 @@ def fetch_by_event_type(
         if res.get("logs"):
             # Iterate over each event log, update their `type` and `_time` fields
             for event in res["logs"]:
-                event["genTime"] = convert_datetime_to_without_milliseconds(event["genTime"])
+                # Maintains a uniform format for all events
+                # used to check duplicates and save the `genTiem` in the `last_run`
+                event["genTime"] = convert_datetime_to_without_milliseconds(
+                    event["genTime"]
+                )
                 deduplicate_management.update_suspected_duplicate_events_list(
                     event, start
                 )
@@ -338,7 +339,7 @@ def fetch_by_event_type(
     return events_res, deduplicate_management
 
 
-def set_first_fetch(start_time: str = None) -> str:
+def set_start_time(start_time: str = None) -> str:
     """
     set the start time of the first time of the fetch
     """
@@ -359,7 +360,7 @@ def test_module(client: Client):
             EventType.POLICY_LOGS,
             {
                 "limit": 1,
-                "start": set_first_fetch("6 hours"),
+                "start": set_start_time("6 hours"),
                 "end": datetime.now().strftime(DATE_FORMAT_EVENT),
             },
         )
@@ -436,7 +437,7 @@ def main() -> None:  # pragma: no cover
     api_key = params["credentials"]["password"]
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    first_fetch = set_first_fetch()
+    first_fetch = set_start_time()
 
     should_push_events = argToBoolean(args.get("should_push_events", False))
 
@@ -455,7 +456,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == "trend-micro-get-events":
             should_update_last_run = False
-            since = set_first_fetch(args.get("since") or "1 days")
+            since = set_start_time(args.get("since") or "1 days")
             events, _ = fetch_events_command(client, args, since, last_run={})
             return_results(
                 CommandResults(readable_output=tableToMarkdown("Events:", events))

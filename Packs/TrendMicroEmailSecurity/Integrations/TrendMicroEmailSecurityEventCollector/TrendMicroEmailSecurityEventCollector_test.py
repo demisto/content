@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from freezegun import freeze_time
 from TrendMicroEmailSecurityEventCollector import (
     Client,
-    set_first_fetch,
+    set_start_time,
     calculate_last_run,
     fetch_by_event_type,
     fetch_events_command,
@@ -31,17 +31,17 @@ def load_event_for_test(test_name: str) -> list[dict]:
     "start_time, expected_result",
     [("6 hours", "2023-06-10T10:00:00Z"), (None, "2023-06-10T15:00:00Z")],
 )
-def test_set_first_fetch(start_time: str | None, expected_result: str):
+def test_set_start_time(start_time: str | None, expected_result: str):
     """
     Given:
         - the time for start time or None
     When:
-        - run set_first_fetch function
+        - run set_start_time function
     Then:
         - Ensure the correct time is returned when given a start time
         - Ensure the start time is 1 hour back when no argument is given
     """
-    assert set_first_fetch(start_time) == expected_result
+    assert set_start_time(start_time) == expected_result
 
 
 def test_handle_error_no_content(mock_client: Client):
@@ -199,7 +199,7 @@ def test_calculate_last_run_no_events(
 
 
 @pytest.mark.parametrize(
-    "event_key, last_run, start, event_type, is_fetch_time_moved, new_event_ids_suspected, expected_results",
+    "event_key, last_run, start, event_type, is_fetch_time_advanced, new_event_ids_suspected, expected_results",
     [
         pytest.param(
             "CALCULATE_LAST_RUN",
@@ -220,7 +220,7 @@ def test_calculate_last_run_no_events(
                     "<44444.44444.44444.4444@mx.test.com>"
                 ],
             },
-            id="fetch time moved",
+            id="fetch time advanced",
         ),
         pytest.param(
             "CALCULATE_LAST_RUN",
@@ -246,7 +246,7 @@ def test_calculate_last_run_no_events(
                     "<44444.44444.44444.4444@mx.test.com>"
                 ],
             },
-            id="fetch time is not moved",
+            id="fetch time is not advanced",
         )
     ]
 )
@@ -255,7 +255,7 @@ def test_calculate_last_run(
     last_run: dict,
     start: str,
     event_type: EventType,
-    is_fetch_time_moved: bool,
+    is_fetch_time_advanced: bool,
     new_event_ids_suspected: list,
     expected_results: dict,
 ):
@@ -269,7 +269,7 @@ def test_calculate_last_run(
     """
     events = load_event_for_test(event_key)
     dedup = Deduplicate([], EventType.ACCEPTED_TRAFFIC)
-    dedup.is_fetch_time_moved = is_fetch_time_moved
+    dedup.is_fetch_time_advanced = is_fetch_time_advanced
     dedup.new_event_ids_suspected = new_event_ids_suspected
     result = calculate_last_run(
         events=events,
@@ -534,9 +534,7 @@ def test_get_event_ids_with_duplication_risk(
     dedup = Deduplicate([], EventType.POLICY_LOGS)
     events = load_event_for_test(event_key)
     results = dedup.get_event_ids_with_duplication_risk(events, latest_time)
-    assert len(results) == len(expected_results)
-    for result in results:
-        assert result in expected_results
+    assert set(results) == set(expected_results)
 
 
 @pytest.mark.parametrize(
