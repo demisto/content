@@ -54,7 +54,7 @@ description: OpenPhish uses proprietary Artificial Intelligence algorithms to au
 name: OpenPhish_v2
 display: OpenPhish v2
 script:
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   commands:
   - name: url
     arguments:
