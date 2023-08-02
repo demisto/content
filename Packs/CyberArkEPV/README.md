@@ -10,7 +10,7 @@ This pack includes Cortex XSIAM content.
 This section describes the steps required to configure Syslog forwarding of vault audit logs, such as user activity and safe activity events, from CyberArk EPV to Cortex XSIAM.
 
 ### General Overview
-The Cyber-Ark vault event logs are generated in [XML](https://en.wikipedia.org/wiki/XML) format. 
+The CyberArk vault event logs are generated in [XML](https://en.wikipedia.org/wiki/XML) format. 
 In order to forward the logs via Syslog to Cortex XSIAM, 
 the XML event records must be converted to suitable [CEF](https://www.microfocus.com/documentation/arcsight/arcsight-smartconnectors-8.3/cef-implementation-standard/Content/CEF/Chapter%201%20What%20is%20CEF.htm) messages. This transformation from XML event records to CEF messages is done though a suitable [XSL](https://en.wikipedia.org/wiki/XSL) translator file. This XSL file should be then referenced from the Vault server *DBParm.ini* configuration file, along with other syslog settings, as described in the [configuration steps](#Configuration-Steps) below. 
 
