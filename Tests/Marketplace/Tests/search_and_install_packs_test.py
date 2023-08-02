@@ -1,10 +1,7 @@
 import json
 from pathlib import Path
-from urllib.error import HTTPError
 
 import requests
-import urllib3.request
-from urllib3.response import HTTPResponse
 
 import demisto_client
 import pytest
