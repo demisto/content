@@ -1577,7 +1577,7 @@ def format_incidents(relevant_incidents: List[dict]) -> List[dict]:
     return relevant_incidents
 
 
-def format_nested_incident_attribute(attribute_value: str) -> tuple:
+def format_nested_incident_attribute(attribute_value: str | None) -> tuple:
     """
     Format nested attributes to be readable. For example:
     for the attribute_value "srcIpAddr:192.168.1.1,",
@@ -1590,6 +1590,7 @@ def format_nested_incident_attribute(attribute_value: str) -> tuple:
     """
     if not attribute_value:
         return None, None
+
     try:
         if attribute_value:
             attribute_parts = attribute_value.split(":")
