@@ -2634,7 +2634,20 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: inputs.QradarURLDomainField
+                  simple: inputs.InvestigationIPFields
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ','
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.InvestigationUserFields
                 iscontext: true
               suffix: {}
           - operator: concat
@@ -2929,6 +2942,7 @@ view: |-
       "39_166_#default#": 0.19,
       "55_176_yes": 0.44,
       "8_166_#default#": 0.1,
+      "8_26_yes": 0.73,
       "9_166_#default#": 0.25
     },
     "paper": {
