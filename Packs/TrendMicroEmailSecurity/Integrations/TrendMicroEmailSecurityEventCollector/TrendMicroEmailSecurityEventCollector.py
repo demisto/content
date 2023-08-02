@@ -203,7 +203,7 @@ class Deduplicate:
         return True
 
 
-def managing_set_last_run(
+def calculate_last_run(
     events: list[dict],
     last_run: dict,
     start: str,
@@ -414,7 +414,7 @@ def fetch_events_command(
 
         events.extend(events_by_type)
 
-        last_run_for_type = managing_set_last_run(
+        last_run_for_type = calculate_last_run(
             events=events_by_type,
             last_run=last_run,
             start=time_from,

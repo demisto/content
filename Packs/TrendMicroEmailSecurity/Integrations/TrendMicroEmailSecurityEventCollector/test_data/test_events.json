@@ -128,7 +128,7 @@
             "genTime": "2023-07-14T10:00:18Z"
         }
     ],
-    "EVENTS_MANAGING_SET_LAST_RUN": [
+    "EVENTS_CALCULATE_LAST_RUN": [
         {
             "mailID": "<33333.33333.33333.3333@mx.test.com>",
             "subject": "test-test2 - 1111",

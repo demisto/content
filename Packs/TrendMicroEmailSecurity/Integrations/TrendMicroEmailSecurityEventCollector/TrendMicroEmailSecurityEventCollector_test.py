@@ -4,7 +4,7 @@ from freezegun import freeze_time
 from TrendMicroEmailSecurityEventCollector import (
     Client,
     set_first_fetch,
-    managing_set_last_run,
+    calculate_last_run,
     fetch_by_event_type,
     fetch_events_command,
     remove_sensitive_from_events,
@@ -170,7 +170,7 @@ def test__encode_authorization(mock_client: Client):
         )
     ],
 )
-def test_managing_set_last_run_no_events(
+def test_calculate_last_run_no_events(
     event_key: str,
     last_run: dict,
     start: str,
@@ -179,16 +179,16 @@ def test_managing_set_last_run_no_events(
 ):
     """
     Given:
-        - args for `managing_set_last_run`
+        - args for `calculate_last_run`
     When:
-        - run `managing_set_last_run` function
+        - run `calculate_last_run` function
     Then:
         - Ensure the last_run obj is not changed
           when no events returned from the API
     """
     events = load_event_for_test(event_key)
     dedup = Deduplicate([], event_type)
-    result = managing_set_last_run(
+    result = calculate_last_run(
         events=events,
         last_run=last_run,
         start=start,
@@ -202,7 +202,7 @@ def test_managing_set_last_run_no_events(
     "event_key, last_run, start, event_type, is_fetch_time_moved, new_event_ids_suspected, expected_results",
     [
         pytest.param(
-            "MANAGING_SET_LAST_RUN",
+            "CALCULATE_LAST_RUN",
             {
                 f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T10:00:18Z",
                 f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
@@ -223,7 +223,7 @@ def test_managing_set_last_run_no_events(
             id="fetch time moved",
         ),
         pytest.param(
-            "MANAGING_SET_LAST_RUN",
+            "CALCULATE_LAST_RUN",
             {
                 f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T10:00:18Z",
                 f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
@@ -250,7 +250,7 @@ def test_managing_set_last_run_no_events(
         )
     ]
 )
-def test_managing_set_last_run(
+def test_calculate_last_run(
     event_key: str,
     last_run: dict,
     start: str,
@@ -271,7 +271,7 @@ def test_managing_set_last_run(
     dedup = Deduplicate([], EventType.ACCEPTED_TRAFFIC)
     dedup.is_fetch_time_moved = is_fetch_time_moved
     dedup.new_event_ids_suspected = new_event_ids_suspected
-    result = managing_set_last_run(
+    result = calculate_last_run(
         events=events,
         last_run=last_run,
         start=start,
@@ -462,7 +462,7 @@ def test_fetch_events_command(
         return_value=([{"_time": "test", "logType": "test"}], "test"),
     )
     mocker.patch(
-        "TrendMicroEmailSecurityEventCollector.managing_set_last_run", return_value={}
+        "TrendMicroEmailSecurityEventCollector.calculate_last_run", return_value={}
     )
     fetch_events_command(mock_client, args, first_fetch, last_run)
 
