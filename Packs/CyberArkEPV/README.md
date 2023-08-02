@@ -30,7 +30,7 @@ the XML event records must be converted to suitable [CEF](https://www.microfocus
             </xsl:call-template>
             <!-- End of IsoTimestamp mapping section -->
       ```
-      See The following screenshot for a demonstration of the updated XSL file: 
+      See the following screenshot for an example of the updated XSL file: 
     ![xsl_with_timestamp_mapping](https://raw.githubusercontent.com/demisto/content/fcf4535d373df78bded4b1bedacdd505d25cc095/Packs/CyberArkEPV/doc_files/config_isotimestamp_mapping.png)
 4. Save the changes.
 #### Set up the Syslog Configuration
