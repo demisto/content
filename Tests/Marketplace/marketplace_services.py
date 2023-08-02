@@ -3615,19 +3615,25 @@ class Pack:
             return True
 
         logging.debug(f"Found dynamic dashboard image: {dynamic_dashboard_image_relative_paths}")
-        dynamic_dashboard_image_relative_path: str = dynamic_dashboard_image_relative_paths[0]
-        image_name = os.path.basename(dynamic_dashboard_image_relative_path)
-        image_storage_path = os.path.join(pack_storage_root_path, image_name)
-        pack_image_blob = storage_bucket.blob(image_storage_path)
+        for dynamic_dashboard_image in dynamic_dashboard_image_relative_paths:
+            integration_dir = Path(dynamic_dashboard_image).parts[:-1]
+            integration_yaml_path = glob.glob(os.path.join(*integration_dir, '*.yml'))
 
-        try:
-            with open(dynamic_dashboard_image_relative_path, "rb") as image_file:
-                pack_image_blob.upload_from_file(image_file)
-        except Exception as e:
-            logging.exception(f"Failed uploading {self.name} pack dynamic dashboard image. Additional info: {e}")
-            return False
+            with open(integration_yaml_path[0]) as pack_file:
+                integration_yaml_content = yaml.safe_load(pack_file)
 
-        self._uploaded_dynamic_dashboard_images.append(dynamic_dashboard_image_relative_path)
+            image_storage_path = os.path.join(pack_storage_root_path,
+                                              f"{integration_yaml_content.get('commonfields', {}).get('id', '')}.svg")
+            pack_image_blob = storage_bucket.blob(image_storage_path)
+
+            try:
+                with open(dynamic_dashboard_image, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+            except Exception as e:
+                logging.exception(f"Failed uploading {self.name} pack dynamic dashboard image. Additional info: {e}")
+                return False
+
+        self._uploaded_dynamic_dashboard_images.append(image_storage_path)
 
         return True
 
