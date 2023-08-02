@@ -52,24 +52,25 @@ def cve_to_context(cve) -> Dict[str, str]:
     }
 
 
-def test_module(client: Client):
+def test_module(client: Client, reliability: str):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
     try:
-        cve_latest_command(client, 1)
+        cve_latest_command(client, 1, reliability)
     except Exception as e:
         if "Read timed out." not in str(e):
             raise
     return 'ok', None, None
 
 
-def cve_latest_command(client: Client, limit) -> List[CommandResults]:
+def cve_latest_command(client: Client, limit: int, reliability: str) -> List[CommandResults]:
     """Returns the 30 latest updated CVEs.
     Args:
          limit int: The amount of CVEs to display
+         reliability: The reliability of the source.
     Returns:
          Latest 30 CVE details containing ID, CVSS, modified date, published date and description.
     """
@@ -77,7 +78,7 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     for cve_details in res:
         data = cve_to_context(cve_details)
-        indicator = generate_indicator(data)
+        indicator = generate_indicator(data, reliability)
         readable_output = tableToMarkdown('Latest CVEs', data)
         command_results.append(
             CommandResults(
@@ -99,11 +100,12 @@ def cve_latest_command(client: Client, limit) -> List[CommandResults]:
     return command_results
 
 
-def cve_command(client: Client, args: dict) -> Union[List[CommandResults], CommandResults]:
+def cve_command(client: Client, args: dict, reliability: str) -> Union[List[CommandResults], CommandResults]:
     """Search for cve with the given ID and returns the cve data if found.
     Args:
            client: Integration client
            args :The demisto args containing the cve_id
+           reliability: The reliability of the source
     Returns:
         CVE details containing ID, CVSS, modified date, published date and description.
     """
@@ -120,7 +122,7 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
             cr = CommandResults(readable_output=f'### No results found for cve {_id}')
         else:
             data = cve_to_context(response)
-            indicator = generate_indicator(data)
+            indicator = generate_indicator(data, reliability)
             cr = CommandResults(
                 outputs_prefix='CVE',
                 outputs_key_field='ID',
@@ -133,11 +135,12 @@ def cve_command(client: Client, args: dict) -> Union[List[CommandResults], Comma
     return command_results
 
 
-def generate_indicator(data: dict) -> Common.CVE:
+def generate_indicator(data: dict, reliability: str) -> Common.CVE:
     """
     Generating a single cve indicator with dbot score from cve data.
     Args:
         data: The cve data
+        reliability: The reliability of the source
 
     Returns:
         A CVE indicator with dbotScore
@@ -147,7 +150,12 @@ def generate_indicator(data: dict) -> Common.CVE:
         cvss=data.get('CVSS'),
         published=data.get('Published'),
         modified=data.get('Modified'),
-        description=data.get('Description')
+        description=data.get('Description'),
+        dbot_score=Common.DBotScore(indicator=data.get('ID'),
+                                    indicator_type=DBotScoreType.CVE,
+                                    malicious_description=data.get('Description'),
+                                    score=Common.DBotScore.NONE,
+                                    reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability))
     )
     return cve_object
 
@@ -170,16 +178,18 @@ def main():
     base_url = params.get('url', 'https://cve.circl.lu/api/')
     client = Client(base_url=base_url, verify=use_ssl, proxy=proxy)
     command = demisto.command()
+    reliability = params.get('integration_reliability', '')
+
     LOG(f'Command being called is {command}')
     try:
         if demisto.command() == 'test-module':
-            return_outputs(*test_module(client))
+            return_outputs(*test_module(client, reliability))
 
         elif demisto.command() == 'cve-latest':
-            return_results(cve_latest_command(client, demisto.args().get('limit', 30)))
+            return_results(cve_latest_command(client, demisto.args().get('limit', 30), reliability))
 
         elif demisto.command() == 'cve':
-            return_results(cve_command(client, demisto.args()))
+            return_results(cve_command(client, demisto.args(), reliability))
 
         else:
             raise NotImplementedError(f'{command} is not an existing CVE Search command')

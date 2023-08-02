@@ -1598,10 +1598,9 @@ def test_get_cve_different_reliability(requests_mock, reliability, client):
     """
     args = {
         "cve": "cve_id_value",
-        "integration_reliability": reliability
     }
     requests_mock.get(url=f"{BASE_URL}/cves", json=EXAMPLE_CVES)
 
-    response = get_cves(client=client, args=args)[0]
+    response = get_cves(client=client, args=args, reliability=reliability)[0]
 
     assert response.indicator.dbot_score.reliability == reliability

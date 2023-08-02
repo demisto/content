@@ -72,6 +72,43 @@ var createEntry = function(response) {
     };
 };
 
+
+var createReputationEntry = function(response) {
+    var data = [];
+    ec = {};
+    ec.Account =[];
+    var reliability =  params.integration_reliability
+    //Only one person
+    if (response.person) {
+        data[0] = addPerson(response.person);
+        ec.Account[0] = buildECReliability(data, 0, reliability);
+        data[0]['Emails'] = '';
+        for (var j = 0; j < data[0].Email.length; j++) {
+            data[0]['Emails'] += data[0].Email[j].Address + '\n';
+        }
+        delete data[0].Email;
+    } else {
+    //More than one person
+        for (var i = 0; i < response.possible_persons.length; i++) {
+            data[i] = addPerson(response.possible_persons[i]);
+            ec.Account[i] = buildECReliability(data, i, reliability);
+            data[i]['Emails'] = '';
+            for (var j = 0; j < data[i].Email.length; j++) {
+                data[i]['Emails'] += data[i].Email[j].Address + '\n';
+            }
+            delete data[i].Email;
+        }
+    }
+    return {
+        Type: entryTypes.note,
+        ContentsFormat: formats.table,
+        Contents: data,
+        ReadableContentsFormat: formats.table,
+        HumanReadable: data,
+        EntryContext: ec
+    };
+};
+
 var buildEC = function(data, i) {
     return {
         Addresses: data[i].Addresses,
@@ -80,6 +117,23 @@ var buildEC = function(data, i) {
         Names: data[i].Names,
         Phones: data[i].Phones,
         Usernames: data[i].Usernames
+    };
+};
+
+var buildECReliability = function(data, i, reliability) {
+    return {
+        Addresses: data[i].Addresses,
+        Email: data[i].Email,
+        IDs: data[i].UserIDs,
+        Names: data[i].Names,
+        Phones: data[i].Phones,
+        Usernames: data[i].Usernames,
+        DbotScore: {
+            Indicator: data[i].Email,
+            Score: 0, // No score
+            Vendor: 'pipl',
+            Reliability: reliability
+        }
     };
 };
 
@@ -171,7 +225,7 @@ switch (command) {
         return createEntry(response);
     case 'email':
         var response = sendRequest(args);
-        return createEntry(response);
+        return createReputationEntry(response);
     default:
 
 }

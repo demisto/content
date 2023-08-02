@@ -31,6 +31,20 @@ configuration:
   name: proxy
   type: 8
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 script:
   script: ''
   type: javascript
@@ -97,4 +111,19 @@ script:
       description: Phone numbers
     - contextPath: Account.Usernames
       description: Online platforms usernames
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
     description: Searches for information regarding given email address

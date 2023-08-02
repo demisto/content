@@ -1,5 +1,5 @@
 [file:Pipl.yml]
-ignore=IN144,DB100,IN154
+ignore=IN144,DB100
 
 [file:Pipl_image.png]
 ignore=IM111

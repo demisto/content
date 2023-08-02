@@ -37,6 +37,7 @@ Retruns the latest updated CVEs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 
 ##### Context Output
@@ -52,6 +53,7 @@ Retruns the latest updated CVEs.
 | DBotScore.Score | Number | The indicator score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor reporting the score of the indicator. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 
 ##### Command Example
