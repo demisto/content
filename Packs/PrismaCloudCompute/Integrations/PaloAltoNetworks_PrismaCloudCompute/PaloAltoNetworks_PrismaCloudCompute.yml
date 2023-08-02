@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.12.65389
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: "-"
@@ -1004,7 +1004,7 @@ script:
       - "true"
       - "false"
     - name: fields
-      description: A comma-separated list of fields to return.
+      description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
       defaultValue: ""
     - name: hostname
@@ -1232,7 +1232,7 @@ script:
       isArray: true
       defaultValue: ""
     - name: fields
-      description: A comma-separated list of fields to return.
+      description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
       defaultValue: ""
     - name: hostname

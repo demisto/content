@@ -9,7 +9,6 @@ import urllib3
 import ipaddress
 import dateparser
 import tempfile
-from typing import Tuple
 import urllib
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -34,7 +33,7 @@ INTEGRATION_NAME = 'PaloAltoNetworks_PrismaCloudCompute'
 
 
 class PrismaCloudComputeClient(BaseClient):
-    def __init__(self, base_url, verify, project, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+    def __init__(self, base_url, verify, project, proxy=False, ok_codes=(), headers=None, auth=None):
         """
         Extends the init method of BaseClient by adding the arguments below,
 
@@ -492,15 +491,12 @@ def get_headers(name: str, data: list) -> list:
 
     # check the list for any additional headers that might have been added
     known_headers = HEADERS_BY_NAME.get(name)
-    if known_headers:
-        headers = known_headers[:]
-    else:
-        headers = []
+    headers = known_headers[:] if known_headers else []
 
     if isinstance(data, list):
         for d in data:
             if isinstance(d, dict):
-                for key in d.keys():
+                for key in d:
                     if key not in headers:
                         headers.append(key)
     return headers
@@ -532,10 +528,7 @@ def is_command_is_fetch():
     if demisto.getLastRun():
         return True
     else:
-        if demisto.getIntegrationContext().get('fetched_incidents_list', []):
-            return False
-        else:
-            return True
+        return not demisto.getIntegrationContext().get('fetched_incidents_list', [])
 
 
 def fetch_incidents(client):
@@ -614,7 +607,7 @@ def fetch_incidents(client):
         return demisto.getIntegrationContext().get('fetched_incidents_list', [])
 
 
-def parse_limit_and_offset_values(limit: str, offset: str = "0") -> Tuple[int, int]:
+def parse_limit_and_offset_values(limit: str, offset: str = "0") -> tuple[int, int]:
     """
     Parse the offset and limit parameters to integers and verify that the offset/limit are valid.
 
@@ -627,8 +620,10 @@ def parse_limit_and_offset_values(limit: str, offset: str = "0") -> Tuple[int, i
     """
     limit, offset = arg_to_number(arg=limit, arg_name="limit"), arg_to_number(arg=offset, arg_name="offset")
 
-    assert offset is not None and offset >= 0, f"offset {offset} is invalid, scope >= 0"
-    assert limit is not None and 0 < limit <= MAX_API_LIMIT, f"limit {limit} is invalid, scope = 1-50"
+    assert offset is not None
+    assert offset >= 0, f"offset {offset} is invalid, scope >= 0"
+    assert limit is not None
+    assert 0 < limit <= MAX_API_LIMIT, f"limit {limit} is invalid, scope = 1-50"
 
     return limit, offset
 
@@ -1194,7 +1189,7 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     name = args.get("name")
     md5s = argToList(arg=args.get("md5", []))
 
-    existing_md5s = set([feed.get("md5") for feed in feeds])
+    existing_md5s = {feed.get("md5") for feed in feeds}
     for md5 in md5s:
         if md5 not in existing_md5s:  # verify that there are no duplicates because the api doesn't handle it
             feeds.append({"name": name, "md5": md5})
@@ -1406,7 +1401,7 @@ def get_image_descriptions(images_scans: List[dict]) -> List[dict]:
     """
     return [
         {
-            "Image": image_scan.get("instances", [{}])[0].get("image"),
+            "Image": (image_scan.get("instances") or [{}])[0].get("image"),
             "ID": image_scan.get("_id"),
             "OS Distribution": image_scan.get("distro"),
             "Vulnerabilities Count": image_scan.get("vulnerabilitiesCount"),
