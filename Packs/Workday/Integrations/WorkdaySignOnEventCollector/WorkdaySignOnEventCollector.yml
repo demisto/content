@@ -1,0 +1,105 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Workday Sign On Event Collector
+  version: -1
+configuration:
+- name: base_url
+  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/v1/TENANT-NAME)
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: 'API Endpoint of Workday server. Can be obtained from View API Clients report in Workday application.'
+  section: Connect
+- name: credentials
+  display: Username
+  required: true
+  defaultvalue:
+  type: 9
+  displaypassword: Password
+  section: Connect
+  hiddenusername: false
+- name: token
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo: 'Non-expiry Workday API refresh token.'
+  displaypassword: Refresh Token
+  hiddenusername: true
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  additionalinfo:
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  additionalinfo:
+  section: Connect
+  advanced: true
+- additionalinfo: The maximum number of sign on events to retrievee. Large amount of events can cause performance issues.
+  defaultvalue: '1000'
+  display: Max events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+  hidden: false
+- defaultvalue: 1
+  display: Events Fetch Interval
+  hidden: false
+  name: eventFetchInterval
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+description: Use the Workday Sign On Event Collector integration to get sign on logs from Workday.
+display: Workday Sign On Event Collector
+name: Workday Sign On Event Collector
+script:
+  commands:
+  - name: workday-get-sign-on-events
+    description: Returns Sign On events extracted from Workday.
+    deprecated: false
+    arguments:
+    - name: limit
+      description: The maximum number of events to return.
+      required: false
+      isArray: false
+      defaultValue: 1000
+      predefined:
+      - ""
+    - name: from_date
+      description: 'The date and time of the earliest event. The default timezone is UTC/GMT. The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: to_date
+      description: 'The time format is "{yyyy}-{mm}-{dd}T{hh}:{mm}:{ss}Z". Example: "2021-05-18T13:45:14Z" indicates May 18, 2021, 1:45PM UTC.'
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    outputs: []
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.10.12.63474
+  feed: false
+fromversion: 8.2.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
