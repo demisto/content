@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: The source of enrichment. Ex: Qualys"
         },
         {
             "displayName": "record_exists",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: True means the enrichment of some kind has occurred for that source, the opposite is false."
         },
         {
             "displayName": "timestamp",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: Timestamp for when the enrichment and checking of the status took place."
         }
     ],
     "content": true,
