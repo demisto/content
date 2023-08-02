@@ -70,14 +70,17 @@ def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable
                  f'uninstall: {len(packs_to_uninstall)}')
     uninstalled_count = 0
     failed_to_uninstall = []
+    start_time = datetime.utcnow()
     if packs_to_uninstall:
-        for pack_to_uninstall in packs_to_uninstall:
-            logging.info(f"Attempting to uninstall a pack: {pack_to_uninstall}")
+        for i, pack_to_uninstall in enumerate(packs_to_uninstall, 1):
+            logging.info(f"{i}/{len(packs_to_uninstall)} - Attempting to uninstall a pack: {pack_to_uninstall}")
             if uninstall_pack(client, pack_to_uninstall):
                 uninstalled_count += 1
             else:
                 failed_to_uninstall.append(pack_to_uninstall)
-    logging.info(f"Finished uninstalling - Succeeded: {uninstalled_count} out of {len(packs_to_uninstall)}")
+    end_time = datetime.utcnow()
+    logging.info(f"Finished uninstalling - Succeeded: {uninstalled_count} out of {len(packs_to_uninstall)}, "
+                 f"Took:{end_time - start_time}")
     if failed_to_uninstall:
         logging.error(f"Failed to uninstall: {','.join(failed_to_uninstall)}")
     return uninstalled_count == len(packs_to_uninstall)
