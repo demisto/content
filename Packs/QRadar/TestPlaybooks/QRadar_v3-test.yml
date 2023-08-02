@@ -1351,7 +1351,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: "1"
     continueonerrortype: ""
     view: |-
       {
