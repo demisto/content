@@ -565,8 +565,10 @@ var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_
 
 switch (command) {
     case 'test-module':
-        res2 = sendRequest('GET','user');
-        console.log(res2)
+        res = sendRequest('GET','user');
+        if (res.response.id == undefined){
+            throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
+        }
         return 'ok';
     case 'demisto-api-post':
     case 'core-api-post':
