@@ -5509,7 +5509,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.67448
   isfetch: true
   runonce: false
   script: '-'
