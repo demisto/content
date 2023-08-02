@@ -585,7 +585,9 @@ sync-buckets-between-projects:
         echo "Syncing gs://marketplace-xpanse-prod-us"
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
         
-        ./Tests/scripts/validate_synced_buckets.sh
         
         echo "Bucket sync completed"
       fi
+
+    - ./Tests/scripts/validate_synced_buckets.sh
+
