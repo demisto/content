@@ -1788,3 +1788,41 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 
 #### Human Readable Output
 ```Update operation successful: true```
+
+
+### asm-update-alerts
+
+***
+Updates the state of one or more alerts.
+
+#### Base Command
+
+`asm-update-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
+| status | Updated alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
+| severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.UpdatedAlerts | unknown | IDs of the updated alerts. |
+
+#### Command example
+```!asm-update-alerts alert_id_list=602 status=new```
+#### Context Example
+```json
+{
+    "ASM": {
+        "UpdatedAlerts": [602]
+    }
+}
+```
+
+#### Human Readable Output
+```Updated alerts: [602]```
