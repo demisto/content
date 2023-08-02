@@ -838,7 +838,7 @@ def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults]
     Then:
      - Ensure that the expected CommandResults object is returned by the command function.
     """
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"})
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
     args = command_test_data[command_name].get('args', {})
     response = command_test_data[command_name]['response']
     expected = command_test_data[command_name]['expected']
@@ -1526,15 +1526,26 @@ def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter
 
 @pytest.mark.parametrize("api_version", ("16.2", "17.0"))
 @pytest.mark.parametrize("status", ("COMPLETED", "IN_PROGRESS"))
-def test_reference_set_upsert_commands_new_api(mocker, api_version, status):
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"})
+@pytest.mark.parametrize("func", (qradar_reference_set_value_upsert_command, qradar_indicators_upload_command))
+def test_reference_set_upsert_commands_new_api(mocker, api_version, status, func):
+    if func == qradar_indicators_upload_command:
+        mocker.patch.object(client, "reference_sets_list")
+        mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version", return_value={
+                            "iocs": [{"value": "test1", "indicator_type": "ip"},
+                                     {"value": "test2", "indicator_type": "ip"},
+                                     {"value": "test3", "indicator_type": "ip"}]})
+
+    mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
     mocker.patch.object(client, "reference_set_entries", return_value={"id": 1234})
     mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": status})
     response = command_test_data["reference_set_bulk_load"]['response']
     mocker.patch.object(client, "reference_sets_list", return_value=response)
-
-    results = qradar_reference_set_value_upsert_command({
-        "ref_name": "test_ref", "value": "test1,test2,test3"}, client, {"api_version": api_version})
+    args = {"ref_name": "test_ref"}
+    if func == qradar_reference_set_value_upsert_command:
+        args["value"] = "test1,test2,test3"
+    results = func(
+        args, client, {"api_version": api_version}
+    )
     if status == "COMPLETED":
 
         expected = command_test_data["reference_set_bulk_load"]['expected']
@@ -1553,26 +1564,3 @@ def test_reference_set_upsert_commands_new_api(mocker, api_version, status):
     else:
         assert results.readable_output == 'Reference set test_ref is still being updated in task 1234'
         assert results.scheduled_command._args.get('task_id') == 1234
-
-
-def test_indicators_upload(mocker, api_version):
-    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0", "buildNumber": "12345"})
-    mocker.patch.object(client, "reference_sets_list")
-    mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version", return_value={
-                        "iocs": [{"value": "test1", "indicator_type": "ip"}, {"value": "test2", "indicator_type": "ip"}]})
-    if api_version == "14.0":
-        response = command_test_data["reference_set_bulk_load"]["response"]
-        mocker.patch.object(client, "reference_set_bulk_load", return_value=response)
-        results = qradar_indicators_upload_command({"ref_name": "test_ref", }, client, {"api_version": api_version})
-        expected = command_test_data["reference_set_bulk_load"]['expected']
-        expected_command_results = CommandResults(
-            outputs_prefix=expected.get('outputs_prefix'),
-            outputs_key_field=expected.get('outputs_key_field'),
-            outputs=expected.get('outputs'),
-            raw_response=response
-        )
-
-        assert results.outputs_prefix == expected_command_results.outputs_prefix
-        assert results.outputs_key_field == expected_command_results.outputs_key_field
-        assert results.outputs == expected_command_results.outputs
-        assert results.raw_response == expected_command_results.raw_response

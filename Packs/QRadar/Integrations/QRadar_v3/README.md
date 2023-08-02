@@ -125,6 +125,7 @@ It is recommended to enable [mirroring](#mirroring-events), as it should fetch p
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -191,6 +192,7 @@ Gets offenses from QRadar.
     "QRadar": {
         "Offense": [
             {
+                "AssignedTo": "admin",
                 "Categories": [
                     "Information",
                     "Suspicious Activity",
@@ -218,11 +220,11 @@ Gets offenses from QRadar.
                 "ID": 14,
                 "LastUpdatedTime": "2023-07-26T15:31:11.839000+00:00",
                 "LinkToOffense": "https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14",
-                "Magnitude": 5,
+                "Magnitude": 4,
                 "OffenseSource": "userD",
                 "OffenseType": "Username",
-                "Protected": true,
-                "Relevance": 1,
+                "Protected": false,
+                "Relevance": 0,
                 "RemoteDestinationCount": 1,
                 "Rules": [
                     {
@@ -353,11 +355,11 @@ Gets offenses from QRadar.
 #### Human Readable Output
 
 >### Offenses List
->|ID|Description|OffenseType|Status|Severity|Magnitude|Categories|RemoteDestinationCount|EventCount|Protected|Credibility|Relevance|SourceAddress|OffenseSource|DestinationHostname|Followup|DestinationAddress|LinkToOffense|StartTime|FlowCount|LastUpdatedTime|Rules|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | 5 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 1 | 35651 | true | 4 | 1 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | userD | other,<br/>Net-10-172-192.Net_192_168_0_0 | true | 1.1.1.1,<br/>1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 2023-07-26T14:31:13.387000+00:00 | 0 | 2023-07-26T15:31:11.839000+00:00 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} |
->| 13 | Flow Source/Interface Stopped Sending Flows<br/> | Rule | OPEN | 1 | 1 | Mail,<br/>System Failure | 0 | 2 | true | 2 | 0 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | Flow Source Stopped Sending Flows | Net-10-172-192.Net_10_0_0_0 | true | 1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=13 | 2023-06-12T08:19:02.020000+00:00 | 6026 | 2023-06-12T08:49:50.145000+00:00 | {'id': 100270, 'type': 'CRE_RULE', 'name': 'Flow Source Stopped Sending Flows'} |
->| 12 | User Account Created and Used and Deleted within a short time frame (Exp Center)<br/> | Username | OPEN | 5 | 2 | User Activity | 0 | 8 | true | 3 | 0 | 1.1.1.1 | badadmin | Net-10-172-192.Net_172_16_0_0 | true | 1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=12 | 2023-06-12T08:15:54.740000+00:00 | 0 | 2023-06-12T08:17:33.008000+00:00 | {'id': 102989, 'type': 'CRE_RULE', 'name': 'EC: User Account Created and Used and Removed'} |
+>|ID|Description|OffenseType|Status|Severity|DestinationHostname|LastUpdatedTime|Credibility|Rules|SourceAddress|AssignedTo|OffenseSource|Followup|EventCount|StartTime|FlowCount|DestinationAddress|LinkToOffense|RemoteDestinationCount|Relevance|Categories|Magnitude|Protected|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
+>| 13 | Flow Source/Interface Stopped Sending Flows<br/> | Rule | OPEN | 1 | Net-10-172-192.Net_10_0_0_0 | 2023-06-12T08:49:50.145000+00:00 | 2 | {'id': 100270, 'type': 'CRE_RULE', 'name': 'Flow Source Stopped Sending Flows'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 |  | Flow Source Stopped Sending Flows | true | 2 | 2023-06-12T08:19:02.020000+00:00 | 6026 | 1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=13 | 0 | 0 | Mail,<br/>System Failure | 1 | true |
+>| 12 | User Account Created and Used and Deleted within a short time frame (Exp Center)<br/> | Username | OPEN | 5 | Net-10-172-192.Net_172_16_0_0 | 2023-06-12T08:17:33.008000+00:00 | 3 | {'id': 102989, 'type': 'CRE_RULE', 'name': 'EC: User Account Created and Used and Removed'} | 1.1.1.1 |  | badadmin | true | 8 | 2023-06-12T08:15:54.740000+00:00 | 0 | 1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=12 | 0 | 0 | User Activity | 2 | true |
 
 
 ### qradar-offense-update
@@ -452,11 +454,11 @@ Updates an offense.
             "ID": 14,
             "LastUpdatedTime": "2023-07-26T15:31:11.839000+00:00",
             "LinkToOffense": "https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14",
-            "Magnitude": 5,
+            "Magnitude": 4,
             "OffenseSource": "userD",
             "OffenseType": "Username",
             "Protected": false,
-            "Relevance": 1,
+            "Relevance": 0,
             "RemoteDestinationCount": 1,
             "Rules": [
                 {
@@ -507,9 +509,9 @@ Updates an offense.
 #### Human Readable Output
 
 >### offense Update
->|ID|Description|OffenseType|Status|Severity|Magnitude|Categories|AssignedTo|RemoteDestinationCount|EventCount|Protected|Credibility|Relevance|SourceAddress|OffenseSource|DestinationHostname|Followup|DestinationAddress|LinkToOffense|StartTime|FlowCount|LastUpdatedTime|Rules|
+>|ID|Description|OffenseType|Status|Severity|DestinationHostname|LastUpdatedTime|Credibility|Rules|SourceAddress|AssignedTo|OffenseSource|Followup|EventCount|StartTime|FlowCount|DestinationAddress|LinkToOffense|RemoteDestinationCount|Relevance|Categories|Magnitude|Protected|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | 5 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | admin | 1 | 35651 | false | 4 | 1 | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | userD | other,<br/>Net-10-172-192.Net_192_168_0_0 | true | 1.1.1.1,<br/>1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 2023-07-26T14:31:13.387000+00:00 | 0 | 2023-07-26T15:31:11.839000+00:00 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} |
+>| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2-54-155-52-85.eu-west-1.compute.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
 
 
 ### qradar-closing-reasons
@@ -632,9 +634,9 @@ Retrieves a list of notes for an offense.
                 "Text": "Note Regarding The Offense"
             },
             {
-                "CreateTime": "2023-07-27T10:43:15.800000+00:00",
+                "CreateTime": "2023-08-02T08:23:05.473000+00:00",
                 "CreatedBy": "API_user: admin",
-                "ID": 47,
+                "ID": 60,
                 "Text": "Note Regarding The Offense"
             }
         ]
@@ -648,7 +650,7 @@ Retrieves a list of notes for an offense.
 >|ID|Text|CreatedBy|CreateTime|
 >|---|---|---|---|
 >| 53 | Note Regarding The Offense | API_user: admin | 2023-07-27T13:58:46.428000+00:00 |
->| 47 | Note Regarding The Offense | API_user: admin | 2023-07-27T10:43:15.800000+00:00 |
+>| 60 | Note Regarding The Offense | API_user: admin | 2023-08-02T08:23:05.473000+00:00 |
 
 
 ### qradar-offense-note-create
@@ -684,9 +686,9 @@ Creates a note on an offense.
 {
     "QRadar": {
         "Note": {
-            "CreateTime": "2023-07-30T09:51:59.141000+00:00",
+            "CreateTime": "2023-08-02T08:39:15.813000+00:00",
             "CreatedBy": "API_user: admin",
-            "ID": 55,
+            "ID": 65,
             "Text": "Note Regarding The Offense"
         }
     }
@@ -698,7 +700,7 @@ Creates a note on an offense.
 >### Create Note
 >|ID|Text|CreatedBy|CreateTime|
 >|---|---|---|---|
->| 55 | Note Regarding The Offense | API_user: admin | 2023-07-30T09:51:59.141000+00:00 |
+>| 65 | Note Regarding The Offense | API_user: admin | 2023-08-02T08:39:15.813000+00:00 |
 
 
 ### qradar-rules-list
@@ -794,11 +796,11 @@ Retrieves a list of rules.
 #### Human Readable Output
 
 >### Rules List
->|ID|Name|Type|AverageCapacity|ModificationDate|Owner|Enabled|BaseHostID|BaseCapacity|CapacityTimestamp|Origin|CreationDate|
+>|ID|Name|Type|Enabled|BaseHostID|Origin|ModificationDate|CreationDate|BaseCapacity|AverageCapacity|Owner|CapacityTimestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 100068 | Login Successful After Scan Attempt | COMMON | 0 | 2022-11-21T18:44:32.696000+00:00 | admin | true | 0 | 0 | 0 | SYSTEM | 2007-10-14T20:12:00.374000+00:00 |
->| 100102 | Potential Botnet Connection (DNS) | COMMON | 0 | 2023-02-23T14:12:52.067000+00:00 | admin | false | 0 | 0 | 0 | SYSTEM | 2006-03-27T10:54:12.077000+00:00 |
->| 100109 | Host Port Scan Detected by Remote Host | COMMON | 0 | 2023-02-23T14:12:49.992000+00:00 | admin | true | 0 | 0 | 0 | SYSTEM | 2005-12-22T00:54:48.708000+00:00 |
+>| 100068 | Login Successful After Scan Attempt | COMMON | true | 0 | SYSTEM | 2022-11-21T18:44:32.696000+00:00 | 2007-10-14T20:12:00.374000+00:00 | 0 | 0 | admin | 0 |
+>| 100102 | Potential Botnet Connection (DNS) | COMMON | false | 0 | SYSTEM | 2023-02-23T14:12:52.067000+00:00 | 2006-03-27T10:54:12.077000+00:00 | 0 | 0 | admin | 0 |
+>| 100109 | Host Port Scan Detected by Remote Host | COMMON | true | 0 | SYSTEM | 2023-02-23T14:12:49.992000+00:00 | 2005-12-22T00:54:48.708000+00:00 | 0 | 0 | admin | 0 |
 
 
 ### qradar-rule-groups-list
@@ -930,11 +932,11 @@ Retrieves a list of the rule groups.
 #### Human Readable Output
 
 >### Rules Group List
->|ID|Name|Description|Owner|ChildItems|Level|ParentID|Type|ModifiedTime|
+>|ID|Name|Description|Owner|ModifiedTime|ParentID|Type|ChildItems|Level|
 >|---|---|---|---|---|---|---|---|---|
->| 125 | Asset Reconciliation Exclusion | Rules focused on detection of suspicious asset reconciliation behavior. | admin | 100045,<br/>100046,<br/>100047,<br/>100048,<br/>100049,<br/>100050,<br/>100051,<br/>100052,<br/>100053,<br/>100054,<br/>100055,<br/>100056,<br/>1607,<br/>1608,<br/>1609,<br/>1610,<br/>1611,<br/>1612,<br/>1613,<br/>1614,<br/>1615,<br/>1616,<br/>1617,<br/>1618 | 2 | 3 | RULE_GROUP | 2014-01-06T15:23:26.060000+00:00 |
->| 100020 | Horizontal Movement | Rules that indicate post-intrusion access activity | admin | 100057,<br/>100059 | 2 | 3 | RULE_GROUP | 2015-07-08T20:14:12.250000+00:00 |
->| 101 | Anomaly | Rules based on log source and event anomalies such as high event rates or excessive connections. | admin | 100001,<br/>100003,<br/>100044,<br/>100323,<br/>1219,<br/>1265,<br/>1335,<br/>1410,<br/>1411,<br/>1412,<br/>1431,<br/>1443,<br/>1460,<br/>1461,<br/>1471,<br/>1481,<br/>1509,<br/>1552,<br/>1566 | 1 | 3 | RULE_GROUP | 2010-08-21T11:48:27.850000+00:00 |
+>| 125 | Asset Reconciliation Exclusion | Rules focused on detection of suspicious asset reconciliation behavior. | admin | 2014-01-06T15:23:26.060000+00:00 | 3 | RULE_GROUP | 100045,<br/>100046,<br/>100047,<br/>100048,<br/>100049,<br/>100050,<br/>100051,<br/>100052,<br/>100053,<br/>100054,<br/>100055,<br/>100056,<br/>1607,<br/>1608,<br/>1609,<br/>1610,<br/>1611,<br/>1612,<br/>1613,<br/>1614,<br/>1615,<br/>1616,<br/>1617,<br/>1618 | 2 |
+>| 100020 | Horizontal Movement | Rules that indicate post-intrusion access activity | admin | 2015-07-08T20:14:12.250000+00:00 | 3 | RULE_GROUP | 100057,<br/>100059 | 2 |
+>| 101 | Anomaly | Rules based on log source and event anomalies such as high event rates or excessive connections. | admin | 2010-08-21T11:48:27.850000+00:00 | 3 | RULE_GROUP | 100001,<br/>100003,<br/>100044,<br/>100323,<br/>1219,<br/>1265,<br/>1335,<br/>1410,<br/>1411,<br/>1412,<br/>1431,<br/>1443,<br/>1460,<br/>1461,<br/>1471,<br/>1481,<br/>1509,<br/>1552,<br/>1566 | 1 |
 
 
 ### qradar-assets-list
@@ -1108,7 +1110,7 @@ Retrieves a list of Ariel saved searches.
     "QRadar": {
         "SavedSearch": [
             {
-                "AQL": "select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',\"eventCount\" as 'Event Count',\"startTime\" as 'Time',categoryname(category) as 'Low Level Category',\"sourceIP\" as 'Source IP',\"sourcePort\" as 'Source Port',\"destinationIP\" as 'Destination IP',\"destinationPort\" as 'Destination Port',\"userName\" as 'Username',\"magnitude\" as 'Magnitude' from events where \"Experience Center\" ilike '%AWSCloud%' order by \"startTime\" desc LIMIT 1000 start '2023-07-30 09:47' stop '2023-07-30 09:52'",
+                "AQL": "select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',\"eventCount\" as 'Event Count',\"startTime\" as 'Time',categoryname(category) as 'Low Level Category',\"sourceIP\" as 'Source IP',\"sourcePort\" as 'Source Port',\"destinationIP\" as 'Destination IP',\"destinationPort\" as 'Destination Port',\"userName\" as 'Username',\"magnitude\" as 'Magnitude' from events where \"Experience Center\" ilike '%AWSCloud%' order by \"startTime\" desc LIMIT 1000 start '2023-08-02 08:34' stop '2023-08-02 08:39'",
                 "CreationDate": "2019-04-02T17:39:08.493000+00:00",
                 "Database": "EVENTS",
                 "Description": "",
@@ -1141,10 +1143,10 @@ Retrieves a list of Ariel saved searches.
 #### Human Readable Output
 
 >### Saved Searches List
->|ID|Name|UID|ModifiedDate|AQL|Owner|Database|IsShared|CreationDate|QuickSearch|
+>|ID|Name|IsShared|AQL|UID|QuickSearch|ModifiedDate|CreationDate|Database|Owner|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2817 | EC: AWS Cloud Attack Events | 0144c7d8-a3fe-47c1-b16b-12721a34077e | 2023-02-23T14:12:52.611000+00:00 | select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where "Experience Center" ilike '%AWSCloud%' order by "startTime" desc LIMIT 1000 start '2023-07-30 09:47' stop '2023-07-30 09:52' | admin | EVENTS | false | 2019-04-02T17:39:08.493000+00:00 | false |
->| 2835 | Potential Ransomware (Suspicious activity, Possible Petya, NotPetya) | 0791701a-80e3-4a1c-b11f-7bc943b96bf6 | 2023-03-05T13:34:00.352000+00:00 | select * from flows where destinationport = '445' and (FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%70 00 73 00 65 00 78 00 65 00 63 00 73 00 76 00 63 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%50 00 53 00 45 00 58 00 45 00 53 00 56 00 43 00 2e 00 45 00 58 00 45%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%73 00 76 00 63 00 63 00 74 00 6c 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%5c 00 61 00 64 00 6d 00 69 00 6e 00 24 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%ff 53 4d 42 72 00 00 00 00 18 07 c0%') last 24 HOURS | admin | FLOWS | true | 2017-07-02T18:11:44.984000+00:00 | false |
+>| 2817 | EC: AWS Cloud Attack Events | false | select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where "Experience Center" ilike '%AWSCloud%' order by "startTime" desc LIMIT 1000 start '2023-08-02 08:34' stop '2023-08-02 08:39' | 0144c7d8-a3fe-47c1-b16b-12721a34077e | false | 2023-02-23T14:12:52.611000+00:00 | 2019-04-02T17:39:08.493000+00:00 | EVENTS | admin |
+>| 2835 | Potential Ransomware (Suspicious activity, Possible Petya, NotPetya) | true | select * from flows where destinationport = '445' and (FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%70 00 73 00 65 00 78 00 65 00 63 00 73 00 76 00 63 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%50 00 53 00 45 00 58 00 45 00 53 00 56 00 43 00 2e 00 45 00 58 00 45%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%73 00 76 00 63 00 63 00 74 00 6c 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%5c 00 61 00 64 00 6d 00 69 00 6e 00 24 00%' OR FORMAT::PAYLOAD_TO_HEX(sourcepayload) like '%ff 53 4d 42 72 00 00 00 00 18 07 c0%') last 24 HOURS | 0791701a-80e3-4a1c-b11f-7bc943b96bf6 | false | 2023-03-05T13:34:00.352000+00:00 | 2017-07-02T18:11:44.984000+00:00 | FLOWS | admin |
 
 
 ### qradar-searches-list
@@ -1176,154 +1178,154 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
     "QRadar": {
         "SearchID": [
             {
-                "SearchID": "31f27978-f59b-4dea-9ee2-f66610417ffe"
+                "SearchID": "111e7107-48da-4645-8c2c-a8285d113eac"
             },
             {
-                "SearchID": "6647fddb-9e8b-435d-94c5-e85a07ff58c5"
+                "SearchID": "4ad8f58f-d63b-4555-9d5e-62529e6ac089"
             },
             {
-                "SearchID": "5bf0e510-a969-41d8-a5f6-d1035902e1df"
+                "SearchID": "909075e0-b450-400c-b641-dd04e46b65bf"
             },
             {
-                "SearchID": "d31a0bf3-cc2a-4c3f-9097-4bfd72984a9d"
+                "SearchID": "f6387ac3-342a-41e7-bcd4-14fe5525dc5c"
             },
             {
-                "SearchID": "a9e7887d-8a94-48fe-a0e0-3f97ba2a47f3"
+                "SearchID": "e15caa93-a01f-49f4-b6be-5c666b0e08c7"
             },
             {
-                "SearchID": "345a4d1b-428d-4470-b6c0-6632ea1cc915"
+                "SearchID": "36ad7331-149d-4419-947d-ff0d3dd23cf1"
             },
             {
-                "SearchID": "8cd443e7-f784-4ab8-99a8-6780dfe5a9fa"
+                "SearchID": "a893fc4f-f405-4cb2-a6c3-698dfad6045d"
             },
             {
-                "SearchID": "36227863-bc6a-488f-9aa4-0f9c6f767655"
+                "SearchID": "47f40fcd-b7fd-48d7-abbc-05fb447acee2"
             },
             {
-                "SearchID": "fe1d5919-d560-472a-890d-2910994b9185"
+                "SearchID": "8967788b-f746-4e5b-9174-c145196eddb1"
             },
             {
-                "SearchID": "191cb2f2-760d-40a2-9593-3ef43ddabd14"
+                "SearchID": "1d743e24-a524-417f-9747-c967e0328b48"
             },
             {
-                "SearchID": "a6c693c0-550e-447b-a6e7-6db1a3fda712"
+                "SearchID": "be14bcb5-363e-4547-9b7f-923578a16ae6"
             },
             {
-                "SearchID": "d618105e-a3e5-4e0a-82a9-fe53ae8bef8a"
+                "SearchID": "a4f4d846-9057-41ae-b558-0dd47134a72a"
             },
             {
-                "SearchID": "ad70acef-1860-4198-bc78-17c46fd03a92"
+                "SearchID": "2c98e5f6-4988-4fe3-bbac-43acbbfaaea2"
             },
             {
-                "SearchID": "a62bc421-c59d-4b3f-a482-ffbe28d4e409"
+                "SearchID": "7e4bd0cf-b04e-446f-ba94-16e1811740e9"
             },
             {
-                "SearchID": "1ea246fc-1aa3-4b9b-8a2c-fbe7043b3207"
+                "SearchID": "76e9ed8a-4f59-42ad-8135-9b1781568935"
             },
             {
-                "SearchID": "8c1fd5f6-f289-47b4-8c84-e4c47ca4688a"
+                "SearchID": "04e953e2-153a-488b-9a53-8701d16431c4"
             },
             {
-                "SearchID": "e3fa2bdb-994e-4a35-9152-9fe528426a1e"
+                "SearchID": "cd44255c-0496-4663-a6ac-9662ad4a13ef"
             },
             {
-                "SearchID": "f559f8f2-784e-41ce-a129-8467f0a9c2a3"
+                "SearchID": "92e5d6ec-1c60-4c7b-ad97-7610c1e7ed90"
             },
             {
-                "SearchID": "d635b4f6-f93c-4951-9807-ba707518a8d4"
+                "SearchID": "8ded0056-8853-443f-9f99-3fff30c08cd6"
             },
             {
-                "SearchID": "acbd24c5-a33a-4c39-8c82-b81ba6c928b6"
+                "SearchID": "5ced0d93-4237-461a-ba12-6513d5674fb0"
             },
             {
-                "SearchID": "19e76e00-82b4-4cec-8bc7-6d5fcd5c8455"
+                "SearchID": "1de985b2-2d45-4d0e-ac86-d25c5b7d8803"
             },
             {
-                "SearchID": "aae19fc5-b3c8-4908-8679-f1eca85ea332"
+                "SearchID": "b19000dd-1eda-4b85-a45e-334478f0755f"
             },
             {
-                "SearchID": "14a2267f-e837-4d43-bad0-777c3edf6560"
+                "SearchID": "ae52c4d7-689f-4274-8f74-6de74bd3652c"
             },
             {
-                "SearchID": "22081745-93e0-4dc6-9254-98b3cefdd021"
+                "SearchID": "70fe39d6-4e8e-4c48-8207-12d5930544f4"
             },
             {
-                "SearchID": "1aef8743-2344-4e53-a2f6-5f4e9168ec0e"
+                "SearchID": "011e1de5-c985-462a-8252-e291acaed012"
             },
             {
-                "SearchID": "71673d0a-a766-4681-ac09-3931409ad4a2"
+                "SearchID": "174d5a7c-b004-4b9c-96fb-868c043daa3c"
             },
             {
-                "SearchID": "d0ffb6d0-c01f-46fc-bc7b-5c55ebf82693"
+                "SearchID": "12b576a1-410e-4c46-bd95-61b2bebb4ceb"
             },
             {
-                "SearchID": "4e6c53c4-1afb-4997-91e7-1613d28192cc"
+                "SearchID": "8f1b645a-6f81-43fc-86f3-23c2213359b6"
             },
             {
-                "SearchID": "8c1308a8-f68a-465d-a1c4-ed5a4f019351"
+                "SearchID": "12463d5a-4d2c-4c5b-9640-88e4cdee245c"
             },
             {
-                "SearchID": "b386d4bc-908b-4657-ae96-9c23e0bb9fd4"
+                "SearchID": "e1d2697f-4c40-46d0-b8b3-90a51e732814"
             },
             {
-                "SearchID": "c2e77472-888d-423f-b172-63f3c45c4ff7"
+                "SearchID": "e9dea979-039c-409a-8a60-fe1fe44fa3c2"
             },
             {
-                "SearchID": "20a161a4-9ef9-4b98-825b-8acb7873c6dd"
+                "SearchID": "66ca4a44-a3ac-482b-9d7a-300d621eb8a9"
             },
             {
-                "SearchID": "667004ef-a741-4b3a-9674-73389e13c551"
+                "SearchID": "a42ef950-fd27-42c9-af3d-8d466bf73d5d"
             },
             {
-                "SearchID": "dac7c890-c4d4-4b0b-8b73-6916fd0e7982"
+                "SearchID": "73ee61f0-c480-4145-a00b-d8c3a55de791"
             },
             {
-                "SearchID": "f5a5dcce-4390-4d24-bcd0-6f54877f9057"
+                "SearchID": "e73b8002-b47d-4fb3-9dae-34a99dd21943"
             },
             {
-                "SearchID": "eebc9ac3-6719-4f3a-8976-ad5ab807ee76"
+                "SearchID": "5b812a3b-624d-4cf7-a2ed-f2d1f469b0a4"
             },
             {
-                "SearchID": "18168afc-39ff-4887-abd1-7be72c9f0d96"
+                "SearchID": "4f6e37db-8c4f-4e2f-9b27-b8ae68d0c38b"
             },
             {
-                "SearchID": "7f134056-8047-43df-8eb6-9e746ab2de66"
+                "SearchID": "df9cf783-d706-46ed-8be7-680a0830d3eb"
             },
             {
-                "SearchID": "e8410a1c-0f49-4093-a02b-12650d9fed4c"
+                "SearchID": "d2aa7f7c-dbf4-405f-9652-b6bb776164f0"
             },
             {
-                "SearchID": "ca14e016-77c2-4bea-8d9e-830449acd132"
+                "SearchID": "de72022b-8070-4151-a826-16eb913db2cd"
             },
             {
-                "SearchID": "62a2a323-4b86-4c4f-a90c-8d1c371d4330"
+                "SearchID": "32501bb7-22b8-4d79-aa7b-0b565c4bd806"
             },
             {
-                "SearchID": "2e12aa6a-ac08-4a3c-87e3-dc50c726b091"
+                "SearchID": "f89f3515-6d27-4616-a1bb-7dc008aa1562"
             },
             {
-                "SearchID": "344feb8a-9acc-4c1f-9db7-67de2ef78edc"
+                "SearchID": "1ba37caf-c969-43fa-b037-6c164535b512"
             },
             {
-                "SearchID": "eeccdb8d-d4b5-46b8-a2f1-44fcd83ffc6d"
+                "SearchID": "78b709c4-8037-43dc-8bf0-dfd94629674f"
             },
             {
-                "SearchID": "21eb8da7-3c86-4b6b-a97c-b8542951d9ba"
+                "SearchID": "88096e2b-4feb-4071-807e-96e3dfc080ff"
             },
             {
-                "SearchID": "450e7012-61db-4aa1-97af-30a0f566f0e7"
+                "SearchID": "1a7576fc-2cc1-41c6-85b6-3728d4d44f3d"
             },
             {
-                "SearchID": "d656a2a8-2613-486e-b46e-9f9530660d74"
+                "SearchID": "b4414e3b-b5ec-4cc8-9db2-35a7a2057e46"
             },
             {
-                "SearchID": "407d425e-9b29-49e4-9499-aff692d4e251"
+                "SearchID": "c6a82de6-cfef-444e-9b0f-b124b5599b7b"
             },
             {
-                "SearchID": "06a06a43-421a-4de9-b2d8-6575b2910b93"
+                "SearchID": "185971cc-ebbb-453d-b826-bffc59836be1"
             },
             {
-                "SearchID": "e9e1233b-9d11-43c5-8760-84fcfa64de2f"
+                "SearchID": "2a45ec38-d060-4aae-9a9c-730f49966fdc"
             }
         ]
     }
@@ -1335,56 +1337,56 @@ Retrieves the list of Ariel searches IDs. Search status and results can be polle
 >### Search ID List
 >|SearchID|
 >|---|
->| 31f27978-f59b-4dea-9ee2-f66610417ffe |
->| 6647fddb-9e8b-435d-94c5-e85a07ff58c5 |
->| 5bf0e510-a969-41d8-a5f6-d1035902e1df |
->| d31a0bf3-cc2a-4c3f-9097-4bfd72984a9d |
->| a9e7887d-8a94-48fe-a0e0-3f97ba2a47f3 |
->| 345a4d1b-428d-4470-b6c0-6632ea1cc915 |
->| 8cd443e7-f784-4ab8-99a8-6780dfe5a9fa |
->| 36227863-bc6a-488f-9aa4-0f9c6f767655 |
->| fe1d5919-d560-472a-890d-2910994b9185 |
->| 191cb2f2-760d-40a2-9593-3ef43ddabd14 |
->| a6c693c0-550e-447b-a6e7-6db1a3fda712 |
->| d618105e-a3e5-4e0a-82a9-fe53ae8bef8a |
->| ad70acef-1860-4198-bc78-17c46fd03a92 |
->| a62bc421-c59d-4b3f-a482-ffbe28d4e409 |
->| 1ea246fc-1aa3-4b9b-8a2c-fbe7043b3207 |
->| 8c1fd5f6-f289-47b4-8c84-e4c47ca4688a |
->| e3fa2bdb-994e-4a35-9152-9fe528426a1e |
->| f559f8f2-784e-41ce-a129-8467f0a9c2a3 |
->| d635b4f6-f93c-4951-9807-ba707518a8d4 |
->| acbd24c5-a33a-4c39-8c82-b81ba6c928b6 |
->| 19e76e00-82b4-4cec-8bc7-6d5fcd5c8455 |
->| aae19fc5-b3c8-4908-8679-f1eca85ea332 |
->| 14a2267f-e837-4d43-bad0-777c3edf6560 |
->| 22081745-93e0-4dc6-9254-98b3cefdd021 |
->| 1aef8743-2344-4e53-a2f6-5f4e9168ec0e |
->| 71673d0a-a766-4681-ac09-3931409ad4a2 |
->| d0ffb6d0-c01f-46fc-bc7b-5c55ebf82693 |
->| 4e6c53c4-1afb-4997-91e7-1613d28192cc |
->| 8c1308a8-f68a-465d-a1c4-ed5a4f019351 |
->| b386d4bc-908b-4657-ae96-9c23e0bb9fd4 |
->| c2e77472-888d-423f-b172-63f3c45c4ff7 |
->| 20a161a4-9ef9-4b98-825b-8acb7873c6dd |
->| 667004ef-a741-4b3a-9674-73389e13c551 |
->| dac7c890-c4d4-4b0b-8b73-6916fd0e7982 |
->| f5a5dcce-4390-4d24-bcd0-6f54877f9057 |
->| eebc9ac3-6719-4f3a-8976-ad5ab807ee76 |
->| 18168afc-39ff-4887-abd1-7be72c9f0d96 |
->| 7f134056-8047-43df-8eb6-9e746ab2de66 |
->| e8410a1c-0f49-4093-a02b-12650d9fed4c |
->| ca14e016-77c2-4bea-8d9e-830449acd132 |
->| 62a2a323-4b86-4c4f-a90c-8d1c371d4330 |
->| 2e12aa6a-ac08-4a3c-87e3-dc50c726b091 |
->| 344feb8a-9acc-4c1f-9db7-67de2ef78edc |
->| eeccdb8d-d4b5-46b8-a2f1-44fcd83ffc6d |
->| 21eb8da7-3c86-4b6b-a97c-b8542951d9ba |
->| 450e7012-61db-4aa1-97af-30a0f566f0e7 |
->| d656a2a8-2613-486e-b46e-9f9530660d74 |
->| 407d425e-9b29-49e4-9499-aff692d4e251 |
->| 06a06a43-421a-4de9-b2d8-6575b2910b93 |
->| e9e1233b-9d11-43c5-8760-84fcfa64de2f |
+>| 111e7107-48da-4645-8c2c-a8285d113eac |
+>| 4ad8f58f-d63b-4555-9d5e-62529e6ac089 |
+>| 909075e0-b450-400c-b641-dd04e46b65bf |
+>| f6387ac3-342a-41e7-bcd4-14fe5525dc5c |
+>| e15caa93-a01f-49f4-b6be-5c666b0e08c7 |
+>| 36ad7331-149d-4419-947d-ff0d3dd23cf1 |
+>| a893fc4f-f405-4cb2-a6c3-698dfad6045d |
+>| 47f40fcd-b7fd-48d7-abbc-05fb447acee2 |
+>| 8967788b-f746-4e5b-9174-c145196eddb1 |
+>| 1d743e24-a524-417f-9747-c967e0328b48 |
+>| be14bcb5-363e-4547-9b7f-923578a16ae6 |
+>| a4f4d846-9057-41ae-b558-0dd47134a72a |
+>| 2c98e5f6-4988-4fe3-bbac-43acbbfaaea2 |
+>| 7e4bd0cf-b04e-446f-ba94-16e1811740e9 |
+>| 76e9ed8a-4f59-42ad-8135-9b1781568935 |
+>| 04e953e2-153a-488b-9a53-8701d16431c4 |
+>| cd44255c-0496-4663-a6ac-9662ad4a13ef |
+>| 92e5d6ec-1c60-4c7b-ad97-7610c1e7ed90 |
+>| 8ded0056-8853-443f-9f99-3fff30c08cd6 |
+>| 5ced0d93-4237-461a-ba12-6513d5674fb0 |
+>| 1de985b2-2d45-4d0e-ac86-d25c5b7d8803 |
+>| b19000dd-1eda-4b85-a45e-334478f0755f |
+>| ae52c4d7-689f-4274-8f74-6de74bd3652c |
+>| 70fe39d6-4e8e-4c48-8207-12d5930544f4 |
+>| 011e1de5-c985-462a-8252-e291acaed012 |
+>| 174d5a7c-b004-4b9c-96fb-868c043daa3c |
+>| 12b576a1-410e-4c46-bd95-61b2bebb4ceb |
+>| 8f1b645a-6f81-43fc-86f3-23c2213359b6 |
+>| 12463d5a-4d2c-4c5b-9640-88e4cdee245c |
+>| e1d2697f-4c40-46d0-b8b3-90a51e732814 |
+>| e9dea979-039c-409a-8a60-fe1fe44fa3c2 |
+>| 66ca4a44-a3ac-482b-9d7a-300d621eb8a9 |
+>| a42ef950-fd27-42c9-af3d-8d466bf73d5d |
+>| 73ee61f0-c480-4145-a00b-d8c3a55de791 |
+>| e73b8002-b47d-4fb3-9dae-34a99dd21943 |
+>| 5b812a3b-624d-4cf7-a2ed-f2d1f469b0a4 |
+>| 4f6e37db-8c4f-4e2f-9b27-b8ae68d0c38b |
+>| df9cf783-d706-46ed-8be7-680a0830d3eb |
+>| d2aa7f7c-dbf4-405f-9652-b6bb776164f0 |
+>| de72022b-8070-4151-a826-16eb913db2cd |
+>| 32501bb7-22b8-4d79-aa7b-0b565c4bd806 |
+>| f89f3515-6d27-4616-a1bb-7dc008aa1562 |
+>| 1ba37caf-c969-43fa-b037-6c164535b512 |
+>| 78b709c4-8037-43dc-8bf0-dfd94629674f |
+>| 88096e2b-4feb-4071-807e-96e3dfc080ff |
+>| 1a7576fc-2cc1-41c6-85b6-3728d4d44f3d |
+>| b4414e3b-b5ec-4cc8-9db2-35a7a2057e46 |
+>| c6a82de6-cfef-444e-9b0f-b124b5599b7b |
+>| 185971cc-ebbb-453d-b826-bffc59836be1 |
+>| 2a45ec38-d060-4aae-9a9c-730f49966fdc |
 
 
 ### qradar-search-create
@@ -1422,7 +1424,7 @@ Creates a new asynchronous Ariel search. Returns the search ID. Search status an
 {
     "QRadar": {
         "Search": {
-            "ID": "f9772703-8c15-4e0d-8756-d2d9ce96a4d9",
+            "ID": "68d4e4e6-f512-4171-b130-d671334cb47d",
             "Status": "WAIT"
         }
     }
@@ -1434,7 +1436,7 @@ Creates a new asynchronous Ariel search. Returns the search ID. Search status an
 >### Create Search
 >|ID|Status|
 >|---|---|
->| f9772703-8c15-4e0d-8756-d2d9ce96a4d9 | WAIT |
+>| 68d4e4e6-f512-4171-b130-d671334cb47d | WAIT |
 
 
 ### qradar-search-status-get
@@ -1459,28 +1461,6 @@ Retrieves status information for a search, based on the search ID.
 | QRadar.Search.Status | String | Status of the search. | 
 | QRadar.Search.ID | String | ID of the search. | 
 
-#### Command example
-```!qradar-search-status-get search_id=36227863-bc6a-488f-9aa4-0f9c6f767655```
-#### Context Example
-```json
-{
-    "QRadar": {
-        "Search": {
-            "ID": "36227863-bc6a-488f-9aa4-0f9c6f767655",
-            "Status": "COMPLETED"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Search Status For Search ID 36227863-bc6a-488f-9aa4-0f9c6f767655
->|ID|Status|
->|---|---|
->| 36227863-bc6a-488f-9aa4-0f9c6f767655 | COMPLETED |
-
-
 ### qradar-search-results-get
 
 ***
@@ -1503,208 +1483,6 @@ Retrieves search results.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.Search.Result | Unknown | The result of the search. | 
-
-#### Command example
-```!qradar-search-results-get search_id=36227863-bc6a-488f-9aa4-0f9c6f767655 range=0-3```
-#### Context Example
-```json
-{
-    "QRadar": {
-        "Search": {
-            "Result": {
-                "events": [
-                    {
-                        "categoryname_category": "Object Download Attempt",
-                        "categoryname_highlevelcategory": "Audit",
-                        "credibility": 10,
-                        "destinationgeographiclocation": "other",
-                        "destinationip": "1.1.1.1",
-                        "destinationport": 0,
-                        "destinationv6": "0:0:0:0:0:0:0:0",
-                        "devicetime": "2023-03-15T15:46:04+00:00",
-                        "eventDirection": "R2L",
-                        "eventcount": 1,
-                        "logsourcename_logsourceid": "Experience Center: AWS Syslog @ 1.1.1.1",
-                        "logsourcetypename_devicetype": "Universal DSM",
-                        "magnitude": 10,
-                        "postNatDestinationIP": "1.1.1.1",
-                        "postNatDestinationPort": 0,
-                        "postNatSourceIP": "1.1.1.1",
-                        "postNatSourcePort": 0,
-                        "preNatDestinationPort": 0,
-                        "preNatSourceIP": "1.1.1.1",
-                        "preNatSourcePort": 0,
-                        "protocolname_protocolid": "Reserved",
-                        "qiddescription_qid": "Get Object",
-                        "qidname_qid": "Get Object",
-                        "rulename_creEventList": [
-                            "Source Asset Weight is Low",
-                            "EC: AWS Cloud - An AWS API Has Been Invoked From Kali",
-                            "EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket",
-                            "Destination Asset Weight is Low",
-                            "Context is Remote to Local",
-                            "ECBB:CategoryDefinition: Destination IP is a Third Country/Region"
-                        ],
-                        "severity": 10,
-                        "sourceMAC": "00:00:00:00:00:00",
-                        "sourcegeographiclocation": "Europe.RussianFederation",
-                        "sourceip": "1.1.1.1",
-                        "sourceport": 0,
-                        "sourcev6": "0:0:0:0:0:0:0:0",
-                        "starttime": "2023-07-26T15:31:00.631000+00:00",
-                        "username": "userD",
-                        "utf8_payload": "<182>Mar 15 15:46:04 1.1.1.1 {\"eventVersion\":\"1.05\",\"userIdentity\":{\"type\":\"IAMUser\",\"arn\":\"arn:aws:iam::911534260404:user/user22\",\"accountId\":\"911534260404\",\"accessKeyId\":\"ASIA5IO5NAC2OIBXQ4NY\",\"userName\":\"userD\",\"invokedBy\":\"userD\"},\"eventSource\":\"s3.amazonaws.com\",\"eventName\":\"GetObject\",\"awsRegion\":\"us-west-2\",\"sourceIPAddress\":\"1.1.1.1\",\"userAgent\":\"[aws-cli/1.15.57 Python/2.7.14+ Linux/4.15.0-kali2-amd64 botocore/1.10.56]\",\"requestParameters\":{\"X-Amz-Date\":\"20180609T210803Z\",\"bucketName\":\"db_backups2032\",\"response-content-disposition\":\"inline\",\"X-Amz-Algorithm\":\"AWS4-HMAC-SHA256\",\"X-Amz-SignedHeaders\":\"host\",\"X-Amz-Expires\":\"300\",\"key\":\"fullDB_dump30102018.dump\"},\"resources\":[{\"type\":\"AWS::s3::Object\",\"ARN\":\"arn:aws:s3:::mystorage2007/fullDB_dump30102018.dump\"},{\"accountId\":\"911534260404\",\"type\":\"AWS::s3::Bucket\",\"ARN\":\"arn:aws:s3:::db_backups2032\"}]},\"ExperienceCenter\":\"AWSCloud\" "
-                    },
-                    {
-                        "categoryname_category": "Suspicious Activity",
-                        "categoryname_highlevelcategory": "Suspicious Activity",
-                        "credibility": 10,
-                        "destinationgeographiclocation": "other",
-                        "destinationip": "1.1.1.1",
-                        "destinationport": 0,
-                        "destinationv6": "0:0:0:0:0:0:0:0",
-                        "devicetime": "2023-07-26T15:31:00.732000+00:00",
-                        "eventDirection": "R2L",
-                        "eventcount": 1,
-                        "logsourcename_logsourceid": "Custom Rule Engine-8 :: ip-172-31-17-10",
-                        "logsourcetypename_devicetype": "Custom Rule Engine",
-                        "magnitude": 7,
-                        "postNatDestinationIP": "1.1.1.1",
-                        "postNatDestinationPort": 0,
-                        "postNatSourceIP": "1.1.1.1",
-                        "postNatSourcePort": 0,
-                        "preNatDestinationPort": 0,
-                        "preNatSourceIP": "1.1.1.1",
-                        "preNatSourcePort": 0,
-                        "protocolname_protocolid": "Reserved",
-                        "qiddescription_qid": "A Database backup Has Been Downloaded From S3 Bucket",
-                        "qidname_qid": "A Database backup Has Been Downloaded From S3 Bucket - AWSCloud (Exp Center)",
-                        "rulename_creEventList": [
-                            "EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket",
-                            "BB:CategoryDefinition: Suspicious Event Categories",
-                            "BB:CategoryDefinition: Suspicious Events",
-                            "Source Asset Weight is Low",
-                            "Destination Asset Weight is Low",
-                            "Load Basic Building Blocks",
-                            "Context is Remote to Local",
-                            "ECBB:CategoryDefinition: Destination IP is a Third Country/Region"
-                        ],
-                        "severity": 5,
-                        "sourceMAC": "00:00:00:00:00:00",
-                        "sourcegeographiclocation": "Europe.RussianFederation",
-                        "sourceip": "1.1.1.1",
-                        "sourceport": 0,
-                        "sourcev6": "0:0:0:0:0:0:0:0",
-                        "starttime": "2023-07-26T15:31:00.732000+00:00",
-                        "username": "userD",
-                        "utf8_payload": "A Database backup Has Been Downloaded From S3 Bucket - AWSCloud (Exp Center)\tA Database backup Has Been Downloaded From S3 Bucket"
-                    },
-                    {
-                        "categoryname_category": "Information",
-                        "categoryname_highlevelcategory": "System",
-                        "credibility": 10,
-                        "destinationgeographiclocation": "other",
-                        "destinationip": "1.1.1.1",
-                        "destinationport": 0,
-                        "destinationv6": "0:0:0:0:0:0:0:0",
-                        "devicetime": "2015-03-15T15:38:28+00:00",
-                        "eventDirection": "L2L",
-                        "eventcount": 1,
-                        "logsourcename_logsourceid": "Experience Center: Cisco IronPort @ 1.1.1.1",
-                        "logsourcetypename_devicetype": "Cisco IronPort",
-                        "magnitude": 10,
-                        "postNatDestinationIP": "1.1.1.1",
-                        "postNatDestinationPort": 0,
-                        "postNatSourceIP": "1.1.1.1",
-                        "postNatSourcePort": 0,
-                        "preNatDestinationPort": 0,
-                        "preNatSourceIP": "1.1.1.1",
-                        "preNatSourcePort": 0,
-                        "protocolname_protocolid": "Reserved",
-                        "qiddescription_qid": "Mail server info message",
-                        "qidname_qid": "Mail Server Info Message",
-                        "rulename_creEventList": [
-                            "Source Asset Weight is Low",
-                            "Destination Asset Weight is Low",
-                            "EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender",
-                            "BB:DeviceDefinition: Mail",
-                            "BB:DeviceDefinition: Proxy",
-                            "Load Basic Building Blocks",
-                            "Context is Local to Local",
-                            "ECBB:CategoryDefinition: Destination IP is a Third Country/Region"
-                        ],
-                        "severity": 10,
-                        "sourceMAC": "00:00:00:00:00:00",
-                        "sourcegeographiclocation": "other",
-                        "sourceip": "1.1.1.1",
-                        "sourceport": 0,
-                        "sourcev6": "0:0:0:0:0:0:0:0",
-                        "starttime": "2023-07-26T15:31:06.276000+00:00",
-                        "username": "userD",
-                        "utf8_payload": "<182>Mar 15 15:38:28 1.1.1.1 13:46:14 2015 Info: MID 987654321 ICID 351684134 From: <admin.AWS.console.management.aws.amazon.com@yoyobadh.date> To: <userD@example.com> Subject 'Urgent: AWS bill' attachment 'critical AWS bill.docx' ExperienceCenter=AWSCloud "
-                    },
-                    {
-                        "categoryname_category": "Process Creation Success",
-                        "categoryname_highlevelcategory": "System",
-                        "credibility": 10,
-                        "destinationgeographiclocation": "other",
-                        "destinationip": "1.1.1.1",
-                        "destinationport": 0,
-                        "destinationv6": "0:0:0:0:0:0:0:0",
-                        "devicetime": "2023-03-15T15:42:54+00:00",
-                        "eventDirection": "R2R",
-                        "eventcount": 1,
-                        "logsourcename_logsourceid": "Experience Center: WindowsAuthServer @ IE8WIN7",
-                        "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
-                        "magnitude": 10,
-                        "postNatDestinationIP": "1.1.1.1",
-                        "postNatDestinationPort": 0,
-                        "postNatSourceIP": "1.1.1.1",
-                        "postNatSourcePort": 0,
-                        "preNatDestinationPort": 0,
-                        "preNatSourceIP": "1.1.1.1",
-                        "preNatSourcePort": 0,
-                        "protocolname_protocolid": "Reserved",
-                        "qiddescription_qid": "The process creation event provides extended information about a newly created process.",
-                        "qidname_qid": "Process Create",
-                        "rulename_creEventList": [
-                            "BB:NetworkDefinition: Honeypot like Addresses",
-                            "BB:DeviceDefinition: Operating System",
-                            "Source Asset Weight is Low",
-                            "Source Address is a Bogon IP",
-                            "Destination Asset Weight is Low",
-                            "BB:NetworkDefinition: Darknet Addresses",
-                            "Load Basic Building Blocks",
-                            "EC: AWS Cloud - Microsoft Word Launched a Command Shell",
-                            "ECBB:CategoryDefinition: Destination IP is a Third Country/Region"
-                        ],
-                        "severity": 10,
-                        "sourceMAC": "00:00:00:00:00:00",
-                        "sourcegeographiclocation": "other",
-                        "sourceip": "1.1.1.1",
-                        "sourceport": 0,
-                        "sourcev6": "0:0:0:0:0:0:0:0",
-                        "starttime": "2023-07-26T15:31:06.635000+00:00",
-                        "username": "userD",
-                        "utf8_payload": "<182>Mar 15 15:42:54 IE8WIN7 AgentDevice=WindowsLog\tAgentLogFile=Microsoft-Windows-Sysmon/Operational\tPluginVersion=1.1.1.1\tSource=Microsoft-Windows-Sysmon\tComputer=IE8WIN7\tOriginatingComputer=IE8WIN7\tUser=userD\tDomain=NT AUTHORITY\tEventID=1\tEventIDCode=1\tEventType=4\tEventCategory=4\tRecordNumber=32642\tLevel=Informational\tKeywords=0x8000000000000000\tTask=SysmonTask-SYSMON_CREATE_PROCESS\tOpcode=Info\tExperienceCenter=AWSCloud\tMessage=Process Create: UtcTime: 2018-10-28 16:01:32.836 Image: C:\\Windows\\System32\\cmd.exe CommandLine: C:\\Windows\\System32\\cmd.exe CurrentDirectory: C:\\Users\\userD\\ User: domain\\userD IntegrityLevel: Medium Hashes: MD5=6242E3D67787CCBF4E06AD2982853144 ParentImage: C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE ParentCommandLine: \"C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE\" "
-                    }
-                ]
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Search Results For Search ID 36227863-bc6a-488f-9aa4-0f9c6f767655
->|categoryname_category|categoryname_highlevelcategory|credibility|destinationgeographiclocation|destinationip|destinationport|destinationv6|devicetime|eventDirection|eventcount|logsourcename_logsourceid|logsourcetypename_devicetype|magnitude|postNatDestinationIP|postNatDestinationPort|postNatSourceIP|postNatSourcePort|preNatDestinationPort|preNatSourceIP|preNatSourcePort|protocolname_protocolid|qiddescription_qid|qidname_qid|rulename_creEventList|severity|sourceMAC|sourcegeographiclocation|sourceip|sourceport|sourcev6|starttime|username|utf8_payload|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Object Download Attempt | Audit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2023-03-15T15:46:04+00:00 | R2L | 1 | Experience Center: AWS Syslog @ 1.1.1.1 | Universal DSM | 10 | 1.1.1.1 | 0 | 1.1.1.1 | 0 | 0 | 1.1.1.1 | 0 | Reserved | Get Object | Get Object | Source Asset Weight is Low,<br/>EC: AWS Cloud - An AWS API Has Been Invoked From Kali,<br/>EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket,<br/>Destination Asset Weight is Low,<br/>Context is Remote to Local,<br/>ECBB:CategoryDefinition: Destination IP is a Third Country/Region | 10 | 00:00:00:00:00:00 | Europe.RussianFederation | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2023-07-26T15:31:00.631000+00:00 | userD | <182>Mar 15 15:46:04 1.1.1.1 {"eventVersion":"1.05","userIdentity":{"type":"IAMUser","arn":"arn:aws:iam::911534260404:user/user22","accountId":"911534260404","accessKeyId":"ASIA5IO5NAC2OIBXQ4NY","userName":"userD","invokedBy":"userD"},"eventSource":"s3.amazonaws.com","eventName":"GetObject","awsRegion":"us-west-2","sourceIPAddress":"1.1.1.1","userAgent":"[aws-cli/1.15.57 Python/2.7.14+ Linux/4.15.0-kali2-amd64 botocore/1.10.56]","requestParameters":{"X-Amz-Date":"20180609T210803Z","bucketName":"db_backups2032","response-content-disposition":"inline","X-Amz-Algorithm":"AWS4-HMAC-SHA256","X-Amz-SignedHeaders":"host","X-Amz-Expires":"300","key":"fullDB_dump30102018.dump"},"resources":[{"type":"AWS::s3::Object","ARN":"arn:aws:s3:::mystorage2007/fullDB_dump30102018.dump"},{"accountId":"911534260404","type":"AWS::s3::Bucket","ARN":"arn:aws:s3:::db_backups2032"}]},"ExperienceCenter":"AWSCloud"  |
->| Suspicious Activity | Suspicious Activity | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2023-07-26T15:31:00.732000+00:00 | R2L | 1 | Custom Rule Engine-8 :: ip-172-31-17-10 | Custom Rule Engine | 7 | 1.1.1.1 | 0 | 1.1.1.1 | 0 | 0 | 1.1.1.1 | 0 | Reserved | A Database backup Has Been Downloaded From S3 Bucket | A Database backup Has Been Downloaded From S3 Bucket - AWSCloud (Exp Center) | EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket,<br/>BB:CategoryDefinition: Suspicious Event Categories,<br/>BB:CategoryDefinition: Suspicious Events,<br/>Source Asset Weight is Low,<br/>Destination Asset Weight is Low,<br/>Load Basic Building Blocks,<br/>Context is Remote to Local,<br/>ECBB:CategoryDefinition: Destination IP is a Third Country/Region | 5 | 00:00:00:00:00:00 | Europe.RussianFederation | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2023-07-26T15:31:00.732000+00:00 | userD | A Database backup Has Been Downloaded From S3 Bucket - AWSCloud (Exp Center)	A Database backup Has Been Downloaded From S3 Bucket |
->| Information | System | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2015-03-15T15:38:28+00:00 | L2L | 1 | Experience Center: Cisco IronPort @ 1.1.1.1 | Cisco IronPort | 10 | 1.1.1.1 | 0 | 1.1.1.1 | 0 | 0 | 1.1.1.1 | 0 | Reserved | Mail server info message | Mail Server Info Message | Source Asset Weight is Low,<br/>Destination Asset Weight is Low,<br/>EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender,<br/>BB:DeviceDefinition: Mail,<br/>BB:DeviceDefinition: Proxy,<br/>Load Basic Building Blocks,<br/>Context is Local to Local,<br/>ECBB:CategoryDefinition: Destination IP is a Third Country/Region | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2023-07-26T15:31:06.276000+00:00 | userD | <182>Mar 15 15:38:28 1.1.1.1 13:46:14 2015 Info: MID 987654321 ICID 351684134 From: <admin.AWS.console.management.aws.amazon.com@yoyobadh.date> To: <userD@example.com> Subject 'Urgent: AWS bill' attachment 'critical AWS bill.docx' ExperienceCenter=AWSCloud  |
->| Process Creation Success | System | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2023-03-15T15:42:54+00:00 | R2R | 1 | Experience Center: WindowsAuthServer @ IE8WIN7 | Microsoft Windows Security Event Log | 10 | 1.1.1.1 | 0 | 1.1.1.1 | 0 | 0 | 1.1.1.1 | 0 | Reserved | The process creation event provides extended information about a newly created process. | Process Create | BB:NetworkDefinition: Honeypot like Addresses,<br/>BB:DeviceDefinition: Operating System,<br/>Source Asset Weight is Low,<br/>Source Address is a Bogon IP,<br/>Destination Asset Weight is Low,<br/>BB:NetworkDefinition: Darknet Addresses,<br/>Load Basic Building Blocks,<br/>EC: AWS Cloud - Microsoft Word Launched a Command Shell,<br/>ECBB:CategoryDefinition: Destination IP is a Third Country/Region | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2023-07-26T15:31:06.635000+00:00 | userD | <182>Mar 15 15:42:54 IE8WIN7 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=IE8WIN7	OriginatingComputer=IE8WIN7	User=userD	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=4	RecordNumber=32642	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	ExperienceCenter=AWSCloud	Message=Process Create: UtcTime: 2018-10-28 16:01:32.836 Image: C:\Windows\System32\cmd.exe CommandLine: C:\Windows\System32\cmd.exe CurrentDirectory: C:\Users\userD\ User: domain\userD IntegrityLevel: Medium Hashes: MD5=6242E3D67787CCBF4E06AD2982853144 ParentImage: C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE ParentCommandLine: "C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE"  |
-
 
 ### qradar-reference-sets-list
 
@@ -1824,7 +1602,7 @@ Creates a new reference set.
 {
     "QRadar": {
         "Reference": {
-            "CreationTime": "2023-07-30T09:52:12.945000+00:00",
+            "CreationTime": "2023-08-02T08:39:30.887000+00:00",
             "ElementType": "IP",
             "Name": "Malicious IPs",
             "NumberOfElements": 0,
@@ -1840,7 +1618,7 @@ Creates a new reference set.
 >### Reference Set Create
 >|Name|ElementType|TimeToLive|TimeoutType|CreationTime|NumberOfElements|
 >|---|---|---|---|---|---|
->| Malicious IPs | IP | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN | 2023-07-30T09:52:12.945000+00:00 | 0 |
+>| Malicious IPs | IP | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN | 2023-08-02T08:39:30.887000+00:00 | 0 |
 
 
 ### qradar-reference-set-delete
@@ -1891,15 +1669,16 @@ Adds or updates an element in a reference set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Reference.completed | Number | The timestamp time of the task. | 
-| QRadar.Reference.created | Number | The timestamp the task was created. | 
-| QRadar.Reference.created_by | String | The use the task was created by. | 
-| QRadar.Reference.error_code | Number | The error code of the task creation. | 
-| QRadar.Reference.error_message | String | The error message of the task creation, if failed. | 
-| QRadar.Reference.modified | Number | The timestamp this task was modified. | 
-| QRadar.Reference.name | String | The name of the reference set. | 
-| QRadar.Reference.started | Number | The timestamp the task was started. | 
-| QRadar.Reference.status | String | The status of the task. One of CANCELLED, CANCELING, CANCEL_REQUESTED, COMPLETED, CONFLICT, EXCEPTION, INITIALIZING, INTERRUPTED, PAUSED, PROCESSING, QUEUED, RESUMING. | 
+| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". | 
+| QRadar.Reference.NumberOfElements | Number | Number of elements in the reference set. | 
+| QRadar.Reference.TimeToLive | String | Time left to live for the reference. | 
+| QRadar.Reference.Data.LastSeen | Date | Date when this data was last seen. | 
+| QRadar.Reference.Data.FirstSeen | Date | Date when this data was first seen. | 
+| QRadar.Reference.Data.Source | String | Source of this data. | 
+| QRadar.Reference.Data.Value | String | Data value. | 
+| QRadar.Reference.CreationTime | Date | Date when the reference set was created. | 
+| QRadar.Reference.Name | String | Name of the reference set. | 
+| QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
 #### Command example
 ```!qradar-reference-set-value-upsert ref_name="Malicious IPs" value="1.1.1.1,1.1.1.1,1.1.1.1"```
@@ -1908,7 +1687,32 @@ Adds or updates an element in a reference set.
 {
     "QRadar": {
         "Reference": {
-            "Name": "Reference Data Collection Bulk Update Task"
+            "CreationTime": "2023-08-02T08:39:30.887000+00:00",
+            "Data": [
+                {
+                    "first_seen": 1690965572017,
+                    "last_seen": 1690965572017,
+                    "source": "reference data api",
+                    "value": "1.1.1.1"
+                },
+                {
+                    "first_seen": 1690965572017,
+                    "last_seen": 1690965572017,
+                    "source": "reference data api",
+                    "value": "1.1.1.1"
+                },
+                {
+                    "first_seen": 1690965572017,
+                    "last_seen": 1690965572017,
+                    "source": "reference data api",
+                    "value": "1.1.1.1"
+                }
+            ],
+            "ElementType": "IP",
+            "Name": "Malicious IPs",
+            "NumberOfElements": 3,
+            "TimeToLive": "1 years 0 mons 0 days 0 hours 0 mins 0.0 secs",
+            "TimeoutType": "FIRST_SEEN"
         }
     }
 }
@@ -1917,9 +1721,9 @@ Adds or updates an element in a reference set.
 #### Human Readable Output
 
 >### Reference Update Create
->|Name|
->|---|
->| Reference Data Collection Bulk Update Task |
+>|CreationTime|Data|ElementType|Name|NumberOfElements|TimeToLive|TimeoutType|
+>|---|---|---|---|---|---|---|
+>| 2023-08-02T08:39:30.887000+00:00 | {'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'},<br/>{'last_seen': 1690965572017, 'first_seen': 1690965572017, 'source': 'reference data api', 'value': '1.1.1.1'} | IP | Malicious IPs | 3 | 1 years 0 mons 0 days 0 hours 0 mins 0.0 secs | FIRST_SEEN |
 
 
 ### qradar-reference-set-value-delete
@@ -2032,47 +1836,16 @@ Uploads indicators to QRadar.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Reference.completed | Number | The timestamp time of the task. | 
-| QRadar.Reference.created | Number | The timestamp the task was created. | 
-| QRadar.Reference.created_by | String | The use the task was created by. | 
-| QRadar.Reference.error_code | Number | The error code of the task creation. | 
-| QRadar.Reference.error_message | String | The error message of the task creation, if failed. | 
-| QRadar.Reference.modified | Number | The timestamp this task was modified. | 
-| QRadar.Reference.name | String | The name of the reference set. | 
-| QRadar.Reference.started | Number | The timestamp the task was started. | 
-| QRadar.Reference.status | String | The status of the task. One of CANCELLED, CANCELING, CANCEL_REQUESTED, COMPLETED, CONFLICT, EXCEPTION, INITIALIZING, INTERRUPTED, PAUSED, PROCESSING, QUEUED, RESUMING. | 
-
-#### Command example
-```!qradar-indicators-upload ref_name="Mail Servers" limit=2 query="type:IP"```
-#### Context Example
-```json
-{
-    "QRadar": {
-        "Reference": {
-            "created": "2023-07-30T09:52:20.104000+00:00",
-            "created_by": "admin",
-            "id": 487,
-            "modified": 1690710740118,
-            "name": "Reference Data Collection Bulk Update Task",
-            "status": "QUEUED"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Indicators Upload For Reference Set Mail Servers
->|created|created_by|id|modified|name|status|
->|---|---|---|---|---|---|
->| 2023-07-30T09:52:20.104000+00:00 | admin | 487 | 1690710740118 | Reference Data Collection Bulk Update Task | QUEUED |
->
->### Indicators Uploaded
->|Indicator Type|Indicator Value|
->|---|---|
->| IP | 1.1.1.1 |
->| IP | 1.1.1.1 |
-
+| QRadar.Reference.TimeoutType | String | Timeout type of the reference set. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". | 
+| QRadar.Reference.NumberOfElements | Number | Number of elements in the reference set. | 
+| QRadar.Reference.TimeToLive | String | Time left to live for the reference. | 
+| QRadar.Reference.Data.LastSeen | Date | Date when this data was last seen. | 
+| QRadar.Reference.Data.FirstSeen | Date | Date when this data was first seen. | 
+| QRadar.Reference.Data.Source | String | Source of this data. | 
+| QRadar.Reference.Data.Value | String | Data value. | 
+| QRadar.Reference.CreationTime | Date | Date when the reference set was created. | 
+| QRadar.Reference.Name | String | Name of the reference set. | 
+| QRadar.Reference.ElementType | String | Type of the elements in the reference set. | 
 
 ### qradar-geolocations-for-ip
 
@@ -2264,19 +2037,19 @@ Retrieves a list of log sources.
             },
             {
                 "AutoDiscovered": false,
-                "CreationDate": "2022-11-21T18:45:24.619000+00:00",
-                "Credibility": 8,
-                "Description": "Custom Rule Engine",
+                "CreationDate": "2022-11-21T18:45:24.621000+00:00",
+                "Credibility": 10,
+                "Description": "System Notification",
                 "Enabled": true,
                 "Gateway": false,
                 "GroupIDs": [
                     0
                 ],
-                "ID": 63,
+                "ID": 65,
                 "Internal": true,
-                "LastEventTime": "2023-07-16T10:49:05.889000+00:00",
-                "ModifiedDate": "2022-11-21T18:45:24.619000+00:00",
-                "Name": "Custom Rule Engine-8 :: ip-172-31-17-10",
+                "LastEventTime": "2023-08-02T08:39:00.106000+00:00",
+                "ModifiedDate": "2022-11-21T18:45:24.621000+00:00",
+                "Name": "System Notification-2 :: ip-172-31-17-10",
                 "ProtocolParameters": [
                     {
                         "id": 0,
@@ -2292,15 +2065,9 @@ Retrieves a list of log sources.
                 "ProtocolTypeID": 0,
                 "Status": {
                     "last_updated": 0,
-                    "messages": [
-                        {
-                            "severity": "ERROR",
-                            "text": "Events have not been received from this Log Source in over 720 minutes."
-                        }
-                    ],
-                    "status": "ERROR"
+                    "status": "SUCCESS"
                 },
-                "TypeID": 18
+                "TypeID": 147
             },
             {
                 "AutoDiscovered": true,
@@ -2350,11 +2117,11 @@ Retrieves a list of log sources.
 #### Human Readable Output
 
 >### Log Sources List
->|ID|Name|Description|Enabled|Credibility|TypeID|ModifiedDate|ProtocolParameters|AutoDiscovered|Internal|GroupIDs|ProtocolTypeID|Gateway|LastEventTime|CreationDate|Status|
+>|ID|Name|Description|Internal|ProtocolParameters|Credibility|GroupIDs|CreationDate|Status|Enabled|ProtocolTypeID|AutoDiscovered|Gateway|TypeID|ModifiedDate|LastEventTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 68 | Search Results-2 :: ip-172-31-17-10 | Search Results | true | 10 | 355 | 2022-11-21T18:45:24.624000+00:00 | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | false | true | 0 | 0 | false | 1970-01-01T00:00:00+00:00 | 2022-11-21T18:45:24.624000+00:00 | last_updated: 0<br/>status: NA |
->| 63 | Custom Rule Engine-8 :: ip-172-31-17-10 | Custom Rule Engine | true | 8 | 18 | 2022-11-21T18:45:24.619000+00:00 | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | false | true | 0 | 0 | false | 2023-07-16T10:49:05.889000+00:00 | 2022-11-21T18:45:24.619000+00:00 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR |
->| 1262 | Experience Center: WindowsAuthServer @ 1.1.1.1 | WindowsAuthServer device | true | 5 | 12 | 2023-02-23T14:12:45.774000+00:00 | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | true | false | 0 | 0 | false | 2023-06-12T08:17:22.292000+00:00 | 2018-10-24T15:25:21.928000+00:00 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR |
+>| 68 | Search Results-2 :: ip-172-31-17-10 | Search Results | true | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 10 | 0 | 2022-11-21T18:45:24.624000+00:00 | last_updated: 0<br/>status: NA | true | 0 | false | false | 355 | 2022-11-21T18:45:24.624000+00:00 | 1970-01-01T00:00:00+00:00 |
+>| 65 | System Notification-2 :: ip-172-31-17-10 | System Notification | true | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 10 | 0 | 2022-11-21T18:45:24.621000+00:00 | last_updated: 0<br/>status: SUCCESS | true | 0 | false | false | 147 | 2022-11-21T18:45:24.621000+00:00 | 2023-08-02T08:39:00.106000+00:00 |
+>| 1262 | Experience Center: WindowsAuthServer @ 1.1.1.1 | WindowsAuthServer device | false | {'name': 'identifier', 'id': 0, 'value': '1.1.1.1'},<br/>{'name': 'incomingPayloadEncoding', 'id': 1, 'value': 'UTF-8'} | 5 | 0 | 2018-10-24T15:25:21.928000+00:00 | last_updated: 0<br/>messages: {'severity': 'ERROR', 'text': 'Events have not been received from this Log Source in over 720 minutes.'}<br/>status: ERROR | true | 0 | true | false | 12 | 2023-02-23T14:12:45.774000+00:00 | 2023-06-12T08:17:22.292000+00:00 |
 
 
 ### qradar-get-custom-properties
@@ -3299,7 +3066,7 @@ Polling command to search for events of a specific offense.
 {
     "QRadar": {
         "SearchEvents": {
-            "ID": "5182044b-958e-4030-b84b-6426193298a2",
+            "ID": "9c2c18a8-5e06-4edb-bc26-53ad44421148",
             "Status": "wait"
         }
     }
@@ -3308,7 +3075,7 @@ Polling command to search for events of a specific offense.
 
 #### Human Readable Output
 
->Search ID: 5182044b-958e-4030-b84b-6426193298a2
+>Search ID: 9c2c18a8-5e06-4edb-bc26-53ad44421148
 
 ### qradar-remote-network-cidr-create
 
@@ -3437,3 +3204,50 @@ Potentially harmful: This API command executes any waiting system deployments in
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | QRadar.deploy.status | String | The deployment status \(INITIALIZING, IN_PROGRESS, COMPLETE\). | 
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and IBM QRadar v3 corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in IBM QRadar v3.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and IBM QRadar v3.
+
+## Breaking changes from the previous version of this integration - IBM QRadar v3
+%%FILL HERE%%
+The following sections list the changes in this version.
+
+### Commands
+#### The following commands were removed in this version:
+* *commandName* - this command was replaced by XXX.
+* *commandName* - this command was replaced by XXX.
+
+### Arguments
+#### The following arguments were removed in this version:
+
+In the *commandName* command:
+* *argumentName* - this argument was replaced by XXX.
+* *argumentName* - this argument was replaced by XXX.
+
+#### The behavior of the following arguments was changed:
+
+In the *commandName* command:
+* *argumentName* - is now required.
+* *argumentName* - supports now comma separated values.
+
+### Outputs
+#### The following outputs were removed in this version:
+
+In the *commandName* command:
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+In the *commandName* command:
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+## Additional Considerations for this version
+%%FILL HERE%%
+* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
