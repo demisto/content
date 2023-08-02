@@ -21,6 +21,9 @@ from RankServiceOwners import (
 
 
 def test_load_pickled_xpanse_object(tmp_path):
+    """
+    Test that we can load an object from the given cache path
+    """
     # create temporary local cache
     cache_path = tmp_path / "tmp"
     cache_path.mkdir()
@@ -55,6 +58,9 @@ def test_load_pickled_xpanse_object(tmp_path):
     ),
 ])
 def test_canonicalize(owner, expected_out):
+    """
+    Test that we use the lower-cased email or name as the owner key
+    """
     assert _canonicalize(owner) == expected_out
 
 
@@ -143,6 +149,10 @@ def test_canonicalize(owner, expected_out):
     )
 ])
 def test_aggregate(owners, expected_out):
+    """
+    Test that owners are deduplicated first by email then by name, with the remaining
+    fields aggregated as expected (union over source, max over timestamp)
+    """
     assert sorted(aggregate(owners), key=lambda x: sorted(x.items())) == sorted(expected_out, key=lambda x: sorted(x.items()))
 
 
@@ -439,6 +449,12 @@ def test_score_model_inference_fail(mocker):
     ),
 ])
 def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
+    """
+    Test the main function with a variety of `owners` inputs
+
+    We mock out the model object and mock its predict function to return a single
+    score of 1.0, since all the above test cases only have one owner (after deduplication)
+    """
     # Construct payload
     arg_payload = {}
     arg_payload["owners"] = owners
@@ -466,6 +482,10 @@ def test_main(mocker, owners, asm_system_ids, expected_out, capfd):
 
 
 def test_main_error(mocker, capfd):
+    """
+    Test that if an unhandled exception is thrown in main (e.g. from score),
+    the script will fail with SystemExit
+    """
     score_mock = mocker.patch(
         'RankServiceOwners.score'
     )
@@ -537,6 +557,9 @@ def test_get_k():
     (5, 2, 1.0, 0.75, does_not_raise()),
 ])
 def test_get_k_bad_values(target_k, k_tol, a_tol, min_score_proportion, expected_raises):
+    """
+    Test that we raise ValueErrors on invalid parameters for get_k
+    """
     scores = [1, 1, 1]
     with expected_raises:
         assert _get_k(
@@ -550,6 +573,9 @@ def test_get_k_bad_values(target_k, k_tol, a_tol, min_score_proportion, expected
 
 # Featurization Pipeline Tests
 def test_get_num_distinct_reasons():
+    """
+    Verify get_num_distinct_reasons
+    """
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_num_reasons({
         'Name': 'Amira',
@@ -562,6 +588,9 @@ def test_get_num_distinct_reasons():
 
 
 def test_get_num_distinct_sources():
+    """
+    Verify get_num_distinct_sources
+    """
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_num_distinct_sources({
         'Name': 'Amira',
@@ -574,6 +603,9 @@ def test_get_num_distinct_sources():
 
 
 def test_get_min_path_length():
+    """
+    Verify get_min_path_length over a variey of path lengths
+    """
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_min_path_length({
         'Name': 'Amira',
@@ -603,6 +635,9 @@ def test_get_min_path_length():
 
 
 def test_get_name_similarity_person_asset():
+    """
+    Verify get_name_similarity_person_asset
+    """
     owner = {
         'Name': 'Amira Muhammad',
         'Email': 'amuhammad@example.com',
@@ -643,6 +678,9 @@ def test_get_name_similarity_person_asset():
 
 
 def test_get_in_cmdb():
+    """
+    Verify get_in_cmdb
+    """
     # CMDB attested
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_in_cmdb({
@@ -665,6 +703,9 @@ def test_get_in_cmdb():
 
 
 def test_get_in_logs():
+    """
+    Verify get_in_logs
+    """
     # Splunk attested
     pipeline = OwnerFeaturizationPipeline()
     out = pipeline.get_in_logs({
