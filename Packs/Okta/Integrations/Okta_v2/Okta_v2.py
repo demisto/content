@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import urllib3
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
@@ -1394,7 +1396,10 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        if "E0000007" in str(e):
+            return_outputs(readable_output="User does not exist", outputs={}, raw_response="User does not exist")
+        else:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

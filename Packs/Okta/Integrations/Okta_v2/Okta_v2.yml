@@ -1,7 +1,4 @@
 category: Authentication & Identity Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Okta v2
   version: -1
@@ -17,6 +14,7 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - display: API Token (see detailed instructions)
   name: apitoken
   type: 4
@@ -212,10 +210,8 @@ script:
     - default: true
       description: Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required.
       name: term
-      required: false
     - description: Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required.
       name: advanced_search
-      required: false
     - description: The maximum number of results to return. The default and maximum is 200.
       name: limit
     - auto: PREDEFINED
@@ -1408,7 +1404,7 @@ script:
     name: okta-assign-group-to-app
   dockerimage: demisto/python3:3.10.12.66339
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
