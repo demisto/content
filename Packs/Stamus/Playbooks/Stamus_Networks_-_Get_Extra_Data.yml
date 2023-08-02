@@ -89,7 +89,7 @@ tasks:
       - "4"
     scriptarguments:
       ip:
-        simple: ${incident.labels.target}
+        simple: ${incident.stamustarget}
     separatecontext: false
     continueonerrortype: ""
     view: |-
