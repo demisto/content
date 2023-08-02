@@ -557,14 +557,9 @@ sync-buckets-between-projects:
   extends:
     - .bucket-upload-rule
   stage: upload-to-marketplace
-  needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
+  needs: []
   when: always
   script:
-    - |
-      if [[ $TEST_UPLOAD == "true" ]]; then
-        echo "Skipping syncing buckets in test upload-flow"
-        exit 0
-      fi
 
     - |
       if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]] || [[ -z "$GCS_XSOAR_CONTENT_PROD_KEY" ]]; then
