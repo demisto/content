@@ -1,6 +1,6 @@
 {
     "name": "CyberArk Enterprise Password Vault",
-    "description": "CyberArk Enterprise Password Vault enables organizations to secure, manage, automatically change and log all activities associated with all types of Privileged Passwords and SSH Keys.",
+    "description": "This pack contains modeling & parsing rules for CyberArk Enterprise Password Vault (EPV) audit event logs. ",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -12,7 +12,7 @@
     "tags": [],
     "useCases": [],
     "keywords": [ 
-        "EPV"
+        "EPV", "CyberArk", "Enterprise Password Vault", "Vault"
     ],
     "marketplaces": [
         "marketplacev2"
