@@ -53,4 +53,4 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 
 ---
 
-
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/panorama)
