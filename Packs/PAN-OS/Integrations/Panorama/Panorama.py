@@ -300,8 +300,7 @@ def http_request(uri: str, method: str, headers: dict = {},
 
     if result.status_code < 200 or result.status_code >= 300:
         raise Exception(
-            f'Request Failed. with status: {result.status_code}. Reason is: {result.reason}'
-        )
+            'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
     if is_pcap:
@@ -312,9 +311,8 @@ def http_request(uri: str, method: str, headers: dict = {},
     json_result = json.loads(xml2json(result.text))
 
     # handle raw response that does not contain the response key, e.g configuration export
-    if (
-        'response' not in json_result or '@code' not in json_result['response']
-    ) and json_result['response']['@status'] == 'success':
+    if ('response' not in json_result or '@code' not in json_result['response']) and \
+            not json_result['response']['@status'] != 'success':
         return json_result
 
     # handle non success
@@ -326,7 +324,8 @@ def http_request(uri: str, method: str, headers: dict = {},
                 raise Exception(
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
-            elif 'test -> url' in str(response_msg):
+            #  catch urlfiltering error and display a meaningful message
+            elif str(response_msg).find('test -> url') != -1:
                 if DEVICE_GROUP:
                     raise Exception('URL filtering commands are only available on Firewall devices.')
                 if 'Node can be at most 1278 characters' in response_msg:
@@ -334,19 +333,20 @@ def http_request(uri: str, method: str, headers: dict = {},
                 raise Exception('The URL filtering license is either expired or not active.'
                                 ' Please contact your PAN-OS representative.')
 
+            # catch non valid jobID errors and display a meaningful message
             elif isinstance(json_result['response']['msg']['line'], str) and \
                 json_result['response']['msg']['line'].find('job') != -1 and \
                 (json_result['response']['msg']['line'].find('not found') != -1
                  or json_result['response']['msg']['line'].find('No such query job')) != -1:
                 raise Exception('Invalid Job ID error: ' + json_result['response']['msg']['line'])
 
-            elif 'already at the' in str(json_result['response']['msg']['line']):
+            # catch already at the top/bottom error for rules and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('already at the') != -1:
                 return_results('Rule ' + str(json_result['response']['msg']['line']))
                 sys.exit(0)
 
-            elif 'already exists, ignore' in str(
-                json_result['response']['msg']['line']
-            ):
+            # catch already registered ip tags and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('already exists, ignore') != -1:
                 if isinstance(json_result['response']['msg']['line']['uid-response']['payload']['register']['entry'],
                               list):
                     ips = [o['@ip'] for o in
@@ -354,13 +354,11 @@ def http_request(uri: str, method: str, headers: dict = {},
                 else:
                     ips = json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
                 return_results(
-                    f'IP {str(ips)} already exist in the tag. All submitted IPs were not registered to the tag.'
-                )
+                    'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag.')
                 sys.exit(0)
 
-            elif 'Query timed out' in str(
-                json_result['response']['msg']['line']
-            ):
+            # catch timed out log queries and return this as an entry.note
+            elif str(json_result['response']['msg']['line']).find('Query timed out') != -1:
                 return_results(str(json_result['response']['msg']['line']) + '. Rerun the query.')
                 sys.exit(0)
 
@@ -602,15 +600,8 @@ def add_argument_yes_no(arg: Optional[str], field_name: str, option: bool = Fals
 
 def add_argument_target(arg: Optional[str], field_name: str) -> str:
     if arg:
-        return (
-            f'<{field_name}><devices>'
-            + '<entry name=\"'
-            + arg
-            + '\"/>'
-            + '</devices>'
-            + '</'
-            + field_name
-        ) + '>'
+        return '<' + field_name + '>' + '<devices>' + '<entry name=\"' + arg + '\"/>' + '</devices>' + '</' + \
+            field_name + '>'
     else:
         return ''
 
@@ -1896,17 +1887,15 @@ def panorama_get_address_group_command(args: dict):
 @logger
 def panorama_create_static_address_group(address_group_name: str, addresses: list,
                                          description: str | None = None, tags: list | None = None):
-    params = {
-        'action': 'set',
-        'type': 'config',
-        'xpath': f"{XPATH_OBJECTS}address-group/entry[@name='{address_group_name}']",
-        'key': API_KEY,
-        'element': "<static>"
-        + add_argument_list(addresses, 'member', True)
-        + "</static>"
-        + add_argument(description, 'description', False)
-        + add_argument_list(tags, 'tag', True),
-    }
+    params = {'action': 'set',
+              'type': 'config',
+              'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
+              'key': API_KEY,
+              'element': (
+                  "<static>" + add_argument_list(addresses, 'member', True)
+                  + "</static>" + add_argument(description, 'description', False)
+                  + add_argument_list(tags, 'tag', True)
+              )}
 
     result = http_request(
         URL,
@@ -3885,6 +3874,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
         params['action'] = 'set'
         params['element'] = '<profile-setting><group/></profile-setting>'
         values = [element_value]
+        result = http_request(URL, 'POST', body=params)
+
     else:
         params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
@@ -3904,7 +3895,7 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
                     raise Exception(f'The object: {element_to_change} must have at least one item.')
 
         params['element'] = add_argument_list(values, element_to_change, True) if 'element' not in params else params['element']
-    result = http_request(URL, 'POST', body=params)
+        result = http_request(URL, 'POST', body=params)
 
     rule_output = {
         'Name': rulename,
@@ -13986,6 +13977,7 @@ def main():  # pragma: no cover
         if command == 'test-module':
             panorama_test(params)
 
+        # Fetch incidents
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
@@ -14004,138 +13996,99 @@ def main():  # pragma: no cover
                                 'max_fetch_dict': next_max_fetch_dict})
             demisto.incidents(incident_entries_list)
 
-        elif command in ['panorama', 'pan-os']:
+        elif command == 'panorama' or command == 'pan-os':
             panorama_command(args)
 
-        elif command in ['panorama-commit', 'pan-os-commit']:
+        elif command == 'panorama-commit' or command == 'pan-os-commit':
             return_results(panorama_commit_command(args))
 
-        elif command in ['panorama-commit-status', 'pan-os-commit-status']:
+        elif command == 'panorama-commit-status' or command == 'pan-os-commit-status':
             panorama_commit_status_command(args)
 
-        elif command in [
-            'panorama-push-to-device-group',
-            'pan-os-push-to-device-group',
-        ]:
+        elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
             return_results(panorama_push_to_device_group_command(args))
         elif command == 'pan-os-push-to-template':
             panorama_push_to_template_command(args)
         elif command == 'pan-os-push-to-template-stack':
             panorama_push_to_template_stack_command(args)
-        elif command in ['panorama-push-status', 'pan-os-push-status']:
+        elif command == 'panorama-push-status' or command == 'pan-os-push-status':
             panorama_push_status_command(args)
 
-        elif command in ['panorama-list-addresses', 'pan-os-list-addresses']:
+        # Addresses commands
+        elif command == 'panorama-list-addresses' or command == 'pan-os-list-addresses':
             panorama_list_addresses_command(args)
 
-        elif command in ['panorama-get-address', 'pan-os-get-address']:
+        elif command == 'panorama-get-address' or command == 'pan-os-get-address':
             panorama_get_address_command(args)
 
-        elif command in ['panorama-create-address', 'pan-os-create-address']:
+        elif command == 'panorama-create-address' or command == 'pan-os-create-address':
             panorama_create_address_command(args)
 
         elif command == 'pan-os-edit-address':
             return_results(pan_os_edit_address_command(args))
 
-        elif command in ['panorama-delete-address', 'pan-os-delete-address']:
+        elif command == 'panorama-delete-address' or command == 'pan-os-delete-address':
             panorama_delete_address_command(args)
 
-        elif command in [
-            'panorama-list-address-groups',
-            'pan-os-list-address-groups',
-        ]:
+        # Address groups commands
+        elif command == 'panorama-list-address-groups' or command == 'pan-os-list-address-groups':
             panorama_list_address_groups_command(args)
 
-        elif command in [
-            'panorama-get-address-group',
-            'pan-os-get-address-group',
-        ]:
+        elif command == 'panorama-get-address-group' or command == 'pan-os-get-address-group':
             panorama_get_address_group_command(args)
 
-        elif command in [
-            'panorama-create-address-group',
-            'pan-os-create-address-group',
-        ]:
+        elif command == 'panorama-create-address-group' or command == 'pan-os-create-address-group':
             panorama_create_address_group_command(args)
 
-        elif command in [
-            'panorama-delete-address-group',
-            'pan-os-delete-address-group',
-        ]:
+        elif command == 'panorama-delete-address-group' or command == 'pan-os-delete-address-group':
             panorama_delete_address_group_command(args.get('name'))
 
-        elif command in [
-            'panorama-edit-address-group',
-            'pan-os-edit-address-group',
-        ]:
+        elif command == 'panorama-edit-address-group' or command == 'pan-os-edit-address-group':
             panorama_edit_address_group_command(args)
 
-        elif command in ['panorama-list-services', 'pan-os-list-services']:
+        # Services commands
+        elif command == 'panorama-list-services' or command == 'pan-os-list-services':
             panorama_list_services_command(args.get('tag'))
 
-        elif command in ['panorama-get-service', 'pan-os-get-service']:
+        elif command == 'panorama-get-service' or command == 'pan-os-get-service':
             panorama_get_service_command(args.get('name'))
 
-        elif command in ['panorama-create-service', 'pan-os-create-service']:
+        elif command == 'panorama-create-service' or command == 'pan-os-create-service':
             panorama_create_service_command(args)
 
-        elif command in ['panorama-delete-service', 'pan-os-delete-service']:
+        elif command == 'panorama-delete-service' or command == 'pan-os-delete-service':
             panorama_delete_service_command(args.get('name'))
 
-        elif command in [
-            'panorama-list-service-groups',
-            'pan-os-list-service-groups',
-        ]:
+        # Service groups commands
+        elif command == 'panorama-list-service-groups' or command == 'pan-os-list-service-groups':
             panorama_list_service_groups_command(args.get('tags'))
 
-        elif command in [
-            'panorama-get-service-group',
-            'pan-os-get-service-group',
-        ]:
+        elif command == 'panorama-get-service-group' or command == 'pan-os-get-service-group':
             panorama_get_service_group_command(args.get('name'))
 
-        elif command in [
-            'panorama-create-service-group',
-            'pan-os-create-service-group',
-        ]:
+        elif command == 'panorama-create-service-group' or command == 'pan-os-create-service-group':
             panorama_create_service_group_command(args)
 
-        elif command in [
-            'panorama-delete-service-group',
-            'pan-os-delete-service-group',
-        ]:
+        elif command == 'panorama-delete-service-group' or command == 'pan-os-delete-service-group':
             panorama_delete_service_group_command(args.get('name'))
 
-        elif command in [
-            'panorama-edit-service-group',
-            'pan-os-edit-service-group',
-        ]:
+        elif command == 'panorama-edit-service-group' or command == 'pan-os-edit-service-group':
             panorama_edit_service_group_command(args)
 
-        elif command in [
-            'panorama-get-custom-url-category',
-            'pan-os-get-custom-url-category',
-        ]:
+        # Custom Url Category commands
+        elif command == 'panorama-get-custom-url-category' or command == 'pan-os-get-custom-url-category':
             panorama_get_custom_url_category_command(args.get('name'))
 
-        elif command in [
-            'panorama-create-custom-url-category',
-            'pan-os-create-custom-url-category',
-        ]:
+        elif command == 'panorama-create-custom-url-category' or command == 'pan-os-create-custom-url-category':
             panorama_create_custom_url_category_command(args)
 
-        elif command in [
-            'panorama-delete-custom-url-category',
-            'pan-os-delete-custom-url-category',
-        ]:
+        elif command == 'panorama-delete-custom-url-category' or command == 'pan-os-delete-custom-url-category':
             panorama_delete_custom_url_category_command(args.get('name'))
 
-        elif command in [
-            'panorama-edit-custom-url-category',
-            'pan-os-edit-custom-url-category',
-        ]:
+        elif command == 'panorama-edit-custom-url-category' or command == 'pan-os-edit-custom-url-category':
             panorama_edit_custom_url_category_command(args)
 
+        # URL Filtering capabilities
         elif command == 'url':
             if USE_URL_FILTERING:  # default is false
                 panorama_get_url_category_command(
@@ -14147,7 +14100,7 @@ def main():  # pragma: no cover
                 )
             # do not error out
 
-        elif command in ['panorama-get-url-category', 'pan-os-get-url-category']:
+        elif command == 'panorama-get-url-category' or command == 'pan-os-get-url-category':
             panorama_get_url_category_command(
                 url_cmd='url',
                 url=args.get('url'),
@@ -14157,10 +14110,7 @@ def main():  # pragma: no cover
                 reliability=reliability
             )
 
-        elif command in [
-            'panorama-get-url-category-from-cloud',
-            'pan-os-get-url-category-from-cloud',
-        ]:
+        elif command == 'panorama-get-url-category-from-cloud' or command == 'pan-os-get-url-category-from-cloud':
             panorama_get_url_category_command(
                 url_cmd='url-info-cloud',
                 url=args.get('url'),
@@ -14169,10 +14119,7 @@ def main():  # pragma: no cover
                 reliability=reliability
             )
 
-        elif command in [
-            'panorama-get-url-category-from-host',
-            'pan-os-get-url-category-from-host',
-        ]:
+        elif command == 'panorama-get-url-category-from-host' or command == 'pan-os-get-url-category-from-host':
             panorama_get_url_category_command(
                 url_cmd='url-info-host',
                 url=args.get('url'),
@@ -14181,355 +14128,253 @@ def main():  # pragma: no cover
                 reliability=reliability
             )
 
-        elif command in ['panorama-get-url-filter', 'pan-os-get-url-filter']:
+        # URL Filter
+        elif command == 'panorama-get-url-filter' or command == 'pan-os-get-url-filter':
             panorama_get_url_filter_command(args.get('name'))
 
-        elif command in [
-            'panorama-create-url-filter',
-            'pan-os-create-url-filter',
-        ]:
+        elif command == 'panorama-create-url-filter' or command == 'pan-os-create-url-filter':
             panorama_create_url_filter_command(args)
 
-        elif command in ['panorama-edit-url-filter', 'pan-os-edit-url-filter']:
+        elif command == 'panorama-edit-url-filter' or command == 'pan-os-edit-url-filter':
             panorama_edit_url_filter_command(args)
 
-        elif command in [
-            'panorama-delete-url-filter',
-            'pan-os-delete-url-filter',
-        ]:
+        elif command == 'panorama-delete-url-filter' or command == 'pan-os-delete-url-filter':
             panorama_delete_url_filter_command(demisto.args().get('name'))
 
-        elif command in ['panorama-list-edls', 'pan-os-list-edls']:
+        # EDL
+        elif command == 'panorama-list-edls' or command == 'pan-os-list-edls':
             panorama_list_edls_command()
 
-        elif command in ['panorama-get-edl', 'pan-os-get-edl']:
+        elif command == 'panorama-get-edl' or command == 'pan-os-get-edl':
             panorama_get_edl_command(demisto.args().get('name'))
 
-        elif command in ['panorama-create-edl', 'pan-os-create-edl']:
+        elif command == 'panorama-create-edl' or command == 'pan-os-create-edl':
             panorama_create_edl_command(args)
 
-        elif command in ['panorama-edit-edl', 'pan-os-edit-edl']:
+        elif command == 'panorama-edit-edl' or command == 'pan-os-edit-edl':
             panorama_edit_edl_command(args)
 
-        elif command in ['panorama-delete-edl', 'pan-os-delete-edl']:
+        elif command == 'panorama-delete-edl' or command == 'pan-os-delete-edl':
             panorama_delete_edl_command(demisto.args().get('name'))
 
-        elif command in ['panorama-refresh-edl', 'pan-os-refresh-edl']:
+        elif command == 'panorama-refresh-edl' or command == 'pan-os-refresh-edl':
             panorama_refresh_edl_command(args)
 
-        elif command in ['panorama-register-ip-tag', 'pan-os-register-ip-tag']:
+        # Registered IPs
+        elif command == 'panorama-register-ip-tag' or command == 'pan-os-register-ip-tag':
             panorama_register_ip_tag_command(args)
 
-        elif command in [
-            'panorama-unregister-ip-tag',
-            'pan-os-unregister-ip-tag',
-        ]:
+        elif command == 'panorama-unregister-ip-tag' or command == 'pan-os-unregister-ip-tag':
             panorama_unregister_ip_tag_command(args)
 
-        elif command in [
-            'panorama-register-user-tag',
-            'pan-os-register-user-tag',
-        ]:
+        # Registered Users
+        elif command == 'panorama-register-user-tag' or command == 'pan-os-register-user-tag':
             panorama_register_user_tag_command(args)
 
-        elif command in [
-            'panorama-unregister-user-tag',
-            'pan-os-unregister-user-tag',
-        ]:
+        elif command == 'panorama-unregister-user-tag' or command == 'pan-os-unregister-user-tag':
             panorama_unregister_user_tag_command(args)
 
-        elif command in ['panorama-list-rules', 'pan-os-list-rules']:
+        # Security Rules Managing
+        elif command == 'panorama-list-rules' or command == 'pan-os-list-rules':
             panorama_list_rules_command(args)
 
-        elif command in ['panorama-move-rule', 'pan-os-move-rule']:
+        elif command == 'panorama-move-rule' or command == 'pan-os-move-rule':
             panorama_move_rule_command(args)
 
-        elif command in ['panorama-create-rule', 'pan-os-create-rule']:
+        # Security Rules Configuration
+        elif command == 'panorama-create-rule' or command == 'pan-os-create-rule':
             panorama_create_rule_command(args)
 
-        elif command in [
-            'panorama-custom-block-rule',
-            'pan-os-custom-block-rule',
-        ]:
+        elif command == 'panorama-custom-block-rule' or command == 'pan-os-custom-block-rule':
             panorama_custom_block_rule_command(args)
 
-        elif command in ['panorama-edit-rule', 'pan-os-edit-rule']:
+        elif command == 'panorama-edit-rule' or command == 'pan-os-edit-rule':
             panorama_edit_rule_command(args)
 
-        elif command in ['panorama-delete-rule', 'pan-os-delete-rule']:
+        elif command == 'panorama-delete-rule' or command == 'pan-os-delete-rule':
             panorama_delete_rule_command(args.get('rulename'))
 
-        elif command in [
-            'panorama-query-traffic-logs',
-            'pan-os-query-traffic-logs',
-        ]:
+        # Traffic Logs - deprecated
+        elif command == 'panorama-query-traffic-logs' or command == 'pan-os-query-traffic-logs':
             panorama_query_traffic_logs_command(args)
 
-        elif command in [
-            'panorama-check-traffic-logs-status',
-            'pan-os-check-traffic-logs-status',
-        ]:
+        elif command == 'panorama-check-traffic-logs-status' or command == 'pan-os-check-traffic-logs-status':
             panorama_check_traffic_logs_status_command(args.get('job_id'))
 
-        elif command in ['panorama-get-traffic-logs', 'pan-os-get-traffic-logs']:
+        elif command == 'panorama-get-traffic-logs' or command == 'pan-os-get-traffic-logs':
             panorama_get_traffic_logs_command(args.get('job_id'))
 
-        elif command in ['panorama-query-logs', 'pan-os-query-logs']:
+        # Logs
+        elif command == 'panorama-query-logs' or command == 'pan-os-query-logs':
             return_results(panorama_query_logs_command(args))
 
-        elif command in [
-            'panorama-check-logs-status',
-            'pan-os-check-logs-status',
-        ]:
+        elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
             panorama_check_logs_status_command(args.get('job_id'))
 
-        elif command in ['panorama-get-logs', 'pan-os-get-logs']:
+        elif command == 'panorama-get-logs' or command == 'pan-os-get-logs':
             panorama_get_logs_command(args)
 
-        elif command in ['panorama-list-pcaps', 'pan-os-list-pcaps']:
+        # Pcaps
+        elif command == 'panorama-list-pcaps' or command == 'pan-os-list-pcaps':
             panorama_list_pcaps_command(args)
 
-        elif command in ['panorama-get-pcap', 'pan-os-get-pcap']:
+        elif command == 'panorama-get-pcap' or command == 'pan-os-get-pcap':
             panorama_get_pcap_command(args)
 
-        elif command in [
-            'panorama-list-applications',
-            'pan-os-list-applications',
-        ]:
+        # Application
+        elif command == 'panorama-list-applications' or command == 'pan-os-list-applications':
             panorama_list_applications_command(args)
 
-        elif command in [
-            'panorama-security-policy-match',
-            'pan-os-security-policy-match',
-        ]:
+        # Test security policy match
+        elif command == 'panorama-security-policy-match' or command == 'pan-os-security-policy-match':
             panorama_security_policy_match_command(args)
 
-        elif command in [
-            'panorama-list-static-routes',
-            'pan-os-list-static-routes',
-        ]:
+        # Static Routes
+        elif command == 'panorama-list-static-routes' or command == 'pan-os-list-static-routes':
             panorama_list_static_routes_command(args)
 
-        elif command in ['panorama-get-static-route', 'pan-os-get-static-route']:
+        elif command == 'panorama-get-static-route' or command == 'pan-os-get-static-route':
             panorama_get_static_route_command(args)
 
-        elif command in ['panorama-add-static-route', 'pan-os-add-static-route']:
+        elif command == 'panorama-add-static-route' or command == 'pan-os-add-static-route':
             panorama_add_static_route_command(args)
 
-        elif command in [
-            'panorama-delete-static-route',
-            'pan-os-delete-static-route',
-        ]:
+        elif command == 'panorama-delete-static-route' or command == 'pan-os-delete-static-route':
             panorama_delete_static_route_command(args)
 
-        elif command in [
-            'panorama-show-device-version',
-            'pan-os-show-device-version',
-        ]:
+        # Firewall Upgrade
+        # Check device software version
+        elif command == 'panorama-show-device-version' or command == 'pan-os-show-device-version':
             panorama_show_device_version_command(args.get('target'))
 
-        elif command in [
-            'panorama-download-latest-content-update',
-            'pan-os-download-latest-content-update',
-        ]:
+        # Download the latest content update
+        elif command == 'panorama-download-latest-content-update' or command == 'pan-os-download-latest-content-update':
             panorama_download_latest_content_update_command(args)
 
-        elif command in [
-            'panorama-content-update-download-status',
-            'pan-os-content-update-download-status',
-        ]:
+        # Download the latest content update
+        elif command == 'panorama-content-update-download-status' or command == 'pan-os-content-update-download-status':
             panorama_content_update_download_status_command(args)
 
-        elif command in [
-            'panorama-install-latest-content-update',
-            'pan-os-install-latest-content-update',
-        ]:
+        # Install the latest content update
+        elif command == 'panorama-install-latest-content-update' or command == 'pan-os-install-latest-content-update':
             panorama_install_latest_content_update_command(args.get('target'))
 
-        elif command in [
-            'panorama-content-update-install-status',
-            'pan-os-content-update-install-status',
-        ]:
+        # Content update install status
+        elif command == 'panorama-content-update-install-status' or command == 'pan-os-content-update-install-status':
             panorama_content_update_install_status_command(args)
 
-        elif command in [
-            'panorama-check-latest-panos-software',
-            'pan-os-check-latest-panos-software',
-        ]:
+        # Check PAN-OS latest software update
+        elif command == 'panorama-check-latest-panos-software' or command == 'pan-os-check-latest-panos-software':
             return_results(panorama_check_latest_panos_software_command(args.get('target')))
 
-        elif command in [
-            'panorama-download-panos-version',
-            'pan-os-download-panos-version',
-        ]:
+        # Download target PAN-OS version
+        elif command == 'panorama-download-panos-version' or command == 'pan-os-download-panos-version':
             panorama_download_panos_version_command(args)
 
-        elif command in [
-            'panorama-download-panos-status',
-            'pan-os-download-panos-status',
-        ]:
+        # PAN-OS download status
+        elif command == 'panorama-download-panos-status' or command == 'pan-os-download-panos-status':
             panorama_download_panos_status_command(args)
 
-        elif command in [
-            'panorama-install-panos-version',
-            'pan-os-install-panos-version',
-        ]:
+        # PAN-OS software install
+        elif command == 'panorama-install-panos-version' or command == 'pan-os-install-panos-version':
             panorama_install_panos_version_command(args)
 
-        elif command in [
-            'panorama-install-panos-status',
-            'pan-os-install-panos-status',
-        ]:
+        # PAN-OS install status
+        elif command == 'panorama-install-panos-status' or command == 'pan-os-install-panos-status':
             panorama_install_panos_status_command(args)
 
-        elif command in ['panorama-device-reboot', 'pan-os-device-reboot']:
+        # Reboot Panorama Device
+        elif command == 'panorama-device-reboot' or command == 'pan-os-device-reboot':
             panorama_device_reboot_command(args)
 
-        elif command in [
-            'panorama-block-vulnerability',
-            'pan-os-block-vulnerability',
-        ]:
+        # PAN-OS Set vulnerability to drop
+        elif command == 'panorama-block-vulnerability' or command == 'pan-os-block-vulnerability':
             panorama_block_vulnerability(args)
 
-        elif command in [
-            'panorama-get-predefined-threats-list',
-            'pan-os-get-predefined-threats-list',
-        ]:
+        # Get pre-defined threats list from the firewall
+        elif command == 'panorama-get-predefined-threats-list' or command == 'pan-os-get-predefined-threats-list':
             panorama_get_predefined_threats_list_command(args.get('target'))
 
-        elif command in ['panorama-show-location-ip', 'pan-os-show-location-ip']:
+        elif command == 'panorama-show-location-ip' or command == 'pan-os-show-location-ip':
             panorama_show_location_ip_command(args.get('ip_address'))
 
-        elif command in ['panorama-get-licenses', 'pan-os-get-licenses']:
+        elif command == 'panorama-get-licenses' or command == 'pan-os-get-licenses':
             panorama_get_license_command()
 
-        elif command in [
-            'panorama-get-security-profiles',
-            'pan-os-get-security-profiles',
-        ]:
+        elif command == 'panorama-get-security-profiles' or command == 'pan-os-get-security-profiles':
             get_security_profiles_command(args.get('security_profile'))
 
-        elif command in [
-            'panorama-apply-security-profile',
-            'pan-os-apply-security-profile',
-        ]:
+        elif command == 'panorama-apply-security-profile' or command == 'pan-os-apply-security-profile':
             apply_security_profile_command(args)
 
         elif command == 'pan-os-remove-security-profile':
             apply_security_profile_command(args)
 
-        elif command in [
-            'panorama-get-ssl-decryption-rules',
-            'pan-os-get-ssl-decryption-rules',
-        ]:
+        elif command == 'panorama-get-ssl-decryption-rules' or command == 'pan-os-get-ssl-decryption-rules':
             get_ssl_decryption_rules_command(**args)
 
-        elif command in [
-            'panorama-get-wildfire-configuration',
-            'pan-os-get-wildfire-configuration',
-        ]:
+        elif command == 'panorama-get-wildfire-configuration' or command == 'pan-os-get-wildfire-configuration':
             get_wildfire_configuration_command(**args)
 
-        elif command in [
-            'panorama-get-wildfire-best-practice',
-            'pan-os-get-wildfire-best-practice',
-        ]:
+        elif command == 'panorama-get-wildfire-best-practice' or command == 'pan-os-get-wildfire-best-practice':
             get_wildfire_best_practice_command()
 
-        elif command in [
-            'panorama-enforce-wildfire-best-practice',
-            'pan-os-enforce-wildfire-best-practice',
-        ]:
+        elif command == 'panorama-enforce-wildfire-best-practice' or command == 'pan-os-enforce-wildfire-best-practice':
             enforce_wildfire_best_practice_command(**args)
 
-        elif command in [
-            'panorama-url-filtering-block-default-categories',
-            'pan-os-url-filtering-block-default-categories',
-        ]:
+        elif command == 'panorama-url-filtering-block-default-categories' \
+                or command == 'pan-os-url-filtering-block-default-categories':
             url_filtering_block_default_categories_command(**args)
 
-        elif command in [
-            'panorama-get-anti-spyware-best-practice',
-            'pan-os-get-anti-spyware-best-practice',
-        ]:
+        elif command == 'panorama-get-anti-spyware-best-practice' or command == 'pan-os-get-anti-spyware-best-practice':
             get_anti_spyware_best_practice_command()
 
-        elif command in [
-            'panorama-get-file-blocking-best-practice',
-            'pan-os-get-file-blocking-best-practice',
-        ]:
+        elif command == 'panorama-get-file-blocking-best-practice' \
+                or command == 'pan-os-get-file-blocking-best-practice':
             get_file_blocking_best_practice_command()
 
-        elif command in [
-            'panorama-get-antivirus-best-practice',
-            'pan-os-get-antivirus-best-practice',
-        ]:
+        elif command == 'panorama-get-antivirus-best-practice' or command == 'pan-os-get-antivirus-best-practice':
             get_antivirus_best_practice_command()
 
-        elif command in [
-            'panorama-get-vulnerability-protection-best-practice',
-            'pan-os-get-vulnerability-protection-best-practice',
-        ]:
+        elif command == 'panorama-get-vulnerability-protection-best-practice' \
+                or command == 'pan-os-get-vulnerability-protection-best-practice':
             get_vulnerability_protection_best_practice_command()
 
-        elif command in [
-            'panorama-get-url-filtering-best-practice',
-            'pan-os-get-url-filtering-best-practice',
-        ]:
+        elif command == 'panorama-get-url-filtering-best-practice' \
+                or command == 'pan-os-get-url-filtering-best-practice':
             get_url_filtering_best_practice_command()
 
-        elif command in [
-            'panorama-create-antivirus-best-practice-profile',
-            'pan-os-create-antivirus-best-practice-profile',
-        ]:
+        elif command == 'panorama-create-antivirus-best-practice-profile' \
+                or command == 'pan-os-create-antivirus-best-practice-profile':
             create_antivirus_best_practice_profile_command(**args)
 
-        elif command in [
-            'panorama-create-anti-spyware-best-practice-profile',
-            'pan-os-create-anti-spyware-best-practice-profile',
-        ]:
+        elif command == 'panorama-create-anti-spyware-best-practice-profile' \
+                or command == 'pan-os-create-anti-spyware-best-practice-profile':
             create_anti_spyware_best_practice_profile_command(**args)
 
-        elif command in [
-            'panorama-create-vulnerability-best-practice-profile',
-            'pan-os-create-vulnerability-best-practice-profile',
-        ]:
+        elif command == 'panorama-create-vulnerability-best-practice-profile' \
+                or command == 'pan-os-create-vulnerability-best-practice-profile':
             create_vulnerability_best_practice_profile_command(**args)
 
-        elif command in [
-            'panorama-create-url-filtering-best-practice-profile',
-            'pan-os-create-url-filtering-best-practice-profile',
-        ]:
+        elif command == 'panorama-create-url-filtering-best-practice-profile' \
+                or command == 'pan-os-create-url-filtering-best-practice-profile':
             create_url_filtering_best_practice_profile_command(**args)
 
-        elif command in [
-            'panorama-create-file-blocking-best-practice-profile',
-            'pan-os-create-file-blocking-best-practice-profile',
-        ]:
+        elif command == 'panorama-create-file-blocking-best-practice-profile' \
+                or command == 'pan-os-create-file-blocking-best-practice-profile':
             create_file_blocking_best_practice_profile_command(**args)
 
-        elif command in [
-            'panorama-create-wildfire-best-practice-profile',
-            'pan-os-create-wildfire-best-practice-profile',
-        ]:
+        elif command == 'panorama-create-wildfire-best-practice-profile' \
+                or command == 'pan-os-create-wildfire-best-practice-profile':
             create_wildfire_best_practice_profile_command(**args)
 
-        elif command in [
-            'panorama-show-user-id-interfaces-config',
-            'pan-os-show-user-id-interfaces-config',
-        ]:
+        elif command == 'panorama-show-user-id-interfaces-config' or command == 'pan-os-show-user-id-interfaces-config':
             show_user_id_interface_config_command(args)
 
-        elif command in [
-            'panorama-show-zones-config',
-            'pan-os-show-zones-config',
-        ]:
+        elif command == 'panorama-show-zones-config' or command == 'pan-os-show-zones-config':
             show_zone_config_command(args)
 
-        elif command in [
-            'panorama-list-configured-user-id-agents',
-            'pan-os-list-configured-user-id-agents',
-        ]:
+        elif command == 'panorama-list-configured-user-id-agents' or command == 'pan-os-list-configured-user-id-agents':
             list_configured_user_id_agents_command(args)
 
         elif command == 'panorama-upload-content-update-file' or command == 'pan-os-upload-content-update-file':
