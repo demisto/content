@@ -3008,7 +3008,7 @@ def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -
             response = client.reference_set_bulk_load(ref_name, indicator_values, fields)
         else:
             response = client.reference_set_entries(ref_name, indicator_values, fields)
-            args["task_id"] = response.get('task_id')
+            args["task_id"] = response.get('id')
         args["indicators_data"] = indicators_data
     if not use_old_api:
         response = client.get_reference_data_bulk_task_status(args["task_id"])
