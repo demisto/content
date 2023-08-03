@@ -122,7 +122,7 @@ def test_fetch_incidents(requests_mock, mocker):
                                    " AAAAA involving user Administrator"
 
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
-        raise AssertionError
+        assert False
     assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
@@ -213,7 +213,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     assert len(incidents_from_previous_run) == 1
     assert incidents_from_previous_run[0].get('incident_id') == '2'
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
-        raise AssertionError
+        assert False
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
 
