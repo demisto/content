@@ -443,7 +443,7 @@ class TestCollector(ABC):
                 logger.debug(str(e))
         return CollectionResult.union(result)
 
-    def collect_specific_marketplace_compatible_packs(self, packs_to_upload) -> Optional[CollectionResult]:
+    def _collect_specific_marketplace_compatible_packs(self, packs_to_upload) -> Optional[CollectionResult]:
         result = []
         for pack_id in packs_to_upload:
             try:
@@ -1176,8 +1176,8 @@ class SpecificPacksTestCollector(TestCollector):
         super().__init__(marketplace, graph=graph)
         self.packs_to_upload = packs_to_upload
 
-    def collect(self) -> Optional[CollectionResult]:
-        result: Optional[CollectionResult] = super().collect_specific_marketplace_compatible_packs(self.packs_to_upload)
+    def _collect(self) -> Optional[CollectionResult]:
+        result: Optional[CollectionResult] = super()._collect_specific_marketplace_compatible_packs(self.packs_to_upload)
         return result
 
 class NightlyTestCollector(TestCollector, ABC):
