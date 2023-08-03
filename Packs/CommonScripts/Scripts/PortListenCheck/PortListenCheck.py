@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import socket
 
 
-
 def port_listen_check(port: int, host: str) -> CommandResults:
     """
     When given a port and host, this function will attempt to connect to the host on the given port and if successful,

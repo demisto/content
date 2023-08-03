@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
 def main():
     res = demisto.executeCommand('addEntitlement', {
                                  'persistent': demisto.get(demisto.args(), 'persistent'),

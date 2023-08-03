@@ -13,93 +13,93 @@ configuration:
   type: 9
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
   display: The query to use when fetching incidents
   name: fetch_query
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Incident Mirroring Direction
   name: mirror_direction
-  required: false
   type: 15
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from TOPdesk to Cortex XSOAR), Outgoing (from Cortex XSOAR to TOPdesk), or Incoming and Outgoing (from/to Cortex XSOAR and TOPdesk).'
   defaultvalue: None
   hidden:
-    - marketplacev2
+  - marketplacev2
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  required: false
 - display: Comment Entry Tag
   name: comment_tag
-  required: false
   type: 0
   additionalinfo: Choose the tag to add to an entry to mirror it as a visible comment in TOPdesk for the persons.
   defaultvalue: comments
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - defaultvalue: work_notes
   display: Work Note Entry Tag
   name: work_notes_tag
-  required: false
   type: 0
   additionalinfo: Choose the tag to add to an entry to mirror it as a hidden comment in TOPdesk for the persons.
   hidden:
-    - marketplacev2
+  - marketplacev2
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in TOPdesk.
   defaultvalue: ForTOPdesk
   display: File Entry Tag
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: file_tag
-  required: false
   type: 0
+  required: false
 - additionalinfo: When selected, closing the TOPdesk ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incident
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: close_incident
-  required: false
   type: 8
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in TOPdesk.
   defaultvalue: 'false'
   display: Close Mirrored TOPdesk Ticket
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: close_ticket
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 description: TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
 display: TOPdesk
 name: TOPdesk
@@ -244,8 +244,6 @@ script:
       name: query
     - name: fields
       description: Only include these specific fields in the response. (default = all)
-      required: false
-      isArray: false
       defaultValue: ''
       predefined:
       - ''
@@ -1012,8 +1010,6 @@ script:
       name: query
     - name: fields
       description: Only include these specific fields in the response. (default = id, name)
-      required: false
-      isArray: false
       defaultValue: ''
       predefined:
       - ''
@@ -1521,7 +1517,7 @@ script:
     - description: The number of the incident to retrieve, overrides any other argument but incident_id.
       name: incident_number
     - auto: PREDEFINED
-      description: Retrieve only the incidents of the given status. 
+      description: Retrieve only the incidents of the given status.
       name: status
       predefined:
       - firstLine
@@ -1541,8 +1537,6 @@ script:
       name: entry_type
     - name: fields
       description: Only include these specific fields in the response. (default = all)
-      required: false
-      isArray: false
       defaultValue: ''
       predefined:
       - ''
@@ -5830,51 +5824,26 @@ script:
       type: string
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring.
-    deprecated: false
     arguments: []
     outputs: []
   - arguments:
-    - default: false
-      description: The remote incident ID.
-      isArray: false
+    - description: The remote incident ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was
-        modified after the last update time.
-      isArray: false
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets remote data from a remote incident. This method does not update
-     the current incident and should be used for debugging purposes only.
-    execution: false
+    description: Gets remote data from a remote incident. This method does not update the current incident and should be used for debugging purposes only.
     name: get-remote-data
   - arguments:
-    - default: false
-      description: Date string representing the local time. The incident is only returned
-        if it was modified after the last update time.
-      isArray: false
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets the list of incidents that were modified since the last update time.
-      This method is used for debugging purposes. The get-modified-remote-data command
-      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
-    execution: false
+    description: Gets the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     name: get-modified-remote-data
-  - deprecated: false
-    description: Updates the remote incident with local incident changes. This method
-      is only used for debugging purposes and will not update the current incident.
-    execution: false
+  - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

@@ -32,11 +32,9 @@ configuration:
   defaultvalue: https://acme.xmatters.com
   type: 0
   required: true
-  additionalinfo: This is for creating events in xMatters from Cortex XSOAR. Used
-    for the xm-trigger-workflow command.
+  additionalinfo: This is for creating events in xMatters from Cortex XSOAR. Used for the xm-trigger-workflow command.
 - display: Fetch Type
-  additionalinfo: In a future release the xMatters incidents will be supported. For
-    now it's just events.
+  additionalinfo: In a future release the xMatters incidents will be supported. For now it's just events.
   name: fetch_type
   defaultvalue: events
   type: 15
@@ -46,19 +44,19 @@ configuration:
 - display: Fetch alerts with status (ACTIVE, TERMINATED, SUSPENDED)
   name: status
   type: 15
-  required: false
   options:
   - ACTIVE
   - TERMINATED
   - SUSPENDED
+  required: false
 - display: Priority of events to fetch
   name: priority
   type: 16
-  required: false
   options:
   - LOW
   - MEDIUM
   - HIGH
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -70,24 +68,24 @@ configuration:
 - display: Property Name
   name: property_name
   type: 0
-  required: false
   additionalinfo: Property Name to look for in xMatters. Used for importing events.
+  required: false
 - display: Property Value
   name: property_value
   type: 0
-  required: false
   additionalinfo: Property Value to look for in xMatters. Used for importing events.
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   defaultvalue: 7 days
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: Maximum number of incidents to fetch
   defaultvalue: '50'
   name: max_fetch
-  required: false
   type: 0
   additionalinfo: Must be between 0 and 201.
+  required: false
 script:
   commands:
   - name: xm-trigger-workflow
@@ -102,8 +100,7 @@ script:
     - name: incident_id
       description: Incident ID of Incident referenced
     - name: close_task_id
-      description: Id of task to close in playbook. Requires an incident_id as the
-        investigation id.
+      description: Id of task to close in playbook. Requires an incident_id as the investigation id.
     outputs:
     - contextPath: xMatters.Workflow.request_id
       description: Request ID from xMatters
@@ -128,11 +125,9 @@ script:
       - HIGH
       description: Priority of the event.
     - name: from
-      description: A date and time in UTC format that represents the start of the
-        time range you want to search. (i.e. `2020-01-01T00:11:22Z`)
+      description: A date and time in UTC format that represents the start of the time range you want to search. (i.e. `2020-01-01T00:11:22Z`)
     - name: to
-      description: A date and time in UTC format that represents the end of the time
-        range you want to search. (i.e. `2020-01-01T00:11:22Z`)
+      description: A date and time in UTC format that represents the end of the time range you want to search. (i.e. `2020-01-01T00:11:22Z`)
     - name: workflow
       description: The name of the workflow the event is tied to.
     - name: form
@@ -147,8 +142,7 @@ script:
     - contextPath: xMatters.GetEvents.Created
       description: The date and time the event was created
     - contextPath: xMatters.GetEvents.Terminated
-      description: The date and time the event was terminated. Populated only if the
-        event is terminated.
+      description: The date and time the event was terminated. Populated only if the event is terminated.
     - contextPath: xMatters.GetEvents.ID
       description: The UUID of the event
     - contextPath: xMatters.GetEvents.Name
@@ -158,8 +152,7 @@ script:
     - contextPath: xMatters.GetEvents.FormName
       description: The name of the form the event is tied to
     - contextPath: xMatters.GetEvents.Status
-      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL,
-        SUPRESSED
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
     - contextPath: xMatters.GetEvents.Priority
       description: The priority of the event. LOW, MEDIUM, HIGH
     - contextPath: xMatters.GetEvents.Properties
@@ -178,8 +171,7 @@ script:
     - contextPath: xMatters.GetEvent.Created
       description: The date and time the event was created
     - contextPath: xMatters.GetEvent.Terminated
-      description: The date and time the event was terminated. Populated only if the
-        event is terminated.
+      description: The date and time the event was terminated. Populated only if the event is terminated.
     - contextPath: xMatters.GetEvent.ID
       description: The UUID of the event
     - contextPath: xMatters.GetEvent.Name
@@ -189,8 +181,7 @@ script:
     - contextPath: xMatters.GetEvent.FormName
       description: The name of the form the event is tied to
     - contextPath: xMatters.GetEvent.Status
-      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL,
-        SUPRESSED
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
     - contextPath: xMatters.GetEvent.Priority
       description: The priority of the event. LOW, MEDIUM, HIGH
     - contextPath: xMatters.GetEvent.Properties
@@ -200,7 +191,6 @@ script:
     description: Get a single event from xMatters.
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python

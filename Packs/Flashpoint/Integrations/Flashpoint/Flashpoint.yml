@@ -8,12 +8,12 @@ description: Use the Flashpoint integration to reduce business risk. Flashpoint 
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Server URL
   additionalinfo: Server URL to connect to Flashpoint.
   name: url
@@ -29,14 +29,14 @@ configuration:
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: 'Date or relative timestamp to start fetching the incidents from. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc).'
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Whether to fetch the Flashpoint alerts or the compromised credentials. Would choose "Compromised Credentials" if nothing selected.
   defaultvalue: Compromised Credentials
   display: Fetch Type
@@ -44,14 +44,14 @@ configuration:
   options:
   - 'Compromised Credentials'
   - 'Alerts'
-  required: false
   type: 15
+  required: false
 - additionalinfo: Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before.
   defaultvalue: 'true'
   display: Fetch fresh compromised credentials alerts
   name: is_fresh_compromised_credentials
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -64,8 +64,8 @@ configuration:
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -78,8 +78,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -88,13 +88,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 script:
   script: ''
   type: python
@@ -103,7 +103,6 @@ script:
     arguments:
     - name: ip
       default: true
-      required: false
       description: The IP address to check.
       isArray: true
     outputs:
@@ -174,7 +173,6 @@ script:
   - name: domain
     arguments:
     - name: domain
-      required: false
       default: true
       description: The domain name to check.
       isArray: true
@@ -246,7 +244,6 @@ script:
   - name: filename
     arguments:
     - name: filename
-      required: false
       default: true
       description: The file name to check.
       isArray: true
@@ -294,7 +291,6 @@ script:
   - name: url
     arguments:
     - name: url
-      required: false
       default: true
       description: The url to check.
       isArray: true
@@ -366,7 +362,6 @@ script:
   - name: file
     arguments:
     - name: file
-      required: false
       default: true
       description: A list of hashes of the file to query. Supports MD5, SHA1 and SHA256.
       isArray: true
@@ -450,7 +445,6 @@ script:
   - name: email
     arguments:
     - name: email
-      required: false
       default: true
       description: The email to check.
       isArray: true
@@ -592,7 +586,6 @@ script:
   - name: flashpoint-common-lookup
     arguments:
     - name: indicator
-      required: false
       default: true
       description: The indicator type, for example, domain, ip, email, url, and so on.
       isArray: true
@@ -714,43 +707,25 @@ script:
       description: A list of forum posts based on the search keyword.
     description: Search forum posts using a keyword
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Filters the alerts based on the earliest date when the alerts were created.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
-      isArray: false
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filters the alerts based on the latest date when the alerts were created.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
-      isArray: false
       name: until
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Retrieves the next batch of alerts.
 
         Note: User can get the "scroll_id" from the HR of the same command "flashpoint-alert-list".
-      isArray: false
       name: scroll_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Number of alerts to retrieve in the response. (Maximum allowed size is 100).
-      isArray: false
       name: size
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves an alert or a list of alerts based on the filter values provided in the command arguments. Yields the alerts from Flashpoint collected sources and the alerts from data exposure.
-    execution: false
     name: flashpoint-alert-list
     outputs:
     - contextPath: Flashpoint.Alerts.alert_id
@@ -898,83 +873,49 @@ script:
       description: The command name.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Filters the data based on the start date of the breach (UTC). Note: Will consider current time as default for end_date if start_date is initialized.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
-      isArray: false
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filters the data based on the end date of the breach (UTC). Note: Requires start_date along with the given argument.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
-      isArray: false
       name: end_date
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Filters the compromised credential's breach data by either created or first observed date.
         Note: Requires the argument value for at least 'start_date' and 'end_date'.
-      isArray: false
       name: filter_date
       predefined:
       - created_at
       - first_observed_at
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: 'The maximum number of result objects to return per page. Note: The maximum value is 1,000.'
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: 'Specify a page number to retrieve the compromised credentials. Note: The multiplication of page_size and page_number parameters cannot exceed 10,000.'
-      isArray: false
       name: page_number
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Sort the compromised credential''s breach data by either created or first observed date. Note: Will consider ascending as default for sort_order if sort_date is initialized.'
-      isArray: false
       name: sort_date
       predefined:
       - created_at
       - first_observed_at
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Specify the order to sort the data in. Note: Requires sort_date along with the given argument.'
-      isArray: false
       name: sort_order
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to fetch the fresh compromised credentials or not. Possible values are: true, false.'
-      isArray: false
       name: is_fresh
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the compromised credentials based on the filter values provided in the command arguments.
-    execution: false
     name: flashpoint-compromised-credentials-list
     outputs:
     - contextPath: Flashpoint.CompromisedCredential._id
@@ -1095,10 +1036,7 @@ script:
       description: Sort value of the IoC.
       type: Unknown
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   subtype: python3
 tests:

@@ -40,7 +40,6 @@ outputs:
   description: The Slack Blocks json string
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

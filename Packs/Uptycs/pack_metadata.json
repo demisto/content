@@ -2,7 +2,7 @@
     "name": "Uptycs",
     "description": "Fetches data from the Uptycs database.",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Uptycs Inc.",
     "url": "https://www.uptycs.com",
     "email": "support@uptycs.com",
@@ -14,7 +14,8 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [
-        "bkschmoll-uptycs"
+        "bkschmoll-uptycs",
+        "cgadde-uptycs"
     ],
     "certification": "certified",
     "marketplaces": [

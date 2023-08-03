@@ -15,12 +15,12 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Use the Inventa integration to generate DSAR reports within Inventa instance and retrieve DSAR data for the XSOAR
 display: 1Touch.io's Inventa Connector
 name: Inventa

@@ -24,7 +24,6 @@ outputs:
   description: Away user email.
   type: String
 script: '-'
-system: false
 tags:
 - Shift Management
 - widget

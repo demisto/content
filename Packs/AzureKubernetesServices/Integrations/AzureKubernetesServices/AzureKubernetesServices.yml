@@ -6,7 +6,6 @@ configuration:
 - defaultvalue: Worldwide
   display: Azure Cloud
   name: azure_cloud
-  required: false
   type: 15
   options:
   - Worldwide
@@ -19,12 +18,12 @@ configuration:
   additionalinfo: When selecting the Custom option, the Azure AD endpoint parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
   advanced: true
+  required: false
 - display: Application ID
   name: app_id
-  required: false
   defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
   type: 0
-  hidden: false
+  required: false
 - display: Authentication Type
   name: auth_type
   required: true
@@ -35,81 +34,84 @@ configuration:
   - Authorization Code
   - Device Code
   - Azure Managed Identities
+  section: Connect
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
-  required: false
   type: 0
+  required: false
+  section: Connect
 - display: Client Secret (for authorization code mode)
   name: credentials
-  required: false
   type: 9
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
+  required: false
+  section: Connect
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
-  required: false
   type: 0
+  required: false
+  section: Connect
 - additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section
   displaypassword: Authorization code
   name: auth_code
-  required: false
   hiddenusername: true
   type: 9
   display: Authorization code
-- name: managed_identities_client_id
   required: false
+- name: managed_identities_client_id
   type: 9
   additionalinfo: The Managed Identities client ID for authentication. Relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
-- display: Subscription ID
+  required: false
+  section: Connect
+  advanced: true
+- display: Default Subscription ID
   name: subscription_id
   required: true
   type: 0
-- display: Resource Group Name
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
+  section: Connect
+- display: Default Resource Group Name
   name: resource_group_name
   required: true
   type: 0
+  additionalinfo: There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value.
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
+  section: Connect
+  advanced: true
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
-  required: false
   type: 0
   advanced: true
   additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
+  required: false
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services
 name: Azure Kubernetes Services
 script:
   commands:
-  - deprecated: false
-    description: Tests the connectivity to Azure.
-    execution: false
+  - description: Tests the connectivity to Azure.
     name: azure-ks-auth-test
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the instructions in the command results.
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: azure-ks-auth-start
-  - deprecated: false
-    description: Run this command to complete the authorization process. Should be used after running the azure-ks-auth-start command.
-    execution: false
+  - description: Run this command to complete the authorization process. Should be used after running the azure-ks-auth-start command.
     name: azure-ks-auth-complete
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-ks-auth-reset
-  - deprecated: false
-    description: Gets a list of managed clusters in the specified subscription.
-    execution: false
+  - description: Gets a list of managed clusters in the specified subscription.
     name: azure-ks-clusters-list
     outputs:
     - contextPath: AzureKS.ManagedCluster.id
@@ -208,21 +210,33 @@ script:
     - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName
       description: The subscription DNS zone name.
       type: String
-  - arguments:
+    arguments:
     - default: false
-      description: The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.
       isArray: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+  - arguments:
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+      required: false
+      type: String
+      isArray: false
+    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      name: resource_group_name
+      required: false
+      type: String
+      isArray: false
+    - description: 'The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.'
       name: resource_name
-      required: true
-      secret: false
-    - auto: PREDEFINED
       default: false
-      description: Resource location, Can be retrieved using the azure-ks-clusters-list command.
       isArray: false
+      required: true
+    - auto: PREDEFINED
+      description: 'Resource location, Can be retrieved using the azure-ks-clusters-list command.'
       name: location
       predefined:
-      - australiacentral
-      - australiacentral2
+      - 'australiacentral'
+      - 'australiacentral2'
       - australiaeast
       - australiasoutheast
       - brazilse
@@ -267,50 +281,130 @@ script:
       - westus
       - westus2
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false".'
-      isArray: false
+    - description: 'Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false".'
       name: http_application_routing_enabled
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false".'
-      isArray: false
       name: monitoring_agent_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal.
-      isArray: false
+    - description: The name of an existing Log Analytics workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal.
       name: monitoring_resource_name
-      required: false
-      secret: false
-    deprecated: false
     description: Updates a managed cluster with the specified configuration.
-    execution: false
     name: azure-ks-cluster-addon-update
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: azure-ks-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - description: Gets all subscriptions for a tenant.
+    name: azure-ks-subscriptions-list
+    outputs:
+    - contextPath: AzureKS.Subscription.id
+      description: 'The unique identifier of the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.authorizationSource
+      description: 'The source of authorization for the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.managedByTenants
+      description: 'The tenants that have access to manage the Azure Kubernetes subscription.'
+      type: Unknown
+    - contextPath: AzureKS.Subscription.subscriptionId
+      description: 'The ID of the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.tenantId
+      description: 'The ID of the tenant associated with the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.displayName
+      description: 'The display name of the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.state
+      description: 'The current state of the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.subscriptionPolicies.locationPlacementId
+      description: 'The ID of the location placement policy for the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.subscriptionPolicies.quotaId
+      description: 'The ID of the quota policy for the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.subscriptionPolicies.spendingLimit
+      description: 'The spending limit policy for the Azure Kubernetes subscription.'
+      type: String
+    - contextPath: AzureKS.Subscription.count.type
+      description: 'The type of the Azure Kubernetes subscription count.'
+      type: String
+    - contextPath: AzureKS.Subscription.count.value
+      description: 'The value of the Azure Kubernetes subscription count.'
+      type: Number
+  - description: Gets all resource groups for a subscription.
+    name: azure-ks-resource-group-list
+    arguments:
+    - default: false
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      required: false
+      defaultValue: 50
+    - default: false
+      name: tag
+      description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
+      required: false
+    outputs:
+    - contextPath: AzureKS.ResourceGroup.id
+      description: 'The unique identifier of the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.name
+      description: 'The name of the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.type
+      description: 'The type of the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.location
+      description: 'The location of the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.properties.provisioningState
+      description: 'The provisioning state of the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.Owner
+      description: 'The owner tag of the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags
+      description: 'The tags associated with the Azure Kubernetes resource group.'
+      type: Unknown
+    - contextPath: AzureKS.ResourceGroup.tags.Name
+      description: 'The name tag of the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.managedBy
+      description: 'The entity that manages the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-name
+      description: 'The AKS managed cluster name tag associated with the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-rg
+      description: 'The AKS managed cluster resource group tag associated with the Azure Kubernetes resource group.'
+      type: String
+    - contextPath: AzureKS.ResourceGroup.tags.type
+      description: 'The type tag associated with the Azure Kubernetes resource group.'
+      type: String
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3
   type: python
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Azure Kubernetes Services - Test
+sectionorder:
+- Connect
+- Collect

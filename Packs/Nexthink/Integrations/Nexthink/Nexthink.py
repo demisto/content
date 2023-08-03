@@ -5,9 +5,10 @@ import json
 import urllib.parse
 
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 entryList = []
 deviceList = []

@@ -1,18 +1,19 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import re
 import ssl
 import email
 from datetime import timezone
-from typing import Any, Dict, Tuple, List, Optional
+from typing import Any
 
 from dateparser import parse
 from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
 from imapclient import IMAPClient
+from tempfile import NamedTemporaryFile
 
 
-
-class Email(object):
+class Email:
     def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int) -> None:
         """
         Initialize Email class with all relevant data
@@ -105,7 +106,7 @@ class Email(object):
         message_bytes = regex.sub(escape_message_bytes, message_bytes)
         return message_bytes
 
-    def _generate_labels(self) -> List[Dict[str, str]]:
+    def _generate_labels(self) -> list[dict[str, str]]:
         """
         Generates the labels needed for the incident
         Returns:
@@ -163,7 +164,7 @@ class Email(object):
             })
         return files
 
-    def convert_to_incident(self) -> Dict[str, Any]:
+    def convert_to_incident(self) -> dict[str, Any]:
         """
         Convert an Email class instance to a demisto incident
         Returns:
@@ -232,7 +233,7 @@ def fetch_incidents(client: IMAPClient,
                     delete_processed: bool,
                     limit: int,
                     save_file: bool
-                    ) -> Tuple[dict, list]:
+                    ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
     The search is based on the criteria of the SINCE time and the UID.
@@ -301,7 +302,7 @@ def fetch_mails(client: IMAPClient,
                 limit: int = 200,
                 save_file: bool = False,
                 message_id: int = None,
-                uid_to_fetch_from: int = 1) -> Tuple[list, list, int]:
+                uid_to_fetch_from: int = 1) -> tuple[list, list, int]:
     """
     This function will fetch the mails from the IMAP server.
 
@@ -334,10 +335,7 @@ def fetch_mails(client: IMAPClient,
         demisto.debug(f'Searching for email messages with criteria: {messages_query}')
         messages_uids = client.search(messages_query)
         # first fetch takes last page only (workaround as first_fetch filter is date accurate)
-        if uid_to_fetch_from == 1:
-            messages_uids = messages_uids[limit * -1:]
-        else:
-            messages_uids = messages_uids[:limit]
+        messages_uids = messages_uids[limit * -1:] if uid_to_fetch_from == 1 else messages_uids[:limit]
 
     mails_fetched = []
     messages_fetched = []
@@ -368,7 +366,7 @@ def fetch_mails(client: IMAPClient,
     return mails_fetched, messages_fetched, last_message_in_current_batch
 
 
-def generate_search_query(time_to_fetch_from: Optional[datetime],
+def generate_search_query(time_to_fetch_from: datetime | None,
                           with_headers: bool,
                           permitted_from_addresses: str,
                           permitted_from_domains: str,
@@ -498,6 +496,54 @@ def _convert_to_bytes(data) -> bytes:
     return bytes_data
 
 
+def replace_spaces_in_credentials(credentials: str | None) -> str | None:
+    """
+    This function is used in case of credential from type: 9 is in the wrong format
+    of one line with spaces instead of multiple lines.
+
+    :param credentials: the credentials to replace spaces in.
+    :return: the credential with spaces replaced with new lines if the credential is in the correct format,
+             otherwise the credential will be returned as is.
+    """
+    if not credentials:
+        return credentials
+
+    return re.sub(
+        r'(?P<lseps>\s*)(?P<begin>-----BEGIN(.*?)-----)(?P<body>.*?)(?P<end>-----END(.*?)-----)(?P<tseps>\s*)',
+        lambda m: m.group('lseps').replace(' ', '\n')
+        + m.group('begin')
+        + m.group('body').replace(' ', '\n')
+        + m.group('end')
+        + m.group('tseps').replace(' ', '\n'),
+        credentials,
+        flags=re.DOTALL)
+
+
+def load_client_cert_and_key(ssl_context: ssl.SSLContext, params: dict[str, Any]) -> bool:
+    """ Load client certificates and private keys to the SSL context.
+
+    :param ssl_context: The SSL context to which client certs/keys will be loaded.
+    :param params: The integration parameters.
+    :return: True if certificates and private keys are loaded, otherwise False.
+    """
+    cred_params = params.get('clientCertAndKey') or {}
+    if cert_and_pkey_pem := cred_params.get('password'):
+        cert_and_pkey_pem = replace_spaces_in_credentials(cert_and_pkey_pem)
+    else:
+        cert_and_pkey_pem = demisto.get(cred_params, 'credentials.sshkey')
+        if not cert_and_pkey_pem:
+            # No client certificates and private keys
+            return False
+
+    # Load client certificates and private keys
+    with NamedTemporaryFile(mode='w') as pem_file:
+        pem_file.write(cert_and_pkey_pem)
+        pem_file.flush()
+        pem_file.seek(0)
+        ssl_context.load_cert_chain(certfile=pem_file.name, keyfile=None)
+        return True
+
+
 def main():
     params = demisto.params()
     mail_server_url = params.get('MailServerURL')
@@ -523,6 +569,8 @@ def main():
         ssl_context.verify_mode = ssl.CERT_NONE
     LOG(f'Command being called is {demisto.command()}')
     try:
+        load_client_cert_and_key(ssl_context, params)
+
         with IMAPClient(mail_server_url, ssl=tls_connection, port=port, ssl_context=ssl_context) as client:
             client.login(username, password)
             client.select_folder(folder)

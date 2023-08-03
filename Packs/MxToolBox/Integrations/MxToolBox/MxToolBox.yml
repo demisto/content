@@ -4,20 +4,19 @@ commonfields:
 name: MxToolBox
 display: MxToolBox
 category: Data Enrichment & Threat Intelligence
-description: All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated
-  tool
+description: All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated tool
 configuration:
 - display: API Key
   name: apiKey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
-- displaypassword: API Key
-  name:  credentials_api_key
   required: false
+- displaypassword: API Key
+  name: credentials_api_key
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: useproxy
   type: 8

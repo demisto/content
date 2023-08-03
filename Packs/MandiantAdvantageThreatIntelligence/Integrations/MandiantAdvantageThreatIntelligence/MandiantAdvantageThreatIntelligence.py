@@ -1,5 +1,4 @@
-from typing import Callable, Tuple
-from typing import Dict
+from collections.abc import Callable
 
 import dateutil.parser
 import pytz
@@ -106,9 +105,8 @@ class MandiantClient(BaseClient):
         now_timestamp = arg_to_datetime("now").timestamp()  # type:ignore
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
-        if token and valid_until:
-            if now_timestamp < valid_until:
-                return token
+        if token and valid_until and now_timestamp < valid_until:
+            return token
 
         # else generate a token and update the integration context accordingly
         token = self._retrieve_token()
@@ -188,7 +186,7 @@ class MandiantClient(BaseClient):
         else:
             return call_result.get(info_type, [])
 
-    def get_indicator_info(self, identifier: str, indicator_type: str) -> Dict:
+    def get_indicator_info(self, identifier: str, indicator_type: str) -> dict:
         """
         Retrieve detailed information for a given indicator.
         Args:
@@ -216,7 +214,7 @@ class MandiantClient(BaseClient):
         return call_result
 
     def get_indicators(
-        self, indicator_type: str = "Indicators", params: Dict = None
+        self, indicator_type: str = "Indicators", params: dict = None
     ) -> List:
         """
         Retrieve a list of indicators from Mandiant Threat Intelligence
@@ -240,7 +238,7 @@ class MandiantClient(BaseClient):
 
         return response
 
-    def get_indicators_by_value(self, indicator_value: str, params: Dict = None):
+    def get_indicators_by_value(self, indicator_value: str, params: dict = None):
         params = params or {}
         request_body = {
             "requests": [{"values": [indicator_value]}],
@@ -318,7 +316,7 @@ def get_verdict(mscore: Optional[str]) -> int:
         return Common.DBotScore.NONE
 
 
-def get_dbot_score(indicator: dict, indicator_type: str = None) -> Dict:
+def get_dbot_score(indicator: dict, indicator_type: str = None) -> dict:
     if indicator_type is None:
         indicator_type = MAP_INDICATORS[indicator["type"]]["dbotscore"]
     return {
@@ -333,7 +331,7 @@ def get_dbot_score(indicator: dict, indicator_type: str = None) -> Dict:
 
 
 def get_indicator_relationships(
-    raw_indicator: Dict,
+    raw_indicator: dict,
     indicator_field: str,
     entity_a_field: str,
     entity_a_type: str,
@@ -341,7 +339,7 @@ def get_indicator_relationships(
     entity_b_type: str,
     name: str,
     reverse_name: str,
-) -> List[Dict]:
+) -> List[dict]:
     """
     Creates relationships for the given indicator
     Args:
@@ -375,7 +373,7 @@ def get_indicator_relationships(
     return relationships
 
 
-def create_malware_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_malware_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Creates a malware indicator
     Args:
@@ -466,7 +464,7 @@ def create_malware_indicator(client: MandiantClient, raw_indicator: Dict) -> Dic
     return indicator_obj
 
 
-def create_campaign_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_campaign_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Creates a campaign indicator
     Args:
@@ -534,7 +532,7 @@ def create_campaign_indicator(client: MandiantClient, raw_indicator: Dict) -> Di
     return indicator_obj
 
 
-def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_actor_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Create indicator
     Args:
@@ -683,7 +681,7 @@ def parse_cvss(cve: dict) -> dict:
     return cvss
 
 
-def create_cve_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_cve_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Create CVE indicator
     Args:
@@ -702,7 +700,7 @@ def create_cve_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     return indicator_obj
 
 
-def create_file_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_file_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Args:
         client: MandiantClient
@@ -743,7 +741,7 @@ def create_file_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     return indicator_obj
 
 
-def create_ip_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_ip_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Args:
         client: MandiantClient
@@ -760,7 +758,7 @@ def create_ip_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     return indicator_obj
 
 
-def create_fqdn_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_fqdn_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Args:
         client: MandiantClient
@@ -778,7 +776,7 @@ def create_fqdn_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     return indicator_obj
 
 
-def create_url_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_url_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Args:
         client: MandiantClient
@@ -796,7 +794,7 @@ def create_url_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     return indicator_obj
 
 
-def create_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
+def create_indicator(client: MandiantClient, raw_indicator: dict) -> dict:
     """
     Create indicator
     Args:
@@ -809,8 +807,8 @@ def create_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
 
 
 def create_base_indicator(
-    client: MandiantClient, raw_indicator: Dict, indicator_type: str
-) -> Dict:
+    client: MandiantClient, raw_indicator: dict, indicator_type: str
+) -> dict:
     """
     Create indicator
     Args:
@@ -828,10 +826,7 @@ def create_base_indicator(
         if not source.get("osint", False):
             information_is_osint = False
 
-    if information_is_osint:
-        tlp_color = "GREEN"
-    else:
-        tlp_color = client.tlp_color
+    tlp_color = "GREEN" if information_is_osint else client.tlp_color
 
     campaign_relationships = [
         EntityRelationship(
@@ -871,7 +866,7 @@ def create_base_indicator(
     return indicator_obj
 
 
-MAP_INDICATORS_FUNCTIONS: Dict[str, Callable] = {
+MAP_INDICATORS_FUNCTIONS: dict[str, Callable] = {
     "Malware": create_malware_indicator,
     "Actors": create_actor_indicator,
     "Indicators": create_indicator,
@@ -1059,7 +1054,7 @@ def get_new_indicators(
 
 def get_indicator_list(
     client: MandiantClient, limit: int, first_fetch: str, indicator_type: str
-) -> List[Dict]:
+) -> List[dict]:
     """
     Get a list of indicators of the given type
     Args:
@@ -1088,7 +1083,7 @@ def get_indicator_list(
     return indicators_list
 
 
-def fetch_indicators(client: MandiantClient, args: Dict = None) -> Tuple[List, Dict]:
+def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, dict]:
     """
     For each type the fetch indicator command will:
         1. Fetch a list of indicators from the Mandiant Threat Intelligence API
@@ -1148,7 +1143,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> Tuple[List, D
     return (result, last_run_dict)
 
 
-def debug_fetch_indicators(client: MandiantClient, args: Dict = None):
+def debug_fetch_indicators(client: MandiantClient, args: dict = None):
     indicators, _ = fetch_indicators(client, args)
     return [CommandResults(outputs=indicator,
                            outputs_prefix="MANDIANTTI.Feed",
@@ -1178,7 +1173,7 @@ def batch_fetch_indicators(client: MandiantClient):
     demisto.setLastRun(last_run_dict)
 
 
-def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
+def fetch_indicator_by_value(client: MandiantClient, args: dict = None):
     args = args if args else {}
     indicator_value: str = args["indicator_value"]
 
@@ -1221,7 +1216,7 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
         return f"No indicators found matching value {indicator_value}"
 
 
-def fetch_threat_actor(client: MandiantClient, args: Dict = None):
+def fetch_threat_actor(client: MandiantClient, args: dict = None):
     args = args if args else {}
     actor_name: str = args["actor_name"]
 
@@ -1246,7 +1241,7 @@ def fetch_threat_actor(client: MandiantClient, args: Dict = None):
     )
 
 
-def fetch_malware_family(client: MandiantClient, args: Dict = None):
+def fetch_malware_family(client: MandiantClient, args: dict = None):
     args = args if args else {}
     malware_name: str = str(args.get("malware_name"))
 
@@ -1272,7 +1267,7 @@ def fetch_malware_family(client: MandiantClient, args: Dict = None):
     )
 
 
-def fetch_campaign(client: MandiantClient, args: Dict = None):
+def fetch_campaign(client: MandiantClient, args: dict = None):
     args = args if args else {}
     campaign: str = str(args.get("campaign_id"))
 
@@ -1293,7 +1288,7 @@ def fetch_campaign(client: MandiantClient, args: Dict = None):
     )
 
 
-def fetch_reputation(client: MandiantClient, args: Dict = None):
+def fetch_reputation(client: MandiantClient, args: dict = None):
     args = args if args else {}
     input_type: str = demisto.command()
     indicator_value: str = str(args.get(input_type))
@@ -1315,7 +1310,7 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
     if indicators:
         table = {
             'Value': indicators[0]['value'],
-            'MScore': indicators[0]['score'],
+            'MScore': indicators[0]["rawJSON"].get("mscore", ''),
             'Last Seen': indicators[0]["rawJSON"].get("last_seen", '')
         }
         indicator_type = indicators[0]["rawJSON"]["type"].lower()
@@ -1409,7 +1404,7 @@ def main() -> None:
             types=types,
         )
 
-        command_map: Dict[str, Callable] = {
+        command_map: dict[str, Callable] = {
             "mati-get-indicator": fetch_indicator_by_value,
             "mati-get-actor": fetch_threat_actor,
             "mati-get-malware": fetch_malware_family,
@@ -1421,7 +1416,7 @@ def main() -> None:
             "cve": fetch_reputation,
             "mati-feed-get-indicators": debug_fetch_indicators
         }
-        params_only_cmds: Dict[str, Callable] = {
+        params_only_cmds: dict[str, Callable] = {
             "test-module": test_module,
             "fetch-indicators": batch_fetch_indicators,
         }

@@ -59,8 +59,8 @@ configuration:
 - display: Search Keywords
   name: keywords
   type: 12
-  required: false
   additionalinfo: Comma separated keywords to look for in the files.
+  required: false
 - display: Sites To Search
   name: urls
   type: 12
@@ -155,7 +155,6 @@ script:
     description: Use the google search engine to search a query.
   dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 6.2.0
 tests:

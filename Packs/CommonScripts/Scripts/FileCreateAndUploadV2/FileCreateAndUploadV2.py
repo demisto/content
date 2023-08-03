@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import base64
 
 
-
 def main():
     args = demisto.args()
     filename = args.get('filename', '')

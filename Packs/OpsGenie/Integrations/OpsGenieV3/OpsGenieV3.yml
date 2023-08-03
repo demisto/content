@@ -88,38 +88,20 @@ name: OpsGenieV3
 script:
   commands:
   - arguments:
-    - default: false
-      description: Alert message.
-      isArray: false
+    - description: Alert message.
       name: message
       required: true
-      secret: false
-    - default: false
-      description: Client-defined identifier of the alert
-      isArray: false
+    - description: Client-defined identifier of the alert
       name: alias
-      required: false
-      secret: false
-    - default: false
-      description: Description field of the alert that is generally used to provide detailed information about the alert.
-      isArray: false
+    - description: Description field of the alert that is generally used to provide detailed information about the alert.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: "Teams/users to whom the alert is routed via notifications.\n You need to insert it as List of triples - responder_type,value_type,value.\n The responder_type can be: team, user, escalation or schedule.\n The value_type can be: id or name.\n You can retrieve the value from the output of the following commands '!opsgenie-get-teams', '!opsgenie-get-schedules' or '!opsgenie-get-escalations'.\n For example: schedule,name,test_schedule,user,id,123,team,name,test_team."
+    - description: "Teams/users to whom the alert is routed via notifications.\n You need to insert it as List of triples - responder_type,value_type,value.\n The responder_type can be: team, user, escalation or schedule.\n The value_type can be: id or name.\n You can retrieve the value from the output of the following commands '!opsgenie-get-teams', '!opsgenie-get-schedules' or '!opsgenie-get-escalations'.\n For example: schedule,name,test_schedule,user,id,123,team,name,test_team."
       isArray: true
       name: responders
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of tags to add.
+    - description: Comma-separated list of tags to add.
       isArray: true
       name: tags
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Incident priority.
       isArray: true
       name: priority
@@ -129,23 +111,16 @@ script:
       - P3
       - P4
       - P5
-      required: false
-      secret: false
       defaultValue: P3
-    - default: false
-      description: Display name of the request source. Defaults to IP address of the request sender.
-      isArray: false
+    - description: Display name of the request source. Defaults to IP address of the request sender.
       name: source
-      required: false
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
+    - name: details
+      description: Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01".
+      type: keyValue
+      isArray: true
     description: Create an alert in Opsgenie.
-    deprecated: false
     name: opsgenie-create-alert
     polling: true
     outputs:
@@ -176,46 +151,24 @@ script:
     - contextPath: OpsGenie.Alert.success
       description: Whether the request was successful.
       type: Boolean
-
   - arguments:
-    - default: false
-      description: The ID of the alert from Opsgenie.
-      isArray: false
+    - description: The ID of the alert from Opsgenie.
       name: alert-id
-      required: false
-      secret: false
-    - default: false
-      description: "Name of the field that the result set will be sorted by.\n The options are: createdAt, updatedAt, tinyId, alias, message, status, acknowledged, isSeen snoozed, snoozedUntil, count, lastOccurredAt, source, owner, integration.name, integration.type, report.ackTime, report.closeTime, report.acknowledgedBy, report.closedBy"
-      isArray: false
+    - description: "Name of the field that the result set will be sorted by.\n The options are: createdAt, updatedAt, tinyId, alias, message, status, acknowledged, isSeen snoozed, snoozedUntil, count, lastOccurredAt, source, owner, integration.name, integration.type, report.ackTime, report.closeTime, report.acknowledgedBy, report.closedBy"
       name: sort
-      required: false
-      secret: false
-    - default: false
-      description: Maximum results to return.
-      isArray: false
+    - description: Maximum results to return.
       name: limit
-      required: false
-      secret: false
       defaultValue: '20'
-    - default: false
-      description: Start index of the result set (to apply pagination). Minimum value is 0.
-      isArray: false
+    - description: Start index of the result set (to apply pagination). Minimum value is 0.
       name: offset
-      required: false
-      secret: false
       defaultValue: '0'
     - auto: PREDEFINED
-      default: false
       description: The status of the alert from Opsgenie.
-      isArray: false
       name: status
-      required: false
-      secret: false
       predefined:
       - Open
       - Closed
     - auto: PREDEFINED
-      default: false
       description: The priority of the alert from Opsgenie.
       isArray: true
       name: priority
@@ -225,34 +178,20 @@ script:
       - P3
       - P4
       - P5
-      required: false
-      secret: false
       defaultValue: P3
-    - default: false
-      description: Comma-separated list of tags.
+    - description: Comma-separated list of tags.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: URL encoded query parameters.
-      isArray: false
+    - description: URL encoded query parameters.
       name: query
-      required: false
-      secret: false
     - name: request_id
       description: ID of the polling request. No need to enter a value.
-      required: false
     - name: paging
       description: The next URL to request. No need to enter a value.
-      required: false
     - name: result
       description: Result of the previous command. No need to enter a value.
       isArray: true
-      required: false
-    deprecated: false
     description: List the current alerts from OpsGenie.
-    execution: false
     name: opsgenie-get-alerts
     polling: true
     outputs:
@@ -338,15 +277,10 @@ script:
       description: User who closed the alert.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the alert from Opsgenie.
-      isArray: false
+    - description: The ID of the alert from Opsgenie.
       name: alert-id
       required: true
-      secret: false
-    deprecated: false
     description: Delete an alert from OpsGenie.
-    execution: false
     name: opsgenie-delete-alert
     polling: true
     outputs:
@@ -378,21 +312,12 @@ script:
       description: Whether the request was successful.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the alert from Opsgenie.
-      isArray: false
+    - description: The ID of the alert from Opsgenie.
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Acknowledge an alert in OpsGenie.
-    execution: false
     name: opsgenie-ack-alert
     polling: true
     outputs:
@@ -425,21 +350,12 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the alert from Opsgenie.
-      isArray: false
+    - description: The ID of the alert from Opsgenie.
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Close an alert in OpsGenie.
-    execution: false
     name: opsgenie-close-alert
     polling: true
     outputs:
@@ -472,33 +388,16 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: ID of the Opsgenie alert.
-      isArray: false
+    - description: ID of the Opsgenie alert.
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: ID of the user to whom the alert will be assigned. Not required if owner_username is present.
-      isArray: false
+    - description: ID of the user to whom the alert will be assigned. Not required if owner_username is present.
       name: owner_id
-      required: false
-      secret: false
-    - default: false
-      description: Display name of the request owner. Not required if owner_id is present.
-      isArray: false
+    - description: Display name of the request owner. Not required if owner_id is present.
       name: owner_username
-      required: false
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Assign an OpsGenie alert.
-    execution: false
     name: opsgenie-assign-alert
     polling: true
     outputs:
@@ -531,38 +430,23 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: ID of the Opsgenie alert.
-      isArray: false
+    - description: ID of the Opsgenie alert.
       name: alert-id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Type of the identifier.
-      isArray: false
       name: identifierType
-      required: false
-      secret: false
       predefined:
       - id
       - tiny
       - alias
-    - default: false
-      description: "Team/user to whom the alert is routed via notifications.\n For now, it can be inserted only one responder at a time.\n You need to insert it as List of triple - responder_type,value_type,value.\n The responder_type can be: team or user.\n The value_type can be: id or name.\n You can retrieve the value from the output of the following '!opsgenie-get-teams' command.\n For example: user,id,123 Another example: team,name,test_team."
+    - description: "Team/user to whom the alert is routed via notifications.\n For now, it can be inserted only one responder at a time.\n You need to insert it as List of triple - responder_type,value_type,value.\n The responder_type can be: team or user.\n The value_type can be: id or name.\n You can retrieve the value from the output of the following '!opsgenie-get-teams' command.\n For example: user,id,123 Another example: team,name,test_team."
       isArray: true
       name: responders
       required: true
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Add a responder to an OpsGenie alert.
-    execution: false
     name: opsgenie-add-responder-alert
     polling: true
     outputs:
@@ -595,18 +479,10 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: ID of the escalation.
-      isArray: false
+    - description: ID of the escalation.
       name: escalation_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the escalation.
-      isArray: false
+    - description: Name of the escalation.
       name: escalation_name
-      required: false
-      secret: false
     description: Get escalations from OpsGenie.
     name: opsgenie-get-escalations
     outputs:
@@ -648,24 +524,15 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: E-mail address of the user
-      isArray: false
+    - description: E-mail address of the user
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Name of the user
-      isArray: false
+    - description: Name of the user
       name: fullName
       required: true
-      secret: false
-    - default: false
-      description: Role of user. It may be one of admin, user or the name of a custom role you've created.
-      isArray: false
+    - description: Role of user. It may be one of admin, user or the name of a custom role you've created.
       name: role
       required: true
-      secret: false
     description: Invite a user to OpsGenie
     name: opsgenie-invite-user
     outputs:
@@ -676,33 +543,16 @@ script:
       description: Username of the user.
       type: String
   - arguments:
-    - default: false
-      description: ID of the Opsgenie alert.
-      isArray: false
+    - description: ID of the Opsgenie alert.
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: Name of the escalation to which the alert will be escalated. Provide either the ID or name of the escalation.
-      isArray: false
+    - description: Name of the escalation to which the alert will be escalated. Provide either the ID or name of the escalation.
       name: escalation_name
-      required: false
-      secret: false
-    - default: false
-      description: ID of the escalation to which the alert will be escalated. Provide either the ID or name of the escalation.
-      isArray: false
+    - description: ID of the escalation to which the alert will be escalated. Provide either the ID or name of the escalation.
       name: escalation_id
-      required: false
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Escalate an OpsGenie alert.
-    execution: false
     name: opsgenie-escalate-alert
     polling: true
     outputs:
@@ -739,27 +589,16 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: ID of the Opsgenie alert.
-      isArray: false
+    - description: ID of the Opsgenie alert.
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of tags to add to the alert.
+    - description: Comma-separated list of tags to add to the alert.
       isArray: true
       name: tags
       required: true
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Add tag to the OpsGenie alert.
-    execution: false
     name: opsgenie-add-alert-tag
     polling: true
     outputs:
@@ -792,24 +631,15 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: ID of the Opsgenie alert.
-      isArray: false
+    - description: ID of the Opsgenie alert.
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of tags to remove from the alert.
+    - description: Comma-separated list of tags to remove from the alert.
       isArray: true
       name: tags
       required: true
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
     description: Remove a tag from the OpsGenie alert.
     name: opsgenie-remove-alert-tag
     outputs:
@@ -841,22 +671,13 @@ script:
       description: Whether the request was successful.
       type: Boolean
 
-    deprecated: false
-    execution: false
     polling: true
   - arguments:
-    - default: false
-      description: ID of the Opsgenie alert.
-      isArray: false
+    - description: ID of the Opsgenie alert.
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: Identifier of the attachment.
-      isArray: false
+    - description: Identifier of the attachment.
       name: attachment_id
-      required: false
-      secret: false
     description: Get the attachments of the alert.
     name: opsgenie-get-alert-attachments
     outputs:
@@ -890,18 +711,10 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: ID of the schedule.
-      isArray: false
+    - description: ID of the schedule.
       name: schedule_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the schedule.
-      isArray: false
+    - description: Name of the schedule.
       name: schedule_name
-      required: false
-      secret: false
     description: Get a schedule from OpsGenie.
     name: opsgenie-get-schedules
     outputs:
@@ -927,24 +740,12 @@ script:
       description: Timezone of the schedule.
       type: String
   - arguments:
-    - default: false
-      description: ID of the schedule.
-      isArray: false
+    - description: ID of the schedule.
       name: schedule_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the schedule.
-      isArray: false
+    - description: Name of the schedule.
       name: schedule_name
-      required: false
-      secret: false
-    - default: false
-      description: Alias of the schedule override.
-      isArray: false
+    - description: Alias of the schedule override.
       name: override_alias
-      required: false
-      secret: false
     description: Get schedule overrides.
     name: opsgenie-get-schedule-overrides
     outputs:
@@ -977,26 +778,13 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: Schedule ID from which to return on-call users.
-      isArray: false
+    - description: Schedule ID from which to return on-call users.
       name: schedule_id
-      required: false
-      secret: false
-    - default: false
-      description: Name of the schedule from which to return on-call users.
-      isArray: false
+    - description: Name of the schedule from which to return on-call users.
       name: schedule_name
-      required: false
-      secret: false
-    - default: false
-      description: Start date of the timeline in the following format (yyyy-MM-dd'T'HH:mm:ssZ)
-      isArray: false
+    - description: Start date of the timeline in the following format (yyyy-MM-dd'T'HH:mm:ssZ)
       name: starting_date
-      required: false
-      secret: false
     description: Get the on-call users for the provided schedule.
-    deprecated: false
     name: opsgenie-get-on-call
     outputs:
     - contextPath: OpsGenie.Schedule.OnCall._parent.enabled
@@ -1017,41 +805,22 @@ script:
     - contextPath: OpsGenie.Schedule.OnCall.onCallParticipants.type
       description: Type of the on-call participant.
       type: String
-    execution: false
   - arguments:
-    - default: false
-      description: Interval in seconds between each poll.
-      isArray: false
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
-      required: false
-      secret: false
       defaultValue: '5'
-    - default: false
-      description: Incident message.
-      isArray: false
+    - description: Incident message.
       name: message
       required: true
-      secret: false
-    - default: false
-      description: Detailed information about the incident.
-      isArray: false
+    - description: Detailed information about the incident.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: "Teams/users to whom the incident is routed via notifications.\n You need to insert it as List of triples - responder_type,value_type,value.\n The responder_type can be: team or user.\n The value_type can be: id or name.\n You can retrieve the value from the output of the '!opsgenie-get-teams' command.\n For example: user,id,123,team,name,test_team."
+    - description: "Teams/users to whom the incident is routed via notifications.\n You need to insert it as List of triples - responder_type,value_type,value.\n The responder_type can be: team or user.\n The value_type can be: id or name.\n You can retrieve the value from the output of the '!opsgenie-get-teams' command.\n For example: user,id,123,team,name,test_team."
       isArray: true
       name: responders
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of tags to add.
+    - description: Comma-separated list of tags to add.
       isArray: true
       name: tags
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Incident Priority.
       isArray: true
       name: priority
@@ -1061,10 +830,7 @@ script:
       - P3
       - P4
       - P5
-      required: false
-      secret: false
       defaultValue: P3
-    deprecated: false
     description: Create an incident in Opsgenie.
     name: opsgenie-create-incident
     polling: true
@@ -1095,15 +861,10 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the incident from Opsgenie.
-      isArray: false
+    - description: The ID of the incident from Opsgenie.
       name: incident_id
       required: true
-      secret: false
-    deprecated: false
     description: Delete an incident from OpsGenie.
-    execution: false
     name: opsgenie-delete-incident
     polling: true
     outputs:
@@ -1132,38 +893,21 @@ script:
       description: Whether the request was successful.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the incident from Opsgenie.
-      isArray: false
+    - description: The ID of the incident from Opsgenie.
       name: incident_id
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
+    - description: Maximum number of results to return.
       name: limit
-      required: false
-      secret: false
       defaultValue: '20'
-    - default: false
-      description: Start index of the result set (to apply pagination). Minimum value is 0.
-      isArray: false
+    - description: Start index of the result set (to apply pagination). Minimum value is 0.
       name: offset
-      required: false
-      secret: false
       defaultValue: '0'
     - auto: PREDEFINED
-      default: false
       description: The status of the alert from Opsgenie.
-      isArray: false
       name: status
-      required: false
-      secret: false
       predefined:
       - Open
       - Closed
     - auto: PREDEFINED
-      default: false
       description: Incident Priority.
       isArray: true
       name: priority
@@ -1173,34 +917,20 @@ script:
       - P3
       - P4
       - P5
-      required: false
-      secret: false
       defaultValue: P3
-    - default: false
-      description: Comma-separated list of tags to add.
+    - description: Comma-separated list of tags to add.
       isArray: true
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: URL encoded query parameters.
-      isArray: false
+    - description: URL encoded query parameters.
       name: query
-      required: false
-      secret: false
     - name: request_id
       description: ID of the polling request. No need to enter a value.
-      required: false
     - name: paging
       description: The next URL to request. No need to enter a value.
-      required: false
     - name: result
       description: Result of the previous command. No need to enter a value.
       isArray: true
-      required: false
-    deprecated: false
     description: List the current incidents from OpsGenie.
-    execution: false
     name: opsgenie-get-incidents
     polling: true
     outputs:
@@ -1249,21 +979,12 @@ script:
       type: Date
 
   - arguments:
-    - default: false
-      description: The ID of the incident from Opsgenie.
-      isArray: false
+    - description: The ID of the incident from Opsgenie.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: Additional incident note.
-      isArray: false
+    - description: Additional incident note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Close an incident from OpsGenie.
-    execution: false
     name: opsgenie-close-incident
     polling: true
     outputs:
@@ -1293,21 +1014,12 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the incident from Opsgenie.
-      isArray: false
+    - description: The ID of the incident from Opsgenie.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: "Additional incident note."
-      isArray: false
+    - description: "Additional incident note."
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Resolve an incident from OpsGenie.
-    execution: false
     name: opsgenie-resolve-incident
     polling: true
     outputs:
@@ -1337,27 +1049,16 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the incident from Opsgenie.
-      isArray: false
+    - description: The ID of the incident from Opsgenie.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: "Teams/users to whom the incident is routed via notifications.\n You need to insert it as list of triples - responder_type,value_type,value.\n The responder_type can be: team or user.\n The value_type can be: id or name.\n You can retrieve the value from the output of the '!opsgenie-get-teams' command.\n For example: user,id,123,team,name,test_team."
+    - description: "Teams/users to whom the incident is routed via notifications.\n You need to insert it as list of triples - responder_type,value_type,value.\n The responder_type can be: team or user.\n The value_type can be: id or name.\n You can retrieve the value from the output of the '!opsgenie-get-teams' command.\n For example: user,id,123,team,name,test_team."
       isArray: true
       name: responders
       required: true
-      secret: false
-    - default: false
-      description: Additional alert note.
-      isArray: false
+    - description: Additional alert note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Add a responder to an OpsGenie incident.
-    execution: false
     name: opsgenie-add-responder-incident
     polling: true
     outputs:
@@ -1387,27 +1088,16 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the incident from Opsgenie.
-      isArray: false
+    - description: The ID of the incident from Opsgenie.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of tags to add to the incident.
+    - description: Comma-separated list of tags to add to the incident.
       isArray: true
       name: tags
       required: true
-      secret: false
-    - default: false
-      description: Additional incident note.
-      isArray: false
+    - description: Additional incident note.
       name: note
-      required: false
-      secret: false
-    deprecated: false
     description: Add a tag to the OpsGenie incident.
-    execution: false
     name: opsgenie-add-tag-incident
     polling: true
     outputs:
@@ -1437,24 +1127,15 @@ script:
       type: Boolean
 
   - arguments:
-    - default: false
-      description: The ID of the incident from Opsgenie.
-      isArray: false
+    - description: The ID of the incident from Opsgenie.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of tags to add to the incident.
+    - description: Comma-separated list of tags to add to the incident.
       isArray: true
       name: tags
       required: true
-      secret: false
-    - default: false
-      description: Additional incident note.
-      isArray: false
+    - description: Additional incident note.
       name: note
-      required: false
-      secret: false
     description: Remove a tag from the OpsGenie alert.
     name: opsgenie-remove-tag-incident
     outputs:
@@ -1483,18 +1164,12 @@ script:
       description: Whether the request was successful.
       type: Boolean
 
-    deprecated: false
-    execution: false
     polling: true
   - name: opsgenie-get-teams
     description: Get teams
     arguments:
     - name: team_id
       description: The ID of the team from Opsgenie.
-      default: false
-      isArray: false
-      required: false
-      secret: false
     outputs:
     - contextPath: OpsGenie.Team.description
       description: Team description.
@@ -1514,7 +1189,6 @@ script:
   - name: opsgenie-get-request
     polling: true
     description: Get a request in Opsgenie
-    deprecated: false
     arguments:
     - name: output_prefix
       deprecated: true
@@ -1522,15 +1196,12 @@ script:
     - name: polled_once
       deprecated: true
       description: 'Whether this is the first time polling'
-      required: false
     - name: request_id
       description: The id of the request to get
       required: true
-      isArray: false
     - name: request_type
       description: The type of the request to get
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - alerts
@@ -1590,10 +1261,33 @@ script:
     - contextPath: OpsGenie.Incident.success
       description: Whether the request was successful.
       type: Boolean
-
-  dockerimage: demisto/python3:3.10.12.63474
+  - name: opsgenie-get-team-routing-rules
+    description: Lists team routing rules.
+    arguments:
+    - name: team_id
+      description: The ID of the team from Opsgenie.
+      required: true
+    outputs:
+    - contextPath: OpsGenie.TeamRoutingRule.name
+      description: Name of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.order
+      description: Order of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.id
+      description: ID of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.timezone
+      description: Timezone of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.teamId
+      description: Team ID of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.customerId
+      description: Customer ID of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.notify.id
+      description: Notify ID of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.notify.name
+      description: Notify name of the routing rule.
+    - contextPath: OpsGenie.TeamRoutingRule.notify.type
+      description: Notify type of the routing rule.
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

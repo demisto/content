@@ -5,7 +5,6 @@ import random
 from typing import Counter
 
 
-
 def parse_data(list_content):
     lists_data = []
     list_collections: Counter = collections.Counter(list_content)

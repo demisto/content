@@ -1,16 +1,11 @@
 args:
-- default: false
-  description: 'Device IDs to isolate or unisolate.'
+- description: 'Device IDs to isolate or unisolate.'
   isArray: true
   name: device_ids
   required: true
-  secret: false
-- default: false
-  description: 'The action to apply to device IDs - isolate or unisolate.'
-  isArray: false
+- description: 'The action to apply to device IDs - isolate or unisolate.'
   name: action
   required: true
-  secret: false
   auto: PREDEFINED
   predefined:
   - 'isolate'
@@ -73,14 +68,13 @@ outputs:
   # CrowdStrike outputs
 
 script: '-'
-system: false
 tags:
 - basescript
 - incident-action-button
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

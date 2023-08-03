@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import ipaddress
 
 
-
 def cidr_network_addresses_lower_from_const(ip_cidr: str, max_prefix: int) -> bool:
     """ Check if a given CIDR prefix is bigger (lower number prefix) than the given input.
 

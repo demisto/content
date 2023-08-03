@@ -30,62 +30,37 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.12.63474
-  isfetch: false
   commands:
   - name: arkime-connection-list
     description: Gets a list of nodes and links and returns them to the client.
     arguments:
     - name: source_field
       description: The source database field name.
-      required: false
-      isArray: false
     - name: destination_field
       description: The destination database field name.
-      required: false
-      isArray: false
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1.
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time for data to return. The format is the number of seconds since Unix EPOC.
-      required: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time for data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: "\"last\"\tQuery sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received."
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     - name: baseline_date
       description: 'The baseline date range to compare connections against. Default is 0, disabled. Options include: 1x - 1 times query range. 2x - 2 times query range. 4x - 4 times query range. 6x - 6 times query range. 8x - 8 times query range. 10x - 10 times query range. 1 - 1 hour. 6 - 6 hours. 24 - 1 day. 48 - 2 days. 72 - 3 days. 168 - 1 week. 336 - 2 weeks. 720 - 1 month. 1440 - 2 months. 4380 - 6 months. 8760 - 1 year.'
-      required: false
-      isArray: false
     - name: baseline_view
       description: 'Which connections to display when a baseline date range is applied. Default is all. Options include: ‘all’ - All Nodes: all nodes are visible. ‘actual’ - Actual Nodes: nodes present in the “current” timeframe query results are visible. ‘actualold’ - Baseline Nodes: nodes present in the “baseline” timeframe query results are visible. ‘new’ - New Nodes Only: nodes present in the “current” but NOT the “baseline” timeframe are visible. ‘old’ - Baseline Nodes Only: nodes present in the “baseline” but NOT the “current” timeframe are visible.'
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.Connection.nodes.id
       description: The source IP address of the connection nodes.
@@ -146,48 +121,27 @@ script:
     arguments:
     - name: source_field
       description: The source database field name.
-      required: false
-      isArray: false
     - name: destination_field
       description: The destination database field name.
-      required: false
-      isArray: false
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1.
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: 'Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received.'
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.Connection.InfoFile.Name
       description: The file name.
@@ -212,20 +166,13 @@ script:
     arguments:
     - name: ids
       description: The list of IDs to return.
-      required: false
       isArray: true
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.PcapFile.data.node
       description: The pcap file data node.
@@ -250,48 +197,27 @@ script:
     arguments:
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1.
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: "\"last\"\tQuery sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received."
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of items to return. Defaults to 100. Max is 2,000,000.
-      required: false
-      isArray: false
     - name: offset
       description: The entry from which to start.
-      required: false
-      isArray: false
       defaultValue: '0'
     outputs:
     - contextPath: Arkime.Session.InfoFile.Name
@@ -317,52 +243,29 @@ script:
     arguments:
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1.
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: "\"last\"\tQuery sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received."
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of items to return. Defaults to 100. Max is 2,000,000.
-      required: false
-      isArray: false
     - name: page_number
       description: The page at which to start. The default is 0.
-      required: false
-      isArray: false
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
-      required: false
-      isArray: false
     outputs:
     - type: Date
       contextPath: Arkime.Session.data.firstPacket
@@ -453,60 +356,35 @@ script:
     arguments:
     - name: counts
       description: Whether to return counts with the list of unique field values. Defaults to 0. 0 = no counts, 1 - counts.
-      required: false
-      isArray: false
     - name: expression_field_names
       description: Comma-separated list of expression field names to return.
       required: true
       isArray: true
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: 'Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received.'
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of items to return. Defaults to 100, Max is 2,000,000
-      required: false
-      isArray: false
     - name: page_number
       description: The page at which to start. The default is 0
-      required: false
-      isArray: false
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.UniqueField.Field
       description: The field.
@@ -519,64 +397,37 @@ script:
     arguments:
     - name: counts
       description: Whether to return counts with the list of unique field values. Defaults to 0. 0 = no counts, 1 - counts.
-      required: false
-      isArray: false
     - name: expression_field_names
       description: Comma-separated list of expression field names to return.
       required: true
       isArray: true
     - name: database_field
       description: The database field to return unique data for. Either expression or field is required, field is given priority if both are present.
-      required: false
-      isArray: false
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1.
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: 'Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received.'
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of items to return. Defaults to 100, Max is 2,000,000
-      required: false
-      isArray: false
     - name: page_number
       description: The page at which to start. The default is 0
-      required: false
-      isArray: false
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.UniqueField.Field
       description: The field.
@@ -589,8 +440,6 @@ script:
     arguments:
     - name: array_response
       description: Whether to return an array of fields, otherwise returns a map,
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.Field.friendlyName
       description: The friendly name.
@@ -613,39 +462,23 @@ script:
     - name: field
       description: The database field to get data for. Defaults to “node”.
       required: true
-      isArray: false
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: "\"last\"\tQuery sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received."
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: Arkime.SpiGraph.items.name
@@ -707,39 +540,23 @@ script:
     - name: spi
       description: Comma-separated list of database fields to return. Optionally can be followed by :{count} to specify the number of values returned for the field (defaults to 100).
       required: true
-      isArray: false
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: 'Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received.'
-      required: false
-      isArray: false
     - name: strictly
       description: When set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’.
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: Arkime.SpiView.spi.destination.ip.doc_count_error_upper_bound
@@ -771,48 +588,28 @@ script:
       isArray: true
     - name: session_ids
       description: Comma-separated list of session IDs.
-      required: false
       isArray: true
     - name: segments
       description: 'Whether to add tags to linked session segments. Default is no. Options include: no - Don’t add tags to linked segments all - Add tags to all linked segments time - Add tags to segments occurring in the same time period'
-      required: false
-      isArray: false
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: 'Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received.'
-      required: false
-      isArray: false
     - name: strictly
       description: "\tWhen set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’."
-      required: false
-      isArray: false
     outputs:
     - type: Boolean
       contextPath: Arkime.AddSessionTags.success
@@ -829,48 +626,28 @@ script:
       isArray: true
     - name: session_ids
       description: Comma-separated list of session IDs.
-      required: false
       isArray: true
     - name: segments
       description: 'Whether to add tags to linked session segments. Default is no. Options include: no - Don’t add tags to linked segments all - Add tags to all linked segments time - Add tags to segments occurring in the same time period'
-      required: false
-      isArray: false
     - name: date
       description: The number of hours of data to return (-1 means all data). Defaults to 1
-      required: false
-      isArray: false
     - name: expression
       description: The search expression string.
-      required: false
-      isArray: false
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. The format is the number of seconds since Unix EPOC.
-      required: false
-      isArray: false
     - name: view
       description: The view name to apply before the expression.
-      required: false
-      isArray: false
     - name: order
       description: Comma-separated list of database field names to sort on. Data is sorted in order of the list supplied. Optionally can be followed by :asc or :desc for ascending or descending sorting.
-      required: false
-      isArray: false
     - name: fields
       description: Comma-separated list of database field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO.
-      required: false
       isArray: true
     - name: bounding
       description: 'Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received.'
-      required: false
-      isArray: false
     - name: strictly
       description: "\tWhen set, the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’."
-      required: false
-      isArray: false
     outputs:
     - type: Boolean
       contextPath: Arkime.AddSessionTags.success
@@ -883,16 +660,10 @@ script:
     arguments:
     - name: limit
       description: The maximum number of items to return. Defaults to 100, Max is 10,000
-      required: false
-      isArray: false
     - name: page_number
       description: The page at which to start. The default is 0.
-      required: false
-      isArray: false
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
-      required: false
-      isArray: false
     outputs:
     - type: Number
       contextPath: Arkime.File.recordsTotal

@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import socket
 
 
-
 def ip_to_host(ip: str) -> CommandResults:
     host_info = socket.gethostbyaddr(ip)
 

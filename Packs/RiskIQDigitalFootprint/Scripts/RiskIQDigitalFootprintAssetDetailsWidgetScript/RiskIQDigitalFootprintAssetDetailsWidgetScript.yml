@@ -6,16 +6,14 @@ script: '-'
 type: python
 tags:
 - dynamic-indicator-section
-comment: Shows the detailed information of an asset identified as a "RiskIQAsset"
-  type of indicator in the layout of the indicator.
+comment: Shows the detailed information of an asset identified as a "RiskIQAsset" type of indicator in the layout of the indicator.
 enabled: true
 subtype: python3
 dependson:
   must:
   - '|||df-get-asset'
 timeout: 300ns
-runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

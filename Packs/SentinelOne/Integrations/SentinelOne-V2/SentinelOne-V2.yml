@@ -9,10 +9,10 @@ configuration:
   type: 0
 - name: credentials
   display: ""
-  required: false
   type: 9
   displaypassword: API Token
   hiddenusername: true
+  required: false
 - name: api_version
   display: API Version
   required: true
@@ -23,80 +23,80 @@ configuration:
   - "2.1"
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - name: fetch_type
   display: Fetch incidents from type
-  required: false
   defaultvalue: Threats
   type: 15
   options:
   - Alerts
   - Threats
   - Both
+  required: false
 - name: fetch_time
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
-  required: false
   defaultvalue: "3 days"
   type: 0
+  required: false
 - name: fetch_threat_rank
   display: "Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0."
-  required: false
   defaultvalue: '5'
   type: 0
+  required: false
 - name: fetch_severity
   display: Defines Alert severity to fetch.
-  required: false
   type: 16
   options:
   - High
   - Medium
   - Low
+  required: false
 - name: fetch_incidentStatus
   display: Define which Alerts should be fetched.
-  required: false
   type: 16
   options:
   - RESOLVED
   - UNRESOLVED
   - IN_PROGRESS
+  required: false
 - name: fetch_limit
   display: 'Fetch limit: The maximum number of threats or alerts to fetch'
-  required: false
   type: 0
   defaultvalue: '10'
+  required: false
 - name: fetch_site_ids
   display: Site IDs
-  required: false
   type: 0
   additionalinfo: Comma-separated list of site IDs to fetch incidents for. Leave blank to fetch all sites.
+  required: false
 - name: block_site_ids
   display: Block Site IDs
-  required: false
   type: 0
   additionalinfo: Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites.
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Use the "API Token (Recommended)" parameter instead.
   display: API Token (Deprecated)
   name: token
-  required: false
   type: 4
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -106,14 +106,14 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
+  required: false
 - additionalinfo: When selected, closing the SentinelOne ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_xsoar_incident
-  required: false
   type: 8
+  required: false
 description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
@@ -2019,7 +2019,6 @@ script:
       required: true
       description: 'Greater than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z", "10 days", "2 hours","5 months".'
     - name: created_until
-      required: false
       description: 'Less than or equal to the time created. Example: "2018-02-27T04:49:26.257525Z", "10 days", "2 hours","5 months".'
     - name: ruleName
       description: 'Free-text filter by rule name. Example: "rule1".'
@@ -2210,6 +2209,25 @@ script:
       required: true
       description: A comma-separated list of agent IDs on which the script should run.
       isArray: true
+    - name: singularity_xdr_Keyword
+      description: Singularityxdr keyword.
+    - name: singularity_xdr_Url
+      description: Singularityxdr url.
+    - name: api_key
+      description: Api key.
+    - name: input_params
+      description: Input params.
+    - name: password
+      description: Password.
+    - name: script_runtime_timeout_seconds
+      description: Script runtime timout in seconds for current execution.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: If set to true, execution will require approval.
+      name: requires_approval
+      predefined:
+      - "false"
+      - "true"
     outputs:
     - contextPath: SentinelOne.RunRemoteScript.pendingExecutionId
       description: ID of the created pending execution. Present only if pending flag is true.
@@ -2265,9 +2283,9 @@ script:
     - contextPath: SentinelOne.Query.Status.QueryId
       description: QueryID From Request
   - arguments:
-      - description: AgentId of the System
-        name: agent_id
-        required: true
+    - description: AgentId of the System
+      name: agent_id
+      required: true
     description: Returns network interface details for a given Agent ID. This includes MAC address details and interface description.
     name: sentinelone-get-agent-mac
     outputs:
@@ -2288,7 +2306,6 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: ""
   type: python
   subtype: python3

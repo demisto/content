@@ -15,8 +15,7 @@ args:
   required: true
   description: Terms to hightlight in the text. Can be words or sentances (that does not includes comma). Notice that if you used a sentances and word, the word shouldn't be as part of a sentance, for example "thank,thank you" is invalid input. Comma-separated value.
 scripttarget: 0
-runonce: false
 tests:
 - HighlightWords_Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.11.61265
+dockerimage: demisto/python3:3.10.12.66339

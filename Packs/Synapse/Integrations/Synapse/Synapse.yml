@@ -18,31 +18,31 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: 'Optionally set display timezone for timestamps. Default is UTC. Ex: "US/Eastern"'
   display: Timezone (optional)
   name: timezone
-  required: false
   type: 0
+  required: false
 - additionalinfo: Tag that denotes indicator is malicious (i.e. "threat.mal" or "mal.foo.bar"). Depends on custom tag heirarchy. Use highest heirarchical tag that is considered malicious.
   display: Malicious Tag
   name: bad_tag
-  required: false
   type: 0
+  required: false
 - additionalinfo: Tag that denotes indicator is benign (i.e. "omit.benign" or "legit.beign"). Depends on custom tag heirarchy. Use highest heirarchical tag that is considered benign.
   display: Benign Tag
   name: good_tag
-  required: false
   type: 0
+  required: false
 - display: Use Synapse Optic
   name: use_optic
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -55,8 +55,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -65,13 +65,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 description: Synapse intelligence analysis platform.
 display: Synapse
 name: Synapse
@@ -83,10 +83,7 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Returns IP information and reputation.
-    execution: false
     name: ip
     outputs:
     - contextPath: Synapse.IP.ip
@@ -131,10 +128,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Returns URL information and reputation.
-    execution: false
     name: url
     outputs:
     - contextPath: Synapse.URL.url
@@ -179,10 +173,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Returns Domain information and reputation.
-    execution: false
     name: domain
     outputs:
     - contextPath: Synapse.Domain.domain
@@ -227,10 +218,7 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Returns File information and reputation.
-    execution: false
     name: file
     outputs:
     - contextPath: Synapse.File.hash
@@ -284,20 +272,12 @@ script:
   - arguments:
     - default: true
       description: Synapse storm query (i.e. "inet:ipv4=1.2.3.4")
-      isArray: false
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Limit the number of results returned. Default is 100.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Execute a Synapse Storm query.
-    execution: false
     name: synapse-storm-query
     outputs:
     - contextPath: Synapse.Nodes.created
@@ -312,9 +292,7 @@ script:
     - contextPath: Synapse.Nodes.valu
       description: 'The node primary value (i.e. "1.2.3.4" for an IP).'
       type: String
-  - deprecated: false
-    description: Lists current users in Synapse Cortex.
-    execution: false
+  - description: Lists current users in Synapse Cortex.
     name: synapse-list-users
     outputs:
     - contextPath: Synapse.Users.Admin
@@ -335,9 +313,7 @@ script:
     - contextPath: Synapse.Users.Rules
       description: The rules applied to the Synapse user.
       type: String
-  - deprecated: false
-    description: Lists current roles in Synapse Cortex.
-    execution: false
+  - description: Lists current roles in Synapse Cortex.
     name: synapse-list-roles
     outputs:
     - contextPath: Synapse.Roles.Iden
@@ -350,21 +326,12 @@ script:
       description: The rules applied to the Synapse Role.
       type: String
   - arguments:
-    - default: false
-      description: New username to be created.
-      isArray: false
+    - description: New username to be created.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Optionally set the new user's password.
-      isArray: false
+    - description: Optionally set the new user's password.
       name: password
-      required: false
-      secret: false
-    deprecated: false
     description: Create a new Synapse user.
-    execution: false
     name: synapse-create-user
     outputs:
     - contextPath: Synapse.Users.Admin
@@ -386,15 +353,10 @@ script:
       description: The rules applied to the Synapse user.
       type: String
   - arguments:
-    - default: false
-      description: New role to create in Synapse.
-      isArray: false
+    - description: New role to create in Synapse.
       name: role
       required: true
-      secret: false
-    deprecated: false
     description: Create a new Synapse role.
-    execution: false
     name: synapse-create-role
     outputs:
     - contextPath: Synapse.Roles.Iden
@@ -407,21 +369,13 @@ script:
       description: The rules applied to the Synapse Role.
       type: String
   - arguments:
-    - default: false
-      description: User's "iden" property - not the username.
-      isArray: false
+    - description: User's "iden" property - not the username.
       name: user
       required: true
-      secret: false
-    - default: false
-      description: Role's "iden" property - not the name of the role.
-      isArray: false
+    - description: Role's "iden" property - not the name of the role.
       name: role
       required: true
-      secret: false
-    deprecated: false
     description: Grants a user access to role based perrmissions.
-    execution: false
     name: synapse-grant-user-role
     outputs:
     - contextPath: Synapse.Users.Admin
@@ -443,15 +397,10 @@ script:
       description: The rules applied to the Synapse user.
       type: String
   - arguments:
-    - default: false
-      description: Type/Form query (i.e. "inet:ipv4" or "inet"fqdn")
-      isArray: false
+    - description: Type/Form query (i.e. "inet:ipv4" or "inet"fqdn")
       name: query
       required: true
-      secret: false
-    deprecated: false
     description: Query the Synapse data model and return details for given type or form (i.e. "inet:ipv4" for an IPv4 IP address).
-    execution: false
     name: synapse-query-model
     outputs:
     - contextPath: Synapse.Model.Doc
@@ -473,10 +422,6 @@ script:
       description: The given value of the Synapse object type.
       type: String
   dockerimage: demisto/py3-tools:1.0.0.31193
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

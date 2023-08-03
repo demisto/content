@@ -1,0 +1,536 @@
+id: XCloud Alert Enrichment
+version: -1
+name: XCloud Alert Enrichment
+description: |-
+  This playbook is responsible for data collection and enrichment.
+
+  The playbook collects or enriches the following data:
+
+  - Account enrichment
+
+
+  - Network enrichment
+
+     -Attacker IP
+
+     -Geolocation
+
+     -ASN
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 25022665-b8ac-42ef-8efc-7ced46e7f559
+    type: start
+    task:
+      id: 25022665-b8ac-42ef-8efc-7ced46e7f559
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f29094d8-f1ca-4ce4-8639-f5fceb7bf9d4
+    type: title
+    task:
+      id: f29094d8-f1ca-4ce4-8639-f5fceb7bf9d4
+      version: -1
+      name: Network Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 71667809-2d9e-4daf-8a9f-1fc2e82c4d6b
+    type: regular
+    task:
+      id: 71667809-2d9e-4daf-8a9f-1fc2e82c4d6b
+      version: -1
+      name: Check if the caller_ip is an internal IP address
+      description: Determines whether an IPv4 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed comma-delimited and each will be tested.
+      scriptName: IsInCidrRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      left:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: caller_ip
+      right:
+        simple: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 75349330-2905-4ec0-8277-c34477b1ce9f
+    type: title
+    task:
+      id: 75349330-2905-4ec0-8277-c34477b1ce9f
+      version: -1
+      name: Identity Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6af1abdf-0a66-4f53-8b61-e91af5085073
+    type: regular
+    task:
+      id: 6af1abdf-0a66-4f53-8b61-e91af5085073
+      version: -1
+      name: Get Geolocation data
+      description: Checks the specified IP address against the AbuseIP database.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      extended_data:
+        simple: "true"
+      ip:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: caller_ip
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: cfadb906-576e-47cb-8b91-8b5bce349f2e
+    type: condition
+    task:
+      id: cfadb906-576e-47cb-8b91-8b5bce349f2e
+      version: -1
+      name: Is it cloud ASN?
+      description: A transformer for simple if-then-else logic.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.event
+                accessor: caller_ip_asn_org
+            iscontext: true
+          right:
+            value:
+              simple: AMAZON
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.event
+                accessor: caller_ip_asn_org
+            iscontext: true
+          right:
+            value:
+              simple: MICROSOFT
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.OriginalAlert.event
+                accessor: caller_ip_asn_org
+            iscontext: true
+          right:
+            value:
+              simple: GOOGLE
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 431a171f-fed5-432d-82a5-9d00bcf14cdb
+    type: playbook
+    task:
+      id: 431a171f-fed5-432d-82a5-9d00bcf14cdb
+      version: -1
+      name: IP Enrichment - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS)
+        - Provide threat information
+        - Separate internal and external IP addresses
+        - For internal IP addresses, get host information
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      IP:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: caller_ip
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        complex:
+          root: inputs.ResolveIP
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 898ac7ab-07c5-480d-8586-abcf647326c3
+    type: regular
+    task:
+      id: 898ac7ab-07c5-480d-8586-abcf647326c3
+      version: -1
+      name: Set ASN type - Not Cloud ASN
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      key:
+        simple: ASNType
+      value:
+        simple: notCloudASN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 2587f6d4-9f99-4a0b-8d46-3b9adc264dfc
+    type: playbook
+    task:
+      id: 2587f6d4-9f99-4a0b-8d46-3b9adc264dfc
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 6d8d04bd-cc56-46bf-8fae-d39cb585e5d0
+    type: title
+    task:
+      id: 6d8d04bd-cc56-46bf-8fae-d39cb585e5d0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 00aac347-43a2-4b79-8677-798d7dcd5794
+    type: regular
+    task:
+      id: 00aac347-43a2-4b79-8677-798d7dcd5794
+      version: -1
+      name: Set ASN type - Cloud ASN
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      key:
+        simple: ASNType
+      value:
+        simple: CloudASN
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1195,
+        "width": 1300,
+        "x": -160,
+        "y": 260
+      }
+    }
+  }
+inputs:
+- key: ResolveIP
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
+  playbookInputQuery:
+outputs:
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: IAM
+  description: Generic IAM output.
+  type: unknown
+- contextPath: UserManagerEmail
+  description: The email of the user's manager.
+- contextPath: UserManagerDisplayName
+  description: The display name of the user's manager.
+  type: unknown
+- contextPath: MSGraphUser
+  description: The MSGraphUser object.
+  type: unknown
+- contextPath: MSGraphUserManager.Manager
+  description: The MSGrMSGraphUserManageraph Manager object.
+  type: unknown
+- contextPath: SailPointIdentityNow
+  description: The SailPointIdentityNow object.
+  type: unknown
+- contextPath: SailPointIdentityNow.Account
+  description: The IdentityNow account object.
+  type: unknown
+- contextPath: IdentityIQ
+  description: The IdentityIQ object.
+  type: unknown
+- contextPath: ActiveDirectory.Users
+  description: The ActiveDirectory Users object.
+  type: unknown
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.6.0

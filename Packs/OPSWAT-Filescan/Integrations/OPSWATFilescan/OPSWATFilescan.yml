@@ -19,12 +19,12 @@ configuration:
   type: 9
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
+  required: false
 script:
   script: "-"
   type: python
@@ -46,23 +46,18 @@ script:
     - name: timeout
       description: The timeout for the polling in seconds.
       defaultValue: "600"
-      required: false
     - name: hide_polling_output
       description: Hide polling output.
       deprecated: true
     - name: description
       description: Uploaded file/url description
-      required: false
     - name: tags
       description: Tags array to propagate
-      required: false
     - name: password
       description: Custom password, in case uploaded archive is protected
-      required: false
       secret: true
     - name: is_private
       description: If file should not be available for download by other users
-      required: false
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -150,23 +145,18 @@ script:
     - name: timeout
       description: The timeout for the polling in seconds.
       defaultValue: "1200"
-      required: false
     - name: hide_polling_output
       description: Hide polling output.
       deprecated: true
     - name: description
       description: Uploaded file/url description
-      required: false
     - name: tags
       description: Tags array to propagate
-      required: false
     - name: password
       description: Custom password, in case uploaded archive is protected
-      required: false
       secret: true
     - name: is_private
       description: If file should not be available for download by other users
-      required: false
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -249,10 +239,8 @@ script:
       default: true
       description: The query string
     - name: page
-      required: false
       description: Page number, starting from 1
     - name: page_size
-      required: false
       description: Page size. Can be 5, 10 or 20
       auto: PREDEFINED
       predefined:
@@ -260,7 +248,6 @@ script:
       - '10'
       - '20'
     - name: limit
-      required: false
       description: Number of total results. Maximum 50. (If page and page_size was also provided, then it will be ignored.)
     outputs:
     - contextPath: OPSWAT.Filescan.Analysis.id

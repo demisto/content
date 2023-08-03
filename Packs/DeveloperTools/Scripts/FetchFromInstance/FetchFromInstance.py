@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 
 
-
 def get_instance_name(args):
     if args.get("instance_name"):
         return args['instance_name']

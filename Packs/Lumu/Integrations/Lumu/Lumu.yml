@@ -9,14 +9,14 @@ configuration:
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch every time
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 minutes, 2 hours, 2 days, 2 months, 2 years). Default is 3 days.
   defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - display: Server URL
   name: url
   defaultvalue: https://defender.lumu.io
@@ -69,19 +69,19 @@ configuration:
   name: mirror_direction
   defaultvalue: None
   type: 15
-  required: false
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming And Outgoing
   additionalinfo: Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Lumu to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Lumu), or both **Incoming And Outgoing**.
+  required: false
 - display: Mirror tags
   name: mirror_tags
   defaultvalue: mirror
   type: 0
-  required: false
   additionalinfo: Comment and files that will be marked with this tag will be pushed into Lumu.
+  required: false
 script:
   script: ''
   type: python
@@ -1081,9 +1081,8 @@ script:
     - contextPath: Lumu.GetCache.lumu_incidentsId
       type: string
       description: "Lumu incident ids processed"
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  runonce: false
   subtype: python3
   ismappable: true
   isremotesyncin: true

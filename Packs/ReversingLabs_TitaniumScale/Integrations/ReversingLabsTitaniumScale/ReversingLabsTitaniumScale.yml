@@ -13,8 +13,8 @@ configuration:
   type: 4
 - display: Verify host certificates
   name: verify
-  required: false
   type: 8
+  required: false
 - defaultvalue: C - Fairly reliable
   display: Reliability
   name: reliability
@@ -26,18 +26,18 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: '2'
   display: Wait time between report fetching retries (seconds). Deafult is 2 seconds.
   name: wait_time_seconds
-  required: false
   type: 0
+  required: false
 - defaultvalue: '30'
   display: Number of report fetching retries. Default is 30.
   name: num_of_retries
-  required: false
   type: 0
+  required: false
 description: ReversingLabs advanced file decomposition appliance.
 detaileddescription: TitaniumScale provides real-time and deep inspection of files.
 display: ReversingLabs TitaniumScale
@@ -47,13 +47,9 @@ script:
   - arguments:
     - default: true
       description: The file entry to upload
-      isArray: false
       name: entryId
       required: true
-      secret: false
-    deprecated: false
     description: Upload sample to TitaniumScale and retrieve analysis report.
-    execution: false
     name: reversinglabs-titaniumscale-upload-sample-and-get-results
     outputs:
     - contextPath: File.SHA256
@@ -98,13 +94,9 @@ script:
   - arguments:
     - default: true
       description: The file entry to upload
-      isArray: false
       name: entryId
       required: true
-      secret: false
-    deprecated: false
     description: Upload sample to TitaniumScale for analysis.
-    execution: false
     name: reversinglabs-titaniumscale-upload-sample
     outputs:
     - contextPath: ReversingLabs.task_Url
@@ -113,13 +105,9 @@ script:
   - arguments:
     - default: true
       description: The file entry to upload
-      isArray: false
       name: taskUrl
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve report of a previously uploaded file from TitaniumScale.
-    execution: false
     name: reversinglabs-titaniumscale-get-results
     outputs:
     - contextPath: File.SHA256
@@ -162,10 +150,6 @@ script:
       description: Full report
       type: String
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.40822
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

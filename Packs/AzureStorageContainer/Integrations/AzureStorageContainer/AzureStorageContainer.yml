@@ -6,34 +6,31 @@ configuration:
 - display: Storage account name
   displaypassword: Account SAS Token
   name: credentials
-  required: false
   type: 9
-- additionalinfo: Relevant only if the integration is running on Azure VM.
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+  required: false
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Account key
   name: key
-  required: false
   type: 0
+  required: false
 description: Create and Manage Azure Storage Container services.
 display: Azure Storage Container
 name: Azure Storage Container
@@ -319,10 +316,6 @@ script:
     description: create SAS token for container
     name: azure-storage-container-sas-create
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: ''
   subtype: python3

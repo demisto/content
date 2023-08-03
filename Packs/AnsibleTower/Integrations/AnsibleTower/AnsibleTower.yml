@@ -13,47 +13,29 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Scale IT automation, manage complex deployments, and speed productivity.
 display: Ansible Automation Platform
 name: AnsibleTower
 script:
   commands:
   - arguments:
-    - default: false
-      description: The inventory ID for which to retrieve the specific inventory.
-      isArray: false
+    - description: The inventory ID for which to retrieve the specific inventory.
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number to retrieve. Default is 1.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Page size. Default is 50.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
-      isArray: false
+    - description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
       name: search
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of inventories.
-    execution: false
     name: ansible-tower-inventories-list
     outputs:
     - contextPath: AnsibleAWX.Inventory.id
@@ -102,41 +84,19 @@ script:
       description: Flag indicating the inventory is being deleted.
       type: Boolean
   - arguments:
-    - default: false
-      description: ID of the host to retrieve.
-      isArray: false
+    - description: ID of the host to retrieve.
       name: host_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the inventory to retrieve.
-      isArray: false
+    - description: ID of the inventory to retrieve.
       name: inventory_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number to retrieve. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Page size. Default is 50.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
-      isArray: false
+    - description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
       name: search
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of hosts. If an inventory ID is specified, retrieve the host located under the specific inventory.
-    execution: false
     name: ansible-tower-hosts-list
     outputs:
     - contextPath: AnsibleAWX.Host.id
@@ -182,34 +142,18 @@ script:
       description: The date and time ansible_facts was last modified.
       type: Date
   - arguments:
-    - default: false
-      description: The ID of the inventory under which to create the host.
-      isArray: false
+    - description: The ID of the inventory under which to create the host.
       name: inventory_id
       required: true
-      secret: false
-    - default: false
-      description: Unique name for the host.
-      isArray: false
+    - description: Unique name for the host.
       name: host_name
       required: true
-      secret: false
-    - default: false
-      description: Optional description of this host.
-      isArray: false
+    - description: Optional description of this host.
       name: description
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'True'
+    - defaultValue: 'True'
       description: Whether this host will be online and available for running jobs. Default is "True".
-      isArray: false
       name: enabled
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a host under the specified inventory ID and with the specified name.
-    execution: false
     name: ansible-tower-host-create
     outputs:
     - contextPath: AnsibleAWX.Host.id
@@ -258,15 +202,10 @@ script:
       description: The date and time ansible_facts was last modified.
       type: Date
   - arguments:
-    - default: false
-      description: The ID of the host to delete.
-      isArray: false
+    - description: The ID of the host to delete.
       name: host_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes the specified host.
-    execution: false
     name: ansible-tower-host-delete
     outputs:
     - contextPath: AnsibleAWX.Host.id
@@ -276,41 +215,19 @@ script:
       description: Whether this host was deleted.
       type: Boolean
   - arguments:
-    - default: false
-      description: Inventory ID of the jobs that are managed with hosts under this inventory.
-      isArray: false
+    - description: Inventory ID of the jobs that are managed with hosts under this inventory.
       name: inventory_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number to retrieve. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Page size. Default is 50.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
-      isArray: false
+    - description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
       name: search
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the job template.
-      isArray: false
+    - description: The ID of the job template.
       name: id
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of job templates.
-    execution: false
     name: ansible-tower-job-templates-list
     outputs:
     - contextPath: AnsibleAWX.JobTemplate.id
@@ -389,35 +306,17 @@ script:
       description: Credential ID that allowed Tower to access the node this job was run against.
       type: Number
   - arguments:
-    - default: false
-      description: ID of a specific credential.
-      isArray: false
+    - description: ID of a specific credential.
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Page number to retrieve. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Page size. Default is 50.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
-      isArray: false
+    - description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
       name: search
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of credentials. If an ID is specified, retrieve the specific credential.
-    execution: false
     name: ansible-tower-credentials-list
     outputs:
     - contextPath: AnsibleAWX.Credential.id
@@ -451,33 +350,16 @@ script:
       description: Username.
       type: String
   - arguments:
-    - default: false
-      description: ID of the job template to launch.
-      isArray: false
+    - description: ID of the job template to launch.
       name: job_template_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the inventory that contains the host you want this job to manage if the job template does not have an inventory to start.
-      isArray: false
+    - description: The ID of the inventory that contains the host you want this job to manage if the job template does not have an inventory to start.
       name: inventory_id
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the credentials that allow Tower to access the node this job will be run against.
-      isArray: false
+    - description: The ID of the credentials that allow Tower to access the node this job will be run against.
       name: credentials_id
-      required: false
-      secret: false
-    - default: false
-      description: Command line variables to pass to the playbook in JSON format.
-      isArray: false
+    - description: Command line variables to pass to the playbook in JSON format.
       name: extra_variables
-      required: false
-      secret: false
-    deprecated: false
     description: Launches the job template.
-    execution: false
     name: ansible-tower-job-launch
     outputs:
     - contextPath: AnsibleAWX.Job.id
@@ -577,32 +459,19 @@ script:
       description: Credential ID that allowed Tower to access the node this job was run against.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the job to relaunch.
-      isArray: false
+    - description: ID of the job to relaunch.
       name: job_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: 'The hosts to relaunch the job. Can be all the hosts or only the ones where the job failed. Possible values are: "all" and "failed". Default is "all".'
-      isArray: false
       name: relaunch_hosts
       predefined:
       - all
       - failed
-      required: false
-      secret: false
-    - default: false
-      description: Credential ID.
-      isArray: false
+    - description: Credential ID.
       name: credentials_id
-      required: false
-      secret: false
-    deprecated: false
     description: Relaunch a job.
-    execution: false
     name: ansible-tower-job-relaunch
     outputs:
     - contextPath: AnsibleAWX.Job.id
@@ -702,15 +571,10 @@ script:
       description: Credential ID that allowed Tower to access the node this job was run against.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the job to cancel.
-      isArray: false
+    - description: The ID of the job to cancel.
       name: job_id
       required: true
-      secret: false
-    deprecated: false
     description: Cancels a pending or running job.
-    execution: false
     name: ansible-tower-job-cancel
     outputs:
     - contextPath: AnsibleAWX.Job.id
@@ -810,32 +674,19 @@ script:
       description: Credential ID that allowed Tower to access the node this job was run against.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the job.
-      isArray: false
+    - description: The ID of the job.
       name: job_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: 'Whether to print the output. Possible values are: "True" and "False". Default is "True".'
-      isArray: false
       name: print_output
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The string by which to filter lines in the standard output. For example, enter 'success' to filter the standard output lines containing this word.
-      isArray: false
+    - description: The string by which to filter lines in the standard output. For example, enter 'success' to filter the standard output lines containing this word.
       name: text_filter
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the standard output by running the provided job.
-    execution: false
     name: ansible-tower-job-stdout
     outputs:
     - contextPath: AnsibleAWX.JobStdout.job_id
@@ -845,21 +696,12 @@ script:
       description: The standard output content.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the job.
-      isArray: false
+    - description: The ID of the job.
       name: job_id
       required: true
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
-      isArray: false
+    - description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
       name: search
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the job status.
-    execution: false
     name: ansible-tower-job-status
     outputs:
     - contextPath: AnsibleAWX.Job.id
@@ -959,35 +801,17 @@ script:
       description: Credential ID that allowed Tower to access the node this job was run against.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the job event.
-      isArray: false
+    - description: The ID of the job event.
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number to retrieve. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Page size. Default is 50.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
-      isArray: false
+    - description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
       name: search
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of job events, you can use the id filter to get one job event, you can use the ansible-tower-job-event-list-by-id command to filter through events by job id.
-    execution: false
     name: ansible-tower-job-events-list
     outputs:
     - contextPath: AnsibleAWX.JobEvents.id
@@ -1054,22 +878,14 @@ script:
       description: Ending line number of the execution.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the inventory.
-      isArray: false
+    - description: ID of the inventory.
       name: inventory_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the credential.
-      isArray: false
+    - description: ID of the credential.
       name: credential_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The name of the module.Modules are discrete units of code that can be used from the command line or in a playbook task. Ansible ships with a number of modules that can be executed directly on remote hosts or through playbooks.
-      isArray: false
       name: module_name
       predefined:
       - command
@@ -1092,16 +908,9 @@ script:
       - win_group
       - win_user
       required: true
-      secret: false
-    - default: false
-      description: Module arguments.
-      isArray: false
+    - description: Module arguments.
       name: module_args
-      required: false
-      secret: false
-    deprecated: false
     description: Creates new ad hoc commands.
-    execution: false
     name: ansible-tower-adhoc-command-launch
     outputs:
     - contextPath: AnsibleAWX.AdhocCommand.id
@@ -1174,15 +983,10 @@ script:
       description: Whether the ad hoc command become enabled.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the command.
-      isArray: false
+    - description: The ID of the command.
       name: command_id
       required: true
-      secret: false
-    deprecated: false
     description: Launch a new job to run the ad hoc command.
-    execution: false
     name: ansible-tower-adhoc-command-relaunch
     outputs:
     - contextPath: AnsibleAWX.AdhocCommand.id
@@ -1255,15 +1059,10 @@ script:
       description: Whether the ad hoc command become enabled.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the command to cancel.
-      isArray: false
+    - description: The ID of the command to cancel.
       name: command_id
       required: true
-      secret: false
-    deprecated: false
     description: Cancel a job of the specified ad hoc command.
-    execution: false
     name: ansible-tower-adhoc-command-cancel
     outputs:
     - contextPath: AnsibleAWX.AdhocCommand.id
@@ -1345,47 +1144,29 @@ script:
       description: Whether the ad hoc command become enabled.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the command to run.
-      isArray: false
+    - description: The ID of the command to run.
       name: command_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: 'Prints the ad hoc command output. Possible values are: "True" and "False". Default is "True".'
-      isArray: false
       name: print_output
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: The string by which to filter lines in the standard output. For example, enter 'success' to filter the standard output lines containing this word.
-      isArray: false
+    - description: The string by which to filter lines in the standard output. For example, enter 'success' to filter the standard output lines containing this word.
       name: text_filter
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the standard output from running this ad hoc command.
-    execution: false
     name: ansible-tower-adhoc-command-stdout
     outputs:
     - contextPath: AnsibleAWX.AdhocCommandStdout.content
       description: Standard output content.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the command.
-      isArray: false
+    - description: The ID of the command.
       name: command_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a single ad hoc command status.
-    execution: false
     name: ansible-tower-adhoc-command-status
     outputs:
     - contextPath: AnsibleAWX.AdhocCommand.id
@@ -1467,35 +1248,18 @@ script:
       description: Whether the ad hoc command become enabled.
       type: Boolean
   - arguments:
-    - default: false
-      description: The ID of the job event.
-      isArray: false
+    - description: The ID of the job event.
       name: job_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number to retrieve. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Page size. Default is 50.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
-      isArray: false
+    - description: The search query string used to perform a case-insensitive search within all designated text fields of a model.
       name: search
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the list of job events of specific job.
-    execution: false
     name: ansible-tower-job-events-list-by-id
     outputs:
     - contextPath: AnsibleAWX.JobEvents.id
@@ -1565,10 +1329,6 @@ script:
       description: Job's raw event data
       type: String
   dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

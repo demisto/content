@@ -27,7 +27,6 @@ script:
   type: javascript
   commands:
   - name: blockade-get-indicators
-    deprecated: false
     arguments:
     - name: dbroute
       description: Optional DB name in a multi-DB cloud node

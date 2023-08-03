@@ -4,7 +4,6 @@ import json
 from time import sleep
 
 
-
 TIMEOUT = 960
 INTERVAL = 10
 

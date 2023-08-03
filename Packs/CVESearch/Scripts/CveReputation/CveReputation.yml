@@ -19,6 +19,5 @@ dependson:
   must:
   - cve
 timeout: 2.4µs
-runonce: false
 fromversion: 5.0.0
 deprecated: true

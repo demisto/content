@@ -104,7 +104,6 @@ script:
     description: Getting Access logs from for SSH traffic
   dockerimage: demisto/luminate:1.0.0.14061
   isfetch: true
-  runonce: false
 fromversion: 5.0.0
 tests:
 - No Test
