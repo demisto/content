@@ -220,12 +220,9 @@ def get_pack_dependencies(client: demisto_client,
     api_endpoint = "/contentpacks/marketplace/search/dependencies"
     body = [{"id": pack_id}]  # Not specifying a "version" key will return the latest version of the pack.
 
-    logging.debug(f"Fetching dependencies for pack '{pack_id}'.\n"
-                  f"Sending POST request to {api_endpoint} with body: {json.dumps(body)}")
-
     for attempt in range(attempts_count - 1, -1, -1):
-        logging.info(f"Fetching dependencies information for '{pack_id}' using Marketplace API "
-                     f"(Attempt {attempts_count - attempt}/{attempts_count})")
+        logging.debug(f"Fetching dependencies information for '{pack_id}' using Marketplace API "
+                      f"(Attempt {attempts_count - attempt}/{attempts_count})")
         try:
             response_data = demisto_client.generic_request_func(
                 client,
@@ -779,7 +776,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         'batch_packs_install_request_body': batch_packs_install_request_body,
         'commit_hash': master_commit_hash,
     }
-
 
     if not multithreading:
         for pack_id in pack_ids:
