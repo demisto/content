@@ -5,6 +5,11 @@ from AnyMatch import main
 # Note: left and right can be all types, and in order to test list as an input we use a string that looks like a list,
 # a comma separated string that will be converted to a list in the script.
 
+# Note: When executing the filter within playbooks, a JSON on the left will be treated as a single long string, as designed.
+# There is an example for that in the TestPlaybook.
+# However, during testing, I encountered difficulty reproducing that behavior. In the test environment,
+# a JSON containing a comma will be separated into two strings.
+
 
 @pytest.mark.parametrize('left,right, call_count,expected_result', [
     (123, 1, 1, [True]),
