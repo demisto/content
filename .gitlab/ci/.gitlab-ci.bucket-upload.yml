@@ -567,9 +567,7 @@ sync-buckets-between-projects:
         job-done
         exit 1
       else
-        bucket_list_origin=("gs://marketplace-dist" "gs://marketplace-v2-dist" "gs://xpanse-dist")
-        bucket_list_prod=("gs://marketplace-xsoar-dev" "gs://marketplace-xsiam-dev" "gs://marketplace-xpanse-dev")
-        buckets_list_prod_us=("gs://marketplace-xsoar-prod-us", "gs://marketplace-xsiam-prod-us", "gs://marketplace-xpanse-prod-us")
+
       
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
         
@@ -580,7 +578,7 @@ sync-buckets-between-projects:
         echo "Syncing gs://marketplace-xpanse-dev"
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-dev
         
-        ./Tests/scripts/validate_synced_buckets.sh "${bucket_list_origin[@]}" "${bucket_list_prod[@]}" 
+        ./Tests/scripts/validate_synced_buckets.sh "dev"
         
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY"
 
@@ -591,7 +589,7 @@ sync-buckets-between-projects:
         echo "Syncing gs://marketplace-xpanse-prod-us"
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
         
-        ./Tests/scripts/validate_synced_buckets.sh "${bucket_list_origin[@]}" "${buckets_list_prod_us[@]}" 
+        ./Tests/scripts/validate_synced_buckets.sh "prod-us"
         
         echo "Bucket sync completed"
       fi

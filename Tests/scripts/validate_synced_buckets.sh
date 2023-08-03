@@ -13,15 +13,13 @@ function get_revision_field() {
 }
 
 function compare_revision() {
-  bucket_list_origin=$1
-  bucket_list_prod=$2
-  echo $bucket_list_origin
-  echo $bucket_list_prod
+  bucket_list_origin=("gs://marketplace-dist" "gs://marketplace-v2-dist" "gs://xpanse-dist")
+  bucket_list_prod=("gs://marketplace-xsoar" "gs://marketplace-xsiam" "gs://marketplace-xpanse")
 
   # Compare the revision fields for each pair of buckets
   for ((i = 0; i < ${#bucket_list_origin[@]}; i++)); do
     bucket1="${bucket_list_origin[$i]}"
-    bucket2="${bucket_list_prod[$i]}"
+    bucket2="${bucket_list_prod[$i]}-$1"
 
     echo "Comparing revisions for $bucket1 and $bucket2"
 
@@ -41,9 +39,5 @@ function compare_revision() {
   done
 }
 
-echo $1
-echo $2
-echo ${1[@]}
-echo here
-compare_revision "${1[@]}" "${2[@]}"
+compare_revision "$1"
 
