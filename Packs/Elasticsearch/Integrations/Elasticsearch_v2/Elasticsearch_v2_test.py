@@ -969,19 +969,46 @@ def test_execute_raw_query(mocker):
     assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE
 
 
+class MockES:
+    class MockIndices:
+        @staticmethod
+        def get_mapping(index):
+            return {
+                'my_index': {
+                    'mappings': {
+                        'properties': {
+                            'created_at': {
+                                'type': 'date',
+                                'format': 'yyyy-MM-dd HH:mm:ss'
+                            }
+                        }
+                    }
+                }
+            }
+
+    indices = MockIndices
+
+
+def test_get_datetime_field_format():
+    Elasticsearch_v2.FETCH_INDEX = 'my_index'
+    Elasticsearch_v2.TIME_FIELD = 'created_at'
+
+    es = MockES
+    assert Elasticsearch_v2.get_datetime_field_format(es) == 'YYYY-MM-DD HH:mm:ss'
+
+
 @pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [
     ('123456', 'Timestamp-Seconds', '', 123456),
     ('123456', 'Timestamp-Milliseconds', '', 123456),
-    ('123456', 'Simple-Date', 'yyyy-MM-dd HH:mm:ss', 123456),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-dd', '2023-07-01'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss', '2023-07-01T00:00:00'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss.SSS', '2023-07-01T00:00:00.000'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss.SSSSSS', '2023-07-01T00:00:00.000000'),
-    (dateparser.parse('July 1, 2023 02:30'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ssZ', '2023-07-01T02:30:00Z'),
-    (dateparser.parse('July 1, 2023 02:00'), 'Simple-Date', 'yyyy-MM-ddTHH:mm:ss.SSSZ', '2023-07-01T02:00:00.000Z'),
+    ('123456', 'Simple-Date', 'YYYY-MM-DD HH:mm:ss', 123456),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD', '2023-07-01'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss', '2023-07-01 00:00:00'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSS', '2023-07-01 00:00:00.000'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSSSSS', '2023-07-01 00:00:00.000000'),
+    (dateparser.parse('July 1, 2023 02:30'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ssZ', '2023-07-01 02:30:00+0000'),
+    (dateparser.parse('July 1, 2023 02:00'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSSZ', '2023-07-01 02:00:00.000+0000'),
 ])
 def test_convert_date_to_timestamp(mocker, date_time, time_method, time_format, expected_time):
     mocker.patch.object(demisto, 'params', return_value={'time_format': time_format})
     Elasticsearch_v2.TIME_METHOD = time_method
-    Elasticsearch_v2.TIME_FORMAT = time_format
-    assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
+    assert Elasticsearch_v2.convert_date_to_timestamp(date_time, time_format) == expected_time
