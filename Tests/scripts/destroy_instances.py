@@ -51,11 +51,11 @@ def shutdown(ssh: SSHClient, server_ip: str, ttl: int | None = None) -> bool:
         _, stdout, stderr = ssh.exec_command(shutdown_command)
         # Wait for the command to exit.
         exit_code = stdout.channel.recv_exit_status()
-        stderr_lines = stderr.readlines()
-        logging.info(f"Running shutdown finished - stdout:{stdout.readlines()}, stderr:{stderr_lines},"
+        # not checking stderr, as shutdown command on success writes it's output to it, so we can only verify the exit code.
+        logging.info(f"Running shutdown finished - stdout:{stdout.readlines()}, stderr:{stderr.readlines()},"
                      f" exit code:{exit_code}")
 
-        return not stderr_lines and exit_code == 0
+        return exit_code == 0
     except SSHException:
         logging.exception(f'Failed changing permissions of folder {SERVER_LOG_DIRECTORY} on server {server_ip}')
     return False
