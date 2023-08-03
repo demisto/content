@@ -9,7 +9,7 @@ configuration:
 - display: Server IP address (for example, 192.168.0.1)
   name: server_ip
   type: 0
-  required: false
+  required: true
   section: Connect
   advanced: true
 - display: Port. If not specified, the default port is 389, or 636 for LDAPS.
