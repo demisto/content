@@ -43,6 +43,7 @@ function compare_revision() {
 
 echo $1
 echo $2
+echo ${1[@]}
 echo here
-compare_revision "$1" "$2"
+compare_revision "${1[@]}" "${2[@]}"
 
