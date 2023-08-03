@@ -17,6 +17,7 @@ from Tests.scripts.utils.log_util import install_logging
 urllib3.disable_warnings()  # Disable insecure warnings
 
 DEFAULT_TTL = "300"
+SERVER_LOG_PATH = "/var/log/demisto/server.log"
 
 
 def options_handler():
@@ -37,15 +38,17 @@ def chmod_logs(server_ip: str) -> bool:
     return False
 
 
-def progress(filename: bytes, size: int, sent: int, peer_name: tuple[str, int]):
-    logging.info(f"({peer_name[0]}:{peer_name[1]}) {filename!r}'s progress: {float(sent) / float(size) * 100:.2f}%")
-
-
 def download_logs(server_ip: str, artifacts_dir: str, role: str, ssh: SSHClient) -> bool:
+
+    def progress(filename: bytes, size: int, sent: int, peer_name: tuple[str, int]):
+        logging.info(f"Downloading from:{peer_name[0]}:{peer_name[1]} {filename!r} "
+                     f"progress: {float(sent) / float(size) * 100:.2f}%")
+
     try:
-        logging.info(f'Downloading server logs from server {server_ip}')
+        download_path = (Path(artifacts_dir) / f"server_{role}_{server_ip}.log").as_posix()
+        logging.info(f'Downloading server logs from server {server_ip} from:{SERVER_LOG_PATH} to {download_path}')
         with SCPClient(ssh.get_transport(), progress4=progress) as scp:
-            scp.get("/var/log/demisto/server.log", (Path(artifacts_dir) / f"server_{role}_{server_ip}.log").as_posix())
+            scp.get(SERVER_LOG_PATH, download_path)
         return True
     except SCPException:
         logging.exception(f'Failed downloading server logs from server {server_ip}')
