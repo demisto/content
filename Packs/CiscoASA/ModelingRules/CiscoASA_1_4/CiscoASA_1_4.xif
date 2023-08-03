@@ -752,11 +752,15 @@ filter _raw_log ~= "from\s\(\d+\.\d+\.\d+\.\d+\)\sto\s\d+\.\d+\.\d+\.\d+"
 // Call-Home
 filter _raw_log contains "Call-Home"
 | call cisco_asa_main_fields_extraction
-| alter outcome_reason = arrayindex(regextract(_raw_log, "Reason\:\s+(\S+)"),0)
+| alter outcome_reason = arrayindex(regextract(_raw_log, "Reason\:\s+(\S+)"),0),
+    dst_url = arrayindex(regextract(_raw_log, "message\sto\s(\S+)"),0),
+    outcome = arrayindex(regextract(_raw_log, "message\sto\s\S+\s(\w+)\."),0)
 | alter xdm.event.original_event_type = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
     xdm.observer.name = observer_name,
+    xdm.target.url = dst_url,
+    xdm.event.outcome = if(outcome = "failed",XDM_CONST.OUTCOME_FAILED,null),
     xdm.event.outcome_reason = outcome_reason;
 
 // UPDATE:
@@ -787,8 +791,7 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*
     outcome_reason2 = arrayindex(regextract(_raw_log ,"reason\:\s([A-Za-z]+)"),0),
     network_rule = arrayindex(regextract(_raw_log , "for\s([A-Z]+)\slog"),0),
     src_ip = arrayindex(regextract(_raw_log ,"\(from\s(\d+\.\d+\.\d+\.\d+)\)"),0),
-    status_1 = arrayindex(regextract(_raw_log ,"state\:\s(\w+)"),0),
-//
+    status_1 = arrayindex(regextract(_raw_log ,"state\:\s([\w\-]+)"),0),
     status_2 = arrayindex(regextract(_raw_log ,"entered\s(\S+)\sstate"),0),
     port_mode = arrayindex(regextract(_raw_log ,"mode\sfor\s\S+\sset\sto\s([A-Z]+)"),0),
     ethernet_name = arrayindex(regextract(_raw_log ,"([A-Za-z0-9]+\/\d+)"),0),
