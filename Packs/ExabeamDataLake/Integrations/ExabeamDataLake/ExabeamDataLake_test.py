@@ -4,7 +4,10 @@ from CommonServerPython import CommandResults, DemistoException
 from ExabeamDataLake import Client, _handle_time_range_query, query_datalake_command
 
 
-class MockClient:
+class MockClient(Client):
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
+        pass
+
     def query_datalake_command(self) -> None:
         return
 
@@ -61,21 +64,16 @@ def test_handle_time_range_query_raise_error():
         _handle_time_range_query(start_time, end_time)
 
 
-# @pytest.mark.parametrize(
-#     "limit, all_result, len_expected ,readable_expected",
-    
-# )
 def test_query_datalake_command(mocker):
     """
     Test case for the 'query_datalake_command' function.
     """
     mock_response = load_test_data("./test_data/response.json")
 
-    mocker.patch("ExabeamDataLake.Client", return_value=MockClient())
     mocker.patch.object(Client, "query_datalake_request", return_value=mock_response)
 
     response: CommandResults = query_datalake_command(
-        Client,
+        MockClient("", "", "", False, False),
         {
             "query": "*",
             "start_time": "2021-07-16T12:00:00",  # 1626382800000
@@ -84,7 +82,8 @@ def test_query_datalake_command(mocker):
             "all_result": False,
         },
     )
-    assert len(response.outputs) == 3
+    outputs = response.to_context()["EntryContext"]['ExabeamDataLake.Log']
+    assert len(outputs) == 3
     assert response.readable_output == (
         "### Logs\n"
         "|Action|Event Name|ID|Product|Time|Vendor|\n"
@@ -100,10 +99,9 @@ def test_query_datalake_command_no_response(mocker):
     Test case for the 'query_datalake_command' function.
     """
 
-    mocker.patch("ExabeamDataLake.Client", return_value=MockClient())
     mocker.patch.object(Client, "query_datalake_request", return_value={})
 
-    response = query_datalake_command(Client, {"query": "*"})
+    response = query_datalake_command(MockClient("", "", "", False, False), {"query": "*"})
 
     assert response.readable_output == "No results found."
 
@@ -114,7 +112,7 @@ def test_query_datalake_command_raise_error(mocker):
     when: query_datalake_command is called with an invalid query
     then: Ensure that a DemistoException is raised
     """
-    mocker.patch("ExabeamDataLake.Client", return_value=MockClient())
+
     args = {"query": "*", "limit": 50, "all_result": False}
     mocker.patch.object(
         Client,
@@ -124,4 +122,4 @@ def test_query_datalake_command_raise_error(mocker):
         },
     )
     with pytest.raises(DemistoException, match="Error in query: test response"):
-        query_datalake_command(Client, args)
+        query_datalake_command(MockClient("", "", "", False, False), args)

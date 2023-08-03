@@ -1,6 +1,6 @@
 {
     "name": "ExabeamDataLake",
-    "description": "Cloud-delivered Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.",
+    "description": "Exabeam Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

@@ -1,6 +1,5 @@
-id: a7ad1fea-3671-45e6-8e6e-85f147c6e8df
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: ExabeamDataLake-test
+version: -1
 name: ExabeamDataLake-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -164,6 +164,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -195,3 +196,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+description: ''
+fromversion: 6.9.0

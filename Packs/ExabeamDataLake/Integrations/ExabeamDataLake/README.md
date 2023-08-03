@@ -1,4 +1,5 @@
-Cloud-delivered Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
+Exabeam Data Lake provides a highly scalable, cost-effective, and searchable log management system. Data Lake is used for log collection, storage, processing, and presentation.
+
 This integration was integrated and tested with version DL-i40.3 of Exabeam Data Lake
 
 ## Configure Exabeam Data Lake on Cortex XSOAR
