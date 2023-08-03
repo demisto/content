@@ -5842,7 +5842,7 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   script: ''
   subtype: python3
