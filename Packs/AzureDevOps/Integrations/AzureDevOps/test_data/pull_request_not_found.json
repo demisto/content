@@ -5,5 +5,6 @@
     "typeName": "Microsoft.TeamFoundation.Git.Server.GitPullRequestNotFoundException, Microsoft.TeamFoundation.Git.Server",
     "typeKey": "GitPullRequestNotFoundException",
     "errorCode": 0,
-    "eventId": 3000
+    "eventId": 3000,
+    "value": ""
 }

@@ -636,7 +636,7 @@ def test_azure_devops_branch_list_command(requests_mock):
         proxy=False,
         auth_type='Device Code')
 
-    result = branch_list_command(client, {"project": project, "repository": repository})
+    result = branch_list_command(client, {"project": project, "repository": repository}, None, None)
 
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'AzureDevOps.Branch'
@@ -1286,7 +1286,7 @@ def test_file_pre_process_body_request(requests_mock, change_type, args, expecte
     Then:
      - Ensure that this static method works as expected by constructing the HTTP response data accordingly.
     """
-    from AzureDevOps import Client
+    from AzureDevOps import Client, file_pre_process_body_request
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
@@ -1298,7 +1298,7 @@ def test_file_pre_process_body_request(requests_mock, change_type, args, expecte
         proxy=False,
         auth_type='Device Code')
 
-    data = client.file_pre_process_body_request(change_type, args)
+    data = file_pre_process_body_request(change_type, args)
     assert data == expected_result
 
 def test_file_update_command(requests_mock):
@@ -1420,28 +1420,25 @@ def test_file_list_command(requests_mock):
     assert result.readable_output.startswith('### Files\n|File Name(s)|Object ID|\n|---|---|\n| / |  |\n| /.github |  |')
     assert result.outputs_prefix == 'AzureDevOps.File'
 
-def test_file_content_get_command(requests_mock):
+
+ZIP = ("zip", {"Content-Type": "application/zip"}, "response")
+JSON = ("json", {"Content-Type": "application/json"}, "json")
+@pytest.mark.parametrize('format_file, headers, resp_type', [ZIP, JSON])
+def test_file_get_command(mocker, requests_mock, format_file, headers, resp_type):
     """
     Given:
      - all required arguments
     When:
-     - executing azure-devops-file-content-get command
+     - executing azure-devops-file-get command
     Then:
-     - Ensure outputs_prefix and readable_output are set up right
+     - Ensure headers and resp_type were sent correctly based on input (json or zip).
     """
-    from AzureDevOps import Client, file_content_get_command
+    from AzureDevOps import Client, file_get_command
+    from requests import Response
+    import AzureDevOps
 
     authorization_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
-
-    # setting parameters
-    project = 'test'
-    repository = 'xsoar'
-
-    url = f'https://dev.azure.com/{ORGANIZATION}/{project}/_apis/git/repositories/{repository}/items'
-
-    mock_response = json.loads(load_mock_response('file_content_get.json'))
-    requests_mock.get(url, json=mock_response)
 
     client = Client(
         client_id=CLIENT_ID,
@@ -1450,13 +1447,18 @@ def test_file_content_get_command(requests_mock):
         proxy=False,
         auth_type='Device Code')
 
-    args = {"branch_name": "Test",
-            "file_name": "Test",
-            }
-    result = file_content_get_command(client, args, ORGANIZATION, repository, project)
+    response = Response()
 
-    assert result.readable_output.startswith('### Content File\n|path|content|\n')
-    assert result.outputs_prefix == 'AzureDevOps.File'
+    http_request = mocker.patch.object(client.ms_client, 'http_request',
+                                       return_value=response if format_file == 'zip' else {"content": ""})
+
+    args = {"file_name": "test_file", "branch_name": "Test", "format": format_file, "include_content": False}
+
+    mocker.patch.object(AzureDevOps, 'fileResult')
+    file_get_command(client, args, ORGANIZATION, "test", "test")
+
+    assert http_request.call_args.kwargs["headers"] == headers
+    assert http_request.call_args.kwargs["resp_type"] == resp_type
 
 def test_branch_create_command(requests_mock):
     """

@@ -751,10 +751,10 @@ script:
   - arguments:
     - description: The name of the organization project.
       name: project
-      required: true
+      required: false
     - description: The name of the project repository.
       name: repository
-      required: true
+      required: false
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
@@ -2251,7 +2251,7 @@ script:
       - type: String
         contextPath: AzureDevOps.File.value.url
         description: URL link to the item.
-  - name: azure-devops-file-content-get
+  - name: azure-devops-file-get
     description: Getting the content file.
     arguments:
       - name: organization_name
@@ -2274,34 +2274,25 @@ script:
         description: The file name.
         required: true
         isArray: false
-    outputs:
-      - type: String
-        contextPath: AzureDevOps.File.objectId
-        description: The file object ID.
-      - type: String
-        contextPath: AzureDevOps.File.gitObjectType
-        description: The file git object type.
-      - type: String
-        contextPath: AzureDevOps.File.commitId
-        description: ID (SHA-1) of the file commit.
-      - type: String
-        contextPath: AzureDevOps.File.path
-        description: The file's path.
-      - type: String
-        contextPath: AzureDevOps.File.content
-        description: The file's content.
-      - type: String
-        contextPath: AzureDevOps.File.url
-        description: URL link to the item.
-      - type: String
-        contextPath: AzureDevOps.File._links.self.href
-        description: Link to the file.
-      - type: String
-        contextPath: AzureDevOps.File._links.repository.href
-        description: Link to the repository.
-      - type: String
-        contextPath: AzureDevOps.File._links.blob.href
-        description: Link to the blob.
+      - auto: PREDEFINED
+        predefined:
+          - 'json'
+          - 'zip'
+        defaultValue: 'json'
+        name: format
+        description: The file format (json or zip). Default is json.
+        required: false
+        isArray: false
+      - name: include_content
+        description: Include item content when requesting json. Default is True.
+        required: false
+        isArray: false
+        auto: PREDEFINED
+        predefined:
+          - 'True'
+          - 'False'
+        defaultValue: 'True'
+
   - name: azure-devops-branch-create
     description: Create a branch.
     arguments:

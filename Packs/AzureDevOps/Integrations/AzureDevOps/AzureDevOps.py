@@ -19,6 +19,10 @@ PARAMETERS_ERROR_MSG_2 = "One or more arguments are missing." \
       "Please pass with the command: organization name and project." \
       "You can also re-configure the instance and set them as parameters."
 
+PARAMETERS_ERROR_MSG_3 = "One or more arguments are missing." \
+      "Please pass with the command: repository and project." \
+      "You can also re-configure the instance and set them as parameters."
+
 INCIDENT_TYPE_NAME = "Azure DevOps"
 OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
                             'title': 'The title of the pull request.',
@@ -575,18 +579,22 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def file_content_get_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
+    def file_get_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
 
-        params = {"path": args["file_name"], "api-version": 7.0, "$format": "json", "includeContent": True,
-                  "versionDescriptor.versionType": "branch", "versionDescriptor.version": args["branch_name"]}
+        params = {"path": args["file_name"], "api-version": 7.0, "$format": args["format"],
+                  "includeContent": args["include_content"], "versionDescriptor.versionType": "branch",
+                  "versionDescriptor.version": args["branch_name"]}
 
         full_url = f'https://dev.azure.com/{org_repo_project_tuple.organization}/{org_repo_project_tuple.project}/' \
                    f'_apis/git/repositories/{org_repo_project_tuple.repository}/items'
 
+        headers = {"Content-Type": "application/json"} if args["format"] == 'json' else {"Content-Type": "application/zip"}
+
         return self.ms_client.http_request(method='GET',
                                            full_url=full_url,
+                                           headers=headers,
                                            params=params,
-                                           resp_type='json')
+                                           resp_type='response' if args["format"] == 'zip' else 'json')
 
     def branch_create_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
 
@@ -1455,10 +1463,12 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def branch_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Retrieve repository branches list.
     Args:
+        project: Azure DevOps project.
+        repository: Azure DevOps repository.
         client (Client): Azure DevOps API client.
         args (dict): Command arguments from XSOAR.
 
@@ -1466,8 +1476,10 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project = args['project']
-    repository = args['repository']
+    project = args.get('project') or project
+    repository = args.get('repository') or repository
+    if not (repository and project):
+        raise DemistoException(PARAMETERS_ERROR_MSG_3)
 
     page = arg_to_number(args.get('page') or '1')
     limit = arg_to_number(args.get('limit') or '50')
@@ -1501,7 +1513,7 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         readable_message,
         outputs,
-        headers=['name'],
+        headers=['name', 'objectId'],
         headerTransform=string_to_table_header
     )
 
@@ -2163,26 +2175,26 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
     )
 
 
-def file_content_get_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
-                             project: Optional[str]) -> list:
+def file_get_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
+                     project: Optional[str]) -> dict:
     """
-    Getting the content file.
+    Getting the file.
     """
     # pre-processing inputs
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
 
-    response = client.file_content_get_request(org_repo_project_tuple, args=args)
+    response = client.file_get_request(org_repo_project_tuple, args=args)
+    file_name = Path(args["file_name"]).name
 
-    readable_output = tableToMarkdown('Content File', response, headers=["path", "content"])
-    file_name = Path(response["path"]).name
-    file = fileResult(filename=file_name, data=response["content"], file_type=EntryType.ENTRY_INFO_FILE)
-    results = CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='AzureDevOps.File',
-            outputs=response,
-            raw_response=response
-        )
-    return [results, file]
+    if args["format"] == 'json':
+        data = response["content"]
+        file_type = EntryType.ENTRY_INFO_FILE
+
+    else:  # args["format"] == 'zip'
+        data = response.content
+        file_type = EntryType.FILE
+
+    return fileResult(filename=file_name, data=data, file_type=file_type)
 
 
 def branch_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
@@ -2354,7 +2366,7 @@ def blob_zip_get_command(client: Client, args: Dict[str, Any], organization: Opt
 
     response = client.blob_zip_get_request(org_repo_project_tuple, args["file_object_id"])
 
-    return fileResult(filename='blob.zip', data=response.content, file_type=EntryType.FILE)
+    return fileResult(filename=f'{args["file_object_id"]}.zip', data=response.content, file_type=EntryType.FILE)
 
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
@@ -2514,7 +2526,7 @@ def main() -> None:
             return_results(pipeline_list_command(client, args))
 
         elif command == 'azure-devops-branch-list':
-            return_results(branch_list_command(client, args))
+            return_results(branch_list_command(client, args, params.get('repository'), params.get('project')))
 
         elif command == 'test-module':
             return_results(test_module(client))
@@ -2585,9 +2597,9 @@ def main() -> None:
             return_results(file_list_command(client, args, params.get('organization'),
                                              params.get('repository'), params.get('project')))
 
-        elif command == 'azure-devops-file-content-get':
-            return_results(file_content_get_command(client, args, params.get('organization'),
-                                                    params.get('repository'), params.get('project')))
+        elif command == 'azure-devops-file-get':
+            return_results(file_get_command(client, args, params.get('organization'),
+                                            params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-branch-create':
             return_results(branch_create_command(client, args, params.get('organization'),
