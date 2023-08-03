@@ -2252,7 +2252,7 @@ script:
     - contextPath: RubrikPolaris.GPSVMRecoverFiles.id
       description: Recover files request ID.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.63756
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.66039
   isfetch: true
   runonce: false
   script: '-'

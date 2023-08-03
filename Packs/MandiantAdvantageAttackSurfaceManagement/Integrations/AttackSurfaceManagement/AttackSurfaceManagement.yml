@@ -109,7 +109,6 @@ script:
     description: Update issue in Mandiant Advantage ASM
     arguments: []
   isfetch: true
-  ismappable: false
   isremotesyncin: true
   isremotesyncout: true
   script: '-'
