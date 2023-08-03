@@ -3080,7 +3080,7 @@ tasks:
       id: 4a06bcba-903e-428e-8f67-9d090b205081
       version: -1
       name: Initialize grid fields
-      description: Initialize "ASM - Playbook Stage" to blank in case the playbook is re-run.
+      description: Clear ASM grid fields in case the playbook is rerun.
       script: Builtin|||setAlert
       type: regular
       iscommand: true
