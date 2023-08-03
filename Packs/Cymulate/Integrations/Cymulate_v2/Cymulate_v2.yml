@@ -85,7 +85,7 @@ script:
       name: agent_profile_name
       required: false
     - auto: PREDEFINED
-      description: whether to schedule the automated assessment periodically.
+      description: 'whether to schedule the automated assessment periodically.'
       name: schedule
       predefined:
       - 'true'
@@ -231,7 +231,7 @@ script:
       name: agent_profile_name
       required: false
     - auto: PREDEFINED
-      description: whether to schedule the automated assessment periodically.
+      description: 'whether to schedule the automated assessment periodically.'
       name: schedule
       predefined:
       - 'true'
@@ -476,15 +476,15 @@ script:
       name: template_id
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: Whether to upload the result to Cymulate.
       name: upload_to_cymulate
       predefined:
       - 'true'
       - 'false'
       required: true
+      defaultValue: 'false'
     - auto: PREDEFINED
-      description: Whether to schedule the automated assessment periodically.
+      description: 'Whether to schedule the automated assessment periodically.'
       name: schedule
       predefined:
       - 'true'
@@ -661,7 +661,7 @@ script:
     - contextPath: Cymulate.Simulations.Template
       description: Attack template.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: '-'
