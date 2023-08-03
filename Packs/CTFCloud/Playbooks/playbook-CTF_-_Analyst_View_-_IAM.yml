@@ -1073,8 +1073,9 @@ tasks:
     continueonerrortype: ""
     form:
       description: |-
-        Based on our investigation, classify this incident using the following question:
+        Based on our investigation, classify the original incident we started with (the 'Suspicious API call from a Tor exit node' incident).
         Remember that we need to use all our findings and knowledge gained though this exercise.
+        So what's your verdcit here? Did you find some suspicious activty?
 
         ![image](https://raw.githubusercontent.com/demisto/content/5caaf74a87ee4c03eaba65a066fef7f6c11898de/Packs/CTFCloud/doc_files/lord-of-the-rings-smeagol.gif)
       expired: false
@@ -1268,7 +1269,7 @@ tasks:
       brand: ""
       id: 6dfb6b32-8149-45bf-893e-9a89c0555ca1
       iscommand: false
-      name: Classify the incident
+      name: Remediation Button
       type: title
       version: -1
       description: ''
@@ -1289,6 +1290,7 @@ tasks:
         After we analyzed the original incident we need to choose if we are taking remediation actions.
 
         Now, XSOAR can be customized in many ways so we already created a custom button for quick remediation action "Revoke Access Keys".
+        Check the original incident's layout ('Suspicious API call from a Tor exit node').
 
         Take the necessary measures to keep your company secure!
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/ocean-ocean-protocol.gif)
@@ -1576,7 +1578,7 @@ tasks:
         placeholder: ""
         readonly: false
         required: true
-        tooltip: 'Use the CloudTrail Context key '
+        tooltip: "Use the `CloudTrail` Context key to retrieve the right values for the integration's commands."
         type: shortText
       - defaultrows: []
         fieldassociated: ""
