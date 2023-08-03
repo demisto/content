@@ -1,8 +1,9 @@
+
 {
-  "cisco_asa_raw": {
+    "ibm_aix_raw": {
       "_raw_log": {
         "type": "string",
         "is_array": false
       }
+    }
   }
-}
