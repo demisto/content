@@ -83,6 +83,7 @@ repos:
   hooks:
   - id: sourcery
     args: [--no-summary, --fix, --diff, "git diff HEAD"]
+    skip: true
 
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
@@ -119,7 +120,7 @@ repos:
     - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
     - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
     - demisto-py==3.2.10 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-sdk==1.18.0 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-sdk==1.18.1 ; python_version >= "3.8" and python_version < "3.11"
     - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
     - dictor==0.1.11 ; python_version >= "3.8" and python_version < "3.11"
     - distlib==0.3.6 ; python_version >= "3.8" and python_version < "3.11"
