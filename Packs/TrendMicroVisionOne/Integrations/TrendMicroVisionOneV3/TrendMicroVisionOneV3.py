@@ -1,15 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""IMPORTS"""
 from CommonServerUserPython import *  # noqa: F401
+
+"""IMPORTS"""
 
 import json
 import urllib3
 from datetime import datetime, timezone, timedelta
-from typing import Any, Callable, Dict, List, TypeVar, Union
-
-# from requests.models import HTTPError
+from typing import Any, Dict, List, TypeVar, Union
 import pytmv1
 from pytmv1 import (
     ExceptionObject,
@@ -86,41 +85,7 @@ CONTENT = "content"
 STATUS = "status"
 SUBMISSION_ID = "submission_id"
 UNIQUE_ID = "unique_id"
-# End Points
-ENABLE_USER_ACCOUNT = "/v3.0/response/domainAccounts/enable"
-DISABLE_USER_ACCOUNT = "/v3.0/response/domainAccounts/disable"
-FORCE_SIGN_OUT = "/v3.0/response/domainAccounts/signOut"
-FORCE_PASSWORD_RESET = "/v3.0/response/domainAccounts/resetPassword"
-ADD_BLOCKLIST_ENDPOINT = "/v3.0/response/suspiciousObjects"
-REMOVE_BLOCKLIST_ENDPOINT = "/v3.0/response/suspiciousObjects/delete"
-QUARANTINE_EMAIL_ENDPOINT = "/v3.0/response/emails/quarantine"
-DELETE_EMAIL_ENDPOINT = "/v3.0/response/emails/delete"
-ISOLATE_CONNECTION_ENDPOINT = "/v3.0/response/endpoints/isolate"
-TERMINATE_PROCESS_ENDPOINT = "/v3.0/response/endpoints/terminateProcess"
-RESTORE_CONNECTION_ENDPOINT = "/v3.0/response/endpoints/restore"
-ADD_OBJECT_TO_EXCEPTION_LIST = "/v3.0/threatintel/suspiciousObjectExceptions"
-DELETE_OBJECT_FROM_EXCEPTION_LIST = (
-    "/v3.0/threatintel/suspiciousObjectExceptions/delete"
-)
-ADD_OBJECT_TO_SUSPICIOUS_LIST = "/v3.0/threatintel/suspiciousObjects"
-DELETE_OBJECT_FROM_SUSPICIOUS_LIST = "/v3.0/threatintel/suspiciousObjects/delete"
-TASK_DETAIL_ENDPOINT = "/v3.0/response/tasks/{taskId}"
-GET_ENDPOINT_INFO_ENDPOINT = "/v3.0/eiqs/endpoints"
-GET_FILE_STATUS = "/v3.0/sandbox/tasks/{taskId}"
-GET_FILE_RESULT = "/v3.0/sandbox/analysisResults/{reportId}"
-ADD_NOTE_ENDPOINT = "/v3.0/workbench/alerts/{alertId}/notes"
-UPDATE_STATUS_ENDPOINT = "/v3.0/workbench/alerts/{workbenchId}"
-COLLECT_FORENSIC_FILE = "/v3.0/response/endpoints/collectFile"
-DOWNLOAD_INFORMATION_COLLECTED_FILE = "/v3.0/response/tasks/{taskId}"
-SUBMIT_FILE_TO_SANDBOX = "/v3.0/sandbox/files/analyze"
-DOWNLOAD_ANALYSIS_REPORT = "/v3.0/sandbox/analysisResults/{submissionId}/report"
-DOWNLOAD_INVESTIGATION_PACKAGE = (
-    "/v3.0/sandbox/analysisResults/{submissionId}/investigationPackage"
-)
-DOWNLOAD_SUSPICIOUS_OBJECT_LIST = (
-    "/v3.0/sandbox/analysisResults/{submissionId}/suspiciousObjects"
-)
-WORKBENCH_HISTORIES = "/v3.0/workbench/alerts"
+
 # Error Messages
 RESPONSE_ERROR = "Error in API call: [%d] - %s"
 RETRY_ERROR = "The max tries exceeded [%d] - %s"
@@ -161,12 +126,14 @@ TABLE_DELETE_SUSPICIOUS_LIST = "Delete object from suspicious list "
 TABLE_ENDPOINT_INFO = "Endpoint info "
 TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
 TABLE_GET_FILE_ANALYSIS_RESULT = "File analysis result "
+TABLE_GET_ALERT_DETAILS = "Alert details"
 TABLE_COLLECT_FILE = "Collect forensic file "
 TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = (
     "The download information for collected forensic file "
 )
 TABLE_SUBMIT_FILE_TO_SANDBOX = "Submit file to sandbox "
 TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX = "Submit file entry to sandbox "
+TABLE_SUBMIT_URLS_TO_SANDBOX = "Submit urls to sandbox "
 TABLE_SANDBOX_SUBMISSION_POLLING = "Sandbox submission polling status "
 TABLE_CHECK_TASK_STATUS = "Check task status "
 TABLE_DOWNLOAD_ANALYSIS_REPORT = "Download analysis report "
@@ -209,11 +176,13 @@ DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND = (
 )
 FILE_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-file-to-sandbox"
 FILE_ENTRY_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-file-entry-to-sandbox"
+URLS_TO_SANDBOX_COMMAND = "trendmicro-visionone-submit-urls-to-sandbox"
 SANDBOX_SUBMISSION_POLLING_COMMAND = (
     "trendmicro-visionone-run-sandbox-submission-polling"
 )
 CHECK_TASK_STATUS_COMMAND = "trendmicro-visionone-check-task-status"
 GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
+GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
 FETCH_INCIDENTS = "fetch-incidents"
@@ -244,11 +213,13 @@ table_name = {
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
     FILE_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_TO_SANDBOX,
     FILE_ENTRY_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX,
+    URLS_TO_SANDBOX_COMMAND: TABLE_SUBMIT_URLS_TO_SANDBOX,
     SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
     CHECK_TASK_STATUS_COMMAND: TABLE_CHECK_TASK_STATUS,
     GET_ENDPOINT_INFO_COMMAND: TABLE_ENDPOINT_INFO,
     UPDATE_STATUS_COMMAND: TABLE_UPDATE_STATUS,
     ADD_NOTE_COMMAND: TABLE_ADD_NOTE,
+    GET_ALERT_DETAILS_COMMAND: TABLE_GET_ALERT_DETAILS,
 }
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -2063,6 +2034,101 @@ def submit_file_entry_to_sandbox(
         ),
         outputs_prefix="VisionOne.Submit_File_Entry_to_Sandbox",
         outputs_key_field="entryId",
+        outputs=message,
+    )
+
+
+def submit_urls_to_sandbox(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    submit Urls to sandbox and send the result to demist war room
+    :type client: ``Client``
+    :param client: client object to use http_request.
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    urls: List[str] = json.loads(args.get("urls", []))
+
+    message: Dict[str, Any] = {}
+    submit_urls_resp: List[MsData] = []
+
+    # Make rest call
+    for url in urls:
+        resp = v1_client.submit_urls_to_sandbox(url)
+        # Check if an error occurred during rest call
+        if (err := _is_pytmv1_error(resp)) is not None:
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    table_name[URLS_TO_SANDBOX_COMMAND],
+                    err,
+                    removeNull=True,
+                ),
+                outputs_prefix="VisionOne.Submit_Urls_to_Sandbox",
+                outputs_key_field="error",
+                outputs=err,
+            )
+        # Add values to message on successful call
+        else:
+            submit_urls_resp.append(unwrap(resp.response).items[0])
+
+    message = {"submit_urls_resp": [item.dict() for item in submit_urls_resp]}
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[URLS_TO_SANDBOX_COMMAND], message, removeNull=True
+        ),
+        outputs_prefix="VisionOne.Submit_Urls_to_Sandbox",
+        outputs_key_field="submit_urls_resp",
+        outputs=message,
+    )
+
+
+def get_alert_details(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    Fetch information for a specific alert and display in war room.
+    :type client: ``Client``
+    :param client: client object to make rest call
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Required Params
+    workbench_id: str = args.get("workbench_id", EMPTY_STRING)
+
+    message: Dict[str, Any] = {}
+    # Make rest call
+    resp = v1_client.get_alert_details(alert_id=workbench_id)
+    # Check if an error occurred during rest call
+    if (err := _is_pytmv1_error(resp)) is not None:
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                table_name[GET_ALERT_DETAILS_COMMAND],
+                err,
+                removeNull=True,
+            ),
+            outputs_prefix="VisionOne.Alert_Details",
+            outputs_key_field="error",
+            outputs=err,
+        )
+    # Add values to message on successful call
+    else:
+        etag = unwrap(resp.response).etag
+        alert = unwrap(resp.response).alert.json()
+        message = {"etag": etag, "alert": alert}
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_ALERT_DETAILS_COMMAND], message, removeNull=True
+        ),
+        outputs_prefix="VisionOne.Alert_Details",
+        outputs_key_field="etag",
         outputs=message,
     )
 
