@@ -144,7 +144,7 @@ def search_command():
                     'IP': match.get('ip_str', ''),
                     'Port': match.get('port', 0),
                     'Ssl': {
-                        'versions': match.get('ssl', {'versions': []})['versions']
+                        'versions': match.get('ssl', {'versions': []}).get('versions', [])
                     },
                     'Hostnames': match.get('hostnames', []),
                     'Location': {
