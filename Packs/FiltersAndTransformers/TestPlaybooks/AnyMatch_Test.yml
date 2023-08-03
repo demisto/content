@@ -570,7 +570,7 @@ tasks:
     task:
       id: 2957aff5-dbcd-4d23-8465-b9adee3f0b5d
       version: -1
-      name: Run the filter with right = key and save as res4
+      name: Run the filter with right = 1 and save as res4
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
