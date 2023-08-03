@@ -32,7 +32,7 @@ Since the comparison treats all inputs as strings, integers and strings are cons
 There are no outputs for this script.
 
 
-### Truth table for example
+### Table of examples
 
 | Left            | Right                   | Result                                               | Explanation                                               |  
 | --------------- | ----------------------- | ----------------------------------------              | --------------------------------------------------------- |
