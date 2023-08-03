@@ -1928,11 +1928,6 @@ script:
     name: get-remote-data
   - arguments: []
     deprecated: false
-    description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-    execution: false
-    name: get-mapping-fields
-  - arguments: []
-    deprecated: false
     description: Updates the remote incident with local incident changes. This method
       is only used for debugging purposes and will not update the current incident.
     execution: false

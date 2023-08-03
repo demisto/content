@@ -54,7 +54,6 @@ INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'open'
 INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = 'Closed by XSOAR'
-INCIDENT_OUTGOING_MIRROR_ARGS = {'status': 'Updated incident status'}  # TODO: not sure about the args names here, also not sure about the dismissal note - it should be a constant string saying - Closed by XSOAR.
 PRISMA_CLOUD_MIRRORED_INCIDENT_TYPES = [
     'AWS CloudTrail Misconfiguration',
     'AWS EC2 Instance Misconfiguration',
@@ -1889,26 +1888,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
 
-def get_mapping_fields_command() -> GetMappingFieldsResponse:
-    # TODO: there is a chance I need to remove this func cause we don't mapping out xsoar fields
-    """
-    Returns the list of fields to map in outgoing mirroring.
-
-    Returns: GetMappingFieldsResponse object, which contains the the list of fields to map in outgoing mirroring.
-
-    """
-    mapping_response = GetMappingFieldsResponse()
-
-    for incident_type in PRISMA_CLOUD_MIRRORED_INCIDENT_TYPES:
-        incident_type_scheme = SchemeTypeMapping(type_name=incident_type)
-        # TODO: what should be the type name?  should I create a scheme type mapping for each incident type in the Incoming mapper?
-        for argument, description in INCIDENT_OUTGOING_MIRROR_ARGS.items():
-            incident_type_scheme.add_field(name=argument, description=description)
-        mapping_response.add_scheme_type(incident_type_scheme)
-
-    return mapping_response
-
-
 def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """
     Mirrors out local changes (closing or reopening of an xsoar incident) to the remote system (Prisma Cloud).
@@ -2056,8 +2035,6 @@ def main() -> None:
             })
         elif command == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, params))
-        elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command())
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
         else:
