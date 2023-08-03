@@ -1420,7 +1420,7 @@ class SecurityAndComplianceClient {
 
 #### COMMAND FUNCTIONS ####
 
-function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
+function TestModuleCommand () {
     $raw_response = $null
     $human_readable = "The test module does not work for MFA auth. Use the command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization and !$script:COMMAND_PREFIX-auth-test to instead."
     $entry_context = $null
@@ -1825,7 +1825,7 @@ function Main {
         # Executing command
         switch ($command) {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $cs_client
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand
             }
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client
