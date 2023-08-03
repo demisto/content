@@ -261,11 +261,17 @@ def test_calculate_last_run(
 ):
     """
     Given:
-        -
+        - The arguments required for the function,
+          so that once the `is_fetch_time_advanced`
+          argument is true and once it is false
     When:
-        -
+        - run `calculate_last_run` function
     Then:
-        -
+        - Ensure that the returned `last_run` object saves
+          the last time of the event and the id of the events
+          that are suspected of being duplicates
+        - Ensure that the `time_from` does not change when the argument foo is false,
+          and more IDs of events that are suspected of being duplicates are added to the list of ids
     """
     events = load_event_for_test(event_key)
     dedup = Deduplicate([], EventType.ACCEPTED_TRAFFIC)
@@ -567,7 +573,8 @@ def test_deduplicate(
         - run `is_duplicate` method
     Then:
         - Ensure that the events found with an ID that matches
-          the value in the `ids_fetched_by_type` list are removed
+          the value in the `ids_fetched_by_type` list are not add
+          to events list
     """
     dedup = Deduplicate(ids_fetched_by_type, EventType.POLICY_LOGS)
     events = []

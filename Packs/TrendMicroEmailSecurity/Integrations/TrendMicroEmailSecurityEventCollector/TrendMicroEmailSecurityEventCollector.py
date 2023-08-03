@@ -458,6 +458,10 @@ def main() -> None:  # pragma: no cover
             should_update_last_run = False
             since = set_start_time(args.get("since") or "1 days")
             events, _ = fetch_events_command(client, args, since, last_run={})
+
+            # By default return as an md table
+            # when the argument `should_push_events` is set to true
+            # will also be returned as events
             return_results(
                 CommandResults(readable_output=tableToMarkdown("Events:", events))
             )

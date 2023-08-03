@@ -29,7 +29,7 @@ configuration:
   type: 8
   section: Connect
 - display: Hide sensitive details from email
-  additionalinfo: "Don't insert to dataset the following returned fields: subject, filename, sha256"
+  additionalinfo: Hide subject and file name from emails
   name: hide_sensitive
   required: false
   defaultvalue: 'true'
