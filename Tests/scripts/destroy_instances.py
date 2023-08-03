@@ -29,16 +29,24 @@ def options_handler():
     return parser.parse_args()
 
 
+def execute_ssh_command(ssh: SSHClient, shutdown_command: str) -> tuple[int, str, str]:
+    _, stdout, stderr = ssh.exec_command(shutdown_command)
+    # Wait for the command to exit.
+    exit_code = stdout.channel.recv_exit_status()
+    stdout_lines_output = '\n'.join(stdout.readlines())
+    stderr_lines_output = '\n'.join(stderr.readlines())
+    return exit_code, stderr_lines_output, stdout_lines_output
+
+
 def chmod_logs(ssh: SSHClient, server_ip: str) -> bool:
     try:
         logging.info(f'Changing permissions of folder {SERVER_LOG_DIRECTORY} on server {server_ip}')
-        _, stdout, stderr = ssh.exec_command(f"sudo chmod -R 755 {SERVER_LOG_DIRECTORY}")
-        # Wait for the command to exit.
-        exit_code = stdout.channel.recv_exit_status()
-        stderr_lines = stderr.readlines()
-        logging.info(f"Running chmod finished - stdout:{stdout.readlines()}, stderr:{stderr_lines}, exit code:{exit_code}")
+        exit_code, stderr_lines_output, stdout_lines_output = execute_ssh_command(ssh,
+                                                                                  f"sudo chmod -R 755 {SERVER_LOG_DIRECTORY}")
+        logging.info(f"Running chmod finished.\nstdout:\n{stdout_lines_output}\nstderr:\n{stderr_lines_output}\n"
+                     f"exit code:{exit_code}")
 
-        return not stderr_lines and exit_code == 0
+        return not stderr_lines_output and exit_code == 0
     except SSHException:
         logging.exception(f'Failed changing permissions of folder {SERVER_LOG_DIRECTORY} on server {server_ip}')
     return False
@@ -48,11 +56,9 @@ def shutdown(ssh: SSHClient, server_ip: str, ttl: int | None = None) -> bool:
     try:
         shutdown_command = f'sudo shutdown +{ttl}' if ttl else 'sudo shutdown'
         logging.info(f"Destroying instance with IP {server_ip}, with command: '{shutdown_command}'")
-        _, stdout, stderr = ssh.exec_command(shutdown_command)
-        # Wait for the command to exit.
-        exit_code = stdout.channel.recv_exit_status()
+        exit_code, stderr_lines_output, stdout_lines_output = execute_ssh_command(ssh, shutdown_command)
         # not checking stderr, as shutdown command on success writes it's output to it, so we can only verify the exit code.
-        logging.info(f"Running shutdown finished - stdout:{stdout.readlines()}, stderr:{stderr.readlines()},"
+        logging.info(f"Running shutdown finished.\nstdout:\n{stdout_lines_output}\nstderr:\n{stderr_lines_output}\n"
                      f"exit code: {exit_code}")
 
         return exit_code == 0
@@ -79,6 +85,31 @@ def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, role: str)
     return False
 
 
+def destroy_server(artifacts_dir, readable_role, role, server_ip, tests_path, time_to_live) -> bool:
+    success = True
+    with SSHClient() as ssh:
+        try:
+            ssh.load_system_host_keys()
+            ssh.connect(server_ip, username=SSH_USER)
+            success &= chmod_logs(ssh, server_ip)
+            success &= download_logs(ssh, server_ip, artifacts_dir, role)
+
+            if time_to_live:
+                logging.info(f'Time to live was set to {time_to_live} minutes for server {server_ip}')
+                success &= shutdown(ssh, server_ip, time_to_live)
+            elif (tests_path / f'is_build_passed_{role}.txt').exists() and \
+                    (tests_path / f'is_post_update_passed_{role}.txt').exists():
+                success &= shutdown(ssh, server_ip)
+                logging.warning(f'Tests passed on {readable_role}, shutting down instance.')
+            else:
+                logging.warning(f'Tests for some integration failed on {readable_role}, keeping instance alive, '
+                                f'until server default TTL')
+        except SSHException:
+            logging.exception(f"Unable to SSH to server {server_ip}")
+            success = False
+    return success
+
+
 def main():
     install_logging('Destroy_instances.log')
     options = options_handler()
@@ -100,30 +131,12 @@ def main():
         server_ip = env["InstanceDNS"]
         logging.info(f'{i}/{len(servers_list)} {server_ip} - Downloading server log from {readable_role}, and destroying it')
 
-        with SSHClient() as ssh:
-            try:
-                ssh.load_system_host_keys()
-                ssh.connect(server_ip, username=SSH_USER)
-                success &= chmod_logs(ssh, server_ip)
-                success &= download_logs(ssh, server_ip, options.artifacts_dir, role)
+        success &= destroy_server(options.artifacts_dir, readable_role, role, server_ip, tests_path, time_to_live)
 
-                if time_to_live:
-                    logging.info(f'Time to live was set to {time_to_live} minutes for server {server_ip}')
-                    success &= shutdown(ssh, server_ip, time_to_live)
-                elif (tests_path / f'is_build_passed_{role}.txt').exists() and \
-                        (tests_path / f'is_post_update_passed_{role}.txt').exists():
-                    success &= shutdown(ssh, server_ip)
-                    logging.warning(f'Tests passed on {readable_role}, shutting down instance.')
-                else:
-                    logging.warning(f'Tests for some integration failed on {readable_role}, keeping instance alive until ...'). #FIXME
-            except SSHException:
-                logging.exception(f"Unable to SSH to server {server_ip}")
-                success = False
-
-    logging.info(f"Finished destroying instances - success:{success} took:{datetime.utcnow() - start_time}")
+    duration = humanize.naturaldelta(datetime.utcnow() - start_time, minimum_unit="milliseconds")
+    logging.info(f"Finished destroying instances - success:{success} took:{duration}")
     if not success:
-        logging.eror(f'Exiting with error, see reasons above.')
-
+        logging.error('Exiting with error, see reasons above.')
         sys.exit(1)
 
 

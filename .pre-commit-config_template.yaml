@@ -146,7 +146,6 @@ repos:
     - grpcio-status==1.56.2 ; python_version >= "3.8" and python_version < "3.11"
     - grpcio==1.56.2 ; python_version >= "3.8" and python_version < "3.11"
     - humanfriendly==10.0 ; python_version >= "3.8" and python_version < "3.11"
-    - humanize==4.7.0 ; python_version >= "3.8" and python_version < "3.11"
     - identify==2.5.26 ; python_version >= "3.8" and python_version < "3.11"
     - idna==3.4 ; python_version >= "3.8" and python_version < "3.11"
     - imagesize==1.4.1 ; python_version >= "3.8" and python_version < "3.11"
