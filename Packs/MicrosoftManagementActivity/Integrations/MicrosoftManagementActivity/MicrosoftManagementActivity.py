@@ -458,6 +458,7 @@ def get_fetch_start_and_end_time(last_run, first_fetch_datetime):
         fetch_start_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
 
     # the start time must be no more than 7 days in the past
+    demisto.debug(f"For start time takes the bigger between: last_fetch={fetch_start_datetime.strftime(DATE_FORMAT)}, 7 days ago")
     fetch_start_datetime = max(fetch_start_datetime, dateparser.parse("7 days ago"))
     fetch_end_datetime = get_fetch_end_time_based_on_start_time(fetch_start_datetime)
 
