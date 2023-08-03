@@ -56,7 +56,7 @@ def set_server_ttl(ip: str, ttl: int):
     try:
         shutdown_command = f'sudo shutdown +{ttl}' if ttl else 'sudo shutdown'
         logging.info(f"Setting TTL for server:{ip} with command:'{shutdown_command}'")
-        check_output(f"ssh {SSH_USER}@{ip} {shutdown_command}")
+        check_output(f"ssh {SSH_USER}@{ip} {shutdown_command}".split())
     except CalledProcessError as e:
         logging.exception(f"Failed while calling shutdown on server {ip}:\n{e.stderr=}\n{e.output=}\n{e.returncode=}\n{e.cmd=}.")
 
