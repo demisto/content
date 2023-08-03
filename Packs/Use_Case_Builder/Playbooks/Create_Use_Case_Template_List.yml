@@ -1,8 +1,17 @@
 id: Create Use Case Template List
-version: -1
+version: 6
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: generator
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Create Use Case Template List
+description: This Playbook creates the HTML Use Case Builder document list
 starttaskid: "0"
 tasks:
   "0":
@@ -15,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -89,7 +97,6 @@ tasks:
       scriptName: CreateUseCaseTemplateList
       type: regular
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -121,7 +128,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -156,4 +162,3 @@ quiet: true
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'

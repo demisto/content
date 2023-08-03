@@ -1,7 +1,15 @@
 id: Generate Playbooks Based On Category
-version: -1
+version: 14
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: Use Case Builder 4-21
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Generate Playbooks Based On Category
 description: Takes the use case selected category and auto creates an example playbook
 starttaskid: "0"
@@ -16,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -88,7 +95,6 @@ tasks:
       name: Is the category Phishing?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -139,7 +145,6 @@ tasks:
       version: -1
       name: Is the category Case Management
       type: condition
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -195,7 +200,6 @@ tasks:
       name: Is the category Data Enrichment and Threat Intel?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -250,7 +254,6 @@ tasks:
       name: Is the category Malware?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -305,7 +308,6 @@ tasks:
       name: Is the category Network Security?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -532,15 +534,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d56fef8e-c82a-42a5-8615-19cf9b3c9edb
+    taskid: 2c2bd62d-80f0-4a3b-810a-5007bbe2a312
     type: condition
     task:
-      id: d56fef8e-c82a-42a5-8615-19cf9b3c9edb
+      id: 2c2bd62d-80f0-4a3b-810a-5007bbe2a312
       version: -1
-      name: Is the Use Case Category set to none?
+      name: Is it a New Use Case?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -554,11 +555,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.usecasecategory
+              simple: incident.usecasetype
             iscontext: true
           right:
             value:
-              simple: None
+              simple: New Use Case
     continueonerrortype: ""
     view: |-
       {
@@ -620,7 +621,6 @@ tasks:
       scriptName: UseCasePlaybookAutoGenerator
       type: regular
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -652,7 +652,6 @@ tasks:
       scriptName: PlaybookAutoGeneratorDynamicSectionMessage
       type: regular
       iscommand: false
-      description: ""
       brand: ""
     separatecontext: false
     continueonerrortype: ""

@@ -1,8 +1,17 @@
 id: Quick Start Main Playbook
-version: -1
+version: 2
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: quick start
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Quick Start Main Playbook
+description: The main playbook for the quick start incident
 starttaskid: "0"
 tasks:
   "0":
@@ -15,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -102,7 +110,6 @@ tasks:
       version: -1
       name: Which type of event generated this incident?
       type: collection
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -166,6 +173,16 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
+    formDisplay:
+      headerbackgroundcolor: ""
+      headerfontcolor: ""
+      sender: ""
+      bodybackgroundcolor: ""
+      bodyfontcolor: ""
+      submitbuttonbackgroundcolor: ""
+      submitbuttonfontcolor: ""
+      submittext: ""
+      isexternalrtl: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -179,7 +196,6 @@ tasks:
       version: -1
       name: Perform Deduplication?
       type: condition
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -230,7 +246,6 @@ tasks:
       version: -1
       name: Provide Similar Fields
       type: collection
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -298,7 +313,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -329,7 +343,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -360,7 +373,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -387,7 +399,6 @@ tasks:
     task:
       id: 4408e0d6-64c3-4867-8e2a-d782b3c0542f
       version: -1
-      description: ""
       name: Close as False Positive?
       type: condition
       iscommand: false
@@ -533,7 +544,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -563,7 +573,6 @@ tasks:
       name: What is  the selected Ticketing type?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       Jira:
@@ -630,7 +639,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -661,7 +669,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -692,7 +699,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -839,7 +845,6 @@ tasks:
       name: Gathered required info to create a ServiceNow Ticket
       type: collection
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -920,7 +925,6 @@ tasks:
       name: Gathered required info to create a Jira Ticket
       type: collection
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -1002,7 +1006,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -1035,7 +1038,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -1070,7 +1072,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -1105,7 +1106,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1241,7 +1241,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1273,7 +1272,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1313,7 +1311,7 @@ inputs:
   description: You can use XSOAR, ServiceNow, Jira. Make sure to setup the ServiceNow and Jira integrations if you opt to choose these options.
   playbookInputQuery:
 outputs: []
+sourceplaybookid: edac1525-2658-407a-8dc1-0f054eb6cb7e
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'

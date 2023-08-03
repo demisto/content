@@ -1,8 +1,17 @@
 id: Quick Start Remediation
-version: -1
+version: 2
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: quick start
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Quick Start Remediation
+description: This contains the remediation and triage steps for the Quick Start Investigation
 starttaskid: "0"
 tasks:
   "0":
@@ -15,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -44,7 +52,6 @@ tasks:
       version: -1
       name: Select Remediation Steps
       type: collection
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -186,7 +193,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -386,7 +392,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -457,7 +462,6 @@ tasks:
       name: Block on Firewall
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -501,7 +505,6 @@ tasks:
       name: Block Account
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -544,7 +547,6 @@ tasks:
       id: 384b6b9f-f97a-4ba2-8165-5cdc3b41ac04
       version: -1
       name: Block File
-      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -590,7 +592,6 @@ tasks:
       version: -1
       name: Notify Teams
       type: condition
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -636,7 +637,6 @@ tasks:
       name: Block Domain
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -680,7 +680,6 @@ tasks:
       version: -1
       name: Reset Password
       type: condition
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -725,7 +724,6 @@ tasks:
       version: -1
       name: Quarantine Device
       type: condition
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -771,7 +769,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -803,7 +800,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -834,7 +830,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -865,7 +860,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -896,7 +890,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -927,7 +920,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -958,7 +950,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -992,7 +983,7 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: 5c451e74-8770-4d37-8af8-4bcd61579dae
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'

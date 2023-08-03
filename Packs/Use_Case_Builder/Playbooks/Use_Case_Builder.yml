@@ -1,8 +1,17 @@
 id: Use Case Builder
-version: -1
+version: 11
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: Use Case Builder 4-21
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Use Case Builder
+description: The main playbook for the Use Case Builder
 starttaskid: "0"
 tasks:
   "0":
@@ -15,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -46,7 +54,6 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -444,16 +451,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e26f0c4c-d21f-4d1e-8956-9c0908ed0e2d
+    taskid: acda5467-af92-4546-8ccf-7deefb75c0a5
     type: condition
     task:
-      id: e26f0c4c-d21f-4d1e-8956-9c0908ed0e2d
+      id: acda5467-af92-4546-8ccf-7deefb75c0a5
       version: -1
-      name: Would you like to make any changes?
+      name: Start over?
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       "No":
       - "4"
@@ -504,7 +510,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -575,7 +580,6 @@ tasks:
       scriptName: UseCaseAdoptionMetrics
       type: regular
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -643,7 +647,6 @@ tasks:
       version: -1
       name: Is the XSOAR Rest API enabled?
       type: condition
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -745,7 +748,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -815,7 +817,6 @@ tasks:
       name: Is this a Quick Start Use Case?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -932,7 +933,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -963,7 +963,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -992,7 +991,6 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -1032,7 +1030,7 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: 06e4c9a7-3bb3-420f-83f7-1ea94546cc1d
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'

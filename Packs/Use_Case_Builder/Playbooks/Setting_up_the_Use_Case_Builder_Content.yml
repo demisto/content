@@ -1,8 +1,17 @@
 id: Setting up the Use Case Builder Content
-version: -1
+version: 16
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: Use Case Builder 4-21
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Setting up the Use Case Builder Content
+description: This playbook generates the flow, markdown, and layout information
 starttaskid: "0"
 tasks:
   "0":
@@ -15,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -165,7 +173,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -208,7 +215,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -278,4 +284,3 @@ quiet: true
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: '""'

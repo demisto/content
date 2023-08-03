@@ -1,10 +1,12 @@
 commonfields:
   id: UseCaseAdoptionMetrics
   version: -1
-comment: ''
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.10.50695
 enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: UseCaseAdoptionMetrics
+pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''

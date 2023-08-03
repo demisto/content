@@ -1,8 +1,17 @@
 id: Quick Start Investigation
-version: -1
+version: 3
 contentitemexportablefields:
-  contentitemfields: {}
+  contentitemfields:
+    packID: ""
+    packName: quick start
+    itemVersion: ""
+    fromServerVersion: ""
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Quick Start Investigation
+description: This playbook contains the investigation steps in the Quick Start Playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -15,7 +24,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -45,7 +53,6 @@ tasks:
       name: Do we need to Enrich indicators?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -90,7 +97,6 @@ tasks:
       name: Do we need to detonate files in Sandbox?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -136,7 +142,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -181,7 +186,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -214,7 +218,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -245,7 +248,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "17"
@@ -325,9 +327,9 @@ tasks:
     task:
       id: 2d94c86e-a9c4-464c-8ba5-71af56b67bcd
       version: -1
-      name: 8a7b6ff4-42c5-46ee-8172-a2f964728cc6
+      name: Entity Enrichment - Generic v4
       description: Enrich entities using one or more integrations.
-      playbookId: 8a7b6ff4-42c5-46ee-8172-a2f964728cc6
+      playbookName: Entity Enrichment - Generic v4
       type: playbook
       iscommand: false
       brand: ""
@@ -561,7 +563,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -711,7 +712,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -742,7 +742,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -764,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 660f6b1c-0eaf-4108-8ab5-08e69c8d637b
+    taskid: a749582a-37f3-4cab-817e-bf82ee9e5ad8
     type: regular
     task:
-      id: 660f6b1c-0eaf-4108-8ab5-08e69c8d637b
+      id: a749582a-37f3-4cab-817e-bf82ee9e5ad8
       version: -1
       name: Get related indicators
       description: commands.local.cmd.find.indicators
@@ -812,7 +811,6 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -879,7 +877,6 @@ tasks:
       name: Do you want to refine exclusion list?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -924,7 +921,6 @@ tasks:
       name: Delete and exclude selected indicators
       scriptName: DeleteAndExcludeIndicators
       type: regular
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -968,7 +964,6 @@ tasks:
       name: Are there indicators to be deleted and excluded?
       type: condition
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -1018,7 +1013,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1046,7 +1040,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -1112,8 +1105,8 @@ inputs:
   description: Set to true to add exclusion list tuning step to the workflow
   playbookInputQuery:
 outputs: []
+sourceplaybookid: 810cf469-1703-4b67-845e-434c67536b21
 quiet: true
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: ''
