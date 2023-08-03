@@ -1366,6 +1366,7 @@ and enter the code **{user_code}** to authenticate.
     def is_auth_code_reconfigured(self) -> bool:
         return False if get_integration_context().get("auth_code") == self.auth_code else True
 
+
 class NotFoundError(Exception):
     """Exception raised for 404 - Not Found errors.
 
