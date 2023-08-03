@@ -12,7 +12,8 @@ IGNORE_FIELDS = [
     'searchRank',
     'downloads',
     'fromversion',
-    'deprecated'
+    'deprecated',
+    'updated',
 ]
 
 
