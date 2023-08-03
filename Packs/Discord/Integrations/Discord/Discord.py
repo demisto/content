@@ -21,14 +21,14 @@ def send_message(api_key, channel_id, text):
     content = response.json()['content']
     channel_id = response.json()['channel_id']
     alerts = {
-        'ID': message_id,
-        'Content': content,
-        'ChannelID': channel_id
+        'id': message_id,
+        'content': content,
+        'channel_id': channel_id
     }
 
     command_results = CommandResults(
         outputs_prefix='Discord.Message',
-        outputs_key_field='ID',
+        outputs_key_field='id',
         outputs=alerts
     )
     return_results(command_results)
@@ -49,18 +49,20 @@ def get_message(api_key, channel_id, message_id):
     msg_id = details['id']
     msg = details['content']
     channel_id = details['channel_id']
-    autherid = details['author']['id']
-    auther_user = details['author']['username']
+    author_id = details['author']['id']
+    author_user = details['author']['username']
     alert = {
-        'ID': msg_id,
-        'Content': msg,
-        'ChannelID': channel_id,
-        'AutherID': autherid,
-        'AutherUser': auther_user
+        'id': msg_id,
+        'content': msg,
+        'channel_id': channel_id,
+        'author': {
+            'id': author_id,
+            'username': author_user
+        }
     }
     command_results = CommandResults(
         outputs_prefix='Discord.Details',
-        outputs_key_field='ID',
+        outputs_key_field='id',
         outputs=alert
     )
     return_results(command_results)

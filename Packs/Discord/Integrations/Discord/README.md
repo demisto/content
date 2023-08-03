@@ -36,9 +36,9 @@ Send message to your channel
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Discord.Message.ID | unknown | Message ID | 
-| Discord.Message.Content | unknown | Content | 
-| Discord.Message.ChannelID | unknown | Channel ID | 
+| Discord.Message.id | unknown | Message ID | 
+| Discord.Message.content | unknown | Content | 
+| Discord.Message.channel_id | unknown | Channel ID | 
 
 ### discord-get-message
 
@@ -59,8 +59,8 @@ Get message details
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Discord.Details.ID | unknown | Message ID | 
-| Discord.Details.Content | unknown | Message Content | 
-| Discord.Details.ChannelID | unknown | Message Channel ID | 
-| Discord.Details.AutherID | unknown | Message Auther ID | 
-| Discord.Details.AutherUser | unknown | Message Auther User | 
+| Discord.Details.id | unknown | Message ID | 
+| Discord.Details.content | unknown | Message Content | 
+| Discord.Details.channel_id | unknown | Message Channel ID | 
+| Discord.Details.author.id | unknown | Message Author ID | 
+| Discord.Details.author.username | unknown | Message Author User Name | 
