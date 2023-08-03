@@ -121,6 +121,14 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
 
 class Client(CoreClient):
 
+    def __init__(self, base_url, proxy, verify, timeout, params={}):
+        self._params = params
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout)
+
+    @property
+    def headers(self):
+        return get_headers(self._params)
+
     def test_module(self, first_fetch_time):
         """
             Performs basic get request to get item samples
@@ -148,6 +156,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/incidents/get_incidents/',
             json_data={'request_data': request_data},
+            headers=self.headers,
             timeout=self.timeout
         )
         raw_incidents = res.get('reply', {}).get('incidents', [])
@@ -168,6 +177,7 @@ class Client(CoreClient):
                 method='POST',
                 url_suffix='/incidents/get_incidents/',
                 json_data={'request_data': request_data},
+                headers=self.headers,
                 timeout=self.timeout
             )
             raw_incidents = res.get('reply', {}).get('incidents', [])
@@ -296,6 +306,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/incidents/get_incidents/',
             json_data={'request_data': request_data},
+            headers=self.headers,
             timeout=self.timeout
         )
         incidents = res.get('reply', {}).get('incidents', [])
@@ -338,6 +349,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/incidents/update_incident/',
             json_data={'request_data': request_data},
+            headers=self.headers,
             timeout=self.timeout
         )
 
@@ -358,6 +370,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/incidents/get_incident_extra_data/',
             json_data={'request_data': request_data},
+            headers=self.headers,
             timeout=self.timeout
         )
 
@@ -385,6 +398,7 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/alerts/get_correlation_alert_data/',
             json_data=request_data,
+            headers=self.headers,
             timeout=self.timeout,
         )
 
@@ -402,6 +416,7 @@ class Client(CoreClient):
             url_suffix=f'/featured_fields/replace_{field_type}',
             json_data=request_data,
             timeout=self.timeout,
+            headers=self.headers,
             raise_on_status=True
         )
 
@@ -412,9 +427,32 @@ class Client(CoreClient):
             method='POST',
             url_suffix='/system/get_tenant_info/',
             json_data={'request_data': {}},
+            headers=self.headers,
             timeout=self.timeout
         )
         return reply.get('reply', {})
+
+
+def get_headers(params: dict) -> dict:
+    api_key = params.get('apikey') or params.get('apikey_creds', {}).get('password', '')
+    api_key_id = params.get('apikey_id') or params.get('apikey_id_creds', {}).get('password', '')
+    nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
+    timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
+    auth_key = f"{api_key}{nonce}{timestamp}"
+    auth_key = auth_key.encode("utf-8")
+    api_key_hash: str = hashlib.sha256(auth_key).hexdigest()
+
+    if argToBoolean(params.get("prevent_only", False)):
+        api_key_hash = api_key
+
+    headers: dict = {
+        "x-xdr-timestamp": timestamp,
+        "x-xdr-nonce": nonce,
+        "x-xdr-auth-id": str(api_key_id),
+        "Authorization": api_key_hash,
+    }
+
+    return headers
 
 
 def get_tenant_info_command(client: Client):
@@ -443,7 +481,7 @@ def get_incidents_command(client, args):
     incident_id_list = argToList(incident_id_list)
     # make sure all the ids passed are strings and not integers
     for index, id_ in enumerate(incident_id_list):
-        if isinstance(id_, (int, float)):
+        if isinstance(id_, int | float):
             incident_id_list[index] = str(id_)
 
     lte_modification_time = args.get('lte_modification_time')
@@ -611,7 +649,7 @@ def get_incident_extra_data_command(client, args):
     file_artifacts = raw_incident.get('file_artifacts').get('data')
     network_artifacts = raw_incident.get('network_artifacts').get('data')
 
-    readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
+    readable_output = [tableToMarkdown(f'Incident {incident_id}', incident)]
 
     if len(context_alerts) > 0:
         readable_output.append(tableToMarkdown('Alerts', context_alerts,
@@ -708,11 +746,7 @@ def insert_parsed_alert_command(client, args):
     alert_name = args.get('alert_name')
     alert_description = args.get('alert_description', '')
 
-    if args.get('event_timestamp') is None:
-        # get timestamp now if not provided
-        event_timestamp = int(round(time.time() * 1000))
-    else:
-        event_timestamp = int(args.get('event_timestamp'))
+    event_timestamp = int(round(time.time() * 1000)) if args.get("event_timestamp") is None else int(args.get("event_timestamp"))
 
     alert = create_parsed_alert(
         product=product,
@@ -743,12 +777,7 @@ def insert_cef_alerts_command(client, args):
     if isinstance(alerts, list):
         pass
     elif isinstance(alerts, str):
-        if alerts[0] == '[' and alerts[-1] == ']':
-            # if the string contains [] it means it is a list and must be parsed
-            alerts = json.loads(alerts)
-        else:
-            # otherwise it is a single alert
-            alerts = [alerts]
+        alerts = json.loads(alerts) if alerts[0] == "[" and alerts[-1] == "]" else [alerts]
     else:
         raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), '
                          'or single string')
@@ -859,7 +888,7 @@ def get_modified_remote_data_command(client, args):
 
     raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
 
-    modified_incident_ids = list()
+    modified_incident_ids = []
     for raw_incident in raw_incidents:
         incident_id = raw_incident.get('incident_id')
         modified_incident_ids.append(incident_id)
@@ -1014,7 +1043,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
-    next_run = dict()
+    next_run = {}
     try:
         # The count of incidents, so as not to pass the limit
         count_incidents = 0
@@ -1182,8 +1211,6 @@ def main():  # pragma: no cover
     LOG(f'Command being called is {command}')
 
     # using two different credentials object as they both fields need to be encrypted
-    api_key = params.get('apikey') or params.get('apikey_creds').get('password', '')
-    api_key_id = params.get('apikey_id') or params.get('apikey_id_creds').get('password', '')
     first_fetch_time = params.get('fetch_time', '3 days')
     base_url = urljoin(params.get('url'), '/public_api/v1')
     proxy = params.get('proxy')
@@ -1203,28 +1230,12 @@ def main():  # pragma: no cover
         demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
         max_fetch = 10
 
-    nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
-    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = "%s%s%s" % (api_key, nonce, timestamp)
-    auth_key = auth_key.encode("utf-8")
-    api_key_hash = hashlib.sha256(auth_key).hexdigest()
-
-    if argToBoolean(params.get("prevent_only", False)):
-        api_key_hash = api_key
-
-    headers = {
-        "x-xdr-timestamp": timestamp,
-        "x-xdr-nonce": nonce,
-        "x-xdr-auth-id": str(api_key_id),
-        "Authorization": api_key_hash
-    }
-
     client = Client(
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
-        headers=headers,
-        timeout=timeout
+        timeout=timeout,
+        params=params
     )
 
     args = demisto.args()
