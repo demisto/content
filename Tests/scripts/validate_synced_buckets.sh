@@ -15,13 +15,15 @@ function get_revision_field() {
 function compare_revision() {
   bucket_list_origin=$1
   bucket_list_prod=$2
+  echo $bucket_list_origin
+  echo $bucket_list_prod
 
   # Compare the revision fields for each pair of buckets
   for ((i = 0; i < ${#bucket_list_origin[@]}; i++)); do
     bucket1="${bucket_list_origin[$i]}"
     bucket2="${bucket_list_prod[$i]}"
 
-    echo "Comparing revisions for $bucket_list_origin and $bucket_list_prod"
+    echo "Comparing revisions for $bucket1 and $bucket2"
 
     # Get the revision fields from the JSON files in the buckets
     revision1=$(get_revision_field "$bucket1")
@@ -39,5 +41,8 @@ function compare_revision() {
   done
 }
 
+echo $1
+echo $2
+echo here
 compare_revision "$1" "$2"
 
