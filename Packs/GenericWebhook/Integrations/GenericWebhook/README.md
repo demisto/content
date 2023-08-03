@@ -22,7 +22,7 @@ The Generic Webhook integration is used to create incidents on event triggers. T
 
 You can now trigger the webhook URL:
 - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/webhook`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
-- For Cortex XSOAR 8: '<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, https://ext-dev-tertius.crtx.us.paloaltonetworks.com/xsoar/instance/execute/webhook1. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+- For Cortex XSOAR 8: `<ext-<CORTEX-XSOAR-URL>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, https://ext-dev-tertius.crtx.us.paloaltonetworks.com/xsoar/instance/execute/webhook1. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
 
 If you're not invoking the integration via the server HTTPS endpoint, then you should trigger the webhook URL as follows: `<CORTEX-XSOAR-URL>:<LISTEN_PORT>/`. For example, `https://my.demisto.live:8000/`.
 
