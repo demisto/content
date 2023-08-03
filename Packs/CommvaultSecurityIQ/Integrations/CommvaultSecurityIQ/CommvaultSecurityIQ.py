@@ -136,9 +136,10 @@ def handle_post_helper(client, incident, request):
             "event_time": event_time,
             "host_name": hostname,
         }
-        incident_body.update(
-            client.get_incident_details(incident.get("Description"))  # type: ignore
-        )
+        inc = client.get_incident_details(incident.get("Description"))  # type: ignore
+        if inc.get("anomaly_sub_type", "Undefined") != "File Type":  # type: ignore
+            return {}
+        incident_body.update(inc)  # type: ignore
         return incident_body
     except Exception as err:
         logging.error(f"could not print REQUEST: {err}")
@@ -178,7 +179,7 @@ def parse_no_length_limit(data: bytes) -> syslogmp.parser.Message:
     )
 
 
-def if_zero_set_none(value: str | None) -> str | None:
+def if_zero_set_none(value: str | None | int) -> str | None | int:
     """
     If the value is zero, return None
     """
@@ -477,10 +478,14 @@ class Client(BaseClient):
             self.qsdk_token = f"QSDK {str(new_access_token)}"
             self.access_token_last_generation = current_epoch
             current_token_dict = demisto.getIntegrationContext()
-            current_token_dict.update({"tokenDetails": {
-                "accessToken": str(new_access_token),
-                "accessTokenGenerationTime": str(current_epoch)
-            }})
+            current_token_dict.update(
+                {
+                    "tokenDetails": {
+                        "accessToken": str(new_access_token),
+                        "accessTokenGenerationTime": str(current_epoch),
+                    }
+                }
+            )
             demisto.setIntegrationContext(current_token_dict)
 
         except KeyError as error:
@@ -726,7 +731,10 @@ class Client(BaseClient):
                 ),
             }
 
-            incident.update(self.get_incident_details(message))  # type: ignore
+            inc = self.get_incident_details(message)  # type: ignore
+            if inc.get("anomaly_sub_type", "Undefined") != "File Type":  # type: ignore
+                return None
+            incident.update(inc)  # type: ignore
             return incident
         except syslogmp.parser.MessageFormatError as error:
             demisto.debug(
@@ -1087,24 +1095,32 @@ class Client(BaseClient):
         :return: True/False
         """
         if (
-            (self.keyvault_url is not None
-                and len(self.keyvault_url) != 0)
-            or (self.keyvault_client_id is not None
-                and len(self.keyvault_client_id) != 0)
-            or (self.keyvault_client_secret is not None
-                and len(self.keyvault_client_secret) != 0)
-            or (self.keyvault_tenant_id is not None
-                and len(self.keyvault_tenant_id) != 0)
+            (self.keyvault_url is not None and len(self.keyvault_url) != 0)
+            or (
+                self.keyvault_client_id is not None
+                and len(self.keyvault_client_id) != 0
+            )
+            or (
+                self.keyvault_client_secret is not None
+                and len(self.keyvault_client_secret) != 0
+            )
+            or (
+                self.keyvault_tenant_id is not None
+                and len(self.keyvault_tenant_id) != 0
+            )
         ):
             if (
-                (self.keyvault_url is None
-                    or len(self.keyvault_url) == 0)
-                or (self.keyvault_client_id is None
-                    or len(self.keyvault_client_id) == 0)
-                or (self.keyvault_client_secret is None
-                    or len(self.keyvault_client_secret) == 0)
-                or (self.keyvault_tenant_id is None
-                    or len(self.keyvault_tenant_id) == 0)
+                (self.keyvault_url is None or len(self.keyvault_url) == 0)
+                or (
+                    self.keyvault_client_id is None or len(self.keyvault_client_id) == 0
+                )
+                or (
+                    self.keyvault_client_secret is None
+                    or len(self.keyvault_client_secret) == 0
+                )
+                or (
+                    self.keyvault_tenant_id is None or len(self.keyvault_tenant_id) == 0
+                )
             ):
                 return False
             else:
@@ -1211,8 +1227,9 @@ def fetch_incidents(
                 ],
             }
             det = client.get_incident_details(event[Constants.description])
-            incident.update(det)  # type: ignore
-            out.append(incident)
+            if det.get("anomaly_sub_type", "Undefined") == "File Type":  # type: ignore
+                incident.update(det)  # type: ignore
+                out.append(incident)
     if lasttimestamp is None:
         lasttimestamp = {"lastRun": str(seconds_since_epoch)}
     return lasttimestamp, out
@@ -1315,6 +1332,10 @@ def validate_inputs(
     portno, client, is_valid_cv_token, is_fetch, is_long_running, forwarding_rule_type
 ):
     try:
+        if is_fetch and is_long_running:
+            raise DemistoException(
+                "Please enable only fetch incidents/long running integration"
+            )
         if portno > 0 and client.is_port_in_use(portno):
             raise DemistoException(
                 f"Port [{portno}] is in use, please specify another port"
@@ -1403,14 +1424,20 @@ def main() -> None:
             )
             return_results("ok")
         elif command == "fetch-incidents":
+            lr = demisto.getLastRun()
             last_fetch, out = fetch_incidents(
-                client, last_run=demisto.getLastRun().get('lastRun'), first_fetch_time=first_fetch_time
+                client,
+                last_run=({} if lr is None else lr).get("lastRun"),
+                first_fetch_time=first_fetch_time,
             )
             demisto.setLastRun(last_fetch)
             if (out is None) or len(out) == 0:
                 demisto.incidents([])
             else:
-                seconds_since_epoch = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S') // 1000
+                seconds_since_epoch = (
+                    date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+                    // 1000
+                )
                 client.create_incident(
                     out,
                     datetime.fromtimestamp(seconds_since_epoch),

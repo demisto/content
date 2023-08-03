@@ -269,7 +269,7 @@ def test_fetch_incidents():
     )
     _, resp = fetch_incidents(client, {}, "2 Days")
     _, resp = fetch_incidents(client, {"last_fetch": 0}, "2 Days")
-    assert resp[0]["affected_files_count"] == "145"
+    assert resp[0]["affected_files_count"] == "145"  # type: ignore
 
 
 def test_get_backup_anomaly():
@@ -288,7 +288,7 @@ def test_if_zero_set_none():
 
 def test_extract_from_regex():
     """Unit test function"""
-    resp = extract_from_regex("clientid[123]", 0, "clientid\\[(.*)\\]")
+    resp = extract_from_regex("clientid[123]", '0', "clientid\\[(.*)\\]")
     assert resp == "123"
 
 
@@ -390,9 +390,9 @@ def test_misc_functions():
     t.get_user_agent({})
 
     resp = client.parse_incoming_message(string)
-    assert resp["affected_files_count"] == "132"
+    assert resp["affected_files_count"] == "132"  # type: ignore
 
-    resp = client.perform_long_running_loop(string)
+    resp = client.perform_long_running_loop(string)  # type: ignore
 
     resp = client.fetch_file_details(None, 0)
     assert resp[0] == []
