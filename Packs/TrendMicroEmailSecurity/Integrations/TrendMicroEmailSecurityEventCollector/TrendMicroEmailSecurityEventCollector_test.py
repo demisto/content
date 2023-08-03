@@ -114,10 +114,10 @@ def test_get_last_time_event(events_key: str, expected_results: str):
                 "subject": "test",
                 "attachments": [{"fileName": "test", "sha256": "test"}],
             },
-            {"attachments": [{"sha256": "test"}]},
+            {"subject": "hidden data", "attachments": [{"fileName": "hidden data", "sha256": "test"}]},
         ),
-        ({"subject": "test", "attachments": []}, {"attachments": []}),
-        ({"subject": "test", "attachments": None}, {"attachments": None}),
+        ({"subject": "test", "attachments": []}, {"subject": "hidden data", "attachments": []}),
+        ({"subject": "test", "attachments": None}, {"subject": "hidden data", "attachments": None}),
     ],
 )
 def test_remove_sensitive_from_events(event: dict, expected_results: dict):
@@ -283,7 +283,7 @@ def test_calculate_last_run(
 
 @pytest.mark.parametrize(
     "event_mock, limit",
-    [(({"nextToken": "abc%20abc", "logs": [{"genTime": "test"}]}, {}), 2)],
+    [(({"nextToken": "abc%20abc", "logs": [{"genTime": "2023-07-14T10:00:18Z"}]}, {}), 2)],
 )
 def test_fetch_by_event_type_token_unquote(
     mocker, mock_client: Client, event_mock: tuple[dict], limit: int
@@ -313,21 +313,21 @@ def test_fetch_by_event_type_token_unquote(
             id="No logs and nextToken were returned",
         ),
         pytest.param(
-            ({"nextToken": "test", "logs": [{"genTime": "test"}]}, {}),
+            ({"nextToken": "test", "logs": [{"genTime": "2023-07-14T10:00:18Z"}]}, {}),
             2,
             {"len_events": 1, "call_count": 2},
             id="No logs and nextToken were returned (second iteration)",
         ),
         pytest.param(
-            ({"logs": [{"genTime": "test"}]},),
+            ({"logs": [{"genTime": "2023-07-14T10:00:18Z"}]},),
             1,
             {"len_events": 1, "call_count": 1},
             id="no nextToken returned",
         ),
         pytest.param(
             (
-                {"nextToken": "test", "logs": [{"genTime": "test"}]},
-                {"logs": [{"genTime": "test"}]},
+                {"nextToken": "test", "logs": [{"genTime": "2023-07-14T10:00:18Z"}]},
+                {"logs": [{"genTime": "2023-07-14T10:00:18Z"}]},
             ),
             2,
             {"len_events": 2, "call_count": 2},
@@ -341,7 +341,7 @@ def test_fetch_by_event_type_token_unquote(
         ),
         pytest.param(
             (
-                {"nextToken": "test", "logs": [{"genTime": "test"}]},
+                {"nextToken": "test", "logs": [{"genTime": "2023-07-14T10:00:18Z"}]},
                 NoContentException(),
             ),
             2,
@@ -350,8 +350,8 @@ def test_fetch_by_event_type_token_unquote(
         ),
         pytest.param(
             (
-                {"nextToken": "test", "logs": [{"genTime": "test"}]},
-                {"nextToken": "test", "logs": [{"genTime": "test"}]},
+                {"nextToken": "test", "logs": [{"genTime": "2023-07-14T10:00:18Z"}]},
+                {"nextToken": "test", "logs": [{"genTime": "2023-07-14T10:00:18Z"}]},
             ),
             2,
             {"len_events": 2, "call_count": 2},

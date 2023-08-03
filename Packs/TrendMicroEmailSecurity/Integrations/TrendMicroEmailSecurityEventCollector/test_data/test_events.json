@@ -24,7 +24,7 @@
             "messageID": "<11111.11111.11111.1111@mx.test.com>",
             "subject": "test-test2 - 1111",
             "size": 3000,
-            "genTime": "2023-07-15T10:00:18.12345Z"
+            "genTime": "2023-07-15T10:00:18Z"
         },
         {
             "messageID": "<11111.11111.11111.1111@mx.test.com>",
@@ -36,7 +36,7 @@
             "messageID": "<11111.11111.11111.1111@mx.test.com>",
             "subject": "test-test2 - 1111",
             "size": 3000,
-            "genTime": "2023-07-15T10:00:20.324Z"
+            "genTime": "2023-07-15T10:00:20Z"
         }
     ],
     "EVENTS_GET_LAST_TIME_EVENT_3": [

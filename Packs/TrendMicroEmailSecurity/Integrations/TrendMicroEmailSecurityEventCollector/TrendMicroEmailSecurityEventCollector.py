@@ -242,12 +242,12 @@ def calculate_last_run(
 
 def remove_sensitive_from_events(event: dict) -> dict:
     if event.get("subject", None):
-        event["subject"] = "Hidden (sensitive data)"
+        event["subject"] = "hidden data"
 
     if (attachments := event.get("attachments")) and isinstance(attachments, list):
         for attachment in attachments:
             if isinstance(attachment, dict) and attachment.get("fileName", None):
-                attachment["fileName"] = "Hidden (sensitive data)"
+                attachment["fileName"] = "hidden data"
 
     return event
 
@@ -343,7 +343,7 @@ def set_start_time(start_time: str = None) -> str:
     """
     set the start time of the first time of the fetch
     """
-    if first_fetch := arg_to_datetime(start_time or "72 hours"):
+    if first_fetch := arg_to_datetime(start_time or "1 hours"):
         return first_fetch.strftime(DATE_FORMAT_EVENT)
     raise ValueError("Failed to convert `str` to `datetime` object")
 
