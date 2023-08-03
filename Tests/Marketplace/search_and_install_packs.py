@@ -148,11 +148,11 @@ def is_pack_deprecated(pack_id: str, production_bucket: bool = True,
         else:
             logging.warning(f"File '{pack_metadata_path}' could not be found, or isn't a file.")
 
-        # If we got here, it means that nothing was returned and an error was encountered
-        logging.warning(f"Deprecation status of '{pack_id}' could not be determined, "
-                        "and has been set to a default value of 'False'.\n"
-                        "Note that this might result in potential errors if it is deprecated.")
-        return False
+    # If we got here, it means that nothing was returned and an error was encountered
+    logging.warning(f"Deprecation status of '{pack_id}' could not be determined, "
+                    "and has been set to a default value of 'False'.\n"
+                    "Note that this might result in potential errors if it is deprecated.")
+    return False
 
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
