@@ -490,16 +490,14 @@ def search_pack_and_its_dependencies(client: demisto_client,
             Each list contain one pack and its dependencies.
     """
     global SUCCESS_FLAG
-    is_deprecated = is_pack_deprecated(pack_id=pack_id, production_bucket=production_bucket, commit_hash=commit_hash)
-
-    if is_deprecated:
+    if is_pack_deprecated(pack_id=pack_id, production_bucket=production_bucket, commit_hash=commit_hash):
         logging.warning(f"Pack '{pack_id}' is deprecated (hidden) and will not be installed.")
         return
 
     api_data = get_pack_dependencies(client=client, pack_id=pack_id, lock=lock)
 
     if not api_data:
-        return  # Error information already logged on 'get_pack_dependencies'.
+        return
 
     dependencies_data: list[dict] = []
 
@@ -513,7 +511,6 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                            checked_packs=[pack_id])
 
     except Exception as ex:
-        # If APIs response structure has unexpectedly changed, causing an error, print debug information
         logging.error(f"Error: {ex}\n\nStack trace:\n" + traceback.format_exc())
         SUCCESS_FLAG = False
         return
@@ -783,11 +780,6 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         'commit_hash': master_commit_hash,
     }
 
-    if production_bucket:
-        logging.debug("Packs deprecation status will be determined by their status on our production bucket.")
-
-    else:
-        logging.debug("Packs deprecation status will be determined by the local branch and its changes.")
 
     if not multithreading:
         for pack_id in pack_ids:
