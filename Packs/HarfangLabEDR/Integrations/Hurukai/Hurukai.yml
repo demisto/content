@@ -16,12 +16,15 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: API Key
-  displaypassword: API Key
-  name: apikey
+- name: credentials
   type: 9
-  required: false
+  displaypassword: API Key
   hiddenusername: true
+- display: API Key
+  name: apikey
+  type: 0
+  required: false
+  hidden: true
 - display: Long running instance
   name: longRunning
   type: 8
