@@ -56,7 +56,6 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  # omertodo: do i need to add here any thing else what happens in the endpoint.
   -f|--force) _force=true
     _bucket_upload=""
     shift;;
