@@ -118,10 +118,19 @@ def is_pack_deprecated(pack_id: str, production_bucket: bool = True,
     """
     if production_bucket:
         if pack_api_data:
-            return pack_api_data['extras']['pack'].get('deprecated', False)
+            try:
+                return pack_api_data['extras']['pack'].get('deprecated', False)
+
+            except Exception as ex:
+                logging.error(f"Failed to parse API response data for '{pack_id}'.\n"
+                              f"API Data: {pack_api_data}\nError: {ex}")
 
         elif commit_hash:
-            return fetch_pack_metadata_from_gitlab(pack_id=pack_id, commit_hash=commit_hash).get('hidden', False)
+            try:
+                return fetch_pack_metadata_from_gitlab(pack_id=pack_id, commit_hash=commit_hash).get('hidden', False)
+
+            except Exception as ex:
+                logging.error(f"Failed to fetch pack metadata from GitLab for pack '{pack_id}'.\nError: {ex}")
 
         else:
             raise ValueError("Either 'master_commit_hash' or 'pack_api_data' must be provided.")
@@ -129,21 +138,21 @@ def is_pack_deprecated(pack_id: str, production_bucket: bool = True,
     else:  # Check locally
         pack_metadata_path = Path(PACKS_FOLDER) / pack_id / PACK_METADATA_FILENAME
 
-        if not pack_metadata_path.is_file():
-            logging.warning(f"Failed to find 'pack_metadata.json' file for pack '{pack_id}'.\n"
-                            f"Deprecation status of '{pack_id}' has been set to a default value of 'False'.\n"
-                            "Note that this might result in an unexpected behavior.")
+        if pack_metadata_path.is_file():
+            try:
+                return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
 
-            return False
+            except Exception as ex:
+                logging.error(f"Failed to open file '{pack_metadata_path}'.\nError: {ex}")
 
-        try:
-            return tools.get_pack_metadata(str(pack_metadata_path)).get('hidden', False)
+        else:
+            logging.warning(f"File '{pack_metadata_path}' could not be found, or isn't a file.")
 
-        except Exception as ex:
-            logging.error(f"Failed to open 'pack_metadata.json' file for pack '{pack_id}'.\nError: {ex}")
-            logging.warning(f"Deprecation status of '{pack_id}' has been set to a default value of 'False'.\n"
-                            "Note that this might result in an unexpected behavior.")
-            return False
+        # If we got here, it means that nothing was returned and an error was encountered
+        logging.warning(f"Deprecation status of '{pack_id}' could not be determined, "
+                        "and has been set to a default value of 'False'.\n"
+                        "Note that this might result in potential errors if it is deprecated.")
+        return False
 
 
 def get_pack_id_from_error_with_gcp_path(error: str) -> str:
