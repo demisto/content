@@ -5,7 +5,7 @@ function get_revision_field() {
   bucket=$1
   json_file_path="/content/packs/index.json"
 
-
+  echo "gs://$bucket$json_file_path"
   # Download the JSON file from the bucket and extract the revision field using jq
 
   revision=$(gsutil cat "gs://$bucket$json_file_path" | jq -r '.revision')
