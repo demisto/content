@@ -11,10 +11,11 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
+MSPs
 assignee
 CQL
-MSPs
 namespace
-harelink
+sharelink
 Taegis
 TaegisXDRv2
+XD
