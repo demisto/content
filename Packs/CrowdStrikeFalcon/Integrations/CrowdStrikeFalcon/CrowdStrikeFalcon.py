@@ -553,7 +553,6 @@ def incident_to_incident_context(incident):
         'name': f'Incident ID: {incident.get("incident_id")}',
         'occurred': str(incident.get('start')),
         'rawJSON': json.dumps(incident),
-        'severity': severity_string_to_int(incident.get('fine_score'))
     }
     return incident_context
 
@@ -2524,7 +2523,7 @@ def fetch_incidents():
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
-            fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
+            fetch_query = f"created_timestamp:>{start_fetch_time!r}+{fetch_query}"
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit), 'resources')
         else:
             detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit),
@@ -2571,7 +2570,7 @@ def fetch_incidents():
         fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
-            fetch_query = f"start:>'{start_fetch_time}'+{fetch_query}"
+            fetch_query = f'start:>{start_fetch_time!r}+{fetch_query}'
             incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, limit=fetch_limit), 'resources')
 
         else:
