@@ -748,6 +748,8 @@ def parse_subtree(my_map):
             res[k] = parse_subtree(my_map[k]['properties'])
         else:
             res[k] = "type: " + my_map[k].get('type', "")
+            if field_format := my_map[k].get('format'):
+                res[k] += field_format
     return res
 
 

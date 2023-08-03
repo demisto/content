@@ -77,20 +77,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: Only if time field type is Simple-date.
-  defaultvalue: None
-  display: Time format
-  name: time_format
-  options:
-  - yyyy-MM-dd
-  - yyyy-MM-ddTHH:mm:ss
-  - yyyy-MM-ddTHH:mm:ssZ
-  - yyyy-MM-ddTHH:mm:ss.SSS
-  - yyyy-MM-ddTHH:mm:ss.SSSZ
-  - yyyy-MM-ddTHH:mm:ss.SSSSSS
-  - yyyy-MM-ddTHH:mm:ss.SSSSSSZ
-  type: 15
-  required: false
 - defaultvalue: 'true'
   display: Map JSON fields into labels
   name: map_labels
