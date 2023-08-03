@@ -308,4 +308,5 @@ There is no context output for this command.
 
 
 ## Additional Information
-Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.
+- Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.
+- When fetching, note that the API only supports a start time that is no more than 7 days in the past. In cases where the last fetch timestamp exceeds this limitation, the integration will automatically default to fetching data from 7 days ago.
