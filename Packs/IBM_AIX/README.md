@@ -6,7 +6,7 @@ You need to configure your IBM AIX instance to forward audit event messages with
 
 Open your IBM AIX instance, and follow these instructions (Product Documentation)[https://www.ibm.com/docs/en/dsm?topic=asdo-configuring-your-aix-server-device-send-syslog-events-qradar]: 
 1. Log in to your IBM AIX appliance as a *root* user.
-2. Open the ***/etc/syslog.conf*** file.
+2. Open the */etc/syslog.conf* file.
 3. To forward the system authentication logs to QRadar, add the following line to the file:
 ```bash
     auth.info @SyslogServer_IP_address
