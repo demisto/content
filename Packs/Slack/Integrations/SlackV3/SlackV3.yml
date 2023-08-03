@@ -14,6 +14,13 @@ configuration:
   section: Connect
   required: false
 - display: ''
+  displaypassword: User Token
+  name: user_token
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- display: ''
   displaypassword: App Token
   name: app_token
   type: 9
@@ -418,6 +425,12 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
+  - arguments:
+    - description: The user id of the user.
+      name: user_id
+      required: true
+    description: Reset user session token in Slack
+    name: slack-user-session-reset
   dockerimage: demisto/slackv3:1.0.0.63762
   longRunning: true
   runonce: false
