@@ -25,48 +25,35 @@ The playbooks included in this pack help save time and automate repetitive tasks
 
 As part of this pack, you will also get an out-of-the-box layout to facilitate analyst investigation. All of these components are easily customizable to suit the needs of your organization.
 
-For XSIAM, the playbooks are also included in the "Playbook Recommendation".
-
-## Supported Products
-
-The Cloud Incident Response Pack supports the following products:
-
-- Cortex XSIAM
-- Cortex XDR
+<~XSIAM>The playbooks are also included in the "Playbook Recommendation".</~XSIAM>
 
 ## Playbooks
 
-The pack consists of three comprehensive playbooks tailored for handling common cloud security incidents. Each playbook is available in two versions, one for Cortex XDR and one for Cortex XSIAM, allowing users to leverage the specific capabilities of their preferred platform.
-
+The pack consists of three comprehensive playbooks tailored for handling common cloud security incidents
 ### 1. Cloud Token Theft
 
 The Cloud Token Theft playbook is designed to guide security analysts through the response process in cases of compromised cloud access tokens. These tokens are crucial for accessing cloud resources and are often targeted by attackers to gain unauthorized access.
 
-#### Playbook for Cortex XSIAM
-- [Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cloud-token-theft-response)
 
-#### Playbook for Cortex XDR
-- [Cortex XDR - Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---x-cloud-token-theft-response)
+<~XSIAM>- [Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cloud-token-theft-response)<~/XSIAM>
+
+<~XSOAR>- [Cortex XDR - Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---x-cloud-token-theft-response)<~/XSOAR>
 
 ### 2. Cryptojacking Response
 
 The Cryptojacking Response playbook assists security teams in detecting and mitigating cryptojacking incidents, where attackers illicitly use an organization's cloud resources to mine cryptocurrencies.
 
-#### Playbook for Cortex XSIAM
-- [Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/x-cloud-cryptomining)
+<~XSIAM>- [Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/x-cloud-cryptomining)<~/XSIAM>
 
-#### Playbook for Cortex XDR
-- [Cortex XDR - Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-cryptomining)
+<~XSOAR>- [Cortex XDR - Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-cryptomining)<~/XSOAR>
 
 ### 3. IAM User Investigation
 
 The IAM User Investigation playbook provides step-by-step instructions for investigating suspicious activities related to IAM (Identity and Access Management) users in the cloud environment. It aids in identifying potential account compromises and unauthorized access.
 
-#### Playbook for Cortex XSIAM
-- [Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cloud-iam-user-access-investigation)
+<~XSIAM>- [Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cloud-iam-user-access-investigation)<~/XSIAM>
 
-#### Playbook for Cortex XDR
-- [Cortex XDR - Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-iam-user-access-investigation)
+<~XSOAR>- [Cortex XDR - Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-iam-user-access-investigation)<~/XSOAR>
 
 ### Investigative Playbooks
 
@@ -76,7 +63,7 @@ The IAM User Investigation playbook provides step-by-step instructions for inves
 
 ## How to Use the Playbooks
 
-Each playbook is provided in a user-friendly format, detailing the necessary actions, procedures, and tools required for effective incident response. To use the playbooks, follow the respective links provided above for the Cortex XDR or Cortex XSIAM version.
+Each playbook is provided in a user-friendly format, detailing the necessary actions, procedures, and tools required for effective incident response. To use the playbooks, follow the respective links provided above.
 
 
 ![Cloud Incident Response](doc_files/Cloud_Incident_Response.png)
