@@ -41,7 +41,8 @@ function compare_revision() {
 
 bucket_list_origin=("gs://marketplace-dist" "gs://marketplace-v2-dist" "gs://xpanse-dist")
 bucket_list_prod=("gs://marketplace-xsoar-dev" "gs://marketplace-xsiam-dev" "gs://marketplace-xpanse-dev")
-buckets_list_us=("gs://marketplace-xsoar-prod-us", "gs://marketplace-xsiam-prod-us", "gs://marketplace-xpanse-prod-us")
+buckets_list_prod_us=("gs://marketplace-xsoar-prod-us", "gs://marketplace-xsiam-prod-us", "gs://marketplace-xpanse-prod-us")
 
+compare_revision "$1" "$2"
 compare_revision "$bucket_list_origin" "$bucket_list_prod"
 compare_revision "$bucket_list_origin" "$buckets_list_us"
