@@ -28,6 +28,7 @@ configuration:
   required: true
   type: 9
   displaypassword: Password
+  hiddenpassword: true
   section: Connect
 - display: The organization used in app-only authentication.
   name: organization
