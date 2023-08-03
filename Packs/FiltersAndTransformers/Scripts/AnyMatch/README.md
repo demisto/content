@@ -1,6 +1,7 @@
 This filter accepts two inputs, left and right, each of which can be either a single element of any type (e.g., string, int, etc.) or a list of elements. The filter iterates over each element in the left input and returns all elements that have a substring that is equal to an element from the right side. The matching process is case-insensitive, meaning it disregards letter case during the comparison.
 
-All inputs are treated either as a string or as a list of strings, if it contains a comma. Json on the other hand is always treated as one string.
+All inputs are treated either as a string or as a list of strings, if it contains a comma.
+A JSON is always treated as a string.
 
 Since the comparison treats all inputs as strings, integers and strings are considered equal during the evaluation.
 
@@ -22,8 +23,8 @@ Since the comparison treats all inputs as strings, integers and strings are cons
 
 | **Argument Name** | **Description**                                                                                                    |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
-| left              | Value to check if it has a substring that is equal to an element in the right side. can be a single value or a comma-separated list.                   |
-| right             | Value to check if it is equal to an element or to a substring of an element from the left. can be a single value or a comma-separated list. |
+| left              | Value to check if it has a substring that is equal to an element in the right side. Can be a single value or a comma-separated list.                   |
+| right             | Value to check if it is equal to an element or to a substring of an element from the left. Can be a single value or a comma-separated list. |
 
 
 ## Outputs
