@@ -99,6 +99,10 @@
         "deliveryTime": {
             "type": "datetime",
             "is_array": false
+        },
+        "embeddedUrls": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

@@ -191,8 +191,6 @@ class Deduplicate:
         """
         checks if the event is duplicate
         """
-        if not self.last_event_ids_suspected:
-            return False
         if event["genTime"] != time_from:
             return False
         if self.generate_id_for_event(event) not in self.last_event_ids_suspected:
@@ -306,14 +304,17 @@ def fetch_by_event_type(
             # Iterate over each event log, update their `type` and `_time` fields
             for event in res["logs"]:
                 # Maintains a uniform format for all events
-                # used to check duplicates and save the `genTiem` in the `last_run`
+                # used to check duplicates and save the `genTime` in the `last_run`
                 event["genTime"] = convert_datetime_to_without_milliseconds(
                     event["genTime"]
                 )
                 deduplicate_management.update_suspected_duplicate_events_list(
                     event, start
                 )
-                if not deduplicate_management.is_duplicate(event, start):
+                if (
+                    not deduplicate_management.last_event_ids_suspected
+                    or not deduplicate_management.is_duplicate(event, start)
+                ):
                     event.update(
                         {"_time": event.get("timestamp"), "logType": event_type.value}
                     )
