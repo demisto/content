@@ -248,7 +248,7 @@ install-packs-in-server-master:
     - |
       if [ "$INSTANCE_ROLE" == XSIAM ]; then
         section_start "Run end to end sanity tests"
-      
+
         python3 -m pytest ./Tests/tests_end_to_end_xsiam -v --cloud_machine "$CLOUD_CHOSEN_MACHINE_ID" --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
         section_end "Run end to end sanity tests"
       fi
@@ -515,7 +515,9 @@ upload-packs-to-xsoar-saas-marketplace:
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "master" ]] ||  [[ "$GCS_MARKET_XSOAR_SAAS_BUCKET" != "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET" ]]; then
+      echo "$GCS_MARKET_XSOAR_SAAS_BUCKET"
+      echo "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET"
+      if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$CI_COMMIT_BRANCH" == "new_bucket_xsoar_saas" ]] ||  [[ "$GCS_MARKET_XSOAR_SAAS_BUCKET" != "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
         PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
