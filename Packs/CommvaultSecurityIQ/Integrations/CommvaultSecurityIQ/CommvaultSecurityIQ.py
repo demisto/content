@@ -137,7 +137,7 @@ def handle_post_helper(client, incident, request):
             "host_name": hostname,
         }
         inc = client.get_incident_details(incident.get("Description"))  # type: ignore
-        if inc.get("anomaly_sub_type", "Undefined") != "File Type":  # type: ignore
+        if inc.get(Constants.anomaly_sub_type, "Undefined") != "File Type":  # type: ignore
             return {}
         incident_body.update(inc)  # type: ignore
         return incident_body
@@ -593,7 +593,8 @@ class Client(BaseClient):
                 "type": incident_type,
                 "details": "\n".join([f"{k}: {v}" for k, v in message_.items() if v]),
             }
-            incidents.append(incident)
+            if message_.get(Constants.anomaly_sub_type, "Undefined") == "File Type":
+                incidents.append(incident)
         if is_fetch:
             demisto.incidents(incidents)
             # self.define_indicator(extracted_message.get("originating_client"))
@@ -732,7 +733,7 @@ class Client(BaseClient):
             }
 
             inc = self.get_incident_details(message)  # type: ignore
-            if inc.get("anomaly_sub_type", "Undefined") != "File Type":  # type: ignore
+            if inc.get(Constants.anomaly_sub_type, "Undefined") != "File Type":  # type: ignore
                 return None
             incident.update(inc)  # type: ignore
             return incident
@@ -1227,7 +1228,7 @@ def fetch_incidents(
                 ],
             }
             det = client.get_incident_details(event[Constants.description])
-            if det.get("anomaly_sub_type", "Undefined") == "File Type":  # type: ignore
+            if det.get(Constants.anomaly_sub_type, "Undefined") == "File Type":  # type: ignore
                 incident.update(det)  # type: ignore
                 out.append(incident)
     if lasttimestamp is None:
