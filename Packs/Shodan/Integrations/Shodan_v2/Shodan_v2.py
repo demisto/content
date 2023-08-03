@@ -111,7 +111,7 @@ def get_scan_status(scan_id):
     })
 
 
-def mtest_module():
+def test_module():
     """
     Performs basic get request to get item samples
     """
@@ -448,7 +448,7 @@ def shodan_network_alert_remove_service_from_whitelist_command():
 
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
-    mtest_module()
+    test_module()
     demisto.results('ok')
 elif demisto.command() == 'search':
     search_command()
