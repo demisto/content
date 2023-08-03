@@ -25,11 +25,11 @@ script:
     description: Send message to your channel
     name: discord-send-message
     outputs:
-    - contextPath: Discord.Message.id
+    - contextPath: Discord.Message.ID
       description: Message ID
-    - contextPath: Discord.Message.content
+    - contextPath: Discord.Message.Content
       description: Content
-    - contextPath: Discord.Message.channel_id
+    - contextPath: Discord.Message.ChannelID
       description: Channel ID
   - arguments:
     - description: Right click on message then "Copy Message ID"
@@ -38,15 +38,15 @@ script:
     description: Get message details
     name: discord-get-message
     outputs:
-    - contextPath: Discord.Details.id
+    - contextPath: Discord.Details.ID
       description: Message ID
-    - contextPath: Discord.Details.content
+    - contextPath: Discord.Details.Content
       description: Message Content
-    - contextPath: Discord.Details.channel_id
+    - contextPath: Discord.Details.ChannelID
       description: Message Channel ID
-    - contextPath: Discord.Details.Auther_ID
+    - contextPath: Discord.Details.AutherID
       description: Message Auther ID
-    - contextPath: Discord.Details.Auther_User
+    - contextPath: Discord.Details.AutherUser
       description: Message Auther User
   dockerimage: demisto/python3:3.10.12.66339
   runonce: false
