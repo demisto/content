@@ -78,15 +78,21 @@ def main():
     # Set PR assignees
     assignees = [assignee.login for assignee in merged_pr.assignees]
 
-    # Unassign the tech writer from the merged PR
+    # Unassign the tech writer
     content_roles = load_json(CONTENT_ROLES_PATH)
     if content_roles:
-        doc_reviewer = get_doc_reviewer(content_roles)
 
-        if doc_reviewer and doc_reviewer in assignees:
-            print(f"Unassigning tech writer '{doc_reviewer}' from internal PR...")
-            assignees.remove(doc_reviewer)
-            print(f"Tech writer '{doc_reviewer}' unassigned")
+        try:
+            doc_reviewer = get_doc_reviewer(content_roles)
+
+            if doc_reviewer in assignees:
+                print(f"Unassigning tech writer '{doc_reviewer}' from internal PR...")
+                assignees.remove(doc_reviewer)
+                print(f"Tech writer '{doc_reviewer}' unassigned")
+
+        except ValueError as ve:
+            print(f"{str(ve)}. Skipped tech writer unassignment.")
+
     else:
         print(f"Unable to parse JSON from '{CONTENT_ROLES_PATH}'. Skipping tech writer unassignment.")
 

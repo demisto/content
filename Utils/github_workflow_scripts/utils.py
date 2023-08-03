@@ -207,7 +207,7 @@ def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str
         sys.exit(1)
 
 
-def get_doc_reviewer(content_roles: dict[str, Any]) -> str | None:
+def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     """
     Retrieve the doc reviewer from content roles JSON/`dict`.
 
@@ -216,22 +216,9 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str | None:
 
     Return:
         - `str` of document reviewer GitHub username.
-        If there's an error in retrieving the tech writer/doc reviewer,
-        an `None` is returned.
+        If there's an error in retrieving the tech writer/doc reviewer, we raise a `ValueError`
     """
 
-    try:
-        doc_reviewer: str = content_roles[DOC_REVIEWER_KEY]
-
-        if not isinstance(doc_reviewer, str) or not doc_reviewer:
-            print(f"'{DOC_REVIEWER_KEY}' is not a string. Terminating...")
-            return None
-
-        if not DOC_REVIEWER_KEY or not DOC_REVIEWER_KEY:
-            print(f"No '{DOC_REVIEWER_KEY}' key specified or is empty")
-            return None
-
-        return doc_reviewer
-    except KeyError as ke:
-        print(f"Error parsing doc reviewer: {str(ke)}.")
-        return None
+    if not (reviewer := content_roles.get(DOC_REVIEWER_KEY)):
+        raise ValueError("Cannot get doc reviewer")
+    return reviewer
