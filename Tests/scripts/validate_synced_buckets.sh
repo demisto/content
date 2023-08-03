@@ -5,9 +5,9 @@ function get_revision_field() {
   bucket=$1
   json_file_path="/content/packs/index.json"
 
-  echo $bucket$json_file_path
 
   # Download the JSON file from the bucket and extract the revision field using jq
+
   revision=$(gsutil cat "gs://$bucket$json_file_path" | jq -r '.revision')
   echo "$revision"
 }
@@ -24,8 +24,8 @@ function compare_revision() {
     echo "Comparing revisions for $bucket_list_origin and $bucket_list_prod"
 
     # Get the revision fields from the JSON files in the buckets
-    revision1=$(get_revision_field "$bucket_list_origin")
-    revision2=$(get_revision_field "$bucket_list_prod")
+    revision1=$(get_revision_field "$bucket1")
+    revision2=$(get_revision_field "$bucket2")
 
     # Compare the revisions
     if [ "$revision1" = "$revision2" ]; then
