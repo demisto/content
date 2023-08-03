@@ -401,7 +401,7 @@ script:
       description: The actual score.
       type: String
 
-  dockerimage: demisto/python3:3.10.12.65389
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3
