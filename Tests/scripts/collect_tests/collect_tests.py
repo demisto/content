@@ -1166,6 +1166,7 @@ class UploadBranchCollector(BranchTestCollector):
             result.tests = set()
         return result
 
+
 class SpecificPacksTestCollector(TestCollector):
     def __init__(
             self,
@@ -1179,6 +1180,7 @@ class SpecificPacksTestCollector(TestCollector):
     def _collect(self) -> Optional[CollectionResult]:
         result: Optional[CollectionResult] = super()._collect_specific_marketplace_compatible_packs(self.packs_to_upload)
         return result
+
 
 class NightlyTestCollector(TestCollector, ABC):
     def collect(self) -> Optional[CollectionResult]:
