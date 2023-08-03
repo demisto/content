@@ -1,13 +1,15 @@
-from copy import deepcopy
-import pytest
-from splunklib.binding import AuthenticationError
-
-import SplunkPy as splunk
-from splunklib import client
 import demistomock as demisto
 from CommonServerPython import *
-from datetime import timedelta, datetime
+
+import pytest
+from copy import deepcopy
 from collections import namedtuple
+from datetime import timedelta, datetime
+
+from splunklib.binding import AuthenticationError
+from splunklib import client
+from splunklib import results
+import SplunkPy as splunk
 
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
@@ -93,58 +95,60 @@ RAW_WITH_MESSAGE = '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"T
                    '"a1d57ed2-1fe6-4800-be7a-26cd89bf686d","SESSIONID":"stY46PpweFToT5JX04CZGMeCvP8=","ORGOID":' \
                    '"G2SY6MR3ATKA232T","AOID":"G2N2TJETBRAAXAAA","MSGID":"a1d57ed2-1fe6-0000-be7a-26cd89bf686d"}'
 
-SAMPLE_RESPONSE = [{
-    '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
-    '_cd': '668:17198',
-    '_indextime': '1596545116',
-    '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
-            'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
-            'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
-            'signature="Trojan.Gen.2"',
-    '_serial': '50',
-    '_si': ['ip-172-31-44-193', 'notable'],
-    '_sourcetype': 'stash',
-    '_time': '2020-08-04T05:45:16.000-07:00',
-    'dest': 'ACME-workstation-012',
-    'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
-    'dest_asset_tag': ['cardholder', 'pci', 'americas'],
-    'dest_bunit': 'americas',
-    'dest_category': ['cardholder', 'pci'],
-    'dest_city': 'Pleasanton',
-    'dest_country': 'USA',
-    'dest_ip': '192.168.3.12',
-    'dest_is_expected': 'TRUE',
-    'dest_lat': '37.694452',
-    'dest_long': '-121.894461',
-    'dest_nt_host': 'ACME-workstation-012',
-    'dest_pci_domain': ['trust', 'cardholder'],
-    'dest_priority': 'medium',
-    'dest_requires_av': 'TRUE',
-    'dest_risk_object_type': 'system',
-    'dest_risk_score': '15680',
-    'dest_should_timesync': 'TRUE',
-    'dest_should_update': 'TRUE',
-    'host': 'ip-172-31-44-193',
-    'host_risk_object_type': 'system',
-    'host_risk_score': '0',
-    'index': 'notable',
-    'linecount': '1',
-    'priorities': 'medium',
-    'priority': 'medium',
-    'risk_score': '15680',
-    'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
-    'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
-    'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
-    'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
-    'severity': 'unknown',
-    'signature': 'Trojan.Gen.2',
-    'source': 'Endpoint - Recurring Malware Infection - Rule',
-    'sourcetype': 'stash',
-    'splunk_server': 'ip-172-31-44-193',
-    'urgency': 'low',
-    'owner': 'unassigned',
-    'event_id': '66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca',
-}]
+SAMPLE_RESPONSE = [
+    results.Message("INFO-TEST", "test message"),
+    {
+        '_bkt': 'notable~668~66D21DF4-F4FD-4886-A986-82E72ADCBFE9',
+        '_cd': '668:17198',
+        '_indextime': '1596545116',
+        '_raw': '1596545116, search_name="Endpoint - Recurring Malware Infection - Rule", count="17", '
+        'day_count="8", dest="ACME-workstation-012", info_max_time="1596545100.000000000", '
+        'info_min_time="1595939700.000000000", info_search_time="1596545113.965466000", '
+        'signature="Trojan.Gen.2"',
+        '_serial': '50',
+        '_si': ['ip-172-31-44-193', 'notable'],
+        '_sourcetype': 'stash',
+        '_time': '2020-08-04T05:45:16.000-07:00',
+        'dest': 'ACME-workstation-012',
+        'dest_asset_id': '028877d3c80cb9d87900eb4f9c9601ea993d9b63',
+        'dest_asset_tag': ['cardholder', 'pci', 'americas'],
+        'dest_bunit': 'americas',
+        'dest_category': ['cardholder', 'pci'],
+        'dest_city': 'Pleasanton',
+        'dest_country': 'USA',
+        'dest_ip': '192.168.3.12',
+        'dest_is_expected': 'TRUE',
+        'dest_lat': '37.694452',
+        'dest_long': '-121.894461',
+        'dest_nt_host': 'ACME-workstation-012',
+        'dest_pci_domain': ['trust', 'cardholder'],
+        'dest_priority': 'medium',
+        'dest_requires_av': 'TRUE',
+        'dest_risk_object_type': 'system',
+        'dest_risk_score': '15680',
+        'dest_should_timesync': 'TRUE',
+        'dest_should_update': 'TRUE',
+        'host': 'ip-172-31-44-193',
+        'host_risk_object_type': 'system',
+        'host_risk_score': '0',
+        'index': 'notable',
+        'linecount': '1',
+        'priorities': 'medium',
+        'priority': 'medium',
+        'risk_score': '15680',
+        'rule_description': 'Endpoint - Recurring Malware Infection - Rule',
+        'rule_name': 'Endpoint - Recurring Malware Infection - Rule',
+        'rule_title': 'Endpoint - Recurring Malware Infection - Rule',
+        'security_domain': 'Endpoint - Recurring Malware Infection - Rule',
+        'severity': 'unknown',
+        'signature': 'Trojan.Gen.2',
+        'source': 'Endpoint - Recurring Malware Infection - Rule',
+        'sourcetype': 'stash',
+        'splunk_server': 'ip-172-31-44-193',
+        'urgency': 'low',
+        'owner': 'unassigned',
+        'event_id': '66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca',
+    }]
 
 EXPECTED = {
     "action": "allowed",
@@ -578,7 +582,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
@@ -642,7 +646,7 @@ def test_fetch_notables(mocker):
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
     service = Service('DONE')
-    mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = splunk.UserMappingObject(service, False)
     splunk.fetch_incidents(service, mapper=mapper)
     cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
@@ -925,80 +929,137 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
             splunk.get_last_update_in_splunk_time(last_update)
 
 
-@pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
-                         [
-                             # A Notable with a "Closed" status label
-                             ({'status_label': 'Closed', 'event_id': 'id', 'status_end': 'true'},
-                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
-                              {'Type': EntryType.NOTE,
-                               'Contents': {
-                                   'dbotIncidentClose': True,
-                                   'closeReason': 'Notable event was closed on Splunk with status "Closed".',
-                               },
-                               'ContentsFormat': EntryFormat.JSON,
-                               },
-                              ),
-
-                             # A Notable with a "New" status label (shouldn't close)
-                             ({'status_label': 'New', 'event_id': 'id', 'status_end': 'false'},
-                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
-                              None,
-                              ),
-
-                             # A Notable with a custom status label that is on close_extra_labels (should close)
-                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'false'},
-                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': ['Custom']},
-                              {'Type': EntryType.NOTE,
-                               'Contents': {
-                                   'dbotIncidentClose': True,
-                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
-                               },
-                               'ContentsFormat': EntryFormat.JSON,
-                               },
-                              ),
-
-                             # A Notable with close_extra_labels that don't include status_label (shouldn't close)
-                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'false'},
-                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': ['A', 'B']},
-                              None,
-                              ),
-
-                             # A Notable that has status_end as true with close_end_statuses as true (should close)
-                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
-                              {'close_incident': True, 'close_end_statuses': True, 'close_extra_labels': []},
-                              {'Type': EntryType.NOTE,
-                               'Contents': {
-                                   'dbotIncidentClose': True,
-                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
-                               },
-                               'ContentsFormat': EntryFormat.JSON,
-                               },
-                              ),
-
-                             # A Notable that has status_end as true with close_end_statuses as false (shouldn't close)
-                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
-                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
-                              None,
-                              ),
-
-                             # A Notable that is both on close_extra_labels,
-                             # and has status_end as true with close_end_statuses as true (should close)
-                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
-                              {'close_incident': True, 'close_end_statuses': True, 'close_extra_labels': ['Custom']},
-                              {'Type': EntryType.NOTE,
-                               'Contents': {
-                                   'dbotIncidentClose': True,
-                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
-                               },
-                               'ContentsFormat': EntryFormat.JSON,
-                               },
-                              ),
-                         ])
-def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
+@pytest.mark.parametrize(
+    "notable_data, func_call_kwargs, expected_closure_data",
+    [
+        # A Notable with a "Closed" status label
+        (
+            [
+                results.Message("INFO-TEST", "test message"),
+                {"status_label": "Closed", "event_id": "id", "status_end": "true"},
+            ],
+            {
+                "close_incident": True,
+                "close_end_statuses": False,
+                "close_extra_labels": [],
+            },
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": 'Notable event was closed on Splunk with status "Closed".',
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            },
+        ),
+        # A Notable with a "New" status label (shouldn't close)
+        (
+            [
+                results.Message("INFO-TEST", "test message"),
+                {"status_label": "New", "event_id": "id", "status_end": "false"},
+            ],
+            {
+                "close_incident": True,
+                "close_end_statuses": False,
+                "close_extra_labels": [],
+            },
+            None,
+        ),
+        # A Notable with a custom status label that is on close_extra_labels (should close)
+        (
+            [
+                results.Message("INFO-TEST", "test message"),
+                {"status_label": "Custom", "event_id": "id", "status_end": "false"},
+            ],
+            {
+                "close_incident": True,
+                "close_end_statuses": False,
+                "close_extra_labels": ["Custom"],
+            },
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": 'Notable event was closed on Splunk with status "Custom".',
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            },
+        ),
+        # A Notable with close_extra_labels that don't include status_label (shouldn't close)
+        (
+            [
+                results.Message("INFO-TEST", "test message"),
+                {"status_label": "Custom", "event_id": "id", "status_end": "false"},
+            ],
+            {
+                "close_incident": True,
+                "close_end_statuses": False,
+                "close_extra_labels": ["A", "B"],
+            },
+            None,
+        ),
+        # A Notable that has status_end as true with close_end_statuses as true (should close)
+        (
+            [
+                results.Message("INFO-TEST", "test message"),
+                {"status_label": "Custom", "event_id": "id", "status_end": "true"},
+            ],
+            {
+                "close_incident": True,
+                "close_end_statuses": True,
+                "close_extra_labels": [],
+            },
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": 'Notable event was closed on Splunk with status "Custom".',
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            },
+        ),
+        # A Notable that has status_end as true with close_end_statuses as false (shouldn't close)
+        (
+            [
+                results.Message("INFO-TEST", "test message"),
+                {"status_label": "Custom", "event_id": "id", "status_end": "true"},
+            ],
+            {
+                "close_incident": True,
+                "close_end_statuses": False,
+                "close_extra_labels": [],
+            },
+            None,
+        ),
+        # A Notable that is both on close_extra_labels,
+        # and has status_end as true with close_end_statuses as true (should close)
+        (
+            [
+                results.Message("INFO-TEST", "test message"),
+                {"status_label": "Custom", "event_id": "id", "status_end": "true"},
+            ],
+            {
+                "close_incident": True,
+                "close_end_statuses": True,
+                "close_extra_labels": ["Custom"],
+            },
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": 'Notable event was closed on Splunk with status "Custom".',
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            },
+        ),
+    ],
+)
+def test_get_remote_data_command_close_incident(mocker, notable_data: list[results.Message | dict],
                                                 func_call_kwargs: dict, expected_closure_data: dict):
     class Jobs:
-        def __init__(self):
-            self.oneshot = lambda x: notable_data
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == splunk.OUTPUT_MODE_JSON
+            return notable_data
 
     class Service:
         def __init__(self):
@@ -1008,13 +1069,13 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=notable_data)
     mocker.patch.object(demisto, 'results')
     service = Service()
     splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False), **func_call_kwargs)
     results = demisto.results.call_args[0][0]
 
-    expected_results = [notable_data]
+    expected_results = [notable_data[1]]
 
     if expected_closure_data:
         expected_results.append(expected_closure_data)
@@ -1023,12 +1084,53 @@ def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
     assert results == expected_results
 
 
+def test_get_remote_data_command_with_message(mocker):
+    """
+    Test for the get_remote_data_command function with a message.
+
+    This test verifies that when the splunk-sdk returns a message, the function correctly logs the message
+    using demisto.info().
+
+    Args:
+        mocker: The mocker object for patching and mocking.
+
+    Returns:
+        None
+    """
+    class Jobs:
+        def oneshot(self, _, output_mode: str):
+            assert output_mode == splunk.OUTPUT_MODE_JSON
+            return results.Message("INFO-test", "test message")
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    func_call_kwargs = {
+        "args": {"lastUpdate": "2021-02-09T16:41:30.589575+02:00", "id": "id"},
+        "close_incident": True,
+        "close_end_statuses": True,
+        "close_extra_labels": ["Custom"],
+        "mapper": splunk.UserMappingObject(Service(), False),
+    }
+    info_mock = mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "params", return_value={"timezone": "0"})
+    mocker.patch(
+        "SplunkPy.results.JSONResultsReader", return_value=[results.Message("INFO-test", "test message")]
+    )
+    mocker.patch("SplunkPy.isinstance", return_value=True)
+
+    splunk.get_remote_data_command(Service(), **func_call_kwargs)
+    (info_message,) = info_mock.call_args_list[0][0]
+    assert info_message == "Splunk-SDK message: test message"
+
+
 def test_get_modified_remote_data_command(mocker):
     updated_incidet_review = {'rule_id': 'id'}
 
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x, count: [updated_incidet_review]
+            self.oneshot = lambda x, count, output_mode: [updated_incidet_review]
 
     class Service:
         def __init__(self):
@@ -1037,7 +1139,7 @@ def test_get_modified_remote_data_command(mocker):
     args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00'}
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_incidet_review])
+    mocker.patch('SplunkPy.results.JSONResultsReader', return_value=[updated_incidet_review])
     mocker.patch.object(demisto, 'results')
     splunk.get_modified_remote_data_command(Service(), args)
     results = demisto.results.call_args[0][0]['Contents']
@@ -1376,9 +1478,15 @@ def test_splunk_search_command(mocker, polling, status):
     Then:
         Ensure the result as expected in polling and in regular search.
     """
-    mock_args = {'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
-                 'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'fast_mode': 'false', 'polling': polling}
+    mock_args = {
+        "query": "query",
+        "earliest_time": "2021-11-23T10:10:10",
+        "latest_time": "2020-10-20T10:10:20",
+        "app": "test_app",
+        "fast_mode": "false",
+        "polling": polling,
+    }
+
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
     search_result = splunk.splunk_search_command(Service(status), mock_args)
 
@@ -1487,10 +1595,9 @@ def test_module_message_object(mocker):
     Then:
         - Validate the test_module run successfully and the info method was called once.
     """
-    from splunklib import results
     # prepare
     message = results.Message("DEBUG", "There's something in that variable...")
-    mocker.patch('splunklib.results.ResultsReader', return_value=[message])
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[message])
     service = mocker.patch('splunklib.client.connect', return_value=None)
     # run
     splunk.test_module(service, {'isFetch': True, 'fetchQuery': 'something'})
@@ -1531,15 +1638,15 @@ def test_labels_with_non_str_values(mocker):
         "bool_val": False,
         "float_val": 100.0
     }
-    mocked_response = SAMPLE_RESPONSE[0].copy()
-    mocked_response['_raw'] = json.dumps(raw)
+    mocked_response: list[results.Message | dict] = SAMPLE_RESPONSE.copy()
+    mocked_response[1]['_raw'] = json.dumps(raw)
     mock_last_run = {'time': '2018-10-24T14:13:20'}
     mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
-    mocker.patch('splunklib.results.ResultsReader', return_value=[mocked_response])
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=mocked_response)
 
     # run
     service = mocker.patch('splunklib.client.connect', return_value=None)
@@ -1728,3 +1835,17 @@ def test_basic_authentication_param(mocker, username, expected_username, basic_a
 
     assert client.connect.call_args[1]['username'] == expected_username
     assert ('basic' in client.connect.call_args[1]) == basic_auth
+
+
+@pytest.mark.parametrize(
+    'item, expected',
+    [
+        ({'message': 'Test message'}, False),
+        (results.Message('INFO', 'Test message'), True)
+    ]
+)
+def test_handle_message(item: dict | results.Message, expected: bool):
+    """
+    Tests that passing a results.Message object returns True
+    """
+    assert splunk.handle_message(item) is expected

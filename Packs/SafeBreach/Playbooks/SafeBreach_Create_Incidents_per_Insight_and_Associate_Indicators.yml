@@ -1,10 +1,7 @@
 id: SafeBreach - Create Incidents per Insight and Associate Indicators
 version: -1
 name: SafeBreach - Create Incidents per Insight and Associate Indicators
-description: This is a sub-playbook that creates incidents per SafeBreach insight,
-  enriched with all the related indicators and additional SafeBreach insight contextual
-  information. Used in main SafeBreach playbooks, such as "SafeBreach - Process Behavioral
-  Insights Feed" and "SafeBreach - Process Non-Behavioral Insights Feed".
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
@@ -67,8 +64,7 @@ tasks:
       id: ae6fc506-2860-4842-81fb-2d66ba22100e
       version: -1
       name: Create SafeBreach Insight incidents
-      description: Create a new incident of type SafeBreach Insight for each insight
-        related to the indicators.
+      description: Create a new incident of type SafeBreach Insight for each insight related to the indicators.
       script: Builtin|||createNewIncident
       type: regular
       iscommand: true
@@ -77,228 +73,10 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      accountgroups: {}
-      accountid: {}
-      accountinformationbreached: {}
-      accountname: {}
-      activedirectoryaccountstatus: {}
-      activedirectorydisplayname: {}
-      activedirectorypasswordstatus: {}
-      affecteddata: {}
-      affecteddatatype: {}
-      affectedindividualscontactinformation: {}
-      agentid: {}
-      app: {}
-      approximatenumberofaffecteddatasubjects: {}
-      assetid: {}
-      associatedmaliciousdomains: {}
-      attachmentcount: {}
-      attachmentextension: {}
-      attachmenthash: {}
-      attachmentid: {}
-      attachmentname: {}
-      attachmentsize: {}
-      attachmenttype: {}
-      attackerhostisolated: {}
-      attackeripblocked: {}
-      axoniuslink: {}
-      ballmergrid: {}
-      blockedaction: {}
-      bugtraq: {}
-      city: {}
-      clarotyalertresolved: {}
-      clarotyalerttype: {}
-      clarotycategory: {}
-      clarotydepartment: {}
-      clarotynetworkid: {}
-      clarotyrelatedassets: {}
-      clarotyresourceid: {}
-      clarotysiteid: {}
-      clienthello: {}
-      cloudtype: {}
-      code42alerttype: {}
-      code42fileevents: {}
-      commandline: {}
-      companyaddress: {}
-      companycity: {}
-      companycountry: {}
-      companyhasinsuranceforthebreach: {}
-      companyname: {}
-      companypostalcode: {}
-      companypropertystatus: {}
-      contactaddress: {}
-      contactemailaddress: {}
-      contactname: {}
-      contacttelephonenumber: {}
-      coordinates: {}
-      cortexreceivetime: {}
-      country: {}
-      countrywherebusinesshasitsmainestablishment: {}
-      countrywherethebreachtookplace: {}
-      criticalassets: {}
-      customFields: {}
-      cve: {}
-      cvss: {}
-      cymulateimmediatethreatsattackid: {}
-      cymulateimmediatethreatsfiletype: {}
-      cymulateimmediatethreatsid: {}
-      cymulateimmediatethreatsmitigations: {}
-      cymulateimmediatethreatsmodule: {}
-      cymulateimmediatethreatspayloadname: {}
-      cymulateimmediatethreatsstatus: {}
-      cymulateimmediatethreatsvector: {}
-      dataencryptionstatus: {}
-      datetimeofthebreach: {}
-      dbotprediction: {}
-      dbotpredictionprobability: {}
-      dbottextsuggestionhighlighted: {}
-      dest: {}
-      desthostname: {}
-      destinationip: {}
-      destinationport: {}
-      destinationports: {}
-      destntdomain: {}
-      destos: {}
       details:
         complex:
           root: JoinedIndicators
           accessor: value
-      detectionendtime: {}
-      detectionid: {}
-      detectionticketed: {}
-      detectionupdatetime: {}
-      detectionurl: {}
-      devicegsuiteaccountstatus: {}
-      devicehostname: {}
-      devicename: {}
-      digitalguardianactivity: {}
-      digitalguardianalarmname: {}
-      digitalguardianarcuid: {}
-      digitalguardianattachmentfilename: {}
-      digitalguardianclassification: {}
-      digitalguardiancommandline: {}
-      digitalguardiancomputername: {}
-      digitalguardiandestinationaddress: {}
-      digitalguardiandestinationdnsdomain: {}
-      digitalguardianemailrecipient: {}
-      digitalguardianemailsender: {}
-      digitalguardianemailsubject: {}
-      digitalguardianfilename: {}
-      digitalguardianparentprocessname: {}
-      digitalguardianpolicy: {}
-      digitalguardianprocessname: {}
-      digitalguardianremoteport: {}
-      digitalguardiansensitivity: {}
-      digitalguardiansourceaddress: {}
-      digitalguardiansourceip: {}
-      digitalguardianthreattype: {}
-      digitalguardianusername: {}
-      domain: {}
-      dpoemailaddress: {}
-      duoaccountstatus: {}
-      duration: {}
-      emailaddress: {}
-      emailauthenticitycheck: {}
-      emailautoreply: {}
-      emailbcc: {}
-      emailbody: {}
-      emailbodyformat: {}
-      emailbodyhtml: {}
-      emailcc: {}
-      emailclassification: {}
-      emailclientname: {}
-      emailfrom: {}
-      emailheaders: {}
-      emailhtml: {}
-      emailinreplyto: {}
-      emailkeywords: {}
-      emailmessageid: {}
-      emailreceived: {}
-      emailreplyto: {}
-      emailreturnpath: {}
-      emailsenderip: {}
-      emailsize: {}
-      emailsource: {}
-      emailsubject: {}
-      emailto: {}
-      emailtocount: {}
-      emailurlclicked: {}
-      employeedisplayname: {}
-      employeeemail: {}
-      employeemanageremail: {}
-      entryIDs: {}
-      exactlywhathappenedandatwhattimes: {}
-      exfiltratedfiles: {}
-      expanseexposuretype: {}
-      expanserawjsonevent: {}
-      expanseseverity: {}
-      extrahopapplianceid: {}
-      extrahophostname: {}
-      filehash: {}
-      filehashblocked: {}
-      filename: {}
-      filepath: {}
-      filesize: {}
-      financialinformationbreached: {}
-      firstseen: {}
-      globaldirectoryvisibility: {}
-      googleaccountstatus: {}
-      googleadminrolesstatus: {}
-      googledisplayname: {}
-      googledrivestatus: {}
-      googlemailstatus: {}
-      googlepasswordstatus: {}
-      healthinsurancebreached: {}
-      helloworldalertid: {}
-      helloworldalertstatus: {}
-      helloworldalerttype: {}
-      helloworldid: {}
-      helloworldstatus: {}
-      helloworldtype: {}
-      hostname: {}
-      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
-      howwastheincidentcontainedanderadicated: {}
-      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
-      illusionblackattackerid: {}
-      illusionblackattacktype: {}
-      illusionblackdecoyid: {}
-      illusionblackevents: {}
-      illusionblackthreatparse: {}
-      illusivenetworkshasforensics: {}
-      illusivenetworkshostname: {}
-      illusivenetworksid: {}
-      illusivenetworkslastseenuser: {}
-      illusivenetworkssourceoperatingsystem: {}
-      illusivenetworksstepstocrownjewel: {}
-      illusivenetworksstepstodomainadmin: {}
-      indenideviceid: {}
-      indeniissueid: {}
-      infectedhostnames: {}
-      infectedhosts: {}
-      investigationstage: {}
-      isolated: {}
-      isthedatasubjecttodpia: {}
-      ja3: {}
-      ja3s: {}
-      labels: {}
-      lastmodifiedby: {}
-      lastmodifiedon: {}
-      lastseen: {}
-      likelyimpact: {}
-      loginattemptcount: {}
-      logzioalerteventid: {}
-      logzioalertid: {}
-      logzioalertsummary: {}
-      logziotags: {}
-      macaddress: {}
-      mailboxdelegation: {}
-      maliciousbehavior: {}
-      maliciouscauseifthecauseisamaliciousattack: {}
-      maliciousdomainsblocked: {}
-      malwarefamily: {}
-      manageremail: {}
-      measurestomitigate: {}
-      medicalinformationbreached: {}
       name:
         complex:
           root: JoinedIndicators
@@ -310,130 +88,6 @@ tasks:
                 value:
                   simple: 'SafeBreach Insight - '
               suffix: {}
-      ngfwaction: {}
-      ngfwcategoryofapp: {}
-      ngfwcategoryofthreatid: {}
-      ngfwdestinationport: {}
-      ngfwdestinationzone: {}
-      ngfwdomain: {}
-      ngfwhostname: {}
-      ngfwhttpmethod: {}
-      ngfwinboundinterface: {}
-      ngfwnameofthreatid: {}
-      ngfwoutboundinterface: {}
-      ngfwpcap: {}
-      ngfwprotocol: {}
-      ngfwriskofapp: {}
-      ngfwrule: {}
-      ngfwsessionid: {}
-      ngfwsourceport: {}
-      ngfwsourcezone: {}
-      ngfwsrcuser: {}
-      ngfwsubcategoryofapp: {}
-      ngfwsubtype: {}
-      ngfwtechnologyofapp: {}
-      ngfwthreatid: {}
-      ngfwtrafficdirection: {}
-      ngfwvsys: {}
-      niststage: {}
-      numberofports: {}
-      numberofuniqueports: {}
-      o365endpoints: {}
-      o365instance: {}
-      o365servicesareas: {}
-      occurred: {}
-      offboardingdate: {}
-      offboardingstage: {}
-      oktaaccountstatus: {}
-      otherpiidatabreached: {}
-      owner: {}
-      parentprocessid: {}
-      participants: {}
-      passwordexpirationstatus: {}
-      penteraoperationdetails: {}
-      penteraoperationtype: {}
-      phase: {}
-      phishingsubtype: {}
-      pid: {}
-      piidatatype: {}
-      policydeleted: {}
-      policydescription: {}
-      policydetails: {}
-      policyid: {}
-      policyrecommendation: {}
-      policyremediable: {}
-      policyseverity: {}
-      policytype: {}
-      portsblocked: {}
-      possiblecauseofthebreach: {}
-      postalcode: {}
-      previouscoordinates: {}
-      previouscountry: {}
-      previoussignindatetime: {}
-      previoussourceip: {}
-      prismacloudcomputeactivitytype: {}
-      prismacloudcomputeappid: {}
-      prismacloudcomputecategory: {}
-      prismacloudcomputecollections: {}
-      prismacloudcomputecommand: {}
-      prismacloudcomputecontainer: {}
-      prismacloudcomputecredentialid: {}
-      prismacloudcomputedistribution: {}
-      prismacloudcomputeerror: {}
-      prismacloudcomputeforensic: {}
-      prismacloudcomputefqdn: {}
-      prismacloudcomputefunction: {}
-      prismacloudcomputehost: {}
-      prismacloudcomputeimage: {}
-      prismacloudcomputeinteractive: {}
-      prismacloudcomputekubernetesresource: {}
-      prismacloudcomputelabels: {}
-      prismacloudcomputeline: {}
-      prismacloudcomputelogfile: {}
-      prismacloudcomputemarkdown: {}
-      prismacloudcomputemessage: {}
-      prismacloudcomputeproject: {}
-      prismacloudcomputeprotected: {}
-      prismacloudcomputeprovider: {}
-      prismacloudcomputerawalertjson: {}
-      prismacloudcomputeregion: {}
-      prismacloudcomputeregistry: {}
-      prismacloudcomputerule: {}
-      prismacloudcomputeruntime: {}
-      prismacloudcomputeservice: {}
-      prismacloudcomputeservicetype: {}
-      prismacloudcomputetotal: {}
-      prismacloudcomputetype: {}
-      prismacloudcomputeuser: {}
-      prismacloudid: {}
-      prismacloudreason: {}
-      prismacloudrules: {}
-      prismacloudstatus: {}
-      prismacloudtime: {}
-      quarantined: {}
-      rating: {}
-      rawparticipants: {}
-      redlockpolicy: {}
-      region: {}
-      regionid: {}
-      remediable: {}
-      reporteremailaddress: {}
-      residentnotificationoption: {}
-      residentsemailaddress: {}
-      resourceapiname: {}
-      resourcecloudtype: {}
-      resourceid: {}
-      resourcename: {}
-      resourcetype: {}
-      riskrating: {}
-      riskscore: {}
-      roles: {}
-      rrn: {}
-      safebreachaffectedtargets: {}
-      safebreachaffectedtargetscount: {}
-      safebreachattackcount: {}
-      safebreachattackids: {}
-      safebreachattacks: {}
       safebreachinsightcategory:
         complex:
           root: SafeBreach
@@ -442,138 +96,14 @@ tasks:
         complex:
           root: JoinedIndicators
           accessor: Id
-      safebreachinsightname: {}
-      safebreachinsightriskimpact: {}
-      safebreachlatestsimulation: {}
-      safebreachremediationaction: {}
-      safebreachremediationdata: {}
-      safebreachremediationdatacount: {}
       safebreachremediationstatus:
         simple: New
-      safebreachresultslink: {}
-      safebreachseverity: {}
-      safebreachseverityscore: {}
-      safebreachsimulationid: {}
-      safebreachsimulationnumber: {}
-      safebreachthreatgroups: {}
-      samaccountname: {}
-      sansstage: {}
-      scansourcetype: {}
-      score: {}
-      sectorofaffectedparty: {}
       severity:
         complex:
           root: SafeBreach
           accessor: Insight.Severity
-      signature: {}
-      signindatetime: {}
-      sixgillalertid: {}
-      sixgillcontent: {}
-      sixgillthreatlevel: {}
-      sixgillthreattype: {}
-      sizenumberofemployees: {}
-      sizeturnover: {}
-      skuname: {}
-      skutier: {}
-      sla: {}
-      slaField: {}
-      sourcehostname: {}
-      sourceip: {}
-      sourceport: {}
-      sourceusername: {}
-      src: {}
-      srchostname: {}
-      srcntdomain: {}
-      srcos: {}
-      srcuser: {}
-      sslversion: {}
-      statewherethebreachtookplace: {}
-      subscriptionassignedby: {}
-      subscriptioncreatedby: {}
-      subscriptioncreatedon: {}
-      subscriptiondescription: {}
-      subscriptionid: {}
-      subscriptionname: {}
-      subscriptiontype: {}
-      subscriptionupdatedby: {}
-      subscriptionupdatedon: {}
-      subtype: {}
-      successfullogin: {}
-      suggestionsanddiscussionofhowtoimprovetheteam: {}
-      systemdefault: {}
-      systems: {}
-      targetfirewallversion: {}
-      telephoneno: {}
-      terminatedaction: {}
-      threatactor: {}
-      threatvaultlink: {}
-      trapsid: {}
-      travelmaplink: {}
-      triggeredsecurityprofile: {}
       type:
         simple: SafeBreach Insight
-      uniquebiometricdatabreached: {}
-      uniqueidentificationnumberbreached: {}
-      url: {}
-      urlsslverification: {}
-      user: {}
-      useraccountcontrol: {}
-      userdisabledstatus: {}
-      username: {}
-      vendorid: {}
-      vendorproduct: {}
-      vpcid: {}
-      vulnerabilitycategory: {}
-      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
-      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
-      whataretheareasthatneedimprovement: {}
-      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
-      whatinformationwasneededsooner: {}
-      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
-      whatwasthescopeoftheincident: {}
-      whatwastheworkperformedduringrecovery: {}
-      whatweretheareaswherethecirtteamswereeffective: {}
-      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
-      whenwastheproblemfirstdetectedandbywhom: {}
-      whereisdatahosted: {}
-      xdractivityfirstseen: {}
-      xdractivitylastseen: {}
-      xdralertcount: {}
-      xdralerts: {}
-      xdrassigneduseremail: {}
-      xdrassigneduserprettyname: {}
-      xdrcategory: {}
-      xdrdescription: {}
-      xdrdetectiontime: {}
-      xdrdevicehostname: {}
-      xdrdeviceip: {}
-      xdrexternaldestinations: {}
-      xdrfileartifacts: {}
-      xdrfirstdetected: {}
-      xdrhighseverityalertcount: {}
-      xdrhostcount: {}
-      xdrid: {}
-      xdrincidentid: {}
-      xdripranges: {}
-      xdrips: {}
-      xdrirquerybydestinations: {}
-      xdrlastdetected: {}
-      xdrlink: {}
-      xdrlowseverityalertcount: {}
-      xdrmac: {}
-      xdrmediumseverityalertcount: {}
-      xdrnetworkartifacts: {}
-      xdrnotes: {}
-      xdros: {}
-      xdrostype: {}
-      xdrresolvecomment: {}
-      xdrseverity: {}
-      xdrstatus: {}
-      xdrtype: {}
-      xdrurl: {}
-      xdrusercount: {}
-      xdruserdisplayname: {}
-      xdrusername: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -714,8 +244,7 @@ tasks:
       id: 9ab9e486-a0d3-44e5-8344-06f0593b09e2
       version: -1
       name: Merge indicators and insights data
-      description: Sets "IndicatorsWithIncidents" with combined data from indicator
-        and insights.
+      description: Sets "IndicatorsWithIncidents" with combined data from indicator and insights.
       scriptName: Set
       type: regular
       iscommand: false
@@ -766,8 +295,7 @@ tasks:
       id: 2d2ca0e1-ef0e-4157-8c63-f96bbb7cb6a2
       version: -1
       name: Associate indicators to incident
-      description: Associate an indicator to a given incident. All indicators joined
-        and assigned to the details field of incidents.
+      description: Associate an indicator to a given incident. All indicators joined and assigned to the details field of incidents.
       script: Builtin|||associateIndicatorToIncident
       type: regular
       iscommand: true
@@ -915,4 +443,5 @@ outputs:
 quiet: true
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true
