@@ -9,7 +9,7 @@ from pathlib import Path
 
 import urllib3
 from demisto_sdk.commands.test_content.constants import SSH_USER
-from paramiko import SSHClient, AutoAddPolicy, SSHException
+from paramiko import SSHClient, SSHException
 from scp import SCPClient, SCPException
 
 from Tests.scripts.utils.log_util import install_logging
@@ -90,10 +90,8 @@ def main():
         success &= chmod_logs(server_ip)
 
         with SSHClient() as ssh:
-            ssh.load_system_host_keys()
-            ssh.set_missing_host_key_policy(AutoAddPolicy())
-
             try:
+                ssh.load_system_host_keys()
                 ssh.connect(server_ip, username=SSH_USER)
                 success &= download_logs(server_ip, options.artifacts_dir, role, ssh)
             except SSHException:
