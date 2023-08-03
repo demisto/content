@@ -1011,6 +1011,8 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
+      append:
+        simple: "true"
       key:
         simple: asm_enrichment_flag_aws
       value:
@@ -1130,6 +1132,8 @@ tasks:
         simple: asm_enrichment_flag_aws
       value:
         simple: "false"
+      append:
+        simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1245,6 +1249,8 @@ tasks:
         simple: asm_enrichment_flag_aws_s3
       value:
         simple: "false"
+      append:
+        simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1268,7 +1274,7 @@ tasks:
     task:
       id: 7a4df59a-49f0-4182-8add-7e5c1f352bbd
       version: -1
-      name: Set ASM enrichment status field (s3)
+      name: Set ASM enrichment status to true (s3)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
@@ -1313,7 +1319,7 @@ tasks:
     task:
       id: 77d86402-7d2f-4fa3-8342-f6b81ec9e377
       version: -1
-      name: Set ASM enrichment status field (AWS)
+      name: Set ASM enrichment status to true (AWS)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
@@ -1470,7 +1476,7 @@ tasks:
     task:
       id: 6913117a-5072-45c9-81ac-789a2b1e84ec
       version: -1
-      name: Set ASM enrichment status field (AWS)
+      name: Set ASM enrichment status to false (AWS)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
@@ -1515,7 +1521,7 @@ tasks:
     task:
       id: 27904728-1475-4457-8bac-23ceefd53134
       version: -1
-      name: Set ASM enrichment status field (s3)
+      name: Set ASM enrichment status to false (s3)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`

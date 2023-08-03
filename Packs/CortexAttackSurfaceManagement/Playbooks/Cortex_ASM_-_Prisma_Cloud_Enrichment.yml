@@ -373,7 +373,7 @@ tasks:
     task:
       id: cf6daeee-77c3-495d-870e-e0d15087e37a
       version: -1
-      name: Set flag for completed enrichment
+      name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
