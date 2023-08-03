@@ -10,6 +10,10 @@ on:
         description: The SDK release version
         required: true
         type: string
+      release_changes:
+        description: The SDK release changes
+        required: true
+        type: string
 
 permissions:
   contents: write
