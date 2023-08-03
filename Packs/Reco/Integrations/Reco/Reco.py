@@ -1130,7 +1130,7 @@ def fetch_incidents(
         incident
         for incident in incidents
         if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
-           and (incident.get("dbotMirrorId", None) not in existing_incidents)
+        and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
