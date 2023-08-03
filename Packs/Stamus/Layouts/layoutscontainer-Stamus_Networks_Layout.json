@@ -319,7 +319,7 @@
                         ],
                         "maxW": 3,
                         "moved": false,
-                        "name": "Investigation Data",
+                        "name": "Threat Description",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -364,15 +364,6 @@
                                 "height": 22,
                                 "id": "7dffc030-bdd5-11ed-92fc-831964606e8e",
                                 "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "stamusthreatdescription",
-                                "height": 22,
-                                "id": "87aeffb0-bdd5-11ed-92fc-831964606e8e",
-                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
