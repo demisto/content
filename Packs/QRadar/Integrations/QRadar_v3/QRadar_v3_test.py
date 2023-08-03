@@ -1528,6 +1528,18 @@ def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter
 @pytest.mark.parametrize("status", ("COMPLETED", "IN_PROGRESS"))
 @pytest.mark.parametrize("func", (qradar_reference_set_value_upsert_command, qradar_indicators_upload_command))
 def test_reference_set_upsert_commands_new_api(mocker, api_version, status, func):
+    """
+    Given:
+        - A reference set name and data to upload
+
+    When:
+        - Calling the reference set upsert command or the indicators upload command
+
+    Then:
+        - Verify that the correct API is used.
+        - Verify that the data is returned if the status is COMPLETED.
+        - Verify that the task id is returned if the status is IN_PROGRESS.
+    """
     if func == qradar_indicators_upload_command:
         mocker.patch.object(client, "reference_sets_list")
         mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version", return_value={

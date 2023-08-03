@@ -2925,7 +2925,7 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
     return insert_values_to_reference_set_polling(client,
                                                   params.get('api_version', ''),
                                                   args,
-                                                  values=argToList(args.get('values', '')))
+                                                  values=argToList(args.get('value', '')))
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:

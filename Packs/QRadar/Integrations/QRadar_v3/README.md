@@ -1574,7 +1574,7 @@ Creates a new reference set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ref_name | The name of the reference set to be created. | Required | 
+| ref_name | The name of the reference set to be created. Reference names can be found by 'Name' field in 'qradar-reference-sets-list' command. | Required | 
 | element_type | The element type for the values allowed in the reference set. Possible values are: ALN, ALNIC, NUM, IP, PORT, DATE. | Required | 
 | timeout_type | Indicates if the time_to_live interval is based on when the data was first seen or last seen. Possible values are: FIRST_SEEN, LAST_SEEN, UNKNOWN. Default is UNKNOWN. | Optional | 
 | time_to_live | The time to live interval, time range. for example: '1 month' or '5 minutes'. | Optional | 
