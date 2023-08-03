@@ -785,7 +785,7 @@ def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     Re-opening in the remote system should happen only when both:
     1. The user asked for it.
     2. The delta equals - {'closingUserId': '', 'runStatus': ''}.
-    # TODO: need to consult with yuval about it. another option is to check if none of the closing fields is in the delta
+    # TODO: need to consult with yuval about the condition here - I think that its enough to determine that its a re-opening action but not sure.
 
 
     Args:
@@ -794,7 +794,6 @@ def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     Returns: True - if re-opening the prisma alert is needed, False - otherwise.
 
     """
-    # return demisto.params().get('close_ticket') and delta == {'closingUserId': '', 'runStatus': ''}
     return demisto.params().get('close_ticket') and 'closingUserId' in delta
 
 
@@ -804,6 +803,12 @@ def update_remote_alert(client: Client, delta: Dict[str, Any],
     Updates the remote prisma alert according to changes of the mirrored xsaor incident.
     The possible updates are closing or re-opening the alert.
 
+    When closing an incident in XSOAR the possible reasons are: False Positive, Duplicate, Other and Resolved.
+    As a result, the remote Prisma alert will be closed with a 'Dismissed' status, and the reason and close notes will be added to
+    the 'Reason' field of the remote alert.
+    * It is not possible to close an incident as 'Resolved' in XSOAR and mark it as 'Resolved' in Prisma,
+    it will be closed as dismissed even if the selected reaon is Resolved.
+
     Args:
         client: Demisto client.
         delta: A dictionary of fields that changed from the last update - containing only the changed fields.
@@ -812,7 +817,6 @@ def update_remote_alert(client: Client, delta: Dict[str, Any],
 
     Returns: None.
     """
-    demisto.debug(f"Incident status = {inc_status}, delta = {delta}") # TODO: remove this log
     # XSOAR incident was closed - closing the mirrored prisma alert
     if inc_status == IncidentStatus.DONE and whether_to_close_in_prisma_cloud(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
@@ -822,9 +826,6 @@ def update_remote_alert(client: Client, delta: Dict[str, Any],
     if inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(delta):
         demisto.debug(f'Reopening incident with remote ID {incident_id} in remote system.')
         reopen_alert_in_prisma_cloud(client, [incident_id])
-
-    # TODO: need to check with Dima - when closing an xsoar incident, one of the possible statuses is Resolved -
-    #  don't think it is possible to resolve an issue through the API.
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
