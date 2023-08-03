@@ -56,25 +56,10 @@ FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
-TIME_FORMAT = param.get('time_format', 'yyyy-MM-ddTHH:mm:ss.SSSSSS')
 TIMEOUT = int(param.get('timeout') or 60)
 MAP_LABELS = param.get('map_labels', True)
 
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
-
-
-def date_to_iso_format(date, time_format):
-    if time_format.count('T') == 0:
-        return date.date().isoformat()
-
-    str_time = ''
-    if time_format.count('S') == 0:
-        str_time = date.isoformat(timespec='seconds')
-    elif time_format.count('S') == 3:
-        str_time = date.isoformat(timespec='milliseconds')
-    elif time_format.count('S') == 6:
-        str_time = date.isoformat(timespec='microseconds')
-    return f'{str_time}Z' if 'Z' in time_format else str_time
 
 
 def convert_date_to_timestamp(date):
@@ -97,7 +82,7 @@ def convert_date_to_timestamp(date):
         return int(date.timestamp() * 1000)
 
     else:  # In case of 'Simple-Date'.
-        return date_to_iso_format(date, TIME_FORMAT)
+        return ...
 
 
 def timestamp_to_date(timestamp_string):
@@ -386,7 +371,6 @@ def test_time_field_query(es):
     if total_results == 0:
         # failed in getting the TIME_FIELD
         return_error(f"Fetch incidents test failed.\nDate field value incorrect [{TIME_FIELD}].")
-        return None
 
     else:
         return response
@@ -748,8 +732,6 @@ def parse_subtree(my_map):
             res[k] = parse_subtree(my_map[k]['properties'])
         else:
             res[k] = "type: " + my_map[k].get('type', "")
-            if field_format := my_map[k].get('format'):
-                res[k] += field_format
     return res
 
 
