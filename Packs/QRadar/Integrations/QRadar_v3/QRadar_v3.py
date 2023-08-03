@@ -756,6 +756,99 @@ def get_major_version(version: str) -> int:
         return 17
 
 
+def insert_values_to_reference_set_polling(client: Client,
+                                           api_version: str,
+                                           args: dict,
+                                           from_indicators: bool = False,
+                                           values: list[str] | None = None,
+                                           ) -> PollResult:
+    """This function inserts values to reference set using polling method.
+
+
+    Args:
+        client (Client): QRadar Client
+        api_version (str): The API version of QRadar.
+        args (dict): args of the command
+        from_indicators (bool, optional): Whether to insert values from XSOAR indicators. Defaults to False.
+        values (list[str] | None, optional): The values to insert. Defaults to None.
+
+    Raises:
+        DemistoException: If there are no values to insert
+
+    Returns:
+        PollResult: The result with the CommandResults
+    """
+    response = {}
+    use_old_api = get_major_version(api_version) <= 15
+    ref_name = args.get('ref_name', '')
+    if use_old_api or 'task_id' not in args:
+        if from_indicators:
+            query = args.get('query')
+            limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
+            page = arg_to_number(args.get('page', 0))
+
+            # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
+            element_type = args.get('element_type', '')
+            timeout_type = args.get('timeout_type')
+            time_to_live = args.get('time_to_live')
+            try:
+                client.reference_sets_list(ref_name=ref_name)
+            except DemistoException as e:
+                # Create reference set if does not exist
+                if e.message and f'{ref_name} does not exist' in e.message:
+                    # if this call fails, raise an error and stop command execution
+                    client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
+                else:
+                    raise e
+
+            search_indicators = IndicatorsSearcher(page=page)
+            indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
+            indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
+                               for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
+            values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
+            if not indicators_data:
+                return PollResult(CommandResults(
+                    readable_output=f'No indicators were found for reference set {ref_name}',
+                ))
+
+        if not values:
+            raise DemistoException('Value to insert must be given.')
+        source = args.get('source')
+        date_value = argToBoolean(args.get('date_value', False))
+        fields = args.get('fields')
+
+        if date_value:
+            values = [get_time_parameter(value, epoch_format=True) for value in values]
+        if use_old_api:
+            response = client.reference_set_bulk_load(ref_name, values, fields)
+        else:
+            response = client.reference_set_entries(ref_name, values, fields, source)
+            args['task_id'] = response.get('id')
+    if not use_old_api:
+        response = client.get_reference_data_bulk_task_status(args["task_id"])
+    if use_old_api or response.get("status") == "COMPLETED":
+        if not use_old_api:
+            # get the reference set data
+            response = client.reference_sets_list(ref_name=ref_name)
+        outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+
+        command_results = CommandResults(
+            readable_output=tableToMarkdown('Reference Update Create', outputs, removeNull=True),
+            outputs_prefix='QRadar.Reference',
+            outputs_key_field='Name',
+            outputs=outputs,
+            raw_response=response
+        )
+        return PollResult(command_results, continue_to_poll=False)
+    return PollResult(
+        partial_result=CommandResults(
+            readable_output=f'Reference set {ref_name} is still being updated in task {args["task_id"]}'),
+        continue_to_poll=True,
+        args_for_next_run=args,
+        response=None
+    )
+
+
 def get_remote_events(client: Client,
                       offense_id: str,
                       context_data: dict,
@@ -2827,50 +2920,12 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
         args (Dict): Demisto args.
 
     Returns:
-        CommandResults.
+        PollResult.
     """
-    ref_name: str = args.get('ref_name', '')
-    response = {}
-    use_old_api = get_major_version(params.get('api_version', '')) <= 15
-
-    if use_old_api or 'task_id' not in args:
-        values: List[str] = argToList(args.get('value', ''))
-        if not values:
-            raise DemistoException('Value to insert must be given.')
-        source = args.get('source')
-        date_value = argToBoolean(args.get('date_value', False))
-        fields = args.get('fields')
-
-        if date_value:
-            values = [get_time_parameter(value, epoch_format=True) for value in values]
-        if use_old_api:
-            response = client.reference_set_bulk_load(ref_name, values, fields)
-        else:
-            response = client.reference_set_entries(ref_name, values, fields, source)
-            args['task_id'] = response.get('id')
-    if not use_old_api:
-        response = client.get_reference_data_bulk_task_status(args["task_id"])
-    if use_old_api or response.get("status") == "COMPLETED":
-        if not use_old_api:
-            # get the reference set data
-            response = client.reference_sets_list(ref_name=ref_name)
-        outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
-
-        command_results = CommandResults(
-            readable_output=tableToMarkdown('Reference Update Create', outputs, removeNull=True),
-            outputs_prefix='QRadar.Reference',
-            outputs_key_field='Name',
-            outputs=outputs,
-            raw_response=response
-        )
-        return PollResult(command_results, continue_to_poll=False)
-    return PollResult(
-        partial_result=CommandResults(
-            readable_output=f'Reference set {ref_name} is still being updated in task {args["task_id"]}'),
-        continue_to_poll=True,
-        args_for_next_run=args,
-        response=None
-    )
+    return insert_values_to_reference_set_polling(client,
+                                                  params.get('api_version', ''),
+                                                  args,
+                                                  values=argToList(args.get('values', '')))
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
@@ -2971,71 +3026,7 @@ def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -
     Returns:
         PollResult.
     """
-    ref_name: str = args.get('ref_name', '')
-    response = {}
-    use_old_api = get_major_version(params.get('api_version', '')) <= 15
-    if 'task_id' not in args or use_old_api:
-        query = args.get('query')
-        limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
-        page = arg_to_number(args.get('page', 0))
-        fields = args.get('fields')
-
-        # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
-        element_type = args.get('element_type', '')
-        timeout_type = args.get('timeout_type')
-        time_to_live = args.get('time_to_live')
-        try:
-            client.reference_sets_list(ref_name=ref_name)
-        except DemistoException as e:
-            # Create reference set if does not exist
-            if e.message and f'{ref_name} does not exist' in e.message:
-                # if this call fails, raise an error and stop command execution
-                client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
-            else:
-                raise e
-
-        search_indicators = IndicatorsSearcher(page=page)
-        indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
-        indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
-                           for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
-        indicator_values: List[Any] = [indicator.get('Indicator Value') for indicator in indicators_data]
-
-        if not indicators_data:
-            return PollResult(CommandResults(
-                readable_output=f'No indicators were found for reference set {ref_name}',
-            ))
-        if use_old_api:
-            response = client.reference_set_bulk_load(ref_name, indicator_values, fields)
-        else:
-            response = client.reference_set_entries(ref_name, indicator_values, fields)
-            args["task_id"] = response.get('id')
-        args["indicators_data"] = indicators_data
-    if not use_old_api:
-        response = client.get_reference_data_bulk_task_status(args["task_id"])
-
-    if use_old_api or response.get("status") == "COMPLETED":
-        if not use_old_api:
-            # get the reference set data
-            response = client.reference_sets_list(ref_name=ref_name)
-
-        outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
-
-        reference_set_hr = tableToMarkdown(f'Indicators Upload For Reference Set {ref_name}', outputs)
-        indicators_uploaded_hr = tableToMarkdown('Indicators Uploaded', args["indicators_data"])
-
-        return PollResult(CommandResults(
-            readable_output=f'{reference_set_hr}\n{indicators_uploaded_hr}',
-            outputs_prefix='QRadar.Reference',
-            outputs_key_field='Name',
-            outputs=outputs,
-            raw_response=response
-        ))
-    return PollResult(
-        partial_result=CommandResults(
-            readable_output=f'Reference set {ref_name} is still being updated in task {args["task_id"]}'),
-        continue_to_poll=True,
-        args_for_next_run=args,
-        response=None)
+    return insert_values_to_reference_set_polling(client, params.get('api_version', ''), args, from_indicators=True)
 
 
 def flatten_nested_geolocation_values(geolocation_dict: dict, dict_key: str, nested_value_keys: List[str]) -> dict:
