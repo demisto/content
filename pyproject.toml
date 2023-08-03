@@ -361,7 +361,6 @@ select = [
     "SIM102", # collapsible-if
     "SIM103", # needless-bool
     "SIM107", # return-in-try-except-finally
-    "SIM108", # if-else-block-instead-of-if-exp
     "SIM109", # compare-with-tuple
     "SIM110", # reimplemented-builtin
     "SIM117", # multiple-with-statements
