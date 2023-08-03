@@ -38,7 +38,7 @@ class Client(BaseClient):
             'NONE': 'None (N)',
             'NETWORK': 'Network (N)',
             'ADJACENT': 'Adjacent (A)',
-            'ADJACENT_NETWORK': 'Ajdacent Network (A)',
+            'ADJACENT_NETWORK': 'Adjacent Network (A)',
             'LOCAL': 'Local (L)',
             'PHYSICAL': 'Physical (P)',
             'REQUIRED': 'Required (R)',
@@ -50,7 +50,7 @@ class Client(BaseClient):
             'UNPROVEN': 'Unproven (U)',
             'UNAVAILABLE': 'Unavailable (U)',
             'WORKAROUND': 'Workaround (W)',
-            'TEMPRORARY_FIX': 'Temprorary Fix (T)',
+            'TEMPORARY_FIX': 'Temporary Fix (T)',
             'OFFICIAL_FIX': 'Official Fix (O)',
             'PARTIAL': 'Partial (P)',
             'COMPLETE': 'Complete (C)',
@@ -235,7 +235,7 @@ class OpenCVE():
             'NONE': 'None (N)',
             'NETWORK': 'Network (N)',
             'ADJACENT': 'Adjacent (A)',
-            'ADJACENT_NETWORK': 'Ajdacent Network (A)',
+            'ADJACENT_NETWORK': 'Adjacent Network (A)',
             'LOCAL': 'Local (L)',
             'PHYSICAL': 'Physical (P)',
             'REQUIRED': 'Required (R)',
@@ -247,7 +247,7 @@ class OpenCVE():
             'UNPROVEN': 'Unproven (U)',
             'UNAVAILABLE': 'Unavailable (U)',
             'WORKAROUND': 'Workaround (W)',
-            'TEMPRORARY_FIX': 'Temprorary Fix (T)',
+            'TEMPORARY_FIX': 'Temporary Fix (T)',
             'OFFICIAL_FIX': 'Official Fix (O)',
             'PARTIAL': 'Partial (P)',
             'COMPLETE': 'Complete (C)',
@@ -517,7 +517,7 @@ def dedupe_cves(cves: list[dict[str, str]]) -> list[dict[str, str]]:
 
 
 # Commands
-def test_module_command(client: Client) -> str:
+def module_test_command(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -528,11 +528,10 @@ def test_module_command(client: Client) -> str:
     """
     try:
         client.get_my_vendors_request()
-        client.get_my_vendors_request()
         return 'ok'
 
     except Exception:
-        demisto.error('Failed to execute test_module_command.')
+        demisto.error('Failed to execute module_test_command.')
         raise
 
     return ''
@@ -908,10 +907,8 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         client: Client = Client(urljoin(url, '/api'), verify_ssl, proxy, auth=(username, password))
-        if command == 'test-module':
-            return_results(test_module_command(client))
 
-        elif command == 'opencve-latest':
+        if command == 'opencve-latest':
             return_results(cve_latest_command(client, ocve, args))
 
         elif command == 'cve':
@@ -940,6 +937,9 @@ def main():
 
         elif command == 'opencve-get-alerts':
             return_results(get_alerts_command(client, args))
+
+        elif command == 'test-module':
+            return_results(module_test_command(client))
 
         else:
             raise NotImplementedError(f'{command} is not an existing CVE Search command')
