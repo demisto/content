@@ -5672,7 +5672,8 @@
         "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
-        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527"
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
