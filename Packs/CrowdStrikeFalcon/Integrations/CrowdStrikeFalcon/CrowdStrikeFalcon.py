@@ -5519,11 +5519,17 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
-            result = test_module()
-            return_results(result)
+            return_results(test_module())
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
-
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(args))
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(args))
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(args))
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif command == 'cs-falcon-search-device':
@@ -5561,11 +5567,11 @@ def main():
         elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
         elif command == 'cs-falcon-status-get-command':
-            demisto.results(status_get_command(demisto.args()))
+            demisto.results(status_get_command(args))
         elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
         elif command == 'cs-falcon-get-extracted-file':
-            demisto.results(get_extracted_file_command(demisto.args()))
+            demisto.results(get_extracted_file_command(args))
         elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':
@@ -5666,14 +5672,6 @@ def main():
             return_results(rtr_polling_retrieve_file_command(args))
         elif command == 'cs-falcon-get-detections-for-incident':
             return_results(get_detection_for_incident_command(args.get('incident_id')))
-        elif command == 'get-remote-data':
-            return_results(get_remote_data_command(args))
-        elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(args))
-        elif command == 'update-remote-system':
-            return_results(update_remote_system_command(args))
-        elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command())
         elif command == 'cs-falcon-spotlight-search-vulnerability':
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
         elif command == 'cs-falcon-spotlight-list-host-by-vulnerability':
