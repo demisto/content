@@ -1,3 +1,5 @@
+import arrow
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
@@ -62,11 +64,19 @@ MAP_LABELS = param.get('map_labels', True)
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-def convert_date_to_timestamp(date):
+def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
+    mapping = es.indices.get_mapping(index=index)
+    datetime_field = mapping[index]['mappings']['properties'][field]
+
+    return datetime_field.get('format', '').upper()
+
+
+def convert_date_to_timestamp(date, datetime_format: str = 'YYYY-MM-DD HH:MM:SS'):
     """converts datetime to the relevant timestamp format.
 
     Args:
         date(datetime): A datetime object setting up the last fetch time
+        datetime_format(str): The datetime format
 
     Returns:
         (num).The formatted timestamp
@@ -82,7 +92,7 @@ def convert_date_to_timestamp(date):
         return int(date.timestamp() * 1000)
 
     else:  # In case of 'Simple-Date'.
-        return ...
+        return arrow.get(date).format(datetime_format)
 
 
 def timestamp_to_date(timestamp_string):
@@ -260,7 +270,8 @@ def search_command(proxies):
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
-                                         time_field=timestamp_field)
+                                         time_field=timestamp_field,
+                                         datetime_format=get_datetime_field_format(es, index, timestamp_field))
 
     if query_dsl:
         response = execute_raw_query(es, query_dsl, index, size, base_page)
@@ -635,7 +646,7 @@ def format_to_iso(date_string):
 
 
 def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME,
-                   time_range_end=None, time_field=TIME_FIELD) -> Dict:
+                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = None) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
@@ -645,10 +656,11 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     Args:
 
         last_fetch (str): last fetch time stamp
-        fetch_time (str): first fetch time
         time_range_start (str): start of time range
         time_range_end (str): end of time range
-        time_field ():
+        time_field (str): The field on which the filter the results
+        datetime_format: (str) The datetime format
+
 
     Returns:
         dictionary (Ex. {"range":{'gt': 1000 'lt':1001}})
@@ -657,7 +669,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
 
-        start_time = convert_date_to_timestamp(start_date)
+        start_time = convert_date_to_timestamp(start_date, datetime_format)
     else:
         start_time = last_fetch
 
@@ -666,7 +678,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        end_time = convert_date_to_timestamp(end_date)
+        end_time = convert_date_to_timestamp(end_date, datetime_format)
         range_dict['lt'] = end_time
 
     return {'range': {time_field: range_dict}}
@@ -692,8 +704,8 @@ def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time') or FETCH_TIME
 
-    time_range_dict = get_time_range(time_range_start=last_fetch)
     es = elasticsearch_builder(proxies)
+    time_range_dict = get_time_range(time_range_start=last_fetch, datetime_format=get_datetime_field_format(es))
 
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
