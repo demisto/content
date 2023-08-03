@@ -2,7 +2,7 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
 
-# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
+# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. Slack notification
 .sdk-nightly-schedule-rule-always:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
@@ -174,10 +174,13 @@ demisto-sdk-nightly:run-commands-against-instance:
     INSTANCE_ROLE: "Server Master"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
-  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   script:
     - !reference [.ssh-config-setup]
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - section_start "Wait Until Server Ready"
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
+    - section_end "Wait Until Server Ready"
     - !reference [.download-demisto-conf]
     - |
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
