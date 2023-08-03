@@ -620,10 +620,7 @@ class SecurityAndComplianceClient {
             "ConnectionUri" = $this.connection_uri
             "AzureADAuthorizationEndpointUri" = $this.azure_ad_authorization_endpoint_uri
         }
-        Write-Host "Attempting to connect"
-        write-host ("Access Token is {0}" -f $this.access_token)
-        Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -Verbose | Out-Null
-        Write-Host "Connected to EXO"
+        Connect-ExchangeOnline @cmd_params -CommandName $CommandName -WarningAction:SilentlyContinue -ShowBanner:$false | Out-Null
     }
 
 
@@ -1424,14 +1421,8 @@ class SecurityAndComplianceClient {
 #### COMMAND FUNCTIONS ####
 
 function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
-    if ($cs_client.password) {
-        $cs_client.ListSearchActions() | Out-Null
-    }
-    else {
-        throw "Fill password for basic auth or use command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization (MFA enabled accounts)."
-    }
     $raw_response = $null
-    $human_readable = "ok"
+    $human_readable = "The test module does not work for MFA auth. Use the command !$script:COMMAND_PREFIX-auth-start for Oauth2.0 authorization and !$script:COMMAND_PREFIX-auth-test to instead."
     $entry_context = $null
 
     return $human_readable, $entry_context, $raw_response
@@ -1465,10 +1456,10 @@ function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplian
     $human_readable = "**Test ok!**"
     $entry_context = @{}
     try {
-        $cs_client.CreateSession()
+        $cs_client.CreateDelegatedSession("Start-ComplianceSearch")
     }
     finally {
-        $cs_client.CloseSession()
+        $cs_client.DisconnectSession()
     }
 
     return $human_readable, $entry_context, $raw_response
