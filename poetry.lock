@@ -1014,10 +1014,8 @@ description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
-files = [
-    {file = "demisto_sdk-1.18.0-py3-none-any.whl", hash = "sha256:1b7a4eff7b40d96573951322000388d7d485c9be08b405523552df1241dc6882"},
-    {file = "demisto_sdk-1.18.0.tar.gz", hash = "sha256:28d87d0dfe323b59698b77cfb7b3e39563fdafed618fca89cfd3962c7a49ddf3"},
-]
+files = []
+develop = false
 
 [package.dependencies]
 autopep8 = "^1.6.0"
@@ -1107,7 +1105,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "enhance-dump-pack-metadata"
-resolved_reference = "31a767f8a74436f03f31635ae51d7be3237865ea"
+resolved_reference = "ec595300447f9520f3bfeac4892388d6b8a7209c"
 
 [[package]]
 name = "deprecated"
@@ -4030,14 +4028,14 @@ files = [
 
 [[package]]
 name = "pygithub"
-version = "1.59.0"
+version = "1.59.1"
 description = "Use the full Github API v3"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "PyGithub-1.59.0-py3-none-any.whl", hash = "sha256:126bdbae72087d8d038b113aab6b059b4553cb59348e3024bb1a1cae406ace9e"},
-    {file = "PyGithub-1.59.0.tar.gz", hash = "sha256:6e05ff49bac3caa7d1d6177a10c6e55a3e20c85b92424cc198571fd0cf786690"},
+    {file = "PyGithub-1.59.1-py3-none-any.whl", hash = "sha256:3d87a822e6c868142f0c2c4bf16cce4696b5a7a4d142a7bd160e1bdf75bc54a9"},
+    {file = "PyGithub-1.59.1.tar.gz", hash = "sha256:c44e3a121c15bf9d3a5cc98d94c9a047a5132a9b01d22264627f58ade9ddc217"},
 ]
 
 [package.dependencies]
@@ -6608,4 +6606,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "43e84c09cc998d9ebbf5d3a09e015ff7773d3888e2112f79f293f9bcf21ee6fc"
+content-hash = "0947a14adfa4c1c1aa19bd8bba226fb7624da878d5d9f34aee2eda7f1761d5b6"
