@@ -1,8 +1,8 @@
-import argparse
 import json
 import logging
 import os
 import sys
+from argparse import Namespace, ArgumentParser
 from datetime import datetime
 from pathlib import Path
 
@@ -21,8 +21,8 @@ SERVER_LOG_DIRECTORY = "/var/log/demisto"
 SERVER_LOG_FILE_PATH = f"{SERVER_LOG_DIRECTORY}/server.log"
 
 
-def options_handler():
-    parser = argparse.ArgumentParser(description='Utility for destroying integration test instances')
+def options_handler() -> Namespace:
+    parser = ArgumentParser(description='Utility for destroying integration test instances')
     parser.add_argument('--artifacts-dir', help='Path to the artifacts directory', required=True)
     parser.add_argument('--instance-role', help='The instance role', required=True)
     parser.add_argument('--env-file', help='The env_results.json file')
@@ -85,7 +85,8 @@ def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, role: str)
     return False
 
 
-def destroy_server(artifacts_dir, readable_role, role, server_ip, tests_path, time_to_live) -> bool:
+def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip: str, tests_path: Path,
+                   time_to_live: int) -> bool:
     success = True
     with SSHClient() as ssh:
         try:
