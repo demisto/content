@@ -178,6 +178,12 @@ class Client(BaseClient):
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/"
                                              f"{args.get('alert-id')}/attachments")
 
+    def get_alert_logs(self, args: dict):
+        alert_id = args.get('alert_id')
+        return self._http_request(method='GET',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/"
+                                             f"{alert_id}/logs")
+
     def get_schedule(self, args: dict):
         if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
             raise DemistoException("Either schedule_id or schedule_name should be provided.")
@@ -641,6 +647,15 @@ def get_alert_attachments(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
+def get_alert_logs(client: Client, args: Dict[str, Any]) -> CommandResults:
+    result = client.get_alert_logs(args)
+    data = result.get("data")
+    return CommandResults(
+        readable_output=tableToMarkdown("OpsGenie Logs", data),
+        raw_response=result
+    )
+
+
 def get_schedules(client: Client, args: Dict[str, Any]) -> CommandResults:
     schedule = args.get("schedule_id", None) or args.get("schedule_name", None)
     result = client.get_schedule(args) if schedule else client.list_schedules()
@@ -1019,6 +1034,7 @@ def main() -> None:
             'opsgenie-add-alert-tag': add_alert_tag,
             'opsgenie-remove-alert-tag': remove_alert_tag,
             'opsgenie-get-alert-attachments': get_alert_attachments,
+            'opsgenie-get-alert-logs': get_alert_logs,
             'opsgenie-get-schedules': get_schedules,
             'opsgenie-get-schedule-overrides': get_schedule_overrides,
             'opsgenie-get-on-call': get_on_call,
