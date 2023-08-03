@@ -1381,7 +1381,7 @@ if __name__ == '__main__':
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
     parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
                         required=False)
-    parser.add_argument('-p', '--pack_names', help="Target packs to upload to gcs csv list of packs", default='', required=False)
+    parser.add_argument('-up', '--pack_names', help="Target packs to upload to gcs csv list of packs", default='', required=False)
 
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
