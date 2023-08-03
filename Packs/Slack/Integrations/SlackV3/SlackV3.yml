@@ -429,7 +429,7 @@ script:
     - description: The user id of the user.
       name: user_id
       required: true
-    description: Reset user session token in Slack
+    description: Reset user session token in Slack.
     name: slack-user-session-reset
   dockerimage: demisto/slackv3:1.0.0.63762
   longRunning: true
