@@ -244,8 +244,9 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.PR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
      None),
 
-    (MockerCases.U, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'},
-     None, None),
+    (MockerCases.U, XSIAMNightlyTestCollector, None, {'Base', 'DeveloperTools', 'CiscoASA', 'CoreAlertFields'},
+     None, {Path('CiscoASA/ModelingRules/CiscoASA'), Path('CiscoASA/ModelingRules/CiscoASA_1_3'),
+            Path('CiscoASA/ModelingRules/CiscoASA_1_4')}),
 )
 
 

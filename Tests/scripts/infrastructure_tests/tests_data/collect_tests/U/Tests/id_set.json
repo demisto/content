@@ -1,0 +1,60 @@
+{
+    "scripts": [],
+    "integrations": [],
+    "TestPlaybooks": [],
+    "ModelingRules": [
+      {
+        "CiscoASA": {
+          "name": "CiscoASA",
+          "file_path": "Packs/CiscoASA/ModelingRules/CiscoASA/CiscoASA.yml",
+          "source": [
+              "github.com",
+              "demisto",
+              "content"
+          ],
+          "fromversion": "6.10.0",
+          "pack": "CiscoASA",
+          "marketplaces": [
+              "marketplacev2"
+          ]
+        },
+        "CiscoASA_1_3": {
+          "name": "CiscoASA_1_3",
+          "file_path": "Packs/CiscoASA/ModelingRules/CiscoASA_1_3/CiscoASA_1_3.yml",
+          "source": [
+              "github.com",
+              "demisto",
+              "content"
+          ],
+          "fromversion": "6.10.0",
+          "pack": "CiscoASA",
+          "marketplaces": [
+              "marketplacev2"
+          ]
+        },
+        "CiscoASA_1_4": {
+          "name": "CiscoASA_1_4",
+          "file_path": "Packs/CiscoASA/ModelingRules/CiscoASA_1_4/CiscoASA_1_4.yml",
+          "source": [
+              "github.com",
+              "demisto",
+              "content"
+          ],
+          "fromversion": "6.10.0",
+          "pack": "CiscoASA",
+          "marketplaces": [
+              "marketplacev2"
+          ]
+        }
+      }
+    ],
+    "Packs": {
+      "CiscoASA": {
+        "name": "CiscoASA",
+        "marketplaces": [
+          "xsoar",
+          "marketplacev2"
+        ]
+      }
+    }
+  }
