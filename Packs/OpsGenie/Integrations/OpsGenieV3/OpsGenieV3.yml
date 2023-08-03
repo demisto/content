@@ -1261,16 +1261,6 @@ script:
     - contextPath: OpsGenie.Incident.success
       description: Whether the request was successful.
       type: Boolean
-<<<<<<< HEAD
-  - name: opsgenie-get-alert-logs
-    arguments:
-    - name: alert_id
-      required: true
-      description: Alert ID
-    description: Lists alert logs.
-
-  dockerimage: demisto/python3:3.10.12.63474
-=======
   - name: opsgenie-get-team-routing-rules
     description: Lists team routing rules.
     arguments:
@@ -1296,8 +1286,14 @@ script:
       description: Notify name of the routing rule.
     - contextPath: OpsGenie.TeamRoutingRule.notify.type
       description: Notify type of the routing rule.
-  dockerimage: demisto/python3:3.10.12.66339
->>>>>>> 41ebc5e8fa0b7723e80c6ecd77fead343421f618
+  - name: opsgenie-get-alert-logs
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    description: Lists alert logs.
+
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   script: '-'
   type: python
