@@ -2,7 +2,7 @@
 This pack includes Cortex XSIAM content. 
 
 ## Configuration on Server Side
-You need to configure your IBM AIX instance to forward audit event messages with Syslog.
+You need to configure your IBM AIX instance to forward audit event messages with syslog.
 
 Open your IBM AIX instance, and follow these instructions (Product Documentation)[https://www.ibm.com/docs/en/dsm?topic=asdo-configuring-your-aix-server-device-send-syslog-events-qradar]: 
 1. Log in to your IBM AIX appliance as a *root* user.
