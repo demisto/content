@@ -45,6 +45,7 @@ jobs:
         git checkout -b ${{ inputs.release_version }}
     
     - name: Update dependencies
+      continue-on-error: true
       run: |
         poetry add --group dev demisto-sdk@${{inputs.release_version}}
         poetry lock --no-update
