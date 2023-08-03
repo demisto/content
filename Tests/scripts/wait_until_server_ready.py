@@ -104,7 +104,7 @@ def main():
                         if 60 * 60 != SETUP_TIMEOUT:
                             logging.info('Resetting SETUP_TIMEOUT to an hour.')
                             SETUP_TIMEOUT = 60 * 60
-                        logging.info(f'{ami_instance_name} is ready to use')
+                        logging.info(f'Role:{ami_instance_name} server ip:{ami_instance_ip} is ready to use')
                         instance_ips_to_poll.remove(ami_instance_ip)
                     # printing the message every 30 seconds
                     elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
