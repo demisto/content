@@ -1024,3 +1024,21 @@ def test_invite_user(mocker):
     mocker.patch.object(mock_client, 'invite_user', return_value=util_load_json('test_data/invite_user.json'))
     res = OpsGenieV3.invite_user(mock_client, {'username': "test@example.com", 'fullName': 'Test Example', 'role': 'user'})
     assert (res.raw_response == util_load_json('test_data/invite_user.json'))
+
+
+def test_get_alert_logs(mocker):
+    """
+    Given:
+        - An app client object
+        - Limit = 1
+    When:
+        - Calling function get_alert_notes
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_alert_logs',
+                        return_value=util_load_json('test_data/get_alert_logs.json'))
+    res = OpsGenieV3.get_alert_logs(mock_client, {"alert_id": 'test'})
+    assert isinstance(res.raw_response, dict)
