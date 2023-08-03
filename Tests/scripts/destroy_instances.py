@@ -117,7 +117,7 @@ def main():
     time_to_live = int(os.getenv('TIME_TO_LIVE') or DEFAULT_TTL)
     tests_path = Path('./Tests')
     start_time = datetime.utcnow()
-    logging.info(f"Starting destroy instances - environment from {options.env_file}, TTL: {time_to_live} seconds, "
+    logging.info(f"Starting destroy instances - environment from {options.env_file}, TTL: {time_to_live} minutes, "
                  f"Tests Path: {tests_path.absolute()}")
 
     with open(options.env_file) as json_file:
