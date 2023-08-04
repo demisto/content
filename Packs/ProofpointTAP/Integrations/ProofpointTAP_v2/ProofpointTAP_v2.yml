@@ -78,6 +78,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- defaultvalue: '50'
+  display: Maximum number of incident per fetch
+  name: limit
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
 - additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Proofpoint supports a maximum 1 week fetch back.
   defaultvalue: 1 hour
   display: First fetch time range
