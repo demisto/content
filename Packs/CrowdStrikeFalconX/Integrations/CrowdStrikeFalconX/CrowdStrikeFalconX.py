@@ -1302,7 +1302,7 @@ def get_results_function_args(outputs, extended_data, item_type, interval_in_sec
 
 
 def pop_polling_related_args(args: dict) -> None:
-    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'polling'):
+    for key in ('submit_file', 'enable_tor', 'interval_in_seconds', 'polling', 'environment_id'):
         args.pop(key, None)
 
 
