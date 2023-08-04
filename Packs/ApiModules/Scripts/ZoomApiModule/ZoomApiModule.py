@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-import jwt
+# import jwt
 from CommonServerPython import *  # noqa: F401
 from datetime import timedelta
 import dateparser
@@ -35,6 +35,8 @@ class Zoom_Client(BaseClient):
         account_id: str | None = None,
         client_id: str | None = None,
         client_secret: str | None = None,
+        bot_client_id: str | None = None,
+        bot_client_secret: str | None = None,
         verify=True,
         proxy=False,
     ):
@@ -44,17 +46,33 @@ class Zoom_Client(BaseClient):
         self.account_id = account_id
         self.client_id = client_id
         self.client_secret = client_secret
-        is_jwt = (api_key and api_secret) and not (client_id and client_secret and account_id)
+        self.bot_client_id = bot_client_id
+        self.bot_client_secret = bot_client_secret
+        is_jwt = False
+        # (api_key and api_secret) and not (client_id and client_secret and account_id)
+
         if is_jwt:
+            self.access_token = None
+            self.bot_access_token = None
             # the user has chosen to use the JWT authentication method (deprecated)
-            self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
+            #  self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
             # the user has chosen to use the OAUTH authentication method.
             try:
-                self.access_token = self.get_oauth_token()
+                self.access_token, self.bot_access_token = self.get_oauth_token()
+                demisto.debug(f"self.access_token= {self.access_token}, self.bot_access_token={self.bot_access_token}")
             except Exception as e:
                 demisto.debug(f"Cannot get access token. Error: {e}")
                 self.access_token = None
+                self.bot_access_token = None
+
+        # if bot_client_id and bot_client_secret:
+        #     try:
+        #         self.bot_access_token = self.get_oauth_token("bot")
+        #     except Exception as e:
+        #         demisto.debug(f"Cannot get access token. Error: {e}")
+        #         self.bot_access_token = None
+        #         self.access_token = None
 
     def generate_oauth_token(self):
         """
@@ -66,6 +84,18 @@ class Zoom_Client(BaseClient):
                                        params={"account_id": self.account_id,
                                                "grant_type": "account_credentials"},
                                        auth=(self.client_id, self.client_secret))
+        return token_res.get('access_token')
+
+    def generate_oauth_client_token(self):
+        """
+    Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
+
+    :return: valid token
+    """
+        token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
+                                       params={"account_id": self.account_id,
+                                               "grant_type": "client_credentials"},
+                                       auth=(self.bot_client_id, self.bot_client_secret))
         return token_res.get('access_token')
 
     def get_oauth_token(self, force_gen_new_token=False):
@@ -83,6 +113,7 @@ class Zoom_Client(BaseClient):
         if not ctx or not ctx.get('token_info').get('generation_time', force_gen_new_token):
             # new token is needed
             oauth_token = self.generate_oauth_token()
+            client_oauth_token = self.generate_oauth_client_token()
             ctx = {}
         else:
             if generation_time := dateparser.parse(
@@ -93,14 +124,16 @@ class Zoom_Client(BaseClient):
                 time_passed = TOKEN_LIFE_TIME
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
-                return ctx.get('token_info').get('oauth_token')
+                return ctx.get('token_info').get('oauth_token'), ctx.get('token_info').get('client_oauth_token')
             else:
                 # token expired
                 oauth_token = self.generate_oauth_token()
+                client_oauth_token = self.generate_oauth_client_token()
 
-        ctx.update({'token_info': {'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
+        ctx.update({'token_info': {'oauth_token': oauth_token, 'client_oauth_token': client_oauth_token,
+                   'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
         set_integration_context(ctx)
-        return oauth_token
+        return oauth_token, client_oauth_token
 
     def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
                                    auth=None, json_data=None, params=None, files=None, data=None,
@@ -117,7 +150,7 @@ class Zoom_Client(BaseClient):
         except DemistoException as e:
             if ('Invalid access token' in e.message
                     or "Access token is expired." in e.message):
-                self.access_token = self.generate_oauth_token()
+                self.access_token = self.generate_oauth_client_token()
                 headers = {'authorization': f'Bearer {self.access_token}'}
                 return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                              auth=auth, json_data=json_data, params=params, files=files, data=data,
@@ -129,16 +162,16 @@ class Zoom_Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_jwt_token(apiKey: str, apiSecret: str) -> str:
-    """
-    Encode the JWT token given the api ket and secret
-    """
-    now = datetime.now()
-    expire_time = int(now.strftime('%s')) + JWT_LIFETIME
-    payload = {
-        'iss': apiKey,
+# def get_jwt_token(apiKey: str, apiSecret: str) -> str:
+#     """
+#     Encode the JWT token given the api ket and secret
+#     """
+#     now = datetime.now()
+#     expire_time = int(now.strftime('%s')) + JWT_LIFETIME
+#     payload = {
+#         'iss': apiKey,
 
-        'exp': expire_time
-    }
-    encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
-    return encoded
+#         'exp': expire_time
+#     }
+#     encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
+#     return encoded

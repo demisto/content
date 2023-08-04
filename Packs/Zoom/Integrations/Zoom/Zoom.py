@@ -1,10 +1,21 @@
+from fastapi.responses import JSONResponse
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
 from ZoomApiModule import *
 from traceback import format_exc
 from datetime import datetime
+from fastapi import FastAPI, Request
+from pydantic import BaseModel
+import uvicorn
 
+
+app = FastAPI()
+SYNC_CONTEXT = True
+OBJECTS_TO_KEYS = {
+    'messages': 'entitlement',
+}
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
@@ -86,9 +97,13 @@ MARKDOWN_EXTRA_FORMATS = """Too many style in text. you can provide only one sty
 MARKDOWN_EXTRA_MENTIONS = """Too many mentions in text. you can provide only one mention in each message"""
 MISSING_ARGUMENT_JID = """Missing either a user JID  or a channel id"""
 TOO_MANY_JID = """Too many argument you must provide either a user JID  or a channel id and not both """
-
-
+CLIENT: Zoom_Client
 '''CLIENT CLASS'''
+
+
+class ZoomWebhookData(BaseModel):
+    event: str
+    payload: dict
 
 
 class Client(Zoom_Client):
@@ -320,11 +335,217 @@ class Client(Zoom_Client):
             method='POST',
             url_suffix=url_suffix,
             json_data=json_data,
-            headers={'authorization': f'Bearer {self.access_token}'}
+            headers={'authorization': f'Bearer {self.bot_access_token}'}
         )
 
 
 '''HELPER FUNCTIONS'''
+
+
+async def check_and_handle_entitlement(text: str, message_id: str, user_name: str) -> str:
+    """
+    Handles an entitlement message (a reply to a question)
+    Args:
+    Returns:
+        If the message contains entitlement, return a reply.
+    """
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    messages = integration_context.get('messages', [])
+    demisto.debug(f"check_and_handle_entitlements: {messages}")
+    if messages and message_id:
+        messages = json.loads(messages)
+        message_filter = list(filter(lambda q: q.get('message_id') == message_id, messages))
+        if message_filter:
+            message = message_filter[0]
+            message.get('entitlement')
+            reply = message.get('reply', 'Thank you for your response.')
+            # guid, incident_id, task_id = extract_entitlement(entitlement, text)
+            # demisto.handleEntitlementForUser(incident_id, guid, user_name, text,
+            #                                 task_id)
+            demisto.debug(f'message_filter: {message_filter}')
+            message['remove'] = True
+            set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            return reply
+    return ''
+
+
+def save_entitlement(entitlement, message_id, reply, expiry, default_response):
+    """
+    Saves an entitlement with its thread
+
+    Args:
+        entitlement: The entitlement
+        thread: The thread
+        reply: The reply to send to the user.
+        expiry: The question expiration date.
+        default_response: The response to send if the question times out.
+    """
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    messages = integration_context.get('messages', [])
+    demisto.debug(f"save_entitlement {integration_context}")
+    if messages:
+        messages = json.loads(integration_context['messages'])
+    messages.append({
+        'message_id': message_id,
+        'entitlement': entitlement,
+        'reply': reply,
+        'expiry': expiry,
+        'sent': datetime.strftime(datetime.utcnow(), DATE_FORMAT),
+        'default_response': default_response
+    })
+
+    set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
+def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
+    """
+    Extracts entitlement components from an entitlement string
+    Args:
+        entitlement: The entitlement itself
+        text: The actual reply text
+
+    Returns:
+        Entitlement components
+    """
+    parts = entitlement.split('@')
+    guid = parts[0]
+    id_and_task = parts[1].split('|')
+    incident_id = id_and_task[0]
+    task_id = ''
+
+    if len(id_and_task) > 1:
+        task_id = id_and_task[1]
+    # content = text.replace(entitlement, '', 1)
+
+    return guid, incident_id, task_id
+
+
+# def check_for_unanswered_questions():
+#     integration_context = get_integration_context(SYNC_CONTEXT)
+#     messages = integration_context.get('messages', None)
+#     if messages:
+#         questions = json.loads(messages)
+#         now = datetime.utcnow()
+#         now_string = datetime.strftime(now, DATE_FORMAT)
+#         updated_questions = []
+
+#         for question in questions:
+#             if question.get('expiry'):
+#                 # Check if the question expired - if it did, answer it with the default response
+#                 # and remove it
+#                 expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
+#                 if expiry < now:
+#                     _ = answer_question(question.get('default_response'), question, email='')
+#                     updated_questions.append(question)
+#                     continue
+#             # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
+#             # since the last polling time. if not, continue to the next question until it has.
+#             if question.get('last_poll_time'):
+#                 last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
+#                 delta = now - last_poll_time
+#                 minutes = delta.total_seconds() / 60
+#                 sent = question.get('sent', None)
+#                 poll_time_minutes = get_poll_minutes(now, sent)
+#                 if minutes < poll_time_minutes:
+#                     continue
+#             question['last_poll_time'] = now_string
+#             updated_questions.append(question)
+#         if updated_questions:
+#             set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
+def long_running(port):
+    integration_logger = IntegrationLogger()
+    integration_logger.buffering = False
+    log_config = dict(uvicorn.config.LOGGING_CONFIG)
+    while True:
+        try:
+            demisto.debug('long running')
+            uvicorn.run(app, host="0.0.0.0", port=port, log_config=log_config)
+            # check_for_unanswered_questions()
+        except Exception as e:
+            demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
+            demisto.updateModuleHealth(f'An error occurred: {str(e)}')
+        finally:
+            time.sleep(5)
+
+
+async def process_entitlement_reply(
+    entitlement_reply: str,
+    accountId: str,
+    robotJid: str,
+    action_text: str,
+    toJid: str | None = None,
+):
+    """
+    Triggered when an entitlement reply is found, this function will update the original message with the reply message.
+    :param entitlement_reply: str: The text to update the asking question with.
+    :param user_id: str: ID of the user who answered the entitlement
+    :param action_text: str: The text attached to the button, used for string replacement.
+    :param response_url: str: The response URL to use for the update.
+    :param channel: str: The channel ID of where the question exists.
+    :param message_ts: str: The timestamp of the message. Acts as a unique ID.
+    :return: None
+    """
+    url_suffix = '/im/chat/messages'
+    json_data_all = {
+        "content": {
+            "body": [
+                {
+                    "type": "message",
+                    "text": entitlement_reply
+                }
+            ]
+        },
+        "to_jid": toJid,
+        "robot_jid": robotJid,
+        "account_id": accountId
+    }
+    await CLIENT.zoom_send_notification(url_suffix, json_data_all)
+
+
+def answer_question(text: str, question: dict, email: str = ''):
+    entitlement = question.get('entitlement', '')
+    guid, incident_id, task_id = extract_entitlement(entitlement)
+    try:
+        demisto.handleEntitlementForUser(incident_id, guid, email, text, task_id)
+    except Exception as e:
+        demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
+    question['remove'] = True
+    return incident_id
+
+
+@app.post('/')
+async def handle_zoom_button_click(request: Request):
+    request = await request.json()
+    demisto.debug(f"request: {request}")
+    event_type = request['event']
+    payload = request['payload']
+    if event_type == 'interactive_message_actions':
+        action = payload['actionItem']['value']
+        message_id = payload['messageId']
+        account_id = payload['accountId']
+        robot_jid = payload['robotJid']
+        to_jid = payload['toJid']
+        demisto.debug(f"message_id: {message_id}")
+        entitlement_reply = await check_and_handle_entitlement(action, message_id)  # type: ignore
+        if entitlement_reply:
+            await process_entitlement_reply(entitlement_reply, account_id, robot_jid, action, to_jid)
+        #    demisto.updateModuleHealth("")
+        demisto.debug(f"button was clicked {action} on message {message_id}")
+        return {"message": "success"}
+    else:
+        return {"message": "Invalid event type."}
+
+
+@app.get('/authorize')
+def authorize():
+    return JSONResponse(content='https://zoom.us/launch/chat?jid=robot_v16tba1o08roqyncjqo5slvq@xmpp.zoom.us')
+
+
+@app.get('/')
+def index(request: Request):
+    return 'Welcome to the xsoar Chatbot for Zoom!'
 
 
 def test_module(client: Client):
@@ -1548,40 +1769,61 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
 
     if user_id and re.match(emailRegex, user_id):
         user_id = zoom_get_user_id_by_email(client, user_id)
-
+    json_data = {
+        'user_id': user_id,
+        'to_contact': to_contact,
+        'to_channel': to_channel,
+        'date': date_arg,
+        'from': from_arg,
+        'to': to_arg,
+        'include_deleted_and_edited_message': include_deleted_and_edited_message,
+        'search_type': search_type,
+        'search_key': search_key,
+        'exclude_child_message': exclude_child_message,
+        'page_size': limit
+    }
+    # remove all keys with val of None
+    request_data = remove_None_values_from_dict(json_data)
     url_suffix = f'users/{user_id}/messages'
     all_messages: List = []
     next_page_token = args.get('next_page_token', None)
     while True:
-        raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,
-                                                  user_id=user_id,
-                                                  to_contact=to_contact,
-                                                  to_channel=to_channel,
-                                                  date_arg=date_arg,
-                                                  from_arg=from_arg,
-                                                  to_arg=to_arg,
-                                                  include_deleted_and_edited_message=include_deleted_and_edited_message,
-                                                  search_type=search_type,
-                                                  search_key=search_key,
-                                                  exclude_child_message=exclude_child_message,
-                                                  next_page_token=next_page_token,
-                                                  page_size=limit)
-        data = raw_data.get('messages', [])
+        try:
+            raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,
+                                                      user_id=user_id,
+                                                      to_contact=to_contact,
+                                                      to_channel=to_channel,
+                                                      date_arg=date_arg,
+                                                      from_arg=from_arg,
+                                                      to_arg=to_arg,
+                                                      include_deleted_and_edited_message=include_deleted_and_edited_message,
+                                                      search_type=search_type,
+                                                      search_key=search_key,
+                                                      exclude_child_message=exclude_child_message,
+                                                      next_page_token=next_page_token,
+                                                      page_size=limit)
+            data = raw_data.get('messages', [])
+            if limit and len(all_messages) + len(data) > limit:
+                remaining_limit = limit - len(all_messages)
+                data = data[:remaining_limit]
 
-        if limit and len(all_messages) + len(data) > limit:
-            remaining_limit = limit - len(all_messages)
-            data = data[:remaining_limit]
+            all_messages.extend(data)
 
-        all_messages.extend(data)
+            if limit and len(all_messages) >= limit:
+                all_messages = all_messages[:limit]
+                break
+            next_page_token = raw_data.get('next_page_token', None)
+            if next_page_token and next_page_token != '':
+                next_page_token = raw_data['next_page_token']
+            else:
+                break
+        except DemistoException as e:
+            error_message = e.message
+            if 'The next page token is invalid or expired.' in error_message and next_page_token:
+                raise DemistoException(f"Please ensure that the correct argument values are used when attempting to use \
+the next_page_toke.\n Note that when using next_page_token it is mandatory to specify date time and not relative time.\n \
+To find the appropriate values, refer to the ChatMessageNextToken located in the context. \n {error_message}")
 
-        if limit and len(all_messages) >= limit:
-            all_messages = all_messages[:limit]
-            break
-        next_page_token = raw_data.get('next_page_token', None)
-        if next_page_token and next_page_token != '':
-            next_page_token = raw_data['next_page_token']
-        else:
-            break
     outputs = []
     for i in all_messages:
         outputs.append({
@@ -1597,21 +1839,41 @@ def zoom_list_messages_command(client, **args) -> CommandResults:
     md = tableToMarkdown('Messages', outputs)
     md += '\n' + 'Messages next token:' + raw_data.get('next_page_token', '')
 
+    if raw_data.get('next_page_token'):
+        request_data.update({'next_page_token': raw_data.get('next_page_token')})
+    else:
+        request_data = None
+
     return CommandResults(
-        outputs_prefix='Zoom.ChatMessage',
+        outputs_prefix='Zoom',
         readable_output=md,
-        outputs={'messages': all_messages,
-                 'ChatMessageNextToken': raw_data.get('next_page_token')},
+        outputs={'ChatMessage': {'messages': all_messages},
+                 'ChatMessageNextToken': request_data},
         raw_response=raw_data
     )
 
 
 def zoom_send_notification_command(client, botJID: str, account_id: str, **args) -> CommandResults:
+    demisto.debug(f"args: {args}")
     client = client
-    message = args.get('message')
+    # message = json.loads(args.get('message', ''))
+    # message2 = args.get('message')
     to = args.get('to')
     channel_id = args.get('channel_id')
-    visible_to_user = argToBoolean(args.get('visible_to_user'))
+    argToBoolean(args.get('visible_to_user', False))
+    zoom_ask = argToBoolean(args.get('zoom_ask', False))
+
+    if zoom_ask:
+        parsed_message = json.loads(args.get("message", ''))
+        entitlement = parsed_message.get('entitlement')
+        message = parsed_message.get('blocks')
+        reply = parsed_message.get('reply')
+        expiry = parsed_message.get('expiry')
+        default_response = parsed_message.get('default_response')
+    else:
+        message = {"head": {"type": "message", "text": args.get("message", "")}}
+
+    demisto.debug(f"bot message {parsed_message}")
 
     if (to and channel_id):
         raise DemistoException(TOO_MANY_JID)
@@ -1623,18 +1885,20 @@ def zoom_send_notification_command(client, botJID: str, account_id: str, **args)
         "robot_jid": botJID,
         "to_jid": to if to else channel_id,
         "account_id": account_id,
-        "visible_to_user": visible_to_user,
-        "content": {
-            "head": {
-                "text": message
-            }
-        }
+        "content":
+            message
     }
     json_data = remove_None_values_from_dict(json_data_all)
 
-    client.zoom_send_notification(url_suffix, json_data)
-
-    return CommandResults()
+    demisto.debug(f"json_data: {json_data}")
+    raw_data = client.zoom_send_notification(url_suffix, json_data)
+    if raw_data:
+        message_id = raw_data.get("message_id")
+        if entitlement:
+            save_entitlement(entitlement, message_id, reply, expiry, default_response)
+    return CommandResults(
+        readable_output=f'Message sent to Zoom successfully. Message ID is: {raw_data.get("message_id")}'
+    )
 
 
 def main():  # pragma: no cover
@@ -1646,19 +1910,22 @@ def main():  # pragma: no cover
     account_id = params.get('account_id')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
+    bot_client_id = params.get('bot_credentials', {}).get('identifier')
+    bot_client_secret = params.get('bot_credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     botJID = params.get('botJID')
     params.get('botEndpointURL')
     params.get('longRunning', False)
     command = demisto.command()
+    port = int(demisto.params().get('longRunningPort'))
 
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
         check_authentication_type_parameters(api_key, api_secret, account_id, client_id, client_secret)
-
+        global CLIENT
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -1668,7 +1935,12 @@ def main():  # pragma: no cover
             account_id=account_id,
             client_id=client_id,
             client_secret=client_secret,
+            bot_client_id=bot_client_id,
+            bot_client_secret=bot_client_secret,
         )
+        CLIENT = client
+
+        demisto.debug(client.bot_access_token)
 
         if command == 'test-module':
             return_results(test_module(client=client))
@@ -1676,7 +1948,9 @@ def main():  # pragma: no cover
         demisto.debug(f'Command being called is {command}')
 
         '''CRUD commands'''
-        if command == 'zoom-create-user':
+        if command == 'long-running-execution':
+            long_running(port)
+        elif command == 'zoom-create-user':
             results = zoom_create_user_command(client, **args)
         elif command == 'zoom-create-meeting':
             results = zoom_create_meeting_command(client, **args)

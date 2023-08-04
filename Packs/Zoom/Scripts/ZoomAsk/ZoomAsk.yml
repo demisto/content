@@ -1,0 +1,65 @@
+args:
+- description: The Zoom user to which to send the message. Can be either an email address or a Zoom user name.
+  name: user
+- description: The Zoom channel to which to send the message.
+  name: channel
+- description: The Zoom channel ID to which to send the message.
+  name: channel_id
+- description: The message to send to the user or channel.
+  name: message
+  required: true
+- defaultValue: Yes#blue
+  description: The first reply option. The default is "Yes" with a green button. To change the color of the button, add the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "green". For example, "Yes#green".
+  name: option1
+- description: The second reply option. The default is "No" with a red button. To change the button color, add the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "red". For example, "No#red".
+  name: option2
+  defaultValue: No#red
+- description: The task to close with the reply. If empty, then no playbook tasks will be closed.
+  name: task
+- description: Tag to add to email reply entries.
+  name: replyEntriesTag
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+- description: How the user should respond to the question.
+  name: responseType
+  auto: PREDEFINED
+  defaultValue: button
+  predefined:
+  - button
+  - dropdown
+- description: A comma-separated list of additional options in the format of "option#color", for example, "maybe#red". The default color is "black".
+  name: additionalOptions
+- defaultValue: Thank you for your response.
+  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e. "Thank you {user}. You have answered {response}.")
+  name: reply
+- defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
+  name: lifetime
+- description: Default response in case the question expires.
+  name: defaultResponse
+  defaultValue: NoResponse
+- description: The instance of Zoom this script should use.
+  name: ZoomInstance
+comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
+commonfields:
+  id: ZoomAsk
+  version: -1
+enabled: true
+name: ZoomAsk
+script: '-'
+subtype: python3
+tags:
+- zoom
+timeout: '0'
+type: python
+dockerimage: demisto/fastapi:1.0.0.63688
+tests:
+- no test - Untestable
+dependson:
+  must:
+  - Zoom|||zoom-send-notification
