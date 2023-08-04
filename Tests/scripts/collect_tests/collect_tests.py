@@ -450,7 +450,7 @@ class TestCollector(ABC):
                 result.append(self._collect_pack(
                     pack_id=pack_id,
                     reason=CollectionReason.PACK_CHOSEN_TO_UPLOAD,
-                    reason_description="pack was chosen to upload",
+                    reason_description="",
                     allow_incompatible_marketplace=False,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, IncompatibleMarketplaceException) as e:
@@ -1383,7 +1383,7 @@ if __name__ == '__main__':
     parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
     parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
                         required=False)
-    parser.add_argument('-up', '--pack_names', help="Target packs to upload to gcs csv list of packs", default='', required=False)
+    parser.add_argument('-up', '--pack_names', help="Packs to upload, will only collect what is related to them", default='', required=False)
 
     args = parser.parse_args()
     args_string = '\n'.join(f'{k}={v}' for k, v in vars(args).items())
