@@ -194,6 +194,7 @@ validate-content-conf:
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
         time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP --zone $GCP_ZONE
       fi
+    - section_end "Create Instances for XSOAR"
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
@@ -254,7 +255,11 @@ xpanse-prepare-testing-bucket:
         exit 0
       fi
     - !reference [.ssh-config-setup]
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - section_start "Wait Until Server Ready"
+    - |
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}"
+    - section_end "Wait Until Server Ready"
     - |
       # workaround for the hard-coded value in the sdk
       cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
@@ -264,7 +269,6 @@ xpanse-prepare-testing-bucket:
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - echo Going to sleep for 15 minutes to allow server finish indexing
     - sleep 900
-
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
@@ -283,7 +287,7 @@ xpanse-prepare-testing-bucket:
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
         TIME_TO_LIVE=300
       fi
-      python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+      python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
     - job-done
     - exit $EXIT_CODE
 
@@ -416,6 +420,7 @@ slack-notify-nightly-build:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
+    CLOUD_MACHINES_TYPE: "build"
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -435,7 +440,7 @@ slack-notify-nightly-build:
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
     - source CloudEnvVariables
     - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
     - section_end "Lock Machine"
@@ -518,7 +523,6 @@ xsiam_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
@@ -544,7 +548,6 @@ xsoar_ng_server_ga:
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
@@ -621,7 +624,7 @@ test-upload-flow:
     - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
 
-handle-dev-secrets:
+merge-dev-secrets:
   tags:
     - gke
   extends:
@@ -634,8 +637,9 @@ handle-dev-secrets:
   stage: unittests-and-validations
   script:
     - |
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
+    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+  allow_failure: true
 
 xsoar_server_master-test_playbooks_results:
   variables:
