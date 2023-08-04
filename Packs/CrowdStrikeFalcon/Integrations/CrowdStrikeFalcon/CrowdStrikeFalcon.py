@@ -647,7 +647,7 @@ def get_passed_mins(start_time, end_time_str):
 
 def handle_response_errors(raw_res: dict, err_msg: str | None = None):
     """
-    Raise exception if raw_res is empty or contains errors
+    Raise exception if raw_res is empty or containsa errors
     """
     if not err_msg:
         err_msg = "The server was unable to return a result, please run the command again."
