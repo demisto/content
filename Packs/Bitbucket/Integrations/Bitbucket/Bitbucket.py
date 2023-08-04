@@ -1518,7 +1518,7 @@ def pull_request_comment_delete_command(client: Client, args: Dict) -> CommandRe
     """ Deletes a comment in a pull request.
         Args:
             client: A Bitbucket client.
-            args: Demisto args.
+            args: Demisto arggs.
         Returns:
             A CommandResult object with a success message.
     """
