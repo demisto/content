@@ -14,34 +14,43 @@ configuration:
   section: Connect
   required: false
 - display: ''
-  displaypassword: App Token
-  name: app_token
+  displaypassword: User Token
+  name: user_token
   type: 9
   hiddenusername: true
   section: Connect
   required: false
+- display: ''
+  name: app_token
+  type: 9
+  section: Connect
+  required: false
+  displaypassword: App Token
+  hiddenusername: true
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   type: 0
   section: Connect
   advanced: true
   required: false
-- defaultvalue: Low
-  display: Minimum incident severity by which to send messages to Slack
+- display: Minimum incident severity by which to send messages to Slack
   name: min_severity
+  type: 15
   options:
   - Unknown
   - Low
   - Medium
   - High
   - Critical
-  type: 15
   section: Collect
   advanced: true
   required: false
+  defaultvalue: Low
 - display: Types of Notifications to Send.
   name: permitted_notifications
   type: 16
+  section: Collect
+  required: false
   options:
   - incidentOpened
   - incidentChanged
@@ -53,16 +62,14 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
-  section: Collect
   advanced: true
   additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
-  required: false
-- defaultvalue: Unclassified
-  display: Type of incidents created in Slack
+- display: Type of incidents created in Slack
   name: incidentType
   type: 13
   section: Connect
   required: false
+  defaultvalue: Unclassified
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   type: 8
@@ -72,11 +79,11 @@ configuration:
 - display: Ignore event retries
   name: ignore_event_retries
   type: 8
-  additionalinfo: In some cases, events may not be processed fast enough. If you want to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted.
-  defaultvalue: 'true'
   section: Collect
   advanced: true
   required: false
+  additionalinfo: In some cases, events may not be processed fast enough. If you want to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted.
+  defaultvalue: 'true'
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -87,8 +94,8 @@ configuration:
   name: unsecure
   type: 8
   section: Connect
-  advanced: true
   required: false
+  advanced: true
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
   name: mirroring
@@ -99,10 +106,10 @@ configuration:
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
-  additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
   section: Connect
   advanced: true
   required: false
+  additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
 - defaultvalue: Cortex XSOAR
   display: Bot display name in Slack
   name: bot_name
@@ -110,28 +117,28 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png
+- defaultvalue: 'https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png'
   display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   type: 0
   section: Connect
   advanced: true
   required: false
-- defaultvalue: '60'
-  display: Maximum time to wait for a rate limiting call in seconds
+- display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
   type: 0
+  defaultvalue: '60'
   section: Connect
   advanced: true
   required: false
 - display: Number of objects to return in each paginated call
   name: paginated_count
   type: 0
-  defaultvalue: '200'
   section: Collect
   advanced: true
   required: false
-- display: Comma-separated list of tags to filter the messages sent from Cortex XSOAR.
+  defaultvalue: '200'
+- display: 'Comma-separated list of tags to filter the messages sent from Cortex XSOAR.'
   name: filtered_tags
   type: 0
   additionalinfo: Only supported in Cortex XSOAR V6.1 and above.
@@ -139,14 +146,14 @@ configuration:
   advanced: true
   required: false
 - display: ''
-  displaypassword: XSOAR API Key
   name: demisto_api_key
   type: 9
-  hiddenusername: true
-  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
   section: Connect
   advanced: true
   required: false
+  displaypassword: XSOAR API Key
+  hiddenusername: true
+  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
@@ -156,20 +163,20 @@ configuration:
   required: false
 - display: Disable Caching of Users and Channels
   name: disable_caching
-  type: 8
   additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
+  type: 8
   defaultvalue: 'false'
   section: Collect
   advanced: true
   required: false
 - display: Extensive Logging
   name: extensive_logging
-  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
   type: 8
-  defaultvalue: 'false'
+  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
   section: Connect
   advanced: true
   required: false
+  defaultvalue: 'false'
 - display: Common Channels
   name: common_channels
   type: 12
@@ -418,7 +425,13 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.63762
+  - arguments:
+    - description: The user id of the user.
+      name: user_id
+      required: true
+    description: Reset user session token in Slack.
+    name: slack-user-session-reset
+  dockerimage: demisto/slackv3:1.0.0.66900
   longRunning: true
   runonce: false
   script: '-'
