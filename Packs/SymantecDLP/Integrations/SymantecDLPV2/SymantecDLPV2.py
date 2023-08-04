@@ -732,10 +732,8 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
         if raw_filter:
             raise DemistoException(f'Please make sure the {raw_filter=} is correct, {error=}')
         raise
-    demisto.info(f'The value of incidents_result from API = {incidents_result}')
     incidents_result = get_incidents_of_current_page(limit, page, page_size,
                                                      incidents_list=incidents_result.get('incidents', []))
-    demisto.info(f'The value of incidents_result from get_incidents_of_current_page = {incidents_result}')
     if raw_filter:
         list_incidents_hr = incidents_result
         context_incidents_list = incidents_result
