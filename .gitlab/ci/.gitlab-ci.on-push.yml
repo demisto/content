@@ -279,6 +279,10 @@ xpanse-prepare-testing-bucket:
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
     - |
+      if [[ -f ./Tests/tttttt.txt ]]; then
+        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/tttttt.txt
+      fi
+    - |
       if [[ -f ./Tests/test_playbooks_report.json ]]; then
         cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
       fi
