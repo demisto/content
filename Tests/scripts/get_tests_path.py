@@ -15,9 +15,11 @@ def search_string_in_files(folder_path, search_string):
             try:
                 with open(file_path, 'r', encoding='utf-8') as file:
                     content = file.read()
-                    if search_string in content:
-                        print(f"Found '{search_string}' in '{file_path}'")
-                        failed.append(f'{file_path.split("/Packs/")[1].split("/")[0]}/{search_string}'.replace(' (Second Playback)', '').replace('%', ''))
+                    print(f'{content=}')
+                    for s in search_string:
+                        if s in content:
+                            print(f"Found '{s}' in '{file_path}'")
+                            failed.append(f'{file_path.split("/Packs/")[1].split("/")[0]}/{s}'.replace(' (Second Playback)', '').replace('%', ''))
             except Exception as e:
                 print(f"Error reading '{file_path}': {e}")
     return failed
@@ -30,7 +32,7 @@ def run(options: argparse.Namespace):
     packs_folder = './Packs'
     with open(failed_tests_path) as file:
         failed_tests = file.read().splitlines()
-
+    print(f'^^^^{failed_tests=}^^^^')
     failed = search_string_in_files(packs_folder, failed_tests)
     print(f'{failed=}')
     if failed:
