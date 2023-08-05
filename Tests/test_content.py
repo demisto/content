@@ -116,7 +116,6 @@ def print_test_summary(tests_data_keeper: DataKeeperTester,
     """
     succeed_playbooks = tests_data_keeper.succeeded_playbooks
     failed_playbooks = tests_data_keeper.failed_playbooks
-    logging_module.error(f'^^^^^^^^^^^^^^^{tests_data_keeper=}^^^^^^^^^^^^')
     skipped_tests = tests_data_keeper.skipped_tests
     unmocklable_integrations = tests_data_keeper.unmockable_integrations
     skipped_integration = tests_data_keeper.skipped_integrations
@@ -203,13 +202,11 @@ def create_result_files(tests_data_keeper):
     skipped_integration = tests_data_keeper.skipped_integrations
     skipped_tests = tests_data_keeper.skipped_tests
     with open("./Tests/failed_tests.txt", "w") as failed_tests_file:
-        failed_tests_file.write(f'!!!!!!{tests_data_keeper}!!!!!!')
+        failed_tests_file.write('\n'.join(failed_playbooks))
     with open('./Tests/skipped_tests.txt', "w") as skipped_tests_file:
         skipped_tests_file.write('\n'.join(skipped_tests))
     with open('./Tests/skipped_integrations.txt', "w") as skipped_integrations_file:
         skipped_integrations_file.write('\n'.join(skipped_integration))
-    with open('./Tests/tttttt.txt', "w") as skipped_integrations_file:
-        skipped_integrations_file.write(f'!!!!!!{tests_data_keeper}!!!!!!')
 
 
 def change_placeholders_to_values(placeholders_map, config_item):

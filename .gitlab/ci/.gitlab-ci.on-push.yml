@@ -273,14 +273,13 @@ xpanse-prepare-testing-bucket:
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+        python3 ./Tests/scripts/get_tests_path.py -f "./Tests/scripts/" >> $ARTIFACTS_FOLDER/tttttttt.txt
+        sleep 20 
+        cp ./Tests/failed_tests_path.txt $ARTIFACTS_FOLDER/failed_tests_path.txt
       fi
     - |
       if [[ -f ./Tests/succeeded_tests.txt ]]; then
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
-      fi
-    - |
-      if [[ -f ./Tests/tttttt.txt ]]; then
-        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/tttttt.txt
       fi
     - |
       if [[ -f ./Tests/test_playbooks_report.json ]]; then
@@ -470,6 +469,13 @@ slack-notify-nightly-build:
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+        python3 ./Tests/scripts/get_tests_path.py -f "./Tests/scripts/" >> $ARTIFACTS_FOLDER/tttttttt.txt
+        sleep 20 
+        cp ./Tests/failed_tests_path.txt $ARTIFACTS_FOLDER/failed_tests_path.txt
+      fi
+    - |
+      if [[ -f ./Tests/failed_tests_path.txt ]]; then
+        cp ./Tests/failed_tests_path.txt $ARTIFACTS_FOLDER/failed_tests_path.txt
       fi
     - |
       if [[ -f ./Tests/succeeded_tests.txt ]]; then
