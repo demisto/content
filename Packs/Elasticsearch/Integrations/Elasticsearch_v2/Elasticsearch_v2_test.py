@@ -865,18 +865,17 @@ class TestIncidentLabelMaker(unittest.TestCase):
         assert labels == expected_labels
 
 
-@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
-                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
-                           {'range': {'time_field': {'gt': '2000-01-01T12:00:00.000000+00:00',
-                                                     'lt': '2000-02-01T12:00:00.000000+00:00'}}}),
-                          (946728000000, '', '2.1.2000 12:00:00Z',
-                           {'range': {'time_field': {'gt': 946728000000, 'lt': '2000-02-01T12:00:00.000000+00:00'}}}),
-                          ('', '', '2.1.2000 12:00:00Z',
-                           {'range': {'time_field': {'lt': '2000-02-01T12:00:00.000000+00:00'}}}),
+@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, datetime_format, result',
+                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z', 'D.M.YYYY HH:mm:ssZ',
+                           {'range': {'time_field': {'gt': '1.1.2000 12:00:00+0000', 'lt': '1.2.2000 12:00:00+0000'}}}),
+                          (946728000000, '', '2.1.2000 12:00:00Z', 'D.M.YYYY HH:mm:ssZ',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': '1.2.2000 12:00:00+0000'}}}),
+                          ('', '', '2.1.2000 12:00:00Z', 'D.M.YYYY HH:mm:ssZ',
+                           {'range': {'time_field': {'lt': '1.2.2000 12:00:00+0000'}}}),
                           ])
-def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
+def test_get_time_range(last_fetch, time_range_start, time_range_end, datetime_format, result):
     from Elasticsearch_v2 import get_time_range
-    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
+    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field", datetime_format) == result
 
 
 def test_build_eql_body():
@@ -990,11 +989,8 @@ class MockES:
 
 
 def test_get_datetime_field_format():
-    Elasticsearch_v2.FETCH_INDEX = 'my_index'
-    Elasticsearch_v2.TIME_FIELD = 'created_at'
-
     es = MockES
-    assert Elasticsearch_v2.get_datetime_field_format(es) == 'YYYY-MM-DD HH:mm:ss'
+    assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'YYYY-MM-DD HH:mm:ss'
 
 
 @pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [

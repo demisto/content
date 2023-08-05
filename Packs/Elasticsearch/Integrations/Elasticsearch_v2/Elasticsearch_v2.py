@@ -646,7 +646,7 @@ def format_to_iso(date_string):
 
 
 def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME,
-                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = None) -> Dict:
+                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = 'YYYY-MM-DD HH:mm:ss') -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
