@@ -5,6 +5,7 @@ import os
 def search_string_in_files(folder_path, search_string):
     # Iterate through all files in the folder and its subfolders
     failed = []
+    search_string = [s.replace(' (Second Playback)', '').replace('%', '') for s in search_string]
     for root, dirs, files in os.walk(folder_path):
         if 'Bitbucket' in root:
             print(5)
@@ -15,11 +16,11 @@ def search_string_in_files(folder_path, search_string):
             try:
                 with open(file_path, 'r', encoding='utf-8') as file:
                     content = file.read()
-                    print(f'{content=}')
                     for s in search_string:
+                        print(f"searching '{s}' in '{file_path}'")
                         if s in content:
                             print(f"Found '{s}' in '{file_path}'")
-                            failed.append(f'{file_path.split("/Packs/")[1].split("/")[0]}/{s}'.replace(' (Second Playback)', '').replace('%', ''))
+                            failed.append(f'{file_path.split("/Packs/")[1].split("/")[0]}/{s}')
             except Exception as e:
                 print(f"Error reading '{file_path}': {e}")
     return failed
