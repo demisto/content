@@ -474,10 +474,6 @@ slack-notify-nightly-build:
         cp ./Tests/failed_tests_path.txt $ARTIFACTS_FOLDER/failed_tests_path.txt
       fi
     - |
-      if [[ -f ./Tests/failed_tests_path.txt ]]; then
-        cp ./Tests/failed_tests_path.txt $ARTIFACTS_FOLDER/failed_tests_path.txt
-      fi
-    - |
       if [[ -f ./Tests/succeeded_tests.txt ]]; then
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
