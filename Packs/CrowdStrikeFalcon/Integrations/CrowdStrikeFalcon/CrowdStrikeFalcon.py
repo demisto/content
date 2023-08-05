@@ -23,8 +23,7 @@ IDP_DETECTION = "IDP detection"
 CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
 SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-    demisto.params()['url']
+SERVER = demisto.params()['url'].removesuffix('/')
 # Should we use SSL
 USE_SSL = not demisto.params().get('insecure', False)
 # How many time before the first fetch to retrieve incidents
@@ -549,24 +548,25 @@ def incident_to_incident_context(incident):
     if incident.get('status'):
         incident['status'] = STATUS_NUM_TO_TEXT.get(incident.get('status'))
 
+    incident_id = str(incident.get('incident_id'))
     incident_context = {
-        'name': f'Incident ID: {incident.get("incident_id")}',
+        'name': f'Incident ID: {incident_id}',
         'occurred': str(incident.get('start')),
-        'rawJSON': json.dumps(incident),
+        'rawJSON': json.dumps(incident)
     }
     return incident_context
 
 
 def idp_detection_to_incident_context(idp_detection):
     """
-        Creates an incident context of an IDP detection.
+            Creates an incident context of an IDP detection.
 
-        :type idp_detection: ``dict``
-        :param idp_detection: Single IDP detection object
+            :type idp_detection: ``dict``
+            :param idp_detection: Single IDP detection object
 
-        :return: Incident context representation of an IDP detection.
-        :rtype ``dict``
-    """
+            :return: Incident context representation of an IDP detection.
+            :rtype ``dict``
+        """
     add_mirroring_fields(idp_detection)
     if status := idp_detection.get('status'):
         idp_detection['status'] = status
@@ -647,7 +647,7 @@ def get_passed_mins(start_time, end_time_str):
 
 def handle_response_errors(raw_res: dict, err_msg: str | None = None):
     """
-    Raise exception if raw_res is empty or containsa errors
+    Raise exception if raw_res is empty or contains errors
     """
     if not err_msg:
         err_msg = "The server was unable to return a result, please run the command again."
@@ -2287,18 +2287,20 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     last_update_timestamp = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
-    modified_ids_to_mirror: list = []
+    modified_ids_to_mirror = []
 
     raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
-    modified_ids_to_mirror.extend(map(str, raw_incidents))
+    for incident_id in raw_incidents:
+        modified_ids_to_mirror.append(str(incident_id))
 
     raw_detections = get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
-    modified_ids_to_mirror.extend(map(str, raw_detections))
-
+    for detection_id in raw_detections:
+        modified_ids_to_mirror.append(str(detection_id))
     last_update_timestamp_idp_detections = last_update_utc.strftime(IDP_DATE_FORMAT)
     raw_idp_detections = get_idp_detections_ids(filter_arg=f"updated_timestamp:>'{last_update_timestamp_idp_detections}'"
                                                 "+product:'idp'").get('resources', [])
-    modified_ids_to_mirror.extend(map(str, raw_idp_detections))
+    for raw_idp_detection in raw_idp_detections:
+        modified_ids_to_mirror.append(str(raw_idp_detection))
 
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
@@ -2523,7 +2525,7 @@ def fetch_incidents():
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
         if fetch_query:
-            fetch_query = f"created_timestamp:>{start_fetch_time!r}+{fetch_query}"
+            fetch_query = f"created_timestamp:>'{start_fetch_time}'+{fetch_query}"
             detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit), 'resources')
         else:
             detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit),
@@ -2570,7 +2572,7 @@ def fetch_incidents():
         fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
-            fetch_query = f'start:>{start_fetch_time!r}+{fetch_query}'
+            fetch_query = f"start:>'{start_fetch_time}'+{fetch_query}"
             incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, limit=fetch_limit), 'resources')
 
         else:
@@ -5518,20 +5520,14 @@ def main():
     args = demisto.args()
     try:
         if command == 'test-module':
-            return_results(test_module())
+            result = test_module()
+            return_results(result)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
-        elif command == 'get-remote-data':
-            return_results(get_remote_data_command(args))
-        elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(args))
-        elif command == 'update-remote-system':
-            return_results(update_remote_system_command(args))
-        elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command())
+
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
-        elif command == 'cs-falcon-search-device':
+        elif demisto.command() == 'cs-falcon-search-device':
             return_results(search_device_command())
         elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
@@ -5566,11 +5562,11 @@ def main():
         elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
         elif command == 'cs-falcon-status-get-command':
-            demisto.results(status_get_command(args))
+            demisto.results(status_get_command(demisto.args()))
         elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
         elif command == 'cs-falcon-get-extracted-file':
-            demisto.results(get_extracted_file_command(args))
+            demisto.results(get_extracted_file_command(demisto.args()))
         elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
         elif command == 'cs-falcon-refresh-session':
@@ -5671,6 +5667,14 @@ def main():
             return_results(rtr_polling_retrieve_file_command(args))
         elif command == 'cs-falcon-get-detections-for-incident':
             return_results(get_detection_for_incident_command(args.get('incident_id')))
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(args))
+        elif demisto.command() == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(args))
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(args))
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
         elif command == 'cs-falcon-spotlight-search-vulnerability':
             return_results(cs_falcon_spotlight_search_vulnerability_command(args))
         elif command == 'cs-falcon-spotlight-list-host-by-vulnerability':
