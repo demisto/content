@@ -1,7 +1,0 @@
-fromversion: 6.8.0
-id: Microsoft_DNS
-name: Microsoft DNS
-rules: ''
-schema: ''
-tags: MicrosoftDNS
-toversion: 6.9.9
