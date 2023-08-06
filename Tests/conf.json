@@ -3069,6 +3069,9 @@
             "playbookID": "sumList - Test"
         },
         {
+            "playbookID": "AnyMatch_Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
         },
@@ -5778,7 +5781,8 @@
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
-        "CheckPhish": "Issue CRTX-86562"
+        "CheckPhish": "Issue CRTX-86562",
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
     },
     "nightly_packs": [
         "CommonScripts",
