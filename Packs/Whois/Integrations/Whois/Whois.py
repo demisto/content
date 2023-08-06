@@ -12,6 +12,7 @@ import urllib
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
+RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 
 # flake8: noqa
 
@@ -8475,7 +8476,8 @@ def prepare_readable_ip_data(response):
 
 def get_whois_ip(ip: str,
                  retry_count: int = RATE_LIMIT_RETRY_COUNT_DEFAULT,
-                 rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT
+                 rate_limit_timeout: int = RATE_LIMIT_WAIT_SECONDS_DEFAULT,
+                 rate_limit_errors_suppressed: bool = RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT
                  ) -> Optional[Dict[str, Any]]:
     """
     Performs an Registration Data Access Protocol (RDAP) lookup for an IP.
@@ -8502,7 +8504,16 @@ def get_whois_ip(ip: str,
     else:
         ip_obj = ipwhois.IPWhois(ip)
 
-    return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+    try:
+        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+    except urllib.error.HTTPError as e:
+        if rate_limit_errors_suppressed:
+            demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
+            return None
+        
+        demisto.error(f'HTTPError when trying to lookup rdap info. Error: {e}')
+        raise e
+
 
 
 def get_param_or_arg(param_key: str, arg_key: str):
@@ -8526,13 +8537,15 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
                                       'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
     rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
                                        'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
+    rate_limit_errors_suppressed: bool = bool(get_param_or_arg(
+        'rate_limit_errors_suppressed', 'rate_limit_errors_suppressed') or RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT)
 
     execution = ExecutionMetrics()
     results: List[CommandResults] = []
     for ip in argToList(ips):
 
         try:
-            response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds)
+            response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds, rate_limit_errors_suppressed=rate_limit_errors_suppressed)
             if response:
                 execution.success += 1
                 dbot_score = Common.DBotScore(
