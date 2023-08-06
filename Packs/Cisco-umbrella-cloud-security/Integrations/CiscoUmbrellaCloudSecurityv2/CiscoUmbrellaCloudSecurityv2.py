@@ -904,15 +904,17 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            return_results(test_module(client))
+            results = test_module(client)
         elif command in commands_v2:
             client.login()
-            return_results(commands_v2[command](client, args))
+            results = commands_v2[command](client, args)
         elif command in commands_v1:
             client.login()
-            return_results(bridge_v1_to_v2(v2_command=commands_v1[command], client=client, args=args))
+            results = bridge_v1_to_v2(v2_command=commands_v1[command], client=client, args=args)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
+
+        return_results(results)
 
     except Exception as e:
         return_error(str(e))
