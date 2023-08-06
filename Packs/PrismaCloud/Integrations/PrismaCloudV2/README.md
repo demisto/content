@@ -24,9 +24,41 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Fetch only incidents matching these filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | False |
     | Fetch incidents |  | False |
     | Output results of old version commands to the context data in the old format |  | False |
+    | Mirroring Direction | 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).' | False |
+    | Close Mirrored XSOAR Incident | When selected, closing and re-opening the Prisma Cloud alert are mirrored in Cortex XSOAR. | False |
+    | Close Mirrored Prisma Cloud Alert |  When selected, closing and re-opening the XSOAR incident are mirrored in Prisma Cloud. | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+### Incident Mirroring
+ 
+You can enable incident mirroring between Cortex XSOAR incidents and Prisma Cloud alerts (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for **Prisma Cloud v2** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. Optional: You can go to the *Fetch only incidents matching these filters* parameter and select the query to fetch the alerts from Prisma Cloud.
+6. In the *Incident Mirroring Direction* parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Changes in Prisma Cloud Alerts (`status`, `dismiisalNote`) will be reflected in XSOAR incidents.
+    - Outgoing - Changes in XSOAR incidents will be reflected in Prisma Cloud alerts (`status`, `reason`).
+    - Incoming And Outgoing - Changes in XSOAR incidents and in Prisma Cloud alerts will be reflected in both directions.
+    - None - Turns off incident mirroring.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close or reopen the Cortex XSOAR incident when the corresponding alert is closed or re-opened in Prisma Cloud.
+8. Optional: Check the *Close Mirrored Prisma Cloud Alert* integration parameter to close or reopen the Prisma Cloud alert when the corresponding Cortex XSOAR incident is closed or re-opened.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+**Important Notes**
+
+- To ensure the mirroring works as expected, an incoming mapper is required, to map the expected fields in Cortex XSOAR.
+- When *mirroring in* incidents from Prisma Cloud to Cortex XSOAR:
+  - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in Prisma Cloud that determines whether the incident was closed or re-opend is the `status` field.
+- When *mirroring out* incidents from Cortex XSOAR to Prisma Cloud:
+  - When enabling the *Close Mirrored Prisma Cloud Alert* integration parameter, the corresponding alert in Prisma Cloud will be closed with a *Dismissed* status for every reason chosen in the XSOAR incident (possible reasons are: `False Positive`, `Duplicate`, `Other` and `Resolved`). The *Reason* field of the Prisma Cloud alert will include the original reason selected in XSOAR and the close notes.
+ 
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

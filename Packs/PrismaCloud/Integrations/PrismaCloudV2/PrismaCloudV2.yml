@@ -86,14 +86,14 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: When selected, closing the Prisma Cloud alert is mirrored in Cortex XSOAR.
+- additionalinfo: When selected, closing and re-opening the Prisma Cloud alert are mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
   section: Collect
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in Prisma Cloud.
+- additionalinfo: When selected, closing and re-opening the XSOAR incident are mirrored in Prisma Cloud.
   defaultvalue: 'false'
   display: Close Mirrored Prisma Cloud Alert
   name: close_ticket
