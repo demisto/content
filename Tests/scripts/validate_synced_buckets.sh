@@ -12,7 +12,7 @@ function compare_revision() {
     bucket2="${bucket_list_prod[$i]}-$1"
 
     echo "Comparing revisions for $bucket1 and $bucket2"
-
+    echo $(gsutil acl get "gs://$bucket1$json_file_path")
     index_json_origin=$(gsutil cat "gs://$bucket1$json_file_path")
     index_json_prod=$(gsutil cat "gs://$bucket2$json_file_path")
     test=$(curl -s "gs://$bucket2$json_file_path")
