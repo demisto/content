@@ -1,5 +1,5 @@
 Search and manage watchlists in Recorded Future
-This integration was integrated and tested with version 1.1 of RecordedFutureLists
+This integration was integrated and tested with version 1.1.1 of RecordedFutureLists
 
 ## Configure Recorded Future - Lists on Cortex XSOAR
 
