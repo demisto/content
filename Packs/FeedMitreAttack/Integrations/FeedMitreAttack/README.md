@@ -42,7 +42,7 @@ Note: This command does not create indicators within Cortex XSOAR.
 `mitre-get-indicators`
 ##### Input
 
-| **Argument Name** | **Description** | **Required** |g
+| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. The default value is 10. | Optional | 
 | raw | Enabling raw will also output the raw content of each indicator | Optional | 
