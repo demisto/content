@@ -2222,7 +2222,7 @@ def parse_incident_from_item(item):     # pragma: no cover
     log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
     log_memory()
-    demisto.debug(f"FInshed generatiing rawjson from email with id {item.id}")
+    demisto.debug(f"Finished generating rawJSON from email with id {item.id}")
 
     return incident
 
