@@ -257,13 +257,8 @@
         echo "flake8 py3 version: $(python3 -m flake8 --version)"
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-        set -ex
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-        echo "here before mkdir"
-        pwd
-        ls -lh
         mkdir ./unit-tests
-        echo "here after mkdir"
         if [[ -n "${SHOULD_LINT_ALL}" || -n "${BUCKET_UPLOAD}" ]]; then
           echo "In should lint all / bucket upload."
           if [ $DOCKER == "native:dev,from-yml" ]; then
