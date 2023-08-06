@@ -1,10 +1,10 @@
-import io
 
 import pytest
 
 import MimecastV2
 
 from CommonServerPython import *
+
 
 # Parameters for Get arguments test
 policy_data = {
@@ -72,7 +72,7 @@ def util_load_json(path):
     Returns:
         json object read from the path given
     """
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
