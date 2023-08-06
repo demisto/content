@@ -4,11 +4,18 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure Semperis DSP to forward Syslog messages.
 
-Go to Checkpoint Log Export, and follow the instructions under "Basic Deployment" to set up the connection using the following guidelines:
-1. If you use version R77.30 or R80.10, follow the instructions to install a Log Exporter.
-2. Set the Syslog port to 514 or your agent port.
-3. Replace the "name" and "\<target-server IP address\>" in the CLI with the broker VM name and IP address.
-Set the format to CEF.
+Open your Semperis DSP UI and follow these instructions:
+1. At the left panel, click on **SETTINGS** -> **SIEM Integration**
+2. Under the **Syslog Server** section, make sure to configure the following-
+    * Make sure the syslog enablement checkbox is checked.
+    * Under **Primary Syslog Server**, input the relevant syslog server IP address.
+    * Under **Primary Port**, input the relevant syslog server port.
+    * Make sure the protocol set for the primary communication is TCP (Without TLS).
+3. Under the **Change Event Filtering** section, make sure to configure the following-
+    * Make sure the **AD Changed Items** checkbox is enabled.
+    * Make sure the **DNS** checkbox is enabled.
+    * Make sure the **Send Operations Log to Syslog** checkbox is enabled.
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
