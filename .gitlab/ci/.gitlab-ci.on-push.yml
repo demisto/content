@@ -631,15 +631,14 @@ merge-dev-secrets:
     - .default-job-settings
   variables:
     master_branch_name: master
+    MY_VARIABLE: "f"
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
     - if: '$NIGHTLY'
       variables:
         MY_VARIABLE: "t"
-    - else:
-      variables:
-        MY_VARIABLE: "f"
+
 
   stage: unittests-and-validations
   script:
