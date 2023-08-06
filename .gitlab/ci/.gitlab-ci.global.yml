@@ -249,7 +249,7 @@
     - section_end "Test Infrastructure"
     - section_start "Run Unit Testing and Lint"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]] && false; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
@@ -258,12 +258,7 @@
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-        echo "here before mkdir"
-        pwd
-        ls -lh
-        set -ex
         mkdir ./unit-tests
-        echo "here after mkdir"
         if [[ -n "${SHOULD_LINT_ALL}" || -n "${BUCKET_UPLOAD}" ]]; then
           echo "In should lint all / bucket upload."
           if [ $DOCKER == "native:dev,from-yml" ]; then
