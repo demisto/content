@@ -98,6 +98,7 @@ else
     OVERRIDE_ALL_PACKS=true
     CONTENT_PACKS_TO_UPLOAD="${PACKS_TO_UPLOAD}"
     IS_FORCE_UPLOAD=true
+    BUCKET_UPLOAD_FLOW=false
   else
     # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
     # given with all the packs, we don't override packs to not force upload a pack
