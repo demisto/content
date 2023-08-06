@@ -1,5 +1,5 @@
 {
-    "id": "CTF Cloud Dashboard_copy",
+    "id": "CTF Cloud Dashboard",
     "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
@@ -12,7 +12,7 @@
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "name": "CTF Cloud Dashboard_copy",
+    "name": "CTF Cloud Dashboard",
     "layout": [
         {
             "id": "762ef4f0-2952-11ee-a7bd-7fcc2b1d51f9",
@@ -98,7 +98,7 @@
                 "prevName": "User doing the CTF",
                 "dataType": "incidents",
                 "widgetType": "bar",
-                "query": "ctfsla.runStatus:running",
+                "query": "ctfsla.runStatus:running or advancedctfsla.runStatus:running",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -150,7 +150,7 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "fastest Top 10 users finished",
+                "name": "Fastest Top 10 users finished - Basic",
                 "prevName": "Top 10 users finished",
                 "dataType": "incidents",
                 "widgetType": "column",
@@ -176,6 +176,7 @@
                     "keys": [
                         "avg|ctfsla.totalDuration"
                     ],
+                    "limitType": "bottom",
                     "showGraphValues": false,
                     "valuesFormat": "hours",
                     "yAxisLabel": ""
@@ -222,7 +223,7 @@
                 "prevName": "List of all CTF incidents",
                 "dataType": "incidents",
                 "widgetType": "table",
-                "query": "playbook:\"CTF - Analyst View - IAM\" ctfsla.runStatus:ended",
+                "query": "playbook:\"CTF - Analyst View - IAM\" and (ctfsla.runStatus:ended or advancedctfsla.runStatus:ended)",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -282,7 +283,7 @@
             "y": 0,
             "i": "651f46a0-3213-11ee-953d-71791f2973d4",
             "w": 2,
-            "h": 1,
+            "h": 2,
             "widget": {
                 "id": "4fc2d3d6-a22c-4cf2-89f1-090147f42355",
                 "version": 1,
@@ -408,7 +409,7 @@
                 "commitMessage": "",
                 "shouldCommit": false,
                 "Cache": null,
-                "name": "fastest Top 10 users finished",
+                "name": "Fastest Top 10 users finished Advanced CTF",
                 "prevName": "Top 10 users finished",
                 "dataType": "incidents",
                 "widgetType": "column",
@@ -432,8 +433,9 @@
                         "owner"
                     ],
                     "keys": [
-                        "avg|(advancedctfsla.endDate - ctfsla.startDate )/60"
+                        "avg|advancedctfsla.totalDuration"
                     ],
+                    "limitType": "bottom",
                     "showGraphValues": false,
                     "valuesFormat": "hours",
                     "yAxisLabel": ""
