@@ -3,37 +3,46 @@ commonfields:
   id: Microsoft Graph Device Management
   version: -1
 configuration:
-- defaultvalue: https://graph.microsoft.com
-  display: Server URL
-  name: url
-  required: true
-  type: 0
-- display: ID or Client ID - see Detailed Instructions (?)
+- defaultvalue: Worldwide
+  display: Azure Cloud
+  name: azure_cloud
+  required: false
+  type: 15
+  options:
+  - Worldwide
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Germany
+  - China
+  - Custom
+  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+- display: ID or Client ID
   name: auth_id
   type: 4
   hidden: true
   required: false
-- displaypassword: ID or Client ID - see Detailed Instructions (?)
+- displaypassword: ID or Client ID
   name: credentials_auth_id
   hiddenusername: true
   type: 9
   required: false
-- display: Token or Tenant ID - see Detailed Instructions (?)
+- display: Token or Tenant ID
   name: tenant_id
   type: 4
   hidden: true
   required: false
-- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+- displaypassword: Token or Tenant ID
   name: credentials_tenant_id
   hiddenusername: true
   type: 9
   required: false
-- display: Key or Client Secret - see Detailed Instructions (?)
+- display: Key or Client Secret
   name: enc_key
   type: 4
   hidden: true
   required: false
-- displaypassword: Key or Client Secret - see Detailed Instructions (?)
+- displaypassword: Key or Client Secret
   name: credentials_enc_key
   hiddenusername: true
   type: 9
@@ -66,6 +75,12 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
+  name: url
+  required: false
+  type: 0
+  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

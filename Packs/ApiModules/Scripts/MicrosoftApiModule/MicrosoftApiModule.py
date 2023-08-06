@@ -584,9 +584,9 @@ def get_azure_cloud(params, integration_name):
     azure_cloud_arg = params.get('azure_cloud')
     if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
         # Backward compatibility before the azure cloud settings.
-        if 'server_url' in params:
+        if 'server_url' or 'url' in params:
             return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
-                                             endpoints={'resource_manager': params.get('server_url')
+                                             endpoints={'resource_manager': params.get('server_url', params.get('url'))
                                                         or 'https://management.azure.com'})
         if 'azure_ad_endpoint' in params:
             return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
