@@ -988,8 +988,8 @@ def test_prepare_datetime_format(datetime_format, expected):
 
     Then
         - Make sure that the returned format is as expected.
-        - Make sure that the result of converting a datetime object with Arrow format function using the returned 
-            datetime format does not contain any alphabetic character.
+        - Make sure that the result of converting a datetime object with Arrow format function using the returned
+        datetime format does not contain any alphabetic character.
     """
     formatted_datetime = Elasticsearch_v2.prepare_datetime_format(datetime_format)
     assert formatted_datetime == expected
