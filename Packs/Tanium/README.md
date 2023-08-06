@@ -28,7 +28,7 @@ Get Computer Name and Last Logged In User and Integrity Monitor - Monitor Events
 14. Under **Host**, fill in the name or the IP address of the SIEM.
 15. Specify the port number under **Port**.
 16. Select **JSON** from the dropdown under **Format**.
-17. Check the "Enable Schedule" check box under **Schedule**.
+17. Check the "Enable Schedule" checkbox under **Schedule**.
 18. Set the **Timezone** to UTC.
 19. From the **Frequency** dropdown, select **Multiple runs per day, every day**.
 20. From the **Hour Interval** dropdown, select **Every 2nd hour**.
