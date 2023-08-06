@@ -40,33 +40,40 @@ def test_handle_time_range_query(
     args: dict[str, int], expected: dict[str, dict[str, str]]
 ):
     """
-    Test case for the '_handle_time_range_query' function.
-
-    Args:
-        args (dict): Dictionary containing the arguments 'start_time' and 'end_time'.
-        expected (dict): Dictionary representing the expected query parameters.
+    GIVEN:
+        a dictionary containing 'start_time' and 'end_time' as keys with integer values
+    WHEN:
+        '_handle_time_range_query' function is called with the provided arguments
+    THEN:
+        it should return a dictionary representing a valid time range query.
     """
     assert _handle_time_range_query(**args) == expected
 
 
 def test_handle_time_range_query_raise_error():
     """
-    Test case for the '_handle_time_range_query' function.
-
-    Tests that the function raises a DemistoException when the start_time is greater than the end_time.
-
-    Raises:
-        DemistoException: If the start_time is greater than the end_time.
+    GIVEN:
+        a start time and end time where the start time is greater than the end time
+    WHEN:
+        _handle_time_range_query is called with the start and end times
+    THEN:
+        a DemistoException is raised with the message "Start time must be before end time"
     """
-    start_time = 1626393600
-    end_time = 1626307200
+    start_time = 2
+    end_time = 1
     with pytest.raises(DemistoException, match="Start time must be before end time"):
         _handle_time_range_query(start_time, end_time)
 
 
 def test_query_datalake_command(mocker):
     """
-    Test case for the 'query_datalake_command' function.
+    GIVEN:
+        a mocked Client and test data,
+    WHEN:
+        'query_datalake_command' function is called with the provided arguments,
+        and the Client returns the test data.
+    THEN:
+        it should return the expected context and readable output.
     """
     mock_response = load_test_data("./test_data/response.json")
 
@@ -83,7 +90,7 @@ def test_query_datalake_command(mocker):
         },
     )
     outputs = response.to_context()["EntryContext"]['ExabeamDataLake.Log']
-    assert len(outputs) == 3
+    assert outputs == mock_response["responses"][0]["hits"]["hits"]
     assert response.readable_output == (
         "### Logs\n"
         "|Action|Event Name|ID|Product|Time|Vendor|\n"
@@ -96,7 +103,13 @@ def test_query_datalake_command(mocker):
 
 def test_query_datalake_command_no_response(mocker):
     """
-    Test case for the 'query_datalake_command' function.
+    GIVEN:
+        a mocked Client with an empty response,
+    WHEN:
+        'query_datalake_command' function is called with the provided arguments,
+    THEN:
+        it should return a readable output indicating no results found.
+
     """
 
     mocker.patch.object(Client, "query_datalake_request", return_value={})
@@ -108,9 +121,14 @@ def test_query_datalake_command_no_response(mocker):
 
 def test_query_datalake_command_raise_error(mocker):
     """
-    Tests that the function raises a DemistoException if there is an error in the query.
-    when: query_datalake_command is called with an invalid query
-    then: Ensure that a DemistoException is raised
+    Test case for the 'query_datalake_command' function when it raises a DemistoException due to an error in the query.
+
+    GIVEN:
+        a mocked Client that returns an error response,
+    WHEN:
+        'query_datalake_command' function is called with an invalid query,
+    THEN:
+        it should raise a DemistoException with the appropriate error message.
     """
 
     args = {"query": "*", "limit": 50, "all_result": False}

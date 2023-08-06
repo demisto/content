@@ -74,6 +74,8 @@ def _handle_time_range_query(start_time: int, end_time: int | None) -> dict:
           end_time: end time
     Returns:
         dict: time range query
+    Raises:
+        DemistoException: If the start_time is greater than the end_time.
     """
 
     if end_time and (start_time > end_time):
