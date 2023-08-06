@@ -22,8 +22,11 @@ def normalize_indicator_value(indicator_value: Any) -> str:
 def add_new_indicator(indicator_value: Any,
                       create_new_indicator_args: Dict[str, Any]) -> Dict[str, Any]:
     indicator_value = normalize_indicator_value(indicator_value)
+    demisto.debug(f"After normalization: {indicator_value=}")
+    escaped_indicator_value = indicator_value.replace('"', r'\"')
+    demisto.debug(f"After escaping quotes: {escaped_indicator_value=}")
 
-    if indicators := execute_command('findIndicators', {'value': indicator_value}):
+    if indicators := execute_command('findIndicators', {'value': escaped_indicator_value}):
         indicator = indicators[0]
         indicator[KEY_CREATION_STATUS] = STATUS_EXISTING
     else:
