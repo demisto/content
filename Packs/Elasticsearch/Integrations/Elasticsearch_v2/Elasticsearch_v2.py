@@ -276,7 +276,7 @@ def search_command(proxies):
     index = demisto.args().get('index')
     query = demisto.args().get('query')
     fields = demisto.args().get('fields')  # fields to display
-    explain = demisto.args().get('explain') == 'true'
+    explain = demisto.args().get('explain').lower() == 'true'
     base_page = int(demisto.args().get('page'))
     size = int(demisto.args().get('size'))
     sort_field = demisto.args().get('sort-field')
