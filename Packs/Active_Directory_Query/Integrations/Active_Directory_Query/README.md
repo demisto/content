@@ -954,7 +954,7 @@ There is no context output for this command.
 
 ### ad-test-credentials
 ***
-Test if credentials are valid.
+Test given credentials.
 
 
 #### Base Command

@@ -1,6 +1,9 @@
 commonfields:
   id: Active Directory Query v2
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: Active Directory Query v2
 display: Active Directory Query v2
 category: Authentication & Identity Management
@@ -8,54 +11,57 @@ description: The Active Directory Query integration enables you to access and ma
 configuration:
 - display: Server IP address (for example, 192.168.0.1)
   name: server_ip
+  defaultvalue: ""
   type: 0
   required: true
   section: Connect
-  advanced: true
 - display: Port. If not specified, the default port is 389, or 636 for LDAPS.
   name: port
   defaultvalue: ""
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Username
   name: credentials
+  defaultvalue: ""
   type: 9
-  section: Connect
   required: true
-  displaypassword: Password
+  section: Connect
+  displaypassword: Password 
 - display: NTLM authentication
   name: ntlm
   type: 8
-  required: false
   section: Connect
+  advanced: true
+  required: false
 - display: Base DN (for example "dc=company,dc=com")
   name: base_dn
+  defaultvalue: ""
   type: 0
-  section: Connect
   required: true
+  section: Connect
 - display: Page size
   name: page_size
-  defaultvalue: '500'
+  defaultvalue: "500"
   type: 0
   required: true
   section: Collect
 - display: Secure Connection
   name: secure_connection
-  defaultvalue: "SSL"
+  defaultvalue: SSL
   type: 15
   required: true
-  section: Connect
   options:
   - None
   - SSL
   - TLS
   - Start TLS
-- display: SSL Version
-  name: ssl_version
+  section: Connect
+- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
   defaultvalue: None
-  type: 15
-  required: false
+  display: SSL Version
+  name: ssl_version
   options:
   - None
   - TLS
@@ -63,22 +69,23 @@ configuration:
   - TLSv1_1
   - TLSv1_2
   - TLS_CLIENT
+  type: 15
   section: Connect
-  additionalinfo: The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   section: Connect
   advanced: true
   required: false
-- display: Incoming Mapper
+- additionalinfo: Used in the IAM commands.
+  defaultvalue: User Profile - Active Directory (Incoming)
+  display: Incoming Mapper
   name: mapper-in
+  required: true
   type: 0
   section: Connect
-  required: true
-  additionalinfo: Used in the IAM commands.
-  defaultvalue: User Profile - Active Directory (Incoming)
 - additionalinfo: Used in the IAM commands.
   defaultvalue: User Profile - Active Directory (Outgoing)
   display: Outgoing Mapper
@@ -86,19 +93,20 @@ configuration:
   required: true
   type: 0
   section: Connect
-- defaultvalue: ""
-  display: Group CN for terminated employees
+- display: Group CN for terminated employees
   name: group-cn
-  required: false
+  defaultvalue: ""
   type: 0
   section: Connect
-- display: Create user if does not exist
-  name: create-if-not-exists
+  required: false
+- additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
   defaultvalue: 'true'
+  display: Create user if does not exist
+  name: create-if-not-exists
   type: 8
   section: Connect
-  additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
   advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -658,9 +666,6 @@ script:
     - name: user-profile
       required: true
       description: A User Profile indicator that contains user information, such as name and email address.
-      default: false
-      isArray: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
       description: When set to true, after the command executes the user status in the 3rd-party integration is active.
@@ -711,7 +716,6 @@ script:
     - name: user-profile
       required: true
       description: "A User Profile indicator that contains user information, such as name and email address."
-      secret: false
     description: Disables a user.
     execution: true
     name: iam-disable-user
@@ -755,7 +759,6 @@ script:
     deprecated: false
   - description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
     name: get-mapping-fields
-    deprecated: false
     execution: false
   - arguments:
     - description: The group name of the group to update (sAMAccountName).
