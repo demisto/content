@@ -25,7 +25,6 @@ DARKTRACE_API_ERRORS = {
     'UNDETERMINED_ERROR': 'Darktrace was unable to process your request.',
     'FAILED_TO_PARSE': 'N/A'
 }
-
 DEFAULT_LIMIT = 10
 DEFAULT_MAX_FETCH = 1000
 DEFAULT_FIRST_FETCH = '3 days'
