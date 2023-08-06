@@ -1,4 +1,3 @@
-import io
 
 import pytest
 
@@ -99,7 +98,7 @@ def util_load_json(path):
     Returns:
         json object read from the path given
     """
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -613,8 +612,8 @@ def test_query(mocker):
     """
     query_data = util_load_json("test_data/query_response.json")
     mocker.patch.object(MimecastV2, "http_request", return_value=query_data["response"])
-    mocker.patch.object(demisto, "args", return_value={"queryXml": QUERY_XML})
-    result = MimecastV2.query()
+
+    result = MimecastV2.query({"queryXml": QUERY_XML})
     assert (
         result["HumanReadable"]
         == "### Mimecast archived emails\n|Subject|Display From|Display To|Received Date|Size|Attachment Count|Status|ID|displayfromaddress|displaytoaddresslist|smash|\n|---|---|---|---|---|---|---|---|---|---|---|\n| Netting |  |  | 2023-08-06T07:23:00+0000 | 2262 | 0 | ARCHIVED | test1_id | test1 | {'displayableName': '', 'emailAddress': 'test1'} | test1_smash |\n| RE |  |  | 2023-08-06T07:23:00+0000 | 11370 | 0 | ARCHIVED | test2_id | test2 | {'displayableName': '', 'emailAddress': 'test2'} | test2_smash |\n| Re |  |  | 2023-08-06T07:23:00+0000 | 5280 | 0 | ARCHIVED | test3_id | test3 | {'displayableName': '', 'emailAddress': 'test3'} | test3_smash |\n"
