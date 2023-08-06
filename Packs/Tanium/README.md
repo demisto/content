@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 
 ### Tanium Integrity Monitor logs
-In order to forward Tanium integrity monitor logs, follow the below steps.
+In order to forward Tanium Integrity Monitor logs, follow the steps below.
 
 You will need to configure a Socket Receiver on Tanium side.
 
