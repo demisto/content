@@ -969,10 +969,12 @@ def generate_pull_request_readable_information(response: Union[dict, list],
     return readable_output
 
 
-def pull_request_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def pull_request_create_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Create a new pull-request.
     Args:
+        project: Azure DevOps project.
+        repository: Azure DevOps repository.
         client (Client): Azure DevOps API client.
         args (dict): Command arguments from XSOAR.
 
@@ -980,15 +982,16 @@ def pull_request_create_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project = args['project']
-    repository_id = args['repository_id']
+    project = args.get('project') or project
+    repository_id = args.get('repository_id') or repository
+    if not (repository and project):
+        raise DemistoException(PARAMETERS_ERROR_MSG_3)
+
     source_branch = args['source_branch']
     target_branch = args['target_branch']
     title = args['title']
     description = args['description']
-
-    reviewers_ids = argToList(args['reviewers_ids'])
-
+    reviewers_ids = argToList(args.get('reviewers_ids'))
     reviewers = [{"id": reviewer} for reviewer in reviewers_ids]
 
     source_branch = source_branch if source_branch.startswith('refs/') else f'refs/heads/{source_branch}'
@@ -1013,10 +1016,12 @@ def pull_request_create_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
-def pull_request_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def pull_request_update_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Update a pull request.
     Args:
+        project: Azure DevOps project.
+        repository: Azure DevOps repository.
         client (Client): Azure DevOps API client.
         args (dict): Command arguments from XSOAR.
 
@@ -1024,8 +1029,11 @@ def pull_request_update_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project = args['project']
-    repository_id = args['repository_id']
+    project = args.get('project') or project
+    repository = args.get('repository_id') or repository
+    if not (repository and project):
+        raise DemistoException(PARAMETERS_ERROR_MSG_3)
+
     pull_request_id = args['pull_request_id']
     title = args.get('title')
     description = args.get('description')
@@ -1036,11 +1044,11 @@ def pull_request_update_command(client: Client, args: Dict[str, Any]) -> Command
 
     last_merge_source_commit = None
     if status == "completed":
-        pr_data = client.pull_requests_get_request(project, repository_id, pull_request_id)
+        pr_data = client.pull_requests_get_request(project, repository, pull_request_id)
         last_merge_source_commit = pr_data.get("lastMergeSourceCommit")
 
     response = client.pull_request_update_request(
-        project, repository_id, pull_request_id, title, description, status, last_merge_source_commit)
+        project, repository, pull_request_id, title, description, status, last_merge_source_commit)
 
     outputs = copy.deepcopy(response)
     outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
@@ -1091,10 +1099,12 @@ def pull_request_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return command_results
 
 
-def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def pull_requests_list_command(client: Client, args: Dict[str, Any], repository: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Retrieve pull requests in repository.
     Args:
+        project: Azure DevOps project.
+        repository: Azure DevOps repository.
         client (Client): Azure DevOps API client.
         args (dict): Command arguments from XSOAR.
 
@@ -1102,8 +1112,11 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project = args['project']
-    repository = args['repository']
+    project = args.get('project') or project
+    repository = args.get('repository') or repository
+    if not (repository and project):
+        raise DemistoException(PARAMETERS_ERROR_MSG_3)
+
     page = arg_to_number(args.get('page') or '1')
     limit = arg_to_number(args.get('limit') or '50')
 
@@ -2496,16 +2509,16 @@ def main() -> None:
             return_results(user_remove_command(client, args))
 
         elif command == 'azure-devops-pull-request-create':
-            return_results(pull_request_create_command(client, args))
+            return_results(pull_request_create_command(client, args, params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-pull-request-get':
             return_results(pull_request_get_command(client, args))
 
         elif command == 'azure-devops-pull-request-update':
-            return_results(pull_request_update_command(client, args))
+            return_results(pull_request_update_command(client, args, params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-pull-request-list':
-            return_results(pull_requests_list_command(client, args))
+            return_results(pull_requests_list_command(client, args, params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-project-list':
             return_results(project_list_command(client, args))

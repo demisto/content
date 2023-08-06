@@ -224,12 +224,12 @@ script:
     name: azure-devops-user-remove
     outputs: []
   - arguments:
-    - description: The name or ID of the project.
+    - description: The name or ID of the project. Default value will be config param, user can supply a different value.
       name: project
-      required: true
-    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
+      required: false
+    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. Default value will be config param, user can supply a different value.
       name: repository_id
-      required: true
+      required: false
     - description: The name of the source branch of the pull request.
       name: source_branch
       required: true
@@ -245,7 +245,7 @@ script:
     - description: Comma-separated list of the pull request reviewers IDs. A reviewer ID can be obtained by running the 'azure-devops-user-list' command.
       isArray: true
       name: reviewers_ids
-      required: true
+      required: false
     description: Create a new pull request.
     name: azure-devops-pull-request-create
     outputs:
@@ -313,12 +313,12 @@ script:
       description: The REST URL for this resource.
       type: String
   - arguments:
-    - description: The name or ID of the project.
+    - description: The name or ID of the project. Default value will be config param, user can supply a different value.
       name: project
-      required: true
-    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command.
+      required: false
+    - description: The repository ID. A repository ID can be obtained by running the 'azure-devops-repository-list' command. Default value will be config param, user can supply a different value.
       name: repository_id
-      required: true
+      required: false
     - description: The ID of the pull request to update.
       name: pull_request_id
       required: true
@@ -400,12 +400,12 @@ script:
       description: The REST URL for this resource.
       type: String
   - arguments:
-    - description: The name or ID of the project which the pull requests belongs to.
+    - description: The name or ID of the project which the pull requests belongs to. Default value will be config param, user can supply a different value.
       name: project
-      required: true
-    - description: The name of the repository pull request's target branch.
+      required: false
+    - description: The name of the repository pull request's target branch. Default value will be config param, user can supply a different value.
       name: repository
-      required: true
+      required: false
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
@@ -749,10 +749,10 @@ script:
       description: Pipeline folder.
       type: String
   - arguments:
-    - description: The name of the organization project.
+    - description: The name of the organization project. Default value will be config param, user can supply a different value.
       name: project
       required: false
-    - description: The name of the project repository.
+    - description: The name of the project repository. Default value will be config param, user can supply a different value.
       name: repository
       required: false
     - defaultValue: '1'
