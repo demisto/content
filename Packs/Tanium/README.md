@@ -10,7 +10,7 @@ In order to forward Tanium Integrity Monitor logs, follow the steps below.
 You will need to configure a Socket Receiver on the Tanium side.
 
 1. Go to **Modules** > **Interact**.
-2. Copy the below question to the "Ask a Question" box under **Explore Data** and run it.
+2. Copy the following question to the "Ask a Question" box under **Explore Data** and run it.
 ```bash
 Get Computer Name and Last Logged In User and Integrity Monitor - Monitor Events[10,0,360,15,0,""] from all machines
 ```
