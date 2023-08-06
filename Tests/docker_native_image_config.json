@@ -107,7 +107,8 @@
          "id": "Rasterize",
          "reason": "Issue: CRTX-72338.",
          "ignored_native_images": [
-            "native:8.3"
+            "native:8.3",
+            "native:candidate"
          ]
       },
       {
