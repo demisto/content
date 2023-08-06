@@ -39,8 +39,8 @@ Get events from Exabeam Data Lake.
 | query | The search query string to filter the events. (examples in the table below.) | Optional | 
 | start_time | The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26.243Z". | Optional | 
 | end_time | The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26.243Z". | Optional | 
-| limit | the limit of exabeam-data-lake query result, max is 10,000. | Optional | 
-| all_result | all result from exabeam-data-lake query (max 10,000). Possible values are: true, false. | Optional | 
+| limit | The maximal number of results to return, up to 10,000. | Optional | 
+| all_result | Retrieve all results from an Exabeam Data Lake query, with a maximum of 10,000 results. Possible values are: true, false. | Optional | 
 
 
 ## Query Argument - Examples

@@ -38,7 +38,9 @@ class Client(BaseClient):
 
     def _login(self):
         """
-            Login using the BaseClient session and the provided credentials.
+        Logs in to the Exabeam API using the provided username and password.
+        This function must be called before any other API calls.
+        Note: the session is automatically closed in BaseClient's __del__
         """
         self._http_request(
             "POST",
@@ -50,17 +52,16 @@ class Client(BaseClient):
         """
         Performs basic get request to check if the server is reachable.
         """
-        self._http_request(
+        return self._http_request(
             "GET", full_url=f"{self._base_url}/api/auth/check", resp_type="text"
         )
 
     def query_datalake_request(self, search_query: dict) -> dict:
-        headers = {"kbn-version": "5.1.1-SNAPSHOT", "Content-Type": "application/json"}
         return self._http_request(
             "POST",
             full_url=f"{self._base_url}/dl/api/es/search",
             data=json.dumps(search_query),
-            headers=headers,
+            headers={"kbn-version": "5.1.1-SNAPSHOT", "Content-Type": "application/json"},
         )
 
 
@@ -68,12 +69,14 @@ class Client(BaseClient):
 
 
 def _handle_time_range_query(start_time: int, end_time: int | None) -> dict:
-    """Handle time range query
-     Args:
-          start_time: start time
-          end_time: end time
+    """
+    Args:
+        start_time (int): The start time for the query.
+        end_time (int | None): The end time for the query. If None, the query will not have an end time constraint.
+
     Returns:
-        dict: time range query
+        dict: A dictionary representing the time range query.
+
     Raises:
         DemistoException: If the start_time is greater than the end_time.
     """
@@ -157,18 +160,16 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
     response = client.query_datalake_request(search_query).get("responses", [{}])
 
     if error := response[0].get("error"):
-        raise DemistoException(f"Error in query: {error['root_cause'][0]['reason']}")
+        raise DemistoException(f"Error in query: {error.get('root_cause', [{}])[0].get('reason', 'Unknown error occurred')}")
 
     data_response = response[0].get("hits", {}).get("hits", [])
 
     table_to_markdown = [_parse_entry(entry) for entry in data_response]
 
-    markdown_table = tableToMarkdown(name="Logs", t=table_to_markdown)
-
     return CommandResults(
         outputs_prefix="ExabeamDataLake.Log",
         outputs=data_response,
-        readable_output=markdown_table if data_response else "No results found.",
+        readable_output=tableToMarkdown(name="Logs", t=table_to_markdown),
     )
 
 
@@ -182,7 +183,7 @@ def test_module(client: Client):
         ok if successful
     """
     client.test_module_request()
-    demisto.results("ok")
+    return "ok"
 
 
 """ MAIN FUNCTION """
