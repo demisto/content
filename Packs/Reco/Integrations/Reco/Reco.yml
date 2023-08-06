@@ -265,6 +265,11 @@ script:
       - description: status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED")
         name: status
         required: true
+        auto: PREDEFINED
+        predefined:
+          - ALERT_STATUS_NEW
+          - ALERT_STATUS_IN_PROGRESS
+          - ALERT_STATUS_CLOSED
     description: update alert status in Reco
     name: reco-change-alert-status
 tests:
