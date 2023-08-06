@@ -82,8 +82,9 @@ else
   fi
 
 fi
+echo "BUCKET_UPLOAD = $BUCKET_UPLOAD, FORCE_PACK_UPLOAD = $FORCE_PACK_UPLOAD"
 
-if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_PACK_UPLOAD}" ]; then
+if [ ! -f "${BUCKET_UPLOAD}" ] && [ ! -f  "${FORCE_PACK_UPLOAD}" ]; then
   echo "Updating the following content packs: $CONTENT_PACKS_TO_UPLOAD ..."
   python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -p $CONTENT_PACKS_TO_UPLOAD -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
   echo "Finished updating content packs successfully."
