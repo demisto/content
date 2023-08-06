@@ -12,12 +12,13 @@ function compare_revision() {
     bucket2="${bucket_list_prod[$i]}-$1"
 
     echo "Comparing revisions for $bucket1 and $bucket2"
-    echo "gs://$bucket1$json_file_path and gs://$bucket2$json_file_path"
-    echo "$(gsutil ls gs://marketplace-dist/**/*.json)"
-    echo "$(gsutil ls gs://marketplace-dist)"
-    test=$(gsutil cat "gs://marketplace-dist/content/packs/index.json")
-    revision1=$(gsutil cat "gs://$bucket1$json_file_path" | jq -r '.revision')
-    revision2=$(gsutil cat "gs://$bucket2$json_file_path" | jq -r '.revision')
+
+    index_json_origin=$(gsutil cat "gs://$bucket1$json_file_path")
+    index_json_prod=$(gsutil cat "gs://$bucket2$json_file_path")
+    test=$(curl -s "gs://$bucket2$json_file_path")
+    echo "$test test"
+    revision1=$(echo "$index_json" | jq -r '.revision')
+    revision2=$(echo "$index_json_prod" | jq -r '.revision')
 
     # Compare the revisions
     if [ "$revision1" = "$revision2" ]; then

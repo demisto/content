@@ -249,7 +249,7 @@
     - section_end "Test Infrastructure"
     - section_start "Run Unit Testing and Lint"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]] && false; then
         echo "Skipping validations when uploading to a test bucket."
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
