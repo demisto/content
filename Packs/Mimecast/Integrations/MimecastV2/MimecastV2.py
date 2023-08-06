@@ -2087,8 +2087,8 @@ def create_find_groups_request():
     query_source = demisto.args().get('query_source', '')
     limit = demisto.args().get('limit')
 
-    meta = {} 
-    data = {} 
+    meta = {}
+    data = {}
 
     if limit:
         meta['pagination'] = {
