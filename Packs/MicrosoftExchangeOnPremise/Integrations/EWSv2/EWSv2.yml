@@ -80,7 +80,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016)'
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, 2016 and 2019)'
   name: defaultServerVersion
   type: 0
   section: Connect
@@ -1012,7 +1012,7 @@ script:
       isArray: true
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: devdemisto/py-ews:5.0.2.67593
+  dockerimage: demisto/py-ews:5.0.2.68133
   isfetch: true
   runonce: false
   script: '-'
