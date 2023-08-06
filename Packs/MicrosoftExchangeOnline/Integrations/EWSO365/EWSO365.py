@@ -2058,6 +2058,7 @@ def parse_incident_from_item(item):     # pragma: no cover
     # handle email from
     if item.sender:
         labels.append({"type": "Email/from", "value": item.sender.email_address})
+        labels.append({"type": "Email/from/name", "value": item.sender.name})
 
     # email format
     email_format = ""
