@@ -355,7 +355,7 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  dockerimage: demisto/py3-tools:1.0.0.67089
+  dockerimage: demisto/py3-tools:1.0.0.68086
   isfetch: true
   runonce: false
   script: '-'

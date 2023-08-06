@@ -67,8 +67,8 @@ def prepare_datetime_format(datetime_format: str):
     """Converting the format from ES to Python so that the Arrow format function will format it correctly.
 
     Args:
-        datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'.
-        see here for more examples: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
+        datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'. see here for more examples:
+        https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
 
     Returns:
         A datetime format in python from 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
