@@ -1571,13 +1571,11 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 | scanId | The identifier for the scan to export. Run the "tenable-io-list-scans" command to get all available scans. | Required | 
 | historyId | The unique identifier of the historical data to export. Run the "tenable-io-get-scan-history" command to get history IDs. | Optional | 
 | historyUuid | The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs. | Optional | 
-| format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.<br/> For scans that are older than 35 days, only the Nessus and CSV formats are supported.<br/> The "chapters" argument must be defined if the chosen format is HTML or PDF.<br/>. Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Optional | 
+| format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.<br/> For scans that are older than 35 days, only the Nessus and CSV formats are supported.<br/> The "chapters" argument must be defined if the chosen format is HTML or PDF.<br/> Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Optional | 
 | chapters | A comma-separated list of chapters to include in the export. This argument is required if the file format is PDF or HTML. Possible values are: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance. | Optional | 
-| filter | A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.<br/> Example: "port.protocol eq tcp, plugin_id eq 1234567"<br/> Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).<br/>. | Optional | 
+| filter | A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.<br/>Example: "port.protocol eq tcp, plugin_id eq 1234567"<br/>Note: when used literally, commas and spaces should be escaped. (i.e. "\\\\," for comma and "\\\\s" for space)<br/>Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response). | Optional | 
 | filterSearchType | For multiple filters, specifies whether to use the AND or the OR logical operator. Possible values are: AND, OR. Default is AND. | Optional | 
 | assetId | The ID of the asset scanned. | Optional | 
-| fileId | . | Optional | 
-| hide_polling_output | . | Optional | 
 
 #### Context Output
 
@@ -1591,7 +1589,7 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 | InfoFile.Extension | unknown | The file extension of the file. | 
 
 #### Command example
-```!tenable-io-export-scan scanId=16 format=HTML chapters="compliance_exec,remediations,vuln_by_plugin" historyId=19540157 historyUuid=f7eaad37-23bd-4aac-a979-baab0e9a465b filterSearchType=OR filterName="host.id,plugin.attributes.bid" filterQuality=eq,neq filterValue="01234567-abcd-ef01-2345-6789abcdef01,NUMBER"  assetId=10```
+```!tenable-io-export-scan scanId=16 format=HTML chapters="compliance_exec,remediations,vuln_by_plugin" historyId=19540157 historyUuid=f7eaad37-23bd-4aac-a979-baab0e9a465b filterSearchType=OR filter="port.protocol eq tcp, plugin_id eq 1234567" assetId=10```
 #### Human Readable Output
 
 >Preparing scan report:

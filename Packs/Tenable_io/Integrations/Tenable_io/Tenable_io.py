@@ -6,6 +6,7 @@ import time
 import traceback
 from datetime import datetime
 import urllib3
+import re
 
 import requests
 
@@ -1249,40 +1250,46 @@ def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandRes
         readable_output=scan_history_readable(history))
 
 
-def build_filters(filter_arg: str | None) -> dict:
-    '''
-    Makes filter args for the export scan endpoint by sequentially matching
-    the filterName, filterQuality and filterValue lists in args.
+def build_filters(filters: str | None) -> dict:
+    """
+    Build a dictionary of filter information from a filters string.
+
+    Args:
+        filters (str, optional): A string containing filters in the format "name quality value" separated by commas.
+                                 Escaped commas (\\,) are treated as literal commas.
+                                 Defaults to None.
+
+    Returns:
+        dict: A dictionary where keys are in the format 'filter.i.filter', 'filter.i.quality', and 'filter.i.value',
+              and values correspond to the name, quality, and value of each filter component.
+
     Example:
-        filterName:     name,description
-        filterQuality:  LETTER,NUMBER
-        filterValue:    test,test2
-        returns:
-        {
-            'filter.0.filter': 'name',
-            'filter.0.quality': 'LETTER',
-            'filter.0.value': 'test',
-            'filter.1.filter': 'description',
-            'filter.1.quality': 'NUMBER',
-            'filter.1.value': 'test2',
+        filters = "name1,good,value1\\,with\\,commas name2,excellent,value2"
+        result = build_filters(filters)
+        # Output:
+        # {
+        #     'filter.0.filter': 'name1',
+        #     'filter.0.quality': 'good',
+        #     'filter.0.value': 'value1,with,commas',
+        #     'filter.1.filter': 'name2',
+        #     'filter.1.quality': 'excellent',
+        #     'filter.1.value': 'value2'
+        # }
+    """
+    if not filters:
+        return {}
 
-    Raises a DemistoException if the lengths of the filter lists are not equal.
-    '''
-
-    filter_names = argToList(args.get('filterName'))
-    filter_qualities = argToList(args.get('filterQuality'))
-    filter_values = argToList(args.get('filterValue'))
-
-    if len({len(filter_names), len(filter_qualities), len(filter_values)}) != 1:
-        raise DemistoException('filterName, filterQuality and filterValue must have the same length.')
+    # split by comma without escaped commas
+    split_filters = re.split(r'(?<!\\),', filters)
+    # remove delimiters and split into name, quality and value
+    filters = (f.replace('\\,', ',').split() for f in split_filters)
 
     result: dict = {}
-    zipped_filters = zip(filter_names, filter_qualities, filter_values)
-    for i, (name, quality, value) in enumerate(zipped_filters):
+    for i, (name, quality, value) in enumerate(filters):
         result |= {
-            f'filter.{i}.filter': name,
-            f'filter.{i}.quality': quality,
-            f'filter.{i}.value': value
+            f'filter.{i}.filter': name.replace('\\s', ' '),
+            f'filter.{i}.quality': quality.replace('\\s', ' '),
+            f'filter.{i}.value': value.replace('\\s', ' ')
         }
 
     return result

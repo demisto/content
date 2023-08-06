@@ -1220,6 +1220,7 @@ script:
       description: |
         A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.
          Example: "port.protocol eq tcp, plugin_id eq 1234567"
+         Note: when used literally, commas and spaces should be escaped. (i.e. "\\," for comma and "\\s" for space)
          Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).
       isArray: true
     - name: filterSearchType

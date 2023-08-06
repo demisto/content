@@ -560,8 +560,9 @@ def test_get_scan_history_command(mocker):
     assert results.outputs == test_data['outputs']
     assert results.readable_output == test_data['readable_output']
 
-    assert request.call_args.args == tuple(test_data['called_with']['args'])
-    assert request.call_args.kwargs == test_data['called_with']['kwargs']
+    request.assert_called_with(
+        *test_data['called_with']['args'],
+        **test_data['called_with']['kwargs'])
 
 
 def test_initiate_export_scan(mocker):
@@ -585,8 +586,9 @@ def test_initiate_export_scan(mocker):
     file = initiate_export_scan(test_data['args'], Client(**MOCK_CLIENT_ARGS))
 
     assert file == test_data['expected_file']
-    assert request.call_args.args == tuple(test_data['called_with']['args'])
-    assert request.call_args.kwargs == test_data['called_with']['kwargs']
+    request.assert_called_with(
+        *test_data['called_with']['args'],
+        **test_data['called_with']['kwargs'])
 
 
 def test_download_export_scan(mocker):
