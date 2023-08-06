@@ -64,11 +64,34 @@ MAP_LABELS = param.get('map_labels', True)
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
-    mapping = es.indices.get_mapping(index=index)
-    datetime_field = mapping[index]['mappings']['properties'][field]
+def prepare_datetime_format(datetime_format: str):
+    """Prepared the format from ES to Python so that the Arrow format function will format it properly.
 
-    return datetime_field.get('format', '').replace('y', 'Y').replace('dd', 'DD')
+    Args:
+        datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'.
+        see here for more examples: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
+
+    Returns:
+        A datetime format is python form 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
+    """
+    return datetime_format.replace('y', 'Y').replace('dd', 'DD')
+
+
+def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
+    """Prepared the format from ES to Python so that the Arrow format function will format it properly.
+
+    Args:
+        es: An ES object.
+        index: The index form which to return the mapper.
+        field: The field form which to return the format.
+
+    Returns:
+        A string represents the date time format for example 'yyyy-MM-dd HH:mm:ss'.
+    """
+    mapping = es.indices.get_mapping(index=index)
+    datetime_field = mapping[index]['mappings']['properties'].get(field, {})
+
+    return datetime_field.get('format', '')
 
 
 def convert_date_to_timestamp(date, datetime_format: str = 'YYYY-MM-DD HH:mm:ss'):
@@ -92,7 +115,7 @@ def convert_date_to_timestamp(date, datetime_format: str = 'YYYY-MM-DD HH:mm:ss'
         return int(date.timestamp() * 1000)
 
     else:  # In case of 'Simple-Date'.
-        return arrow.get(date).format(datetime_format)
+        return arrow.get(date).format(prepare_datetime_format(datetime_format))
 
 
 def timestamp_to_date(timestamp_string):

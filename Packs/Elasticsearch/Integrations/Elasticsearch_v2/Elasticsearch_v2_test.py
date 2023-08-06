@@ -1,5 +1,8 @@
 from datetime import datetime
 from unittest.mock import patch
+
+import arrow
+
 import demistomock as demisto
 import importlib
 import Elasticsearch_v2
@@ -865,17 +868,18 @@ class TestIncidentLabelMaker(unittest.TestCase):
         assert labels == expected_labels
 
 
-@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, datetime_format, result',
-                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z', 'D.M.YYYY HH:mm:ssZ',
-                           {'range': {'time_field': {'gt': '1.1.2000 12:00:00+0000', 'lt': '1.2.2000 12:00:00+0000'}}}),
-                          (946728000000, '', '2.1.2000 12:00:00Z', 'D.M.YYYY HH:mm:ssZ',
-                           {'range': {'time_field': {'gt': 946728000000, 'lt': '1.2.2000 12:00:00+0000'}}}),
-                          ('', '', '2.1.2000 12:00:00Z', 'D.M.YYYY HH:mm:ssZ',
-                           {'range': {'time_field': {'lt': '1.2.2000 12:00:00+0000'}}}),
+@pytest.mark.parametrize('last_fetch, time_range_start, time_range_end, result',
+                         [('', '1.1.2000 12:00:00Z', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          (946728000000, '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'gt': 946728000000, 'lt': 949406400000}}}),
+                          ('', '', '2.1.2000 12:00:00Z',
+                           {'range': {'time_field': {'lt': 949406400000}}}),
                           ])
-def test_get_time_range(last_fetch, time_range_start, time_range_end, datetime_format, result):
+def test_get_time_range(last_fetch, time_range_start, time_range_end, result):
+    Elasticsearch_v2.TIME_METHOD = 'Timestamp-Milliseconds'
     from Elasticsearch_v2 import get_time_range
-    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field", datetime_format) == result
+    assert get_time_range(last_fetch, time_range_start, time_range_end, "time_field") == result
 
 
 def test_build_eql_body():
@@ -968,6 +972,32 @@ def test_execute_raw_query(mocker):
     assert Elasticsearch_v2.execute_raw_query(es, 'dsadf') == ES_V7_RESPONSE
 
 
+@pytest.mark.parametrize('datetime_format, expected', [
+    ('YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
+    ('yyyy-MM-dd HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
+    ('yyyy-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
+    ('YYYY-MM-dd HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
+    ('yy-MM-DD HH:mm:ss', 'YY-MM-DD HH:mm:ss'),
+    ('YYYY-MM-d HH:mm:ss', 'YYYY-MM-d HH:mm:ss'),
+])
+def test_prepare_datetime_format(datetime_format, expected):
+    """
+    Given
+      - An ES datetime format
+
+    When
+        - Executing prepare_datetime_format function.
+
+    Then
+        - Make sure that the returned format is as expected.
+        - Make sure that the result of converting a datetime object with Arrow format function using the returned 
+            datetime format does not contain any alphabetic character.
+    """
+    formatted_datetime = Elasticsearch_v2.prepare_datetime_format(datetime_format)
+    assert formatted_datetime == expected
+    assert not any(c.isalpha() for c in arrow.get(datetime.now()).format(formatted_datetime))
+
+
 class MockES:
     class MockIndices:
         @staticmethod
@@ -989,8 +1019,20 @@ class MockES:
 
 
 def test_get_datetime_field_format():
+    """
+    Given
+      - An ES object.
+      - An index name.
+      - A field name.
+
+    When
+        - Executing get_datetime_field_format function.
+
+    Then
+        - Make sure that the returned field format is as expected.
+    """
     es = MockES
-    assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'YYYY-MM-DD HH:mm:ss'
+    assert Elasticsearch_v2.get_datetime_field_format(es, 'my_index', 'created_at') == 'yyyy-MM-dd HH:mm:ss'
 
 
 @pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [
@@ -1005,6 +1047,17 @@ def test_get_datetime_field_format():
     (dateparser.parse('July 1, 2023 02:00'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSSZ', '2023-07-01 02:00:00.000+0000'),
 ])
 def test_convert_date_to_timestamp(mocker, date_time, time_method, time_format, expected_time):
+    """
+    Given
+      - A datetime object
+      - An ES datetime format
+
+    When
+        - Executing convert_date_to_timestamp function.
+
+    Then
+        - Make sure that the returned datetime is as expected with the correct format.
+    """
     mocker.patch.object(demisto, 'params', return_value={'time_format': time_format})
     Elasticsearch_v2.TIME_METHOD = time_method
     assert Elasticsearch_v2.convert_date_to_timestamp(date_time, time_format) == expected_time
