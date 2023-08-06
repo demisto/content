@@ -74,7 +74,7 @@ def prepare_datetime_format(datetime_format: str):
     Returns:
         A datetime format is python form 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
     """
-    return datetime_format.replace('y', 'Y').replace('dd', 'DD')
+    return datetime_format.replace('yy', 'YY').replace('dd', 'DD')
 
 
 def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
@@ -91,7 +91,7 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
     mapping = es.indices.get_mapping(index=index)
     datetime_field = mapping[index]['mappings']['properties'].get(field, {})
 
-    return datetime_field.get('format', '')
+    return datetime_field.get('format', 'YYYY-MM-DD HH:mm:ss')
 
 
 def convert_date_to_timestamp(date, datetime_format: str = 'YYYY-MM-DD HH:mm:ss'):
