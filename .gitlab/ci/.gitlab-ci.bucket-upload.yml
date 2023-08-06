@@ -571,23 +571,10 @@ sync-buckets-between-projects:
       
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
         
-#        echo "Syncing gs://marketplace-xsoar-dev"
-#        gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-dev
-#        echo "Syncing gs://marketplace-xsiam-dev"
-#        gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-dev
-#        echo "Syncing gs://marketplace-xpanse-dev"
-#        gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-dev
         
         ./Tests/scripts/validate_synced_buckets.sh "dev"
         
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY"
-
-#        echo "Syncing gs://marketplace-xsoar-prod-us"
-#        gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-prod-us
-#        echo "Syncing gs://marketplace-xsiam-prod-us"
-#        gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-prod-us
-#        echo "Syncing gs://marketplace-xpanse-prod-us"
-#        gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
         
         ./Tests/scripts/validate_synced_buckets.sh "prod-us"
         
