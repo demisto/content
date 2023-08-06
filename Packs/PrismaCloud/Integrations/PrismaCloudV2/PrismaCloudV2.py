@@ -666,7 +666,6 @@ def close_incident_in_xsoar(remote_alert_id: str, mirrored_status: str, mirrored
 
     Returns: An entry object with relevant data for closing an XSOAR incident.
     """
-    demisto.debug(f'##### mirrored_status: {mirrored_status}, mirrored_dismissal_note: {mirrored_dismissal_note}') # TODO: remove this log
     demisto.debug(f'Prisma Alert {remote_alert_id} was closed')
     if mirrored_status == 'resolved' and mirrored_dismissal_note == '':
         mirrored_dismissal_note = 'resolved'
@@ -784,9 +783,7 @@ def whether_to_reopen_in_prisma_cloud(delta: Dict[str, Any]) -> bool:
     """
     Re-opening in the remote system should happen only when both:
     1. The user asked for it.
-    2. The delta equals - {'closingUserId': '', 'runStatus': ''}.
-    # TODO: need to consult with yuval about the condition here - I think that its enough to determine that its a re-opening action but not sure.
-
+    2. The delta equals the 'closingUserId'
 
     Args:
         delta: A dictionary of fields that changed from the last update - containing only the changed fields.
@@ -821,11 +818,16 @@ def update_remote_alert(client: Client, delta: Dict[str, Any],
     if inc_status == IncidentStatus.DONE and whether_to_close_in_prisma_cloud(delta):
         demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
         close_alert_in_prisma_cloud(client, [incident_id], delta)
+        demisto.debug(f'Remote Incident: {incident_id} was updated successfully.')
 
     # XSOAR incident was re-opened - re-opening the mirrored prisma alert
-    if inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(delta):
+    elif inc_status == IncidentStatus.ACTIVE and whether_to_reopen_in_prisma_cloud(delta):
         demisto.debug(f'Reopening incident with remote ID {incident_id} in remote system.')
         reopen_alert_in_prisma_cloud(client, [incident_id])
+        demisto.debug(f'Remote Incident: {incident_id} was updated successfully.')
+
+    else:
+        demisto.debug(f"Skipping the update of remote incident {incident_id} as it has not closed or re-opened in XSOAR.")
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
@@ -1818,10 +1820,6 @@ def get_modified_remote_data_command(client: Client,
     last_update_timestamp = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
-    # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request() -
-    #  consult with dima\yuval about rate limit and Burst limit - we might take 120 as a limit.
-    #  - sounds logical to limit the mirror in to 100 - document it.
-
     detailed = 'false'
     sort_by = ['alertTime:asc']
     time_filter = handle_time_filter(time_from=last_update,
@@ -1838,7 +1836,6 @@ def get_modified_remote_data_command(client: Client,
         if status_filter in set(filters):
             filters.remove(status_filter)
 
-    # TODO: what next_token is used for? need to check if I need to implement it.
     response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
     response_items = response.get('items', [])
     modified_records_ids = [str(item.get('id')) for item in response_items]
@@ -1893,6 +1890,20 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
     """
     Mirrors out local changes (closing or reopening of an xsoar incident) to the remote system (Prisma Cloud).
 
+    To determine a closing of an XSOAR incident that should be mirrored to Prisma we check that:
+    1. parsed_args.incident_changed = True (meaning the incident has changed).
+    2. Incident status is Done (=2).
+    3. The delta contains at least one of the following fields: 'closeReason', 'closingUserId', 'closeNotes'.
+
+    To determine a re-opening of an XSOAR incident that should be mirrored to Prisma we check that:
+    1. parsed_args.incident_changed = True (meaning the incident has changed).
+    2. Incident status is Active (=1).
+    3. The delta contains the 'closingUserId'.
+
+    These conditions should be sufficient.
+
+    In any other case, the change in XSOAR won't be mirrored to the remote system.
+
     Args:
         client: Demisto client.
         args: A dictionary containing the data regarding a modified incident, including: data, entries,
@@ -1908,7 +1919,6 @@ def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
         if parsed_args.incident_changed:
             demisto.debug(f'Performing update_remote_system command with incident id {remote_incident_id}, and delta {delta}.')
             update_remote_alert(client, delta, parsed_args.inc_status, remote_incident_id)
-            demisto.debug(f'Remote Incident: {remote_incident_id} was updated successfully.')
 
         else:
             demisto.debug(f"Skipping the update of remote incident {remote_incident_id} as it has not changed.")
