@@ -1,8 +1,5 @@
 from datetime import datetime
 from unittest.mock import patch
-
-import arrow
-
 import demistomock as demisto
 import importlib
 import Elasticsearch_v2
@@ -11,6 +8,7 @@ import requests
 import unittest
 from unittest import mock
 import dateparser
+import arrow
 
 """MOCKED RESPONSES"""
 
