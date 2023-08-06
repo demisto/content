@@ -90,7 +90,7 @@
             "chromium",
             "tesseract"
          ],
-         "docker_ref": "demisto/py3-native:8.3.0.65288"
+         "docker_ref": "demisto/py3-native:8.3.0.67758"
       }
    },
    "ignored_content_items": [
@@ -105,9 +105,10 @@
       },
       {
          "id": "Rasterize",
-         "reason": "Issue: CRTX-72338.",
+         "reason": "Issue: CRTX-72338 and CIAC-7694",
          "ignored_native_images": [
-            "native:8.3"
+            "native:8.3",
+            "native:candidate"
          ]
       },
       {
