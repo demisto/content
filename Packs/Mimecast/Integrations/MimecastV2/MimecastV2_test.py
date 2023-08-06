@@ -603,19 +603,29 @@ def test_parse_queried_fields():
 
 def test_query(mocker):
     """
-    Given
-        - An XML query string
-    When
-        - Calling query()
-    Then
-        - Make sure all return-field values are returned to context and human-readable.
-    """
+    Test case for the 'query' function of the MimecastV2 integration.
+
+    GIVEN:
+        - a mocked HTTP request to Mimecast API with query data,
+    WHEN:
+        - 'query' function is called with the provided arguments,
+    THEN:
+        - Make sure all return-field values are returned to context and human-readable.    """
     query_data = util_load_json("test_data/query_response.json")
     mocker.patch.object(MimecastV2, "http_request", return_value=query_data["response"])
 
     result = MimecastV2.query({"queryXml": QUERY_XML})
     assert (
         result["HumanReadable"]
-        == "### Mimecast archived emails\n|Subject|Display From|Display To|Received Date|Size|Attachment Count|Status|ID|displayfromaddress|displaytoaddresslist|smash|\n|---|---|---|---|---|---|---|---|---|---|---|\n| Netting |  |  | 2023-08-06T07:23:00+0000 | 2262 | 0 | ARCHIVED | test1_id | test1 | {'displayableName': '', 'emailAddress': 'test1'} | test1_smash |\n| RE |  |  | 2023-08-06T07:23:00+0000 | 11370 | 0 | ARCHIVED | test2_id | test2 | {'displayableName': '', 'emailAddress': 'test2'} | test2_smash |\n| Re |  |  | 2023-08-06T07:23:00+0000 | 5280 | 0 | ARCHIVED | test3_id | test3 | {'displayableName': '', 'emailAddress': 'test3'} | test3_smash |\n"
+        == ("### Mimecast archived emails\n"
+            "|Subject|Display From|Display To|Received Date|Size|Attachment Count|Status|ID|displayfromaddress|"
+            "displaytoaddresslist|smash|\n"
+            "|---|---|---|---|---|---|---|---|---|---|---|\n"
+            "| Netting |  |  | 2023-08-06T07:23:00+0000 | 2262 | 0 | ARCHIVED | test1_id | test1 | {'displayableName': '',"
+            " 'emailAddress': 'test1'} | test1_smash |\n"
+            "| RE |  |  | 2023-08-06T07:23:00+0000 | 11370 | 0 | ARCHIVED | test2_id | test2 | {'displayableName': '',"
+            " 'emailAddress': 'test2'} | test2_smash |\n"
+            "| Re |  |  | 2023-08-06T07:23:00+0000 | 5280 | 0 | ARCHIVED | test3_id | test3 | {'displayableName': '',"
+            " 'emailAddress': 'test3'} | test3_smash |\n")
     )
     assert result["Contents"] == query_data["query_contents"]
