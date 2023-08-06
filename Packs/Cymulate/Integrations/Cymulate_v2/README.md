@@ -115,6 +115,7 @@ Create a new exfiltration assessment.
 | agent_name | agent name to run simulation attacks. | Required | 
 | schedule | whether to schedule the automated assessment periodically. Possible values are: true, false. | Required | 
 | schedule_loop | Loop size of the scheduled agent. For example: to run the agent only once, use the value 'one-time'. Possible values are: one-time, daily, weekly, monthly. | Required | 
+| agent_profile_name | agent profile name to run simulation attacks. | Optional |
 
 
 #### Context Output
@@ -577,6 +578,7 @@ Create a new endpoint security assessment.
 | agent_name | agent name. | Required | 
 | schedule | whether to schedule the automated assessment periodically. Possible values are: true, false. | Required | 
 | schedule_loop | Loop size of the scheduled agent. For example: to run the agent only once, use the value 'one-time'. Possible values are: one-time, daily, weekly, monthly. | Required | 
+| agent_profile_name | Agent profile name. | Optional |
 
 
 #### Context Output
@@ -952,6 +954,8 @@ Create a new immediate threats assessment.
 | mail_address | Agent email address. | Optional | 
 | edr_address | EDR address. | Optional | 
 | template_id | The ID of the template to run the immediate threat assessment with. Can be retrieved using Cymulate's UI. | Required | 
+| browsing_address_profile_name | Browsing Agent profile name to run the assessment with. | Optional |
+| edr_address_profile_name | EDR Agent profile name to run the assessment with. | Optional |
 
 
 #### Context Output
@@ -1379,6 +1383,7 @@ Create a new lateral movement assessment.
 | upload_to_cymulate | Whether to upload the result to Cymulate. Possible values are: true, false. Default is false. | Required | 
 | schedule | Whether to schedule the automated assessment periodically. Possible values are: true, false. | Required | 
 | schedule_loop | Loop size of the scheduled agent. For example: to run the agent only once, use the value 'one-time'. Possible values are: one-time, daily, weekly, monthly. | Required | 
+| agent_profile_name | Agent profile name to run the assessment with. | Optional |
 
 
 #### Context Output
