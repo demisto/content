@@ -116,7 +116,7 @@ def test_query_datalake_command_no_response(mocker):
 
     response = query_datalake_command(MockClient("", "", "", False, False), {"query": "*"})
 
-    assert response.readable_output == "No results found."
+    assert response.readable_output == '### Logs\n**No entries.**\n'
 
 
 def test_query_datalake_command_raise_error(mocker):
