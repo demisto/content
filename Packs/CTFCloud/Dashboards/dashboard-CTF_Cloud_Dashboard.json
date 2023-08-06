@@ -1,152 +1,174 @@
 {
+    "id": "CTF Cloud Dashboard_copy",
+    "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "id": "CTF Cloud Dashboard",
+    "name": "CTF Cloud Dashboard_copy",
     "layout": [
         {
-            "forceRange": false,
-            "h": 3,
-            "i": "762ef4f0-2952-11ee-a7bd-7fcc2b1d51f9",
             "id": "762ef4f0-2952-11ee-a7bd-7fcc2b1d51f9",
-            "reflectDimensions": true,
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "762ef4f0-2952-11ee-a7bd-7fcc2b1d51f9",
             "w": 2,
+            "h": 1,
             "widget": {
-                "Cache": null,
-                "cacheVersn": 0,
-                "category": "",
-                "commitMessage": "",
-                "dataType": "incidents",
-                "dateRange": {
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "toDate": "0001-01-01T00:00:00Z"
-                },
-                "definitionId": "",
-                "fromServerVersion": "",
                 "id": "4fc2d3d6-a22c-4cf2-89f1-090147f42355",
-                "isPredefined": false,
-                "itemVersion": "",
+                "version": 1,
+                "cacheVersn": 0,
                 "modified": "2023-07-23T12:14:21.075546199Z",
-                "name": "Finished",
                 "packID": "",
                 "packName": "",
-                "params": {
-                    "valuesFormat": "abbreviated"
-                },
-                "prevName": "Finished",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "ctfsla.runStatus:ended",
-                "shouldCommit": false,
-                "toServerVersion": "",
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "number"
-            },
-            "x": 0,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 3,
-            "i": "a27de200-2952-11ee-a7bd-7fcc2b1d51f9",
-            "id": "a27de200-2952-11ee-a7bd-7fcc2b1d51f9",
-            "reflectDimensions": true,
-            "w": 12,
-            "widget": {
-                "Cache": null,
-                "cacheVersn": 0,
-                "category": "",
                 "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Number of Finished - Basic",
+                "prevName": "Finished",
                 "dataType": "incidents",
+                "widgetType": "number",
+                "query": "ctfsla.runStatus:ended",
+                "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byFrom": "days",
                         "byTo": "",
-                        "field": "",
+                        "byFrom": "days",
+                        "toValue": null,
                         "fromValue": 7,
-                        "toValue": null
+                        "field": ""
                     },
-                    "toDate": "0001-01-01T00:00:00Z"
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
-                "definitionId": "",
-                "fromServerVersion": "",
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "a27de200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "forceRange": false,
+            "x": 0,
+            "y": 5,
+            "i": "a27de200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "w": 12,
+            "h": 3,
+            "widget": {
                 "id": "c8ec1a35-af68-4293-857c-506035c82560",
-                "isPredefined": false,
-                "itemVersion": "",
+                "version": 1,
+                "cacheVersn": 0,
                 "modified": "2023-07-23T12:15:37.663704239Z",
-                "name": "Users that are doing the CTF",
                 "packID": "",
                 "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Users that are doing the CTF",
+                "prevName": "User doing the CTF",
+                "dataType": "incidents",
+                "widgetType": "bar",
+                "query": "ctfsla.runStatus:running",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
                 "params": {
                     "groupBy": [
                         "owner"
                     ],
                     "valuesFormat": "abbreviated"
                 },
-                "prevName": "User doing the CTF",
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "d2678200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "d2678200-2952-11ee-a7bd-7fcc2b1d51f9",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "79900405-6299-45ae-83e6-3279bd0fed11",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2023-07-23T12:16:55.375317441Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "ctfsla.runStatus:running",
-                "shouldCommit": false,
-                "toServerVersion": "",
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "bar"
-            },
-            "x": 0,
-            "y": 6
-        },
-        {
-            "forceRange": false,
-            "h": 3,
-            "i": "d2678200-2952-11ee-a7bd-7fcc2b1d51f9",
-            "id": "d2678200-2952-11ee-a7bd-7fcc2b1d51f9",
-            "reflectDimensions": true,
-            "w": 10,
-            "widget": {
-                "Cache": null,
-                "cacheVersn": 0,
-                "category": "",
                 "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "fastest Top 10 users finished",
+                "prevName": "Top 10 users finished",
                 "dataType": "incidents",
+                "widgetType": "column",
+                "query": "ctfsla.runStatus:ended playbook:\"CTF - Analyst View - IAM\"",
+                "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byFrom": "days",
                         "byTo": "",
-                        "field": "",
+                        "byFrom": "days",
+                        "toValue": null,
                         "fromValue": 7,
-                        "toValue": null
+                        "field": ""
                     },
-                    "toDate": "0001-01-01T00:00:00Z"
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
-                "definitionId": "",
-                "fromServerVersion": "",
-                "id": "79900405-6299-45ae-83e6-3279bd0fed11",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "2023-07-23T12:16:55.375317441Z",
-                "name": "fastest Top 10 users finished",
-                "packID": "",
-                "packName": "",
                 "params": {
                     "groupBy": [
                         "owner"
@@ -158,56 +180,63 @@
                     "valuesFormat": "hours",
                     "yAxisLabel": ""
                 },
-                "prevName": "Top 10 users finished",
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "f0717f30-2970-11ee-960d-4d66530a43c1",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "f0717f30-2970-11ee-960d-4d66530a43c1",
+            "w": 12,
+            "h": 3,
+            "widget": {
+                "id": "6fabb894-5e21-443f-872d-6c69d7b10bd3",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2023-07-23T15:52:32.540751271Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "ctfsla.runStatus:ended playbook:\"CTF - Analyst View - IAM\"",
-                "shouldCommit": false,
-                "toServerVersion": "",
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "column"
-            },
-            "x": 2,
-            "y": 0
-        },
-        {
-            "forceRange": false,
-            "h": 3,
-            "i": "f0717f30-2970-11ee-960d-4d66530a43c1",
-            "id": "f0717f30-2970-11ee-960d-4d66530a43c1",
-            "reflectDimensions": true,
-            "w": 12,
-            "widget": {
-                "Cache": null,
-                "cacheVersn": 0,
-                "category": "",
                 "commitMessage": "",
+                "shouldCommit": false,
+                "sort": [
+                    {
+                        "field": "id",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "Cache": null,
+                "name": "Finished CTF Incidents",
+                "prevName": "List of all CTF incidents",
                 "dataType": "incidents",
+                "widgetType": "table",
+                "query": "playbook:\"CTF - Analyst View - IAM\" ctfsla.runStatus:ended",
+                "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
-                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
                     "period": {
                         "by": "",
-                        "byFrom": "days",
                         "byTo": "",
-                        "field": "",
+                        "byFrom": "days",
+                        "toValue": null,
                         "fromValue": 7,
-                        "toValue": null
+                        "field": ""
                     },
-                    "toDate": "0001-01-01T00:00:00Z"
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
-                "definitionId": "",
-                "fromServerVersion": "",
-                "id": "6fabb894-5e21-443f-872d-6c69d7b10bd3",
-                "isPredefined": false,
-                "itemVersion": "",
-                "modified": "2023-07-23T15:52:32.540751271Z",
-                "name": "Finished CTF Incidents",
-                "packID": "",
-                "packName": "",
                 "params": {
                     "enablePagination": true,
                     "tableColumns": [
@@ -242,40 +271,178 @@
                         }
                     ]
                 },
-                "prevName": "List of all CTF incidents",
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "651f46a0-3213-11ee-953d-71791f2973d4",
+            "forceRange": false,
+            "x": 2,
+            "y": 0,
+            "i": "651f46a0-3213-11ee-953d-71791f2973d4",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "4fc2d3d6-a22c-4cf2-89f1-090147f42355",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2023-07-23T12:14:21.075546199Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "playbook:\"CTF - Analyst View - IAM\" ctfsla.runStatus:ended",
-                "shouldCommit": false,
-                "sort": [
-                    {
-                        "asc": false,
-                        "field": "id",
-                        "fieldType": ""
-                    }
-                ],
-                "toServerVersion": "",
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "version": 1,
-                "widgetType": "table"
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Number of Finished - Full",
+                "prevName": "Finished",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "advancedctfsla.runStatus:ended and ctfsla.runStatus:ended ",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
             },
+            "reflectDimensions": true
+        },
+        {
+            "id": "b72a3c70-3213-11ee-953d-71791f2973d4",
+            "forceRange": false,
             "x": 0,
-            "y": 3
+            "y": 1,
+            "i": "b72a3c70-3213-11ee-953d-71791f2973d4",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "4fc2d3d6-a22c-4cf2-89f1-090147f42355",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2023-07-23T12:14:21.075546199Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Number of Finished - Advanced",
+                "prevName": "Finished",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "advancedctfsla.runStatus:ended",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "18defbc0-3216-11ee-953d-71791f2973d4",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "18defbc0-3216-11ee-953d-71791f2973d4",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "79900405-6299-45ae-83e6-3279bd0fed11",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2023-07-23T12:16:55.375317441Z",
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "fastest Top 10 users finished",
+                "prevName": "Top 10 users finished",
+                "dataType": "incidents",
+                "widgetType": "column",
+                "query": "ctfsla.runStatus:ended playbook:\"CTF - Analyst View - IAM\" and advancedctfsla.runStatus:ended",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "owner"
+                    ],
+                    "keys": [
+                        "avg|(advancedctfsla.endDate - ctfsla.startDate )/60"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "hours",
+                    "yAxisLabel": ""
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
         }
     ],
-    "name": "CTF Cloud Dashboard",
-    "period": {
-        "by": "",
-        "byFrom": "days",
-        "byTo": "",
-        "field": "",
-        "fromValue": 7,
-        "toValue": null
-    },
-    "toDate": "0001-01-01T00:00:00Z",
-    "version": -1,
     "fromVersion": "6.9.0",
     "description": "",
     "isPredefined": true
