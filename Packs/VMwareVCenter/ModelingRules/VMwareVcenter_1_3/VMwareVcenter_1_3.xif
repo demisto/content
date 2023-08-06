@@ -109,7 +109,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.application.name = app_component, 
     xdm.source.host.hostname = hostname, 
     xdm.source.process.thread_id = to_integer(thread_id),
-    xdm.target.port = port,
+    xdm.target.port = to_integer(port),
     xdm.target.url = url,
     xdm.target.resource.type = if(datastore != null, "datastore"),
     xdm.target.resource.value = datastore;
