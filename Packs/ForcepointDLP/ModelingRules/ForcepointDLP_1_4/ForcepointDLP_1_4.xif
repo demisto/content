@@ -1,6 +1,6 @@
 [MODEL:dataset="forcepoint_forcepoint_dlp_raw"]
 // Syslog events
-filter  _collector_type != "API"
+filter  _collector_source != "API"
 | alter fsize = to_float(arrayindex(regextract(fname,"\s\-\s(\d+\.\d+)\s\w+"),0)),
         fsize_unit = arrayindex(regextract(fname,"\s\-\s\d+\.\d+\s(\w+)"),0)
 | alter fname = if(fname contains "N/A",null,arrayindex(regextract(fname ,"(.*)\s\-\s\d+"),0))
@@ -20,7 +20,7 @@ filter  _collector_type != "API"
         xdm.observer.version = productVersion;
 
 // API based logs modeling rules
-filter  _collector_type = "API"
+filter  _collector_source = "API"
 | alter xdm.observer.action=action,
         xdm.observer.name=analyzed_by,
         xdm.event.type=channel,
@@ -49,7 +49,7 @@ filter  _collector_type = "API"
         xdm.alert.original_alert_id=to_string(id),
         xdm.network.rule=policies,
         xdm.alert.severity=severity,
-        xdm.source.user.groups = split(json_extract_scalar(source, "$.business_unit"), ","),
+        xdm.source.user.groups = arraymap(split(json_extract_scalar(source, "$.business_unit"), ","), trim("@element")),
         xdm.source.user.ou=json_extract_scalar(source, "$.department"),
         xdm.email.sender=json_extract_scalar(source, "$.email_address"),
         xdm.source.host.hostname=json_extract_scalar(source, "$.host_name"),
