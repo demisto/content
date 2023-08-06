@@ -483,7 +483,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.67728
   isfetch: false
 fromversion: 6.9.0
 tests:
