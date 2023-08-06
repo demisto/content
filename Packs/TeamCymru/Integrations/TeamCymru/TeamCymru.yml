@@ -5,22 +5,22 @@ commonfields:
 configuration:
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
   defaultvalue: 'false'
+  required: false
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g., socks5h://host:1080)."
   name: proxy_url
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -33,8 +33,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 description: Team Cymru provides various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
 display: 'Team Cymru'
 name: TeamCymru
@@ -45,11 +45,8 @@ script:
       description: An IPv4 address to query, e.g., 1.1.1.1.
       name: ip
       required: true
-      secret: false
       isArray: true
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -98,25 +95,17 @@ script:
       description: The IP range relevant for abuse inquiries provided for the IP.
       type: String
   - arguments:
-    - default: false
-      description: The file's War Room entry ID.
-      isArray: false
+    - description: The file's War Room entry ID.
       name: entry_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: ','
+    - defaultValue: ','
       description: |-
         Delimiter by which the content of the file is separated.
         Eg:  " , " , " : ", " ; "
-      isArray: false
       name: delimiter
-      required: false
-    deprecated: false
     description: |-
       Checks the reputation of a CSV list of IPv4 addresses within a file. 
       Note: Results for queries exceeding 10,000 IPs may take more than a minute given a moderately sized Internet link.
-    execution: false
     name: cymru-bulk-whois
     outputs:
     - contextPath: IP.Address
@@ -164,12 +153,11 @@ script:
     - contextPath: TeamCymru.IP.Registrar.Abuse.Network
       description: The IP range relevant for abuse inquiries provided for the IP.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/cymruwhois:1.0.0.63671
+  dockerimage: demisto/cymruwhois:1.0.0.66558
 fromversion: 6.5.0
 tests:
 - TeamCymruTest

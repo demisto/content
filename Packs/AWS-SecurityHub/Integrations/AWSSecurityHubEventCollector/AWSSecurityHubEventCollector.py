@@ -1,8 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import datetime as dt
 import urllib3
 from typing import Iterator
 
-import demistomock as demisto
 from AWSApiModule import *
 
 import boto3

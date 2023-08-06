@@ -20,13 +20,11 @@ args:
 - name: entryID
   description: The entry id of the attached packed file in the warroom.
 - name: lastPackedFileInWarroom
-  description: Set to package file extension to look for the last of its kind in the
-    war room.
+  description: Set to package file extension to look for the last of its kind in the war room.
 outputs:
 - contextPath: ExtractedFiles
   description: List of file names which extracted from package.
 scripttarget: 0
-runonce: false
 dockerimage: demisto/unrar:1.4
 fromversion: 5.0.0
 deprecated: true

@@ -42,70 +42,59 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: after
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '1000'
   additionalinfo: Due to API limitations, the maximum is 10,000.
   display: Number of alerts for each fetch.
   name: limit
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Fetch events
   name: isFetchEvents
-  required: false
   type: 8
   section: Collect
+  required: false
 - defaultvalue: 'true'
   display: Verify SSL Certificate
   name: verify
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Collects the events log for alerts and activities provided Microsoft Defender for Cloud Apps API.
 display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector
 script:
   commands:
-  - deprecated: false
-    description: Returns a list of alerts.
-    execution: false
+  - description: Returns a list of alerts.
     name: microsoft-defender-cloud-apps-get-events
     arguments:
     - description: The maximum number of alerts per fetch.
       defaultValue: '10000'
       isArray: true
       name: limit
-      required: false
-      secret: false
     - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
       defaultValue: 3 days
       isArray: true
       name: after
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: 'false'
       description: Whether to push the fetched event to XSIAM or not.
-      isArray: false
       name: should_push_events
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-  isfetch: false
   isfetchevents: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3

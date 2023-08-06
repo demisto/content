@@ -9,7 +9,7 @@ on:
 jobs:
   check_changes:
     runs-on: ubuntu-latest
-    if: startsWith(github.head_ref, 'contrib')
+    if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

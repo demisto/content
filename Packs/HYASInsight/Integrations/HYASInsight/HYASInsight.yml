@@ -10,45 +10,31 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Use the HYAS Insight integration to interactively lookup PassiveDNS,
-  DynamicDNS, WHOIS, Malware and C2 Attribution Information – either as playbook tasks or through API
-  calls in the War Room.
+  required: false
+description: Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware and C2 Attribution Information – either as playbook tasks or through API calls in the War Room.
 display: HYAS Insight
 name: HYAS Insight
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Indicator Type.
-      isArray: false
       name: indicator_type
       predefined:
       - ipv4
       - domain
       required: true
-      secret: false
-    - default: false
-      description: Indicator value to query
-      isArray: false
+    - description: Indicator value to query
       name: indicator_value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns PassiveDNS records for the provided indicator value.
-    execution: false
     name: hyas-get-passive-dns-records-by-indicator
     outputs:
     - contextPath: HYAS.PassiveDNS.count
@@ -107,31 +93,19 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Indicator Type.
-      isArray: false
       name: indicator_type
       predefined:
       - ip
       - domain
       - email
       required: true
-      secret: false
-    - default: false
-      description: Indicator value to query
-      isArray: false
+    - description: Indicator value to query
       name: indicator_value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns DynamicDNS records for the provided indicator value.
-    execution: false
     name: hyas-get-dynamic-dns-records-by-indicator
     outputs:
     - contextPath: HYAS.DynamicDNS.a_record
@@ -157,31 +131,19 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Indicator Type.
-      isArray: false
       name: indicator_type
       predefined:
       - domain
       - email
       - phone
       required: true
-      secret: false
-    - default: false
-      description: Indicator value to query
-      isArray: false
+    - description: Indicator value to query
       name: indicator_value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns WHOIS records for the provided indicator value.
-    execution: false
     name: hyas-get-whois-records-by-indicator
     outputs:
     - contextPath: HYAS.WHOIS.address
@@ -230,22 +192,16 @@ script:
       description: Phone number geo. Can be city, province, region or country
       type: String
     - contextPath: HYAS.WHOIS.privacy_punch
-      description: True if this record has additional information bypassing privacy
-        protect
+      description: True if this record has additional information bypassing privacy protect
       type: Boolean
     - contextPath: HYAS.WHOIS.registrar
       description: The domain registrar
       type: String
   - arguments:
-    - default: false
-      description: Domain value to query
-      isArray: false
+    - description: Domain value to query
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Returns WHOIS Current records for the provided indicator value.
-    execution: false
     name: hyas-get-whois-current-records-by-domain
     outputs:
     - contextPath: HYAS.WHOISCurrent.abuse_emails
@@ -298,31 +254,19 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Indicator Type.
-      isArray: false
       name: indicator_type
       predefined:
       - domain
       - ipv4
       - md5
       required: true
-      secret: false
-    - default: false
-      description: Indicator value to query.
-      isArray: false
+    - description: Indicator value to query.
       name: indicator_value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns Malware Sample records for the provided indicator value.
-    execution: false
     name: hyas-get-malware-samples-records-by-indicator
     outputs:
     - contextPath: HYAS.MalwareSamples.datetime
@@ -347,15 +291,10 @@ script:
       description: The sha256 of the sample
       type: String
   - arguments:
-    - default: false
-      description: The md5 value to query
-      isArray: false
+    - description: The md5 value to query
       name: md5
       required: true
-      secret: false
-    deprecated: false
     description: Returns associated IP's for the provided hash value.
-    execution: false
     name: hyas-get-associated-ips-by-hash
     outputs:
     - contextPath: HYAS.HASH-IP.md5
@@ -365,15 +304,10 @@ script:
       description: Associated IPS  for the provided MD5 value
       type: Unknown
   - arguments:
-    - default: false
-      description: The md5 value to query
-      isArray: false
+    - description: The md5 value to query
       name: md5
       required: true
-      secret: false
-    deprecated: false
     description: Returns associated Domain's for the provided hash value.
-    execution: false
     name: hyas-get-associated-domains-by-hash
     outputs:
     - contextPath: HYAS.HASH-DOMAIN.domains
@@ -384,9 +318,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Indicator Type.
-      isArray: false
       name: indicator_type
       predefined:
       - ip
@@ -394,22 +326,12 @@ script:
       - sha256
       - email
       required: true
-      secret: false
-    - default: false
-      description: Indicator Value.
-      isArray: false
+    - description: Indicator Value.
       name: indicator_value
       required: true
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Return C2 Attribution records for the provided indicator value.
-    execution: false
     name: hyas-get-c2attribution-records-by-indicator
     outputs:
     - contextPath: HYAS.C2_Attribution.actor_ipv4
@@ -445,11 +367,7 @@ script:
     - contextPath: HYAS.C2_Attribution.sha256
       description: The sha256 malware hash
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

@@ -9,6 +9,7 @@ filter xsiam_type = "vulnerability"
     xdm.alert.severity = severity,
     xdm.event.description = output,
     xdm.source.host.fqdn = replace(json_extract(asset,"$.fqdn"),"\"",""),
+    xdm.target.host.fqdn = replace(json_extract(asset,"$.fqdn"),"\"",""),
     xdm.alert.category = replace(json_extract(plugin,"$.family"),"\"",""),
     xdm.alert.original_alert_id = json_extract_scalar(plugin,"$.id");
   filter xsiam_type = "audit_log"

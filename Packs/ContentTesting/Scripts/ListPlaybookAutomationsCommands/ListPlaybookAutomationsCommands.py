@@ -1,9 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # Final Test: 6.10
 import uuid
 from typing import Dict
-
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 
 def GetAutomationName(id):

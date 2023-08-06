@@ -13,8 +13,6 @@ comment: Identify whether the incident includes an email message attached as an 
 enabled: true
 args:
 - name: entryid
-  required: false
-  default: false
   description: Specific entryid to check if it is an email attachment. If not specified will check all entries of the incident.
   isArray: true
 outputs:
@@ -30,4 +28,4 @@ tests:
 - Process Email - Generic - Test - Incident Starter
 - Phishing v2 - Test - Incident Starter
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.12.63474

@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 # IMPORTS
 
-from typing import Union
 import json
 import urllib3
 import requests
@@ -125,26 +124,27 @@ class AzureSentinelClient:
         :param managed_identities_client_id: The Azure Managed Identities client id.
         """
 
-        azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        base_url = f'{azure_cloud.endpoints.resource_manager}subscriptions/{subscription_id}/' \
-                   f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
-                   f'{workspace_name}/providers/Microsoft.SecurityInsights'
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        base_url = urljoin(self.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/'
+                           f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'
+                           f'{workspace_name}/providers/Microsoft.SecurityInsights')
         self._client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
             enc_key=client_secret,
             self_deployed=True,
             grant_type=CLIENT_CREDENTIALS,
-            scope=f'{azure_cloud.endpoints.resource_manager}.default',
+            scope=urljoin(self.azure_cloud.endpoints.resource_manager, '.default'),
             ok_codes=(200, 201, 202, 204),
             verify=verify,
             proxy=proxy,
-            azure_cloud=azure_cloud,
+            azure_cloud=self.azure_cloud,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=azure_cloud.endpoints.resource_manager,
-            base_url=base_url
+            managed_identities_resource_uri=self.azure_cloud.endpoints.resource_manager,
+            base_url=base_url,
+            command_prefix="azure-sentinel",
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -1114,11 +1114,11 @@ def list_incident_entities_command(client, args):
     """
 
     def xsoar_transformer(entity):
-        return dict(
-            ID=entity.get('name'),
-            Kind=entity.get('kind'),
-            Properties=entity.get('properties')
-        )
+        return {
+            'ID': entity.get('name'),
+            'Kind': entity.get('kind'),
+            'Properties': entity.get('properties')
+        }
 
     return generic_list_incident_items(
         client=client, incident_id=args.get('incident_id'),
@@ -1201,7 +1201,7 @@ def update_next_link_in_context(result: dict, outputs: dict):
         outputs[f'AzureSentinel.NextLink(val.Description == "{NEXT_LINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: Union[List, Dict]):
+def fetch_incidents_additional_info(client: AzureSentinelClient, incidents: List | Dict):
     """Fetches additional info of an incidents array or a single incident.
 
     Args:
@@ -1816,6 +1816,58 @@ def delete_alert_rule_command(client: AzureSentinelClient, args: Dict[str, Any])
     return CommandResults(readable_output=f'Alert rule {rule_id} was deleted successfully.')
 
 
+def list_subscriptions_command(client: AzureSentinelClient) -> CommandResults:      # pragma: no cover
+
+    full_url = urljoin(client.azure_cloud.endpoints.resource_manager, 'subscriptions?api-version=2020-01-01')
+
+    response = client.http_request('GET', full_url=full_url)
+    data_from_response = response.get('value', [])
+
+    readable_output = tableToMarkdown(
+        'Azure Sentinel Subscriptions',
+        data_from_response,
+        ['subscriptionId', 'tenantId', 'displayName', 'state'], removeNull=True,
+        headerTransform=string_to_table_header)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.Subscription',
+        outputs=data_from_response,
+        outputs_key_field='subscriptionId',
+        raw_response=response
+    )
+
+
+def list_resource_groups_command(client: AzureSentinelClient,
+                                 args: Dict[str, Any], subscription_id: str) -> CommandResults:     # pragma: no cover
+    tag = args.get('tag')
+    limit = arg_to_number(args.get('limit', 50))
+    subscription_id = subscription_id
+
+    # extracting the tag name and value from the tag argument that is received from the user as a string
+    filter_by_tag = azure_tag_formatter(tag) if tag else ''
+
+    full_url = urljoin(client.azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}/resourcegroups?$filter=\
+{filter_by_tag}&$top={limit}&api-version=2021-04-01')
+
+    response = client.http_request('GET', full_url=full_url)
+    data_from_response = response.get('value', [])
+
+    readable_output = tableToMarkdown(
+        'Azure Sentinel Resource Groups',
+        data_from_response,
+        ['name', 'location', 'tags', 'properties.provisioningState'], removeNull=True,
+        headerTransform=string_to_table_header)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.ResourceGroup',
+        outputs=data_from_response,
+        outputs_key_field='name',
+        raw_response=response
+    )
+
+
 def validate_required_arguments_for_alert_rule(args: Dict[str, Any]) -> None:
     required_args_by_kind = {
         'fusion': ['rule_name', 'template_name', 'enabled'],
@@ -1901,8 +1953,9 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
+    command = demisto.command()
 
-    LOG(f'Command being called is {demisto.command()}')
+    LOG(f'Command being called is {command}')
     try:
         client_secret = params.get('credentials', {}).get('password')
         certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or \
@@ -1972,19 +2025,25 @@ def main():
             'update-remote-system': update_remote_system_command
         }
 
-        if demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             fetch_incidents_command(client, params)
 
         # mirroring command
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
+        elif command == 'azure-sentinel-subscriptions-list':
+            return_results(list_subscriptions_command(client))
+        elif command == 'azure-sentinel-resource-group-list':
+            return_results(list_resource_groups_command(client, args, subscription_id))
+        elif command == 'azure-sentinel-auth-reset':
+            return_results(reset_auth())
 
-        elif demisto.command() in commands:
-            return_results(commands[demisto.command()](client, args))  # type: ignore
+        elif command in commands:
+            return_results(commands[command](client, args))  # type: ignore
 
     except Exception as e:
         return_error(
-            f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+            f'Failed to execute {command} command. Error: {str(e)}'
         )
 
 

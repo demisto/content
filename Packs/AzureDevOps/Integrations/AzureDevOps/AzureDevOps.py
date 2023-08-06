@@ -1,10 +1,11 @@
-# type: ignore
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# type: ignore
 from MicrosoftApiModule import *  # noqa: E402
 import copy
 from requests import Response
-from typing import Callable
+from collections.abc import Callable
+import urllib3
 
 INCIDENT_TYPE_NAME = "Azure DevOps"
 OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
@@ -42,7 +43,9 @@ class Client:
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
-            redirect_uri=redirect_uri)
+            redirect_uri=redirect_uri,
+            command_prefix="azure-devops",
+        )
         self.ms_client = MicrosoftClient(**client_args)
         self.organization = organization
         self.connection_type = auth_type
@@ -437,7 +440,8 @@ def generate_pipeline_run_output(response: dict, project: str) -> dict:
 
     """
     outputs = copy.deepcopy(response)
-    outputs['createdDate'] = arg_to_datetime(outputs.get('createdDate')).isoformat()
+    created_date = arg_to_datetime(outputs.get('createdDate'))
+    outputs['createdDate'] = created_date.isoformat() if created_date else created_date
     outputs['run_id'] = outputs.pop('id')
     outputs['project'] = project
     outputs['result'] = outputs.get('result', 'unknown')
@@ -517,8 +521,8 @@ def pipeline_run_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     # Running polling flow
     if should_poll and state != 'completed':
-        interval = arg_to_number(args.get('interval', 30))
-        timeout = arg_to_number(args.get('timeout', 60))
+        interval = arg_to_number(args.get('interval')) or 30
+        timeout = arg_to_number(args.get('timeout')) or 60
         run_id = response.get('id')
         polling_args = {
             'run_id': run_id,
@@ -713,8 +717,8 @@ def pull_request_create_command(client: Client, args: Dict[str, Any]) -> Command
         project, repository_id, source_branch, target_branch, title, description, reviewers)
 
     outputs = copy.deepcopy(response)
-    outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
-
+    created_date = arg_to_datetime(response.get('creationDate'))
+    outputs['creationDate'] = created_date.isoformat() if created_date else created_date
     readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
@@ -758,8 +762,8 @@ def pull_request_update_command(client: Client, args: Dict[str, Any]) -> Command
         project, repository_id, pull_request_id, title, description, status, last_merge_source_commit)
 
     outputs = copy.deepcopy(response)
-    outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
-
+    created_date = arg_to_datetime(response.get('creationDate'))
+    outputs['creationDate'] = created_date.isoformat() if created_date else created_date
     readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
@@ -791,8 +795,8 @@ def pull_request_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
     response = client.pull_requests_get_request(project, repository_id, pull_request_id)
 
     outputs = copy.deepcopy(response)
-    outputs['creationDate'] = arg_to_datetime(response.get('creationDate')).isoformat()
-
+    created_date = arg_to_datetime(response.get('creationDate'))
+    outputs['creationDate'] = created_date.isoformat() if created_date else created_date
     readable_output = generate_pull_request_readable_information(outputs)
 
     command_results = CommandResults(
@@ -819,8 +823,8 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     project = args['project']
     repository = args['repository']
-    page = arg_to_number(args.get('page') or '1')
-    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -832,9 +836,10 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     readable_message = f'Pull Request List:\n Current page size: {limit}\n Showing page {page} out of ' \
                        f'others that may exist.'
 
-    outputs = copy.deepcopy(response.get('value'))
+    outputs = copy.deepcopy(response.get('value', []))
     for pr in outputs:
-        pr['creationDate'] = arg_to_datetime(pr.get('creationDate')).isoformat()
+        created_date = arg_to_datetime(pr.get('creationDate'))
+        pr['creationDate'] = created_date.isoformat() if created_date else created_date
 
     readable_output = generate_pull_request_readable_information(outputs, message=readable_message)
 
@@ -860,8 +865,8 @@ def project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    page = arg_to_number(args.get('page') or '1')
-    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -874,7 +879,8 @@ def project_list_command(client: Client, args: Dict[str, Any]) -> CommandResults
     output_headers = ['name', 'id', 'state', 'revision', 'visibility', 'lastUpdateTime']
 
     for project in outputs:
-        project['lastUpdateTime'] = arg_to_datetime(project.get('lastUpdateTime')).isoformat()
+        last_updated_time = arg_to_datetime(project.get('lastUpdateTime'))
+        project['lastUpdateTime'] = last_updated_time.isoformat() if last_updated_time is not None else last_updated_time
 
     readable_output = tableToMarkdown(
         readable_message,
@@ -907,8 +913,8 @@ def repository_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """
     project = args['project']
 
-    page = arg_to_number(args.get('page') or '1')
-    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -922,9 +928,9 @@ def repository_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     outputs = []
 
-    if response.get('count') and response.get('count') >= start:
-        min_index = min(response.get('count'), end)
-        for repo in response.get('value')[start:min_index]:
+    if (response_count := response.get('count')) and isinstance(response_count, int) and response_count >= start:
+        min_index = min(response_count, end)
+        for repo in response.get('value', [])[start:min_index]:
             outputs.append(repo)
 
     readable_data = copy.deepcopy(outputs)
@@ -961,8 +967,8 @@ def users_query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     """
     query = args['query']
-    page = arg_to_number(args.get('page') or '1')
-    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -1033,8 +1039,8 @@ def pipeline_run_get_command(client: Client, args: Dict[str, Any]) -> CommandRes
         # schedule next poll
         scheduled_command = ScheduledCommand(
             command='azure-devops-pipeline-run-get',
-            next_run_in_seconds=arg_to_number(args.get('interval', 30)),
-            timeout_in_seconds=arg_to_number(args.get('timeout', 60)),
+            next_run_in_seconds=arg_to_number(args.get('interval')) or 30,
+            timeout_in_seconds=arg_to_number(args.get('timeout')) or 60,
             args=args,
         )
 
@@ -1070,8 +1076,8 @@ def pipeline_run_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     project = args['project']
     pipeline_id = args['pipeline_id']
 
-    page = arg_to_number(args.get('page') or '1')
-    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
 
     if page < 1 or limit < 1:
         raise Exception('Page and limit arguments must be greater than 1.')
@@ -1084,9 +1090,9 @@ def pipeline_run_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.pipeline_run_list_request(project, pipeline_id)
 
     outputs = []
-    if response.get('count') and response.get('count') >= start:
-        min_index = min(response.get('count'), end)
-        for run in response.get('value')[start:min_index]:
+    if (response_count := response.get('count')) and isinstance(response_count, int) and response_count >= start:
+        min_index = min(response_count, end)
+        for run in response.get('value', [])[start:min_index]:
             data = generate_pipeline_run_output(run, project)
             outputs.append(data)
 
@@ -1135,8 +1141,8 @@ def pipeline_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     project = args['project']
 
-    page = arg_to_number(args.get('page') or '1')
-    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
     readable_message = f'Pipelines List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
     if page < 1 or limit < 1:
@@ -1192,8 +1198,8 @@ def branch_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     project = args['project']
     repository = args['repository']
 
-    page = arg_to_number(args.get('page') or '1')
-    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page')) or 1
+    limit = arg_to_number(args.get('limit')) or 50
     readable_message = f'Branches List:\n Current page size: {limit}\n Showing page {page} out others that may exist.'
 
     if page < 1 or limit < 1:
@@ -1336,12 +1342,6 @@ def test_connection(client) -> str:
     return 'Success!'
 
 
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. Run **!azure-devops-auth-start** to '
-                                          'start the authentication process.')
-
-
 def parse_incident(pull_request: dict, integration_instance: str) -> dict:
     """
     Parse pull request to XSOAR Incident.
@@ -1364,7 +1364,7 @@ def parse_incident(pull_request: dict, integration_instance: str) -> dict:
     return incident
 
 
-def count_active_pull_requests(project: str, repository: str, client: Client, first_fetch: datetime = None) -> int:
+def count_active_pull_requests(project: str, repository: str, client: Client, first_fetch: str | datetime | None = None) -> int:
     """
     Count the number of active pull-requests in the repository.
     Args:
@@ -1384,22 +1384,25 @@ def count_active_pull_requests(project: str, repository: str, client: Client, fi
     while max_iterations > 0:
         max_iterations -= 1
         response = client.pull_requests_list_request(project, repository, skip=count, limit=limit)
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
         if first_fetch:
-            last_pr_date = arg_to_datetime(
-                response.get("value")[response.get("count") - 1].get('creationDate').replace('Z', ''))
-            if last_pr_date < first_fetch:  # If the oldest pr in the result is older than 'first_fetch' argument.
-                for pr in response.get("value"):
-                    if arg_to_datetime(pr.get('creationDate').replace('Z', '')) > first_fetch:
+            last_pr_date_str = response.get("value", [])[response.get("count", 0) - 1].get('creationDate').replace('Z', '')
+            last_pr_date = arg_to_datetime(last_pr_date_str) if last_pr_date_str else None
+            if last_pr_date and isinstance(first_fetch, datetime) and last_pr_date < first_fetch:
+                # If the oldest pr in the result is older than 'first_fetch' argument.
+                for pr in response.get("value", []):
+                    creation_date_str = pr.get('creationDate', '').replace('Z', '')
+                    creation_date = arg_to_datetime(creation_date_str) if creation_date_str else None
+                    if creation_date and isinstance(first_fetch, datetime) and creation_date > first_fetch:
                         count += 1
                     else:  # Stop counting
                         max_iterations = -1
                         break
             else:
-                count += response.get("count")
+                count += response.get("count", 0)
         else:
-            count += response.get("count")
+            count += response.get("count", 0)
 
     return count
 
@@ -1424,16 +1427,16 @@ def get_last_fetch_incident_index(project: str, repository: str, client: Client,
 
     while max_iterations > 0:
         response = client.pull_requests_list_request(project, repository, skip=count, limit=limit)
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
 
-        pr_ids = [pr.get('pullRequestId') for pr in response.get('value')]
+        pr_ids = [pr.get('pullRequestId') for pr in response.get('value', [])]
         if last_id in pr_ids:
             return pr_ids.index(last_id) + count
         else:
             if max(pr_ids) < last_id:
                 break
-            count += response.get("count")
+            count += response.get("count", 0)
             max_iterations -= 1
 
     return -1
@@ -1461,10 +1464,10 @@ def get_closest_index(project: str, repository: str, client: Client, last_id: in
     while max_iterations > 0:
         response = client.pull_requests_list_request(project, repository, skip=count, limit=limit)
 
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
 
-        pr_ids = [pr.get('pullRequestId') for pr in response.get('value')]
+        pr_ids = [pr.get('pullRequestId') for pr in response.get('value', [])]
         min_id = min(pr_ids)
         max_id = max(pr_ids)
 
@@ -1480,10 +1483,10 @@ def get_closest_index(project: str, repository: str, client: Client, last_id: in
         elif max_id < last_id:  # The closest index is in the previous page.
             return count - 1
         else:
-            count += response.get("count")
+            count += response.get("count", 0)
             max_iterations -= 1
 
-        if response.get("count") == 0:
+        if response.get("count", 0) == 0:
             break
 
     return -1
@@ -1504,7 +1507,7 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
     """
     response = client.pull_requests_list_request(project, repository, skip=0, limit=1)
     num_prs = response.get("count", 0)
-    last_pr_id = response.get('value')[0].get('pullRequestId', 0) if len(response.get('value')) > 0 else None
+    last_pr_id = response.get('value', [])[0].get('pullRequestId', 0) if len(response.get('value', [])) > 0 else None
     if num_prs == 0 or last_pr_id <= last_id:
         demisto.debug(f'Number of PRs is: {num_prs}. Last fetched PR id: {last_pr_id}')
         return False
@@ -1513,7 +1516,7 @@ def is_new_pr(project: str, repository: str, client: Client, last_id: int) -> bo
 
 
 def fetch_incidents(client, project: str, repository: str, integration_instance: str, max_fetch: int = 50,
-                    first_fetch: str = None) -> None:
+                    first_fetch: str | None | datetime = None) -> None:
     """
     Fetch new active pull-requests from repository.
     Args:
@@ -1612,7 +1615,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(
             client_id=client_id,
             organization=organization,
@@ -1676,8 +1679,8 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
-            fetch_incidents(client, params.get('project'), params.get('repository'), integration_instance,
-                            arg_to_number(params.get('max_fetch', 50)), params.get('first_fetch'))
+            fetch_incidents(client, params.get('project', ''), params.get('repository', ''), integration_instance,
+                            arg_to_number(params.get('max_fetch')) or 50, params.get('first_fetch', ''))
 
         elif command == 'azure-devops-auth-reset':
             return_results(reset_auth())

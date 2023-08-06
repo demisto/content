@@ -19,8 +19,7 @@ enabled: true
 args:
 - name: roles
   default: true
-  description: The optional list of roles we want to assign users from. Can accept
-    arrays or comma separated list. Leave empty to fetch all users.
+  description: The optional list of roles we want to assign users from. Can accept arrays or comma separated list. Leave empty to fetch all users.
 - name: assignBy
   auto: PREDEFINED
   predefined:
@@ -30,22 +29,17 @@ args:
   - less-busy-user
   - online
   - current
-  description: '(default: random) You can pick how to assign the owner - by random,
-    online, current, machine-learning, top-user or less-busy-user.'
+  description: '(default: random) You can pick how to assign the owner - by random, online, current, machine-learning, top-user or less-busy-user.'
 - name: username
-  description: When specified, the provided user will be assigned as the incident
-    owner (optional).
+  description: When specified, the provided user will be assigned as the incident owner (optional).
 - name: email
-  description: When specified, the user of provided email will be assigned as the
-    incident owner (optional)
+  description: When specified, the user of provided email will be assigned as the incident owner (optional)
 - name: onCall
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
   defaultValue: "false"
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0

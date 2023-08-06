@@ -43,7 +43,6 @@ script:
     - description: The banner text that should be present in the remote device running configuration.  This argument accepts a multiline string, with no empty lines. Requires `state=present`.
       name: text
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specifies whether or not the configuration is present in the current devices active running configuration.
       name: state
@@ -60,7 +59,6 @@ script:
     - description: Specifies the BGP related configuration.
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merge
       description: |-
         Specifies the operation to be performed on the BGP process configured on the device.
@@ -87,19 +85,16 @@ script:
     - description: List of conditions to evaluate against the output of the command. The task will wait for each condition to be true before moving forward. If the conditional is not true within the configured number of retries, the task fails. See examples.
       name: wait_for
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: The `match` argument is used in conjunction with the `wait_for` argument to specify the match policy.  Valid values are `all` or `any`.  If the value is set to `all` then all conditionals in the wait_for must be satisfied.  If the value is set to `any` then only one of the values must be satisfied.
       name: match
       predefined:
       - any
       - all
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Specifies the number of retries a command should by tried before it is considered failed. The command is run on the target device every retry and evaluated against the `wait_for` conditions.
       name: retries
-    - default: false
-      defaultValue: "1"
+    - defaultValue: "1"
       description: Configures the interval in seconds to wait between retries of the command. If the command does not pass the specified conditions, the interval indicates how long to wait before trying the command again.
       name: interval
     description: Run commands on remote devices running Cisco IOS
@@ -120,7 +115,6 @@ script:
     - description: The ordered set of commands to append to the end of the command stack if a change needs to be made.  Just like with `before` this allows the playbook designer to append a set of commands to be executed after the command set.
       name: after
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the matching of the set of commands against the current device config.  If match is set to `line`, commands are matched line by line.  If match is set to `strict`, command lines are matched with respect to position.  If match is set to `exact`, command lines must be an equal match.  Finally, if match is set to `none`, the module will not attempt to compare the source configuration with the running configuration on the remote device.
       name: match
@@ -130,29 +124,24 @@ script:
       - exact
       - none
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the configuration on the device. If the replace argument is set to `line` then the modified lines are pushed to the device in configuration mode.  If the replace argument is set to `block` then the entire command block is pushed to the device in configuration mode if any line is not correct.
       name: replace
       predefined:
       - line
       - block
-    - default: false
-      defaultValue: '@'
+    - defaultValue: '@'
       description: This argument is used when pushing a multiline configuration element to the IOS device.  It specifies the character to use as the delimiting character.  This only applies to the configuration action.
       name: multiline_delimiter
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: This argument will cause the module to create a full backup of the current `running-config` from the remote device before any changes are made. If the `backup_options` value is not given, the backup file is written to the `backup` folder in the playbook root directory or role root directory, if playbook is part of an ansible role. If the directory does not exist, it is created.
       name: backup
     - description: The module, by default, will connect to the remote device and retrieve the current running-config to use as a base for comparing against the contents of source. There are times when it is not desirable to have the task get the current running-config for every task in a playbook.  The `running_config` argument allows the implementer to pass in the configuration to use as the base config for comparison.
       name: running_config
-    - default: false
-      defaultValue: "no"
+    - defaultValue: "no"
       description: This argument specifies whether or not to collect all defaults when getting the remote device running config.  When enabled, the module will get the current config by issuing the command `show running-config all`.
       name: defaults
     - auto: PREDEFINED
-      default: false
       defaultValue: never
       description: When changes are made to the device running-configuration, the changes are not copied to non-volatile storage by default.  Using this argument will change that before.  If the argument is set to `always`, then the running-config will always be copied to the startup-config and the `modified` flag will always be set to True.  If the argument is set to `modified`, then the running-config will only be copied to the startup-config if it has changed since the last save to startup-config.  If the argument is set to `never`, the running-config will never be copied to the startup-config.  If the argument is set to `changed`, then the running-config will only be copied to the startup-config if the task has made a change. `changed` was added in Ansible 2.5.
       name: save_when
@@ -186,8 +175,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: '!config'
+    - defaultValue: '!config'
       description: |-
         When supplied, this argument restricts the facts collected to a given subset.
         Possible values for this argument include `all`, `min`, `hardware`, `config`, and `interfaces`.
@@ -207,7 +195,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -227,7 +214,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -247,7 +233,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -267,7 +252,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -286,7 +270,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -306,7 +289,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -338,15 +320,13 @@ script:
     - description: List of link aggregation definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the link aggregation group.
       name: state
       predefined:
       - present
       - absent
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Purge links not defined in the `aggregate` parameter.
       name: purge
     description: Manage link aggregation groups on Cisco IOS network devices
@@ -357,7 +337,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the LLDP configuration. If value is `present` lldp will be enabled else if it is `absent` it will be disabled.
       name: state
@@ -375,7 +354,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -394,7 +372,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -424,14 +401,12 @@ script:
         The hostname or IP address of the destination.
         Required when `dest=host`.
       name: name
-    - default: false
-      defaultValue: "4096"
+    - defaultValue: "4096"
       description: Size of buffer. The acceptable value is in range from 4096 to 4294967295 bytes.
       name: size
     - description: Set logging facility.
       name: facility
     - auto: PREDEFINED
-      default: false
       defaultValue: debugging
       description: Set logging severity levels.
       name: level
@@ -447,7 +422,6 @@ script:
     - description: List of logging definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the logging configuration.
       name: state
@@ -467,12 +441,10 @@ script:
       name: source_int
     - description: ACL for peer/server access restricition.
       name: acl
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Enable NTP logs. Data type boolean.
       name: logging
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Enable NTP authentication. Data type boolean.
       name: auth
     - description: md5 NTP authentication key of tye 7.
@@ -480,7 +452,6 @@ script:
     - description: auth_key id. Data type string
       name: key_id
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -494,8 +465,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "5"
+    - defaultValue: "5"
       description: Number of packets to send.
       name: count
     - description: The IP Address or hostname (resolvable by switch) of the remote node.
@@ -504,15 +474,13 @@ script:
     - description: The source IP Address.
       name: source
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines if the expected result is success or fail.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: The VRF to use for forwarding.
       name: vrf
     description: Tests reachability using ping from Cisco IOS network devices
@@ -543,7 +511,6 @@ script:
     - description: List of static route definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the static route configuration.
       name: state
@@ -570,7 +537,6 @@ script:
     - description: List of DNS name servers by IP address to use to perform name resolution lookups.  This argument accepts either a list of DNS servers See examples.
       name: name_servers
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the configuration values in the device's current active configuration.  When set to `present`, the values should be configured in the device active configuration and when set to `absent` the values should not be in the device active configuration
       name: state
@@ -591,7 +557,6 @@ script:
     - description: The password to be configured on the Cisco IOS device. The password needs to be provided in clear and it will be encrypted on the device. Please note that this option is not same as `provider password`.
       name: configured_password
     - auto: PREDEFINED
-      default: false
       defaultValue: always
       description: Since passwords are encrypted in the device running config, this argument will instruct the module when to change the password.  When set to `always`, the password will always be updated in the device and when set to `on_create` the password will be updated only if the username is created.
       name: update_password
@@ -599,7 +564,6 @@ script:
       - on_create
       - always
     - auto: PREDEFINED
-      default: false
       defaultValue: secret
       description: This argument determines whether a 'password' or 'secret' will be configured.
       name: password_type
@@ -618,12 +582,10 @@ script:
       name: sshkey
     - description: Defines the username without assigning a password. This will allow the user to login to the system without being authenticated by a password.
       name: nopassword
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Instructs the module to consider the resource definition absolute. It will remove any previously configured usernames on the device with the exception of the `admin` user (the current defined set of users).
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Configures the state of the username definition as it relates to the device operational configuration. When set to `present`, the username(s) should be configured in the device active configuration and when set to `absent` the username(s) should not be in the device active configuration
       name: state
@@ -641,7 +603,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -669,16 +630,13 @@ script:
       name: interfaces
     - description: This is a intent option and checks the operational state of the for given vrf `name` for associated interfaces. If the value in the `associated_interfaces` does not match with the operational state of vrf interfaces on device it will result in failure.
       name: associated_interfaces
-    - default: false
-      defaultValue: "10"
+    - defaultValue: "10"
       description: Time in seconds to wait before checking for the operational state on remote device.
       name: delay
-    - default: false
-      defaultValue: "False"
+    - defaultValue: "False"
       description: Instructs the module to consider the VRF definition absolute.  It will remove any previously configured VRFs on the device.
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Configures the state of the VRF definition as it relates to the device operational configuration.  When set to `present`, the VRF should be configured in the device active configuration and when set to `absent` the VRF should not be in the device active configuration
       name: state
@@ -706,7 +664,6 @@ script:
     description: Manage the collection of VRF definitions on Cisco IOS devices
     name: ios-vrf
   dockerimage: demisto/ansible-runner:1.0.0.21184
-  runonce: false
   script: ''
   subtype: python3
   type: python

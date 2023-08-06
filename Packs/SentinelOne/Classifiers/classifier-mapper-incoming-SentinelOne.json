@@ -81,6 +81,9 @@
 				},
 				"Threat Name": {
 					"simple": "threatInfo.threatName"
+				},
+				"Verdict": {
+					"simple": "threatInfo.analystVerdictDescription"
 				}
 			}
 		}

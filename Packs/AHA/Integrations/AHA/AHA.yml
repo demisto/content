@@ -24,14 +24,14 @@ configuration:
   additionalinfo: "API Key to access the service REST API."
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
   additionalinfo:
+  required: false
 description: Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
 display: Aha
 name: Aha
@@ -39,32 +39,21 @@ script:
   commands:
   - name: aha-get-features
     description: Lists all features from service, unless a specific feature is specified.
-    deprecated: false
     arguments:
     - name: from_date
       description: Show features created after this date.
-      required: false
-      isArray: false
       defaultValue: "2020-01-01"
     - name: feature_name
-      description: The name of a specific feature to retrieve. 
-      required: false
-      isArray: false
+      description: The name of a specific feature to retrieve.
       defaultValue: ""
     - name: fields
       description: A comma-separated list of fields to include in the Aha! service response.
-      required: false
-      isArray: false
       defaultValue: "name,reference_num,id,created_at"
     - name: page
       description: The specific results page to retrieve.
-      required: false
-      isArray: false
       defaultValue: "1"
     - name: per_page
       description: The maximum number of results per page.
-      required: false
-      isArray: false
       defaultValue: "30"
     outputs:
     - contextPath: AHA.Feature.id
@@ -87,17 +76,14 @@ script:
       type: Date
   - name: aha-edit-feature
     description: "You can edit the following fields in a feature: Name and Status."
-    deprecated: false
     arguments:
     - name: feature_name
       description: The name of the feature to edit.
       required: true
-      isArray: false
       defaultValue: ""
     - name: fields
       description: 'Fields in JSON format to edit in a feature. Possible fields are name and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "status" : "Closed"}'
       required: true
-      isArray: false
       defaultValue: ""
     outputs:
     - contextPath: AHA.Feature.id
@@ -120,32 +106,21 @@ script:
       type: Date
   - name: aha-get-ideas
     description: Lists all ideas from service, unless a specific idea is specified.
-    deprecated: false
     arguments:
     - name: from_date
       description: Show ideas created after this date.
-      required: false
-      isArray: false
       defaultValue: "2020-01-01"
     - name: idea_name
       description: The name of a specific idea to retrieve.
-      required: false
-      isArray: false
       defaultValue: ""
     - name: fields
       description: A comma-separated list of fields to include in the Aha! service response.
-      required: false
-      isArray: false
       defaultValue: "name,reference_num,id,created_at"
     - name: page
       description: The specific results page to retrieve.
-      required: false
-      isArray: false
       defaultValue: "1"
     - name: per_page
       description: The maximum number of results per page.
-      required: false
-      isArray: false
       defaultValue: "30"
     outputs:
     - contextPath: AHA.Idea.id
@@ -168,12 +143,10 @@ script:
       type: Date
   - name: aha-edit-idea
     description: "Edit an idea status to Shipped."
-    deprecated: false
     arguments:
     - name: idea_name
       description: The name of the idea to edit.
       required: true
-      isArray: false
       defaultValue: ""
     outputs:
     - contextPath: AHA.Idea.id
@@ -194,11 +167,9 @@ script:
     - contextPath: AHA.Idea.created_at
       description: The idea creation date.
       type: Date
-  isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.5.0

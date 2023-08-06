@@ -2,8 +2,7 @@ args:
 - description: EntryID of image
   name: image
   required: true
-comment: Script to create a  perceptual hash of an image (or file) stored in the incident.  Wrapps
-  https://pypi.org/project/ImageHash/
+comment: Script to create a  perceptual hash of an image (or file) stored in the incident.  Wrapps https://pypi.org/project/ImageHash/
 commonfields:
   id: PHash
   version: -1
@@ -18,7 +17,6 @@ outputs:
   description: Hash of the image
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

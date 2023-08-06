@@ -6,23 +6,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 4d5df06c-ba1d-4b83-8e3f-f43cf2d6b57d
+    type: start
+    task:
+      id: 4d5df06c-ba1d-4b83-8e3f-f43cf2d6b57d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "1"
-    note: false
-    quietmode: 0
+      - "2"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 2566158a-f879-4cc8-8ebf-d5656da3e262
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: 2566158a-f879-4cc8-8ebf-d5656da3e262
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,30 +26,34 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e41608df-a32a-4a25-8d2f-4e95ff22f892
+    type: regular
+    task:
+      id: e41608df-a32a-4a25-8d2f-4e95ff22f892
+      version: -1
+      name: protectwise-event-info
+      description: Lookup a single event and its associated observations for ProtectWise
+      script: ProtectWise|||protectwise-event-info
+      type: regular
+      iscommand: true
+      brand: ProtectWise
     nexttasks:
       '#none#':
-      - "6"
-    note: false
-    quietmode: 0
+      - "8"
     scriptarguments:
-      sensorId: {}
+      id:
+        simple: ${Protectwise.Event.[0].id}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ProtectWise
-      description: Collection of all available sensors
-      id: 50a60609-5421-4f17-834f-27a44ce83095
-      iscommand: true
-      name: protectwise-show-sensors
-      script: ProtectWise|||protectwise-show-sensors
-      type: regular
-      version: -1
-    taskid: 50a60609-5421-4f17-834f-27a44ce83095
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -61,31 +61,36 @@ tasks:
           "y": 195
         }
       }
-  "2":
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 060d8428-dcd9-4ba1-8ac0-25367b82c962
+    type: regular
+    task:
+      id: 060d8428-dcd9-4ba1-8ac0-25367b82c962
+      version: -1
+      name: protectwise-observation-info
+      description: Lookup a single observation for ProtectWise
+      script: ProtectWise|||protectwise-observation-info
+      type: regular
+      iscommand: true
+      brand: ProtectWise
     nexttasks:
       '#none#':
-      - "8"
-    note: false
-    quietmode: 0
+      - "4"
     scriptarguments:
       id:
-        simple: ${Protectwise.Event.[0].id}
+        simple: ${Protectwise.Observation.[0].id}
+      sensorId:
+        simple: ${Protectwise.Observation.[0].sensorId}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ProtectWise
-      description: Lookup a single event and its associated observations for ProtectWise
-      id: d056f910-2b72-42c0-804d-cdf8809ba963
-      iscommand: true
-      name: protectwise-event-info
-      script: ProtectWise|||protectwise-event-info
-      type: regular
-      version: -1
-    taskid: d056f910-2b72-42c0-804d-cdf8809ba963
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -93,220 +98,34 @@ tasks:
           "y": 545
         }
       }
-  "3":
-    id: "3"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "4"
     note: false
-    quietmode: 0
-    scriptarguments:
-      id:
-        simple: ${Protectwise.Observation.[0].id}
-      sensorId:
-        simple: ${Protectwise.Observation.[0].sensorId}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ProtectWise
-      description: Lookup a single observation for ProtectWise
-      id: d272fb90-1c08-40c4-8d95-12afbba66821
-      iscommand: true
-      name: protectwise-observation-info
-      script: ProtectWise|||protectwise-observation-info
-      type: regular
-      version: -1
-    taskid: d272fb90-1c08-40c4-8d95-12afbba66821
     timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 580944ea-932a-4c8f-856c-0f63dbbab426
+    type: regular
+    task:
+      id: 580944ea-932a-4c8f-856c-0f63dbbab426
+      version: -1
+      name: PWEventPcapDownload
+      description: Download PCAPs related to the requested events. Supports rate throttling.
+      script: PWEventPcapDownload
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
-      burstsize: {}
       eventId:
         simple: ${Protectwise.Event.[0].id}
-      filename: {}
-      waitms: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Download PCAPs related to the requested events. Supports rate throttling.
-      id: b98cdc2b-7d21-44b5-8f5e-b62612c0b57a
-      iscommand: false
-      name: PWEventPcapDownload
-      script: PWEventPcapDownload
-      type: regular
-      version: -1
-    taskid: b98cdc2b-7d21-44b5-8f5e-b62612c0b57a
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-  "5":
-    id: "5"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      burstsize: {}
-      filename: {}
-      id:
-        simple: ${Protectwise.Observation.[0].id}
-      sensorId:
-        simple: ${Protectwise.Observation.[0].sensorId}
-      waitms: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Download PCAPs related to the specified observations. Supports rate throttling.
-      id: dc7d1141-3bfb-4373-882a-f535a946cc1a
-      iscommand: false
-      name: PWObservationPcapDownload
-      script: PWObservationPcapDownload
-      type: regular
-      version: -1
-    taskid: dc7d1141-3bfb-4373-882a-f535a946cc1a
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-  "6":
-    id: "6"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "2"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      end:
-        simple: 2020-03-25T12:00:00
-      eventType: {}
-      ip: {}
-      killChainStage: {}
-      maxLimit: {}
-      minLimit: {}
-      nextPage: {}
-      observationStage: {}
-      reverseOrder: {}
-      start:
-        simple: 2015-03-25T12:00:00
-      threatCategory: {}
-      threatLevel: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Searches for events. Events are resources that describe a threat and contains a collection of observations. Deprecated - use the protectwise-search-events command.
-      id: 6a02e167-1478-4e23-8251-d2888c05d7a4
-      iscommand: true
-      name: protectwise-search-events
-      script: '|||protectwise-search-events'
-      type: regular
-      version: -1
-    taskid: 6a02e167-1478-4e23-8251-d2888c05d7a4
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-  "7":
-    id: "7"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 4b2fdc7f-ab5b-447a-8071-a781efeea76d
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-    taskid: 4b2fdc7f-ab5b-447a-8071-a781efeea76d
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-  "8":
-    id: "8"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "3"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      end:
-        simple: 2020-03-25T12:00:00
-      hasKillChain: {}
-      ip: {}
-      killChainStage: {}
-      maxLimit: {}
-      minLimit: {}
-      nextPage: {}
-      reverseOrder: {}
-      sensorId:
-        simple: ${Protectwise.Event.[0].sensorId}
-      signatureId: {}
-      start:
-        simple: 2015-03-25T12:00:00
-      threatCategory: {}
-      threatLevel: {}
-      type: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Searches for observations in ProtectWise. Deprecated - use the protectwise-search-observations command.
-      id: 052b4d67-8d16-4fda-868e-4605ec58486b
-      iscommand: true
-      name: protectwise-search-observations
-      script: '|||protectwise-search-observations'
-      type: regular
-      version: -1
-    taskid: 052b4d67-8d16-4fda-868e-4605ec58486b
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -314,13 +133,124 @@ tasks:
           "y": 720
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 010017f6-07cd-4a1a-8e8a-3548911703c4
+    type: regular
+    task:
+      id: 010017f6-07cd-4a1a-8e8a-3548911703c4
+      version: -1
+      name: PWObservationPcapDownload
+      description: Download PCAPs related to the specified observations. Supports
+        rate throttling.
+      script: PWObservationPcapDownload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        simple: ${Protectwise.Observation.[0].id}
+      sensorId:
+        simple: ${Protectwise.Observation.[0].sensorId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 81642c57-1a93-4ab2-8f95-e67c1ec36885
+    type: title
+    task:
+      id: 81642c57-1a93-4ab2-8f95-e67c1ec36885
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 763d17ca-6b65-4246-80be-99aad1cd8085
+    type: regular
+    task:
+      id: 763d17ca-6b65-4246-80be-99aad1cd8085
+      version: -1
+      name: protectwise-search-observations
+      description: Searches for observations in ProtectWise. Deprecated - use the
+        protectwise-search-observations command.
+      script: '|||protectwise-search-observations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end:
+        simple: 2020-03-25T12:00:00
+      sensorId:
+        simple: ${Protectwise.Event.[0].sensorId}
+      start:
+        simple: 2015-03-25T12:00:00
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1085,
         "width": 380,
         "x": 50,
         "y": 50

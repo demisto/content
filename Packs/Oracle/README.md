@@ -20,10 +20,10 @@ You will need to use the information described [here](https://docs.paloaltonetwo
 When configuring the `Database Connection` the `SQL Query` should look as follows:
 
 ```
-SELECT to_char(EVENT_TIMESTAMP,'YYYY/MM/DD HH:MM:SS.mi') as DB_TIMESTAMP, UNIFIED_AUDIT_TRAIL.*
+SELECT UNIFIED_AUDIT_TRAIL.*
 FROM UNIFIED_AUDIT_TRAIL
-WHERE to_char(EVENT_TIMESTAMP,'YYYY/MM/DD HH:MM:SS.mi') > ?
-ORDER BY  DB_TIMESTAMP DESC;
+WHERE UNIFIED_AUDIT_TRAIL.EVENT_TIMESTAMP > ?
+ORDER BY UNIFIED_AUDIT_TRAIL.EVENT_TIMESTAMP DESC;
 ```
 
 Make sure to use the correct value for "Retrieval Value", to match the Rising Column value type.

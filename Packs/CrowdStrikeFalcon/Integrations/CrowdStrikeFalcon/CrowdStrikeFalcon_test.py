@@ -15,7 +15,7 @@ SERVER_URL = 'https://4.4.4.4'
 
 
 def load_json(file: str):
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 
@@ -81,6 +81,12 @@ def test_incident_to_incident_context():
     from CrowdStrikeFalcon import incident_to_incident_context
     res = incident_to_incident_context(input_data.response_incident.copy())
     assert res == incident_context
+
+
+def test_idp_detectionin_to_incident_context():
+    from CrowdStrikeFalcon import idp_detection_to_incident_context
+    res = idp_detection_to_incident_context(input_data.response_idp_detection.copy())
+    assert res == input_data.context_idp_detection
 
 
 def test_create_json_iocs_list():
@@ -2185,6 +2191,7 @@ class TestFetch:
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
 
+    @freeze_time("2020-08-26 17:22:13 UTC")
     def test_old_fetch_to_new_fetch(self, set_up_mocks, mocker):
         """
         Tests the change of logic done in fetch. Validates that it's done smoothly
@@ -2197,6 +2204,7 @@ class TestFetch:
 
         """
         from CrowdStrikeFalcon import fetch_incidents
+        mocker.patch.object(demisto, 'params', return_value={})
         mocker.patch.object(demisto, 'getLastRun',
                             return_value={'first_behavior_detection_time': '2020-09-04T09:16:10Z',
                                           'detection_offset': 2,
@@ -2205,29 +2213,31 @@ class TestFetch:
                                           'incident_offset': 4,
                                           })
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:20:11Z', 'offset': 4, 'limit': 2},
-                                                          {'time': '2020-09-04T09:22:10Z', 'last_fetched_incident': '3',
-                                                           'offset': 4}]
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}]
 
-    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
+    @freeze_time("2020-08-26 17:22:13 UTC")
+    def delete_offset_test(self, set_up_mocks, mocker):
         """
-        Tests the correct flow of fetch
+        Tests the change of logic done in fetch. Validates that it's done smoothly
         Given:
-            `getLastRun` which holds only `first_behavior_time`
+            Old getLastRun which holds two lists with offset key
         When:
-            2 results are returned (which equals the FETCH_LIMIT)
+            The offset is inside the lastRun
         Then:
-            The `time` changed to the last detection that fetched and an `offset` of 2 is added.
+            The offset is deleted from the lastRun
+
         """
 
-        mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{'time': '2020-09-04T09:16:10Z'}, {}])
         from CrowdStrikeFalcon import fetch_incidents
-
+        mocker.patch.object(demisto, 'params', return_value={})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[{'time': '2020-09-04T09:16:10Z', 'offset': 2},
+                                          {'time': '2020-09-04T09:22:10Z', 'offset': 4}])
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:20:11Z',
-                                                             'offset': 2, 'limit': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
+                                                          {'time': '2020-09-04T09:22:10Z'}]
 
+    @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         """
         Tests the correct flow of fetch
@@ -2240,7 +2250,7 @@ class TestFetch:
         """
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{'time': '2020-09-04T09:16:10Z',
-                                          'offset': 2}, {}])
+                                          'offset': 2}, {}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
@@ -2248,8 +2258,8 @@ class TestFetch:
                                                 'max_severity_displayname': 'Low'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][0] == {'time': '2020-09-04T09:16:11Z',
-                                                             'offset': 0, 'limit': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == {
+            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2265,7 +2275,7 @@ class TestFetch:
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'getLastRun', return_value=[{
             'time': '2020-09-04T09:16:10Z',
-        }, {}])
+        }, {}, {}])
         incidents = fetch_incidents()
         for incident in incidents:
             assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
@@ -2275,14 +2285,18 @@ class TestFetch:
         [
             ('Incident ID:', ['Incidents'], 2),
             ('Detection ID:', ['Detections'], 2),
-            ('Detection ID:', ['Detections', 'Incidents'], 4)
+            ('Detection ID:', ['Detections', 'Incidents'], 4),
+            ('Incident ID:', ['Endpoint Incident'], 2),
+            ('Detection ID:', ['Endpoint Detection'], 2),
+            ('Detection ID:', ['Endpoint Detection', 'Endpoint Incident'], 4),
+            ('IDP Detection ID: ', ['IDP Detection'], 2)
         ],
     )
     def test_fetch_returns_all_types(self, requests_mock, set_up_mocks, mocker, expected_name,
                                      fetch_incidents_or_detections, incidents_len):
         """
-        Tests that fetch incidents returns incidents and detections types, depends on
-        the value of fetch_incidents_or_detections.
+        Tests that fetch incidents returns incidents, detections, endpoint incidents, endpoint detection,
+        and idp detections types. depends on the value of fetch_incidents_or_detections.
         Given:
             fetch_incidents_or_detections parameter.
         When:
@@ -2292,15 +2306,24 @@ class TestFetch:
             Validate the results contains only incidents when fetch_incidents_or_detections = ['Incidents']
             Validate the results contains detection and incidents when
              fetch_incidents_or_detections = ['Detections', 'Incidents']
+            Validate the results contains only detection when fetch_incidents_or_detections = ['Endpoint Detections'],
+            Validate the results contains only incidents when fetch_incidents_or_detections = ['Endpoint Incidents']
+            Validate the results contains detection and incidents when
+             fetch_incidents_or_detections = ['Endpoint Detections', 'Endpoint Incidents']
+            Validate the results contains only IDP detection when fetch_incidents_or_detections = ['IDP Detections'],
 
         """
         from CrowdStrikeFalcon import fetch_incidents
-        mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}])
+        mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}, {}])
 
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
+        requests_mock.get(f'{SERVER_URL}/alerts/queries/alerts/v1', json={'resources': ['a:ind:1', 'a:ind:2']})
+        requests_mock.post(f'{SERVER_URL}/alerts/entities/alerts/v1',
+                           json={'resources': [{'composite_id': 'a:ind:1', 'start_time': '2020-09-04T09:16:11.000Z'},
+                                               {'composite_id': 'a:ind:2', 'start_time': '2020-09-04T09:16:11.000Z'}]})
 
         mocker.patch.object(
             demisto,
@@ -2345,25 +2368,38 @@ class TestIncidentFetch:
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
 
-    def test_new_fetch_with_offset(self, set_up_mocks, mocker):
-        mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{}, {'time': '2020-09-04T09:16:10Z'}])
+    def delete_offset_test(self, set_up_mocks, mocker):
+        """
+        Tests the change of logic done in fetch. Validates that it's done smoothly
+        Given:
+            Old getLastRun which holds two lists with offset key
+        When:
+            The offset is inside the lastRun
+        Then:
+            The offset is deleted from the lastRun
+        """
+
         from CrowdStrikeFalcon import fetch_incidents
-
+        mocker.patch.object(demisto, 'params', return_value={})
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[{'time': '2020-09-04T09:16:10Z', 'offset': 2},
+                                          {'time': '2020-09-04T09:22:10Z', 'offset': 4}])
         fetch_incidents()
-        assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
-                                                             'offset': 2, 'last_fetched_incident': 'ldt:1', 'limit': 2}
+        assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
+                                                          {'time': '2020-09-04T09:22:10Z'}]
 
+    @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
-                                                                      'offset': 2}])
+                                                                      'offset': 2}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'}]})
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
-                                                             'last_fetched_incident': 'ldt:1', 'offset': 0, 'limit': 2}
+                                                             'limit': 2,
+                                                             'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
         """Tests the addition of incident_type field to the context
@@ -2373,7 +2409,6 @@ class TestIncidentFetch:
             2 results are returned (which equals the FETCH_LIMIT)
         Then:
             "incident_type": "incident" is in raw result returned by the indicator
-
         """
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       }])
@@ -2384,12 +2419,12 @@ class TestIncidentFetch:
 
 
 def get_fetch_data():
-    with open('./test_data/test_data.json', 'r') as f:
+    with open('./test_data/test_data.json') as f:
         return json.loads(f.read())
 
 
 def get_fetch_data2():
-    with open('./test_data/test_data2.json', 'r') as f:
+    with open('./test_data/test_data2.json') as f:
         return json.loads(f.read())
 
 
@@ -2596,7 +2631,7 @@ def test_upload_ioc_command_fail(requests_mock, mocker):
     )
     with pytest.raises(DemistoException) as excinfo:
         upload_ioc_command(ioc_type='md5', value='testmd5')
-    assert "Failed to create IOC. Please try again." == excinfo.value.args[0]
+    assert excinfo.value.args[0] == "Failed to create IOC. Please try again."
 
 
 def test_upload_ioc_command_successful(requests_mock):
@@ -3018,6 +3053,7 @@ def test_update_custom_ioc_command(requests_mock):
             'indicators': [{'id': ioc_id, 'severity': updated_severity}]
         }:
             return True
+        return None
 
     requests_mock.patch(
         f'{SERVER_URL}/iocs/entities/indicators/v1',
@@ -3082,7 +3118,7 @@ def test_get_ioc_device_count_command_does_not_exist(requests_mock, mocker):
     )
     mocker.patch(RETURN_ERROR_TARGET)
     res = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
-    assert 'No results found for md5 - testmd5' == res
+    assert res == 'No results found for md5 - testmd5'
 
 
 def test_get_ioc_device_count_command_exists(requests_mock):
@@ -3105,8 +3141,8 @@ def test_get_ioc_device_count_command_exists(requests_mock):
         status_code=200,
     )
     result = get_ioc_device_count_command(ioc_type='md5', value='testmd5')
-    assert 'Indicator of Compromise **md5:testmd5** device count: **1**' == result['HumanReadable']
-    assert 'md5:testmd5' == result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID']
+    assert result['HumanReadable'] == 'Indicator of Compromise **md5:testmd5** device count: **1**'
+    assert result['EntryContext']['CrowdStrike.IOC(val.ID === obj.ID)'][0]['ID'] == 'md5:testmd5'
 
 
 def test_get_process_details_command_not_exists(requests_mock, mocker):
@@ -3278,7 +3314,7 @@ def test_search_device_command(requests_mock):
     result = outputs[0].to_context()
 
     context = result.get('EntryContext')
-    for key, value in context.items():
+    for key, _value in context.items():
         if 'Device' in key:
             assert context[key] == device_context
         if 'Endpoint' in key:
@@ -3978,22 +4014,28 @@ def test_get_modified_remote_data_command(mocker):
     """
     Given
         - arguments - lastUpdate time
-        - raw incidents and detection (results of get_incidents_ids and get_fetch_detections)
+        - raw incidents, detection, and idp_detection (results of get_incidents_ids, get_fetch_detections,
+          and get_idp_detections_ids)
     When
         - running get_modified_remote_data_command
     Then
-        - returns a list of incidents and detections IDs that were modified since the lastUpdate time
+        - returns a list of incidents, detections, and idp detections IDs that were modified since the lastUpdate time
     """
     from CrowdStrikeFalcon import get_modified_remote_data_command
     mock_get_incidents = mocker.patch('CrowdStrikeFalcon.get_incidents_ids',
                                       return_value={'resources': [input_data.remote_incident_id]})
     mock_get_detections = mocker.patch('CrowdStrikeFalcon.get_fetch_detections',
                                        return_value={'resources': [input_data.remote_detection_id]})
+    mock_get_idp_detections = mocker.patch('CrowdStrikeFalcon.get_idp_detections_ids',
+                                           return_value={'resources': [input_data.remote_idp_detection_id]})
     last_update = '2022-03-08T08:17:09Z'
+    last_update_idp_detection = '2022-03-08T08:17:09.000000Z'
     result = get_modified_remote_data_command({'lastUpdate': last_update})
     assert mock_get_incidents.call_args.kwargs['last_updated_timestamp'] == last_update
     assert mock_get_detections.call_args.kwargs['last_updated_timestamp'] == last_update
-    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id]
+    assert last_update_idp_detection in mock_get_idp_detections.call_args.kwargs['filter_arg']
+    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id,
+                                            input_data.remote_idp_detection_id]
 
 
 @pytest.mark.parametrize('status',
@@ -4219,7 +4261,6 @@ def test_error_in_get_detections_by_behaviors(mocker):
 
     # prepare
     from CrowdStrikeFalcon import get_detection_for_incident_command
-    mocker.patch.object
     mocker.patch('CrowdStrikeFalcon.get_behaviors_by_incident',
                  return_value={'resources': [{'dummy': 'test'}], 'meta': {'pagination': {'total': 1}}})
 
@@ -5377,3 +5418,49 @@ def test_ODS_delete_scheduled_scans_request(mocker, ids, scans_filter, url_param
     http_request = mocker.patch('CrowdStrikeFalcon.http_request')
     ODS_delete_scheduled_scans_request(ids, scans_filter)
     http_request.assert_called_with('DELETE', f'/ods/entities/scheduled-scans/v1?{url_params}', status_code=500)
+
+
+class mocker_gql_client:
+    def __init__(self, mock_responses, expected_after):
+        self.mock_responses = mock_responses
+        self.expected_after = expected_after
+        self.index = 0
+
+    def execute(self, idp_query, variable_values):
+        if 'after' not in variable_values or self.expected_after == variable_values.get('after', ""):
+            response = self.mock_responses[self.index]
+            self.index += 1
+            return response
+        return None
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_list_identity_entities_command(mocker, test_case):
+    """
+        Given:
+        - test case that point to the relevant test case in the json test data which include:
+          args, response mock, expected_after, expected_raw_response_len, expected hr, and expected_ec.
+        - Case 1: args with limit=1, some filter args, mock_response with 1 identity entity, and an empty expected_after
+        - Case 2: args with limit=50, page=size=1, page=2 mock_response with 2 response each have 1 identity entity,
+        and an empty expected_after that matches the endCursor of the first response.
+
+        When:
+        - Running list_identity_entities_command.
+
+        Then:
+        - Ensure that the response was parsed correctly and right HR, raw_response, and EC are returned.
+        - Case 1: Should return the parsed identity from the response and 1 response in the rew_response list.
+        - Case 2: Should return onle the second identity entity, and have 2 responses in the rew_response list.
+    """
+    from CrowdStrikeFalcon import list_identity_entities_command
+    import CrowdStrikeFalcon
+    test_data = load_json("./test_data/test_list_identity_entities_command.json").get(test_case, {})
+    expected_after = test_data.get('expected_after', "")
+    mock_responses = test_data.get('mock_responses', "")
+    mock_client = mocker_gql_client(mock_responses, expected_after)
+    mocker.patch.object(CrowdStrikeFalcon, "create_gql_client", return_value=mock_client)
+    args = test_data.get("args", {})
+    command_results = list_identity_entities_command(args)
+    assert test_data.get('expected_hr') == command_results.readable_output
+    assert test_data.get('expected_ec') == command_results.outputs
+    assert test_data.get('expected_res_len') == len(command_results.raw_response)

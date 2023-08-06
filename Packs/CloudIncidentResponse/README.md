@@ -1,9 +1,5 @@
 # Cloud Incident Response
 
-**Short Description:** This content Pack helps you automate collection, investigation, and remediation of incidents related to cloud infrastructure activities in AWS, Azure, and GCP.
-
-**Pack Description:**
-
 As enterprise resources are moving to the cloud, attackers develop dedicated attacks to be able to access, manipulate, and exfiltrate cloud information and resources. Adequate response and remediation of such attacks requires cloud knowledge and extensive context.
 
 This content pack helps you automate collection from cloud logs and then perform investigation and automated remediation of incidents based on cloud infrastructure activities in AWS, Azure, and GCP. It does not require an agent, resulting in a shorter time to resolution for cloud incidents.

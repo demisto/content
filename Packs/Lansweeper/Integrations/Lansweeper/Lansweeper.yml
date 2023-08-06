@@ -10,20 +10,18 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: The Lansweeper integration allows users to retrieve the asset details.
 display: Lansweeper
 name: Lansweeper
 script:
   commands:
-  - deprecated: false
-    description: Retrieve a list of all sites to which an application has access.
-    execution: false
+  - description: Retrieve a list of all sites to which an application has access.
     name: ls-site-list
     outputs:
     - contextPath: Lansweeper.Site.id
@@ -33,35 +31,22 @@ script:
       description: Site name.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the site ID to retrieve the assets.
 
         Note: To get site ID, execute ls-site-list command.
-      isArray: false
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: "Specify the IP address to retrieve the specific asset. \n\nNote:\
-        \ Supports multiple comma separated values."
+    - description: "Specify the IP address to retrieve the specific asset. \n\nNote: Supports multiple comma separated values."
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Number of records to retrieve in the response.
 
         Note: The minimum value supported is 1 and maximum value supported is 500.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Return a list of all assets associated with a given site and IP address.
-    execution: false
     name: ls-ip-hunt
     outputs:
     - contextPath: Lansweeper.IP.assetId
@@ -107,8 +92,7 @@ script:
       description: Model of the asset.
       type: String
     - contextPath: Lansweeper.IP.assetCustom.firmwareVersion
-      description: Firmware version, retrieved from plug and play devices via the
-        UPnP, DNS-SD or SSDP protocol.
+      description: Firmware version, retrieved from plug and play devices via the UPnP, DNS-SD or SSDP protocol.
       type: String
     - contextPath: Lansweeper.IP.assetCustom.purchaseDate
       description: When the asset was purchased.
@@ -138,8 +122,7 @@ script:
       description: State name of the asset.
       type: String
     - contextPath: Lansweeper.IP.operatingSystem.caption
-      description: Short description of the object. The string includes the operating
-        system version.
+      description: Short description of the object. The string includes the operating system version.
       type: String
     - contextPath: Lansweeper.IP.operatingSystem.productType
       description: Type of the operating system.
@@ -154,36 +137,22 @@ script:
       description: The name of the site to which the asset belongs.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Specify the site ID to retrieve the assets.
 
         Note: To get site ID, execute ls-site-list command.
-      isArray: false
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: "Specify the MAC address to retrieve the specific asset. \n\nNote:\
-        \ Supports multiple comma separated values."
+    - description: "Specify the MAC address to retrieve the specific asset. \n\nNote: Supports multiple comma separated values."
       isArray: true
       name: mac_address
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: |-
         Number of records to retrieve in the response.
 
         Note: The minimum value supported is 1 and maximum value supported is 500.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Return a list of all assets associated with a given site and MAC
-      address.
-    execution: false
+    description: Return a list of all assets associated with a given site and MAC address.
     name: ls-mac-hunt
     outputs:
     - contextPath: Lansweeper.Mac.assetId
@@ -229,8 +198,7 @@ script:
       description: Model of the asset.
       type: String
     - contextPath: Lansweeper.Mac.assetCustom.firmwareVersion
-      description: Firmware version, retrieved from plug and play devices via the
-        UPnP, DNS-SD or SSDP protocol.
+      description: Firmware version, retrieved from plug and play devices via the UPnP, DNS-SD or SSDP protocol.
       type: String
     - contextPath: Lansweeper.Mac.assetCustom.purchaseDate
       description: When the asset was purchased.
@@ -260,8 +228,7 @@ script:
       description: State name of the asset.
       type: String
     - contextPath: Lansweeper.Mac.operatingSystem.caption
-      description: Short description of the object. The string includes the operating
-        system version.
+      description: Short description of the object. The string includes the operating system version.
       type: String
     - contextPath: Lansweeper.Mac.operatingSystem.productType
       description: Type of the operating system.
@@ -275,11 +242,7 @@ script:
     - contextPath: Lansweeper.Mac.siteName
       description: The name of the site to which the asset belongs.
       type: String
-  dockerimage: demisto/python3:3.10.11.61265
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 from typing import Dict, List, Tuple, Any, Union, cast
 import xml.etree.ElementTree as ET_PHONE_HOME
 from copy import deepcopy
@@ -12,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 from dateutil.parser import parse as parsedate
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -457,7 +458,7 @@ def http_request(method: str, url_suffix: str, full_url: str = None, headers: Di
             data=data,
             files=files,
             headers=headers,
-            auth=auth,
+            auth=auth,  # type: ignore[arg-type]
             timeout=timeout
         )
 

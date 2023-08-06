@@ -1,31 +1,15 @@
 args:
-- default: false
-  description: Incident ID of the incident with which to update the canvas. If not
-    specified, updates the current incident.
-  isArray: false
+- description: Incident ID of the incident with which to update the canvas. If not specified, updates the current incident.
   name: incidentID
-  required: false
-  secret: false
-- default: false
-  description: Incident IDs to draw on the canvas and relate to the main incident.
-    The format can be a list of IDs or comma-separated values.
+- description: Incident IDs to draw on the canvas and relate to the main incident. The format can be a list of IDs or comma-separated values.
   isArray: true
   name: relatedIncidentsIDs
-  required: false
-  secret: false
-- default: false
-  description: Indicators to draw on the canvas. The format is a list of indicator
-    objects.
+- description: Indicators to draw on the canvas. The format is a list of indicator objects.
   isArray: true
   name: indicators
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: multipartite
-  description: The canvas layout. Can be "multipartite", "shell", "spring", "kamada_kawai",
-    or "circular".
-  isArray: false
+  description: The canvas layout. Can be "multipartite", "shell", "spring", "kamada_kawai", or "circular".
   name: layout
   predefined:
   - multipartite
@@ -33,19 +17,13 @@ args:
   - spring
   - kamada_kawai
   - circular
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'false'
   description: Override the canvas if it exists.
-  isArray: false
   name: overrideUserCanvas
   predefined:
   - 'true'
   - 'false'
-  required: false
-  secret: false
 comment: Draw incidents and indicators on the canvas to map and visualize their connections.
 commonfields:
   id: DrawRelatedIncidentsCanvas
@@ -54,12 +32,10 @@ enabled: true
 name: DrawRelatedIncidentsCanvas
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
 dockerimage: demisto/sklearn:1.0.0.49796
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.1.0
@@ -67,5 +43,5 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: 6.1.0
 marketplaces:
-  - xsoar
+- xsoar
 

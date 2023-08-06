@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 import hashlib
 import hmac
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from enum import Enum
 import urllib.parse
 
@@ -229,7 +229,7 @@ def get_indicator_reputation(client: Client, args_type: str, type_name: str, arg
         'ContentsFormat': formats['json'],
         'Contents': indicators,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('ThreatConnect URL Reputation for: {}'.format(args.get(args_type)),
+        'HumanReadable': tableToMarkdown(f'ThreatConnect URL Reputation for: {args.get(args_type)}',
                                          human_readable,
                                          headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': ec
@@ -695,6 +695,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         'HumanReadable': tableToMarkdown('ThreatConnect Groups', content, headers, removeNull=True),
         'EntryContext': context
     })
+    return None
 
 
 def tc_get_tags_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -703,7 +704,7 @@ def tc_get_tags_command(client: Client, args: dict) -> None:  # pragma: no cover
     name = args.get('name', '')
 
     if name:
-        name = 'tql=' + urllib.parse.quote(f'summary EQ "{name}" &'.encode('utf8'))
+        name = 'tql=' + urllib.parse.quote(f'summary EQ "{name}" &'.encode())
 
     url = f'/api/v3/tags?{name}resultStart={page}&resultLimit={limit}'
     response = client.make_request(Method.GET, url)
@@ -877,7 +878,7 @@ def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: 
     return_results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
-        'Contents': 'Indicator {} removed Successfully'.format(indicator_id)
+        'Contents': f'Indicator {indicator_id} removed Successfully'
     })
 
 
@@ -1121,7 +1122,7 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
     if args.get('incidentId', incident_id):
         payload['associatedGroups'] = {'data': [{'id': args.get('incidentId', incident_id)}], 'mode': mode}
     url = f'/api/v3/indicators/{indicator}'
-    response, = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore
+    response = client.make_request(Method.PUT, url, payload=json.dumps(payload))  # type: ignore[arg-type]
 
     if return_raw:
         return response.get('data'),
@@ -1136,6 +1137,7 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
                                          headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': ec
     })
+    return None
 
 
 def tc_tag_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1209,10 +1211,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
         payload['tags'] = {'data': tmp, 'mode': mode}
     if args.get('security_label', security_labels):
         security_labels = [{'name': args.get('security_label', security_labels)}]  # type: ignore
-        if mode != 'appends':
-            mode = 'replace'
-        else:
-            mode = 'append'
+        mode = 'replace' if mode != 'appends' else 'append'
         payload['securityLabels'] = {'data': security_labels, 'mode': mode}
     if args.get('associated_group_id', associated_group_id):
         payload['associatedGroups'] = {'data': [{'id': args.get('associated_group_id', associated_group_id)}],
@@ -1254,6 +1253,7 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
             'TC.Group(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
         }
     })
+    return None
 
 
 def tc_download_report(client: Client, args: dict):  # pragma: no cover
@@ -1300,7 +1300,7 @@ def add_group_attribute(client: Client, args: dict):  # pragma: no cover
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('The attribute was added successfully to group {}'.format(group_id), contents,
+        'HumanReadable': tableToMarkdown(f'The attribute was added successfully to group {group_id}', contents,
                                          headers=headers),
         'EntryContext': context
     })
@@ -1362,7 +1362,7 @@ def associate_indicator_to_group(client: Client, args: dict):  # pragma: no cove
         'ContentsFormat': formats['json'],
         'Contents': json.dumps(updated_group),
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': 'The indicator {} was associated successfully.'.format(associated_indicator_id),
+        'HumanReadable': f'The indicator {associated_indicator_id} was associated successfully.',
         'EntryContext': context
     })
 
@@ -1642,7 +1642,7 @@ def main(params):  # pragma: no cover
                         demisto.getParam('baseUrl'), verify=insecure, proxy=proxy)
         args = demisto.args()
         command = demisto.command()
-        if command in COMMANDS.keys():
+        if command in COMMANDS:
             COMMANDS[command](client, args)  # type: ignore
 
     except Exception as e:

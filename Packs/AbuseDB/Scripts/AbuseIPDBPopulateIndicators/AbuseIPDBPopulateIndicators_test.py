@@ -5,7 +5,12 @@ import demistomock as demisto
 
 
 @pytest.mark.parametrize(
-    "return_val, expected", [(None, None), ([{"Contents": ["1.1.1.1"]}], ["1.1.1.1"])]
+    "return_val, expected",
+    [
+        (None, None),
+        (["1.1.1.1"], ["1.1.1.1"]),
+        (["1.1.1.1", "2.2.2.2"], ["1.1.1.1", "2.2.2.2"]),
+    ],
 )
 def test_get_contents(mocker, return_val, expected):
     """

@@ -10,8 +10,7 @@ enabled: true
 script: ''
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.11.57890
+dockerimage: demisto/python3:3.10.12.63474
 dependson:
   must:
   - '|||code42-file-events-table'

@@ -1,5 +1,5 @@
 Fetch & triage Recorded Future Playbook Alerts
-This integration was integrated and tested with version 1.0 of RecordedFuturePlaybookAlerts
+This integration was integrated and tested with version 1.0.2 of RecordedFuturePlaybookAlerts
 
 ## Configure Recorded Future - Playbook Alerts on Cortex XSOAR
 

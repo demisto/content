@@ -1,14 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 # type: ignore
-from typing import Union, List, Dict
 from urllib.parse import urlparse
 import urllib3
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute
+from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute, MISPUser
 from pymisp.tools import GenericObjectGenerator, EMailObject
 import copy
 from pymisp.tools import FileObject
-
-from CommonServerPython import *
-
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
@@ -29,7 +28,6 @@ def warn(*args):
     """
     Do nothing with warnings
     """
-    pass
 
 
 # Disable requests warnings
@@ -241,7 +239,7 @@ ATTRIBUTE_FIELDS = [
 ]
 
 
-def extract_error(error: list) -> List[dict]:
+def extract_error(error: list) -> list[dict]:
     """
     Extracting errors raised by PYMISP into readable response, for more information and examples
     please see UT: test_extract_error.
@@ -259,7 +257,7 @@ def extract_error(error: list) -> List[dict]:
     } for err in error]
 
 
-def dict_to_generic_object_format(args: dict) -> List[dict]:
+def dict_to_generic_object_format(args: dict) -> list[dict]:
     """
     Converts args dict into a list, please see GenericObjectGenerator Class in Pymisp.
     Args:
@@ -275,7 +273,7 @@ def dict_to_generic_object_format(args: dict) -> List[dict]:
     return [{k: v} for k, v in args.items()]
 
 
-def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectGenerator:
+def build_generic_object(template_name: str, args: list[dict]) -> GenericObjectGenerator:
     """
 
     Args:
@@ -298,14 +296,14 @@ def build_generic_object(template_name: str, args: List[dict]) -> GenericObjectG
     return misp_object
 
 
-def misp_convert_timestamp_to_date_string(timestamp: Union[str, int]) -> str:
+def misp_convert_timestamp_to_date_string(timestamp: str | int) -> str:
     """
     Gets a timestamp from MISP response (1546713469) and converts it to human readable format
     """
     return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%dT%H:%M:%SZ') if timestamp else ""
 
 
-def replace_keys_from_misp_to_context_data(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]:
+def replace_keys_from_misp_to_context_data(obj_to_build: dict | list | str) -> dict | list | str:
     """
     Replacing keys from MISP's format to Demisto's (as appear in ENTITIESDICT)
 
@@ -446,10 +444,7 @@ def convert_timestamp_to_readable(attribute, event):
 
 def found_event_with_bad_threat_level_id(found_related_events):
     bad_threat_level_ids = ["1", "2", "3"]
-    for event in found_related_events.values():
-        if event['Threat Level ID'] in bad_threat_level_ids:
-            return True
-    return False
+    return any(event["Threat Level ID"] in bad_threat_level_ids for event in found_related_events.values())
 
 
 def get_score(attribute_tags_ids, event_tags_ids, malicious_tag_ids, suspicious_tag_ids,
@@ -537,6 +532,75 @@ def create_event_command(demisto_args: dict):
     )
 
 
+def add_user_to_misp(demisto_args: dict = {}):
+    """Adding a new user to MISP.
+
+    Args:
+        demisto_args (dict): Demisto args
+    """
+    new_user = MISPUser()
+    new_user.email = demisto_args.get('email')
+    new_user.org_id = demisto_args.get('org_id')
+    new_user.role_id = demisto_args.get('role_id')
+    new_user.password = demisto_args.get('password')
+    response = PYMISP.add_user(new_user)
+    if 'errors' in response:
+        raise DemistoException(f'Failed to add user.\nError message: {response}')
+    else:
+        human_readable = f"## MISP add user\nNew user was added to MISP.\nEmail:{new_user.email}"
+        response = response.get('User', {})
+        return CommandResults(readable_output=human_readable,
+                              raw_response=response,
+                              outputs=response,
+                              outputs_prefix='MISP.User')
+
+
+def get_organizations_info():
+    """
+    Display organization ids and names.
+    """
+    organizations = PYMISP.organisations()
+    org_info = []
+    for organization in organizations:
+        org_id = organization.get('Organisation', {}).get('id')
+        org_name = organization.get('Organisation', {}).get('name')
+        if org_id and org_name:
+            org_info.append({'name': org_name, 'id': org_id})
+    if org_info:
+        human_readable = tableToMarkdown('MISP Organizations', org_info, headers=['id', 'name'], removeNull=True)
+    else:
+        human_readable = 'There are no organization ids and names'
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Organization',
+        outputs=org_info,
+        raw_response=org_info
+    )
+
+
+def get_role_info():
+    """
+    Display role ids and names.
+    """
+    roles = PYMISP.roles()
+    role_info = []
+    for role in roles:
+        role_name = role.get('Role', {}).get('name')
+        role_id = role.get('Role', {}).get('id')
+        if role_name and role_id:
+            role_info.append({'name': role_name, 'id': role_id})
+    if role_info:
+        human_readable = tableToMarkdown('MISP Roles', role_info, headers=['id', 'name'], removeNull=True)
+    else:
+        human_readable = 'There are no role ids and names'
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='MISP.Role',
+        outputs=role_info,
+        raw_response=role_info
+    )
+
+
 def add_attribute(event_id: int = None, internal: bool = False, demisto_args: dict = {}, new_event: MISPEvent = None):
     """Adding attribute to a given MISP event object
     This function can be called as an independence command or as part of another command (create event for example)
@@ -576,7 +640,7 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
     new_event.add_attribute(**attributes_args)
     PYMISP.update_event(event=new_event)
     if internal:
-        return
+        return None
 
     value = attributes_args.get('value')
     updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
@@ -607,18 +671,14 @@ def reputation_value_validation(value, dbot_type):
         hash_format = get_hash_type(value)
         if hash_format == 'Unknown':
             raise DemistoException('Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256')
-    if dbot_type == 'IP':
-        if not is_ip_valid(value):
-            raise DemistoException(f"Error: The given IP address: {value} is not valid")
-    if dbot_type == 'DOMAIN':
-        if not re.compile(DOMAIN_REGEX, regexFlags).match(value):
-            raise DemistoException(f"Error: The given domain: {value} is not valid")
-    if dbot_type == 'URL':
-        if not re.compile(urlRegex, regexFlags).match(value):
-            raise DemistoException(f"Error: The given url: {value} is not valid")
-    if dbot_type == 'EMAIL':
-        if not re.compile(emailRegex, regexFlags).match(value):
-            raise DemistoException(f"Error: The given email address: {value} is not valid")
+    if dbot_type == 'IP' and not is_ip_valid(value):
+        raise DemistoException(f"Error: The given IP address: {value} is not valid")
+    if dbot_type == 'DOMAIN' and not re.compile(DOMAIN_REGEX, regexFlags).match(value):
+        raise DemistoException(f"Error: The given domain: {value} is not valid")
+    if dbot_type == 'URL' and not re.compile(urlRegex, regexFlags).match(value):
+        raise DemistoException(f"Error: The given url: {value} is not valid")
+    if dbot_type == 'EMAIL' and not re.compile(emailRegex, regexFlags).match(value):
+        raise DemistoException(f"Error: The given email address: {value} is not valid")
 
 
 def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_ids, reliability, attributes_limit):
@@ -746,6 +806,7 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
         return Common.EMAIL(address=value, dbot_score=dbot_score)
     if dbot_type == "URL":
         return Common.URL(url=value, dbot_score=dbot_score)
+    return None
 
 
 def build_misp_complex_filter(demisto_query: str):
@@ -768,7 +829,7 @@ def build_misp_complex_filter(demisto_query: str):
     regex_and = r'(AND:)([^\;]+)(;)?'
     regex_or = r'(OR:)([^\;]+)(;)?'
     regex_not = r'(NOT:)([^\;]+)(;)?'
-    misp_query_params = dict()
+    misp_query_params: Dict[Any, Any] = {}
 
     match_and = re.search(regex_and, demisto_query, re.MULTILINE)
     match_or = re.search(regex_or, demisto_query, re.MULTILINE)
@@ -828,7 +889,7 @@ def prepare_args_to_search(controller):
     return args_to_misp_format
 
 
-def build_attributes_search_response(response: Union[dict, requests.Response],
+def build_attributes_search_response(response: dict | requests.Response,
                                      include_correlations=False) -> dict:
     """
     Convert the response of attribute search returned from MISP to the context output format.
@@ -840,7 +901,10 @@ def build_attributes_search_response(response: Union[dict, requests.Response],
 
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-    attributes = response_object.get('Attribute')
+    if isinstance(response_object, dict):
+        attributes = response_object.get('Attribute')
+    else:  # Response
+        attributes = response_object.json().get('Attribute')
     return get_limit_attribute_search_outputs(attributes)
 
 
@@ -897,11 +961,14 @@ def build_sighting_output_from_attribute_search_response(attribute):
         ]
 
 
-def build_attributes_search_response_return_only_values(response_object: Union[dict, requests.Response]) -> list:
+def build_attributes_search_response_return_only_values(response_object: dict | requests.Response) -> list:
     """returns list of attributes' values that match the search query when user set the arg 'compact' to True"""
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-    attributes = response_object.get('Attribute')
+    if isinstance(response_object, dict):
+        attributes = response_object.get('Attribute', [])
+    else:  # Response
+        attributes = response_object.json().get('Attribute', [])
     return [attribute.get('value') for attribute in attributes]
 
 
@@ -950,24 +1017,26 @@ def search_attributes(demisto_args: dict) -> CommandResults:
 
     response = PYMISP.search(**args)
     if response:
+        response_for_context_list = []
+        response_for_context_dict = {}
         if outputs_should_include_only_values:
-            response_for_context = build_attributes_search_response_return_only_values(response)
-            number_of_results = len(response_for_context)
+            response_for_context_list = build_attributes_search_response_return_only_values(response)
+            number_of_results = len(response_for_context_list)
             md = tableToMarkdown(f"MISP search-attributes returned {number_of_results} attributes",
-                                 response_for_context[:number_of_results], ["Value"])
+                                 response_for_context_list[:number_of_results], ["Value"])
         else:
-            response_for_context = build_attributes_search_response(response, include_correlations)
-            attribute_highlights = attribute_response_to_markdown_table(response_for_context)
+            response_for_context_dict = build_attributes_search_response(response, include_correlations)
+            attribute_highlights = attribute_response_to_markdown_table(response_for_context_dict)
 
             pagination_message = f"Current page size: {limit}\n"
-            if len(response_for_context) == limit:
+            if len(response_for_context_dict) == limit:
                 pagination_message += f"Showing page {page} out others that may exist"
             else:
                 pagination_message += f"Showing page {page}"
             md = tableToMarkdown(
-                f"MISP search-attributes returned {len(response_for_context)} attributes\n {pagination_message}",
+                f"MISP search-attributes returned {len(response_for_context_dict)} attributes\n {pagination_message}",
                 attribute_highlights, removeNull=True)
-
+        response_for_context = response_for_context_list or response_for_context_dict
         return CommandResults(
             raw_response=response,
             readable_output=md,
@@ -979,7 +1048,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 
 
-def build_events_search_response(response: Union[dict, requests.Response], demisto_args=dict()) -> dict:
+def build_events_search_response(response: dict | requests.Response, demisto_args={}) -> dict:
     """
     Convert the response of event search returned from MISP to the context output format.
     please note: attributes are excluded from search-events output as the information is too big. User can use the
@@ -990,7 +1059,10 @@ def build_events_search_response(response: Union[dict, requests.Response], demis
     response_object = copy.deepcopy(response)
     if isinstance(response_object, str):
         response_object = json.loads(json.dumps(response_object))
-    events = [event.get('Event') for event in response_object]
+    if isinstance(response_object, requests.Response):
+        events = [event.get('Event') for event in response_object.json()]
+    else:  # dict
+        events = [event.get('Event') for event in response_object]
     for i in range(0, len(events)):
         # Filter object from keys in event_args
         events[i] = {key: events[i].get(key) for key in EVENT_FIELDS if key in events[i]}
@@ -1031,18 +1103,21 @@ def event_to_human_readable_tag_list(event):
     event_tags = event.get('Tag', [])
     if event_tags:
         return [tag.get('Name') for tag in event_tags]
+    return None
 
 
 def event_to_human_readable_galaxy_list(event):
     event_galaxies = event.get('Galaxy', [])
     if event_galaxies:
         return [galaxy.get('Name') for galaxy in event.get('Galaxy')]
+    return None
 
 
 def event_to_human_readable_object_list(event):
     event_objects = event.get('Object', [])
     if event_objects:
         return [event_object.get('ID') for event_object in event.get('Object')]
+    return None
 
 
 def event_to_human_readable(response: dict):
@@ -1251,8 +1326,8 @@ def add_events_from_feed(demisto_args: dict, use_ssl: bool, proxies: dict):
     limit = arg_to_number(demisto_args.get('limit', 2), "limit", required=True)
     try:
         uri_list = requests.get(osint_url, verify=use_ssl, headers=headers, proxies=proxies).json()
-        events_ids = list()  # type: List[Dict[str, int]]
-        for index, uri in enumerate(uri_list, 1):
+        events_ids = []  # type: List[Dict[str, int]]
+        for _index, uri in enumerate(uri_list, 1):
             response = requests.get(f'{url}/{uri}.json', verify=use_ssl, headers=headers, proxies=proxies).json()
             misp_new_event = MISPEvent()
             misp_new_event.load(response)
@@ -1289,7 +1364,12 @@ def add_object(event_id: str, obj: MISPObject):
         convert_timestamp_to_readable(attribute, None)
     response['Object']['timestamp'] = misp_convert_timestamp_to_date_string(response.get('Object', {}).get('timestamp'))
     formatted_response = replace_keys_from_misp_to_context_data(response)
-    formatted_response.update({"ID": event_id})
+    if isinstance(formatted_response, str):
+        formatted_response = f'{formatted_response} ID:{event_id}'
+    elif isinstance(formatted_response, dict):
+        formatted_response.update({"ID": event_id})
+    else:
+        formatted_response.append({"ID": event_id})
 
     human_readable = f'Object has been added to MISP event ID {event_id}'
     return CommandResults(
@@ -1302,7 +1382,7 @@ def add_object(event_id: str, obj: MISPObject):
 
 def add_file_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     file_path = demisto.getFilePath(entry_id).get('path')
     obj = FileObject(file_path)
     return add_object(event_id, obj)
@@ -1310,7 +1390,7 @@ def add_file_object(demisto_args: dict):
 
 def add_email_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     email_path = demisto.getFilePath(entry_id).get('path')
     name = demisto.getFilePath(entry_id).get('name', '')
     if name.endswith(".msg"):
@@ -1325,7 +1405,7 @@ def add_domain_object(demisto_args: dict):
     domain-ip description: https://www.misp-project.org/objects.html#_domain_ip
     """
     text = demisto_args.get('text')
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     domain = demisto_args.get('name')
     obj = MISPObject('domain-ip')
     ips = argToList(demisto_args.get('ip'))
@@ -1346,7 +1426,7 @@ def add_url_object(demisto_args: dict):
         'last_seen',
         'first_seen'
     ]
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     url = demisto_args.get('url')
     url_parse = urlparse(url)
     url_obj = [{'url': url}]
@@ -1365,9 +1445,9 @@ def add_url_object(demisto_args: dict):
 
 
 def add_generic_object_command(demisto_args: dict):
-    event_id = demisto_args.get('event_id')
-    template = demisto_args.get('template')
-    attributes = demisto_args.get('attributes').replace("'", '"')
+    event_id = demisto_args.get('event_id', '')
+    template = demisto_args.get('template', '')
+    attributes = demisto_args.get('attributes', '').replace("'", '"')
     try:
         args = json.loads(attributes)
         if not isinstance(args, list):
@@ -1384,7 +1464,7 @@ def convert_arg_to_misp_args(demisto_args, args_names):
 
 
 def add_ip_object(demisto_args: dict):
-    event_id = demisto_args.get('event_id')
+    event_id = demisto_args.get('event_id', '')
     ip_object_args = [
         'dst_port',
         'src_port',
@@ -1463,7 +1543,7 @@ def create_updated_attribute_instance(demisto_args: dict, attribute_uuid: str) -
 
 
 def update_attribute_command(demisto_args: dict) -> CommandResults:
-    attribute_uuid = demisto_args.get('attribute_uuid')
+    attribute_uuid = demisto_args.get('attribute_uuid', '')
     attribute_instance = create_updated_attribute_instance(demisto_args, attribute_uuid)
     attribute_instance_response = PYMISP.update_attribute(attribute=attribute_instance, attribute_id=attribute_uuid)
     if isinstance(attribute_instance_response, dict) and attribute_instance_response.get('errors'):
@@ -1519,7 +1599,7 @@ def set_event_attributes_command(demisto_args: dict) -> CommandResults:
     if 'errors' in event:
         raise DemistoException(f'Event ID: {event_id} has not found in MISP: \nError message: {event}')
     try:
-        attribute_data = json.loads(demisto_args.get("attribute_data"))
+        attribute_data = json.loads(demisto_args.get("attribute_data", ''))
     except Exception as e:
         raise DemistoException(f'Invalid attribute_data: \nError message: {str(e)}')
     for event_attribute in event.attributes:
@@ -1661,6 +1741,12 @@ def main():
             return_results(set_event_attributes_command(args))
         elif command == "misp-check-warninglist":
             return_results(warninglist_command(args))
+        elif command == "misp-add-user":
+            return_results(add_user_to_misp(args))
+        elif command == "misp-get-organization-info":
+            return_results(get_organizations_info())
+        elif command == "misp-get-role-info":
+            return_results(get_role_info())
     except PyMISPError as e:
         return_error(e.message)
     except Exception as e:

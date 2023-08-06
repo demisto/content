@@ -12,92 +12,64 @@ configuration:
 - additionalinfo: API key required for additional authorization.
   display: API Key
   name: aw_tenant_code
-  required: true
   type: 4
-- additionalinfo: Username of administrative account with read access.
-  display: Username
-  name: credentials
-  required: true
+  hidden: true
+  required: false
+- name: aw_tenant_code_creds
   type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  required: false
+- display: Username
+  name: credentials
+  type: 9
+  additionalinfo: Username of administrative account with read access.
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: VMware Workspace ONE UEM integration allows users to search enrolled corporate or employee-owned devices, provides detailed information about each device such as its serial number, installed OS's, pending OS updates, network details, and much more leveraging Workspace ONE UEM's (formerly AirWatch MDM) API.
 display: VMware Workspace ONE UEM (AirWatch MDM)
 name: VMware Workspace ONE UEM (AirWatch MDM)
 script:
   commands:
   - arguments:
-    - default: false
-      description: Filters devices based on enrolled username.
-      isArray: false
+    - description: Filters devices based on enrolled username.
       name: user
-      required: false
-      secret: false
-    - default: false
-      description: 'Filters devices based on the model. For example: iPhone.'
-      isArray: false
+    - description: 'Filters devices based on the model. For example: iPhone.'
       name: model
-      required: false
-      secret: false
-    - default: false
-      description: "Filter devices based on device's platform type. For example: Apple, Android, WindowsPC, etc."
-      isArray: false
+    - description: "Filter devices based on device's platform type. For example: Apple, Android, WindowsPC, etc."
       name: platform
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filters devices based on the date when the devices were last seen.
 
         Format accepted:
         (<number> <time unit>, e.g., "12 hours ago", "7 days ago", "1 week", "1 month") or (<date> <time>, e.g. "yyyy-mm-ddTHH-MM-SS") or ( "YYYY-MM-ddTHH:mm:ss.sssZ", e.g. 2020-07-22T07:10:02.782Z) or (<date>, e.g. "2020-07-22").
-      isArray: false
       name: last_seen
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Filters devices based on ownership type. Possible values are: Corporate owned, Employee owned, Shared, or Undefined.'
-      isArray: false
       name: ownership
       predefined:
       - Corporate owned
       - Employee owned
       - Shared
       - Undefined
-      required: false
-      secret: false
-    - default: false
-      description: Limits the search to a given Organization Group, defaults to the user's Organization Group.
-      isArray: false
+    - description: Limits the search to a given Organization Group, defaults to the user's Organization Group.
       name: lgid
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Filters search results to return results based on the page number. Starts from 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Maximum records per page.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: deviceid
       description: 'Sorts results based on the provided field. Possible values are: model, lastseen, ownership, platform, deviceid, etc.'
-      isArray: false
       name: order_by
       predefined:
       - model
@@ -105,22 +77,14 @@ script:
       - ownership
       - platform
       - deviceid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASC
       description: 'Sorts results based on the given sorting order. Possible values are: ASC or DESC.'
-      isArray: false
       name: sort_order
       predefined:
       - ASC
       - DESC
-      required: false
-      secret: false
-    deprecated: false
     description: Searches device(s) using the query information provided.
-    execution: false
     name: vmwuem-devices-search
     outputs:
     - contextPath: VMwareWorkspaceONEUEM.Device.Uuid
@@ -412,17 +376,12 @@ script:
       description: The value of the DEP token source.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The unique identifier of the device. Example: 153B4D9D-24DC-416B-91F9-94253D623611.
         Note: To get the uuid, use the command 'vmwuem-devices-search'.
-      isArray: false
       name: uuid
       required: true
-      secret: false
-    deprecated: false
     description: Get basic information about the device.
-    execution: false
     name: vmwuem-device-get
     outputs:
     - contextPath: VMwareWorkspaceONEUEM.Device.Uuid
@@ -531,17 +490,12 @@ script:
       description: Title of the link.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The unique identifier of the device. Example: 153B4D9D-24DC-416B-91F9-94253D623611.
         Note: To get the uuid, use the command 'vmwuem-devices-search'.
-      isArray: false
       name: uuid
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a list of all available OS and software updates for the specified device.
-    execution: false
     name: vmwuem-device-os-updates-list
     outputs:
     - contextPath: VMwareWorkspaceONEUEM.OSUpdate.Uuid
@@ -622,11 +576,7 @@ script:
     - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Uuid
       description: The universally unique identifier of the OS update.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

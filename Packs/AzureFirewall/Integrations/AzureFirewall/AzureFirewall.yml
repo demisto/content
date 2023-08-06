@@ -10,8 +10,8 @@ configuration:
 - display: Client ID.
   defaultvalue: 'f5b37a76-f937-4c57-a9b5-31dab1c7e236'
   name: client_id
-  required: false
   type: 14
+  required: false
 - displaypassword: Subscription ID.
   name: subscription_id
   required: true
@@ -19,39 +19,36 @@ configuration:
   hiddenusername: true
 - displaypassword: Tenant ID.
   name: tenant_id
-  required: false
   type: 9
   hiddenusername: true
+  required: false
 - displaypassword: Client Secret.
   name: client_secret
-  required: false
   type: 9
   hiddenusername: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 14
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  required: false
   type: 14
   hiddenusername: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+  required: false
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
+  required: false
 - display: API Version.
   name: api_version
   required: true
@@ -59,68 +56,41 @@ configuration:
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
-description: Azure Firewall is a cloud-native and intelligent network firewall security
-  service that provides breed threat protection for cloud workloads running in Azure.
-  It's a fully stateful, firewall as a service, with built-in high availability and
-  unrestricted cloud scalability.
+  required: false
+description: Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service, with built-in high availability and unrestricted cloud scalability.
 display: Azure Firewall
 name: Azure Firewall
 script:
   commands:
-  - deprecated: false
-    description: Tests the connectivity to Azure.
-    execution: false
+  - description: Tests the connectivity to Azure.
     name: azure-firewall-auth-test
-  - deprecated: false
-    description: Run this command to start the authorization process and follow the
-      instructions in the command results.
-    execution: false
+  - description: Run this command to start the authorization process and follow the instructions in the command results.
     name: azure-firewall-auth-start
-  - deprecated: false
-    description: Run this command to complete the authorization process. Should be
-      used after running the azure-firewall-auth-start command.
-    execution: false
+  - description: Run this command to complete the authorization process. Should be used after running the azure-firewall-auth-start command.
     name: azure-firewall-auth-complete
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication
-      process.
-    execution: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-firewall-auth-reset
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: resource_group
       description: The resource that contains the firewalls to list.
-      isArray: false
       name: resource
       predefined:
       - resource_group
       - subscription
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: List Azure firewalls in the specified resource group or subscription.
-    execution: false
     name: azure-firewall-list
     outputs:
     - contextPath: AzureFirewall.Firewall.id
@@ -133,41 +103,24 @@ script:
       description: Firewall resource location.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of firewall names to retrieve.
+    - description: Comma-separated list of firewall names to retrieve.
       isArray: true
       name: firewall_names
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Indicates if the command was scheduled.
-      isArray: false
       name: polling
       predefined:
-        - 'True'
-        - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+      - 'True'
+      - 'False'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve Azure firewall information.
-    execution: false
     name: azure-firewall-get
     polling: true
     outputs:
@@ -181,189 +134,102 @@ script:
       description: Firewall resource location.
       type: String
   - arguments:
-    - default: false
-      description: The name of the Azure firewall that contains the collections.
-      isArray: false
+    - description: The name of the Azure firewall that contains the collections.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Azure policy that contains the collections.
-      isArray: false
+    - description: The name of the Azure policy that contains the collections.
       name: policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The names of the rule collection type to retrieve.
-      isArray: false
       name: rule_type
       predefined:
       - application_rule
       - network_rule
       - nat_rule
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
-    description: List the collection rules in the firewall or policy. One of the arguments
-      'firewall_name' or 'policy' must be provided.
-    execution: false
+    description: List the collection rules in the firewall or policy. One of the arguments 'firewall_name' or 'policy' must be provided.
     name: azure-firewall-rule-collection-list
     outputs:
     - contextPath: AzureFirewall.RuleCollection.name
       description: Rule collection unique name.
       type: String
   - arguments:
-    - default: false
-      description: The name of the Azure firewall that contains the rules.
-      isArray: false
+    - description: The name of the Azure firewall that contains the rules.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Azure policy that contains the rules.
-      isArray: false
+    - description: The name of the Azure policy that contains the rules.
       name: policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The names of the rule types to retrieve. Required when the
-        "firewall_name" argument is provided.
-      isArray: false
+      description: The names of the rule types to retrieve. Required when the "firewall_name" argument is provided.
       name: rule_type
       predefined:
       - application_rule
       - network_rule
       - nat_rule
-      required: false
-      secret: false
-    - default: false
-      description: The name of the rule collection that contains the rules.
-      isArray: false
+    - description: The name of the rule collection that contains the rules.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
-    description: List rules in the firewall or in the policy. One of the arguments 'firewall_name' or
-      'policy' must be provided.
-    execution: false
+    description: List rules in the firewall or in the policy. One of the arguments 'firewall_name' or 'policy' must be provided.
     name: azure-firewall-rule-list
     outputs:
     - contextPath: AzureFirewall.Rule.name
       description: Rule name.
       type: String
   - arguments:
-    - default: false
-      description: The name of the firewall that contains the rule.
-      isArray: false
+    - description: The name of the firewall that contains the rule.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the Azure policy that contains the rules.
-      isArray: false
+    - description: The name of the Azure policy that contains the rules.
       name: policy
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The name of the rule type collection that contains the rule.
-        Required when the "firewall_name" argument is provided.
-      isArray: false
+      description: The name of the rule type collection that contains the rule. Required when the "firewall_name" argument is provided.
       name: rule_type
       predefined:
       - application_rule
       - network_rule
       - nat_rule
-      required: false
-      secret: false
-    - default: false
-      description: The name of the rule collection that contains the rule.
-      isArray: false
+    - description: The name of the rule collection that contains the rule.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      description: The name of the rule to retrieve.
-      isArray: false
+    - description: The name of the rule to retrieve.
       name: rule_name
       required: true
-      secret: false
-    deprecated: false
-    description: Retrieve rule information. One of the arguments 'firewall_name' or
-      'policy' must be provided.
-    execution: false
+    description: Retrieve rule information. One of the arguments 'firewall_name' or 'policy' must be provided.
     name: azure-firewall-rule-get
     outputs:
     - contextPath: AzureFirewall.Rule.name
       description: Rule name.
       type: String
   - arguments:
-    - default: false
-      description: The name of the Azure policy to create.
-      isArray: false
+    - description: The name of the Azure policy to create.
       name: policy_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Turned-off
       description: The operation mode for threat intelligence.
-      isArray: false
       name: threat_intelligence_mode
       predefined:
       - Alert
       - Deny
       - Turned-off
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of IP addresses for the threat intelligence
-        whitelist.
+    - description: Comma-separated list of IP addresses for the threat intelligence whitelist.
       isArray: true
       name: ips
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of fully qualified domain names for the threat
-        intelligence whitelist. For example : *.microsoft.com,email.college.edu .'
+    - description: 'Comma-separated list of fully qualified domain names for the threat intelligence whitelist. For example : *.microsoft.com,email.college.edu .'
       isArray: true
       name: domains
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Policy resource region location.
-      isArray: false
       name: location
       predefined:
       - northcentralus
@@ -401,61 +267,33 @@ script:
       - westus3
       - jioindiawest
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Standard
       description: Tier of an Azure policy.
-      isArray: false
       name: tier
       predefined:
       - Standard
       - Premium
       required: true
-      secret: false
-    - default: false
-      description: The ID of the parent firewall policy from which rules are inherited.
-      isArray: false
+    - description: The ID of the parent firewall policy from which rules are inherited.
       name: base_policy_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: Whether to enable the DNS proxy on firewalls attached to the firewall policy.
-      isArray: false
       name: enable_proxy
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of custom DNS servers.
+    - description: Comma-separated list of custom DNS servers.
       isArray: true
       name: dns_servers
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a firewall policy. This command only creates the policy resource.
-      In order to attach the policy to a firewall, run the 'azure-firewall-policy-attach'
-      command.
-    execution: false
+    description: Create a firewall policy. This command only creates the policy resource. In order to attach the policy to a firewall, run the 'azure-firewall-policy-attach' command.
     name: azure-firewall-policy-create
     polling: true
     outputs:
@@ -466,77 +304,40 @@ script:
       description: Policy resource name.
       type: String
   - arguments:
-    - default: false
-      description: The name of the Azure policy to update.
-      isArray: false
+    - description: The name of the Azure policy to update.
       name: policy_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The operation mode for threat intelligence.
-      isArray: false
       name: threat_intelligence_mode
       predefined:
       - Alert
       - Deny
       - Turned-off
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of IP addresses for the threat intelligence
-        whitelist.
+    - description: Comma-separated list of IP addresses for the threat intelligence whitelist.
       isArray: true
       name: ips
-      required: false
-      secret: false
-    - default: false
-      description: 'Comma-separated list of fully qualified domain names for the threat
-        intelligence whitelist. For example : *.microsoft.com,email.college.edu .'
+    - description: 'Comma-separated list of fully qualified domain names for the threat intelligence whitelist. For example : *.microsoft.com,email.college.edu .'
       isArray: true
       name: domains
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the parent firewall policy from which rules are inherited.
-      isArray: false
+    - description: The ID of the parent firewall policy from which rules are inherited.
       name: base_policy_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to enable the DNS Proxy on Firewalls attached to the Firewall Policy.
-      isArray: false
       name: enable_proxy
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of custom DNS servers.
+    - description: Comma-separated list of custom DNS servers.
       isArray: true
       name: dns_servers
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Update the policy resource. The command will update the provided arguments.
-    execution: false
     polling: true
     name: azure-firewall-policy-update
     outputs:
@@ -547,41 +348,24 @@ script:
       description: Policy resource name.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of policy names to retrieve.
+    - description: Comma-separated list of policy names to retrieve.
       isArray: true
       name: policy_names
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Indicates if the command was scheduled.
-      isArray: false
       name: polling
       predefined:
-        - 'True'
-        - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+      - 'True'
+      - 'False'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve policy information.
-    execution: false
     polling: true
     name: azure-firewall-policy-get
     outputs:
@@ -592,45 +376,28 @@ script:
       description: Policy resource name.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of policy names to delete.
+    - description: Comma-separated list of policy names to delete.
       isArray: true
       name: policy_names
       required: true
-      secret: false
-    deprecated: false
     description: Delete policy resource.
-    execution: false
     name: azure-firewall-policy-delete
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: resource_group
       description: The resource that contains the policies to list.
-      isArray: false
       name: resource
       predefined:
       - resource_group
       - subscription
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: List the policy in the resource group or subscription.
-    execution: false
     name: azure-firewall-policy-list
     outputs:
     - contextPath: AzureFirewall.Policy.id
@@ -640,37 +407,20 @@ script:
       description: Policy resource name.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of firewall names to which the policy will be
-        attached.
+    - description: Comma-separated list of firewall names to which the policy will be attached.
       isArray: true
       name: firewall_names
       required: true
-      secret: false
-    - default: false
-      description: The ID of the policy to attach.
-      isArray: false
+    - description: The ID of the policy to attach.
       name: policy_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Attach a policy to a firewall. The policy and firewall have to belong to the same tier.
-    execution: false
     polling: true
     name: azure-firewall-policy-attach
     outputs:
@@ -684,32 +434,17 @@ script:
       description: Firewall resource location.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of firewall names from which the policy will
-        be removed.
+    - description: Comma-separated list of firewall names from which the policy will be removed.
       isArray: true
       name: firewall_names
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Remove a policy from the firewall. This command will detach the policy
-      and firewall, but will not delete the policy.
-    execution: false
+    description: Remove a policy from the firewall. This command will detach the policy and firewall, but will not delete the policy.
     polling: true
     name: azure-firewall-policy-detach
     outputs:
@@ -723,55 +458,30 @@ script:
       description: Firewall resource location.
       type: String
   - arguments:
-    - default: false
-      description: The name of the firewall that contains the collection.
-      isArray: false
+    - description: The name of the firewall that contains the collection.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the policy that contains the collection.
-      isArray: false
+    - description: The name of the policy that contains the collection.
       name: policy
-      required: false
-      secret: false
-    - default: false
-      description: The name of the network rule collection to create.
-      isArray: false
+    - description: The name of the network rule collection to create.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      description: The priority of the network rule collection resource. Minimum value
-        is 100, maximum value is 65000.
-      isArray: false
+    - description: The priority of the network rule collection resource. Minimum value is 100, maximum value is 65000.
       name: collection_priority
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The action type of a rule collection.
-      isArray: false
       name: action
       predefined:
       - Allow
       - Deny
       required: true
-      secret: false
-    - default: false
-      description: The name of the network rule to create.
-      isArray: false
+    - description: The name of the network rule to create.
       name: rule_name
       required: true
-      secret: false
-    - default: false
-      description: The description of the created rule.
-      isArray: false
+    - description: The description of the created rule.
       name: description
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Comma-separated list of protocols for the created rule.
       isArray: true
       name: protocols
@@ -781,33 +491,21 @@ script:
       - ICMP
       - Any
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule source type.
-      isArray: false
       name: source_type
       predefined:
       - ip_address
       - ip_group
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of source IP addresses for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_address'.
+    - description: Comma-separated list of source IP addresses for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_address'.
       isArray: true
       name: source_ips
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of source IP group IDs for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_group'.
+    - description: Comma-separated list of source IP group IDs for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_group'.
       isArray: true
       name: source_ip_group_ids
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule destination type.
-      isArray: false
       name: destination_type
       predefined:
       - ip_address
@@ -815,114 +513,55 @@ script:
       - service_tag
       - fqdn
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument.
-        Supports IP addresses, service tag names, IP group IDs and FQDN addresses.
+    - description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs and FQDN addresses.
       isArray: true
       name: destinations
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of destination ports.
+    - description: Comma-separated list of destination ports.
       isArray: true
       name: destination_ports
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a network rule collection in a firewall or policy. The command will return firewall or policy rule collection resource information. One of the arguments 'firewall_name' or
-      'policy'  must be provided.
-    execution: false
+    description: Create a network rule collection in a firewall or policy. The command will return firewall or policy rule collection resource information. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-collection-create
   - arguments:
-    - default: false
-      description: The name of the firewall that contains the collection.
-      isArray: false
+    - description: The name of the firewall that contains the collection.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the policy the contains the collection.
-      isArray: false
+    - description: The name of the policy the contains the collection.
       name: policy
-      required: false
-      secret: false
-    - default: false
-      description: The name of the network rule collection to delete.
-      isArray: false
+    - description: The name of the network rule collection to delete.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Delete a network rule collection from the firewall or policy. One of the
-      arguments 'firewall_name' or 'policy'  must be provided.
-    execution: false
+    description: Delete a network rule collection from the firewall or policy. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-collection-delete
   - arguments:
-    - default: false
-      description: The name of the firewall that contains the collection.
-      isArray: false
+    - description: The name of the firewall that contains the collection.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the policy that contains the collection.
-      isArray: false
+    - description: The name of the policy that contains the collection.
       name: policy
-      required: false
-      secret: false
-    - default: false
-      description: The name of the network rule collection that contains the rule.
-      isArray: false
+    - description: The name of the network rule collection that contains the rule.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      description: The name of the network rule to create.
-      isArray: false
+    - description: The name of the network rule to create.
       name: rule_name
       required: true
-      secret: false
-    - default: false
-      description: The description of the created rule.
-      isArray: false
+    - description: The description of the created rule.
       name: description
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Comma-separated list of protocols for the created rule.
       isArray: true
       name: protocols
@@ -932,33 +571,21 @@ script:
       - ICMP
       - Any
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule source type.
-      isArray: false
       name: source_type
       predefined:
       - ip_address
       - ip_group
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of source IP addresses for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_address'.
+    - description: Comma-separated list of source IP addresses for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_address'.
       isArray: true
       name: source_ips
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of source IP group IDs for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_group'.
+    - description: Comma-separated list of source IP group IDs for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_group'.
       isArray: true
       name: source_ip_group_ids
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule destination type.
-      isArray: false
       name: destination_type
       predefined:
       - ip_address
@@ -966,74 +593,37 @@ script:
       - service_tag
       - fqdn
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument.
-        Supports IP addresses, service tag names, IP group IDs and FQDN addresses.
+    - description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs and FQDN addresses.
       isArray: true
       name: destinations
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of destination ports.
+    - description: Comma-separated list of destination ports.
       isArray: true
       name: destination_ports
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a network rule in the firewall or policy rule collection. One of the arguments
-      'firewall_name' or 'policy'  must be provided.
-    execution: false
+    description: Create a network rule in the firewall or policy rule collection. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-create
   - arguments:
-    - default: false
-      description: The name of the firewall that contains the collection.
-      isArray: false
+    - description: The name of the firewall that contains the collection.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the policy that contains the collection.
-      isArray: false
+    - description: The name of the policy that contains the collection.
       name: policy
-      required: false
-      secret: false
-    - default: false
-      description: The name of the network rule collection to update.
-      isArray: false
+    - description: The name of the network rule collection to update.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      description: The name of the network rule to update.
-      isArray: false
+    - description: The name of the network rule to update.
       name: rule_name
       required: true
-      secret: false
-    - default: false
-      description: The new description of the rule.
-      isArray: false
+    - description: The new description of the rule.
       name: description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Comma-separated list of protocols for the rule.
       isArray: true
       name: protocols
@@ -1042,188 +632,90 @@ script:
       - UDP
       - ICMP
       - Any
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule source type.
-      isArray: false
       name: source_type
       predefined:
       - ip_address
       - ip_group
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of source IP addresses for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_address'.
+    - description: Comma-separated list of source IP addresses for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_address'.
       isArray: true
       name: source_ips
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of source IP group IDs for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_group'.
+    - description: Comma-separated list of source IP group IDs for the created rule. Must be provided when the 'source_type' argument is assigned to 'ip_group'.
       isArray: true
       name: source_ip_group_ids
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Rule destination type. Must be provided when the 'destinations' argument is provided.
-      isArray: false
       name: destination_type
       predefined:
       - ip_address
       - ip_group
       - service_tag
       - fqdn
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument.
-        Supports IP addresses, service tag names, IP group IDs and FQDN addresses.
+    - description: Comma-separated list of destinations for the created rule. Must be consistent with the provided 'destination_type' argument. Supports IP addresses, service tag names, IP group IDs and FQDN addresses.
       isArray: true
       name: destinations
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of destination ports.
+    - description: Comma-separated list of destination ports.
       isArray: true
       name: destination_ports
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Update the network rule in the firewall. The provided arguments will replace
-      the existing rule configuration. One of the arguments 'firewall_name' or 'policy'  must
-      be provided. The command will not replace the rule source or destination types.
-    execution: false
+    description: Update the network rule in the firewall. The provided arguments will replace the existing rule configuration. One of the arguments 'firewall_name' or 'policy'  must be provided. The command will not replace the rule source or destination types.
     polling: true
     name: azure-firewall-network-rule-update
   - arguments:
-    - default: false
-      description: The name of the firewall that contains the collection.
-      isArray: false
+    - description: The name of the firewall that contains the collection.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the policy that contains the collection.
-      isArray: false
+    - description: The name of the policy that contains the collection.
       name: policy
-      required: false
-      secret: false
-    - default: false
-      description: The name of the network rule collection to update.
-      isArray: false
+    - description: The name of the network rule collection to update.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of network rule names to delete from the collection.
+    - description: Comma-separated list of network rule names to delete from the collection.
       isArray: true
       name: rule_names
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Delete a network rule from the collection. One of the arguments 'firewall_name'
-      or 'policy'  must be provided.
-    execution: false
+    description: Delete a network rule from the collection. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-delete
   - arguments:
-    - default: false
-      description: The name of the firewall that contains the collection.
-      isArray: false
+    - description: The name of the firewall that contains the collection.
       name: firewall_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the policy that contains the collection.
-      isArray: false
+    - description: The name of the policy that contains the collection.
       name: policy
-      required: false
-      secret: false
-    - default: false
-      description: The name of the network rule collection to update.
-      isArray: false
+    - description: The name of the network rule collection to update.
       name: collection_name
       required: true
-      secret: false
-    - default: false
-      description: The priority of the network rule collection resource. Minimum
-        value is 100, maximum value us 65000.
-      isArray: false
+    - description: The priority of the network rule collection resource. Minimum value is 100, maximum value us 65000.
       name: priority
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The action type of a rule collection.
-      isArray: false
       name: action
       predefined:
       - Allow
       - Deny
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
-    description: Update a network rule collection in a firewall or policy. The command will update the provided arguments. One of the
-      arguments 'firewall_name' or 'policy'  must be provided. The command will return firewall or policy rule collection resource information.
-    execution: false
+    description: Update a network rule collection in a firewall or policy. The command will update the provided arguments. One of the arguments 'firewall_name' or 'policy'  must be provided. The command will return firewall or policy rule collection resource information.
     polling: true
     name: azure-firewall-network-rule-collection-update
   - arguments:
     - auto: PREDEFINED
-      default: false
-      description: The location that will be used as a reference for a version (not
-        as a filter based on location, the command will retrieve the list of service
-        tags with prefix details across all regions but limited to the cloud that
-        your subscription belongs to).
-      isArray: false
+      description: The location that will be used as a reference for a version (not as a filter based on location, the command will retrieve the list of service tags with prefix details across all regions but limited to the cloud that your subscription belongs to).
       name: location
       predefined:
       - northcentralus
@@ -1261,43 +753,23 @@ script:
       - westus3
       - jioindiawest
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve service tags information.
-    execution: false
     name: azure-firewall-service-tag-list
   - arguments:
-    - default: false
-      description: The name of the IP group resource to create.
-      isArray: false
+    - description: The name of the IP group resource to create.
       name: ip_group_name
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of IP addresses or IP address prefixes in
-        the IP group resource.
+    - description: Comma-separated list of IP addresses or IP address prefixes in the IP group resource.
       isArray: true
       name: ips
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The location of the IP group resource.
-      isArray: false
       name: location
       predefined:
       - northcentralus
@@ -1335,25 +807,13 @@ script:
       - westus3
       - jioindiawest
       required: true
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Create an IP group.
-    execution: false
     polling: true
     name: azure-firewall-ip-group-create
     outputs:
@@ -1367,44 +827,22 @@ script:
       description: List of IP addresses or IP address prefixes in the IP groups resource.
       type: String
   - arguments:
-    - default: false
-      description: The name of the IP group resource to update.
-      isArray: false
+    - description: The name of the IP group resource to update.
       name: ip_group_name
       required: true
-      secret: false
-    - default: false
-      description: Comma-separated list of IP addresses or IP address prefixes to
-        add to the IP group resource.
+    - description: Comma-separated list of IP addresses or IP address prefixes to add to the IP group resource.
       isArray: true
       name: ips_to_add
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of IP addresses or IP address prefixes to
-        remove from the IP group resource.
+    - description: Comma-separated list of IP addresses or IP address prefixes to remove from the IP group resource.
       isArray: true
       name: ips_to_remove
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Update an IP group. Add or remove IP addresses from the group.
-    execution: false
     polling: true
     name: azure-firewall-ip-group-update
     outputs:
@@ -1419,33 +857,20 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: resource_group
       description: The resource that contains the IP groups to list.
-      isArray: false
       name: resource
       predefined:
       - resource_group
       - subscription
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to retrieve. Minimum value is 1.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: List IP groups in a resource group or subscription.
-    execution: false
     name: azure-firewall-ip-group-list
     outputs:
     - contextPath: AzureFirewall.IPGroup.id
@@ -1458,41 +883,23 @@ script:
       description: List of IP addresses or IP address prefixes in the IP groups resource.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of IP group names resource to retrieve.
-      isArray: false
+    - description: Comma-separated list of IP group names resource to retrieve.
       name: ip_group_names
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: Indicates if the command was scheduled.
-      isArray: false
       name: polling
       predefined:
-        - 'True'
-        - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Indicates how long to wait between command executions (in seconds)
-        when the 'polling' argument is true. Minimum value is 10 seconds.
-      isArray: false
+      - 'True'
+      - 'False'
+    - defaultValue: '30'
+      description: Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds.
       name: interval
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
+    - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve IP group information.
-    execution: false
     polling: true
     name: azure-firewall-ip-group-get
     outputs:
@@ -1506,21 +913,13 @@ script:
       description: List of IP addresses or IP address prefixes in the IP groups resource.
       type: String
   - arguments:
-    - default: false
-      description: Comma-separated list of IP group names resource to delete.
+    - description: Comma-separated list of IP group names resource to delete.
       isArray: true
       name: ip_group_names
       required: true
-      secret: false
-    deprecated: false
     description: Delete an IP group resource.
-    execution: false
     name: azure-firewall-ip-group-delete
-  dockerimage: demisto/crypto:1.0.0.63672
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

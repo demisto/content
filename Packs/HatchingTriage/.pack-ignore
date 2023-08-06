@@ -2,7 +2,7 @@
 ignore=RM104
 
 [file:HatchingTriage.yml]
-ignore=IN145,BA124
+ignore=BA124
 
 [file:HatchingTriage_image.png]
 ignore=IM111
