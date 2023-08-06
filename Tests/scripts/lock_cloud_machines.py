@@ -24,7 +24,7 @@ def options_handler():
     parser.add_argument('--service_account', help='Path to gcloud service account.')
     parser.add_argument('--gcs_locks_path', help='Path to lock repo.')
     parser.add_argument('--ci_job_id', help='the job id.')
-    parser.add_argument('--test_machines_path', help='the name of the file with all the test machines.')
+    parser.add_argument('--test_machines', help='comma separated string contains all available machines.')
     parser.add_argument('--gitlab_status_token', help='gitlab token to get the job status.')
     parser.add_argument('--response_machine', help='file to update the chosen machine.')
     parser.add_argument('--lock_machine_name', help='a machine name to lock the specific machine')
@@ -276,14 +276,14 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
     return lock_machine_list
 
 
-def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_path, test_machines_path,
+def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_path, test_machines,
                                    number_machines_to_lock):
     """
     get the list of the available machines (or one specific given machine for debugging).
     Args:
         storage_bucket(google.cloud.storage.bucket.Bucket): google storage bucket where lock machine is stored.
         lock_machine_name(str): the name of the file with the list of the test machines.
-        test_machines_path(str): all the exiting machines.
+        test_machines(str): all the exiting machines.
         gcs_locks_path(str): the lock repository name.
         number_machines_to_lock(int): the number of the requested machines.
 
@@ -294,8 +294,7 @@ def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_
         list_machines = [lock_machine_name]
     else:
         logging.info('getting all machine names')  # We are looking for a free machine in all the available machines.
-        test_machines_list = storage_bucket.blob(f'{gcs_locks_path}/{test_machines_path}')
-        list_machines = test_machines_list.download_as_string().decode("utf-8").split()
+        list_machines = test_machines.split(',')
         random.shuffle(list_machines)
 
     if number_machines_to_lock > len(list_machines):
@@ -353,7 +352,7 @@ def main():
     logging.info('Starting to search for available machine')
 
     list_machines = create_list_of_machines_to_run(storage_bucket, options.lock_machine_name, options.gcs_locks_path,
-                                                   options.test_machines_path, options.number_machines_to_lock)
+                                                   options.test_machines, options.number_machines_to_lock)
 
     lock_machine_list = get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines,
                                                          options.gcs_locks_path, options.number_machines_to_lock,
