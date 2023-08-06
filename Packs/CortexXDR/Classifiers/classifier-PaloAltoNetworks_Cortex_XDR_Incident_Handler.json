@@ -1,4 +1,5 @@
 {
+    "defaultIncidentType": "Cortex XDR Incident",
     "description": "Classifies Cortex XDR incidents.",
     "feed": false,
     "id": "Cortex XDR Incident Handler - Classifier",
