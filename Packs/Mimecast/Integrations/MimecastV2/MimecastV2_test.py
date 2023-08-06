@@ -6,6 +6,33 @@ import MimecastV2
 
 from CommonServerPython import *
 
+QUERY_XML = """<?xml version=\"1.0\"?>
+    <xmlquery trace=\"iql,muse\">
+    <metadata query-type=\"emailarchive\" archive=\"true\" active=\"false\" page-size=\"25\" startrow=\"0\">
+        <smartfolders/>
+        <return-fields>
+            <return-field>attachmentcount</return-field>
+            <return-field>status</return-field>
+            <return-field>subject</return-field>
+            <return-field>size</return-field>
+            <return-field>receiveddate</return-field>
+            <return-field>displayfrom</return-field>
+            <return-field>id</return-field>
+            <return-field>displayto</return-field>
+            <return-field>smash</return-field>
+            <return-field>displaytoaddresslist</return-field>
+            <return-field>displayfromaddress</return-field>
+        </return-fields>
+    </metadata>
+    <muse>
+        <text></text>
+        <date select=\"last_year\"/>
+        <sent></sent>
+        <docs select=\"optional\"></docs>
+        <route/>
+    </muse>
+    </xmlquery>"""
+
 # Parameters for Get arguments test
 policy_data = {
     'description': 'new',
@@ -569,35 +596,9 @@ def test_list_email_queues_command(mocker):
 
 
 def test_parse_queried_fields():
-    query = """<?xml version=\"1.0\"?>
-    <xmlquery trace=\"iql,muse\">
-    <metadata query-type=\"emailarchive\" archive=\"true\" active=\"false\" page-size=\"25\" startrow=\"0\">
-        <smartfolders/>
-        <return-fields>
-            <return-field>attachmentcount</return-field>
-            <return-field>status</return-field>
-            <return-field>subject</return-field>
-            <return-field>size</return-field>
-            <return-field>receiveddate</return-field>
-            <return-field>displayfrom</return-field>
-            <return-field>id</return-field>
-            <return-field>displayto</return-field>
-            <return-field>smash</return-field>
-            <return-field>isitchristmas</return-field>
-            <return-field>test_key</return-field>
-        </return-fields>
-    </metadata>
-    <muse>
-        <text></text>
-        <date select=\"last_year\"/>
-        <sent></sent>
-        <docs select=\"optional\"></docs>
-        <route/>
-    </muse>
-    </xmlquery>"""
-    assert MimecastV2.parse_queried_fields(query) == (
-        'attachmentcount', 'status', 'subject', 'size', 'receiveddate', 'displayfrom', 'id',
-        'displayto', 'smash', 'isitchristmas', 'test_key'
+    assert MimecastV2.parse_queried_fields(QUERY_XML) == (
+        "attachmentcount", "status", "subject", "size", "receiveddate", "displayfrom",
+        "id", "displayto", "smash", "displaytoaddresslist", "displayfromaddress",
     )
 
 
@@ -610,6 +611,14 @@ def test_query(mocker):
     Then
         - Make sure all return-field values are returned to context and human-readable.
     """
-    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    
+    query_data = util_load_json("test_data/query_response.json")
+    mocker.patch.object(MimecastV2, "http_request", return_value=query_data["response"])
+    mocker.patch.object(demisto, "args", return_value={"queryXml": QUERY_XML})
     result = MimecastV2.query()
-    result.get('outputs')
+    result.get("outputs")
+    assert (
+        result["HumanReadable"]
+        == "### Mimecast archived emails\n|Subject|Display From|Display To|Received Date|Size|Attachment Count|Status|ID|displayfromaddress|displaytoaddresslist|smash|\n|---|---|---|---|---|---|---|---|---|---|---|\n| Netting |  |  | 2023-08-06T07:23:00+0000 | 2262 | 0 | ARCHIVED | test1_id | test1 | {'displayableName': '', 'emailAddress': 'test1'} | test1_smash |\n| RE |  |  | 2023-08-06T07:23:00+0000 | 11370 | 0 | ARCHIVED | test2_id | test2 | {'displayableName': '', 'emailAddress': 'test2'} | test2_smash |\n| Re |  |  | 2023-08-06T07:23:00+0000 | 5280 | 0 | ARCHIVED | test3_id | test3 | {'displayableName': '', 'emailAddress': 'test3'} | test3_smash |\n"
+    )
+    assert result["Contents"] == query_data["query_contents"]
