@@ -312,6 +312,9 @@ def fetch_by_event_type(
                     event, start
                 )
                 if (
+                    # The event is only collected if it has not been collected before
+                    # Checks whether there is a list of suspected duplicate events,
+                    # If there is, then checks that the current event is not in the list of suspicious duplicate events.
                     not deduplicate_management.last_event_ids_suspected
                     or not deduplicate_management.is_duplicate(event, start)
                 ):
