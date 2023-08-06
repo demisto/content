@@ -1,17 +1,8 @@
 id: Quick Start Main Playbook
-version: 2
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: quick start
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Quick Start Main Playbook
-description: The main playbook for the quick start incident
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -173,16 +165,6 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    formDisplay:
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
-      isexternalrtl: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -313,6 +295,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -343,6 +326,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -373,6 +357,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -544,6 +529,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -639,6 +625,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -669,6 +656,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -699,6 +687,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -1006,6 +995,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -1038,6 +1028,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -1072,6 +1063,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -1106,6 +1098,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1241,6 +1234,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -1272,6 +1266,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1311,7 +1306,7 @@ inputs:
   description: You can use XSOAR, ServiceNow, Jira. Make sure to setup the ServiceNow and Jira integrations if you opt to choose these options.
   playbookInputQuery:
 outputs: []
-sourceplaybookid: edac1525-2658-407a-8dc1-0f054eb6cb7e
 fromversion: 6.10.0
 tests:
 - Run all tests
+description: 'The main playbook for the quick start incident'

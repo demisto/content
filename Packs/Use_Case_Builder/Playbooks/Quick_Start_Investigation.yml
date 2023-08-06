@@ -1,17 +1,8 @@
 id: Quick Start Investigation
-version: 3
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: quick start
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Quick Start Investigation
-description: This playbook contains the investigation steps in the Quick Start Playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -186,6 +178,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -218,6 +211,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -329,10 +323,10 @@ tasks:
       version: -1
       name: Entity Enrichment - Generic v4
       description: Enrich entities using one or more integrations.
-      playbookName: Entity Enrichment - Generic v4
       type: playbook
       iscommand: false
       brand: ""
+      playbookName: Entity Enrichment - Generic v4
     nexttasks:
       '#none#':
       - "6"
@@ -563,6 +557,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -712,6 +707,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -742,6 +738,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -1013,6 +1010,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1040,6 +1038,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -1105,8 +1104,8 @@ inputs:
   description: Set to true to add exclusion list tuning step to the workflow
   playbookInputQuery:
 outputs: []
-sourceplaybookid: 810cf469-1703-4b67-845e-434c67536b21
 quiet: true
 fromversion: 6.10.0
 tests:
 - Run all tests
+description: 'This playbook contains the investigation steps in the Quick Start Playbook'

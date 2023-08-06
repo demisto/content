@@ -1,5 +1,4 @@
 {
-    "cacheVersn": 0,
     "close": {
         "sections": [
             {
@@ -23,12 +22,7 @@
             }
         ]
     },
-    "definitionId": "",
-    "description": "",
-    "detached": false,
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -151,7 +145,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -160,13 +153,13 @@
                         "w": 2,
                         "wrapLabels": true,
                         "x": 0,
-                        "y": 3
+                        "y": 3,
+                        "maxH": null
                     },
                     {
                         "h": 2,
                         "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-6c6f8fb0-c403-11ed-9e57-8f1be96082a8",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -175,7 +168,8 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "description": "If you want to generate a use case using OOTB Content, select one of the use case categories below (Example, Phishing). Then Click the Generate Use Case Button",
@@ -219,7 +213,6 @@
                                 "startCol": 2
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -228,7 +221,8 @@
                         "w": 2,
                         "wrapLabels": false,
                         "x": 0,
-                        "y": 2
+                        "y": 2,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
@@ -255,7 +249,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -264,7 +257,8 @@
                         "w": 1,
                         "wrapLabels": true,
                         "x": 2,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
@@ -282,7 +276,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -291,7 +284,8 @@
                         "w": 1,
                         "wrapLabels": true,
                         "x": 2,
-                        "y": 7
+                        "y": 7,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -310,7 +304,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -318,7 +311,8 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 2,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -337,7 +331,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -345,14 +338,14 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 9
+                        "y": 9,
+                        "maxH": null
                     },
                     {
                         "h": 2,
                         "hideName": false,
                         "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-0df2d040-da02-11ed-a62e-fb60d2f387ac",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -363,7 +356,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "CARD",
@@ -406,7 +400,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -414,7 +407,8 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     }
                 ],
                 "type": "custom"
@@ -423,10 +417,8 @@
                 "hidden": true,
                 "id": "ertwnfqlln",
                 "name": "Use Case Definition Report",
-                "report": true,
                 "sections": [
                     {
-                        "displayType": "CARD",
                         "h": 6,
                         "hideName": false,
                         "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-sqdqs2kfxm-gmkvpzms0z-e19f3700-c402-11ed-9e57-8f1be96082a8",
@@ -550,12 +542,12 @@
                         "name": "Use Case Definition",
                         "static": false,
                         "w": 3,
-                        "wrapLabels": true,
                         "x": 0,
-                        "y": 1
+                        "y": 1,
+                        "displayType": "CARD",
+                        "wrapLabels": true
                     },
                     {
-                        "description": "",
                         "displayType": "CARD",
                         "h": 1,
                         "hideItemTitleOnlyOne": false,
@@ -563,15 +555,15 @@
                         "i": "sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460",
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 1,
                                 "fieldId": "customername",
                                 "height": 53,
                                 "id": "eab60ae0-e850-11ed-a517-45b7a9e96a13",
                                 "index": 0,
-                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-6llmfuetuv-field-changed-sqdqs2kfxm-hhnsd8m7vl-sqdqs2kfxm-field-changed-sqdqs2kfxm-us0fyi1dhf-sqdqs2kfxm-kvrp35jwwn-sqdqs2kfxm-field-changed-sqdqs2kfxm-15158640-ca50-11ed-8889-2b1f943d7460"
                             },
                             {
                                 "dropEffect": "move",
@@ -602,9 +594,10 @@
                         "name": "Incident Classification",
                         "static": false,
                         "w": 3,
-                        "wrapLabels": false,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "description": "",
+                        "wrapLabels": false
                     },
                     {
                         "displayType": "CARD",
@@ -735,7 +728,8 @@
                         "y": 13
                     }
                 ],
-                "type": "custom"
+                "type": "custom",
+                "report": true
             },
             {
                 "hidden": false,
@@ -753,6 +747,10 @@
                         "minW": 1,
                         "moved": false,
                         "name": "XSOAR in 5 minutes",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0,
                         "query": {
                             "categories": [],
                             "lastId": "",
@@ -763,11 +761,7 @@
                             "users": []
                         },
                         "queryType": "warRoomFilter",
-                        "static": false,
-                        "type": "invTimeline",
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "type": "invTimeline"
                     },
                     {
                         "displayType": "ROW",
@@ -1130,7 +1124,6 @@
                 "report": false,
                 "sections": [
                     {
-                        "description": "This shows the typical XSOAR Incident process. Alerts are ingested and categorized via Incident type, then playbooks are run to enrich, calculate alert severity, send notifications, etc. Then an analyst will review prior to containing or performing remediation steps.",
                         "displayType": "ROW",
                         "h": 16,
                         "hideItemTitleOnlyOne": true,
@@ -1149,16 +1142,17 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "XSOAR Incident Flow",
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "description": "This shows the typical XSOAR Incident process. Alerts are ingested and categorized via Incident type, then playbooks are run to enrich, calculate alert severity, send notifications, etc. Then an analyst will review prior to containing or performing remediation steps.",
+                        "maxH": null,
+                        "minW": 3
                     }
                 ],
                 "type": "custom"
@@ -1167,13 +1161,9 @@
                 "hidden": false,
                 "id": "6llmfuetuv",
                 "name": "Best Practice",
-                "report": true,
                 "sections": [
                     {
-                        "displayType": "ROW",
                         "h": 5,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": true,
                         "i": "sqdqs2kfxm-6llmfuetuv-field-changed-6llmfuetuv-sqdqs2kfxm-6llmfuetuv-field-changed-6llmfuetuv-sqdqs2kfxm-a12dfaa0-e831-11ed-8c14-711bf05ab2e9",
                         "items": [
                             {
@@ -1197,7 +1187,10 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "displayType": "ROW",
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true
                     },
                     {
                         "displayType": "ROW",
@@ -1258,12 +1251,14 @@
                         "y": 0
                     }
                 ],
-                "type": "custom"
+                "type": "custom",
+                "report": true
             },
             {
                 "hidden": false,
                 "id": "us0fyi1dhf",
                 "name": "Downloads",
+                "type": "custom",
                 "sections": [
                     {
                         "h": 9,
@@ -1288,14 +1283,13 @@
                         "x": 0,
                         "y": 0
                     }
-                ],
-                "type": "custom"
+                ]
             },
             {
-                "hidden": false,
                 "id": "warRoom",
                 "name": "War Room",
-                "type": "warRoom"
+                "type": "warRoom",
+                "hidden": false
             },
             {
                 "id": "workPlan",
@@ -1312,6 +1306,7 @@
                 "hidden": true,
                 "id": "caseinfoid",
                 "name": "Incident Info",
+                "type": "custom",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -1601,8 +1596,7 @@
                         "x": 1,
                         "y": 2
                     }
-                ],
-                "type": "custom"
+                ]
             },
             {
                 "hidden": true,
@@ -1665,21 +1659,19 @@
             }
         ]
     },
-    "fromServerVersion": "",
     "group": "incident",
     "id": "Use Case Builder",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
     "name": "Use Case Builder",
-    "packID": "",
-    "packName": "Use Case Builder 4-21",
     "quickView": {
         "sections": [
             {
                 "description": "",
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
                 "fields": [
                     {
                         "fieldId": "incident_customername",
@@ -1709,19 +1701,12 @@
                         "fieldId": "incident_usecasedevelopmentstage",
                         "isVisible": true
                     }
-                ],
-                "isVisible": true,
-                "name": "Basic Information",
-                "query": null,
-                "queryType": "",
-                "readOnly": false,
-                "type": ""
+                ]
             }
         ]
     },
-    "quickViewV2": null,
     "system": false,
-    "toServerVersion": "",
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.8.0",
+    "description": ""
 }

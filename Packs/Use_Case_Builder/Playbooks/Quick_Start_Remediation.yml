@@ -1,17 +1,8 @@
 id: Quick Start Remediation
-version: 2
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: quick start
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Quick Start Remediation
-description: This contains the remediation and triage steps for the Quick Start Investigation
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -193,6 +185,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -392,6 +385,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -769,6 +763,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -800,6 +795,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -830,6 +826,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -860,6 +857,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -890,6 +888,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -920,6 +919,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -950,6 +950,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -983,7 +984,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 5c451e74-8770-4d37-8af8-4bcd61579dae
 fromversion: 6.10.0
 tests:
 - Run all tests
+description: 'This contains the remediation and triage steps for the Quick Start Investigation'
