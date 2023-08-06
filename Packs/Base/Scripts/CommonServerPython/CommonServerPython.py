@@ -44,6 +44,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -11079,11 +11080,12 @@ def split_data_to_chunks(data, target_chunk_size):
     :type data: ``list`` or a ``string``
     :param data: A list of data or a string delimited with \n  to split to chunks.
     :type target_chunk_size: ``int``
-    :param target_chunk_size: The maximum size of each chunk.
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
 
-    :return: : An iterable of lists where each list contains events with approx size of chunk size.
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
+    target_chunk_size = min(target_chunk_size,  XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
@@ -11126,7 +11128,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
 
     :type chunk_size: ``int``
-    :param chunk_size: Advanced - The maximal size of each chunk size we send to API
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
     :return: None
     :rtype: ``None``
