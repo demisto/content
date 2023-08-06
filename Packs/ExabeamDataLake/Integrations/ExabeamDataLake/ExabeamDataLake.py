@@ -159,7 +159,7 @@ def query_datalake_command(client: Client, args: dict) -> CommandResults:
 
     response = client.query_datalake_request(search_query).get("responses", [{}])
 
-    if error := response[0].get("error"):
+    if error := response[0].get("error", {}):
         raise DemistoException(f"Error in query: {error.get('root_cause', [{}])[0].get('reason', 'Unknown error occurred')}")
 
     data_response = response[0].get("hits", {}).get("hits", [])
