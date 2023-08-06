@@ -717,7 +717,7 @@ def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
     if not (fields := ElementTree.fromstring(query_xml).find('.//return-fields')):  # noqa:S314 - argument set by user
         demisto.debug("could not find a 'return-fields' section - will only return default fields")
         return ()
-    return tuple(field.text for field in fields if field and field.text)
+    return tuple(field.text for field in fields if field is not None and field.text)
 
 
 DEFAULT_QUERY_KEYS = frozenset(('subject', 'displayfrom', 'displayto', 'receiveddate', 'size', 'attachmentcount', 'status', 'id'))

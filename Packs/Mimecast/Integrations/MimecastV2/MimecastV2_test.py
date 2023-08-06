@@ -584,6 +584,7 @@ def test_parse_queried_fields():
             <return-field>displayto</return-field>
             <return-field>smash</return-field>
             <return-field>isitchristmas</return-field>
+            <return-field>test_key</return-field>
         </return-fields>
     </metadata>
     <muse>
@@ -595,7 +596,8 @@ def test_parse_queried_fields():
     </muse>
     </xmlquery>"""
     assert MimecastV2.parse_queried_fields(query) == (
-        'attachmentcount', 'status', 'subject', 'size', 'receiveddate', 'display', 'id', 'displayto', 'smash', 'isitchristmas'
+        'attachmentcount', 'status', 'subject', 'size', 'receiveddate', 'displayfrom', 'id',
+        'displayto', 'smash', 'isitchristmas', 'test_key'
     )
 
 
