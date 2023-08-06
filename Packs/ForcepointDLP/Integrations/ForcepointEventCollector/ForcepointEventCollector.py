@@ -197,7 +197,7 @@ def fetch_events_command_sub(
     incidents = incidents_response["incidents"]
     for incident in incidents:
         if incident["id"] not in last_run_ids:
-            incident["_collector_type"] = "API"
+            incident["_collector_source"] = "API"
             events.append(incident)
             new_last_run_ids[to_str_time(incident["event_time"])].add(incident["id"])
             if len(events) == max_fetch:

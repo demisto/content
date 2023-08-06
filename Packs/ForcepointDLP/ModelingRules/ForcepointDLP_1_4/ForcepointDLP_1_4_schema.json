@@ -1,5 +1,9 @@
 {
     "forcepoint_forcepoint_dlp_raw": {
+        "_collector_source": {
+            "type": "string",
+            "is_array": false
+        },
         "eventid": {
             "type": "string",
             "is_array": false
