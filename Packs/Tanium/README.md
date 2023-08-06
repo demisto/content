@@ -7,7 +7,7 @@ This pack includes Cortex XSIAM content.
 ### Tanium Integrity Monitor logs
 In order to forward Tanium Integrity Monitor logs, follow the steps below.
 
-You will need to configure a Socket Receiver on Tanium side.
+You will need to configure a Socket Receiver on the Tanium side.
 
 1. Go to **Modules** > **Interact**.
 2. Copy the below question to the "Ask a Question" box under **Explore Data** and run it.
