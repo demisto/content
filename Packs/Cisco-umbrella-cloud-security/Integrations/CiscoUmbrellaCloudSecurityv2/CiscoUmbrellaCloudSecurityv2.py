@@ -434,12 +434,10 @@ def handle_pagination(
         tuple[list[dict[str, Any]] | dict[str, Any], list[dict[str, Any]] | dict[str, Any]]:
             A tuple containing the list of items and raw responses, or a single item and raw response if page is None.
     """
-    remaining_items = page_size or limit
-
     if page:
-        remaining_items = min(remaining_items, API_LIMIT)
-        demisto.debug(f'Calling list command with {args=}, {page=}, limit={remaining_items}')
-        raw_response = list_command(*args, page=page, limit=remaining_items, **kwargs)
+        page_size = min(page_size or DEFAULT_LIMIT, API_LIMIT)
+        demisto.debug(f'Calling list command with {args=}, {page=}, limit={page_size}')
+        raw_response = list_command(*args, page=page, limit=page_size, **kwargs)
 
         return raw_response.get('data', []), raw_response
 
@@ -449,7 +447,7 @@ def handle_pagination(
     raw_responses: list[dict[str, Any]] = []
 
     # Keep calling the API until the required amount of items have been met.
-    while remaining_items > 0:
+    while limit > 0:
         demisto.debug(f'Calling list command with {args=}, {page=}, limit={API_LIMIT}')
         raw_response = list_command(*args, page=page, limit=API_LIMIT, **kwargs)
 
@@ -461,8 +459,8 @@ def handle_pagination(
         received_items = len(output)
 
         # If the API returned more than the required amount of items, we need to trim the output.
-        if remaining_items < received_items:
-            output = output[:remaining_items]
+        if limit < received_items:
+            output = output[:limit]
 
         raw_responses.append(raw_response)
         outputs += output
@@ -472,7 +470,7 @@ def handle_pagination(
             demisto.debug(f'These are the last items in the API {page=}, stopping')
             break
 
-        remaining_items -= received_items
+        limit -= received_items
         page += 1
 
     return (get_single_or_full_list(obj) for obj in (outputs, raw_responses))
