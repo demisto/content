@@ -18,7 +18,7 @@ Get Computer Name and Last Logged In User and Integrity Monitor - Monitor Events
 4. Under **Name**, write "XSIAM Integrity Montior".
 5. From the **Content Set** dropdown, select **Base**.
 6. Verify that the text under **Question Text** matches the question mentioned on step 2.
-7. Check the "Reissue this question every" check box, and set it to 2 hours.
+7. Check the "Reissue this question every" checkbox, and set it to 2 hours.
 8. Go to **Modules** > **Connect**.
 9. Enter a name and description for the connection.
 10. From the **Source** dropdown, select **Saved Question**.
