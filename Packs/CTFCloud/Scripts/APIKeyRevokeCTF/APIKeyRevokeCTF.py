@@ -4,7 +4,7 @@ import secrets
 
 
 def validate(username):
-    if (username.lower() == "svc_dev"):
+    if (username.upper() == "AKIAZVSI4536365AD6WCJC"):
         return "You got it right.Removed previous access keys to this user.\nFlag: keepcalmandstaysecure"
     else:
         string="You got it wrong, the attacker still has an access to the organization.\nFlag:"
@@ -15,7 +15,7 @@ def validate(username):
 
 def main():
     args = demisto.args()
-    username = args.get('username')
+    username = args.get('accesskey')
     try:
         return_results(validate(username))
     except Exception as ex:
