@@ -64,31 +64,31 @@ FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
 def prepare_datetime_format(datetime_format: str):
-    """Prepared the format from ES to Python so that the Arrow format function will format it properly.
+    """Converting the format from ES to Python so that the Arrow format function will format it correctly.
 
     Args:
         datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'.
         see here for more examples: https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
 
     Returns:
-        A datetime format is python form 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
+        A datetime format in python from 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
     """
     return datetime_format.replace('yy', 'YY').replace('dd', 'DD')
 
 
 def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
-    """Prepared the format from ES to Python so that the Arrow format function will format it properly.
+    """Returns the datetime format of a field in an index.
 
     Args:
         es: An ES object.
-        index: The index form which to return the mapper.
-        field: The field form which to return the format.
+        index: The index from which to return the mapper.
+        field: The field from which to return the format.
 
     Returns:
-        A string represents the date time format for example 'yyyy-MM-dd HH:mm:ss'.
+        String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
     """
     mapping = es.indices.get_mapping(index=index)
-    datetime_field = mapping[index]['mappings']['properties'].get(field, {})
+    datetime_field = demisto.get(mapping, f'{index}.mappings.properties.{field}', {})
 
     return datetime_field.get('format', 'YYYY-MM-DD HH:mm:ss')
 
@@ -275,7 +275,7 @@ def search_command(proxies):
     index = demisto.args().get('index')
     query = demisto.args().get('query')
     fields = demisto.args().get('fields')  # fields to display
-    explain = demisto.args().get('explain').lower() == 'true'
+    explain = demisto.args().get('explain', 'false').lower() == 'true'
     base_page = int(demisto.args().get('page'))
     size = int(demisto.args().get('size'))
     sort_field = demisto.args().get('sort-field')
