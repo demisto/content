@@ -144,13 +144,15 @@ xpanse-prepare-testing-bucket-upload-flow:
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
     - section_end "Get Instance Variables"
     - section_start "Wait Until Server Ready"
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Wait Until Server Ready"
     - section_start "Install Packs"
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Install Packs"
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
     - section_end "Destroy instances"
     - job-done
     - exit "$EXIT_CODE"
@@ -198,7 +200,7 @@ install-packs-in-server-master:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     INSTANCE_CREATED: "true"
     TIME_TO_LIVE: ""
-    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-upload"
     CLOUD_MACHINES_TYPE: "upload"
   extends:
     - .bucket-upload-rule
@@ -215,6 +217,7 @@ install-packs-in-server-master:
       if [[ $TEST_UPLOAD == "true" ]]; then
         echo "Setting CLOUD_MACHINES_TYPE to build in test upload-flow"
         CLOUD_MACHINES_TYPE="build"
+        GCS_LOCKS_PATH="content-locks/locks-xsiam-ga"
       fi
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
