@@ -1274,7 +1274,7 @@ def build_filters(args: dict) -> dict:
     filter_values = argToList(args.get('filterValue'))
 
     if len({len(filter_names), len(filter_qualities), len(filter_values)}) != 1:
-        raise DemistoException('filterName, filterQuality and filterValue must be provided with the same length.')
+        raise DemistoException('filterName, filterQuality and filterValue must have the same length.')
 
     result: dict = {}
     zipped_filters = zip(filter_names, filter_qualities, filter_values)

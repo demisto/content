@@ -1197,7 +1197,7 @@ script:
       description: |
         The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.
          For scans that are older than 35 days, only the Nessus and CSV formats are supported.
-      required: true
+         The "chapters" argument must be defined if the chosen format is HTML or PDF.
       defaultValue: CSV
       auto: PREDEFINED
       predefined:
@@ -1224,6 +1224,7 @@ script:
          For example:
           If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",
           then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
+          https://example.com/
       isArray: true
     - name: filterQuality
       description: |
@@ -1263,6 +1264,7 @@ script:
     description: |
       Export and download a scan report.
       Scan results older than 35 days are supported in Nessus and CSV formats only.
+      Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses)
     name: tenable-io-export-scan
     outputs:
     - contextPath: InfoFile.Size
