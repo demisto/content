@@ -13,18 +13,18 @@ function compare_revision() {
 
     echo "Comparing revisions for $bucket1 and $bucket2"
     echo $(gsutil acl get "gs://$bucket1$json_file_path")
-    index_json_origin=$(gsutil cat "gs://$bucket1$json_file_path")
-    index_json_prod=$(gsutil cat "gs://$bucket2$json_file_path")
-    test=$(curl -s "gs://$bucket2$json_file_path")
-    echo "$test test"
-    revision1=$(echo "$index_json" | jq -r '.revision')
-    revision2=$(echo "$index_json_prod" | jq -r '.revision')
+
+    gsutil cp "gs://$bucket1$json_file_path" $ARTIFACTS_FOLDER/sync/origin_index.json
+    gsutil cp "gs://$bucket2$json_file_path" $ARTIFACTS_FOLDER/sync/prod_index.json
+
+    revision_origin=$( jq -r '.revision' $ARTIFACTS_FOLDER/sync/origin_index.json)
+    revision_prod=$( jq -r '.revision' $ARTIFACTS_FOLDER/sync/prod_index.json)
 
     # Compare the revisions
-    if [ "$revision1" = "$revision2" ]; then
-      echo "Revisions are the same: $revision1"
+    if [ "$revision_origin" = "$revision_prod" ]; then
+      echo "Revisions are the same: $revision_origin"
     else
-      echo "Revisions are different: $revision1 (in $bucket_list_origin) vs $revision2 (in $bucket_list_prod)"
+      echo "Revisions are different: $revision_origin (in $bucket_list_origin) vs $revision_prod (in $bucket_list_prod)"
       exit 1
     fi
 
