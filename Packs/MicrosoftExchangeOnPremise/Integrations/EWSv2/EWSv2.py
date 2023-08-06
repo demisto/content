@@ -1048,8 +1048,9 @@ def parse_object_as_dict_with_serialized_items(object):
         for field in object.FIELDS:
             try:
                 v = getattr(object, field.name, None)
-                json.dumps(v)
-                raw_dict[field.name] = v
+                if v is not None:
+                    json.dumps(v)
+                    raw_dict[field.name] = v
             except (TypeError, OverflowError):
                 demisto.debug(f'Data in field {field.name} is not serilizable, skipped field')
                 continue

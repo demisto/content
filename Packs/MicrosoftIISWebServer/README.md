@@ -5,15 +5,22 @@ This pack includes XSIAM content.
 ## Configuration on the Server Side
 
 1. Open the IIS Manager.
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISManager.png)
 2. Click the site.
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISWebsites.png)
 3. In the window on the right, click **Logging**.
 4. Ensure the format is set to W3C.
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISW3C.png)
+5. Press **Select Fields** and ensure all the fields are checked.
+![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISLogging.png)
 ## Collect Events from Vendor
 In order to use the collector, you need to use the following option to collect events from the vendor:
 
 - [XDRC (XDR Collector)](#xdrc-xdr-collector)
 
 You will need to configure the vendor and product for this specific collector.
+
+* Pay attention: Timestamp parsing is available for the default UTC (+0000) format for Microsoft IIS.
 
 ### XDRC (XDR Collector)
 

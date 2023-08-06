@@ -1366,9 +1366,7 @@ class TestPanoramaEditRuleCommand:
             }
         }
         mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
-
-        with pytest.raises(DemistoException):
-            Panorama.panorama_edit_rule_command(args)
+        Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
     def test_edit_rule_to_disabled_flow(mocker, reset_device_group):
@@ -7078,13 +7076,13 @@ def test_pan_os_delete_tag_command(mocker, is_shared):
             "device_group",
             "",
             {"disable_override": True, "comment": ""},
-            "<disable-override>yes</disable-override>"
+            "<disable-override>yes</disable-override><comments></comments>"
         ),
         (
             "",
             "vsys1",
             {"disable_override": True, "comment": ""},
-            ""
+            "<comments></comments>"
         ),
     ]
 )

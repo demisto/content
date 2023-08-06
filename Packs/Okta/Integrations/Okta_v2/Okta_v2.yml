@@ -210,9 +210,12 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Term by which to search. Can be a first name, last name, or email address.
+      description: Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required.
       name: term
-      required: true
+      required: false
+    - description: Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required.
+      name: advanced_search
+      required: false
     - description: The maximum number of results to return. The default and maximum is 200.
       name: limit
     - auto: PREDEFINED
@@ -1403,7 +1406,7 @@ script:
       name: appName
     description: Assign a group to an application
     name: okta-assign-group-to-app
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3
