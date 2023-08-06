@@ -27,6 +27,7 @@ else:
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
+DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
@@ -90,10 +91,10 @@ def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field
     mapping = es.indices.get_mapping(index=index)
     datetime_field = demisto.get(mapping, f'{index}.mappings.properties.{field}', {})
 
-    return datetime_field.get('format', 'YYYY-MM-DD HH:mm:ss')
+    return datetime_field.get('format', DEFAULT_DATETIME_FORMAT)
 
 
-def convert_date_to_timestamp(date, datetime_format: str = 'YYYY-MM-DD HH:mm:ss'):
+def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORMAT):
     """converts datetime to the relevant timestamp format.
 
     Args:
@@ -110,11 +111,11 @@ def convert_date_to_timestamp(date, datetime_format: str = 'YYYY-MM-DD HH:mm:ss'
     if TIME_METHOD == 'Timestamp-Seconds':
         return int(date.timestamp())
 
-    elif TIME_METHOD == 'Timestamp-Milliseconds':
+    if TIME_METHOD == 'Timestamp-Milliseconds':
         return int(date.timestamp() * 1000)
 
-    else:  # In case of 'Simple-Date'.
-        return arrow.get(date).format(prepare_datetime_format(datetime_format))
+    # In case of 'Simple-Date'.
+    return arrow.get(date).format(prepare_datetime_format(datetime_format))
 
 
 def timestamp_to_date(timestamp_string):
@@ -233,7 +234,10 @@ def results_to_context(index, query, base_page, size, total_dict, response, even
     hit_headers = []  # type: List
     hit_tables = []
     if total_dict.get('value') > 0:
-        results = response.get("hits").get("hits", []) if not event else response.get("hits").get("events", [])
+        if not event:
+            results = response.get('hits').get('hits', [])
+        else:
+            results = response.get('hits').get('events', [])
 
         for hit in results:
             single_hit_table, single_header = get_hit_table(hit)
@@ -668,7 +672,7 @@ def format_to_iso(date_string):
 
 
 def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME,
-                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = 'YYYY-MM-DD HH:mm:ss') -> Dict:
+                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = DEFAULT_DATETIME_FORMAT) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
