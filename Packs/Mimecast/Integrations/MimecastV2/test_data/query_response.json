@@ -73,8 +73,8 @@
     "query_contents": [
         {
             "Subject": "Netting",
-            "From": "test1",
-            "To": "test1",
+            "Display From": "test1",
+            "Display To": "test1",
             "Received Date": "2023-08-06T07:23:00+0000",
             "Size": 2262,
             "Attachment Count": 0,
@@ -91,8 +91,8 @@
         },
         {
             "Subject": "RE",
-            "From": "test2",
-            "To": "test2",
+            "Display From": "test2",
+            "Display To": "test2",
             "Received Date": "2023-08-06T07:23:00+0000",
             "Size": 11370,
             "Attachment Count": 0,
@@ -109,8 +109,8 @@
         },
         {
             "Subject": "Re",
-            "From": "test3",
-            "To": "test3",
+            "Display From": "test3",
+            "Display To": "test3",
             "Received Date": "2023-08-06T07:23:00+0000",
             "Size": 5280,
             "Attachment Count": 0,

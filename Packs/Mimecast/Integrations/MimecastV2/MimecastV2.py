@@ -708,7 +708,7 @@ def test_module():
 def parse_queried_fields(query_xml: str) -> tuple[str, ...]:
     if not query_xml:
         return ()
-    
+
     if not (fields := ElementTree.fromstring(query_xml).find('.//return-fields')):  # noqa:S314 - argument set by user
         demisto.debug("could not find a 'return-fields' section - will only return default fields")
         return ()
@@ -749,8 +749,8 @@ def query(args: dict):
 
         contents.append({
             'Subject': message.get('subject'),
-            'From': message.get('displayfrom'),
-            'To': message.get('displayto'),
+            'Display From': message.get('displayfrom'),
+            'Display To': message.get('displayto'),
             'Received Date': message.get('receiveddate'),
             'Size': message.get('size'),
             'Attachment Count': message.get('attachmentcount'),
