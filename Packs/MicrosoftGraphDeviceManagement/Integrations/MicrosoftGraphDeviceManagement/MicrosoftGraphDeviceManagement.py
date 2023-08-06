@@ -413,7 +413,7 @@ def main():
     tenant_id: str = params.get('credentials_tenant_id', {}).get('password') or params.get('tenant_id', '')
     auth_and_token_url: str = params.get('credentials_auth_id', {}).get('password') or params.get('auth_id', '')
     enc_key: str = params.get('credentials_enc_key', {}).get('password') or params.get('enc_key', '')
-    azure_cloud = get_azure_cloud(params, 'AzureGraph')
+    azure_cloud = get_azure_cloud(params, 'Microsoft Graph Device Management')
     app_name: str = 'ms-graph-device-management'
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
