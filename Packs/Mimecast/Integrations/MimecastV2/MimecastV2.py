@@ -715,7 +715,7 @@ def query(args: dict):
     query_xml = ''
 
     if args.get('queryXml'):
-        query_xml = args.get('queryXml')
+        query_xml = args.get('queryXml', '')
     else:
         query_xml = parse_query_args(args)
     if args.get('dryRun') == 'true':
