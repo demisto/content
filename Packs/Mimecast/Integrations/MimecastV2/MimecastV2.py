@@ -704,7 +704,7 @@ def test_module():
     list_managed_url()
 
 
-def query(args):
+def query(args: dict):
     headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status', 'ID']
     contents = []
     messages_context = []
@@ -2087,8 +2087,8 @@ def create_find_groups_request():
     query_source = demisto.args().get('query_source', '')
     limit = demisto.args().get('limit')
 
-    meta = {}  # type: Dict[str, Dict[str, int]]
-    data = {}  # type: Dict[str, Dict[str, str]]
+    meta = {} 
+    data = {} 
 
     if limit:
         meta['pagination'] = {
@@ -2189,8 +2189,8 @@ def create_get_group_members_request(group_id=-1, limit=100):
     group_id = demisto.args().get('group_id', group_id)
     limit = demisto.args().get('limit', limit)
 
-    meta = {}  # type: Dict[str, Dict[str, int]]
-    data = {}  # type: Dict[str, Dict[str, str]]
+    meta = {}
+    data = {}
 
     if limit:
         meta['pagination'] = {
