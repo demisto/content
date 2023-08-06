@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.18.0"
+demisto-sdk = "1.18.1"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 google-cloud-compute = "^1.8.0"
@@ -119,6 +119,8 @@ python-gitlab = "^3.0.0"
 PyGithub = "^1.54.1"
 ansible-runner = "^2.2.0"
 paramiko = "^2.11.0"
+scp = "^0.14.5"
+humanize = "^4.7.0"
 boto3 = "^1.23.5"
 jsonschema = "^4.6.0"
 google-cloud-bigquery = "^3.2.0"
@@ -361,7 +363,6 @@ select = [
     "SIM102", # collapsible-if
     "SIM103", # needless-bool
     "SIM107", # return-in-try-except-finally
-    "SIM108", # if-else-block-instead-of-if-exp
     "SIM109", # compare-with-tuple
     "SIM110", # reimplemented-builtin
     "SIM117", # multiple-with-statements
