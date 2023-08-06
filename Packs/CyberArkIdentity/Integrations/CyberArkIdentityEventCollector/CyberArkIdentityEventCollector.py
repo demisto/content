@@ -106,8 +106,8 @@ class CyberArkIdentityEventsOptions(IntegrationOptions):
 
 
 class CyberArkIdentityEventsRequest(IntegrationHTTPRequest):
-    method = Method.POST
-    headers = {'Accept': '*/*', 'Content-Type': 'application/json'}
+    method: Method = Method.POST
+    headers: dict = {'Accept': '*/*', 'Content-Type': 'application/json'}
 
 
 class CyberArkIdentityEventsClient(IntegrationEventsClient):
