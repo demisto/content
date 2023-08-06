@@ -47,8 +47,6 @@ class Client(BaseClient):
     POLICIES_SUFFIX = 'policies/v2'
 
     DESTINATION_LIST_ENDPOINT = urljoin(POLICIES_SUFFIX, 'destinationlists')
-    DESTINATION_LIST_ENDPOINT_TEMPLATE = urljoin(DESTINATION_LIST_ENDPOINT, '{destination_list_id}')
-    DESTINATION_ENDPOINT_TEMPLATE = urljoin(DESTINATION_LIST_ENDPOINT_TEMPLATE, 'destinations')
 
     def __init__(
         self,
@@ -145,7 +143,7 @@ class Client(BaseClient):
             page=page,
             limit=limit,
         )
-        url_suffix = Client.DESTINATION_ENDPOINT_TEMPLATE.format(destination_list_id=destination_list_id)
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f'{destination_list_id}/destinations')
 
         return self._http_request(
             method='GET',
@@ -174,7 +172,7 @@ class Client(BaseClient):
             destinations=destinations,
             destinations_comment=destinations_comment,
         )
-        url_suffix = Client.DESTINATION_ENDPOINT_TEMPLATE.format(destination_list_id=destination_list_id)
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f'{destination_list_id}/destinations')
 
         return self._http_request(
             method='POST',
@@ -192,11 +190,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: The destination list that holds the deleted destinations.
         """
-        url_suffix = urljoin(
-            Client.DESTINATION_ENDPOINT_TEMPLATE.format(destination_list_id=destination_list_id),
-            'remove',
-        )
-
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, f'{destination_list_id}/destinations/remove')
         return self._http_request(
             method='DELETE',
             url_suffix=url_suffix,
@@ -235,7 +229,7 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: The destination list.
         """
-        url_suffix = Client.DESTINATION_LIST_ENDPOINT_TEMPLATE.format(destination_list_id=destination_list_id)
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, destination_list_id)
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def create_destination_list(
@@ -291,9 +285,10 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: The destination list.
         """
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, destination_list_id)
         return self._http_request(
             method='PATCH',
-            url_suffix=Client.DESTINATION_LIST_ENDPOINT_TEMPLATE.format(destination_list_id=destination_list_id),
+            url_suffix=url_suffix,
             json_data={'name': name},
         )
 
@@ -306,9 +301,10 @@ class Client(BaseClient):
         Returns:
             dict[str, Any]: The destination list.
         """
+        url_suffix = urljoin(Client.DESTINATION_LIST_ENDPOINT, destination_list_id)
         return self._http_request(
             method='DELETE',
-            url_suffix=Client.DESTINATION_LIST_ENDPOINT_TEMPLATE.format(destination_list_id=destination_list_id),
+            url_suffix=url_suffix,
         )
 
 

@@ -6,6 +6,10 @@ import CommonServerPython
 import pytest
 
 TEST_DATA = 'test_data'
+DESTINATION_ENDPOINT = CommonServerPython.urljoin(
+    CiscoUmbrellaCloudSecurityv2.BASE_URL,
+    CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_LIST_ENDPOINT,
+)
 
 
 def load_mock_response(file_name: str) -> str:
@@ -65,12 +69,7 @@ def test_list_destinations_command(requests_mock, mock_client):
         'destination_list_id': '123',
     }
     response = load_mock_response('destinations.json')
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_ENDPOINT_TEMPLATE.format(
-            destination_list_id=args['destination_list_id']
-        ),
-    )
+    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, f'{args["destination_list_id"]}/destinations')
 
     requests_mock.get(url=url, json=response)
 
@@ -84,7 +83,7 @@ def test_list_destinations_command(requests_mock, mock_client):
     )
     assert command_results.outputs_key_field == CiscoUmbrellaCloudSecurityv2.ID_OUTPUTS_KEY_FIELD
     assert command_results.outputs == response['data']
-    assert command_results.raw_response == [response]
+    assert command_results.raw_response == response
 
 
 def test_list_destinations_command_fetch_destinations(requests_mock, mock_client):
@@ -110,12 +109,7 @@ def test_list_destinations_command_fetch_destinations(requests_mock, mock_client
         'destination_ids': ['111', '333'],
     }
     response = load_mock_response('destinations.json')
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_ENDPOINT_TEMPLATE.format(
-            destination_list_id=args['destination_list_id']
-        ),
-    )
+    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, f'{args["destination_list_id"]}/destinations')
 
     requests_mock.get(url=url, json=response)
 
@@ -132,7 +126,7 @@ def test_list_destinations_command_fetch_destinations(requests_mock, mock_client
     )
     assert command_results.outputs_key_field == CiscoUmbrellaCloudSecurityv2.ID_OUTPUTS_KEY_FIELD
     assert command_results.outputs == expected_outputs
-    assert command_results.raw_response == [response]
+    assert command_results.raw_response == response
 
 
 def test_add_destinations_command(requests_mock, mock_client):
@@ -156,12 +150,7 @@ def test_add_destinations_command(requests_mock, mock_client):
         'comment': 'Lior is watching',
     }
     response = load_mock_response('destination_list.json')
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_ENDPOINT_TEMPLATE.format(
-            destination_list_id=args['destination_list_id']
-        ),
-    )
+    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, f'{args["destination_list_id"]}/destinations')
 
     requests_mock.post(url=url, json=response)
 
@@ -198,12 +187,7 @@ def test_delete_destination_command(requests_mock, mock_client):
         'destination_ids': [111, 222, 333],
     }
     response = load_mock_response('destination_list.json')
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_ENDPOINT_TEMPLATE.format(
-            destination_list_id=args['destination_list_id']
-        ),
-    )
+    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, f'{args["destination_list_id"]}/destinations')
 
     requests_mock.delete(url=f'{url}/remove', json=response)
 
@@ -241,12 +225,7 @@ def test_list_destination_lists_command(requests_mock, mock_client):
         'destination_list_id': '12345',
     }
     response = load_mock_response('destination_list.json')
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_LIST_ENDPOINT_TEMPLATE.format(
-            destination_list_id=args['destination_list_id']
-        ),
-    )
+    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, args['destination_list_id'])
     requests_mock.get(url=url, json=response)
 
     command_results: CommonServerPython.CommandResults = CiscoUmbrellaCloudSecurityv2.list_destination_lists_command(
@@ -280,12 +259,7 @@ def test_list_destination_lists_command_list_request(requests_mock, mock_client)
     - Ensure that the CommandResults raw_response is correct.
     """
     response = load_mock_response('destination_lists.json')
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_LIST_ENDPOINT,
-    )
-
-    requests_mock.get(url=url, json=response)
+    requests_mock.get(url=DESTINATION_ENDPOINT, json=response)
 
     command_results: CommonServerPython.CommandResults = CiscoUmbrellaCloudSecurityv2.list_destination_lists_command(
         mock_client, {}
@@ -297,7 +271,7 @@ def test_list_destination_lists_command_list_request(requests_mock, mock_client)
     )
     assert command_results.outputs_key_field == CiscoUmbrellaCloudSecurityv2.ID_OUTPUTS_KEY_FIELD
     assert command_results.outputs == response['data']
-    assert command_results.raw_response == [response]
+    assert command_results.raw_response == response
 
 
 def test_create_destination_list_command(requests_mock, mock_client):
@@ -327,12 +301,8 @@ def test_create_destination_list_command(requests_mock, mock_client):
         'destinations_comment': 'Comment',
     }
     response = load_mock_response('destination_list.json')['data']
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_LIST_ENDPOINT,
-    )
 
-    requests_mock.post(url=url, json=response)
+    requests_mock.post(url=DESTINATION_ENDPOINT, json=response)
 
     command_results: CommonServerPython.CommandResults = CiscoUmbrellaCloudSecurityv2.create_destination_list_command(
         mock_client, args
@@ -369,12 +339,7 @@ def test_update_destination_list_command(requests_mock, mock_client):
         'name': 'Lior Sabri',
     }
     response = load_mock_response('destination_list.json')
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_LIST_ENDPOINT_TEMPLATE.format(
-            destination_list_id=args['destination_list_id']
-        ),
-    )
+    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, args['destination_list_id'])
 
     requests_mock.patch(url=url, json=response)
 
@@ -411,12 +376,7 @@ def test_delete_destination_list_command(requests_mock, mock_client):
     }
     response = load_mock_response('delete.json')
 
-    url = CommonServerPython.urljoin(
-        CiscoUmbrellaCloudSecurityv2.BASE_URL,
-        CiscoUmbrellaCloudSecurityv2.Client.DESTINATION_LIST_ENDPOINT_TEMPLATE.format(
-            destination_list_id=args['destination_list_id']
-        ),
-    )
+    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, args['destination_list_id'])
 
     requests_mock.delete(url=url, json=response)
 
