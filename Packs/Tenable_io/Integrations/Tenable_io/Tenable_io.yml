@@ -1216,34 +1216,11 @@ script:
       - remediations
       - vuln_by_plugin
       - compliance
-    - name: filterName
+    - name: filter
       description: |
-        A comma-separated list of filters to apply to the exported scan report.
-         Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).
-         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
-         For example:
-          If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",
-          then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
-          https://example.com/
-      isArray: true
-    - name: filterQuality
-      description: |
-        A comma-separated list of operators for the filter to apply to the exported scan report.
-         Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).
-         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
-         For example:
-          If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",
-          then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
-      isArray: true
-    - name: filterValue
-      description: |
-        A comma-separated list of readable regular expressions for the filter to apply to the exported scan report.
-         Run the "tenable-io-list-scan-filters" command to get filter values ("Readable
-          regex" in response).
-         The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.
-         For example:
-          If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",
-          then two filters are applied: "n1, op1, val1" and "n2, op2, val2".
+        A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.
+         Example: "port.protocol eq tcp, plugin_id eq 1234567"
+         Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).
       isArray: true
     - name: filterSearchType
       description: For multiple filters, specifies whether to use the AND or the OR logical operator.

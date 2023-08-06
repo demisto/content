@@ -1249,7 +1249,7 @@ def get_scan_history_command(args: dict[str, Any], client: Client) -> CommandRes
         readable_output=scan_history_readable(history))
 
 
-def build_filters(args: dict) -> dict:
+def build_filters(filter_arg: str | None) -> dict:
     '''
     Makes filter args for the export scan endpoint by sequentially matching
     the filterName, filterQuality and filterValue lists in args.
@@ -1300,7 +1300,7 @@ def export_scan_body(args: dict) -> dict:
         'chapters': chapters,
         'filter.search_type': args['filterSearchType'].lower(),
         'asset_id': args.get('assetId'),
-    } | build_filters(args)
+    } | build_filters(args.get('filter'))
 
     return body
 

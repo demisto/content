@@ -1557,6 +1557,7 @@ Lists the individual runs of the specified scan.
 ***
 Export and download a scan report.
 Scan results older than 35 days are supported in Nessus and CSV formats only.
+Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses)
 
 
 #### Base Command
@@ -1570,13 +1571,13 @@ Scan results older than 35 days are supported in Nessus and CSV formats only.
 | scanId | The identifier for the scan to export. Run the "tenable-io-list-scans" command to get all available scans. | Required | 
 | historyId | The unique identifier of the historical data to export. Run the "tenable-io-get-scan-history" command to get history IDs. | Optional | 
 | historyUuid | The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs. | Optional | 
-| format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.<br/> For scans that are older than 35 days, only the Nessus and CSV formats are supported.<br/>. Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Required | 
+| format | The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.<br/> For scans that are older than 35 days, only the Nessus and CSV formats are supported.<br/> The "chapters" argument must be defined if the chosen format is HTML or PDF.<br/>. Possible values are: Nessus, HTML, PDF, CSV. Default is CSV. | Optional | 
 | chapters | A comma-separated list of chapters to include in the export. This argument is required if the file format is PDF or HTML. Possible values are: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance. | Optional | 
-| filterName | A comma-separated list of filters to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter names ("Filter name" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/> For example:<br/>  If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",<br/>  then two filters are applied: "n1, op1, val1" and "n2, op2, val2".<br/>. | Optional | 
-| filterQuality | A comma-separated list of operators for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter qualities ("Filter operators" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/> For example:<br/>  If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",<br/>  then two filters are applied: "n1, op1, val1" and "n2, op2, val2".<br/>. | Optional | 
-| filterValue | A comma-separated list of readable regular expressions for the filter to apply to the exported scan report.<br/> Run the "tenable-io-list-scan-filters" command to get filter values ("Readable regex" in response).<br/> The values of the "filterName", "filterQuality" and "filterValue" lists are matched sequentially to produce individual filters.<br/> For example:<br/>  If filterName is "n1,n2", filterQuality is "op1,op2" and filterValue is "val1,val2",<br/>  then two filters are applied: "n1, op1, val1" and "n2, op2, val2".<br/>. | Optional | 
+| filter | A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.<br/> Example: "port.protocol eq tcp, plugin_id eq 1234567"<br/> Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).<br/>. | Optional | 
 | filterSearchType | For multiple filters, specifies whether to use the AND or the OR logical operator. Possible values are: AND, OR. Default is AND. | Optional | 
 | assetId | The ID of the asset scanned. | Optional | 
+| fileId | . | Optional | 
+| hide_polling_output | . | Optional | 
 
 #### Context Output
 
