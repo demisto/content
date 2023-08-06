@@ -93,7 +93,7 @@ configuration:
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 script:
-  dockerimage: demisto/python3:3.10.12.65389
+  dockerimage: demisto/python3:3.10.12.67728
   feed: true
   isfetch: false
   longRunning: false
