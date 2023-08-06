@@ -870,7 +870,7 @@ tasks:
         readonly: false
       title: Find the missing incident and answer the questions below
       description: |-
-        It seems like we missed an incident that can assist us with understanding our current one. Let's dig into it!! Check the  Malicious Indicator "related incident" section and find the missed incident
+        It seems like we missed an incident that can assist us with understanding our current one. Let's dig into it!! Check the  Malicious/Suspicious Indicator's "related incident" section and find the missed incident
 
 
         ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/charlie-day.gif)
@@ -928,7 +928,7 @@ tasks:
     task:
       id: a1aad6ca-b1c7-4f9a-8c32-3f4055ab2e29
       version: -1
-      name: Classify the incidents
+      name: Classify the incident
       type: collection
       iscommand: false
       brand: ""
@@ -966,7 +966,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Classify the incidents
+          simple: Classify the incident
         required: true
         gridcolumns: []
         defaultrows: []
@@ -979,7 +979,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Classify the incidents
+      title: Classify the incident
       description: |-
         Based on our investigation, classify the original incident we started with (the 'Suspicious API call from a Tor exit node' incident).
         Remember that we need to use all our findings and knowledge gained though this exercise.
@@ -1013,7 +1013,7 @@ tasks:
         simple: "09"
       secret:
         complex:
-          root: Classify the incidents.Answers
+          root: Classify the incident.Answers
           accessor: "0"
           transformers:
           - operator: LastArrayElement
@@ -1793,11 +1793,15 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isTrue
+      - - operator: isEqualString
           left:
             value:
               simple: You have finished the Cloud IAM CTF Challange.Answers.0
             iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {

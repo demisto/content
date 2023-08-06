@@ -1,5 +1,5 @@
 args:
-- name: username
+- name: accesskey
   required: true
 comment: CTF Script that initiates a revoke for all user's access keys.
 commonfields:

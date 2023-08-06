@@ -1293,9 +1293,9 @@ def get_incident_extra_data_command(client, args):
                         'fw_url_domain': None,
                         'fw_vsys': None,
                         'fw_xff': None,
-                        'host_ip': '130.193.10.21',
+                        'host_ip': '192.42.116.193',
                         'host_ip_list': [
-                            '130.193.10.21'
+                            '192.42.116.193'
                         ],
                         'host_name': None,
                         'identity_sub_type': 'IAM',
@@ -2099,9 +2099,9 @@ def get_incident_extra_data_command(client, args):
                         'fw_url_domain': None,
                         'fw_vsys': None,
                         'fw_xff': None,
-                        'host_ip': '130.193.10.21',
+                        'host_ip': '192.42.116.193',
                         'host_ip_list': [
-                            '130.193.10.21'
+                            '192.42.116.193'
                         ],
                         'host_name': None,
                         'identity_sub_type': 'IAM',
@@ -3724,9 +3724,9 @@ def createIncidentsListCTF3(max_fetch):
                 "fw_url_domain": None,
                 "fw_vsys": None,
                 "fw_xff": None,
-                "host_ip": "130.193.10.21",
+                "host_ip": "192.42.116.193",
                 "host_ip_list": [
-                    "130.193.10.21"
+                    "192.42.116.193"
                 ],
                 "host_name": None,
                 "identity_sub_type": "IAM",
@@ -4951,9 +4951,9 @@ def get_alerts_by_filter_command_ctf(client: CoreClient, args: Dict) -> CommandR
                     "fw_url_domain": None,
                     "fw_vsys": None,
                     "fw_xff": None,
-                    "host_ip": "130.193.10.21",
+                    "host_ip": "192.42.116.193",
                     "host_ip_list": [
-                        "130.193.10.21"
+                        "192.42.116.193"
                     ],
                     "host_name": None,
                     "identity_sub_type": "IAM",
@@ -5757,9 +5757,9 @@ def get_alerts_by_filter_command_ctf(client: CoreClient, args: Dict) -> CommandR
                     "fw_url_domain": None,
                     "fw_vsys": None,
                     "fw_xff": None,
-                    "host_ip": "130.193.10.21",
+                    "host_ip": "192.42.116.193",
                     "host_ip_list": [
-                        "130.193.10.21"
+                        "192.42.116.193"
                     ],
                     "host_name": None,
                     "identity_sub_type": "IAM",
