@@ -10645,7 +10645,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
-    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents_res),
+    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents),
                                                                                       [incident[id_field] for incident in incidents]))
     return incidents[:fetch_limit]
 

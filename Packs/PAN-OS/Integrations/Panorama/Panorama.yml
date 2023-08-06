@@ -7634,7 +7634,7 @@ script:
   - arguments:
     - description: The string by which to filter the results to only show specific hostnames or serial numbers.
       name: device_filter_string
-    description: Gets the operational information of the device groups in the topology.
+    description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
@@ -9323,7 +9323,7 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  dockerimage: demisto/pan-os-python:1.0.0.65924
+  dockerimage: demisto/pan-os-python:1.0.0.66894
   isfetch: true
   runonce: false
   script: ''

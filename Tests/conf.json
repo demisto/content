@@ -3079,6 +3079,9 @@
             "playbookID": "sumList - Test"
         },
         {
+            "playbookID": "AnyMatch_Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
         },
@@ -3782,7 +3785,8 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout": 600
+            "timeout": 600,
+            "is_mockable": false
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -5672,7 +5676,8 @@
         "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
         "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
-        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527"
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5801,7 +5806,8 @@
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
-        "CheckPhish": "Issue CRTX-86562"
+        "CheckPhish": "Issue CRTX-86562",
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
     },
     "nightly_packs": [
         "CommonScripts",
