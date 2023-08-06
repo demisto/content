@@ -1222,6 +1222,7 @@ script:
          Example: "port.protocol eq tcp, plugin_id eq 1234567"
          Note: when used literally, commas and spaces should be escaped. (i.e. "\\," for comma and "\\s" for space)
          Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).
+         For more information: https://developer.tenable.com/docs/scan-export-filters-tio
       isArray: true
     - name: filterSearchType
       description: For multiple filters, specifies whether to use the AND or the OR logical operator.
