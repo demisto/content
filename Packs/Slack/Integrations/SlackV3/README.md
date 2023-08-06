@@ -18,6 +18,7 @@ to learn about configuring SlackV3 using the app manifest.
     | **Parameter** | **Description** | **Required** |
     |---|---|---|
     | `bot_token` | Slack API bot token. | False |
+    | `user_token` | Slack API user token. | False |
     | `app_token` | Slack API app token. | False |
     | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications. | False |
     | `min_severity` | Minimum incident severity by which to send messages to Slack. | False |
@@ -636,6 +637,25 @@ Returns the integration context as a file. Use this command for debug purposes o
 #### Input
 
 There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### slack-user-session-reset
+
+***
+Reset user session token in Slack.
+
+#### Base Command
+
+`slack-user-session-reset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user id of the user. | Required | 
 
 #### Context Output
 
