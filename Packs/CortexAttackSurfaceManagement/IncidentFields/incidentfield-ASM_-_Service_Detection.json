@@ -82,7 +82,7 @@
     "description": "Pre/Post remediation scan to check if service is still detectable",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmservicedetection",
     "isReadOnly": false,
     "locked": false,
