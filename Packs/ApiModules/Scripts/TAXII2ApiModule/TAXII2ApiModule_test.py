@@ -634,6 +634,39 @@ class TestFetchingStixObjects:
 
         assert mock_client.last_fetched_indicator__modified == expected_modified_result
 
+    @pytest.mark.parametrize(
+        'objects_to_fetch_param', ([], ['dummy'])
+    )
+    def test_empty_objects_to_fetch_parameter(self, mocker, objects_to_fetch_param):
+        """
+               Scenario: Test handling for objects_to_fetch parameter.
+
+               Given:
+                - A : objects_to_fetch parameter is set to a list of at least on object.
+                - B : objects_to_fetch parameter is not set and therefor default to an empty list.
+
+               When:
+               - Fetching stix objects from a collection.
+
+               Then:
+               - A : the poll_collection method sends the HTTP request with the match[type] parameter,
+                     therefor fetching only the requested object types in the collection.
+               - B : the poll_collection method sends the HTTP request without the match[type] parameter,
+                     therefor fetching all available object types in the collection.
+        """
+
+        class mock_collection_to_fetch:
+            get_objects = []
+
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=mock_collection_to_fetch,
+                                       proxies=[], verify=False, objects_to_fetch=objects_to_fetch_param)
+        mock_as_pages = mocker.patch.object(v21, 'as_pages', return_value=[])
+        mock_client.poll_collection(page_size=1)
+
+        if objects_to_fetch_param:
+            mock_as_pages.assert_called_with([], per_request=1, type=['dummy'])
+        else:
+            mock_as_pages.assert_called_with([], per_request=1)
 
 class TestParsingIndicators:
 
