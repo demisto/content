@@ -166,6 +166,19 @@ class Client(BaseClient):
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert-id')}/tags",
                                   json_data=args)
 
+    def add_alert_note(self, args: dict):
+        return self._http_request(method='POST',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert_id')}/notes",
+                                  json_data=args)
+
+    def add_alert_details(self, args: dict):
+        if args.get('details') and not isinstance(args.get('details'), dict):
+            args['details'] = {key_value.split('=')[0]: key_value.split('=')[1]
+                               for key_value in argToList(args.get('details'))}
+        return self._http_request(method='POST',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert_id')}/details",
+                                  json_data=args)
+
     def remove_alert_tag(self, args: dict):
         args['tags'] = argToList(args.get('tags'))
         return self._http_request(method='DELETE',
@@ -632,6 +645,34 @@ def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     return get_request_command(client, args)
 
 
+def add_alert_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+    args = {
+        'request_type': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddAlertNote',
+        **args
+    }
+    data = client.add_alert_note(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    return get_request_command(client, args)
+
+
+def add_alert_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+    args = {
+        'request_type': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddAlertDetails',
+        **args
+    }
+    data = client.add_alert_details(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    return get_request_command(client, args)
+
+
 def remove_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     args = {
         'request_type': ALERTS_SUFFIX,
@@ -1052,6 +1093,8 @@ def main() -> None:
             'opsgenie-get-escalations': get_escalations,
             'opsgenie-escalate-alert': escalate_alert,
             'opsgenie-add-alert-tag': add_alert_tag,
+            'opsgenie-add-alert-note': add_alert_note,
+            'opsgenie-add-alert-details': add_alert_details,
             'opsgenie-remove-alert-tag': remove_alert_tag,
             'opsgenie-get-alert-attachments': get_alert_attachments,
             'opsgenie-get-alert-logs': get_alert_logs,
