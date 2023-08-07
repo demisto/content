@@ -2441,6 +2441,23 @@ def kv_store_collection_config(service: client.Service, args: dict) -> CommandRe
     )
 
 
+def kv_store_collection_create_transform(service: client.Service, args: dict) -> CommandResults:
+    # app = service.namespace['app']
+    collection_name = args['kv_store_collection_name']
+    fields = args['supported_fields']
+    transforms = service.confs["transforms"]
+    params = {
+        "external_type": "kvstore",
+        "collection": collection_name,
+        "namespace": service.namespace,
+        "fields_list": fields
+    }
+    transforms.create(name=collection_name, **params)
+    return CommandResults(
+        readable_output=f"KV store collection transforms {collection_name} created successfully"
+    )
+
+
 def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict:
     if json_data.startswith('[') and json_data.endswith(']'):
         record: Record = kv_data_service_client._post(
@@ -2718,6 +2735,8 @@ def main():  # pragma: no cover
             return_results(kv_store_collection_create(service, args))
         elif command == 'splunk-kv-store-collection-config':
             return_results(kv_store_collection_config(service, args))
+        elif command == 'splunk-kv-store-collection-create-transform':
+            return_results(kv_store_collection_create_transform(service, args))
         elif command == 'splunk-kv-store-collection-delete':
             return_results(kv_store_collection_delete(service, args))
         elif command == 'splunk-kv-store-collections-list':

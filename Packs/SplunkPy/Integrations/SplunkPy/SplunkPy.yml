@@ -479,6 +479,21 @@ script:
     description: Configures the KV store fields.
     name: splunk-kv-store-collection-config
   - arguments:
+    - description: The name of the KV store collection.
+      name: kv_store_collection_name
+      required: true
+    - description: |
+        A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address.
+      name: supported_fields
+      required: true
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      name: app_name
+      required: true
+    description: Creates the KV store collection transform.
+    name: splunk-kv-store-collection-create-transform
+  - arguments:
     - description: 'The data to add to the KV store collection, according to the collection JSON format, e.g., [{"name": "Splunk HQ", "id": 456, "address": { "street": "340 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "121212"}}, {"name": "Splunk HQ", "id": 123, "address": { "street": "250 Brannan Street", "city": "San Francisco", "state": "CA", "zip": "94107"}}]'
       name: kv_store_data
       required: true
@@ -626,7 +641,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.66897
+  dockerimage: demisto/splunksdk-py3:1.0.0.68083
   isfetch: true
   ismappable: true
   isremotesyncin: true
