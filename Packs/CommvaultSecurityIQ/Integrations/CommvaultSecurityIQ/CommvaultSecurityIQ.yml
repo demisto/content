@@ -97,7 +97,7 @@ script:
     execution: false
     name: commvault-security-set-disable-data-aging
     outputs:
-    - contextPath: CommvaultSecurityIQ.Response
+    - contextPath: CommvaultSecurityIQ.DisableDataAging
       description: Status returned after calling disable data aging API
       type: string
   - deprecated: false
@@ -105,7 +105,7 @@ script:
     execution: false
     name: commvault-security-get-generate-token
     outputs:
-    - contextPath: CommvaultSecurityIQ.Response
+    - contextPath: CommvaultSecurityIQ.GenerateToken
       description: Status indicating whether successfully generated access token or not 
       type: string
   - deprecated: false
@@ -113,7 +113,7 @@ script:
     execution: false
     name: commvault-security-get-access-token-from-keyvault
     outputs:
-    - contextPath: CommvaultSecurityIQ.Response
+    - contextPath: CommvaultSecurityIQ.GetAccessToken
       description: Status returned after getting the access token from KeyVault 
       type: string
   - deprecated: false
@@ -121,7 +121,7 @@ script:
     execution: false
     name: commvault-security-set-disable-saml-provider
     outputs:
-    - contextPath: CommvaultSecurityIQ.Response
+    - contextPath: CommvaultSecurityIQ.DisableSaml
       description: Status indicating whether successfully disabled SAML provider or not
       type: string
   - deprecated: false
@@ -138,7 +138,7 @@ script:
       required: true
       type: textArea
     outputs:
-    - contextPath: CommvaultSecurityIQ.Response
+    - contextPath: CommvaultSecurityIQ.DisableUser
       description: Response indicating whether successfully disabled user or not.
       type: string
   dockerimage: demisto/commvault:1.0.0.66552

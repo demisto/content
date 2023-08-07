@@ -1242,8 +1242,8 @@ def disable_data_aging(client):
     else:
         err_resp = "Error disabling data aging on the client"
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.CommandResult.DisableDataAging",
-        outputs_key_field="DisableDataAgingResponse",
+        outputs_prefix="CommvaultSecurityIQ.DisableDataAging",
+        outputs_key_field="DisableDataAging",
         outputs={"DisableDataAgingResponse": err_resp},
     )
 
@@ -1264,8 +1264,8 @@ def generate_access_token(client, cv_api_token):
     else:
         raise DemistoException("Could not generate access token")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.CommandResult.GenerateToken",
-        outputs_key_field="GenerateTokenResponse",
+        outputs_prefix="CommvaultSecurityIQ.GenerateToken",
+        outputs_key_field="GenerateToken",
         outputs={"GenerateTokenResponse": resp},
     )
 
@@ -1278,8 +1278,8 @@ def fetch_and_disable_saml_identity_provider(client):
     else:
         raise DemistoException("Could not disable SAML identity provider")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.CommandResult.DisableSaml",
-        outputs_key_field="DisableSamlResponse",
+        outputs_prefix="CommvaultSecurityIQ.DisableSaml",
+        outputs_key_field="DisableSaml",
         outputs={"DisableSamlResponse": resp},
     )
 
@@ -1292,8 +1292,8 @@ def disable_user(client, user_email):
     else:
         raise DemistoException(f"Could not disable user :- {user_email}")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.CommandResult.DisableUser",
-        outputs_key_field="DisableUserResponse",
+        outputs_prefix="CommvaultSecurityIQ.DisableUser",
+        outputs_key_field="DisableUser",
         outputs={"DisableUserResponse": resp},
     )
 
@@ -1304,8 +1304,8 @@ def get_secret_from_key_vault(client):
     if resp is None:
         raise DemistoException("Could not get access token fro keyvault")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.CommandResult.GetAccessToken",
-        outputs_key_field="GetAccessTokenResponse",
+        outputs_prefix="CommvaultSecurityIQ.GetAccessToken",
+        outputs_key_field="GetAccessToken",
         outputs={"GetAccessTokenResponse": resp},
     )
 
