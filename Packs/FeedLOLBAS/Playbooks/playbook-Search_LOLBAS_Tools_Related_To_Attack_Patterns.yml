@@ -1,0 +1,445 @@
+description: This playbook searches for LOLBAS tools that are related to a given attack pattern.
+id: Search LOLBAS Tools Related To Attack Patterns
+inputs:
+- description: ""
+  key: Tool
+  playbookInputQuery:
+  required: false
+  value:
+    simple: cmd.exe
+name: Search LOLBAS Tools Related To Attack Patterns
+outputs:
+- contextPath: LotlTools
+  description: Lotl tools that related to the given attack patterns.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 79609674-deff-4ea2-8695-13192d60d9b7
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 79609674-deff-4ea2-8695-13192d60d9b7
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -240
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      add_fields_to_context:
+        simple: value,commands,tags,paths
+      query:
+        simple: name:"${inputs.Tool}" tags:"lolbas"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      id: e94cffe7-ac29-482b-8268-dde01788cbbc
+      iscommand: false
+      name: Search if tools are Lolbins
+      script: SearchIndicator
+      type: regular
+      version: -1
+    taskid: e94cffe7-ac29-482b-8268-dde01788cbbc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 80
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3dd139b8-25f7-456c-806f-632c5e4667fb
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 3dd139b8-25f7-456c-806f-632c5e4667fb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1230
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: commands.command
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: foundIndicators.tags
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: lolbas
+                root: foundIndicators
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 84506ba6-6445-4a64-85c8-f956fddd7773
+      iscommand: false
+      name: Has Lolbin tools?
+      type: condition
+      version: -1
+    taskid: 84506ba6-6445-4a64-85c8-f956fddd7773
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 240
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: NameNoExtension
+      value:
+        complex:
+          root: inputs.Tool
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: .
+              fields:
+                value:
+                  simple: "1"
+            operator: Cut
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: c289e80b-200a-4f13-8893-ad987916312f
+      iscommand: false
+      name: Set Lolbin name to output array
+      script: Set
+      type: regular
+      version: -1
+    taskid: c289e80b-200a-4f13-8893-ad987916312f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 410
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: LotlTools.value
+      value:
+        complex:
+          accessor: value
+          root: foundIndicators
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8e0e9941-1f31-49f1-8315-be6866fc176f
+      iscommand: false
+      name: Set tool value to output array
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8e0e9941-1f31-49f1-8315-be6866fc176f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 570
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: LotlTools.commands
+      value:
+        simple: ${foundIndicators.commands.command}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: bbbcddbb-95f1-4c72-842b-871cc0a03612
+      iscommand: false
+      name: Set tool commands to output array
+      script: Set
+      type: regular
+      version: -1
+    taskid: bbbcddbb-95f1-4c72-842b-871cc0a03612
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 730
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: foundIndicators
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 66874f74-93e4-48d6-822c-4f63f019b74b
+      iscommand: false
+      name: Delete found indicators to allow loop
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 66874f74-93e4-48d6-822c-4f63f019b74b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1060
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Tool
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: d0b8432b-0ae3-4034-8e83-9d21205e5d7b
+      iscommand: false
+      name: Has tools from input?
+      type: condition
+      version: -1
+    taskid: d0b8432b-0ae3-4034-8e83-9d21205e5d7b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: LotlTools.paths
+      value:
+        complex:
+          accessor: paths
+          root: foundIndicators
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 784f410c-a243-4a90-8c60-c76136926d4e
+      iscommand: false
+      name: Set tool paths to output array
+      script: Set
+      type: regular
+      version: -1
+    taskid: 784f410c-a243-4a90-8c60-c76136926d4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 890
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_2_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1535,
+        "width": 940,
+        "x": 450,
+        "y": -240
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
