@@ -26,13 +26,21 @@ phishing_incidents = check_phishing_incidents()
 
 for _module, details in modules.items():
     if details.get("brand").lower() != "builtin" and details.get('state') == 'active' and details.get('category') != 'Utilities':
-        if details.get('category') == 'Forensic & Malware Analysis' or details.get('category') == 'Endpoint':
+        if details.get('category') in [
+            'Forensic & Malware Analysis',
+            'Endpoint'
+        ]:
             use_cases_in_production.add('Ransomware & Malware Coverage')
-        elif details.get('category') in ['Email', 'Messaging', 'Messaging and Conferencing'] and 'phishing' in details.get('incident_types', []):
+        elif (
+            details.get('category') in ['Email', 'Messaging', 'Messaging and Conferencing']
+            and 'phishing' in details.get('incident_types', [])
+        ):
             if phishing_incidents:
                 use_cases_in_production.add('Business Email Compromise Coverage')
             else:
-                at_risk.append('[Business Email Compromise Coverage](https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging)')
+                at_risk.append(
+                    '[Business Email Compromise Coverage](https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging)'
+                )
         elif details.get('category') == 'Network Security':
             use_cases_in_production.add('Network Security')
         elif details.get('category') == 'Analytics & SIEM':
@@ -52,7 +60,8 @@ use_case_dict = {
     'Business Email Compromise Coverage': 'https://cortex.marketplace.pan.dev/marketplace/?useCase=Phishing',
     'Network Security': 'https://xsoar.pan.dev/marketplace/?category=Network%20Security',
     'Analytics & SIEM': 'https://cortex.marketplace.pan.dev/marketplace/?category=Analytics+%26+SIEM',
-    'Data Enrichment & Threat Intelligence': 'https://cortex.marketplace.pan.dev/marketplace/?category=Data+Enrichment+%26+Threat+Intelligence',
+    'Data Enrichment & Threat Intelligence':
+        'https://cortex.marketplace.pan.dev/marketplace/?category=Data+Enrichment+%26+Threat+Intelligence',
     'Vulnerability Management': 'https://xsoar.pan.dev/marketplace/?category=Vulnerability%20Management',
     'Case Management': 'https://cortex.marketplace.pan.dev/marketplace/?category=Case+Management',
     'Rapid Breach Response': 'https://cortex.marketplace.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse/'

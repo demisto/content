@@ -132,6 +132,6 @@ usecasetemplatelist = """<html>
     </div>
 </body>
 </html>
-"""
+"""  # noqa: E501
 
 demisto.executeCommand("setList", {"listName": "UseCaseTemplate", "listData": usecasetemplatelist})
