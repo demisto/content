@@ -1,0 +1,349 @@
+description: "This playbook will search a  file or process activity of a software by a given image file name. The analyst can than choose the files he wishes to block.\nThe following integrations is supported:\n\n- Cortex XDR XQL Engine \n- Microsoft Defender For Endpoint"
+id: Search And Block Software - Generic
+inputs:
+- description: File name to search
+  key: FileName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  key: TimeFrame
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Search And Block Software - Generic
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db561466-7b5a-4cea-8350-4a871a84518c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: db561466-7b5a-4cea-8350-4a871a84518c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.FileName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.TimeFrame
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: c1f24703-cccd-4aa8-894a-24936aeccb8f
+      iscommand: false
+      name: Has filename and timeframe from inputs?
+      type: condition
+      version: -1
+    taskid: c1f24703-cccd-4aa8-894a-24936aeccb8f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Please provide a software name
+        options: []
+        optionsarg: []
+        placeholder: name.exe
+        readonly: false
+        required: true
+        tooltip: the software file name
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Please provide a timeframe
+        options: []
+        optionsarg: []
+        placeholder: 7 days
+        readonly: false
+        required: true
+        tooltip: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+        type: shortText
+      sender: ""
+      title: Please provide a software name to block and a timeframe
+      totalanswers: 0
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 1d034069-83cc-4e4b-8d6c-d2faec53535a
+      iscommand: false
+      name: Please provide a software name to block and a timeframe
+      type: collection
+      version: -1
+    taskid: 1d034069-83cc-4e4b-8d6c-d2faec53535a
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 350
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b4a666f-b896-4219-81f5-6af0f8aed8f6
+      iscommand: false
+      name: Search And Block Software
+      type: title
+      version: -1
+      description: ''
+    taskid: 7b4a666f-b896-4219-81f5-6af0f8aed8f6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Filename:
+        complex:
+          root: inputs.FileName
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.0
+            operator: append
+      TimeFrame:
+        complex:
+          root: inputs.TimeFrame
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.1
+            operator: append
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: This playbook will search a  file or process activity of a software by a given image file name using Cortex XDR XQL Engine. The analyst can than choose the files he wishes to block.
+      id: 51fcc25e-607e-43af-899b-d4e19570ddd0
+      iscommand: false
+      name: d4b0f0de-7c11-4050-8e01-9067112f2772
+      playbookId: d4b0f0de-7c11-4050-8e01-9067112f2772
+      type: playbook
+      version: -1
+    taskid: 51fcc25e-607e-43af-899b-d4e19570ddd0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 660
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 72d74415-fffc-4a35-88cc-2c11c3955b0c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 72d74415-fffc-4a35-88cc-2c11c3955b0c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Defender Indicator Title:
+        simple: XSOAR Software Block
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook will search a  file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can than choose the files he wishes to block.
+      id: 6c6d4e63-db04-452b-8862-29e7093753f5
+      iscommand: false
+      name: e5a31f4b-d3bb-4ba5-8fa3-a95105a3c5e4
+      playbookId: e5a31f4b-d3bb-4ba5-8fa3-a95105a3c5e4
+      type: playbook
+      version: -1
+    taskid: 6c6d4e63-db04-452b-8862-29e7093753f5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 660
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 845,
+        "width": 1020,
+        "x": 60,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
