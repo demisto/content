@@ -53,6 +53,8 @@ Get a list of all samples either private or public
 ***
 Submits a file or url for analysis
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
