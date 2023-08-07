@@ -1,7 +1,7 @@
 {
-   "native_images":{
-      "native:8.3":{
-         "supported_docker_images":[
+   "native_images": {
+      "native:8.3": {
+         "supported_docker_images": [
             "python3",
             "python3-deb",
             "python3-ubi",
@@ -31,8 +31,8 @@
          ],
          "docker_ref": "demisto/py3-native:8.3.0.62286"
       },
-      "native:dev":{
-         "supported_docker_images":[
+      "native:dev": {
+         "supported_docker_images": [
             "python3",
             "python3-deb",
             "python3-ubi",
@@ -61,8 +61,8 @@
             "tesseract"
          ]
       },
-      "native:candidate":{
-         "supported_docker_images":[
+      "native:candidate": {
+         "supported_docker_images": [
             "python3",
             "python3-deb",
             "python3-ubi",
@@ -90,14 +90,14 @@
             "chromium",
             "tesseract"
          ],
-         "docker_ref": "demisto/py3-native:8.3.0.65288"
+         "docker_ref": "demisto/py3-native:8.3.0.67758"
       }
    },
-   "ignored_content_items":[
+   "ignored_content_items": [
       {
-         "id":"FetchIndicatorsFromFile",
-         "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
-         "ignored_native_images":[
+         "id": "FetchIndicatorsFromFile",
+         "reason": "issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
+         "ignored_native_images": [
             "native:8.3",
             "native:dev",
             "native:candidate"
@@ -105,9 +105,10 @@
       },
       {
          "id": "Rasterize",
-         "reason": "Issue: CRTX-72338.",
+         "reason": "Issue: CRTX-72338 and CIAC-7694",
          "ignored_native_images": [
-            "native:8.3"
+            "native:8.3",
+            "native:candidate"
          ]
       },
       {
@@ -143,12 +144,19 @@
             "native:dev",
             "native:candidate"
          ]
+      },
+      {
+         "id": "Intezer v2",
+         "reason": "Lint and UT depend on intezer-sdk package",
+         "ignored_native_images": [
+            "native:8.3"
+         ]
       }
    ],
    "flags_versions_mapping": {
-      "native:dev" : "native:dev",
-      "native:ga" : "native:8.3",
-      "native:maintenance" : "",
+      "native:dev": "native:dev",
+      "native:ga": "native:8.3",
+      "native:maintenance": "",
       "native:candidate": "native:candidate"
    }
 }
