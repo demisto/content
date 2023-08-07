@@ -1528,6 +1528,8 @@ Retrieve information about an IP Address from Mandiant
 ***
 Retrieve information about a URL from Mandiant
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 #### Base Command
 
 `url`
@@ -1642,6 +1644,8 @@ Retrieve information about a URL from Mandiant
 
 ***
 Retrieve information about an FQDN from Mandiant
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
