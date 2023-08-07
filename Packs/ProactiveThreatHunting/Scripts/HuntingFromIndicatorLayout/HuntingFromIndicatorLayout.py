@@ -3,6 +3,18 @@ from CommonServerPython import *  # noqa: F401
 
 
 def hunting_from_indicator_layout(sdo):
+    """
+    Creating an incident from the indicator layout with the following parameters:
+        Name: Threat Hunting Session - <Indicator Value>
+        Type: Proactive Threat Hunting
+        sdoname: <Indicator Value>
+
+    Returns:
+        - CommandResults: A CommandResults object with a readable output indicating that the incident was created.
+
+    Raises:
+        - ValueError: If the indicator value is not part of Demisto args, a ValueError is raised with a message indicating that the automation was not executed from the indicator layout.
+       """
     try:
         results = demisto.executeCommand("createNewIncident", {"name": f"Threat Hunting Session - {sdo}",
                                                                "sdoname": f"{sdo}",
@@ -18,7 +30,7 @@ def hunting_from_indicator_layout(sdo):
 def main() -> None:  # pragma: no cover
     args = demisto.args()
     if "indicator" not in args:
-        raise DemistoException("error")
+        raise DemistoException("The automation was not executed from indicator layout")
     return_results(hunting_from_indicator_layout(args.get("indicator", "").get("value")))
 
 
