@@ -20,7 +20,6 @@ class MsGraphClient:
                  azure_cloud: AzureCloud,
                  certificate_thumbprint: str | None = None,
                  private_key: str | None = None,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
                  managed_identities_client_id: str | None = None,
                  ):
         client_args = {
