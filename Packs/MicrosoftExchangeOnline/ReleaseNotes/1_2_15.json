@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Instances of Security and Compliance which are already configured, will need to have the command ***o365-sc-auth-start*** ran in order to authenticate the account."}
