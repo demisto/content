@@ -256,7 +256,7 @@ install-packs-in-server-master:
   after_script:
     - echo "Job finished, removing lock file"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/machines_locks/*-lock-$CI_JOB_ID"
+    - gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
     - echo "Finished removing lock file"
 
 
