@@ -6,8 +6,9 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
     if [[ -n "${PACKS_TO_UPLOAD}" ]]; then
         PACKS_LIST=""
         for item in $PACKS_TO_UPLOAD; do
-        PACKS_LIST=$PACKS_LIST"Packs/"$item" "
+            PACKS_LIST=$PACKS_LIST"Packs/"$item" "
         done
+        PACKS_LIST=${PACKS_LIST%?} # remove last space
         echo "Packs upload - Validating only the supplied packs"
         echo "Packs path "$PACKS_LIST
         python3 -m demisto_sdk validate -i $PACKS_LIST --post-commit --graph --skip-pack-dependencies
