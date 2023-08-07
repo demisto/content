@@ -122,6 +122,8 @@ def filter_and_save_unseen_incident(incidents: List, limit: int, number_of_alrea
 class Client(CoreClient):
 
     def __init__(self, base_url, proxy, verify, timeout, params=None):
+        if not params:
+            params = {}
         self._params = params
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout)
 
