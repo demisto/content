@@ -1,7 +1,8 @@
 commonfields:
   id: UseCaseAdoptionMetrics
   version: -1
-dockerimage: demisto/python3:3.10.10.50695
+comment: ''
+dockerimage: demisto/python3:3.10.12.67728
 enabled: true
 name: UseCaseAdoptionMetrics
 runas: DBotWeakRole
