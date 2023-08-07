@@ -382,7 +382,12 @@ def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
 
     """
     for indicators in fetch_indicators_command(client, client.indicator_type, risk_rule):
+
+        demisto.info("before createIndicators")
+
         demisto.createIndicators(indicators)
+
+        demisto.info("after createIndicators")
 
 
 def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = None, limit: Optional[int] = None):
