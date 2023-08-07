@@ -9330,7 +9330,7 @@ script:
     - contextPath: DeviceGroupNames
       description: The list of device groups.
       type: string
-  dockerimage: demisto/pan-os-python:1.0.0.66894
+  dockerimage: demisto/pan-os-python:1.0.0.68093
   isfetch: true
   runonce: false
   script: ''
