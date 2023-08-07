@@ -1,5 +1,5 @@
 {
-    "fromVersion": "6.10.0",
+    "description": "Campaign Indicator Layout",
     "edit": {
         "sections": [
             {
@@ -255,6 +255,19 @@
                                 "startCol": 0
                             },
                             {
+                                "args": {},
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "fcadbfd0-33b0-11ee-83bf-674adb4bd869",
+                                "index": 8,
+                                "name": "Execute Campaign Hunt",
+                                "scriptId": "517d22f0-8a54-4404-8ed0-ea09e8ad5fc9",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
                                 "args": {
                                     "field": {
                                         "simple": "tags"
@@ -319,7 +332,7 @@
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "description",
                                 "height": 106,
                                 "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
@@ -570,5 +583,5 @@
     "name": "Campaign",
     "system": false,
     "version": -1,
-    "description": "Campaign Indicator Layout"
+    "fromVersion": "6.10.0"
 }

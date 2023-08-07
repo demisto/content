@@ -1,4 +1,5 @@
 {
+    "description": "Intrusion Set Layout",
     "edit": {
         "sections": [
             {
@@ -289,6 +290,18 @@
                                 "index": 10,
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "6bc02be0-350c-11ee-9da7-693d42899c2b",
+                                "index": 11,
+                                "name": "Execute Intrusion Set hunt",
+                                "scriptId": "517d22f0-8a54-4404-8ed0-ea09e8ad5fc9",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -660,6 +673,5 @@
     "name": "Intrusion Set",
     "system": false,
     "version": -1,
-    "description": "Intrusion Set Layout",
-	"fromVersion": "6.10.0"
+    "fromVersion": "6.10.0"
 }
