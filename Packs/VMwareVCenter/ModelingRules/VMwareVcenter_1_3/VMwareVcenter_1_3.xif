@@ -87,6 +87,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
     syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
+    pool_id = arrayindex(regextract(syslog_msg, "pool\-(\d+)\-thread\-\d+"), 0),
     thread_id = arrayindex(regextract(syslog_msg, "thread\-(\d+)\]"), 0),
     msg_severity = arrayindex(regextract(syslog_msg, "\[[\w-]+\]\s+(\w+)"), 0),
     operation_id = arrayindex(regextract(syslog_msg, "opId=(\S+)"), 0),
@@ -106,10 +107,35 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.alert.severity = msg_severity,
     xdm.event.type = event_type,
     xdm.observer.name = hostname, 
+    xdm.session_context_id = pool_id,
+    xdm.source.process.thread_id = to_integer(thread_id),
     xdm.source.application.name = app_component, 
     xdm.source.host.hostname = hostname, 
-    xdm.source.process.thread_id = to_integer(thread_id),
     xdm.target.port = to_integer(port),
     xdm.target.url = url,
     xdm.target.resource.type = if(datastore != null, "datastore"),
     xdm.target.resource.value = datastore;
+
+// vpxd-svcs-perf (VMware vCenter-Services) events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "vpxd-svcs-perf"
+| alter 
+    hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    pool_id = arrayindex(regextract(syslog_msg, "pool\-(\d+)\-thread\-\d+"), 0),
+    thread_id = arrayindex(regextract(syslog_msg, "pool\-\d+\-thread\-(\d+)"), 0),
+    msg_severity = arrayindex(regextract(syslog_msg, "\[\S+\s+\[[^\]]*\]\s+(\w+)"), 0),
+    app_component = arrayindex(regextract(syslog_msg, "\[\S+\s+\[[^\]]*\]\s+\w+\s+(\S+)"), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0)
+    event_details = arrayindex(regextract(syslog_msg, "opId=\S*\]\s+(.+)"), 0)
+| alter
+    xdm.event.id = operation_id,
+    xdm.event.description = event_details,
+    xdm.alert.severity = msg_severity,
+    xdm.event.type = event_type,
+    xdm.observer.name = hostname, 
+    xdm.session_context_id = pool_id,
+    xdm.source.process.thread_id = to_integer(thread_id),
+    xdm.source.application.name = app_component, 
+    xdm.source.host.hostname = hostname;
