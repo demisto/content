@@ -1,7 +1,6 @@
 commonfields:
-  id: 517d22f0-8a54-4404-8ed0-ea09e8ad5fc9
-  version: 9
-vcShouldKeepItemLegacyProdMachine: false
+  id: HuntingFromIndicatorLayout
+  version: -1
 name: HuntingFromIndicatorLayout
 script: ''
 type: python
@@ -11,9 +10,9 @@ comment: Create incident with incident type "Proactive Threat Hunting" from indi
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.11.61265
 runas: DBotWeakRole
-engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
