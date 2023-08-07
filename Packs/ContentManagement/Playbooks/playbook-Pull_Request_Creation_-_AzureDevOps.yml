@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b86b27f0-b073-40fd-8b5a-a9e72084b742
+    taskid: 1667dcd1-af57-4484-8450-856032b0ebd9
     type: regular
     task:
-      id: b86b27f0-b073-40fd-8b5a-a9e72084b742
+      id: 1667dcd1-af57-4484-8450-856032b0ebd9
       version: -1
       name: Create new branch
       description: Create a branch.
@@ -58,9 +58,11 @@ tasks:
       commit_comment:
         simple: 'A new branch was created for the PR '
       file_content:
-        simple: '"An initial file just to create a new branch״'
+        simple: An initial file just to create a new branch.
       file_path:
         simple: '"create_branch.txt"'
+      reference_branch_name:
+        simple: refs/heads/master
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -248,10 +250,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 49e2bc42-ebeb-4a15-8337-58c7dd129cde
+    taskid: 5990764d-c56e-4c8d-8172-7db6abd8a146
     type: condition
     task:
-      id: 49e2bc42-ebeb-4a15-8337-58c7dd129cde
+      id: 5990764d-c56e-4c8d-8172-7db6abd8a146
       version: -1
       name: Is CI/CD Branch field given
       description: Is there a branch name in the update branch field in the incident.
@@ -761,10 +763,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: a5eeca70-dfe3-4aba-8a3c-d1b1ea2af164
+    taskid: 3ee32692-cd01-4a6a-8597-7002eeebca8e
     type: condition
     task:
-      id: a5eeca70-dfe3-4aba-8a3c-d1b1ea2af164
+      id: 3ee32692-cd01-4a6a-8597-7002eeebca8e
       version: -1
       name: Is Pull Request title empty?
       description: Is the field of the pull request title in the incident empty?
@@ -784,9 +786,11 @@ tasks:
           left:
             value:
               complex:
-                root: incident
-                accessor: cicdpullrequesttitle
+                root: ${incident
+                accessor: cicdpullrequesttitle}
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
     continueonerrortype: ""
     view: |-

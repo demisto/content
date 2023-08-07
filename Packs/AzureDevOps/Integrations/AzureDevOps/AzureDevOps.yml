@@ -2309,8 +2309,12 @@ script:
         required: false
         isArray: false
       - name: branch_name
-        description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
+        description: The branch name.
         required: true
+        isArray: false
+      - name: reference_branch_name
+        description: The name of the reference branch.
+        required: false
         isArray: false
       - name: commit_comment
         description: Comment or message of the commit.

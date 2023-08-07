@@ -598,8 +598,8 @@ class Client:
 
     def branch_create_request(self, org_repo_project_tuple: namedtuple, args: Dict[str, Any]):
 
-        # initialize new branch - this is the syntax
-        args["branch_id"] = "0000000000000000000000000000000000000000"
+        # initialize new branch - this is the syntax if no reference was given
+        args["branch_id"] = args["branch_id"] if args.get("branch_id") else "0000000000000000000000000000000000000000"
 
         data = file_pre_process_body_request("add", args)
         params = {"api-version": 7.0}
@@ -2210,6 +2210,14 @@ def file_get_command(client: Client, args: Dict[str, Any], organization: Optiona
     return fileResult(filename=file_name, data=data, file_type=file_type)
 
 
+def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any]):
+    params = demisto.params()
+    branch_list = branch_list_command(client, args, params.get('repository'), params.get('project'))
+    for branch in branch_list.outputs:
+        if branch.get("name").endswith(args["reference_branch_name"]):
+            return branch.get("objectId")
+
+
 def branch_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                           project: Optional[str]) -> CommandResults:
     """
@@ -2217,6 +2225,9 @@ def branch_create_command(client: Client, args: Dict[str, Any], organization: Op
     """
     # pre-processing inputs
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    # convert reference_branch_name to branch id
+    if args.get("reference_branch_name"):
+        args["branch_id"] = mapping_branch_name_to_branch_id(client, args)
 
     response = client.branch_create_request(org_repo_project_tuple, args=args)
 

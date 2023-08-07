@@ -17,6 +17,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 * azure-devops-branch-list
+* azure-devops-branch-create
 * azure-devops-pull-request-create
 * azure-devops-pull-request-list
 * azure-devops-pull-request-update
@@ -37,3 +38,4 @@ This playbook does not use any sub-playbooks.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+Creating a branch (with azure-devops-branch-create command) creates a new file due to API limitations ("create_branch.txt").
