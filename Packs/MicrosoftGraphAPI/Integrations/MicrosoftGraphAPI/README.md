@@ -51,21 +51,36 @@ The integration supports only Application permission type, and does not support 
 2. Search for Microsoft Graph API.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| app_id | Application ID | False |
-| scope | Scope (Required for using Cortex XSOAR Azure app) | False |
-| app_secret | Application Secret (Required for using self deployed Azure app) | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-| tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
-| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-| azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
+    | **Parameter**                      | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
+    |------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+    | Azure Cloud                        | See option table below.                                                                                                                                                                                                                                                                                                                                | False        |
+    | app_id                             | Application ID                                                                                                                                                                                                                                                                                                                                         | False        |
+    | scope                              | Scope (Required for using Cortex XSOAR Azure app)                                                                                                                                                                                                                                                                                                      | False        |
+    | app_secret                         | Application Secret (Required for using self deployed Azure app)                                                                                                                                                                                                                                                                                        | False        |
+    | Certificate Thumbprint             | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.                                                                                                                                                                                                                                                       | False        |
+    | Private Key                        | Used for certificate authentication. The private key of the registered certificate.                                                                                                                                                                                                                                                                    | False        |
+    | tenant_id                          | Tenant ID (Required for using self deployed Azure app)                                                                                                                                                                                                                                                                                                 | False        |
+    | Use Azure Managed Identities       | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False        |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                                                                                                                                                                                                                                         | False        |
+    | azure_ad_endpoint                  | Azure AD endpoint associated with a national cloud. See note below.                                                                                                                                                                                                                                                                                    | False        |
+    | insecure                           | Trust any certificate \(not secure\)                                                                                                                                                                                                                                                                                                                   | False        |
+    | proxy                              | Use system proxy settings                                                                                                                                                                                                                                                                                                                              | False        |
 
-1. Click **Test** to validate the URLs, token, and connection.
+    Azure cloud options
+    
+    | Azure Cloud | Description                                                         |
+    |-------------|---------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud                                 |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)            |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)  |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                 |
+    | Germany     | Azure cloud for the German Government                               |
+    | China       | Azure cloud for the Chinese Government                              |
+    | Custom      | Custom endpoint configuration to the Azure cloud. See note below.   |
+
+   - Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom URL is required for accessing a national cloud.
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 You can execute the command from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -94,14 +109,14 @@ Run a Microsoft Graph API query.
 `msgraph-api`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| resource | The resource in Microsoft Graph to refer. | Required | 
-| http_method | The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET". | Optional | 
-| api_version | The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is "v1.0". | Optional | 
-| request_body | The request body (required for POST queries). | Optional | 
-| odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. It is recommended to use the $top query option to limit the result. | Optional |
-| populate_context | If "true", will populate the API response to the context data. Default is "true". | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                        | **Required** |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| resource          | The resource in Microsoft Graph to refer.                                                                                                                                                                              | Required     | 
+| http_method       | The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET".                                                                            | Optional     | 
+| api_version       | The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is "v1.0".                                                                                                               | Optional     | 
+| request_body      | The request body (required for POST queries).                                                                                                                                                                          | Optional     | 
+| odata             | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. It is recommended to use the $top query option to limit the result. | Optional     |
+| populate_context  | If "true", will populate the API response to the context data. Default is "true".                                                                                                                                      | Optional     | 
 
 #### Context Output
 
