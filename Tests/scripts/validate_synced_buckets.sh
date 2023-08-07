@@ -2,8 +2,8 @@
 
 
 function compare_revision() {
-  bucket_list_origin=("marketplace-dist" "marketplace-v2-dist" "xpanse-dist")
-  bucket_list_prod=("marketplace-xsoar" "marketplace-xsiam" "marketplace-xpanse")
+  bucket_list_origin=(GCS_MARKET_BUCKET GCS_MARKET_V2_BUCKET GCS_MARKET_XPANSE_BUCKET)
+  bucket_list_prod=(MARKETPLACE_XSOAR_PROD MARKETPLACE_V2_PROD MARKETPLACE_XPANSE_PROD)
   json_file_path="/content/packs/index.json"
 
   # Compare the revision fields for each pair of buckets

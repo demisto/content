@@ -562,6 +562,10 @@ sync-buckets-between-projects:
   stage: upload-to-marketplace
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
   when: always
+  variables:
+    MARKETPLACE_XSOAR_PROD: "marketplace-xsoar"
+    MARKETPLACE_V2_PROD: "marketplace-xsiam"
+    MARKETPLACE_XPANSE_PROD: "marketplace-xpanse"
   script:
     - |
       if [[ $TEST_UPLOAD == "true" ]]; then
