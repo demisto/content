@@ -21,7 +21,7 @@ configuration:
   required: true
   section: Connect
 - display: QRadar API Version
-  defaultvalue: 14.0
+  defaultvalue: 17.0
   additionalinfo: API version of QRadar (e.g., '12.0'). Minimum API version is 10.1.
   name: api_version
   type: 0
@@ -31,12 +31,14 @@ configuration:
   name: incident_type
   type: 13
   section: Connect
+  required: false
 - defaultvalue: 3 days
   additionalinfo: if no offenses are found within the range of first fetch, will be set to fetch the earliest offense.
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: Fetch With All Events
   display: Fetch mode
   name: fetch_mode
@@ -54,6 +56,7 @@ configuration:
   additionalinfo: "Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than `event_count`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5"
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20'
   display: Maximum number of events per incident.
   name: events_limit
@@ -61,6 +64,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
   type: 0
@@ -68,12 +72,14 @@ configuration:
   defaultvalue: '20'
   section: Collect
   advanced: true
+  required: false
 - display: Query to fetch offenses.
   name: query
   type: 0
   additionalinfo: Define a query to determine which offenses to fetch. E.g., "severity >= 4 AND id > 5". filtering by status in the query may result in unexpected behavior when changing an incident's status.
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: IPs And Assets
   display: 'Incidents Enrichment'
   name: enrichment
@@ -93,6 +99,7 @@ configuration:
   additionalinfo: 'The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html'
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
   defaultvalue: 'No Mirroring'
   display: Mirroring Options
@@ -106,6 +113,7 @@ configuration:
   - Mirror Offense and Events
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -115,6 +123,7 @@ configuration:
   - marketplacev2
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Maximum number of incoming incidents to mirror each time.
   display: The number of incoming incidents to mirror each time
   name: mirror_limit
@@ -124,22 +133,26 @@ configuration:
   advanced: true
   hidden:
   - marketplacev2
+  required: false
 - display: Advanced Parameters
   name: adv_params
   type: 12
   additionalinfo: Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   commands:
   - name: qradar-offenses-list
@@ -2516,7 +2529,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.67728
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

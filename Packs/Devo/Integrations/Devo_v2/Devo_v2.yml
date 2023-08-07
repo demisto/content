@@ -14,6 +14,7 @@ configuration:
   name: port
   defaultvalue: "443"
   type: 0
+  required: false
 - display: OAuth Token (Preferred method)
   name: reader_oauth_token
   type: 4
@@ -21,51 +22,65 @@ configuration:
 - display: Writer relay to connect to (e.g. us.elb.relay.logtrust.net)
   name: writer_relay
   type: 0
+  required: false
 - display: Writer JSON credentials
   name: writer_credentials
   type: 4
+  required: false
 - display: Devo base domain
   name: linq_link_base
   defaultvalue: https://us.devo.com
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   defaultvalue: "true"
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Custom Alert Table name(If not provided, 'siem.logtrust.alert.info' will be used.)
   name: table_name
   type: 0
+  required: false
 - display: Custom Alert Table prefix (Provide prefix if custom table name provided.)
   name: prefix
   type: 0
+  required: false
 - display: Fetch incidents alert filter (Same filters for get-alerts)
   name: fetch_incidents_filters
   type: 12
+  required: false
 - display: Deduplication parameters JSON if required
   name: fetch_incidents_deduplication
   type: 0
   hidden: true
+  required: false
 - display: Fetch Incident Limit(Should be between 10 and 100. Advisable 50 for better performance.)
   name: fetch_incidents_limit
   type: 0
   defaultvalue: "50"
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   defaultvalue: "1"
+  required: false
 - display: Global query default timeout in seconds
   name: timeout
   type: 0
   defaultvalue: "60"
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ""
   type: python
@@ -199,7 +214,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.63617
+  dockerimage: demisto/devo:1.0.0.66471
   isfetch: true
   subtype: python3
 tests:

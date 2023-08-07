@@ -8,14 +8,13 @@ import requests
 import re
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Tuple, List, Optional
 
 
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
     security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
-    management_azure = 'https://management.azure.com/.default'   # resource_manager
+    management_azure = 'https://management.azure.com/.default'  # resource_manager
 
 
 class Resources:
@@ -35,6 +34,7 @@ AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
+REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
 SESSION_STATE = 'session_state'
 
 # Deprecated, prefer using AZURE_CLOUDS
@@ -142,6 +142,8 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
+                             }  # See: https://login.microsoftonline.com/error?code=
 
 
 class CloudEndpointNotSetException(Exception):
@@ -515,11 +517,11 @@ class AzureCloudNames:
 
 
 def create_custom_azure_cloud(origin: str,
-                              name: Optional[str] = None,
-                              abbreviation: Optional[str] = None,
-                              defaults: Optional[AzureCloud] = None,
-                              endpoints: Optional[Dict] = None,
-                              suffixes: Optional[Dict] = None):
+                              name: str | None = None,
+                              abbreviation: str | None = None,
+                              defaults: AzureCloud | None = None,
+                              endpoints: dict | None = None,
+                              suffixes: dict | None = None):
     defaults = defaults or AzureCloud(origin, name, abbreviation)
     endpoints = endpoints or {}
     suffixes = suffixes or {}
@@ -615,30 +617,30 @@ def get_azure_cloud(params, integration_name):
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
-                 enc_key: Optional[str] = '',
+                 enc_key: str | None = '',
                  token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
-                 refresh_token_param: Optional[str] = '',
                  auth_code: str = '',
                  scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
-                 resource: Optional[str] = '',
+                 resource: str | None = '',
                  multi_resource: bool = False,
-                 resources: List[str] = None,
+                 resources: list[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
-                 timeout: Optional[int] = None,
+                 timeout: int | None = None,
                  azure_ad_endpoint: str = '{endpoint}',
                  azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
                  endpoint: str = "__NA__",  # Deprecated
-                 certificate_thumbprint: Optional[str] = None,
+                 certificate_thumbprint: str | None = None,
                  retry_on_rate_limit: bool = False,
-                 private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None,
-                 managed_identities_resource_uri: Optional[str] = None,
-                 base_url: Optional[str] = None,
+                 private_key: str | None = None,
+                 managed_identities_client_id: str | None = None,
+                 managed_identities_resource_uri: str | None = None,
+                 base_url: str | None = None,
+                 command_prefix: str | None = "command_prefix",
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -649,7 +651,6 @@ class MicrosoftClient(BaseClient):
             contain the token url
             enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
             refresh_token: The current used refresh token.
-            refresh_token_param: The refresh token from the integration's parameters (i.e. instance configuration).
             scope: The scope of the application (only if self deployed)
             resource: The resource of the application (only if self deployed)
             multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
@@ -667,7 +668,9 @@ class MicrosoftClient(BaseClient):
                                  retry the request using a scheduled command.
             base_url: Optionally override the calculated Azure endpoint, used for self-deployed and backward-compatibility with
                       integration that supported national cloud before the *azure_cloud* parameter.
+            command_prefix: The prefix for all integration commands.
         """
+        self.command_prefix = command_prefix
         if endpoint != "__NA__":
             # Backward compatible.
             self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
@@ -691,7 +694,6 @@ class MicrosoftClient(BaseClient):
             self.auth_id = auth_id
             self.enc_key = enc_key
             self.refresh_token = refresh_token
-            self.refresh_token_param = refresh_token_param
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
@@ -726,8 +728,8 @@ class MicrosoftClient(BaseClient):
 
         self.multi_resource = multi_resource
         if self.multi_resource:
-            self.resources = resources or []
-            self.resource_to_access_token: Dict[str, str] = {}
+            self.resources = resources if resources else []
+            self.resource_to_access_token: dict[str, str] = {}
 
         # for Azure Managed Identities purpose
         self.managed_identities_client_id = managed_identities_client_id
@@ -745,7 +747,7 @@ class MicrosoftClient(BaseClient):
 
     def http_request(
             self, *args, resp_type='json', headers=None,
-            return_empty_response=False, scope: Optional[str] = None,
+            return_empty_response=False, scope: str | None = None,
             resource: str = '', overwrite_rate_limit_retry=False, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
@@ -835,12 +837,9 @@ class MicrosoftClient(BaseClient):
                     ET.fromstring(response.text)
             return response
         except ValueError as exception:
-            raise DemistoException(
-                f'Failed to parse json object from response: {response.content}',
-                exception,
-            )
+            raise DemistoException(f'Failed to parse json object from response: {response.content}', exception)
 
-    def get_access_token(self, resource: str = '', scope: Optional[str] = None) -> str:
+    def get_access_token(self, resource: str = '', scope: str | None = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
@@ -860,10 +859,7 @@ class MicrosoftClient(BaseClient):
         access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
         valid_until_keyword = f'{scope}_valid_until' if scope else 'valid_until'
 
-        if self.multi_resource:
-            access_token = integration_context.get(resource)
-        else:
-            access_token = integration_context.get(access_token_keyword)
+        access_token = integration_context.get(resource) if self.multi_resource else integration_context.get(access_token_keyword)
 
         valid_until = integration_context.get(valid_until_keyword)
 
@@ -917,27 +913,29 @@ class MicrosoftClient(BaseClient):
         Args:
             oproxy_response: Raw response from the Oproxy server to parse.
         """
-        msg = 'Error in authentication. Try checking the credentials you entered.'
+        msg = 'Error in Microsoft authorization.'
         try:
-            demisto.info(f'Authentication failure from server: {oproxy_response.status_code} '
-                         f'{oproxy_response.reason} {oproxy_response.text}')
+            demisto.info(
+                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} '
+                f'{oproxy_response.text}'
+            )
+            msg += f" Status: {oproxy_response.status_code},"
+            search_microsoft_response = re.search(r'{.*}', oproxy_response.text)
+            microsoft_response = self.extract_microsoft_error(json.loads(search_microsoft_response.group())) \
+                if search_microsoft_response else ""
+            err_str = microsoft_response or oproxy_response.text
+            if err_str:
+                msg += f' body: {err_str}'
             err_response = oproxy_response.json()
-            server_msg = err_response.get('message')
-            if not server_msg:
-                title = err_response.get('title')
-                detail = err_response.get('detail')
-                if title:
-                    server_msg = f'{title}. {detail}'
-                elif detail:
-                    server_msg = detail
+            server_msg = err_response.get('message', '') or f'{err_response.get("title", "")}. {err_response.get("detail", "")}'
             if server_msg:
                 msg += f' Server message: {server_msg}'
-        except Exception as parsing_ex:
-            demisto.error(f'Failed parsing error response - Exception: {parsing_ex}')
+        except Exception as ex:
+            demisto.error(f'Failed parsing error response - Exception: {ex}')
         raise Exception(msg)
 
-    def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
-                                        scope: Optional[str] = None, resource: str = ''
+    def _oproxy_authorize_build_request(self, headers: dict[str, str], content: str,
+                                        scope: str | None = None, resource: str = ''
                                         ) -> requests.Response:
         """
         Build the Post request sent to the Oproxy server.
@@ -963,7 +961,7 @@ class MicrosoftClient(BaseClient):
             verify=self.verify
         )
 
-    def _oproxy_authorize(self, resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _oproxy_authorize(self, resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing with oproxy.
         Args:
@@ -977,27 +975,7 @@ class MicrosoftClient(BaseClient):
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
-            # Try to send request to the Oproxy server with the refresh token from the integration parameters
-            # (instance configuration).
-            # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
-            if self.refresh_token_param:
-                demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
-                              ' authorizing with the Oproxy, this time using the refresh token from the integration'
-                              ' parameters (instance configuration).')
-                content = self.refresh_token_param
-                oproxy_second_try_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
-
-                if not oproxy_second_try_response.ok:
-                    demisto.error(f'Authentication failure from server (second attempt - using refresh token from the '
-                                  f'integration parameters: {oproxy_second_try_response.status_code} '
-                                  f'{oproxy_second_try_response.reason} {oproxy_second_try_response.text}')
-                    MicrosoftClient._raise_authentication_error(oproxy_response)
-
-                else:  # Second try succeeded
-                    oproxy_response = oproxy_second_try_response
-
-            else:
-                MicrosoftClient._raise_authentication_error(oproxy_response)
+            self._raise_authentication_error(oproxy_response)
 
         # Oproxy authentication succeeded
         try:
@@ -1015,9 +993,9 @@ class MicrosoftClient(BaseClient):
 
     def _get_self_deployed_token(self,
                                  refresh_token: str = '',
-                                 scope: Optional[str] = None,
-                                 integration_context: Optional[dict] = None
-                                 ) -> Tuple[str, int, str]:
+                                 scope: str | None = None,
+                                 integration_context: dict | None = None
+                                 ) -> tuple[str, int, str]:
         if self.managed_identities_client_id:
 
             if not self.multi_resource:
@@ -1052,8 +1030,8 @@ class MicrosoftClient(BaseClient):
                 return '', expires_in, refresh_token
             return self._get_self_deployed_token_client_credentials(scope=scope)
 
-    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None,
-                                                    resource: Optional[str] = None) -> Tuple[str, int, str]:
+    def _get_self_deployed_token_client_credentials(self, scope: str | None = None,
+                                                    resource: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
@@ -1097,7 +1075,7 @@ class MicrosoftClient(BaseClient):
         return access_token, expires_in, ''
 
     def _get_self_deployed_token_auth_code(
-            self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+            self, refresh_token: str = '', resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
         Returns:
@@ -1106,7 +1084,7 @@ class MicrosoftClient(BaseClient):
         data = assign_params(
             client_id=self.client_id,
             client_secret=self.client_secret,
-            resource=resource or self.resource,
+            resource=resource if resource else self.resource,
             redirect_uri=self.redirect_uri
         )
 
@@ -1173,10 +1151,11 @@ class MicrosoftClient(BaseClient):
             err = f'{str(e)}'
 
         return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+        return None
 
     def _get_token_device_code(
-            self, refresh_token: str = '', scope: Optional[str] = None, integration_context: Optional[dict] = None
-    ) -> Tuple[str, int, str]:
+        self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
+    ) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
@@ -1244,8 +1223,7 @@ class MicrosoftClient(BaseClient):
             execution_metrics.general_error += 1
         return_results(execution_metrics.metrics)
 
-    @staticmethod
-    def error_parser(error: requests.Response) -> str:
+    def error_parser(self, error: requests.Response) -> str:
         """
 
         Args:
@@ -1258,17 +1236,42 @@ class MicrosoftClient(BaseClient):
         try:
             response = error.json()
             demisto.error(str(response))
-            inner_error = response.get('error', {})
-            if isinstance(inner_error, dict):
-                err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
-            else:
-                err_str = inner_error
+            err_str = self.extract_microsoft_error(response)
             if err_str:
                 return err_str
             # If no error message
             raise ValueError
         except ValueError:
             return error.text
+
+    def extract_microsoft_error(self, response: dict) -> str | None:
+        """
+        Extracts the Microsoft error message from the JSON response.
+
+        Args:
+            response (dict): JSON response received from the microsoft server.
+
+        Returns:
+            str or None: Extracted Microsoft error message if found, otherwise returns None.
+        """
+        inner_error = response.get('error', {})
+        error_codes = response.get("error_codes", [""])
+        err_desc = response.get('error_description', '')
+
+        if isinstance(inner_error, dict):
+            err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
+        else:
+            err_str = inner_error
+            re_search = re.search(REGEX_SEARCH_ERROR_DESC, err_desc)
+            err_str += f". \n{re_search['desc']}" if re_search else ""
+
+        if err_str:
+            if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
+                           f"to reset the authentication process."
+            return err_str
+        # If no error message
+        return None
 
     @staticmethod
     def epoch_seconds(d: datetime = None) -> int:
@@ -1293,7 +1296,7 @@ class MicrosoftClient(BaseClient):
         return datetime.utcfromtimestamp(_time)
 
     @staticmethod
-    def get_encrypted(content: str, key: Optional[str]) -> str:
+    def get_encrypted(content: str, key: str | None) -> str:
         """
         Encrypts content with encryption key.
         Args:
@@ -1338,7 +1341,7 @@ class MicrosoftClient(BaseClient):
         return encrypted
 
     @staticmethod
-    def _add_info_headers() -> Dict[str, str]:
+    def _add_info_headers() -> dict[str, str]:
         # pylint: disable=no-member
         headers = {}
         try:
@@ -1392,7 +1395,7 @@ class NotFoundError(Exception):
         self.message = message
 
 
-def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
+def get_azure_managed_identities_client_id(params: dict) -> str | None:
     """
     Extract the Azure Managed Identities from the demisto params
 
@@ -1414,7 +1417,6 @@ def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
 
 def generate_login_url(client: MicrosoftClient,
                        login_url: str = "https://login.microsoftonline.com/") -> CommandResults:
-
     missing = []
     if not client.client_id:
         missing.append("client_id")
@@ -1442,7 +1444,7 @@ and paste it in your instance configuration under the **Authorization code** par
     return CommandResults(readable_output=result_msg)
 
 
-def get_from_args_or_params(args: Dict[str, Any], params: Dict[str, Any], key: str) -> Any:
+def get_from_args_or_params(args: dict[str, Any], params: dict[str, Any], key: str) -> Any:
     """
     Get a value from args or params, if the value is provided in both args and params, the value from args will be used.
     if the value is not provided in args or params, an exception will be raised.
@@ -1478,3 +1480,15 @@ def azure_tag_formatter(arg):
             """Invalid tag format, please use the following format: '{"key_name":"value_name"}'""",
             e,
         ) from e
+
+
+def reset_auth() -> CommandResults:
+    """
+    This command resets the integration context.
+    After running the command, a new token/auth-code will need to be given by the user to regenerate the access token.
+    :return: Message about resetting the authorization process.
+    """
+    demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
+                                          'and then click **Test** to validate the credentials and connection.')

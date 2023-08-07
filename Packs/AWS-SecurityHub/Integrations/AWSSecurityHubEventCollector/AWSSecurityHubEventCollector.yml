@@ -34,25 +34,30 @@ configuration:
   name: role_arn
   type: 0
   section: Connect
+  required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
+  required: false
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Role Session Name
   name: role_session_name
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Role Session Duration
   name: role_session_duration
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Max events per fetch
   additionalinfo: The maximum number of events to retrieve for each event type. Can only be values between 0 and 10,000. For more information about event types, see the help section.
   defaultvalue: '1000'
@@ -60,6 +65,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
@@ -67,6 +73,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Retries
   name: retries
   defaultvalue: 5
@@ -74,16 +81,19 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: An XSIAM event collector integration for AWS Security Hub.
 display: AWS Security Hub Event Collector
 name: AWS Security Hub Event Collector
@@ -106,7 +116,7 @@ script:
       name: limit
     description: Fetch events from AWS Security Hub.
     name: aws-securityhub-get-events
-  dockerimage: demisto/boto3py3:1.0.0.64385
+  dockerimage: demisto/boto3py3:1.0.0.67091
   isfetchevents: true
   script: '-'
   subtype: python3

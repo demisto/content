@@ -7,6 +7,7 @@ configuration:
   display: Server URL (e.g. https://192.168.0.1)
   name: url
   type: 0
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -24,32 +25,39 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
   type: 8
+  required: false
 - additionalinfo: Maximal value is 1000.
   defaultvalue: '10'
   display: Maximum number of relationships to fetch per indicator
   name: max_num_of_relationships
   type: 0
+  required: false
 - defaultvalue: '1'
   hidden: true
   display: Blacklists appearances threshold
   name: threshold
   type: 0
+  required: false
 - display: Compromised (is malicious)
   hidden: true
   name: compromised_is_malicious
   type: 8
+  required: false
 - additionalinfo: Determines how many times a command should be retried before raising an error.
   defaultvalue: '3'
   display: Number of retries
   name: retry
   type: 0
+  required: false
 description: URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
 display: URLhaus
 name: URLhaus
@@ -334,7 +342,7 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

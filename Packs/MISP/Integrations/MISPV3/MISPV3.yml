@@ -12,20 +12,25 @@ configuration:
   type: 9
   hiddenusername: true
   display: ""
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Comma-separated list of event's or attribute's malicious tag IDs. Malicious tags are stronger than suspicious tags.
   display: Malicious tag IDs
   name: malicious_tag_ids
   type: 12
+  required: false
 - additionalinfo: Comma-separated list of event's or attribute's suspicious tag IDs. Malicious tags are stronger than suspicious tags.
   display: Suspicious tag IDs
   name: suspicious_tag_ids
   type: 12
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -45,6 +50,7 @@ configuration:
   display: Maximum attributes to be returned
   name: attributes_limit
   type: 0
+  required: false
 description: Malware information sharing platform and threat sharing.
 display: MISP v3
 name: MISP V3
@@ -2480,7 +2486,115 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.63745
+  - arguments:
+    - description: The email address of the new user to be added.
+      name: email
+      required: true
+      type: textArea
+    - description: ID number indicating which organization the new user will be added to. In order to get the org_id, use the command misp-get-organization-info.
+      name: org_id
+      required: true
+      type: textArea
+    - description: Role of the new user to be added. In order to get the role_id, use the command misp-get-role-info.
+      name: role_id
+      required: true
+      type: textArea
+    - description: A password for the new user. Ensure that the password is at least 12 characters long, contains at least one upper-case, includes a digit or a special character, and at least one lower-case character.
+      name: password
+      required: true
+    description: Add a new user to MISP.
+    name: misp-add-user
+    outputs:
+    - contextPath: MISP.User.id
+      description: MISP user ID.
+      type: string
+    - contextPath: MISP.User.password
+      description: MISP user password.
+      type: string
+    - contextPath: MISP.User.org_id
+      description: MISP user organisation ID.
+      type: string
+    - contextPath: MISP.User.server_id
+      description: MISP user server ID.
+      type: string
+    - contextPath: MISP.User.email
+      description: MISP user email.
+      type: string
+    - contextPath: MISP.User.autoalert
+      description: MISP user auto alert.
+      type: boolean
+    - contextPath: MISP.User.authkey
+      description: MISP User auth key.
+      type: string
+    - contextPath: MISP.User.invited_by
+      description: MISP user invited by.
+      type: string
+    - contextPath: MISP.User.gpgkey
+      description: MISP user GPG key.
+      type: string
+    - contextPath: MISP.User.certif_public
+      description: MISP User public certificate.
+      type: string
+    - contextPath: MISP.User.nids_sid
+      description: MISP user Network Intrusion Detection System (NIDS) Signature ID (SID).
+      type: string
+    - contextPath: MISP.User.termsaccepted
+      description: Whether MISP user terms were accepted.
+      type: boolean
+    - contextPath: MISP.User.newsread
+      description: MISP user news read.
+      type: string
+    - contextPath: MISP.User.role_id
+      description: MISP user role ID.
+      type: string
+    - contextPath: MISP.User.change_pw
+      description: Whether the MISP user password was changed.
+      type: boolean
+    - contextPath: MISP.User.contactalert
+      description: MISP user contact alert.
+      type: boolean
+    - contextPath: MISP.User.disabled
+      description: Whether the MISP user was disabled.
+      type: boolean
+    - contextPath: MISP.User.expiration
+      description: MISP user expiration.
+      type: string
+    - contextPath: MISP.User.current_login
+      description: MISP user current login.
+      type: string
+    - contextPath: MISP.User.last_login
+      description: MISP user last login.
+      type: string
+    - contextPath: MISP.User.force_logout
+      description: MISP user force logout.
+      type: boolean
+    - contextPath: MISP.User.date_created
+      description: MISP user created date.
+      type: string
+    - contextPath: MISP.User.date_modified
+      description: MISP user modified date.
+      type: string
+  - arguments: []
+    description: Display the organization IDs and names.
+    name: misp-get-organization-info
+    outputs:
+    - contextPath: MISP.Organization.org_id
+      description: MISP organization ID.
+      type: string
+    - contextPath: MISP.Organization.org_name
+      description: MISP organization name.
+      type: string
+  - arguments: []
+    description: Display role names and role IDs.
+    name: misp-get-role-info
+    outputs:
+    - contextPath: MISP.Role.role_id
+      description: MISP role ID.
+      type: string
+    - contextPath: MISP.Role.role_name
+      description: MISP role name.
+      type: string
+  dockerimage: demisto/pymisp2:1.0.0.66985
   runonce: false
   script: ''
   subtype: python3

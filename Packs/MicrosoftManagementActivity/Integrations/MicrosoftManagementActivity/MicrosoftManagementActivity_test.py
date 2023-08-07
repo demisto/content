@@ -1,6 +1,7 @@
 from CommonServerPython import *
 import pytest
 from datetime import datetime, timedelta
+from freezegun import freeze_time
 
 ''' MOCK DATA AND RESPONSES '''
 
@@ -458,8 +459,8 @@ def create_client(timeout: int = 15):
     proxy = demisto.params().get('proxy', False)
 
     client = Client(base_url, verify=verify_certificate, proxy=proxy, self_deployed=True, auth_and_token_url="test",
-                    refresh_token="test", refresh_token_param="test", enc_key="test", auth_code="test",
-                    tenant_id="test", redirect_uri="", timeout=timeout)
+                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="",
+                    timeout=timeout)
 
     return client
 
@@ -502,8 +503,10 @@ def test_content_records_to_incidents_records_creation():
     incidents, latest_creation_time = content_records_to_incidents(GET_BLOB_DATA_RESPONSE_FOR_AUDIT_GENERAL,
                                                                    TIME_6_HOURS_AGO_STRING, time_now_string)
     single_incident = incidents[0]
-    assert 'name' in single_incident and single_incident['name'] == 'Microsoft Management Activity: 1234'
-    assert 'occurred' in single_incident and single_incident['occurred'] == '2020-02-27T00:57:40Z'
+    assert 'name' in single_incident
+    assert single_incident['name'] == 'Microsoft Management Activity: 1234'
+    assert 'occurred' in single_incident
+    assert single_incident['occurred'] == '2020-02-27T00:57:40Z'
 
 
 @pytest.mark.parametrize('content_records, expected_last_run', TEST_LAST_RUN_UPDATE_DATA)
@@ -733,3 +736,27 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftManagementActivity.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+@freeze_time('2023-08-09')
+def test_fetch_start_time(mocker):
+    """
+    Given:
+        - frozen time set to '2023-08-09'.
+    When:
+        - calling 'get_fetch_start_and_end_time' with 'last_run' containing 'last_fetch' as '2023-04-02T14:22:49'
+         (more than 7 days ago)
+    Then:
+        - Ensure the 'fetch_start_time_str' is as expected - 7 days ago from the frozen time.
+    """
+    from MicrosoftManagementActivity import get_fetch_start_and_end_time
+
+    last_run = {'last_fetch': '2023-04-02T14:22:49'}
+
+    mocker.patch('dateparser.parse', return_value=datetime.strptime('2023-08-02T14:22:49', DATE_FORMAT))
+
+    first_fetch_datetime = None
+    fetch_start_time_str, fetch_end_time_str = get_fetch_start_and_end_time(last_run, first_fetch_datetime)
+
+    assert fetch_start_time_str == '2023-08-02T14:22:49'
+    assert fetch_end_time_str == '2023-08-02T14:32:49'

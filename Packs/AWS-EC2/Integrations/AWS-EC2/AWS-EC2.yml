@@ -27,36 +27,43 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Role Arn
   name: roleArn
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Role Session Name
   name: roleSessionName
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
   section: Connect
+  required: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
@@ -64,6 +71,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Retries
   name: retries
   defaultvalue: 5
@@ -71,26 +79,31 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Amazon Web Services Elastic Compute Cloud (EC2)
 display: AWS - EC2
 name: AWS - EC2

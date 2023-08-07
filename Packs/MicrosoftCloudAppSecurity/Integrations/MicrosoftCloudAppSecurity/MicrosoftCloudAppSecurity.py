@@ -4,6 +4,7 @@ import urllib3
 
 from MicrosoftApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -151,6 +152,7 @@ class Client:
                 enc_key=enc_key,
                 # Azure cloud
                 azure_cloud=azure_cloud,
+                command_prefix="microsoft-cas",
             )
             self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -253,18 +255,7 @@ def complete_auth(client: Client,
 
 
 @logger
-def reset_auth(client: Client,  # noqa
-               args: dict  # noqa
-               ) -> CommandResults:
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!microsoft-cas-auth-start** and **!microsoft-cas-auth-complete**.')
-
-
-@logger
-def connection_test(client: Client,
-                    args: dict  # noqa
-                    ) -> CommandResults:
+def test_connection(client: Client) -> CommandResults:
     client.ms_client.get_access_token()  # type: ignore[attr-defined]
     # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
@@ -562,10 +553,13 @@ def activity_to_human_readable(activity: dict):
 
 def arrange_entities_data(activities: List[dict]):
     for activity in activities:
+        entities_data = []
         if 'entityData' in activity:
             entity_data = activity['entityData']
             if entity_data:
-                entities_data = [value for key, value in entity_data.items() if value]
+                for _key, value in entity_data.items():
+                    if value:
+                        entities_data.append(value)
                 activity['entityData'] = entities_data
 
     return activities

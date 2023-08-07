@@ -10,6 +10,7 @@ configuration:
   name: feed
   defaultvalue: "true"
   type: 8
+  required: false
 - display: Talos Endpoint URL
   name: url
   defaultvalue: https://talosintelligence.com/documents/ip-blacklist
@@ -25,6 +26,7 @@ configuration:
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - display: Source Reliability
   name: feedReliability
   defaultvalue: B - Usually reliable
@@ -47,6 +49,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -56,29 +59,36 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ""
   name: feedExpirationInterval
   defaultvalue: "20160"
   type: 1
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: "30"
   type: 19
+  required: false
 - display: Tags
   name: feedTags
   type: 0
   additionalinfo: Supports CSV values.
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   defaultvalue: "true"
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -89,7 +99,7 @@ script:
       description: The maximum number of results to return. The default value is 10.
       defaultValue: "10"
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   subtype: python3
 fromversion: 5.5.0

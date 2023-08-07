@@ -23,16 +23,20 @@ configuration:
   display: First fetch time
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: "10"
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: Cyren Inbox Security is an innovative solution that safeguards Office 365 mailboxes in your organization against evasive phishing, business email compromise (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into XSOAR, and includes a playbook for incident resolution.
 display: Cyren Inbox Security
 name: Cyren Inbox Security

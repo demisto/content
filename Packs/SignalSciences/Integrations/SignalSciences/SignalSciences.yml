@@ -21,10 +21,12 @@ configuration:
   type: 4
   section: Connect
   hidden: true
+  required: false
 - name: cred_token
   type: 9
   displaypassword: Token
   hiddenusername: true
+  required: false
 - display: Corporation Name (should match the pattern [0-9a-z_.-]+)
   name: corpName
   defaultvalue: ""
@@ -35,32 +37,38 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Fetch Interval (in minutes)
   name: fetch_interval
   defaultvalue: "720"
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: CSV list of sites to fetch from. If no sites are specified, events from all corporation's sites will be fetched.
   name: sites_to_fetch
   defaultvalue: ""
   type: 12
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 script:
   script: ''
   type: python
@@ -954,7 +962,7 @@ script:
     description: Retrieves a request by request ID.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

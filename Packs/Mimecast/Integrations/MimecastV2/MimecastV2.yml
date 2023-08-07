@@ -16,50 +16,62 @@ configuration:
   name: credentials
   type: 9
   displaypassword: Password
+  required: false
 - display: User Email Address (Use for auto token refresh)
   name: email
   type: 0
   hidden: true
+  required: false
 - display: Password
   name: password
   type: 4
   hidden: true
+  required: false
 - display: App Key
   name: appKey_creds
   type: 9
   displaypassword: App Key
   hiddenusername: true
+  required: false
 - display: App key
   name: appKey
   type: 4
   hidden: true
+  required: false
 - display: AccessKey
   name: accessKey
   type: 0
+  required: false
 - display: Secret Key
   name: secretKey_creds
   type: 9
   displaypassword: Secret Key
   hiddenusername: true
+  required: false
 - display: SecretKey
   name: secretKey
   type: 4
   hidden: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Fetch URL incidents
   name: fetchURL
   type: 8
   hidden: true
+  required: false
 - display: Fetch attachment incidents
   name: fetchAttachments
   type: 8
   hidden: true
+  required: false
 - display: Fetch impersonation incidents
   name: fetchImpersonations
   type: 8
   hidden: true
+  required: false
 - additionalinfo: Fetch specific incident types. Default value is "All".
   defaultvalue: All
   display: Fetch incident types
@@ -71,19 +83,24 @@ configuration:
   - Url
   - Held Messages
   type: 16
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: '24'
   display: Hours before first fetch to retrieve incidents
   name: fetchDelta
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: new_insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2
 name: MimecastV2
@@ -2016,7 +2033,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
 tests:
 - Mimecast test
 fromversion: 5.0.0

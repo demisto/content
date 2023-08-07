@@ -14,9 +14,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Symantec Management Center provides a unified management environment for the Symantec Security Platform portfolio of products.
 display: Symantec Management Center
 name: Symantec Management Center
@@ -519,7 +521,7 @@ script:
       name: description
     description: Updates content in a policy in Symantec MC.
     name: symantec-mc-update-policy-content
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   type: python

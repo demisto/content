@@ -32,29 +32,35 @@ configuration:
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - display: First fetch
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   defaultvalue: Ironscales
   name: incidentType
   type: 13
   section: Connect
+  required: false
 description: IRONSCALES, a self-learning email security platform integration
 display: Ironscales
 name: Ironscales
@@ -163,7 +169,7 @@ script:
     outputs:
     - contextPath: Ironscales.OpenIncidents.incident_ids
       description: List of open incidents IDs.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   isfetch: true
   script: ''

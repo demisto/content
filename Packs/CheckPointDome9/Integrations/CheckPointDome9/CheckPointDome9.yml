@@ -12,35 +12,44 @@ configuration:
   display: API key ID
   type: 0
   hidden: true
+  required: false
 - name: api_key_secret
   display: API key secret
   type: 0
   hidden: true
+  required: false
 - name: api_key_id_cred
   type: 9
   displaypassword: API key ID
   hiddenusername: true
+  required: false
 - name: api_key_secret_cred
   type: 9
   displaypassword: API key secret
   hiddenusername: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
   defaultvalue: '50'
   display: Maximum incidents for one fetch.
   name: max_fetch
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Alert region (AWS) to fetch as incidents.
   name: alert_region
   type: 0
+  required: false
 - display: Alert severity to fetch as incidents.
   name: alert_severity
   options:
@@ -48,14 +57,17 @@ configuration:
   - Medium
   - High
   type: 16
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
   name: first_fetch
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 description: Dome9 integration allows to easily manage the security and compliance of the public cloud.
 display: Check Point Dome9 (CloudGuard)
 name: checkpointdome9
@@ -1351,7 +1363,7 @@ script:
     - contextPath: CheckPointDome9.FindingsBundle.region
       description: The CloudTrail account ID.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: '-'

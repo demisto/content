@@ -5,15 +5,23 @@ commonfields:
 configuration:
 - display: API Key
   name: apikey
-  required: true
+  required: false
   type: 4
+  hidden: true
+- name: apikey_creds
+  required: false
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the CloudConvert integration to convert your files to the desired format.
 display: CloudConvert
 name: CloudConvert

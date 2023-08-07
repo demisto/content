@@ -23,27 +23,32 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: IP threshold
   name: ip_threshold
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Domain threshold
   name: domain_threshold
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: File threshold
   name: file_threshold
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Email threshold
   additionalinfo: Email indicators with confidence value above this threshold are considered malicious.
   name: email_threshold
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   additionalinfo: Whether to include inactive indicators in reputation commands.
   display: Include inactive results
@@ -51,6 +56,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -72,11 +78,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
   display: Create relationships
@@ -84,6 +92,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
@@ -6385,7 +6394,7 @@ script:
       required: true
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
-  dockerimage: demisto/py3-tools:1.0.0.63856
+  dockerimage: demisto/py3-tools:1.0.0.67747
   runonce: false
   script: '-'
   subtype: python3

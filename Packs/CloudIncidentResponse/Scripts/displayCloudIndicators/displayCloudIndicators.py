@@ -51,6 +51,10 @@ def main():
     # Fetch alert mapped fields
     fields_list = demisto.context().get('CloudIndicators', [])
 
+    # Check if fields_list is a list, if not, convert it to a list
+    if not isinstance(fields_list, list):
+        fields_list = [fields_list]
+
     # Extract the keys with values
     items = []
     for fields in fields_list:

@@ -15,10 +15,12 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   defaultvalue: '1440'
+  required: false
 - display: Discovery Service
   name: discovery_service
   type: 0
@@ -33,10 +35,12 @@ configuration:
   defaultvalue: 'false'
   type: 8
   additionalinfo:
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
+  required: false
 - display: First fetch time (by days)
   name: initial_interval
   defaultvalue: '1'
@@ -47,6 +51,7 @@ configuration:
   name: feed
   type: 8
   defaultvalue: 'true'
+  required: false
 - display: Indicator Reputation
   name: feedReputation
   type: 18
@@ -57,6 +62,7 @@ configuration:
   - Suspicious
   - Bad
   additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
 - display: Source Reliability
   name: feedReliability
   defaultvalue: A - Completely reliable
@@ -74,6 +80,7 @@ configuration:
   name: limit
   type: 0
   additionalinfo: Provide value to limit the indicator to be fetched per iteration
+  required: false
 - display: Collection Name
   name: collection
   type: 0
@@ -86,17 +93,21 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - name: feedBypassExclusionList
   display: Bypass exclusion list
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 script:
   script: |-
     -
@@ -125,7 +136,7 @@ script:
     - contextPath: CybleIntel.collection.names
       description: Available collection names for the feed service
     description: Get the data feed collection names for the taxii feed
-  dockerimage: demisto/taxii-server:1.0.0.63827
+  dockerimage: demisto/taxii-server:1.0.0.66858
   subtype: python3
   feed: true
 fromversion: 6.2.0

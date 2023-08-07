@@ -16,9 +16,11 @@ configuration:
   display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: The Threat Context module provides SOC, Incident Response, and Threat Intelligence teams with continuously updated and intuitive information around threat actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs.
 display: Blueliv ThreatContext
 name: Blueliv ThreatContext
@@ -635,7 +637,7 @@ script:
     - contextPath: BluelivThreatContext.signature.type
       description: Signature type.
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

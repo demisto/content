@@ -6,6 +6,7 @@ configuration:
 - display: Indicator Query
   name: indicators_query
   type: 0
+  required: false
 - defaultvalue: text
   display: Outbound Format
   name: format
@@ -21,6 +22,7 @@ configuration:
   - Symantec ProxySG
   - PAN-OS URL
   type: 15
+  required: false
 - additionalinfo: Only applies to IPs in text or csv formats.
   defaultvalue: Don't Collapse
   display: Should Collapse IPs
@@ -30,10 +32,12 @@ configuration:
   - To CIDRs
   - To Ranges
   type: 15
+  required: false
 - additionalinfo: If selected, csv and XSOAR-csv formats will create a textual web page instead of downloading a CSV file.
   display: Show CSV Formats as Text
   name: csv_text
   type: 8
+  required: false
 - defaultvalue: '10000'
   display: List Size
   name: list_size
@@ -42,16 +46,19 @@ configuration:
 - display: Update On-Demand Only
   name: on_demand
   type: 8
+  required: false
 - defaultvalue: 5 minutes
   additionalinfo: How often to refresh the exported indicators (e.g., 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value to less than 1 minute.
   display: Refresh Rate
   name: cache_refresh_rate
   type: 0
+  required: false
 - defaultvalue: 'true'
   display: Long Running Instance
   hidden: true
   name: longRunning
   type: 8
+  required: false
 - additionalinfo: Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
@@ -60,21 +67,26 @@ configuration:
 - display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
+  required: false
 - display: Append String To EDL
   name: append_string
   type: 12
   additionalinfo: String to add to end of published EDL, if type is Text. Supports Newline characters (\n).
+  required: false
 - display: Prepend String To EDL
   name: prepend_string
   type: 12
   additionalinfo: String to add to beginning of published EDL, if type is Text. Supports Newline characters (\n).
+  required: false
 - display: Private Key (Required for HTTPS)
   name: key
   type: 14
+  required: false
 - additionalinfo: Enable basic authentication for accessing the EDL. If empty, no authentication is enforced.
   display: Username
   name: credentials
   type: 9
+  required: false
 - additionalinfo: For use with McAfee Web Gateway format to indicate the list type.
   defaultvalue: string
   display: Mcafee Gateway Indicator List Type
@@ -89,31 +101,38 @@ configuration:
   - number
   - regex
   type: 15
+  required: false
 - additionalinfo: For use with PAN-OS URL format - if selected will strip the port from URLs. If not selected - URLs with ports will be ignored.
   display: PAN-OS URL Format Port Strip
   name: strip_port
   type: 8
+  required: false
 - additionalinfo: For use with PAN-OS URL format - if selected, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.
   display: PAN-OS URL Format Drop Invalid Entries
   name: drop_invalids
   type: 8
+  required: false
 - additionalinfo: For use with Symantec ProxySG format - set the default category for the output.
   defaultvalue: bc_category
   display: Symantec ProxySG Default Category
   name: category_default
   type: 0
+  required: false
 - additionalinfo: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, will list all existing categories.
   display: Symantec ProxySG Listed Categories
   name: category_attribute
   type: 0
+  required: false
 - additionalinfo: "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by XSOAR Support."
   display: NGINX Global Directives
   name: nginx_global_directives
   type: 0
+  required: false
 - additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by XSOAR Support."
   display: NGINX Server Conf
   name: nginx_server_conf
   type: 12
+  required: false
 description: Deprecated. Use the Generic Export Indicators Service integration instead. Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Export Indicators Service (Deprecated)
 deprecated: true

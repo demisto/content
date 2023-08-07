@@ -21,12 +21,14 @@ configuration:
   name: insecure
   section: Connect
   type: 8
+  required: false
 - advanced: true
   defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   section: Connect
   type: 8
+  required: false
 description: Cortex XSOAR integration with FullHunt.io API
 display: FullHunt
 name: FullHunt
@@ -256,7 +258,7 @@ script:
     - contextPath: FullHunt.Subdomain.status
       description: HTTP status code
       type: number
-  dockerimage: demisto/python3:3.10.12.62631
+  dockerimage: demisto/python3:3.10.12.65389
   script: ''
   subtype: python3
   type: python

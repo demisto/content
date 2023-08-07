@@ -6,13 +6,16 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: Select if the instance connects to an ExtraHop Reveal(x) 360 system. Leave unselected if connecting to ExtraHop Reveal(x) Enterprise. Default value is false.
   display: On Cloud
   name: on_cloud
   type: 8
+  required: false
 - additionalinfo: The URL of the ExtraHop system this instance will connect to.
   display: URL
   name: url
@@ -22,22 +25,27 @@ configuration:
   display: API Key
   name: apikey
   type: 4
+  required: false
 - additionalinfo: The client ID generated on your ExtraHop system that is required for authentication if connecting to ExtraHop Reveal(x) 360.
   display: Client ID
   name: client_id
   type: 0
+  required: false
 - additionalinfo: The client secret generated on your ExtraHop system that is required for authentication if connecting to ExtraHop Reveal(x) 360.
   display: Client Secret
   name: client_secret
   type: 4
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: |-
     The UTC date or relative timestamp from where to start fetching incidents.
 
@@ -48,11 +56,13 @@ configuration:
   display: First fetch time
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: '200'
   display: How many incidents to fetch each time
   hidden: true
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: |-
     Applies a filter to the list of detections based on a JSON-specific query.
 
@@ -68,6 +78,7 @@ configuration:
   display: Advanced Filter
   name: advanced_filter
   type: 12
+  required: false
 description: ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution that provides complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.
 display: ExtraHop Reveal(x)
 name: ExtraHop v2
@@ -4525,7 +4536,7 @@ script:
     deprecated: true
     description: Use extrahop-packets-search instead. Search for specific packets in Reveal(x).
     name: extrahop-search-packets
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: '-'

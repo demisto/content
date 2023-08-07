@@ -7,13 +7,16 @@ configuration:
   name: credentials
   type: 9
   hiddenusername: true
+  required: false
 - defaultvalue: https://api.app.cymulate.com/v1/
   display: Base URL
   name: base_url
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: Choose one or more categories to fetch.
   display: Fetch category
   name: fetchCategory
@@ -28,28 +31,35 @@ configuration:
   - phishing-awareness
   - lateral-movement
   type: 16
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: Maximal number of incidents to fetch. Max value can be no grater than 35.
   defaultvalue: '35'
   display: Max Fetch
   name: max_fetch
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: API token (Deprecated)
   name: api_key
   type: 4
   hidden: true
+  required: false
 description: Multi-Vector Cyber Attack, Breach and Attack Simulation.
 display: Cymulate v2
 name: cymulate_v2
@@ -71,8 +81,11 @@ script:
     - description: agent name to run simulation attacks.
       name: agent_name
       required: true
+    - description: agent profile name to run simulation attacks.
+      name: agent_profile_name
+      required: false
     - auto: PREDEFINED
-      description: whether to schedule the automated assessment periodically.
+      description: 'whether to schedule the automated assessment periodically.'
       name: schedule
       predefined:
       - 'true'
@@ -214,8 +227,11 @@ script:
     - description: agent name.
       name: agent_name
       required: true
+    - description: agent profile name.
+      name: agent_profile_name
+      required: false
     - auto: PREDEFINED
-      description: whether to schedule the automated assessment periodically.
+      description: 'whether to schedule the automated assessment periodically.'
       name: schedule
       predefined:
       - 'true'
@@ -342,10 +358,14 @@ script:
   - arguments:
     - description: Browsing address
       name: browsing_address
+    - description: Browsing Agent profile name to run the assessment with.
+      name: browsing_address_profile_name
     - description: Agent email address.
       name: mail_address
     - description: EDR address
       name: edr_address
+    - description: EDR Agent profile name to run the assessment with.
+      name: edr_address_profile_name
     - description: The ID of the template to run the immediate threat assessment with. Can be retrieved using Cymulate's UI.
       name: template_id
       required: true
@@ -449,19 +469,22 @@ script:
     - description: Agent name to run the assessment with.
       name: agent_name
       required: true
+    - description: Agent profile name to run the assessment with.
+      name: agent_profile_name
+      required: false
     - description: The ID of the template to run the lateral movement with. Can be retrieved using Cymulate's UI, or using cymulate-lateral-movement-template-list command.
       name: template_id
       required: true
     - auto: PREDEFINED
-      defaultValue: 'false'
       description: Whether to upload the result to Cymulate.
       name: upload_to_cymulate
       predefined:
       - 'true'
       - 'false'
       required: true
+      defaultValue: 'false'
     - auto: PREDEFINED
-      description: Whether to schedule the automated assessment periodically.
+      description: 'Whether to schedule the automated assessment periodically.'
       name: schedule
       predefined:
       - 'true'
@@ -638,7 +661,7 @@ script:
     - contextPath: Cymulate.Simulations.Template
       description: Attack template.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   runonce: false
   script: '-'

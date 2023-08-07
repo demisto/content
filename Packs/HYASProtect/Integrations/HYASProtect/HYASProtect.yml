@@ -10,9 +10,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the HYAS Protect integration to get the verdict information for FQDN, IP Address and NameServer – either as playbook tasks or through API calls in the War Room.
 display: HYAS Protect
 name: HYAS Protect
@@ -118,7 +120,7 @@ script:
     - contextPath: HYAS.NameserverVerdict.reasons
       description: Verdict Reasons for the provided Nameserver.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3
