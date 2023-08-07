@@ -12,5 +12,44 @@
     "keywords": [],
     "marketplaces": [
         "xsoar"
+    ],
+    "dependencies": {
+        "CortexXDR": {
+            "mandatory": false,
+            "display_name": "Cortex XDR by Palo Alto Networks"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "LOLBASFeed": {
+            "mandatory": true,
+            "display_name": "LOLBAS Feed"
+        },
+        "MicrosoftDefenderAdvancedThreatProtection": {
+            "mandatory": false,
+            "display_name": "Microsoft Defender for Endpoint"
+        },
+        "FeedUnit42v2": {
+            "mandatory": false,
+            "display_name": "Feed Unit42 v2"
+        }
+    },
+    "displayedImages": [
+        "CortexXDR",
+        "FiltersAndTransformers",
+        "CommonTypes",
+        "MicrosoftDefenderAdvancedThreatProtection",
+        "LOLBASFeed",
+        "CommonPlaybooks",
+        "FeedUnit42v2"
     ]
 }
