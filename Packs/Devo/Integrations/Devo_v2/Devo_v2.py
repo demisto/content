@@ -415,7 +415,7 @@ def fetch_incidents():
         from_time = float(last_run["from_time"])
         new_last_run["from_time"] = from_time
     else:
-        from_time = to_time - float(FETCH_INCIDENTS_LIMIT)
+        from_time = to_time - 3600
         new_last_run["from_time"] = from_time
 
     # execute the query and get the events
