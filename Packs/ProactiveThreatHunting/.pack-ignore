@@ -18,6 +18,3 @@ ignore=IF113
 
 [file:incidentfield-Hunting_Session_Status.json]
 ignore=IF113
-
-[file:incidentfield-Tools_To_Hunt_For.json]
-ignore=IF113
