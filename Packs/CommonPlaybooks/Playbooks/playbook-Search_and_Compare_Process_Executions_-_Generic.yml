@@ -1,0 +1,272 @@
+description: |-
+  This playbook is a generic playbook that receives process name and command-line argument and search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:
+
+  - Cortex XDR XQL Engine
+  - Cortex XDR IR(Search executions inside XDR alerts)
+  - Microsoft Defender For Endpoint
+
+  Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+  -value: *process name*
+  -commands: *command-line arguments*
+id: Search and Compare Process Executions - Generic
+inputs:
+- description: "List of processes names and command line arguments to search"
+  key: Processes
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  key: HuntingTimeFrame
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 7 days
+- description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  key: StringSimilarityThreshold
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "0.5"
+name: Search and Compare Process Executions - Generic
+outputs:
+- contextPath: StringSimilarity
+  description: StringSimilarity results.
+  type: unknown
+- contextPath: Findings
+  description: Suspicious process executions found.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+      - "16"
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e4d8d0c7-56ec-4b27-8fbb-ae3a02490091
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e4d8d0c7-56ec-4b27-8fbb-ae3a02490091
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6511abc4-4a61-4657-86b8-3809cbcc5dae
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6511abc4-4a61-4657-86b8-3809cbcc5dae
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      HuntingTimeFrame:
+        complex:
+          root: inputs.HuntingTimeFrame
+      Processes:
+        complex:
+          root: inputs.Processes
+      StringSimilarityThreshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook is a generic playbook that receives process name and command-line argument, and uses "Microsoft Defender For Endpoint" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        -commands: *command-line arguments*
+      id: 0c2ea311-165b-48ae-8f5f-92cb5ec5e81b
+      iscommand: false
+      name: c3e7d503-6939-487f-8b6b-b047c352090b
+      playbookId: c3e7d503-6939-487f-8b6b-b047c352090b
+      type: playbook
+      version: -1
+    taskid: 0c2ea311-165b-48ae-8f5f-92cb5ec5e81b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      HuntingTimeFrame:
+        complex:
+          root: inputs.HuntingTimeFrame
+      Processes:
+        complex:
+          root: inputs.Processes
+      StringSimilarityThreshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+        -value: *process name*
+        -commands: *command-line arguments*
+      id: 936cbb1b-fc14-42e0-80e4-9ca0bbec9f10
+      iscommand: false
+      name: a418058c-fc0a-471c-8edc-ac8ff52399cc
+      playbookId: a418058c-fc0a-471c-8edc-ac8ff52399cc
+      type: playbook
+      version: -1
+    taskid: 936cbb1b-fc14-42e0-80e4-9ca0bbec9f10
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 220
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      HuntingTimeFrame:
+        complex:
+          root: inputs.HuntingTimeFrame
+      Processes:
+        complex:
+          root: inputs.Processes
+      StringSimilarityThreshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR - XQL Engine" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        -commands: *command-line arguments*
+      id: 6246b45d-476d-4e3d-8c6a-6eccafe838ef
+      iscommand: false
+      name: 8602fe71-fe87-452f-88d7-eaa3c51c2511
+      playbookId: 8602fe71-fe87-452f-88d7-eaa3c51c2511
+      type: playbook
+      version: -1
+    taskid: 6246b45d-476d-4e3d-8c6a-6eccafe838ef
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 220
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 1200,
+        "x": 40,
+        "y": 80
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
