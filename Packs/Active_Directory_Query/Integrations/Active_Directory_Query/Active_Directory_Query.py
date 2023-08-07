@@ -1867,10 +1867,10 @@ def main():
         try:
             # user example: domain\user
             connection = create_connection(
-                server=server, 
-                server_ip=SERVER_IP, 
-                username=USERNAME, 
-                password=PASSWORD, 
+                server=server,
+                server_ip=SERVER_IP,
+                username=USERNAME,
+                password=PASSWORD,
                 ntlm_connection=NTLM_AUTH,
                 auto_bind=auto_bind)
         except Exception as e:
