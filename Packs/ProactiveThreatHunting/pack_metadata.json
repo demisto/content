@@ -10,9 +10,12 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Hunting"
+        "Use Case",
+        "Threat Intelligence"
     ],
-    "useCases": [],
+    "useCases": [
+        "Hunting"
+    ],
     "keywords": [],
     "marketplaces": [
         "xsoar"
