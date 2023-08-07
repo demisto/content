@@ -181,7 +181,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: ${incident.usecasedescription}
+      description: Disable data aging on client {incident.commvaultoriginatingclient}
       id: 852d421b-c9a3-4b35-894a-82d691fa66cf
       iscommand: false
       name: Disable data aging
