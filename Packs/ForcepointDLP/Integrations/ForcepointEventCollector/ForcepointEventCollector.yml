@@ -11,10 +11,9 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: API Key
-  name: apikey
+- display: Username
+  name: credentials
   required: true
-  hiddenusername: true
   type: 9
   section: Connect
 - defaultvalue: '10000'
