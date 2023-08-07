@@ -8,12 +8,12 @@ args:
 - name: CreateIncidentUntaggedEmail
   description: Allow the creation of an email for which we can't find an existing incident.
   defaultValue: 'true'
-- name: async_call
+- name: reputation_calc_async
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
-  description: Specify whether to do an async call
+  description: Specify whether to calculate the reputation in an asynchronous way.
   defaultValue: 'false'
 comment: |-
   Preprocessing script for email communication layout.

@@ -24,12 +24,12 @@ args:
 - name: subject_include_incident_id
   description: Include the Incident ID within the email subject.
   defaultValue: 'false'
-- name: async_call
+- name: reputation_calc_async
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
-  description: Specify whether to do an async call
+  description: Specify whether to calculate the reputation in an asynchronous way.
   defaultValue: 'false'
 comment: |-
   Send email reply

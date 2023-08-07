@@ -94,14 +94,14 @@ def get_entry_id_list(attachments, files):
     return entry_id_list
 
 
-def add_entries(email_reply, email_related_incident, async_call=False):
+def add_entries(email_reply, email_related_incident, reputation_calc_async=False):
     """Add the entries to the related incident
     Args:
         email_reply: The email reply.
         email_related_incident: The related incident.
     """
     entries_str = json.dumps([{"Type": 1, "ContentsFormat": 'html', "Contents": email_reply, "tags": ['email-thread']}])
-    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident, 'reputationCalcAsync': async_call})
+    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident, 'reputationCalcAsync': reputation_calc_async})
     if is_error(res):
         demisto.error(ERROR_TEMPLATE.format('addEntries', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('addEntries', res['Contents']))
@@ -395,7 +395,7 @@ def main():
     email_replyto = custom_fields.get('emailreplyto', '')
     email_latest_message = custom_fields.get('emaillatestmessage', '')
 
-    async_call = argToBoolean(args.get('async_call', False))
+    reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
@@ -422,7 +422,7 @@ def main():
                 "Incoming email related to Email Communication Incident"
                 f" {email_related_incident}. Appending a message there.")
             email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-            add_entries(email_reply, email_related_incident, async_call)
+            add_entries(email_reply, email_related_incident, reputation_calc_async)
         else:
             # For all other incident types, add message details as context entry
             demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
