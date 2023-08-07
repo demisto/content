@@ -10,14 +10,12 @@ tags:
 - field-change-triggered
 comment: Links an incident investigation back to the ExtraHop Detection that created it.
 script: '-'
-system: false
 enabled: true
 scripttarget: 0
 dependson:
   must:
   - 'ExtraHop v2|||extrahop-ticket-track'
-runonce: false
-dockerimage: demisto/python3:3.10.10.49934
+dockerimage: demisto/python3:3.10.11.61265
 runas: DBotWeakRole
 tests:
 - ExtraHop_v2-Test

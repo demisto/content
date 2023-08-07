@@ -18,13 +18,10 @@ args:
   required: true
   description: Securonix status to map with XSOAR's active state.
 - name: close_state_action
-  required: false
   description: Securonix action name mapped with XSOAR's closed state.
 - name: close_state_status
-  required: false
   description: Securonix status to map with XSOAR's close state.
 - name: only_active
-  required: false
   description: Whether to only change the status of Securonix incident to XSOAR's respective active state.
 scripttarget: 0
 subtype: python3
@@ -33,9 +30,10 @@ dependson:
   must:
   - '|||securonix-xsoar-state-mapping-get'
   - '|||securonix-add-comment-to-incident'
-runonce: false
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+skipprepare:
+- script-name-incident-to-alert

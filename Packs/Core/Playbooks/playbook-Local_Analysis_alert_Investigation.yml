@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -1280
+          "y": -1800
         }
       }
     note: false
@@ -85,7 +85,7 @@ tasks:
       '#default#':
       - '33'
       True Positive:
-      - '6'
+      - "81"
     separatecontext: false
     conditions:
     - label: True Positive
@@ -122,7 +122,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -480
+          "y": -1000
         }
       }
     note: false
@@ -153,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -1140
+          "y": -1660
         }
       }
     note: false
@@ -504,7 +504,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 4090
+          "y": 4100
         }
       }
     note: false
@@ -686,7 +686,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 4270
+          "y": 4290
         }
       }
     note: false
@@ -991,7 +991,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -1000
+          "y": -1520
         }
       }
     note: false
@@ -1856,7 +1856,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -830
+          "y": -1350
         }
       }
     note: false
@@ -1882,7 +1882,7 @@ tasks:
       '#default#':
       - "2"
       True Positive:
-      - "6"
+      - "81"
     separatecontext: false
     conditions:
     - label: True Positive
@@ -1903,7 +1903,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": -680
+          "y": -1200
         }
       }
     note: false
@@ -1913,12 +1913,185 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 59958d6b-33b1-4e97-82d4-4c46bc7301ad
+    type: regular
+    task:
+      id: 59958d6b-33b1-4e97-82d4-4c46bc7301ad
+      version: -1
+      name: Set Incident Severity to High
+      description: commands.local.cmd.set.parent.incident.field
+      script: Builtin|||setParentIncidentFields
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      manual_severity:
+        simple: high
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
+    type: condition
+    task:
+      id: 827b7119-1b9f-4d4b-89d4-2e6b4c61f6da
+      version: -1
+      name: Should open a ticket automatically in a ticketing system?
+      description: Checks whether to open a ticket automatically in a ticketing system.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldOpenTicket
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: dc6ec815-5f93-49bb-89af-1ca132ce5acb
+    type: playbook
+    task:
+      id: dc6ec815-5f93-49bb-89af-1ca132ce5acb
+      version: -1
+      name: Ticket Management - Generic
+      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
+      playbookName: Ticket Management - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      CommentToAdd:
+        complex:
+          root: inputs.CommentToAdd
+      ZendeskAssigne:
+        complex:
+          root: inputs.ZendeskAssigne
+      ZendeskCollaborators:
+        complex:
+          root: inputs.ZendeskCollaborators
+      ZendeskPriority:
+        complex:
+          root: inputs.ZendeskPriority
+      ZendeskRequester:
+        complex:
+          root: inputs.ZendeskRequester
+      ZendeskStatus:
+        complex:
+          root: inputs.ZendeskStatus
+      ZendeskSubject:
+        complex:
+          root: inputs.ZendeskSubject
+      ZendeskTags:
+        complex:
+          root: inputs.ZendeskTags
+      ZendeskType:
+        complex:
+          root: inputs.ZendeskType
+      addCommentPerEndpoint:
+        complex:
+          root: inputs.addCommentPerEndpoint
+      description:
+        complex:
+          root: inputs.description
+      serviceNowAssignmentGroup:
+        complex:
+          root: inputs.serviceNowAssignmentGroup
+      serviceNowCategory:
+        complex:
+          root: inputs.serviceNowCategory
+      serviceNowImpact:
+        complex:
+          root: inputs.serviceNowImpact
+      serviceNowSeverity:
+        complex:
+          root: inputs.serviceNowSeverity
+      serviceNowShortDescription:
+        complex:
+          root: inputs.serviceNowShortDescription
+      serviceNowTicketType:
+        complex:
+          root: inputs.serviceNowTicketType
+      serviceNowUrgency:
+        complex:
+          root: inputs.serviceNowUrgency
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "14_39_#default#": 0.23,
       "2_33_#default#": 0.1,
-      "2_6_True Positive": 0.71,
+      "2_81_True Positive": 0.62,
       "34_39_No": 0.58,
       "34_67_Yes": 0.54,
       "46_47_#default#": 0.54,
@@ -1932,14 +2105,16 @@ view: |-
       "75_67_#default#": 0.67,
       "78_39_no": 0.14,
       "78_59_#default#": 0.72,
-      "80_6_True Positive": 0.57
+      "80_2_#default#": 0.48,
+      "80_81_True Positive": 0.5,
+      "83_84_yes": 0.38
     },
     "paper": {
       "dimensions": {
-        "height": 5615,
+        "height": 6155,
         "width": 1710,
         "x": 430,
-        "y": -1280
+        "y": -1800
       }
     }
   }
@@ -2058,6 +2233,106 @@ inputs:
               simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
   required: false
   description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
+  playbookInputQuery:
+- key: ShouldOpenTicket
+  value:
+    simple: "True"
+  required: false
+  description: Whether to open a ticket automatically in a ticketing system. (True/False).
+  playbookInputQuery:
+- key: serviceNowShortDescription
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: A short description of the ticket.
+  playbookInputQuery:
+- key: serviceNowImpact
+  value: {}
+  required: false
+  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
+  playbookInputQuery:
+- key: serviceNowUrgency
+  value: {}
+  required: false
+  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
+  playbookInputQuery:
+- key: serviceNowSeverity
+  value: {}
+  required: false
+  description: The severity of the new ticket. Leave empty for ServiceNow default severity.
+  playbookInputQuery:
+- key: serviceNowTicketType
+  value: {}
+  required: false
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  playbookInputQuery:
+- key: serviceNowCategory
+  value: {}
+  required: false
+  description: The category of the ServiceNow ticket.
+  playbookInputQuery:
+- key: serviceNowAssignmentGroup
+  value: {}
+  required: false
+  description: The group to which to assign the new ticket.
+  playbookInputQuery:
+- key: ZendeskPriority
+  value: {}
+  required: false
+  description: The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low".
+  playbookInputQuery:
+- key: ZendeskRequester
+  value: {}
+  required: false
+  description: The user who requested this ticket.
+  playbookInputQuery:
+- key: ZendeskStatus
+  value: {}
+  required: false
+  description: The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed".
+  playbookInputQuery:
+- key: ZendeskSubject
+  value:
+    simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+  required: false
+  description: The value of the subject field for this ticket.
+  playbookInputQuery:
+- key: ZendeskTags
+  value: {}
+  required: false
+  description: The array of tags applied to this ticket.
+  playbookInputQuery:
+- key: ZendeskType
+  value: {}
+  required: false
+  description: The type of this ticket. Allowed values are "problem", "incident", "question", or "task".
+  playbookInputQuery:
+- key: ZendeskAssigne
+  value: {}
+  required: false
+  description: The agent currently assigned to the ticket.
+  playbookInputQuery:
+- key: ZendeskCollaborators
+  value: {}
+  required: false
+  description: The users currently CC'ed on the ticket.
+  playbookInputQuery:
+- key: description
+  value:
+    simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+  required: false
+  description: The ticket description.
+  playbookInputQuery:
+- key: addCommentPerEndpoint
+  value: {}
+  required: false
+  description: 'Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False.'
+  playbookInputQuery:
+- key: CommentToAdd
+  value:
+    simple: '${alert.name}. Alert ID: ${alert.id}'
+  required: false
+  description: Comment for the ticket.
   playbookInputQuery:
 outputs: []
 tests:

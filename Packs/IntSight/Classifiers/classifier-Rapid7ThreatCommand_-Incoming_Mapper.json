@@ -1,0 +1,200 @@
+{
+    "description": "Rapid7 ThreatCommand - Incoming Mapper",
+    "feed": false,
+    "id": "Rapid7 ThreatCommand - Incoming Mapper",
+    "mapping": {
+        "Rapid7 ThreatCommand Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "Last Update Time": {
+                    "simple": "update_date"
+                },
+                "Rapid7 ThreatCommand Assets": {
+                    "simple": "assets"
+                },
+                "Rapid7 ThreatCommand Attachments": {
+                    "simple": "attachments"
+                },
+                "Rapid7 ThreatCommand CSV": {
+                    "simple": "attachments.content"
+                },
+                "Rapid7 ThreatCommand Related IOCs": {
+                    "simple": "related_iocs"
+                },
+                "Rapid7 ThreatCommand Related Threat IDs": {
+                    "simple": "related_threat_ids"
+                },
+                "Rapid7 ThreatCommand Source Date": {
+                    "simple": "Source.date"
+                },
+                "Rapid7 ThreatCommand Source Email": {
+                    "simple": "Source.email"
+                },
+                "Rapid7 ThreatCommand Source Type": {
+                    "simple": "Source.type"
+                },
+                "Rapid7 ThreatCommand Source URL": {
+                    "complex": {
+                        "accessor": "url",
+                        "filters": [],
+                        "root": "Source",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "[.]"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "."
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Rapid7 ThreatCommand Source Network Type": {
+                    "simple": "Source.network_type"
+                },
+                "Rapid7 ThreatCommand Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "is_closed",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Closed"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Open"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Rapid7 ThreatCommand Subtype": {
+                    "simple": "sub_type"
+                },
+                "Rapid7 ThreatCommand Tags": {
+                    "simple": "Tags.[].name"
+                },
+                "Rapid7 ThreatCommand Takedown Status": {
+                    "simple": "takedown_status"
+                },
+                "Title": {
+                    "simple": "title"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "title",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "value": {
+                                            "simple": ": "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {},
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "id"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "ThreatCommand - "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "occurred": {
+                    "simple": "found_date"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "1,2,3"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Low,Medium,High"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "Rapid7 ThreatCommand - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

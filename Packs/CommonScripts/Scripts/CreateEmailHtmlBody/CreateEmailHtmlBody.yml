@@ -40,7 +40,6 @@ outputs:
 - contextPath: htmlBody
   description: HTML Body.
 scripttarget: 0
-runonce: false
 tests:
 - CreateEmailHtmlBody_test_pb
 fromversion: 5.0.0

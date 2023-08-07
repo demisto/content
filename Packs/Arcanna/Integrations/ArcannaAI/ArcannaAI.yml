@@ -16,41 +16,35 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: '-1'
   display: Default Arcanna Job Id
-  hidden: false
   name: default_job_id
-  required: false
   type: 0
+  required: false
 - additionalinfo: An array to map between closing reason and Arcanna labels
   defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
   display: A closing reason to Arcanna labels.
-  hidden: false
   name: feature_mapping
-  required: false
   type: 12
-- additionalinfo: This field use to signal to Arcanna the status for closing an alert
-    or marking feedback for Arcanna
+  required: false
+- additionalinfo: This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
   defaultvalue: closeReason
   display: Alert closing reason
-  hidden: false
   name: closing_reason_field
-  required: false
   type: 0
+  required: false
 description: Arcanna integration for using the power of AI in SOC
 display: Arcanna.AI
 name: Arcanna.AI
 script:
   commands:
-  - deprecated: false
-    description: Get jobs list
-    execution: false
+  - description: Get jobs list
     name: arcanna-get-jobs
     outputs:
     - contextPath: Arcanna.Jobs.job_id
@@ -66,33 +60,17 @@ script:
       description: Arcanna job status
       type: String
   - arguments:
-    - default: false
-      description: An Arcanna running job_id
-      isArray: false
+    - description: An Arcanna running job_id
       name: job_id
-      required: false
-      secret: false
-    - default: false
-      description: json event for arcanna to inference.
-      isArray: false
+    - description: json event for arcanna to inference.
       name: event_json
       required: true
-      secret: false
-    - default: false
-      description: event title
-      isArray: false
+    - description: event title
       name: title
       required: true
-      secret: false
-    - default: false
-      description: event severity
-      isArray: false
+    - description: event severity
       name: severity
-      required: false
-      secret: false
-    deprecated: false
     description: Sends a raw event to Arcanna
-    execution: false
     name: arcanna-send-event
     outputs:
     - contextPath: Arcanna.Event.event_id
@@ -111,21 +89,12 @@ script:
       description: An Arcanna Job id used for sending.
       type: Number
   - arguments:
-    - default: false
-      description: Arcanna Job Id
-      isArray: false
+    - description: Arcanna Job Id
       name: job_id
-      required: false
-      secret: false
-    - default: false
-      description: Arcanna generated unique event id.
-      isArray: false
+    - description: Arcanna generated unique event id.
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves Arcanna Inference result.
-    execution: false
     name: arcanna-get-event-status
     outputs:
     - contextPath: Arcanna.Event.event_id
@@ -149,111 +118,65 @@ script:
     - contextPath: Arcanna.Event.status
       description: Arcanna event status.
       type: String
-  - deprecated: false
-    description: Retrieves Arcanna Default Job id.
-    execution: false
+  - description: Retrieves Arcanna Default Job id.
     name: arcanna-get-default-job-id
     outputs:
     - contextPath: Arcanna.Default_Job_Id
       description: Arcanna Default Job id
       type: String
   - arguments:
-    - default: false
-      description: job_id
-      isArray: false
+    - description: job_id
       name: job_id
       required: true
-      secret: false
-    deprecated: false
     description: Sets Arcanna Default Job id.
-    execution: false
     name: arcanna-set-default-job-id
     outputs:
     - contextPath: Arcanna.Default_Job_Id
-      description: An Arcanna  job id used as default(if not specified, default job_id
-        will be used).
+      description: An Arcanna  job id used as default(if not specified, default job_id will be used).
       type: String
   - arguments:
-    - default: false
-      description: An Arcanna job id.
-      isArray: false
+    - description: An Arcanna job id.
       name: job_id
-      required: false
-      secret: false
-    - default: false
-      description: An Arcanna event id.
-      isArray: false
+    - description: An Arcanna event id.
       name: event_id
       required: true
-      secret: false
-    - default: false
-      description: An Arcanna feedback label.
-      isArray: false
+    - description: An Arcanna feedback label.
       name: label
       required: true
-      secret: false
-    - default: false
-      description: A username providing the feedback.
-      isArray: false
+    - description: A username providing the feedback.
       name: username
       required: true
-      secret: false
-    - default: false
-      description: Cortex closing notes if any.
-      isArray: false
+    - description: Cortex closing notes if any.
       name: closing_notes
-      required: false
-      secret: false
-    - default: false
-      description: Cortex Indicator if any as a dict containing 3 keys (type, value,
-        source) as mandatory.
-      isArray: false
+    - description: Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
       name: indicators
-      required: false
-      secret: false
-    deprecated: false
     description: Send Arcanna feedback for a previous inferred event.
-    execution: false
     name: arcanna-send-event-feedback
     outputs:
     - contextPath: Arcanna.Event.feedback_status
       description: An Arcanna feedback status response.
       type: String
   - arguments:
-    - default: false
-      description: An Arcanna job id.
-      isArray: false
+    - description: An Arcanna job id.
       name: job_id
       required: true
-      secret: false
-    - default: false
-      description: A comma-separated list of Arcanna evens ids to be sent.
+    - description: A comma-separated list of Arcanna evens ids to be sent.
       isArray: true
       name: events
       required: true
-      secret: false
-    deprecated: false
-    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled
-      with XSOAR fields.
-    execution: false
+    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR fields.
     name: arcanna-send-bulk-events
     outputs:
     - contextPath: Arcanna.Bulk.status
       description: Arcanna response status for bulk events indexing
       type: String
-  - deprecated: false
-    description: Returns the Feedback field set on integration.
-    execution: false
+  - description: Returns the Feedback field set on integration.
     name: arcanna-get-feedback-field
     outputs:
     - contextPath: Arcanna.FeedbackField
       description: XSOAR field used to signal feedback/label for Arcanna.
       type: String
-  dockerimage: demisto/python3:3.10.10.49934
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

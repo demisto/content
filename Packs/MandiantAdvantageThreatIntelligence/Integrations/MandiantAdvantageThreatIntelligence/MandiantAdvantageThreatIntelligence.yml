@@ -1,0 +1,496 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Mandiant Advantage Threat Intelligence
+  version: -1
+configuration:
+- additionalinfo: Leave as 'api.intelligence.mandiant.com' if unsure
+  defaultvalue: https://api.intelligence.mandiant.com
+  display: API Base URL
+  name: api_base_url
+  type: 0
+  required: false
+- additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence
+  display: API Key
+  name: api_key
+  required: true
+  type: 0
+- additionalinfo: Your Secret Key from Mandiant Advantage Threat Intelligence
+  display: Secret Key
+  name: secret_key
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  defaultvalue: AMBER
+  required: false
+- name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  type: 17
+  required: false
+- name: feedExpirationInterval
+  display: ''
+  type: 1
+  required: false
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+- name: feedMinimumConfidence
+  type: 0
+  display: Feed Minimum Confidence Score
+  required: true
+  defaultvalue: 80
+  additionalinfo: 'The minimum MScore value to import as part of the feed'
+- name: feedExcludeOSIntel
+  display: Feed Exclude Open Source Intelligence
+  type: 8
+  defaultvalue: 'true'
+  additionalinfo: 'Whether to exclude Open Source Intelligence as part of the feed'
+  required: false
+- additionalinfo: 'The type of indicators to fetch. Indicator type might include the following: Domains, IPs, Files and URLs.'
+  defaultvalue: Malware,Actors,Indicators
+  display: Mandiant indicator type
+  name: type
+  options:
+  - Malware
+  - Actors
+  - Indicators
+  type: 16
+  required: false
+- additionalinfo: The maximum value allowed is 90 days.
+  defaultvalue: 30 days
+  display: First fetch time
+  name: first_fetch
+  type: 0
+  required: false
+- defaultvalue: '50'
+  display: Maximum number of indicators per fetch
+  name: max_fetch
+  type: 0
+  additionalinfo: Maximum value of 1000.  Any values higher will be capped to 1000
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+- additionalinfo: API calls timeout.
+  defaultvalue: '60'
+  display: Timeout
+  name: timeout
+  type: 0
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+- additionalinfo: Retrieve additional information for each indicator. Note that this requires additional API calls.
+  defaultvalue: 'false'
+  display: Retrieve indicator metadata
+  name: indicatorMetadata
+  type: 8
+  required: false
+- additionalinfo: Note that this requires additional API calls.
+  defaultvalue: 'false'
+  display: Create relationships
+  name: indicatorRelationships
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: 'Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.'
+display: Mandiant Advantage Threat Intelligence
+name: Mandiant Advantage Threat Intelligence
+script:
+  commands:
+  - name: mati-get-indicator
+    arguments:
+    - default: true
+      description: Value of the indicator to look up.  Can be URL, domain name, IP address, or file hash
+      name: indicator_value
+      required: true
+    description: Get information about a single Indicator of Compromise (IP Address, FQDN, URL, or File Hash) from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.IP.score
+      description: The Severity Score of the IP indicator
+      type: Number
+    - contextPath: MANDIANTTI.IP.fields.ip
+      description: The IP address of the IP indicator
+      type: String
+    - contextPath: MANDIANTTI.FILE.score
+      description: The Severity Score of the File indicator
+      type: Number
+    - contextPath: MANDIANTTI.FILE.fields.md5
+      description: The MD5 Hash associated with the File indicator
+      type: String
+    - contextPath: MANDIANTTI.FILE.fields.sha256
+      description: The SHA256 Hash associated with the File indicator
+      type: String
+    - contextPath: MANDIANTTI.FILE.fields.sha1
+      description: The SHA1 Hash associated with the File indicator
+      type: String
+    - contextPath: MANDIANTTI.DOMAIN.score
+      description: The Severity Score of the Domain indicator
+      type: Number
+    - contextPath: MANDIANTTI.DOMAIN.fields.dns
+      description: The DNS record value for the Domain indicator
+      type: String
+    - contextPath: MANDIANTTI.DOMAIN.fields.domain
+      description: The domain name for the Domain indicator
+      type: String
+    - contextPath: MANDIANTTI.URL.score
+      description: The Severity Score of the URL indicator
+      type: Number
+    - contextPath: MANDIANTTI.URL.fields.url
+      description: The URL value for the Domain indicator
+      type: String
+  - name: mati-get-actor
+    arguments:
+    - default: true
+      description: Name of the actor to look up
+      name: actor_name
+      required: true
+    description: Get information about a Threat Actor from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.ThreatActor.value
+      description: The name of the ThreatActor
+      type: String
+    - contextPath: MANDIANTTI.ThreatActor.fields.primarymotivation
+      description: The primary motivation of the ThreatActor
+      type: String
+    - contextPath: MANDIANTTI.ThreatActor.fields.tags
+      description: The tags and target industries of the ThreatActor
+      type: String
+    - contextPath: MANDIANTTI.ThreatActor.fields.aliases
+      description: The known aliases of the ThreatActor
+      type: String
+    - contextPath: MANDIANTTI.ThreatActor.fields.targets
+      description: The known targets of the ThreatActor
+      type: String
+    - contextPath: MANDIANTTI.ThreatActor.fields.description
+      description: The description of the ThreatActor
+      type: String
+    - contextPath: MANDIANTTI.ThreatActor.fields.publications.title
+      description: The title of a report associated with the ThreatActor
+      type: String
+    - contextPath: MANDIANTTI.ThreatActor.fields.publications.link
+      description: The link to the report in Mandiant Advantage
+      type: String
+  - name: mati-get-malware
+    arguments:
+    - default: true
+      description: Name of the malware family to look up
+      name: malware_name
+      required: true
+    description: Get information about a Malware Family from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.Malware.value
+      description: The name of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.operatingsystemrefs
+      description: The Operating Systems impacted by the malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.roles
+      description: The known roles of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.description
+      description: The description of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.Is Malware Family
+      description: Whether the Indicator is a Malware Family or a Tool
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.publications.title
+      description: The name of the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.publications.title
+      description: The title of a report associated with the Malware
+      type: String
+    - contextPath: MANDIANTTI.Malware.fields.publications.link
+      description: The link to the report in Mandiant Advantage
+      type: String
+  - name: file
+    arguments:
+    - default: true
+      description: List of files.
+      isArray: true
+      name: file
+      required: true
+    description: Retrieve information about a File Hash from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.FILE.score
+      description: The Severity Score of the File indicator
+      type: Number
+    - contextPath: MANDIANTTI.FILE.fields.md5
+      description: The MD5 Hash associated with the File indicator
+      type: String
+    - contextPath: MANDIANTTI.FILE.fields.sha256
+      description: The SHA256 Hash associated with the File indicator
+      type: String
+    - contextPath: MANDIANTTI.FILE.fields.sha1
+      description: The SHA1 Hash associated with the File indicator
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file submitted for analysis.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file submitted for analysis.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+  - name: ip
+    arguments:
+    - default: true
+      description: List of IPs.
+      isArray: true
+      name: ip
+      required: true
+    description: Retrieve information about an IP Address from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.IP.score
+      description: The Severity Score of the IP indicator
+      type: Number
+    - contextPath: MANDIANTTI.IP.fields.ip
+      description: The IP address of the IP indicator
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+  - name: url
+    arguments:
+    - default: true
+      description: List of URLs.
+      isArray: true
+      name: url
+      required: true
+    description: Retrieve information about a URL from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.URL.score
+      description: The Severity Score of the URL indicator
+      type: Number
+    - contextPath: MANDIANTTI.URL.fields.url
+      description: The URL value for the Domain indicator
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+  - name: domain
+    arguments:
+    - default: true
+      description: List of domains.
+      isArray: true
+      name: domain
+      required: true
+    description: Retrieve information about an FQDN from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.DOMAIN.score
+      description: The Severity Score of the Domain indicator
+      type: Number
+    - contextPath: MANDIANTTI.DOMAIN.fields.dns
+      description: The DNS record value for the Domain indicator
+      type: String
+    - contextPath: MANDIANTTI.DOMAIN.fields.domain
+      description: The domain name for the Domain indicator
+      type: String
+    - contextPath: Domain.Name
+      description: The Domain being checked
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+  - name: cve
+    arguments:
+    - default: true
+      description: List of CVEs.
+      isArray: true
+      name: cve
+      required: true
+    description: Retrieve information about a Vulnerability (by CVE) from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.CVE.score
+      description: The Severity Score of the CVE
+      type: Number
+    - contextPath: MANDIANTTI.CVE.id
+      description: The CVE ID
+      type: String
+    - contextPath: MANDIANTTI.CVE.fields.cvss
+      description: The CVSS version of the CVE
+      type: String
+    - contextPath: MANDIANTTI.CVE.fields.cvssvector
+      description: The CVSS vector string for the CVE
+      type: String
+    - contextPath: MANDIANTTI.CVE.fields.cvss2.metric
+      description: The name of the CVSS metric
+      type: String
+    - contextPath: MANDIANTTI.CVE.fields.cvss2.values
+      description: The values of the CVSS metric
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+  - name: mati-get-campaign
+    arguments:
+    - default: true
+      description: ID of the campaign to lookup
+      name: campaign_id
+      required: true
+    description: Retrieve information about a Campaign from Mandiant
+    outputs:
+    - contextPath: MANDIANTTI.Campaign.value
+      description: The name of the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.actors
+      description: The Threat Actors associated with the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.description
+      description: The description of the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.tags
+      description: The industries associated with the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.publications.title
+      description: The title of a report associated with the Campaign
+      type: String
+    - contextPath: MANDIANTTI.Campaign.fields.publications.link
+      description: The link to the report in Mandiant Advantage
+      type: String
+  - name: mati-feed-get-indicators
+    arguments:
+    - description: The maximum number of indicators to fetch.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to retrieve additional data for each indicator.
+      name: indicatorMetadata
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to create indicator relationships.
+      name: indicatorRelationships
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: Malware,Indicators,Actors
+      description: The type of indicators to fetch.
+      isArray: true
+      name: type
+      predefined:
+      - Malware
+      - Indicators
+      - Actors
+      required: true
+    description: Get Mandiant Indicators.
+  dockerimage: demisto/python3:3.10.12.66339
+  feed: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0

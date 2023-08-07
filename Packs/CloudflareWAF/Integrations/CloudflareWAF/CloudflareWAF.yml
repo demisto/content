@@ -21,21 +21,21 @@ configuration:
   additionalinfo: Account identifier.
 - name: zone_id
   display: Default Zone ID
-  required: false
   type: 0
   additionalinfo: The domain identifier. Zone ID can be override when executing commands.The domain identifier. Zone ID can be override when executing commands.
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   defaultvalue: 'false'
   type: 8
   additionalinfo:
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   defaultvalue: 'false'
   type: 8
   additionalinfo: ''
+  required: false
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
 display: Cloudflare WAF
 name: CloudflareWAF
@@ -44,7 +44,6 @@ script:
   - arguments:
     - auto: PREDEFINED
       description: The rule action.
-      isArray: false
       name: action
       predefined:
       - block
@@ -56,13 +55,9 @@ script:
       - bypass
       required: true
     - description: Identifier of an existing filter. Required if filter_expression is unspecified.
-      isArray: false
       name: filter_id
-      required: false
     - description: 'Filter expression when creating a filter for a new rule. Required if filter_id is unspecified. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)". For syntax explanations and more examples: https://developers.cloudflare.com/ruleset-engine/rules-language/expressions/'
-      isArray: false
       name: filter_expression
-      required: false
     - auto: PREDEFINED
       description: 'Comma separated list of products to bypass for a request when the bypass action is used. Valid values: zoneLockdown, uaBlock, bic, hot, securityLevel, rateLimit, waf.'
       isArray: true
@@ -75,7 +70,6 @@ script:
       - securityLevel
       - rateLimit
       - waf
-      required: false
     - description: >-
         The priority of the rule to allow control of processing order. A
         lower number indicates high priority. If not provided, any rules
@@ -84,32 +78,20 @@ script:
         min value: 0.
 
         max value: 2147483647
-      isArray: false
       name: priority
-      required: false
     - auto: PREDEFINED
       description: Whether this firewall rule is currently paused.
-      isArray: false
       name: paused
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: A description of the rule to help identify it.
-      isArray: false
       name: description
-      required: false
     - description: Short reference tag to quickly select related rules.
-      isArray: false
       name: ref
-      required: false
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: Create a new firewall rule that create new filter or use an exist filter.
-    execution: false
     name: cloudflare-waf-firewall-rule-create
     outputs:
     - contextPath: CloudflareWAF.FirewallRule.id
@@ -132,12 +114,10 @@ script:
       type: String
   - arguments:
     - description: 'Firewall Rule identifier. '
-      isArray: false
       name: id
       required: true
     - auto: PREDEFINED
       description: The exist rule action or the new rule action to set.
-      isArray: false
       name: action
       predefined:
       - block
@@ -149,7 +129,6 @@ script:
       - bypass
       required: true
     - description: The ID of the exist rule filter or the ID of the new filter to set.
-      isArray: false
       name: filter_id
       required: true
     - auto: PREDEFINED
@@ -164,7 +143,6 @@ script:
       - securityLevel
       - rateLimit
       - waf
-      required: false
     - description: >-
         The priority of the rule to allow control of processing order. A
         lower number indicates high priority. If not provided, any rules
@@ -173,56 +151,36 @@ script:
         min value: 0.
 
         max value: 2147483647
-      isArray: false
       name: priority
-      required: false
     - auto: PREDEFINED
       description: Whether this firewall rule is currently paused.
-      isArray: false
       name: paused
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: A description of the rule to help identify it.
-      isArray: false
       name: description
-      required: false
     - description: Short reference tag to quickly select related rules.
-      isArray: false
       name: ref
-      required: false
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: Update firewall rule by the specified rule ID. Can update rule action, paused, description, priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
-    execution: false
     name: cloudflare-waf-firewall-rule-update
     outputs: []
   - arguments:
     - description: 'Firewall Rule identifier. '
-      isArray: false
       name: id
       required: true
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: Delete firewall rule by the specified rule ID.
-    execution: false
     name: cloudflare-waf-firewall-rule-delete
     outputs: []
   - arguments:
     - description: 'Firewall Rule identifier. '
-      isArray: false
       name: id
-      required: false
     - auto: PREDEFINED
       description: The rule action.
-      isArray: false
       name: action
       predefined:
       - block
@@ -232,41 +190,26 @@ script:
       - allow
       - log
       - bypass
-      required: false
     - auto: PREDEFINED
       description: Whether this firewall rule is currently paused.
-      isArray: false
       name: paused
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: A description of the rule to help identify it.
-      isArray: false
       name: description
-      required: false
     - description: |-
         Page number of paginated results.
         min value: 1.
-      isArray: false
       name: page
-      required: false
     - description: 'Number of firewall rules per page. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: 50
       description: 'The maximum number of records to retrieve. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: limit
-      required: false
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: List of firewall rules or details of individual rule by ID.
-    execution: false
     name: cloudflare-waf-firewall-rule-list
     outputs:
     - contextPath: CloudflareWAF.FirewallRule.id
@@ -298,32 +241,21 @@ script:
       type: String
   - arguments:
     - description: 'The filter expression to be used. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)". For syntax explanations and more examples: https://developers.cloudflare.com/ruleset-engine/rules-language/expressions/'
-      isArray: false
       name: expression
       required: true
     - description: Short reference tag to quickly select related rules.
-      isArray: false
       name: ref
-      required: false
     - auto: PREDEFINED
       description: Whether this filter is currently paused.
-      isArray: false
       name: paused
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: A note that you can use to describe the purpose of the filter.
-      isArray: false
       name: description
-      required: false
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: Create a new filter which can be added to a firewall rule.
-    execution: false
     name: cloudflare-waf-filter-create
     outputs:
     - contextPath: CloudflareWAF.Filter.id
@@ -345,84 +277,55 @@ script:
     - name: id
       description: 'Filter identifier.  '
       required: true
-      isArray: false
       defaultValue: ''
       predefined:
       - ''
     - description: 'The filter expression to be used. Expression example: "(ip.src eq 192.0.0.4) or (ip.src in $list_name)". For syntax explanations and more examples: https://developers.cloudflare.com/ruleset-engine/rules-language/expressions/'
-      isArray: false
       name: expression
       required: true
     - description: Short reference tag to quickly select related rules.
-      isArray: false
       name: ref
-      required: false
     - auto: PREDEFINED
       description: Whether this filter is currently paused.
-      isArray: false
       name: paused
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: A note that you can use to describe the purpose of the filter.
-      isArray: false
       name: description
-      required: false
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: Update filter by the specified filter ID.
-    execution: false
     name: cloudflare-waf-filter-update
     outputs: []
   - arguments:
     - description: The filter ID.
-      isArray: false
       name: filter_id
       required: true
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: Delete an exist filter (Note that a filter linked to firewall rule cannot be deleted).
-    execution: false
     name: cloudflare-waf-filter-delete
     outputs: []
   - arguments:
     - description: 'Filter identifier. '
-      isArray: false
       name: id
-      required: false
     - description: The filter expression to be used.
-      isArray: false
       name: expression
-      required: false
     - description: Short reference tag to quickly select related rules.
-      isArray: false
       name: ref
-      required: false
     - auto: PREDEFINED
       description: Whether this filter is currently paused.
-      isArray: false
       name: paused
       predefined:
       - 'true'
       - 'false'
-      required: false
     - description: A note that you can use to describe the purpose of the filter.
-      isArray: false
       name: description
-      required: false
     - description: |-
         Page number of paginated results.
         min value: 1.
-      isArray: false
       name: page
-      required: false
     - description: >-
         Number of filter based firewall rules per page. The argument accepts
         values ​​divided by 5.
@@ -432,21 +335,13 @@ script:
         Maximum value 100.
 
         For example: 5,10,15.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: 50
       description: 'The maximum number of records to retrieve. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: limit
-      required: false
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
-      isArray: false
       name: zone_id
-      required: false
-    deprecated: false
     description: List filters.
-    execution: false
     name: cloudflare-waf-filter-list
     outputs:
     - contextPath: CloudflareWAF.Filter.id
@@ -468,27 +363,18 @@ script:
     - auto: PREDEFINED
       defaultValue: all
       description: Whether to match all search requirements or at least one (any).
-      isArray: false
       name: match
       predefined:
       - any
       - all
-      required: false
     - description: A domain name.
-      isArray: false
       name: name
-      required: false
     - description: Account name.
-      isArray: false
       name: account_name
-      required: false
     - description: Account identifier tag.
-      isArray: false
       name: account_id
-      required: false
     - auto: PREDEFINED
       description: Status of the zone.
-      isArray: false
       name: status
       predefined:
       - active
@@ -498,29 +384,22 @@ script:
       - deleted
       - deactivated
       - read only
-      required: false
     - auto: PREDEFINED
       description: Field to order zones by.
-      isArray: false
       name: order
       predefined:
       - name
       - status
       - account.id
       - account.name
-      required: false
     - auto: PREDEFINED
       description: Direction to order zones.
-      isArray: false
       name: direction
       predefined:
       - asc
       - desc
-      required: false
     - description: 'Page number of paginated results. Default value: 1, min value: 1.'
-      isArray: false
       name: page
-      required: false
     - description: >-
         Number of zones per page. The argument accepts values ​​divided by
         5.
@@ -530,17 +409,11 @@ script:
         Maximum value 100.
 
         For example: 5,10,15.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: 50
       description: 'The maximum number of records to retrieve. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List all account zones.
-    execution: false
     name: cloudflare-waf-zone-list
     outputs:
     - contextPath: CloudflareWAF.Zone.success
@@ -596,16 +469,11 @@ script:
       type: Data
   - arguments:
     - description: The name of the list (used in filter expressions).
-      isArray: false
       name: name
       required: true
     - description: A note that can be used to annotate the List.
-      isArray: false
       name: description
-      required: false
-    deprecated: false
     description: Create a new IP-list. An IP-list is a list that includes IP addresses and CIDR. IP-list is used in the filter expression.
-    execution: false
     name: cloudflare-waf-ip-list-create
     outputs:
     - contextPath: CloudflareWAF.IpList.id
@@ -634,37 +502,24 @@ script:
       type: Date
   - arguments:
     - description: 'The list ID. '
-      isArray: false
       name: id
       required: true
-    deprecated: false
     description: Delete IP-list by the specified list ID. Note that IP-list that assigned to a firewall rule can not be delete, only after unassign the list.
-    execution: false
     name: cloudflare-waf-ip-list-delete
     outputs: []
   - arguments:
     - description: Retrieve details for an individual list Id.
-      isArray: false
       name: id
-      required: false
     - description: |-
         Page number of paginated results.
         Default value: 1, min value: 1.
-      isArray: false
       name: page
-      required: false
     - description: 'Number of IP-list per page. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: 50
       description: 'The maximum number of records to retrieve. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List IP-lists.
-    execution: false
     name: cloudflare-waf-ip-lists-list
     outputs:
     - contextPath: CloudflareWAF.IpList.id
@@ -687,7 +542,6 @@ script:
     - name: list_id
       description: The ID of the list to insert the new items.
       required: true
-      isArray: false
       defaultValue: ''
       predefined:
       - ''
@@ -698,142 +552,95 @@ script:
     - auto: PREDEFINED
       defaultValue: true
       description: Use Cortex XSOAR built-in polling to retrieve the result when it's ready. Default is False.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
     - defaultValue: '10'
       description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
-      isArray: false
       name: interval
-      required: false
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence timeouts. Default is 60.
-      isArray: false
       name: timeout
-      required: false
     - description: The ID of the pipeline run to retrieve when polling argument is true. Intended for use by the Polling process and does not need to be provided by the user.
-      isArray: false
       name: operation_id
       deprecated: true
-      required: false
-    deprecated: false
     description: 'Create new items for exist IP-list. '
-    execution: false
     name: cloudflare-waf-ip-list-item-create
     outputs: []
     polling: true
   - arguments:
     - description: The list ID.
-      isArray: false
       name: list_id
       required: true
     - description: The new items.
-      isArray: false
       name: items
       required: true
     - auto: PREDEFINED
       defaultValue: true
       description: Use Cortex XSOAR built-in polling to retrieve the result when it's ready. Default is False.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
     - defaultValue: '10'
       description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
-      isArray: false
       name: interval
-      required: false
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence timeouts. Default is 60.
-      isArray: false
       name: timeout
-      required: false
     - description: The ID of the pipeline run to retrieve when polling argument is true. Intended for use by the Polling process and does not need to be provided by the user.
-      isArray: false
       name: operation_id
       deprecated: true
-      required: false
-    deprecated: false
     description: Replace the IP-list items with a new items
-    execution: false
     name: cloudflare-waf-ip-list-item-update
     outputs: []
     polling: true
   - arguments:
     - description: The list ID.
-      isArray: false
       name: list_id
       required: true
     - description: The items ID to be delete.
-      isArray: false
       name: items_id
       required: true
     - auto: PREDEFINED
       defaultValue: true
       description: Use Cortex XSOAR built-in polling to retrieve the result when it's ready. Default is False.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
     - defaultValue: '10'
       description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
-      isArray: false
       name: interval
-      required: false
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence timeouts. Default is 60.
-      isArray: false
       name: timeout
-      required: false
     - description: The ID of the pipeline run to retrieve when polling argument is true. Intended for use by the Polling process and does not need to be provided by the user.
-      isArray: false
       name: operation_id
       deprecated: true
-      required: false
-    deprecated: false
     description: Delete item of a IP-list by the specified list ID and list item.
-    execution: false
     name: cloudflare-waf-ip-list-item-delete
     outputs: []
     polling: true
   - arguments:
     - description: The list ID.
-      isArray: false
       name: list_id
       required: true
     - description: Retrieve details for an individual item ID. Note that the item_id field can only be provided if item_ip is not provided and vice versa.
-      isArray: false
       name: item_id
-      required: false
     - description: Retrieve details for an individual item IP. Note that the item_ip field can only be provided if item_id is not provided and vice versa.
-      isArray: false
       name: item_ip
-      required: false
     - description: |-
         Page number of paginated results.
         Default value: 1, min value: 1.
-      isArray: false
       name: page
-      required: false
     - description: 'Number of zones per page. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: 50
       description: 'The maximum number of records to retrieve. The argument accepts values ​​divided by 5. Minimum value 5. Maximum value 100. For example: 5,10,15.'
-      isArray: false
       name: limit
-      required: false
-    deprecated: false
     description: List all items in the List or details of individual item by ID or IP. This command may take a long time, you can set the 'execution-timeout' field if necessary.
-    execution: false
     name: cloudflare-waf-ip-list-item-list
     outputs:
     - contextPath: CloudflareWAF.IpListItem.items
@@ -842,11 +649,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.10.10.51930
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3

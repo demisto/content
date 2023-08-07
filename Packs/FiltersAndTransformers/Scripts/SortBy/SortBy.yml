@@ -1,0 +1,28 @@
+commonfields:
+  id: SortBy
+  version: -1
+name: SortBy
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: This transformer will sort an array of dictionary values by keys in ascending or descending order.
+enabled: true
+args:
+- name: value
+  description: The array to sort.
+  isArray: true
+- name: keys
+  description: Comma-separated list of ordering-keys specifying a sorting hierarchy
+  isArray: true
+- name: descending_keys
+  description: Comma-separated list of keys to sort in descending order. '*' is the special symbol to sort the array given without `keys` in descending order.
+  isArray: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

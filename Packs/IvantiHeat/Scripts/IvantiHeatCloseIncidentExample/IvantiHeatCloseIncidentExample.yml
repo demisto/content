@@ -5,9 +5,7 @@ name: IvantiHeatCloseIncidentExample
 script: ''
 type: python
 tags: []
-comment: This is a sample script that demonstrates how to close an incident in Ivanti Heat.
-  The script generates data of the closed incident in JSON format and writes it to the IvantiHeat.CloseIncidentJSON
-  context path.
+comment: This is a sample script that demonstrates how to close an incident in Ivanti Heat. The script generates data of the closed incident in JSON format and writes it to the IvantiHeat.CloseIncidentJSON context path.
 enabled: true
 args:
 - name: rec_id
@@ -15,9 +13,10 @@ args:
   description: Incident object ID.
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
 - No tests
+skipprepare:
+- script-name-incident-to-alert

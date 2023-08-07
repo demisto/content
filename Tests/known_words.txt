@@ -188,6 +188,10 @@ dbotMirrorDirection
 dbotMirrorId
 dbotMirrorInstance
 dbotMirrorTags
+Chatbot
+chatbot
+Okta
+optionally
 Parses
 html
 maxPages
@@ -229,3 +233,14 @@ linter
 pylint
 delimiter
 GCP
+ MS
+ readme
+ params
+Qradar
+XSIAM
+fromversion
+xpanse
+JavaScript
+sdk
+RFC
+

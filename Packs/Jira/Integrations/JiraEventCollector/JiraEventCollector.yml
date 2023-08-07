@@ -26,38 +26,32 @@ configuration:
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: 'Jira logs event collector integration for Cortex XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector
 script:
   commands:
-  - deprecated: false
-    description: 'Returns a list of audit records'
-    execution: false
+  - description: 'Returns a list of audit records'
     name: jira-get-events
     arguments:
     - description: The maximum number of incidents per fetch. Default is 1000.
       isArray: true
       name: max_fetch
-      required: false
-      secret: false
     - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: first_fetch
-      required: false
-      secret: false
   runonce: false
   script: '-'
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:1.0.0.52503
+  dockerimage: demisto/fastapi:1.0.0.61475
 marketplaces:
 - marketplacev2
 fromversion: 6.5.0

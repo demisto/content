@@ -1,0 +1,30 @@
+{
+    "test_case_1":{
+        "repo": "repo",
+        "uuid": "uuid",
+        "dns_name": "dns_name",
+        "expected_path": "repository/repo/deviceInfo",
+        "expected_params": {
+            "fields": "ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,severityMedium,severityHigh,severityCritical",
+            "uuid": "uuid"
+        }
+    },
+    "test_case_2":{
+        "ip": "ip",
+        "expected_path": "deviceInfo",
+        "expected_params": {
+            "fields": "ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,severityMedium,severityHigh,severityCritical",
+            "ip": "ip"
+        }
+    },
+    "test_case_3":{
+        "ip": "ip",
+        "dns_name": "dns_name",
+        "expected_path": "deviceInfo",
+        "expected_params": {
+            "fields": "ip,uuid,macAddress,netbiosName,dnsName,os,osCPE,lastScan,repository,total,severityLow,severityMedium,severityHigh,severityCritical",
+            "ip": "ip",
+            "dnsName": "dns_name"
+        }
+    }
+}

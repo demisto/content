@@ -709,7 +709,6 @@ script:
     - contextPath: SEPM.LastUpdated
       description: The last-updated date.
     description: Retrieves the client content.
-hidden: false
 tests:
 - No test - deprecated integration
 fromversion: 5.0.0

@@ -45,3 +45,12 @@ ignore=BA124
 
 [file:1_6_30.md]
 ignore=RN113,RN114
+
+[file:playbook-Kaseya_VSA__0-day_-_REvil_Ransomware_Supply_Chain_Attack_6_5_README.md]
+ignore=RM106
+
+[file:playbook-SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_6_5.yml]
+ignore=BA110
+
+[file:1_6_35.md]
+ignore=RN113,RN114

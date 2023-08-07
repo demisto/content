@@ -9,114 +9,114 @@ configuration:
   type: 0
 - display: Username (Basic Authentication)
   name: username
-  required: false
   type: 0
+  required: false
 - display: Password (Deprecated - Use API token)
   name: password
-  required: false
   type: 4
+  required: false
 - displaypassword: API token (Recommended)
   name: credentials
-  required: false
   type: 9
   hiddenusername: true
+  display: ''
+  required: false
 - defaultvalue: OauthKey
   additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
-  required: false
   type: 0
+  required: false
 - display: Access Token
   additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
   name: accessToken
-  required: false
   type: 0
+  required: false
 - display: Private key (PKCS8 format)
   name: privateKey
-  required: false
   type: 14
+  required: false
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents.
   name: query
-  required: false
   type: 0
-- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents"
-    is checked.
+  required: false
+- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents" is checked.
   display: Issue index to start fetching incidents from
   name: idOffset
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Mirror incoming incidents
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: incoming_mirror
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Use created field to fetch incidents
   name: fetchByCreated
-  required: false
   type: 8
+  required: false
 - display: Mirror outgoing incidents
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: outgoing_mirror
-  required: false
   type: 8
-- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
-    in Jira.
+  required: false
+- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
   defaultvalue: attachment
   display: File entry tag
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: file_tag
-  required: false
   type: 0
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
   display: Comment entry tag
   hidden:
-    - marketplacev2
+  - marketplacev2
   name: comment_tag
-  required: false
   type: 0
+  required: false
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
-  hidden: false
   name: fetch_comments
-  required: false
   type: 8
+  required: false
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
-  hidden: false
   name: fetch_attachments
-  required: false
   type: 8
+  required: false
 - display: API token (Deprecated)
   name: APItoken
-  required: false
   type: 4
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
-description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
-  from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to
-  existing issue incidents in Cortex XSOAR.
+  required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2
 script:
@@ -124,40 +124,17 @@ script:
   - arguments:
     - default: true
       description: The JQL query string.
-      isArray: false
       name: query
       required: true
-      secret: false
-    - default: false
-      description: The index (integer) of the first issue to return (0-based).
-      isArray: false
+    - description: The index (integer) of the first issue to return (0-based).
       name: startAt
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of users to fetch when searching for a matching
-        user (default is 50). The maximum allowed value is dictated by the Jira property
-        'jira.search.views.default.max'. If you specify a value greater than
-        this number, your search results are truncated.
-      isArray: false
+    - description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
       name: maxResults
-      required: false
-      secret: false
-    - default: false
-      description: Displays the headers in human readable format.
-      isArray: false
+    - description: Displays the headers in human readable format.
       name: headers
-      required: false
-      secret: false
-    - default: false
-      description: Specify the result fields.
-      isArray: false
+    - description: Specify the result fields.
       name: extraFields
-      required: false
-      secret: false
-    deprecated: false
     description: Queries Jira issues.
-    execution: false
     name: jira-issue-query
     outputs:
     - contextPath: Ticket.Id
@@ -203,35 +180,20 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - default: false
-      description: The user attribute value. Can be the username or email address. For OAuth 1.0, only the username works.
-      isArray: false
+    - description: The user attribute value. Can be the username or email address. For OAuth 1.0, only the username works.
       name: attribute
       required: true
-      secret: false
-    - default: false
-      predefined:
-          - 'true'
-          - 'false'
+    - predefined:
+      - 'true'
+      - 'false'
       defaultValue: 'false'
       description: Whether the server is on prem and uses the REST v2 API.
-      isArray: false
       name: is_jirav2api
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
-      description: The maximum number of users to fetch when searching for a matching
-        user (default is 50). The maximum allowed value is dictated by the Jira property
-        'jira.search.views.default.max'. If you specify a value greater than
-        this number, your search results are truncated.
-      isArray: false
+      auto: PREDEFINED
+    - defaultValue: '50'
+      description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
       name: max_results
-      required: false
-      secret: false
-    deprecated: false
     description: Gets the account ID for a given user attribute.
-    execution: false
     name: jira-get-id-by-attribute
     outputs:
     - contextPath: Jira.User.Attribute
@@ -241,43 +203,26 @@ script:
       description: The user account ID.
       type: string
   - arguments:
-    - default: false
-      description: The issue ID.
-      isArray: false
+    - description: The issue ID.
       name: issueId
       required: true
-      secret: false
-    - default: false
-      description: Displays the headers in human readable format.
-      isArray: false
+    - description: Displays the headers in human readable format.
       name: headers
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: If "true", retrieves the issue attachments.
-      isArray: false
       name: getAttachments
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: If "true", expands the issue links.
-      isArray: false
       name: expandLinks
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Fetches an issue from Jira.
-    execution: false
     name: jira-get-issue
     outputs:
     - contextPath: Ticket.Id
@@ -299,20 +244,16 @@ script:
       description: The ticket status.
       type: Unknown
     - contextPath: File.Size
-      description: The file size (Jira attachments are saved as files in Cortex
-        XSOAR).
+      description: The file size (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.SHA256
-      description: The file SHA256 hash (Jira attachments are saved as files
-        in Cortex XSOAR).
+      description: The file SHA256 hash (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.Name
-      description: The file name (Jira attachments are saved as files in Cortex
-        XSOAR).
+      description: The file name (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.SHA1
-      description: The file SHA1 hash (Jira attachments are saved as files
-        in Cortex XSOAR).
+      description: The file SHA1 hash (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: Ticket.Priority
       description: The ticket priority.
@@ -333,126 +274,50 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - default: false
-      description: The issue object (in JSON format).
-      isArray: false
+    - description: The issue object (in JSON format).
       name: issueJson
-      required: false
-      secret: false
-    - default: false
-      description: The summary of the issue.
-      isArray: false
+    - description: The summary of the issue.
       name: summary
       required: true
-      secret: false
-    - default: false
-      description: The project key with which to associate the issue.
-      isArray: false
+    - description: The project key with which to associate the issue.
       name: projectKey
-      required: false
-      secret: false
-    - default: false
-      description: 'Selects an issue type by name, for example: "Problem".'
-      isArray: false
+    - description: 'Selects an issue type by name, for example: "Problem".'
       name: issueTypeName
-      required: false
-      secret: false
-    - default: false
-      description: Selects an issue type by its numeric ID.
-      isArray: false
+    - description: Selects an issue type by its numeric ID.
       name: issueTypeId
-      required: false
-      secret: false
-    - default: false
-      description: The project name with which to associate the issue.
-      isArray: false
+    - description: The project name with which to associate the issue.
       name: projectName
-      required: false
-      secret: false
-    - default: false
-      description: A description of the issue.
-      isArray: false
+    - description: A description of the issue.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: A CSV list of labels.
-      isArray: false
+    - description: A CSV list of labels.
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: 'The priority of the issue, for example: High, Medium.'
-      isArray: false
+    - description: 'The priority of the issue, for example: High, Medium.'
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: 'The due date for the issue (in the format: 2018-03-11).'
-      isArray: false
+    - description: 'The due date for the issue (in the format: 2018-03-11).'
       name: dueDate
-      required: false
-      secret: false
-    - default: false
-      description: The name of the assignee. Relevant for Jira Server only. If you
-        are using Jira Cloud, provide the assignee_id argument instead.
-      isArray: false
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead.
       name: assignee
-      required: false
-      secret: false
-    - default: false
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute
-        command to get the user's account ID.
-      isArray: false
+    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
       name: assignee_id
-      required: false
-      secret: false
-    - default: false
-      description: The account ID of the reporter. Use the jira-get-id-by-attribute
-        command to get the user's account ID.
-      isArray: false
+    - description: The account ID of the reporter. Use the jira-get-id-by-attribute command to get the user's account ID.
       name: reporter_id
-      required: false
-      secret: false
-    - default: false
-      description: The name of the of the reporter.
-      isArray: false
+    - description: The name of the of the reporter.
       name: reporter
-      required: false
-      secret: false
-    - default: false
-      description: The parent issue key (if you're creating a sub-task).
-      isArray: false
+    - description: The parent issue key (if you're creating a sub-task).
       name: parentIssueKey
-      required: false
-      secret: false
-    - default: false
-      description: The parent issue ID (if you're creating a sub-task).
-      isArray: false
+    - description: The parent issue ID (if you're creating a sub-task).
       name: parentIssueId
-      required: false
-      secret: false
-    - default: false
-      description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
-      isArray: false
+    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
       name: environment
-      required: false
-      secret: false
-    - default: false
-      description: The security level of the issue. For example security="Anyone".
-      isArray: false
+    - description: The security level of the issue. For example security="Anyone".
       name: security
-      required: false
-      secret: false
-    - default: false
-      description: The component names of the issue. For example components="component1,component2".
+    - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
-      required: false
-      secret: false
-    deprecated: false
+    - description: A comma-separated list of account IDs for watching the issue. Use the jira-get-id-by-attribute command to get the user's account ID.
+      isArray: true
+      name: watchers
     description: Creates a new issue in Jira.
-    execution: false
     name: jira-create-issue
     outputs:
     - contextPath: Ticket.Id
@@ -462,198 +327,81 @@ script:
       description: The ticket key.
       type: Unknown
   - arguments:
-    - default: false
-      description: The issue ID.
-      isArray: false
+    - description: The issue ID.
       name: issueId
       required: true
-      secret: false
-    - default: false
-      description: The entry ID to upload.
-      isArray: false
+    - description: The entry ID to upload.
       name: upload
-      required: false
-      secret: false
-    - default: false
-      description: The attachment name to be displayed in Jira (overrides the original
-        file name).
-      isArray: false
+    - description: The attachment name to be displayed in Jira (overrides the original file name).
       name: attachmentName
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a file attachment to an issue.
-    execution: false
     name: jira-issue-upload-file
   - arguments:
     - default: true
       description: The issue ID.
-      isArray: false
       name: issueId
       required: true
-      secret: false
-    - default: false
-      description: The comment body.
-      isArray: false
+    - description: The comment body.
       name: comment
       required: true
-      secret: false
-    - default: false
-      description: 'The roles that can view the comment, for example: Administrators.'
-      isArray: false
+    - description: 'The roles that can view the comment, for example: Administrators.'
       name: visibility
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a new comment to an existing Jira issue.
-    execution: false
     name: jira-issue-add-comment
   - arguments:
-    - default: false
-      description: If a globalId is provided and a remote issue link exists with
-        that globalId, the remote issue link is updated.
-      isArray: false
+    - description: If a globalId is provided and a remote issue link exists with that globalId, the remote issue link is updated.
       name: globalId
-      required: false
-      secret: false
-    - default: false
-      description: 'The object relationship to the issue, for example: causes.'
-      isArray: false
+    - description: 'The object relationship to the issue, for example: causes.'
       name: relationship
-      required: false
-      secret: false
-    - default: false
-      description: The URL link.
-      isArray: false
+    - description: The URL link.
       name: url
       required: true
-      secret: false
-    - default: false
-      description: The link title.
-      isArray: false
+    - description: The link title.
       name: title
       required: true
-      secret: false
-    - default: false
-      description: The link summary.
-      isArray: false
+    - description: The link summary.
       name: summary
-      required: false
-      secret: false
-    - default: false
-      description: The issue ID.
-      isArray: false
+    - description: The issue ID.
       name: issueId
       required: true
-      secret: false
-    - default: false
-      description: The application type of the linked remote application. For example "com.atlassian.confluence".
-      isArray: false
+    - description: The application type of the linked remote application. For example "com.atlassian.confluence".
       name: applicationType
-      required: false
-      secret: false
-    - default: false
-      description: The application name of the linked remote application. For example "My
-        Confluence Instance".
-      isArray: false
+    - description: The application name of the linked remote application. For example "My Confluence Instance".
       name: applicationName
-      required: false
-      secret: false
-    deprecated: false
     description: Creates (or updates) an issue link.
-    execution: false
     name: jira-issue-add-link
   - arguments:
-    - default: false
-      description: The ID of the issue to edit.
-      isArray: false
+    - description: The ID of the issue to edit.
       name: issueId
       required: true
-      secret: false
-    - default: false
-      description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037":
-        "field_value"}}.'
-      isArray: false
+    - description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037": "field_value"}}.'
       name: issueJson
-      required: false
-      secret: false
-    - default: false
-      description: The issue summary.
-      isArray: false
+    - description: The issue summary.
       name: summary
-      required: false
-      secret: false
-    - default: false
-      description: The issue description.
-      isArray: false
+    - description: The issue description.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: A CSV list of labels.
-      isArray: false
+    - description: A CSV list of labels.
       name: labels
-      required: false
-      secret: false
-    - default: false
-      description: 'The issue priority, for example: High, Medium.'
-      isArray: false
+    - description: 'The issue priority, for example: High, Medium.'
       name: priority
-      required: false
-      secret: false
-    - default: false
-      description: The due date for the issue (in the format yyyy-mm-dd).
-      isArray: false
+    - description: The due date for the issue (in the format yyyy-mm-dd).
       name: dueDate
-      required: false
-      secret: false
-    - default: false
-      description: The name of the assignee. Relevant for Jira Server only. If you
-        are using Jira Cloud, provide the assignee_id argument instead.
-      isArray: false
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead.
       name: assignee
-      required: false
-      secret: false
-    - default: false
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute
-        command to get the user's account ID.
-      isArray: false
+    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
       name: assignee_id
-      required: false
-      secret: false
-    - default: false
-      description: The issue status.
-      isArray: false
+    - description: The issue status.
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: The issue transition.
-      isArray: false
+    - description: The issue transition.
       name: transition
-      required: false
-      secret: false
-    - default: false
-      description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
-      isArray: false
+    - description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
       name: environment
-      required: false
-      secret: false
-    - default: false
-      description: The security level name of the issue. For example security="Anyone".
-      isArray: false
+    - description: The security level name of the issue. For example security="Anyone".
       name: security
-      required: false
-      secret: false
-    - default: false
-      description: The component names of the issue. For example components="component1,component2".
+    - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
-      required: false
-      secret: false
-    deprecated: false
     description: Modifies an issue in Jira.
-    execution: false
     name: jira-edit-issue
     outputs:
     - contextPath: Ticket.Id
@@ -675,90 +423,69 @@ script:
       description: The ticket status.
       type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the issue to edit.
-      isArray: false
+    - description: The ID of the issue to edit.
       name: issueId
       required: true
-      secret: false
-    - default: false
-      description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}'
-      isArray: false
+    - description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}'
       name: field_json
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Modifies a specific field in an issue in Jira by appending to it instead of replacing its content. 
       Field must be either of type string (appending by using ',') or array.
-    execution: false
     name: jira-append-to-field
     outputs:
-      - contextPath: Ticket.Id
-        description: The ticket ID.
-        type: Unknown
-      - contextPath: Ticket.Key
-        description: The ticket key.
-        type: Unknown
-      - contextPath: Ticket.Assignee
-        description: The user assigned to the ticket.
-        type: Unknown
-      - contextPath: Ticket.Creator
-        description: The user who created the ticket.
-        type: Unknown
-      - contextPath: Ticket.Summary
-        description: The ticket summary.
-        type: Unknown
-      - contextPath: Ticket.Status
-        description: The ticket status.
-        type: Unknown
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: Unknown
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: Unknown
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: Unknown
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: Unknown
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: Unknown
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the issue to edit.
-      isArray: false
+    - description: The ID of the issue to edit.
       name: issueId
       required: true
-      secret: false
-    - default: false
-      description: The fields to retrieve from the issue. For example field="customfield_164,labels".
+    - description: The fields to retrieve from the issue. For example field="customfield_164,labels".
       isArray: true
       name: field
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Gets specific fields from a Jira issue and adds it to context dynamically.
-    execution: false
     name: jira-get-specific-field
     outputs:
-      - contextPath: Ticket.Id
-        description: The ticket ID.
-        type: Unknown
-      - contextPath: Ticket.Key
-        description: The ticket key.
-        type: Unknown
-      - contextPath: Ticket.Assignee
-        description: The user assigned to the ticket.
-        type: Unknown
-      - contextPath: Ticket.Creator
-        description: The user who created the ticket.
-        type: Unknown
-      - contextPath: Ticket.Summary
-        description: The ticket summary.
-        type: Unknown
-      - contextPath: Ticket.Status
-        description: The ticket status.
-        type: Unknown
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: Unknown
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: Unknown
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: Unknown
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: Unknown
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: Unknown
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: Unknown
   - arguments:
-    - default: false
-      description: The ID of the issue from which to get the comments.
-      isArray: false
+    - description: The ID of the issue from which to get the comments.
       name: issueId
       required: true
-      secret: false
-    deprecated: false
     description: Returns the comments added to a ticket.
-    execution: false
     name: jira-get-comments
     outputs:
     - contextPath: Ticket.Comment.Comment
@@ -771,63 +498,38 @@ script:
       description: The user that created the comment.
       type: string
   - arguments:
-    - default: false
-      description: The issue ID or key.
-      isArray: false
+    - description: The issue ID or key.
       name: issueIdOrKey
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an issue in Jira.
-    execution: false
     name: jira-delete-issue
-  - deprecated: false
-    description: Returns the ID offset. For example the first issue ID.
-    execution: false
+  - description: Returns the ID offset. For example the first issue ID.
     name: jira-get-id-offset
     outputs:
     - contextPath: Ticket.idOffSet
       description: The ID offset.
       type: string
+    arguments: []
   - arguments:
-    - default: false
-      description: The remote incident ID (issue ID).
-      isArray: false
+    - description: The remote incident ID (issue ID).
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was
-        modified after the last update time.
-      isArray: false
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
-    description: Gets remote data from a remote incident. This method is only used
-      for debugging and does not update the current incident.
-    execution: false
+    description: Gets remote data from a remote incident. This method is only used for debugging and does not update the current incident.
     name: get-remote-data
-  - deprecated: false
-    description: Returns the fields to map. This method is only used for debugging.
-    execution: false
+  - description: Returns the fields to map. This method is only used for debugging.
     name: get-mapping-fields
-  - deprecated: false
-    description: Gets incident changes. This method is only used for debugging 
-      and does not update the current incident.
-    execution: false
+    arguments: []
+  - description: Gets incident changes. This method is only used for debugging and does not update the current incident.
     name: update-remote-system
+    arguments: []
   - arguments:
-    - default: false
-      description: The issue ID.
-      isArray: false
+    - description: The issue ID.
       name: issueId
       required: true
-      secret: false
-    deprecated: false
     description: Lists all possible transitions for a given ticket.
-    execution: false
     name: jira-list-transitions
     outputs:
     - contextPath: Ticket.Transitions.ticketId
@@ -836,22 +538,59 @@ script:
     - contextPath: Ticket.Transitions.transitions
       description: A list of all possible transitions.
       type: Unknown
-  - deprecated: false
-    description: Available from Cortex XSOAR version 6.1.0. This command queries for
-      incidents that were modified since the last update. This method is only used
-      for debugging.
-    execution: false
+  - description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.48802
-  feed: false
+    arguments: []
+  - arguments: []
+    description: Gets the information related to the role, including assigned users.
+    name: jira-get-project-role
+  - arguments:
+    - description: User's email address.
+      name: user_email
+    - description: Project key.
+      name: project_key
+    - description: Role name to assign the user.
+      name: role_name
+    description: Adds the user to a project.
+    name: jira-add-user-to-project
+  - arguments: []
+    description: Lists all the organizations.
+    name: jira-get-organizations
+  - arguments:
+    - description: The ID of the issue to edit.
+      name: issueId
+      required: true
+    - description: The name of the assignee. Relevant for Jira Server only, If you are using Jira Cloud, provide the assignee_id argument instead.
+      name: assignee
+    - description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+    description: Edit the assignee of an existing issue.
+    name: jira-issue-assign
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
+  dockerimage: demisto/oauthlib:1.0.0.63821
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  longRunning: false
-  longRunningPort: false
-  runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

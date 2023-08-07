@@ -1,0 +1,1213 @@
+{
+    "content": {
+        "iocs": [
+            {
+                "Value": "content_iocs[0]_Value",
+                "Type": "IpAddresses",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[0]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Cyware",
+                    "Threat Library",
+                    "Cyber Crime Tracker"
+                ]
+            },
+            {
+                "Value": "sigmageotecnologias.com",
+                "Type": "Domains",
+                "Status": "Active",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[1]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "vertexcapitalinvestments.com",
+                "Type": "Domains",
+                "Status": "Active",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[2]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "alcorprime.com",
+                "Type": "Domains",
+                "Status": "Active",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[3]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "amitadesai.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[4]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "ab05d6335b06a0dbc41386c7c356202b4e07dcf76a4932ed4d4e7dd69b7a3101",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[5]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "kemitafricatours.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[6]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "content_iocs[7]_Value",
+                "Type": "IpAddresses",
+                "Status": "Retired",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[7]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "15409d59f55d2ae6f30b8e2257bccb246b75a1b044166b31433e55c02d64d158",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[8]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[9]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[10]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "3c280f4b81ca4773f89dc4882c1c1e50ab1255e1975372109b37cf782974e96f",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[11]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "arimeto.lv",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[12]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Cyware",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "syncun.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[13]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "worldofjain.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[14]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Cyware",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "content_iocs[15]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[15]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Cyware",
+                    "Threat Library",
+                    "URLhaus"
+                ]
+            },
+            {
+                "Value": "obeysecuritybsness.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[16]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "veniceclayartists.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[17]_UpdateDate",
+                "Whitelisted": true,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "pcbsi.com.ph",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[18]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "moodle.sigetweb.com.br",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[19]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "empresas.ecohertz.com.br",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[20]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[21]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "sicasasesores.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[22]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "content_iocs[23]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[23]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "0713298a96ac7dd6c5079b898b4550836472db2c65ebd3ac4660fab0053130b4",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[24]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "sattakingsandy.in",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[25]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[26]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "pdcej.sn",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[27]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[28]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "colegiobilinguepioxii.com.co",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[29]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "content_iocs[30]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[30]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "AlienVault OTX",
+                    "Threat Library",
+                    "URLhaus"
+                ]
+            },
+            {
+                "Value": "df4d88bc8fa57a8f38ccdc3170f9df0a9a7784d85c43d885a330bd5ecabea5b4",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[31]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "585ffca5794b35db2e8163f929acaff5",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[32]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "e8f3bcb2560827a8aee38e739fe927af",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[33]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "ventoindia.in",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[34]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "wissamyamout.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[35]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "sunnywuvisuals.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[36]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "content_iocs[37]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[37]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "boogieproductions.com.au",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[38]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "content_iocs[39]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[39]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[40]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "content_iocs[41]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[41]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "URLhaus"
+                ]
+            },
+            {
+                "Value": "content_iocs[42]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[42]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "c5984149bd4f49aaf1bdfb5d5ce141cfd3f5cc2984ac81131dd00f27dfdbc8d4",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[43]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "6402b33d729c8bb44881747a8f397f4aec408bf5e18b9af6fd86cdfa3f96323b",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[44]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu",
+                    "ThreatFox"
+                ]
+            },
+            {
+                "Value": "066009ed39e83cde11082836198d2022d86520f6ee7b5f135be91f5c28b1175a",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[45]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "991154918f4631239be8bd5268da9cc996e574fb42ebbacb9fb958e2915a91c5",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[46]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "razisystem.ir",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[47]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "apnapansar.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[48]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "mipymetv.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[49]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "b6694110b97261c6dc0a912af49c63c91d4279f1fd7f776c4ed8aa7677568697",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[50]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "content_iocs[51]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[51]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "15f78e87815f60083fba312f8ae4b7efd3c2861fe1823f3df5d9553376246a52",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[52]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "7838f2a7503355dfeaa7d097158a55d3",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[53]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "c1b1345b96b06605913a8bd1e153f05cd5a15746cdf661ffdd6dd99a2794bbfb",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[54]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "4aa88ff624c0715d8db07564dd3f9dc30a0f2e03d48b217ffebf8c8b53f05871",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[55]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "3028fb137c730af4e749db0b64c316bd9f6f698d22ad71dbb601f4bf982bf5dd",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[56]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "content_iocs[57]_Value",
+                "Type": "Urls",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[57]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "URLhaus"
+                ]
+            },
+            {
+                "Value": "complejobotanico.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[58]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "52a914b43dfa44910ab649be77a57db631d038ee",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[59]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Cyware"
+                ]
+            },
+            {
+                "Value": "354f9844193171392a16a1a2262712d17638925f16aed9e9827f11e368e0fa05",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[60]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "2a5e42eb87b66b0c6dda93dd1f463e0f2026d1a9",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[61]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "kupisha.pl",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[62]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "decimaai.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[63]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "saleebyproctology.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[64]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "vagaspet.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[65]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[66]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "ifiengineers.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[67]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "bbaschools.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[68]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "planostart.mbvirtual.com.br",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[69]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "site.advancertv.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[70]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "content_iocs[71]_Value",
+                "Type": "IpAddresses",
+                "Status": "Retired",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[71]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "gypsysanddunes.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[72]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[73]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "AlienVault OTX",
+                    "Threat Library",
+                    "Cyware"
+                ]
+            },
+            {
+                "Value": "c8e2beafda68a39fc1f2d96c36f26e51d674583acf9cf6298a6a380e2530957a",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[74]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "0002248ece1b841adf71c763b504d739d8cd55f6f5ceccd44385d0270bd336c8",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[75]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[76]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "turnipshop.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[77]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "e10d8b2c6343432a4384928f91b398c9223a0155385ba1405192c614c6e1cf83",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[78]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu",
+                    "Cyware"
+                ]
+            },
+            {
+                "Value": "katerinapapakosta.gr",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[79]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "fajasdeportivasmola.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[80]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "15bab9681237b159a6c7155ee35a5fcd",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[81]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "scovelstowing.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Medium",
+                "UpdateDate": "content_iocs[82]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "yamminecompany.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[83]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "f06acfcaff4973c2afb04582e94f761085ec546b8810b7e07248cfefa2e37af3",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[84]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "fae4ca3c95a5068063637b2f2ed3a5b2",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[85]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "d219628d344f9bf813c09a5d5195d750537252b78593c7656ad1a1f25528f808",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[86]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[87]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "22e427d636088505aed35304009c2ac23ae4f39784fa95d0d9d3ca12c71d3834",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[88]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "d78be1aaae573167680db8be2768b720",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[89]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "28ebd990dce7fa06486ebb92d09242f459084cb3faad0bf86d0d4f37fc80146b",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[90]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "8be6794f6b84741023d8206d547d43846282d457bb7f183a4e1eaba1ab6d5859",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[91]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "6527345f9aee9363b094aad01304de88",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[92]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library"
+                ]
+            },
+            {
+                "Value": "test",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[93]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "5de88c45cb01b26c30c21fd0e709bfedae3e9b1ec7efc7b8a12170109d134ff7",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[94]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "65c9895cc9374bbdf23c9c58f588848f9ee2ae8768e535dffccfdfbf397d8b57",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[95]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "7fbc1da5a568d2d169bf843edcefee790ee83d9c30c561ec7690c6fd5094ce7f",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[96]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "petexpopakistan.com",
+                "Type": "Domains",
+                "Status": "Retired",
+                "Severity": "Low",
+                "UpdateDate": "content_iocs[97]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "2ff1ca5e14e9c87df9c0e7ca7f0b989a05211427983c8804deb422e7084c9af3",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[98]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            },
+            {
+                "Value": "baefb3e64ae9b3b0513548b3a99dd54061531ade7acd9a330d239c30912ef2b1",
+                "Type": "Hashes",
+                "Status": "Active",
+                "Severity": "High",
+                "UpdateDate": "content_iocs[99]_UpdateDate",
+                "Whitelisted": false,
+                "ReportingFeeds": [
+                    "ThreatFox",
+                    "Threat Library",
+                    "Botvrij.eu"
+                ]
+            }
+        ],
+        "nextOffset": "content_nextOffset"
+    }
+}

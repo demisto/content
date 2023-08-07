@@ -1,21 +1,12 @@
 args:
-- default: false
-  description: Certificate in PEM format. This argument is mutually exclusive with the "entry_id" argument.
-  isArray: false
+- description: Certificate in PEM format. This argument is mutually exclusive with the "entry_id" argument.
   name: pem
-  required: false
-  secret: false
-- default: false
-  description: Certificate entry ID (in DER or PEM format). This argument is mutually exclusive with the "pem" argument.
-  isArray: false
+- description: Certificate entry ID (in DER or PEM format). This argument is mutually exclusive with the "pem" argument.
   name: entry_id
-  required: false
-  secret: false
 comment: Extract fields from a certificate file and return the standard context.
 commonfields:
   id: CertificateExtract
   version: -1
-enabled: false
 name: CertificateExtract
 outputs:
 - contextPath: Certificate.Name
@@ -132,12 +123,11 @@ outputs:
   description: The actual score.
   type: Number
 script: '-'
-system: false
 tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/crypto:1.0.0.51452
+dockerimage: demisto/crypto:1.0.0.67955
 fromversion: 6.0.0
 tests:
 - X509Certificate Test Playbook

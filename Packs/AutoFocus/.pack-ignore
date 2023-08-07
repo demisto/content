@@ -4,8 +4,6 @@ ignore=IN136
 [file:README.md]
 ignore=RM102,RM106
 
-[file:FeedAutofocusDaily.yml]
-ignore=IN145
-
 [known_words]
-PANW
+panw
+

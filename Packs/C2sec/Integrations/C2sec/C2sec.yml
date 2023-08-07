@@ -16,20 +16,27 @@ configuration:
   name: apikey
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- name: apikey_creds
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  required: false
 - display: Default domain name
   name: domainName
-  defaultvalue: ""
   type: 0
   required: true
+  defaultvalue: ''
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+
+  required: false
 script:
   script: '-'
   type: python
@@ -192,4 +199,6 @@ script:
       type: string
     description: Query Data for specific component for companies in the portfolio
   runonce: false
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.12.63474
+tests:
+- No tests (auto formatted)

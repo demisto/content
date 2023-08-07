@@ -11,162 +11,106 @@ configuration:
   type: 0
 - additionalinfo: The secret key to sign the authentication token.
   display: Secret Key
-  hidden: false
   name: key
   required: true
   type: 4
 - additionalinfo: Token Signing Algorithm.
   defaultvalue: HS256
   display: Algorithm
-  hidden: false
   name: algorithm
-  required: false
   type: 0
+  required: false
 - additionalinfo: The “iss” (issuer) claim identifies the principal that issued the JWT.
   display: Issuer
   name: iss
-  required: false
   type: 0
+  required: false
 - additionalinfo: The “aud” (audience) claim identifies the recipients that the JWT is intended for.
   display: Audience
-  hidden: false
   name: aud
-  required: false
   type: 0
+  required: false
 - additionalinfo: The "jti" (JWT ID) claim provides a unique identifier for the JWT token.
   display: Token ID
-  hidden: false
   name: jti
-  required: false
   type: 0
+  required: false
 - additionalinfo: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
   display: Subject
-  hidden: false
   name: sub
-  required: false
   type: 0
+  required: false
 - additionalinfo: The "scp" (scope) claim is described in OAuth 2.0 Token Exchange as an array of strings, each of which represents an OAuth Scope granted for the issued security token.
   display: Scope
-  hidden: false
   name: scp
-  required: false
   type: 0
+  required: false
 - additionalinfo: The "iat" (issued at) claim identifies the time at which the JWT was issued.
   display: Issued At
-  hidden: false
   name: iat
-  required: false
   type: 0
+  required: false
 - additionalinfo: The "exp" (expiration time) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing.
   display: Expiration Time
-  hidden: false
   name: exp
-  required: false
   type: 0
+  required: false
 - additionalinfo: The "nbf" (not before) claim identifies the time before which the JWT MUST NOT be accepted for processing.
   display: Not Before
-  hidden: false
   name: nbf
-  required: false
   type: 0
+  required: false
 - additionalinfo: Additional claims to include in the request.
   display: Additional Claims
-  hidden: false
   name: additionalClaims
-  required: false
   type: 12
+  required: false
 - additionalinfo: Token Timeout in Seconds
   defaultvalue: '300'
   display: Token Timeout
-  hidden: false
   name: tokenTimeout
-  required: false
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. This Integration can be used to Generate New JWT Tokens, Encode and Decode Existing Ones.
 display: JWT
 name: JWT
 script:
   commands:
   - arguments:
-    - default: false
-      description: The "jti" (JWT ID) claim provides a unique identifier for the JWT token.
-      isArray: false
+    - description: The "jti" (JWT ID) claim provides a unique identifier for the JWT token.
       name: jti
-      required: false
-      secret: false
-    - default: false
-      description: The "iss" (issuer) claim identifies the principal that issued the JWT.
-      isArray: false
+    - description: The "iss" (issuer) claim identifies the principal that issued the JWT.
       name: iss
-      required: false
-      secret: false
-    - default: false
-      description: The "aud" (audience) claim identifies the recipients that the JWT is intended for.
-      isArray: false
+    - description: The "aud" (audience) claim identifies the recipients that the JWT is intended for.
       name: aud
-      required: false
-      secret: false
-    - default: false
-      description: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
-      isArray: false
+    - description: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
       name: sub
-      required: false
-      secret: false
-    - default: false
-      description: The "scp" (scope) claim is described in OAuth 2.0 Token Exchange as an array of strings, each of which represents an OAuth Scope granted for the issued security token.
-      isArray: false
+    - description: The "scp" (scope) claim is described in OAuth 2.0 Token Exchange as an array of strings, each of which represents an OAuth Scope granted for the issued security token.
       name: scp
-      required: false
-      secret: false
-    - default: false
-      description: The "iat" (issued at) claim identifies the time at which the JWT was issued.
-      isArray: false
+    - description: The "iat" (issued at) claim identifies the time at which the JWT was issued.
       name: iat
-      required: false
-      secret: false
-    - default: false
-      description: The "exp" (expiration time) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing.
-      isArray: false
+    - description: The "exp" (expiration time) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing.
       name: exp
-      required: false
-      secret: false
-    - default: false
-      description: The "nbf" (not before) claim identifies the time before which the JWT MUST NOT be accepted for processing.
-      isArray: false
+    - description: The "nbf" (not before) claim identifies the time before which the JWT MUST NOT be accepted for processing.
       name: nbf
-      required: false
-      secret: false
-    - default: false
-      description: Additional claims to include in the request.
-      isArray: false
+    - description: Additional claims to include in the request.
       name: additionalClaims
-      required: false
-      secret: false
     - default: true
       defaultValue: '300'
       description: Token Timeout in Seconds
-      isArray: false
       name: tokenTimeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: HS256
+    - defaultValue: HS256
       description: Token Signing Algorithm
-      isArray: false
       name: algorithm
-      required: false
-      secret: false
-    deprecated: false
     description: Generates a JWT authorization token with an optional scope and queries the API for an access token and then returns the received API access token
-    execution: false
     name: jwt-generate-access-token
     outputs:
     - contextPath: JWT.Token.ID
@@ -179,77 +123,32 @@ script:
       description: JWT Authentication Token
       type: String
   - arguments:
-    - default: false
-      description: The "jti" (JWT ID) claim provides a unique identifier for the JWT token.
-      isArray: false
+    - description: The "jti" (JWT ID) claim provides a unique identifier for the JWT token.
       name: jti
-      required: false
-      secret: false
-    - default: false
-      description: The "iss" (issuer) claim identifies the principal that issued the JWT.
-      isArray: false
+    - description: The "iss" (issuer) claim identifies the principal that issued the JWT.
       name: iss
-      required: false
-      secret: false
-    - default: false
-      description: The "aud" (audience) claim identifies the recipients that the JWT is intended for.
-      isArray: false
+    - description: The "aud" (audience) claim identifies the recipients that the JWT is intended for.
       name: aud
-      required: false
-      secret: false
-    - default: false
-      description: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
-      isArray: false
+    - description: The "sub" (subject) claim identifies the principal that is the subject of the JWT.
       name: sub
-      required: false
-      secret: false
-    - default: false
-      description: The "scp" (scope) claim is described in OAuth 2.0 Token Exchange as an array of strings, each of which represents an OAuth Scope granted for the issued security token.
-      isArray: false
+    - description: The "scp" (scope) claim is described in OAuth 2.0 Token Exchange as an array of strings, each of which represents an OAuth Scope granted for the issued security token.
       name: scp
-      required: false
-      secret: false
-    - default: false
-      description: The "iat" (issued at) claim identifies the time at which the JWT was issued.
-      isArray: false
+    - description: The "iat" (issued at) claim identifies the time at which the JWT was issued.
       name: iat
-      required: false
-      secret: false
-    - default: false
-      description: 'The "exp" (expiration time) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing. '
-      isArray: false
+    - description: 'The "exp" (expiration time) claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing. '
       name: exp
-      required: false
-      secret: false
-    - default: false
-      description: The "nbf" (not before) claim identifies the time before which the JWT MUST NOT be accepted for processing.
-      isArray: false
+    - description: The "nbf" (not before) claim identifies the time before which the JWT MUST NOT be accepted for processing.
       name: nbf
-      required: false
-      secret: false
-    - default: false
-      description: Additional claims to include in the request.
-      isArray: false
+    - description: Additional claims to include in the request.
       name: additionalClaims
-      required: false
-      secret: false
     - default: true
       defaultValue: '300'
       description: Token Timeout in Seconds
-      isArray: false
       name: tokenTimeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: HS256
+    - defaultValue: HS256
       description: Token Signing Algorithm
-      isArray: false
       name: algorithm
-      required: false
-      secret: false
-    deprecated: false
     description: Generates a JWT authorization request payload by encoding the provided claims.
-    execution: false
     name: jwt-generate-authentication-payload
     outputs:
     - contextPath: JWT.Token.ID
@@ -259,27 +158,14 @@ script:
       description: The JWT Authentication Token Value
       type: String
   - arguments:
-    - default: false
-      description: The token to decode
-      isArray: false
+    - description: The token to decode
       name: token
       required: true
-      secret: false
-    - default: false
-      description: The secret to validate the token signature
-      isArray: false
+    - description: The secret to validate the token signature
       name: secret
-      required: false
-      secret: false
-    deprecated: false
     description: A command to decode JWT tokens
-    execution: false
     name: jwt-decode-token
   dockerimage: demisto/pyjwt3:1.0.0.48806
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

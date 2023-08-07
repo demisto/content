@@ -5,55 +5,51 @@ commonfields:
 configuration:
 - display: User's Service Account JSON
   name: user_service_account_json
-  required: true
   type: 4
+  hidden: true
+  required: false
+- display: Admin Email
+  name: admin_email_creds
+  type: 9
+  displaypassword: User's Service Account JSON
+  required: false
 - display: Admin Email
   name: admin_email
-  required: false
   type: 0
   additionalinfo: An admin email is required for the Test validation to run. If not configured, then each command can receive an optional admin_email argument.
+  hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+
+  required: false
 description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
 display: Google Workspace Admin
 name: GSuiteAdmin
 script:
   commands:
   - arguments:
-    - default: false
-      description: The unique ID of the customer's Google Workspace Admin account.
-      isArray: false
+    - description: The unique ID of the customer's Google Workspace Admin account.
       name: customer_id
       required: true
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
     - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL
-      isArray: false
       name: projection
-      required: false
       auto: PREDEFINED
       predefined:
       - BASIC
       - FULL
     - name: query
       description: Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: order_by
       description: Device property to use for sorting results. Default is STATUS.
-      required: false
-      isArray: false
       predefined:
       - DEVICE_ID
       - EMAIL
@@ -66,23 +62,15 @@ script:
     - auto: PREDEFINED
       name: sort_order
       description: Whether to return results in ascending or descending order. Must be used with the order_by parameter. Default is ASCENDING.
-      required: false
-      isArray: false
       predefined:
       - ASCENDING
       - DESCENDING
     - name: limit
       description: The maximum number of records to return from the collection. Default is 50.
-      required: false
-      isArray: false
     - name: page_token
       description: The token of the page.
-      required: false
-      isArray: false
     - name: page_size
       description: The number of requested results per page. Default is 50. Maximum allowed value is 100.
-      required: false
-      isArray: false
     description: Retrieves a paginated list that includes company-owned mobile devices.
     name: gsuite-mobiledevice-list
     outputs:
@@ -225,34 +213,22 @@ script:
       contextPath: GSuite.MobileDevices.MobileListObjects.applications.permission
       description: The list of permissions of this application.
   - arguments:
-    - default: false
-      description: The unique ID of the customer's Google Workspace Admin account.
-      isArray: false
+    - description: The unique ID of the customer's Google Workspace Admin account.
       name: customer_id
       required: true
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
     - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user).
-      isArray: false
       name: projection
-      required: false
       auto: PREDEFINED
       predefined:
       - BASIC
       - FULL
     - name: query
       description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators."
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: order_by
       description: Device property to use for sorting results.
-      required: false
-      isArray: false
       predefined:
       - ANNOTATED_LOCATION
       - ANNOTATED_USER
@@ -263,35 +239,23 @@ script:
     - auto: PREDEFINED
       name: sort_order
       description: Whether to return results in ascending or descending order. Must be used with the order_by parameter.
-      required: false
-      isArray: false
       predefined:
       - ASCENDING
       - DESCENDING
     - name: org_unit_path
       description: The full path of the organizational unit (without the leading /) or its unique ID.
-      required: false
-      isArray: false
     - auto: PREDEFINED
       name: include_child_org_units
       description: Whether to return devices from all child organizational units. If this is set to true, 'org_unit_path' must be provided.
-      required: false
-      isArray: false
       predefined:
       - yes
       - no
     - name: limit
       description: The maximum number of records to return from the collection. Default is 50.
-      required: false
-      isArray: false
     - name: page
       description: The page number.
-      required: false
-      isArray: false
     - name: page_size
       description: The number of requested results per page. Default is 50. Maximum allowed value is 100.
-      required: false
-      isArray: false
     description: Retrieves a paginated list of company-owned ChromeOS devices.
     name: gsuite-chromeosdevice-list
     outputs:
@@ -566,23 +530,15 @@ script:
       contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.firstEnrollmentTime
       description: Date and time for the first time the device was enrolled.
   - arguments:
-    - default: false
-      description: The unique ID of the customer's Google Workspace Admin account.
-      isArray: false
+    - description: The unique ID of the customer's Google Workspace Admin account.
       name: customer_id
       required: true
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
     - description: The unique ID of the device.
-      isArray: false
       name: resource_id
       required: true
     - description: The action to be performed on the ChromeOS device.
-      isArray: false
       name: action
       required: true
       auto: PREDEFINED
@@ -593,9 +549,7 @@ script:
       - pre_provisioned_disable
       - pre_provisioned_reenable
     - description: Reason for deprovision. This field is required only when the action used is deprovision.
-      isArray: false
       name: deprovision_reason
-      required: false
       auto: PREDEFINED
       predefined:
       - different_model_replacement
@@ -605,20 +559,13 @@ script:
     description: Executes an action that affects a ChromeOS device. This includes de-provisioning, disabling, and re-enabling devices.
     name: gsuite-chromeosdevice-action
   - arguments:
-    - default: false
-      description: The unique ID of the customer's G Suite account.
-      isArray: false
+    - description: The unique ID of the customer's G Suite account.
       name: customer_id
       required: true
-      secret: false
-    - default: false
-      description: The unique ID used to identify the mobile device.
-      isArray: false
+    - description: The unique ID used to identify the mobile device.
       name: resource_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The action to be performed on the device.
 
         Available Options:
@@ -633,10 +580,8 @@ script:
         cancel_remote_wipe_then_activate - Cancels a remote wipe of the device and then reactivates it.
 
         cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it.
-      isArray: false
       name: action
       required: true
-      secret: false
       auto: PREDEFINED
       predefined:
       - admin_account_wipe
@@ -645,61 +590,31 @@ script:
       - block
       - cancel_remote_wipe_then_activate
       - cancel_remote_wipe_then_block
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Takes an action that affects a mobile device. For example, remotely wiping a device.
-    execution: false
     name: gsuite-mobile-update
   - arguments:
-    - default: false
-      description: The unique ID of the customer's G Suite account.
-      isArray: false
+    - description: The unique ID of the customer's G Suite account.
       name: customer_id
       required: true
-      secret: false
-    - default: false
-      description: The unique ID used to identify the mobile device.
-      isArray: false
+    - description: The unique ID used to identify the mobile device.
       name: resource_id
       required: true
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Removes a mobile device. Note that this does not break the device's sync, it simply removes it from the list of devices connected to the domain. If the device still has a valid login/authentication, it will be added back on it's next successful sync.
-    execution: false
     name: gsuite-mobile-delete
   - arguments:
-    - default: false
-      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
-      isArray: false
+    - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       name: user_key
       required: true
-      secret: false
-    - default: false
-      description: The alias email address.
-      isArray: false
+    - description: The alias email address.
       name: alias
       required: true
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Adds an alias.
-    execution: false
     name: gsuite-user-alias-add
     outputs:
     - contextPath: GSuite.UserAlias.kind
@@ -715,146 +630,76 @@ script:
       description: The alias email address.
       type: String
   - arguments:
-    - default: false
-      description: The user's first name.
-      isArray: false
+    - description: The user's first name.
       name: first_name
       required: true
-      secret: false
-    - default: false
-      description: The user's last name.
-      isArray: false
+    - description: The user's last name.
       name: last_name
       required: true
-      secret: false
-    - default: false
-      description: Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format.
-      isArray: false
+    - description: Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format.
       name: password
       required: true
-      secret: false
-    - default: false
-      description: The user's primary email address. The primary_email must be unique and cannot be an alias of another user.
-      isArray: false
+    - description: The user's primary email address. The primary_email must be unique and cannot be an alias of another user.
       name: primary_email
       required: true
-      secret: false
-    - default: false
-      description: User's Country.
-      isArray: false
+    - description: User's Country.
       name: country
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The address type.
-      isArray: false
       name: address_type
       predefined:
       - home
       - other
       - work
-      required: false
-      secret: false
-    - default: false
-      description: The ZIP or postal code, if applicable.
-      isArray: false
+    - description: The ZIP or postal code, if applicable.
       name: postal_code
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set to true, If this is the user's primary address.
-      isArray: false
       name: is_address_primary
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: For extended addresses, such as an address that includes a sub-region.
-      isArray: false
+    - description: For extended addresses, such as an address that includes a sub-region.
       name: extended_address
-      required: false
-      secret: false
-    - default: false
-      description: The abbreviated province or state.
-      isArray: false
+    - description: The abbreviated province or state.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace within the string is ignored; however, newlines are significant.
-      isArray: false
+    - description: The street address, such as 1600 Amphitheatre Parkway. Whitespace within the string is ignored; however, newlines are significant.
       name: street_address
-      required: false
-      secret: false
-    - default: false
-      description: The user's secondary email address.
-      isArray: false
+    - description: The user's secondary email address.
       name: secondary_email_address
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the secondary email account.
-      isArray: false
       name: secondary_email_type
       predefined:
       - home
       - other
       - work
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: User's gender.
-      isArray: false
       name: gender
       predefined:
       - female
       - male
       - other
       - unknown
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If true, the user's IP address is on allow list.
-      isArray: false
       name: is_ip_white_listed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Content type of note, either plain text or HTML. If not provided, considered as plain text.
-      isArray: false
       name: notes_content_type
       predefined:
       - text_plain
       - text_html
-      required: false
-      secret: false
-    - default: false
-      description: Contents of notes.
-      isArray: false
+    - description: Contents of notes.
       name: notes_value
-      required: false
-      secret: false
-    - default: false
-      description: A human-readable phone number. It may be in any telephone number format.
-      isArray: false
+    - description: A human-readable phone number. It may be in any telephone number format.
       name: phone_number
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of phone number.
-      isArray: false
       name: phone_number_type
       predefined:
       - assistant
@@ -877,49 +722,25 @@ script:
       - work_fax
       - work_mobile
       - work_pager
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates if this is the user's primary phone number. A user may only have one primary phone number.
-      isArray: false
       name: is_phone_number_primary
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Recovery email of the user.
-      isArray: false
+    - description: Recovery email of the user.
       name: recovery_email
-      required: false
-      secret: false
-    - default: false
-      description: 'Recovery phone of the user. The phone number must be in the E.164 format, starting with the plus sign (+). Example: +16506661212.'
-      isArray: false
+    - description: 'Recovery phone of the user. The phone number must be in the E.164 format, starting with the plus sign (+). Example: +16506661212.'
       name: recovery_phone
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates if the user is suspended.
-      isArray: false
       name: suspended
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a user.
-    execution: false
     name: gsuite-user-create
     outputs:
     - contextPath: GSuite.User.id
@@ -1019,33 +840,16 @@ script:
       description: Stores the hash format of the password property.
       type: String
   - arguments:
-    - default: false
-      description: The group's email address.
-      isArray: false
+    - description: The group's email address.
       name: group_email
       required: true
-      secret: false
-    - default: false
-      description: The group's display name.
-      isArray: false
+    - description: The group's display name.
       name: group_name
-      required: false
-      secret: false
-    - default: false
-      description: An extended description to help users determine the purpose of a group.
-      isArray: false
+    - description: An extended description to help users determine the purpose of a group.
       name: group_description
-      required: false
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a group with a group name and its description.
-    execution: false
     name: gsuite-group-create
     outputs:
     - contextPath: GSuite.Group.kind
@@ -1079,45 +883,20 @@ script:
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
   - arguments:
-    - default: false
-      description: Immutable ID of the G Suite account.
-      isArray: false
+    - description: Immutable ID of the G Suite account.
       name: customer_id
       required: true
-      secret: false
-    - default: false
-      description: Immutable ID of a role. If included, it returns only role assignments containing this role ID.
-      isArray: false
+    - description: Immutable ID of a role. If included, it returns only role assignments containing this role ID.
       name: role_id
-      required: false
-      secret: false
-    - default: false
-      description: The user's primary email address, alias email address, or unique user ID. If included in the request, returns role assignments only for this user.
-      isArray: false
+    - description: The user's primary email address, alias email address, or unique user ID. If included in the request, returns role assignments only for this user.
       name: user_key
-      required: false
-      secret: false
-    - default: false
-      description: Token to specify the next page in the list.
-      isArray: false
+    - description: Token to specify the next page in the list.
       name: page_token
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return. Acceptable values are 1 to 200, inclusive.
-      isArray: false
+    - description: Maximum number of results to return. Acceptable values are 1 to 200, inclusive.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a paginated list of all role assignments.
-    execution: false
     name: gsuite-role-assignment-list
     outputs:
     - contextPath: GSuite.RoleAssignment.kind
@@ -1145,51 +924,29 @@ script:
       description: Token to specify the next page in the list.
       type: String
   - arguments:
-    - default: false
-      description: Immutable ID of the G Suite account.
-      isArray: false
+    - description: Immutable ID of the G Suite account.
       name: customer_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the role to be assigned to the user.
-      isArray: false
+    - description: The ID of the role to be assigned to the user.
       name: role_id
       required: true
-      secret: false
-    - default: false
-      description: The unique ID of the user this role is assigned to.
-      isArray: false
+    - description: The unique ID of the user this role is assigned to.
       name: assigned_to
       required: true
-      secret: false
-    - default: false
-      description: The scope in which this role is assigned.
-      isArray: false
+    - description: The scope in which this role is assigned.
       name: scope_type
       required: true
-      secret: false
       auto: PREDEFINED
       predefined:
       - CUSTOMER
       - ORG_UNIT
-    - default: false
-      description: |-
+    - description: |-
         If the role is restricted to an organization unit, this contains the ID for the organization unit the exercise of this role is restricted to.
-      isArray: false
       name: org_unit_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a role assignment.
-    execution: false
     name: gsuite-role-assignment-create
     outputs:
     - contextPath: GSuite.RoleAssignment.kind
@@ -1214,39 +971,20 @@ script:
       description: If the role is restricted to an organization unit, this contains the ID of the organization unit to which the exercise of this role is restricted to.
       type: String
   - arguments:
-    - default: false
-      description: Immutable ID of the G Suite account.
-      isArray: false
+    - description: Immutable ID of the G Suite account.
       name: customer_id
       required: true
-      secret: false
-    - default: false
-      description: Name of the role.
-      isArray: false
+    - description: Name of the role.
       name: role_name
       required: true
-      secret: false
-    - default: false
-      description: The set of privileges that are granted to this role. Comma-separated list of privilege names and service ids of the form "PrivilegeName1:ServiceId1,PrivilegeName2:ServiceId2".
-      isArray: false
+    - description: The set of privileges that are granted to this role. Comma-separated list of privilege names and service ids of the form "PrivilegeName1:ServiceId1,PrivilegeName2:ServiceId2".
       name: role_privileges
       required: true
-      secret: false
-    - default: false
-      description: A short description of the role.
-      isArray: false
+    - description: A short description of the role.
       name: role_description
-      required: false
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new role.
-    execution: false
     name: gsuite-role-create
     outputs:
     - contextPath: GSuite.Role.kind
@@ -1277,75 +1015,42 @@ script:
       description: Whether the role is a super admin role.
       type: Boolean
   - arguments:
-    - default: false
-      description: The Client ID of the application the token is issued to.
-      isArray: false
+    - description: The Client ID of the application the token is issued to.
       name: client_id
       required: true
-      secret: false
-    - default: false
-      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
-      isArray: false
+    - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       name: user_key
       required: true
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Delete all access tokens issued by a user for an application.
-    execution: false
     name: gsuite-token-revoke
   - arguments:
-    - default: false
-      description: Immutable ID of the G Suite account.
-      isArray: false
+    - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
+      name: user_key
+      required: true
+    description: |-
+      Signs a user out of all web and device sessions and reset their sign-in cookies.
+    name: gsuite-user-signout
+  - arguments:
+    - description: Immutable ID of the G Suite account.
       name: customer_id
-      required: false
-      secret: false
-    - default: false
-      description: Destination user's profile ID.
-      isArray: false
+    - description: Destination user's profile ID.
       name: new_owner_user_id
-      required: false
-      secret: false
-    - default: false
-      description: Source user's profile ID.
-      isArray: false
+    - description: Source user's profile ID.
       name: old_owner_user_id
-      required: false
-      secret: false
-    - default: false
-      description: Status of the transfer.
-      isArray: false
+    - description: Status of the transfer.
       name: status
-      required: false
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: |-
+        Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
-      isArray: false
+    - description: |-
+        Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Token to specify the next page in the list.
-      isArray: false
+    - description: Token to specify the next page in the list.
       name: page_token
-      required: false
-      secret: false
-    deprecated: false
-    description: Lists the transfers for a customer by source user, destination user, or status.
-    execution: false
+    description: "Lists the transfers for a customer by source user, destination user, or status."
     name: gsuite-datatransfer-list
     outputs:
     - contextPath: GSuite.DataTransfer.kind
@@ -1385,32 +1090,18 @@ script:
       description: Continuation token which will be used to specify next page in list API.
       type: String
   - arguments:
-    - default: false
-      description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
-      isArray: false
+    - description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
       name: admin_email
-      required: false
-      secret: false
-    - default: false
-      description: Immutable ID of the G Suite account.
-      isArray: false
+    - description: Immutable ID of the G Suite account.
       name: customer_id
       required: true
-      secret: false
-    - default: false
-      description: The schema's name.
-      isArray: false
+    - description: The schema's name.
       name: schema_name
       required: true
-      secret: false
-    - default: false
-      description: Display name for the schema.
-      isArray: false
+    - description: Display name for the schema.
       name: schema_display_name
       required: true
-      secret: false
-    - default: false
-      description: |
+    - description: |
         Raw JSON containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1433,12 +1124,8 @@ script:
             }
           ]
         }
-      isArray: false
       name: field_raw_json
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         JSON file entry ID containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1461,13 +1148,8 @@ script:
             }
           ]
         }
-      isArray: false
       name: field_json_entry_id
-      required: false
-      secret: false
-    deprecated: false
     description: "Creates a custom user schema to add custom fields to user profiles.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
-    execution: false
     name: gsuite-custom-user-schema-create
     outputs:
     - contextPath: GSuite.UserSchema.kind
@@ -1519,38 +1201,18 @@ script:
       description: Maximum value of this field.
       type: Number
   - arguments:
-    - default: false
-      description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
-      isArray: false
+    - description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
       name: admin_email
-      required: false
-      secret: false
-    - default: false
-      description: Immutable ID of the G Suite account.
-      isArray: false
+    - description: Immutable ID of the G Suite account.
       name: customer_id
       required: true
-      secret: false
-    - default: false
-      description: The schema's name.
-      isArray: false
+    - description: The schema's name.
       name: schema_name
-      required: false
-      secret: false
-    - default: false
-      description: Immutable ID of the schema.
-      isArray: false
+    - description: Immutable ID of the schema.
       name: schema_id
-      required: false
-      secret: false
-    - default: false
-      description: Display name for the schema.
-      isArray: false
+    - description: Display name for the schema.
       name: schema_display_name
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         Raw JSON containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1573,12 +1235,8 @@ script:
             }
           ]
         }
-      isArray: false
       name: field_raw_json
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         JSON file entry ID containing fields of the schema. Acceptable values for
         fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
         values for readAccessType are ADMINS_AND_SELF- Only administrators and
@@ -1601,13 +1259,8 @@ script:
             }
           ]
         }
-      isArray: false
       name: field_json_entry_id
-      required: false
-      secret: false
-    deprecated: false
     description: "Updates a custom user schema.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
-    execution: false
     name: gsuite-custom-user-schema-update
     outputs:
     - contextPath: GSuite.UserSchema.kind
@@ -1659,38 +1312,19 @@ script:
       description: Maximum value of this field.
       type: Number
   - arguments:
-    - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    - default: false
-      description: ID of the user whose data is being transferred.
-      isArray: false
+    - description: ID of the user whose data is being transferred.
       name: old_owner_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the user to whom the data is being transferred.
-      isArray: false
+    - description: ID of the user to whom the data is being transferred.
       name: new_owner_id
       required: true
-      secret: false
-    - default: false
-      description: The application's ID.
-      isArray: false
+    - description: The application's ID.
       name: application_id
-      required: false
-      secret: false
-    - default: false
-      description: Key and value pair of application data transfer parameters. Key and value must be delimited by (:) colon. Multiple values must be delimited by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon. E.g. key1:val;key2:val1,val2
-      isArray: false
+    - description: Key and value pair of application data transfer parameters. Key and value must be delimited by (:) colon. Multiple values must be delimited by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon. E.g. key1:val;key2:val1,val2
       name: application_transfer_params
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         Raw JSON containing the whole body of the application data transfers.
         E.g.
         {
@@ -1708,12 +1342,8 @@ script:
             }
           ]
         }
-      isArray: false
       name: applications_raw_json
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         JSON file Entry ID containing the whole body of the application data transfers.
         E.g.
         {
@@ -1731,17 +1361,12 @@ script:
             }
           ]
         }
-      isArray: false
       name: applications_raw_json_entry_id
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Inserts a data transfer request.
       Note: If all three applications_raw_json, applications_raw_json_entry_id and application_id are provided
       the higher precedence will be in order of applications_raw_json, applications_raw_json_entry_id,
       and application_id respectively.
-    execution: false
     name: gsuite-datatransfer-request-create
     outputs:
     - contextPath: GSuite.DataTransfer.kind
@@ -1778,163 +1403,80 @@ script:
       description: The time at which the data transfer was requested.
       type: Date
   - arguments:
-    - default: false
-      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
-      isArray: false
+    - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       name: user_key
       required: true
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes a user.
-    execution: false
     name: gsuite-user-delete
   - arguments:
-    - default: false
-      description: The user's first name.
-      isArray: false
+    - description: 'The user''s first name.'
       name: first_name
-      required: false
-      secret: false
-    - default: false
-      description: The user's last name.
-      isArray: false
+    - description: The user's last name.
       name: last_name
-      required: false
-      secret: false
-    - default: false
-      description: Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format.
-      isArray: false
+    - description: Stores the password for the user account. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format.
       name: password
-      required: false
-      secret: false
-    - default: false
-      description: The user's primary email address. The primary_email must be unique and cannot be an alias of another user.
-      isArray: false
+    - description: The user's primary email address. The primary_email must be unique and cannot be an alias of another user.
       name: primary_email
-      required: false
-      secret: false
-    - default: false
-      description: User's Country.
-      isArray: false
+    - description: User's Country.
       name: country
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The address type.
-      isArray: false
       name: address_type
       predefined:
       - home
       - other
       - work
-      required: false
-      secret: false
-    - default: false
-      description: The ZIP or postal code, if applicable.
-      isArray: false
+    - description: The ZIP or postal code, if applicable.
       name: postal_code
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Set to true, If this is the user's primary address.
-      isArray: false
       name: is_address_primary
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: For extended addresses, such as an address that includes a sub-region.
-      isArray: false
+    - description: For extended addresses, such as an address that includes a sub-region.
       name: extended_address
-      required: false
-      secret: false
-    - default: false
-      description: The abbreviated province or state.
-      isArray: false
+    - description: The abbreviated province or state.
       name: region
-      required: false
-      secret: false
-    - default: false
-      description: The street address, such as 1600 Amphitheatre Parkway. Whitespace within the string is ignored; however, newlines are significant.
-      isArray: false
+    - description: The street address, such as 1600 Amphitheatre Parkway. Whitespace within the string is ignored; however, newlines are significant.
       name: street_address
-      required: false
-      secret: false
-    - default: false
-      description: The user's secondary email address.
-      isArray: false
+    - description: The user's secondary email address.
       name: secondary_email_address
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of the secondary email account.
-      isArray: false
       name: secondary_email_type
       predefined:
       - home
       - other
       - work
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: User's gender.
-      isArray: false
       name: gender
       predefined:
       - female
       - male
       - other
       - unknown
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: If true, the user's IP address is on allow list.
-      isArray: false
       name: is_ip_white_listed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Content type of note, either plain text or HTML. If not provided, considered as plain text.
-      isArray: false
       name: notes_content_type
       predefined:
       - text_plain
       - text_html
-      required: false
-      secret: false
-    - default: false
-      description: Contents of notes.
-      isArray: false
+    - description: Contents of notes.
       name: notes_value
-      required: false
-      secret: false
-    - default: false
-      description: A human-readable phone number. It may be in any telephone number format.
-      isArray: false
+    - description: A human-readable phone number. It may be in any telephone number format.
       name: phone_number
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of phone number.
-      isArray: false
       name: phone_number_type
       predefined:
       - assistant
@@ -1957,71 +1499,36 @@ script:
       - work_fax
       - work_mobile
       - work_pager
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates if this is the user's primary phone number. A user may only have one primary phone number.
-      isArray: false
       name: is_phone_number_primary
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Recovery email of the user.
-      isArray: false
+    - description: Recovery email of the user.
       name: recovery_email
-      required: false
-      secret: false
-    - default: false
-      description: 'Recovery phone of the user. The phone number must be in the E.164 format, starting with the plus sign (+). Example: +16506661212.'
-      isArray: false
+    - description: 'Recovery phone of the user. The phone number must be in the E.164 format, starting with the plus sign (+). Example: +16506661212.'
       name: recovery_phone
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Indicates if the user is suspended.
-      isArray: false
       name: suspended
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Email ID of the G Suite domain admin acts on behalf of an end-user.
-      isArray: false
+    - description: Email ID of the G Suite domain admin acts on behalf of an end-user.
       name: admin_email
-      required: false
-      secret: false
-    - default: false
-      description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
-      isArray: false
+    - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
       name: user_key
       required: true
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: Indicates if the user is archived.
-      isArray: false
       name: archived
-      required: false
-      secret: false
       predefined:
       - 'true'
       - 'false'
-    - default: false
-      description: To move the user to OU (Organization Unit). The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
-      isArray: false
+    - description: To move the user to OU (Organization Unit). The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash (/).
       name: org_unit_path
-      required: false
-      secret: false
-    deprecated: false
     description: Updates a user.
-    execution: false
     name: gsuite-user-update
     outputs:
     - contextPath: GSuite.User.id
@@ -2352,15 +1859,10 @@ script:
       description: Custom fields of the user.
       type: Unknown
   - arguments:
-    - default: false
-      description: 'One of the following: user email address, alias email address, or the unique user ID.'
-      isArray: false
+    - description: 'One of the following: user email address, alias email address, or the unique user ID.'
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve a user's details given a user key
-    execution: false
     name: gsuite-user-get
     outputs:
     - contextPath: GSuite.User.id
@@ -2691,15 +2193,10 @@ script:
       description: Custom fields of the user.
       type: Unknown
   - arguments:
-    - default: false
-      description: 'One of the following: group email address, group alias, or the unique group ID.'
-      isArray: false
+    - description: 'One of the following: group email address, group alias, or the unique group ID.'
       name: group
       required: true
-      secret: false
-    deprecated: false
     description: Retreive a group's details given a group key.
-    execution: false
     name: gsuite-group-get
     outputs:
     - contextPath: GSuite.Group.kind
@@ -2732,11 +2229,7 @@ script:
     - contextPath: GSuite.Group.nonEditableAliases
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.50914
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/googleapi-python3:1.0.0.66918
   runonce: false
   script: '-'
   subtype: python3

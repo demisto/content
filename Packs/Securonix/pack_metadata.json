@@ -1,8 +1,8 @@
 {
     "name": "Securonix",
-    "description": "Use the Securonix integration to manage incidents and watchlists.",
+    "description": "Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists.",
     "support": "partner",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.9",
     "author": "Securonix",
     "url": "https://www.securonix.com",
     "email": "support@securonix.com",

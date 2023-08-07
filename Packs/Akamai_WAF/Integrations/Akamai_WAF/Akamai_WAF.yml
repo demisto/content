@@ -10,24 +10,42 @@ configuration:
   type: 0
 - display: Client token
   name: clientToken
-  required: true
   type: 4
+  hidden: true
+  required: false
 - display: Access token
   name: accessToken
-  required: true
   type: 4
+  hidden: true
+  required: false
 - display: Client secret
   name: clientSecret
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: Client token
+  name: credentials_client_token
+  hiddenusername: true
+  type: 9
+  required: false
+- displaypassword: Access token
+  name: credentials_access_token
+  hiddenusername: true
+  type: 9
+  required: false
+- displaypassword: Client secret
+  name: credentials_client_secret
+  hiddenusername: true
+  type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: |-
   Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
 
@@ -289,7 +307,7 @@ script:
     name: akamai-create-group
   - arguments:
     - defaultValue: US
-      description: Country.
+      description: The country code (two letter format) for the country where your organization is located.
       name: country
       required: true
       type: textArea
@@ -355,7 +373,7 @@ script:
       name: org_name
       required: true
       type: textArea
-    - description: The organization country.
+    - description: The organization country name.
       name: org_country
       required: true
       type: textArea
@@ -410,6 +428,9 @@ script:
     - defaultValue: 'True'
       description: SNI settings for your enrollment. Set to true to enable SNI-only for the enrollment.
       name: network_configuration_sni_only
+    - description: Multiple sans adding into the Common name
+      isArray: true
+      name: sans
     description: Create a new enrollment.
     name: akamai-create-enrollment
     outputs:
@@ -1317,12 +1338,17 @@ script:
       - PRODUCTION
     - description: Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time
       name: contract_id
-    - description: Unique identifier for the group. Both contract_id and group_id need to be defined.
+    - description: Unique identifier for the group. contract_id and groupd_id need to be presented at the same time
       name: group_id
-    description: 'Lists active property hostnames for all properties available in an account.'
+    description: 'Lists active property hostnames for all properties available in an account. '
     name: akamai-list-papi-property-by-hostname
-  dockerimage: demisto/akamai:1.0.0.52532
-  runonce: false
+  - arguments: []
+    description: Returns a list of all Site Shield maps that belong to your account.
+    name: akamai-list-siteshield-map
+    outputs:
+    - contextPath: Akamai.SiteShieldMaps
+      description: Akamai SiteShield Maps
+  dockerimage: demisto/akamai:1.0.0.65229
   script: ''
   subtype: python3
   type: python

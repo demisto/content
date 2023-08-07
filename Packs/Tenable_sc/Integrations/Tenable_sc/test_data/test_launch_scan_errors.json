@@ -1,0 +1,41 @@
+{
+    "test_case_1":{
+        "args": {
+            "scan_id": "scan_id",
+            "diagnostic_target": "diagnostic_target"
+        },
+        "expected_error_msg": "Error: If one of diagnostic target or password is provided, both of them must be provided."
+    },
+    "test_case_2":{
+        "args": {
+            "scan_id": "scan_id",
+            "diagnostic_password": "diagnostic_password"
+        },
+        "expected_error_msg": "Error: If one of diagnostic target or password is provided, both of them must be provided."
+    },
+    "test_case_3":{
+        "args": {
+            "scan_id": "scan_id",
+            "diagnostic_target": "diagnostic_target",
+            "diagnostic_password": "diagnostic_password"
+        },
+        "mock_response": {},
+        "expected_error_msg": "Error: Could not retrieve the scan."
+    },
+    "test_case_4":{
+        "args": {
+            "scan_id": "scan_id"
+        },
+        "mock_response": {"response": {}},
+        "expected_error_msg": "Error: Could not retrieve the scan."
+    },
+    "test_case_5":{
+        "args": {
+            "scan_id": "scan_id",
+            "diagnostic_target": "diagnostic_target",
+            "diagnostic_password": "diagnostic_password"
+        },
+        "mock_response": {"response": {"description": "response without"}},
+        "expected_error_msg": "Error: Could not retrieve the scan."
+    }    
+}

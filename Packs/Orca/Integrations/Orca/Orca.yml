@@ -14,108 +14,189 @@ configuration:
   section: Connect
 - display: API Host
   name: api_host
-  required: false
   type: 0
   defaultvalue: api.orcasecurity.io
   section: Connect
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - defaultvalue: '200'
   display: Max fetch
   name: max_fetch
-  required: false
   type: 0
   additionalinfo: The number of objects to process. Maximum value is 500
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
-- display: Also Fetch informational alerts
-  hidden: false
-  name: fetch_informational
   required: false
+- display: Also Fetch informational alerts
+  name: fetch_informational
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: If this checked, all existing alerts will be fetched
   display: Pull Existing Alerts
-  hidden: false
   name: pull_existing_alerts
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
 display: Orca
 name: Orca
 script:
   commands:
   - arguments:
-    - default: false
-      description: Type of alert to get
-      isArray: false
+    - description: Type of alert to get
       name: alert_type
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: Get alerts of a specific asset
-      isArray: false
+    - description: Get alerts of a specific asset
       name: asset_unique_id
-      required: false
-      secret: false
-    deprecated: false
     description: Get the alerts on cloud assets
-    execution: false
     name: orca-get-alerts
     outputs:
     - contextPath: Orca.Manager.Alerts
       description: All alerts
       type: String
   - arguments:
-    - default: false
-      description: Asset unique id
-      isArray: false
+    - description: Asset unique id
       name: asset_unique_id
       required: true
-      secret: false
-    deprecated: false
     description: Get Description of An asset
-    execution: false
     name: orca-get-asset
     outputs:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
-  feed: false
+  - name: orca-set-alert-severity
+    description: Change severity for the alert
+    arguments:
+    - name: alert_id
+      description: Alert id
+      required: true
+    - name: score
+      description: The Orca Score to set. Valid range 1.0 to 10.
+      required: true
+    outputs:
+    - contextPath: Orca.Alert
+      description: Changed alert.
+      type: string
+  - name: orca-get-alert-event-log
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    - name: limit
+      description: Limit of the event logs
+      defaultValue: "20"
+    - name: start_at_index
+      description: Start at index
+      defaultValue: "0"
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - comment
+      - set_status
+      - score_override
+      - dismiss
+      - snooze
+      - jira_link
+      - jira_add_vulnerabilities
+      - jira_change_log_event
+      - reset_fim_baseline
+      - verification_scan_status
+      - automation_rule_action
+      - azure_devops_work_item_link
+      - azure_devops_work_item_unlink
+      - alert_timeline_api_event
+      - service_now_incident_link
+      - service_now_incident_unlink
+      - service_now_si_incident_link
+      - service_now_si_incident_unlink
+      description: Type of the event logs
+    outputs:
+    - contextPath: Orca.Manager.EventLog
+      description: Alert Event Log
+    description: Get alert event log
+  - name: orca-set-alert-status
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - in_progress
+      - dismiss
+      - dismissed
+      - open
+      - close
+      - closed
+      description: Alert status
+    outputs:
+    - contextPath: Orca.Alert
+      description: Changed alert.
+      type: string
+    description: Get alert event log
+  - name: orca-verify-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    outputs:
+    - contextPath: Orca.Alert
+      description: Set Verify Alert result
+    description: Trigger verify alert
+  - name: orca-download-malicious-file
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    description: Downloads a capture file from CS Enterprise.
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from time import sleep
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Dict, Any
@@ -21,14 +21,14 @@ def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = 
         Tasks with given states related to given incident.
     """
     args: Dict[str, Any] = {
-        'incidentId': incident_id
+        'inc_id': incident_id
     }
     # leave states empty to get all tasks
     if task_states:
         args['states'] = ','.join(task_states)
-    raw_response = demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
+    raw_response = demisto.executeCommand('GetIncidentTasksByState', args=args)
     if is_error(raw_response):
-        raise Exception(f'Failed to execute script: DemistoGetIncidentTasksByState. '
+        raise Exception(f'Failed to execute script: GetIncidentTasksByState. '
                         f'Error: {get_error(raw_response)}')
     return raw_response[0].get("Contents") if raw_response[0].get("Contents") else []
 

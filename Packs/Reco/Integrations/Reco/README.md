@@ -153,6 +153,38 @@ Get sensitive assets by name (optional to search by regex)
 There is no context output for this command.
 
 
+### reco-get-sensitive-assets-by-id
+
+***
+Get sensitive assets by id
+
+#### Base Command
+
+`reco-get-sensitive-assets-by-id`
+
+#### Input
+
+| **Argument Name** | **Description**    | **Required** |
+|-------------------|--------------------|--------------|
+| asset_id          | Asset ID to search | Required     |
+
+
+#### Context Output
+
+
+| **Path**    | **Type** | **Description** |
+|-------------|----------|----------------|
+| Reco.SensitiveAssets.file_name | string   |  The name of the asset |
+| Reco.SensitiveAssets.file_owner | string   | The owner of the asset |
+| Reco.SensitiveAssets.file_url | Unknown     |  Json string of the asset's url and the name |
+| Reco.SensitiveAssets.currently_permitted_users | String   | List of currently permitted users |
+| Reco.SensitiveAssets.visibility | string   |  Visibility of the asset |
+| Reco.SensitiveAssets.location | string   |  The path of the asset |
+| Reco.SensitiveAssets.source | string   |  SaaS tool source of the asset |
+| Reco.SensitiveAssets.sensitivity_level | Number  | The sensitivity level of the asset |
+
+
+
 ### reco-add-leaving-org-user-label
 
 ***
@@ -172,3 +204,115 @@ Tag a user as leaving employee in Reco
 
 There is no context output for this command.
 
+
+### reco-get-link-to-user-overview-page
+
+***
+Get link to user overview page in Reco
+
+#### Base Command
+
+`reco-get-link-to-user-overview-page`
+
+#### Input
+
+| **Argument Name** | **Description**                                                             | **Required** |
+|-------------------|-----------------------------------------------------------------------------| --- |
+| entity_id         | Email address of the user to get the link to the user overview page in Reco. | Required |
+| link_type         | Type of the link                                                            | Required |
+
+
+### reco-get-sensitive-assets-with-public-link
+
+***
+Get all sensitive assets with public link from Reco
+
+#### Base Command
+
+`reco-get-sensitive-assets-with-public-link`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets.asset_id | String | The asset id | 
+| Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
+| Reco.Assets.data_category | String | The data category of the asset | 
+| Reco.Assets.data_categories | String | The data categories of the asset | 
+| Reco.SensitiveAssets.location | String | The path of the asset | 
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
+| Reco.Assets.last_access_date | String | The last access date of the asset | 
+### reco-get-3rd-parties-accessible-to-data-list
+
+***
+Get 3rd parties accessible to sensitive assets
+
+#### Base Command
+
+`reco-get-3rd-parties-accessible-to-data-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| last_interaction_time_in_days | Last interaction time in days. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Domains.domain | String | The domain of the 3rd party | 
+| Reco.Domains.last_activity | String | The last interaction time with the 3rd party | 
+| Reco.Domains.num_files | Number | The number of files the 3rd party has access to | 
+| Reco.Domains.num_users | Number | The number of users the 3rd party has access to | 
+| Reco.Domains.data_category | String | The data category of the assets the 3rd party has access to | 
+### reco-get-files-shared-with-3rd-parties
+
+***
+Get files shared with 3rd parties
+
+#### Base Command
+
+`reco-get-files-shared-with-3rd-parties`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| last_interaction_time_in_days | Last interaction time in days. | Required | 
+| domain | Domain to search. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets.asset_id | String | The asset id of the file | 
+| Reco.Assets.location | String | The location of the file | 
+| Reco.Assets.users | String | Users the file is shared with | 
+| Reco.Assets.asset | Unknown | The asset metadata | 
+| Reco.Assets.data_category | String | The data category of the assets the 3rd party has access to | 
+| Reco.Assets.last_access_date | String | The last access date of the asset | 
+| Reco.Assets.domain | String | The domain of the 3rd party | 
+### reco-add-exclusion-filter
+
+***
+Add exclusion filter to Reco Classifier
+
+#### Base Command
+
+`reco-add-exclusion-filter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| values_to_add | Values to add to the exclusion filter. | Required | 
+| key_to_add | key too add to the exclusion filter (e.g. "case_sensitive_terms", "file_ids", "location_case_insensitive_terms", "locations", "owners"). | Required | 
+
+#### Context Output
+
+There is no context output for this command.

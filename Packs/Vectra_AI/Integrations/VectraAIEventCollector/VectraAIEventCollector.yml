@@ -1,0 +1,64 @@
+category: Network Security
+commonfields:
+  id: VectraAIEventCollector
+  version: -1
+configuration:
+- name: url
+  defaultvalue: https://dev.vectra.ai/
+  display: Your server URL
+  required: true
+  type: 0
+- name: credentials
+  displaypassword: API Token
+  additionalinfo: The API Token to use for authentication.
+  required: true
+  hiddenusername: true
+  type: 9
+- name: first_fetch
+  defaultvalue: 3 days
+  display: First fetch time
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- name: fetch_limit
+  defaultvalue: '1000'
+  display: Fetch Limit
+  additionalinfo: Maximum amount of detections to fetch. Audits API does not include a fetch limit therefore this configuration is only relevant to detections.
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+description: 'Collects Vectra Detections and Audits into XSIAM Events.'
+display: 'Vectra AI Event Collector'
+name: VectraAIEventCollector
+script:
+  commands:
+  - name: vectra-get-events
+    description: Fetches events (detections and audits) from Vectra.
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
+      description: If true, the command will create events, otherwise it will only display them. Default is false.
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+  isfetchevents: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.66339
+marketplaces:
+- marketplacev2
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -17,7 +17,10 @@ def grid_field_setup(keys: List[str], vals: Dict, res_list: List) -> List[str]:
     """
     temp = {}
     for i, key in enumerate(keys, start=1):
-        temp[key] = vals[f'val{i}']
+        if vals[f'val{i}'] == "TIMESTAMP":
+            temp[key] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        else:
+            temp[key] = vals[f'val{i}']
     res_list.append(temp)
 
     return res_list

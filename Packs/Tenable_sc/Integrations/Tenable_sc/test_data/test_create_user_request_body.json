@@ -1,0 +1,12 @@
+{
+    "test_case_1":{
+        "args": {
+            "first_name": "test_first_name",
+            "managed_users_groups": "7,1,3",
+            "time_zone": "time_zone_test",
+            "role_id": "Security Analyst"
+        },
+        "expected_body": {"firstname": "test_first_name", "roleID": "3", "managedUsersGroups": [{"id": "7"}, {"id": "1"}, {"id": "3"}],
+        "preferences": [{"name": "timezone", "value": "time_zone_test", "tag": ""}]}
+    }
+}

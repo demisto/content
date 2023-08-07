@@ -52,10 +52,10 @@ Follow these steps for a self-deployed configuration:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID | The API key to use to connect. | False |
+    | Application ID or Client ID | The API key to use to connect. | False |
     | Endpoint URI | The United States: api-us.security.microsoft.com<br/>Europe: api-eu.security.microsoft.com<br/>The United Kingdom: api-uk.security.microsoft.co | True |
     | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-    | Tenant ID (for Client Credentials mode) |  | False |
+    | Token or Tenant ID (for Client Credentials mode) |  | False |
     | Password |  | False |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
@@ -136,8 +136,7 @@ There is no context output for this command.
 
 ### microsoft-365-defender-auth-reset
 ***
-Run this command if you need to rerun the authentication process. (for device-code mode)
-
+Run this command if for some reason you need to rerun the authentication process.
 
 #### Base Command
 

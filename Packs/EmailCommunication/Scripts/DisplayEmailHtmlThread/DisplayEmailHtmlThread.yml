@@ -12,8 +12,7 @@ comment: |-
 enabled: true
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

@@ -41,11 +41,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Containment Plan
-* Recovery Plan
-* Endpoint Investigation Plan
-* Wildfire Detonate and Analyze File
 * Handle False Positive Alerts
+* Wildfire Detonate and Analyze File
+* Ticket Management - Generic
+* Endpoint Investigation Plan
+* Recovery Plan
+* Containment Plan
 * Enrichment for Verdict
 * Eradication Plan
 
@@ -60,11 +61,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* closeInvestigation
-* internal-wildfire-get-report
-* core-report-incorrect-wildfire
 * core-retrieve-files
+* internal-wildfire-get-report
 * core-retrieve-file-details
+* core-report-incorrect-wildfire
+* setParentIncidentFields
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -83,6 +85,25 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | SHA256 | The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256. | alert | Optional |
 | Path | The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path. | alert | Optional |
 | Query | The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file. | alert | Optional |
+| ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | True | Optional |
+| serviceNowShortDescription | A short description of the ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
+| serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
+| serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
+| serviceNowSeverity | The severity of the new ticket. Leave empty for ServiceNow default severity. |  | Optional |
+| serviceNowTicketType | The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
+| serviceNowCategory | The category of the ServiceNow ticket. |  | Optional |
+| serviceNowAssignmentGroup | The group to which to assign the new ticket. |  | Optional |
+| ZendeskPriority | The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low". |  | Optional |
+| ZendeskRequester | The user who requested this ticket. |  | Optional |
+| ZendeskStatus | The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed". |  | Optional |
+| ZendeskSubject | The value of the subject field for this ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
+| ZendeskTags | The array of tags applied to this ticket. |  | Optional |
+| ZendeskType | The type of this ticket. Allowed values are "problem", "incident", "question", or "task". |  | Optional |
+| ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
+| ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
+| description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. |  | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
 

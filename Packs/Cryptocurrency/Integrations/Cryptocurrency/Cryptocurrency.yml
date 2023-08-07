@@ -17,10 +17,10 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Reputation for the Cryptocurrency indicators. Default is Suspicious.
   defaultvalue: Suspicious
   display: Reputation
@@ -30,10 +30,10 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 15
   section: Collect
   advanced: true
+  required: false
 description: Cryptocurrency will help classify Cryptocurrency indicators with the configured score when ingested.
 display: Cryptocurrency
 name: Cryptocurrency
@@ -70,9 +70,7 @@ script:
       description: The cryptocurrency type. e.g. 'bitcoin'.
       type: string
     description: Return Cryptocurrency reputation.
-  dockerimage: demisto/python3:3.10.10.50695
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

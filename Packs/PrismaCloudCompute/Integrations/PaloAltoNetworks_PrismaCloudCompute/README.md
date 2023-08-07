@@ -1041,7 +1041,7 @@ devOps
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Comma-separated list of CVEs, for example, cve_id=cve-2016-223,cve-2020-3546. | Required | 
+| cve | Comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546. | Required | 
 
 
 #### Context Output
@@ -1059,7 +1059,7 @@ devOps
 
 
 #### Command Example
-```!cve cve_id=CVE-2021-4333```
+```!cve cve=CVE-2021-4333```
 
 #### Context Example
 ```json
@@ -1436,7 +1436,7 @@ vulnerabilityManager
 | --- | --- | --- |
 | clusters | Comma-separated list of cluster names to filter the results by. | Optional | 
 | compact | Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata). Possible values are: true, false. Default is true. | Optional | 
-| fields | Comma-separated list of fields to retrieve. | Optional | 
+| fields | Comma-separated list of fields to retrieve. Possible values are labels, repo, registry, clusters, hosts, tag. | Optional | 
 | hostname | Comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
 | id | Comma-separated list of image IDs to filter the results by. Run !prisma-cloud-compute-images-scan-list without any arguments to get image IDs. | Optional | 
 | name | Comma-separated list of image names to filter the results by. | Optional | 
@@ -2014,7 +2014,7 @@ vulnerabilityManager
 | clusters | A comma-separated list of cluster names to filter the results by. | Optional | 
 | compact | Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata). Possible values are: true, false. Default is true. | Optional | 
 | distro | Comma-separated list of operating system distros to filter the results by. | Optional | 
-| fields | Comma-separated list of fields to return. | Optional | 
+| fields | Comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag. | Optional | 
 | hostname | Comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list. | Optional | 
 | provider | Comma-separated list of cloud providers to filter the results by. | Optional | 
 | limit_record | The maximum number of scan host records to return. Default is 10. | Optional | 
@@ -2714,3 +2714,592 @@ There is no context output for this command.
 ## Known limitations:
 When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
 Therefore, it is recommended to configure only one instance per user to fetch incidents.
+
+
+### prisma-cloud-compute-get-alert-profiles
+
+***
+Get the available alert alert profiles from a specific project.
+
+#### Base Command
+
+`prisma-cloud-compute-get-alert-profiles`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project | The project to get the alert profiles for. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.AlertProfiles.Cortex.Application | String | The alert profile application. | 
+| PrismaCloudCompute.AlertProfiles.Cortex.CredentialId | String | The credential ID. | 
+| PrismaCloudCompute.AlertProfiles.Cortex.Enabled | Boolean | Whether the alert profile is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Cortex.Url | String | The alert profile URL. | 
+| PrismaCloudCompute.AlertProfiles.Email.CredentialId | String | The alert profile credential ID. | 
+| PrismaCloudCompute.AlertProfiles.Email.Enabled | Boolean | The email setting for the alert profile. | 
+| PrismaCloudCompute.AlertProfiles.Email.From | String | The from setting for the email profile. | 
+| PrismaCloudCompute.AlertProfiles.Email.Port | Number | The email alert profile port. | 
+| PrismaCloudCompute.AlertProfiles.Email.SmtpAddress | String | The SMTP address. | 
+| PrismaCloudCompute.AlertProfiles.Email.Ssl | Boolean | The email alert profile SSL. | 
+| PrismaCloudCompute.AlertProfiles.GcpPubsub.CredentialId | String | The credential ID. | 
+| PrismaCloudCompute.AlertProfiles.GcpPubsub.Enabled | Boolean | Whether the GCP Pub Sub is enabled. | 
+| PrismaCloudCompute.AlertProfiles.GcpPubsub.Topic | String | The GCP Pub Sub topic. | 
+| PrismaCloudCompute.AlertProfiles.Jira.BaseUrl | String | The Jira base URL. | 
+| PrismaCloudCompute.AlertProfiles.Jira.CaCert | String | The Jira CA Cert. | 
+| PrismaCloudCompute.AlertProfiles.Jira.CredentialId | String | The Jira credential ID. | 
+| PrismaCloudCompute.AlertProfiles.Jira.Enabled | Boolean | Jira alert profile status. | 
+| PrismaCloudCompute.AlertProfiles.Jira.IssueType | String | The Jira issue type. | 
+| PrismaCloudCompute.AlertProfiles.Jira.Priority | String | The Jira priority. | 
+| PrismaCloudCompute.AlertProfiles.LastError | String | The last error. | 
+| PrismaCloudCompute.AlertProfiles.Modified | Date | The modified time. | 
+| PrismaCloudCompute.AlertProfiles.Name | String | The alert profile name. | 
+| PrismaCloudCompute.AlertProfiles.Owner | String | The alert profile owner. | 
+| PrismaCloudCompute.AlertProfiles.Pagerduty.RoutingKey.Encrypted | String | The PagerDuty routing key encryption status. | 
+| PrismaCloudCompute.AlertProfiles.Pagerduty.Severity | String | The PagerDuty severity. | 
+| PrismaCloudCompute.AlertProfiles.Pagerduty.Summary | String | The PagerDuty summary. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Admission.AllRules | Boolean | The policy all rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Admission.Enabled | Boolean | Whether the admission is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.AllRules | Boolean | The agentless app firewall rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.Enabled | Boolean | Whether the agentless app firewall is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.AllRules | Boolean | App embedded firewall rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.Enabled | Boolean | Whether the app embedded firewall is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.AllRules | Boolean | App embedded runtime rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.Enabled | Boolean | Whether the app embedded runtime is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.AllRules | Boolean | The cloud discovery rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.Enabled | Boolean | Whether the cloud discovery is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.AllRules | Boolean | The code repo vulnerability rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.Enabled | Boolean | Whether the code repo vulnerability is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.AllRules | Boolean | The container app firewall rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.Enabled | Boolean | Whether the container app firewall is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.AllRules | Boolean | The container compliance rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.Enabled | Boolean | Whether the container compliance is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.AllRules | Boolean | The container compliance scan rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.Enabled | Boolean | Whether the container compliance scan is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.AllRules | Boolean | The container runtime rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.Enabled | Boolean | Whether the container runtime is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.AllRules | Boolean | The container vulnerability rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.Enabled | Boolean | Whether the container vulnerability is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Defender.AllRules | Boolean | The Defender policy rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Defender.Enabled | Boolean | Whether the Defender policy is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Docker.AllRules | Boolean | The Docker rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Docker.Enabled | Boolean | Whether the Docker rules are enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.AllRules | Boolean | The app host firewall rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.Enabled | Boolean | Whether the host app firewall is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.AllRules | Boolean | The host compliance rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.Enabled | Boolean | Whether the host compliance is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.AllRules | Boolean | The host compliance scan rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.Enabled | Boolean | Whether the host compliance scan is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostRuntime.AllRules | Boolean | The host runtime rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostRuntime.Enabled | Boolean | Whether the host runtime rules are enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostVulnerability.AllRules | Boolean | The host vulnerability rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.HostVulnerability.Enabled | Boolean | Whether the host vulnerability rule is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Incident.AllRules | Boolean | The policy incident rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.Incident.Enabled | Boolean | Whether the policy incident is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.AllRules | Boolean | The K8S rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.Enabled | Boolean | Whether K8S is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.NetworkFirewall.AllRules | Boolean | The network firewall rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.NetworkFirewall.Enabled | Boolean | Whether the network firewall rule is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.RegistryVulnerability.AllRules | Boolean | The registry vulnerability rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.RegistryVulnerability.Enabled | Boolean | Whether the registry vulnerability rule is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.AllRules | Boolean | The servervless app firewall rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.Enabled | Boolean | Whether the serverless app firewall rule is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ServerlessRuntime.AllRules | Boolean | The serverless runtime rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.ServerlessRuntime.Enabled | Boolean | Whether the serverless runtime rule is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.VmCompliance.AllRules | Boolean | The VM compliance rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.VmCompliance.Enabled | Boolean | Whether the VM compliance rule is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.VmVulnerability.AllRules | Boolean | The VM vulnerability rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.VmVulnerability.Enabled | Boolean | Whether the VM vulnerability rules are enabled. | 
+| PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.AllRules | Boolean | The WAAS health rules. | 
+| PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.Enabled | Boolean | Whether the WAAS health rules are enabled. | 
+| PrismaCloudCompute.AlertProfiles.PreviousName | String | The alert profile previous name. | 
+| PrismaCloudCompute.AlertProfiles.SecurityAdvisor.CredentialID | String | The security advisor credential ID. | 
+| PrismaCloudCompute.AlertProfiles.SecurityAdvisor.Enabled | Boolean | Whether the security advisor is enabled. | 
+| PrismaCloudCompute.AlertProfiles.SecurityAdvisor.FindingsURL | String | The security advisor findings URL. | 
+| PrismaCloudCompute.AlertProfiles.SecurityAdvisor.ProviderId | String | The security advisor provider ID. | 
+| PrismaCloudCompute.AlertProfiles.SecurityAdvisor.TokenURL | String | The security advisor token URL. | 
+| PrismaCloudCompute.AlertProfiles.SecurityCenter.CredentialId | String | The security center crendential ID. | 
+| PrismaCloudCompute.AlertProfiles.SecurityCenter.Enabled | Boolean | Whether the security center is enabled. | 
+| PrismaCloudCompute.AlertProfiles.SecurityCenter.SourceID | String | The security center source ID. | 
+| PrismaCloudCompute.AlertProfiles.SecurityHub.AccountID | String | The security hub account ID. | 
+| PrismaCloudCompute.AlertProfiles.SecurityHub.CredentialId | String | The security hub credential ID. | 
+| PrismaCloudCompute.AlertProfiles.SecurityHub.Enabled | Boolean | Whether the security hub is enabled. | 
+| PrismaCloudCompute.AlertProfiles.SecurityHub.Region | String | The security hub region. | 
+| PrismaCloudCompute.AlertProfiles.ServiceNow.Application | String | The ServiceNow application. | 
+| PrismaCloudCompute.AlertProfiles.ServiceNow.Assignee | String | The ServiceNow assignee. | 
+| PrismaCloudCompute.AlertProfiles.ServiceNow.CredentialID | String | The ServiceNow credential ID. | 
+| PrismaCloudCompute.AlertProfiles.ServiceNow.Project | String | The ServiceNow project. | 
+| PrismaCloudCompute.AlertProfiles.Slack.Enabled | Boolean | Whether the Slack alert profile is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Slack.WebhookUrl | String | The Slack URL. | 
+| PrismaCloudCompute.AlertProfiles.Splunk.AuthToken.Encrypted | String | The Splunk auth token. | 
+| PrismaCloudCompute.AlertProfiles.Splunk.SourceType | String | The Splunk source type. | 
+| PrismaCloudCompute.AlertProfiles.Splunk.Url | String | The Splunk URL. | 
+| PrismaCloudCompute.AlertProfiles.VulnerabilityImmediateAlertsEnabled | Boolean | Whether the vulnerability alert is enabled. | 
+| PrismaCloudCompute.AlertProfiles.Webhook.CredentialId | String | The webhook credential ID. | 
+| PrismaCloudCompute.AlertProfiles.Webhook.Url | String | The webhook URL. | 
+| PrismaCloudCompute.AlertProfiles._Id | String | The alert profile ID. | 
+
+#### Command example
+```!prisma-cloud-compute-get-alert-profiles```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "AlertProfiles": {
+            "Cortex": {
+                "Application": "xsoar",
+                "CredentialId": "",
+                "Enabled": true,
+                "Url": ""
+            },
+            "Email": {
+                "CredentialId": "",
+                "Enabled": false,
+                "From": "",
+                "Port": 0,
+                "SmtpAddress": "",
+                "Ssl": false
+            },
+            "GcpPubsub": {
+                "CredentialId": "",
+                "Enabled": false,
+                "Topic": ""
+            },
+            "Jira": {
+                "Assignee": {},
+                "BaseUrl": "",
+                "CaCert": "",
+                "CredentialId": "",
+                "Enabled": false,
+                "IssueType": "",
+                "Labels": {},
+                "Priority": "",
+                "ProjectKey": {}
+            },
+            "LastError": "",
+            "Modified": "2023-04-03T18:43:05.575Z",
+            "Name": "XSOAR",
+            "Owner": "admin",
+            "Pagerduty": {
+                "RoutingKey": {
+                    "Encrypted": ""
+                },
+                "Severity": "",
+                "Summary": ""
+            },
+            "Policy": {
+                "Admission": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "AgentlessAppFirewall": {
+                    "AllRules": true,
+                    "Enabled": true,
+                    "Rules": []
+                },
+                "AppEmbeddedAppFirewall": {
+                    "AllRules": true,
+                    "Enabled": true,
+                    "Rules": []
+                },
+                "AppEmbeddedRuntime": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "CloudDiscovery": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "CodeRepoVulnerability": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "ContainerAppFirewall": {
+                    "AllRules": true,
+                    "Enabled": true,
+                    "Rules": []
+                },
+                "ContainerCompliance": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "ContainerComplianceScan": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "ContainerRuntime": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "ContainerVulnerability": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "Defender": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "Docker": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "HostAppFirewall": {
+                    "AllRules": true,
+                    "Enabled": true,
+                    "Rules": []
+                },
+                "HostCompliance": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "HostComplianceScan": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "HostRuntime": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "HostVulnerability": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "Incident": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "KubernetesAudit": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "NetworkFirewall": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "RegistryVulnerability": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "ServerlessAppFirewall": {
+                    "AllRules": true,
+                    "Enabled": true,
+                    "Rules": []
+                },
+                "ServerlessRuntime": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "VmCompliance": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "VmVulnerability": {
+                    "AllRules": true,
+                    "Enabled": false,
+                    "Rules": []
+                },
+                "WaasHealth": {
+                    "AllRules": true,
+                    "Enabled": true,
+                    "Rules": []
+                }
+            },
+            "PreviousName": "",
+            "SecurityAdvisor": {
+                "CredentialID": "",
+                "Enabled": false,
+                "FindingsURL": "",
+                "ProviderId": "",
+                "TokenURL": ""
+            },
+            "SecurityCenter": {
+                "CredentialId": "",
+                "Enabled": false,
+                "SourceID": ""
+            },
+            "SecurityHub": {
+                "AccountID": "",
+                "CredentialId": "",
+                "Enabled": false,
+                "Region": ""
+            },
+            "ServiceNow": {
+                "Application": "",
+                "Assignee": "",
+                "CredentialID": "",
+                "Project": ""
+            },
+            "Slack": {
+                "Enabled": false,
+                "WebhookUrl": ""
+            },
+            "Splunk": {
+                "AuthToken": {
+                    "Encrypted": ""
+                },
+                "SourceType": "",
+                "Url": ""
+            },
+            "Sqs": {},
+            "VulnerabilityImmediateAlertsEnabled": false,
+            "Webhook": {
+                "CredentialId": "",
+                "Url": ""
+            },
+            "_Id": "XSOAR"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alert Profiles
+>|admission|agentlessAppFirewall|appEmbeddedAppFirewall|appEmbeddedRuntime|cloudDiscovery|codeRepoVulnerability|containerAppFirewall|containerCompliance|containerComplianceScan|containerRuntime|containerVulnerability|defender|docker|hostAppFirewall|hostCompliance|hostComplianceScan|hostRuntime|hostVulnerability|incident|kubernetesAudit|networkFirewall|registryVulnerability|serverlessAppFirewall|serverlessRuntime|vmCompliance|vmVulnerability|waasHealth|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: false<br/>allRules: true<br/>rules:  | enabled: true<br/>allRules: true<br/>rules:  |
+
+
+### prisma-cloud-compute-get-settings-defender
+
+***
+Get the Defender settings.
+
+#### Base Command
+
+`prisma-cloud-compute-get-settings-defender`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | The Defender hostname. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.DefenderSettings.AdmissionControlEnabled | Boolean | The admission control setting. | 
+| PrismaCloudCompute.DefenderSettings.AdmissionControlWebhookSuffix | String | The webhook suffix. | 
+| PrismaCloudCompute.DefenderSettings.AppEmbeddedFileSystemTracingEnabled | Boolean | The file tracing setting. | 
+| PrismaCloudCompute.DefenderSettings.AutomaticUpgrade | Boolean | The automatic upgrade setting. | 
+| PrismaCloudCompute.DefenderSettings.DisconnectPeriodDays | Number | The disconnect period in days. | 
+| PrismaCloudCompute.DefenderSettings.HostCustomComplianceEnabled | Boolean | The custom compliance setting. | 
+| PrismaCloudCompute.DefenderSettings.ListeningPort | Number | The defender listening port. | 
+
+#### Command example
+```!prisma-cloud-compute-get-settings-defender```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "DefenderSettings": {
+            "AdmissionControlEnabled": false,
+            "AdmissionControlWebhookSuffix": "sdgfskdjfbsdkfbsdkjfbsdkfbksdjbf",
+            "AppEmbeddedFileSystemTracingEnabled": false,
+            "AutomaticUpgrade": false,
+            "DisconnectPeriodDays": 1,
+            "HostCustomComplianceEnabled": false,
+            "ListeningPort": 9998
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|AdmissionControlEnabled|AdmissionControlWebhookSuffix|AppEmbeddedFileSystemTracingEnabled|AutomaticUpgrade|DisconnectPeriodDays|HostCustomComplianceEnabled|ListeningPort|
+>|---|---|---|---|---|---|---|
+>| false | sdgfskdjfbsdkfbsdkjfbsdkfbksdjbf | false | false | 1 | false | 9998 |
+
+
+### prisma-cloud-compute-logs-defender
+
+***
+Download the Defender logs.
+
+#### Base Command
+
+`prisma-cloud-compute-logs-defender`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | The Defender hostname. | Optional | 
+| lines | The number of log lines to fetch. Default is 10. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.Defenders.Hostname | String | The hostname the log was retrieved from. | 
+| PrismaCloudCompute.Defenders.Logs.Level | String | The log level. | 
+| PrismaCloudCompute.Defenders.Logs.Log | String | The log message. | 
+| PrismaCloudCompute.Defenders.Logs.Time | Date | The time of the log. | 
+
+#### Command example
+```!prisma-cloud-compute-logs-defender hostname=test-host.internal lines=2```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "Defenders": {
+            "Hostname": "test-host.internal",
+            "Logs": [
+                {
+                    "Level": "DEBUG",
+                    "Log": "defender.go:2042 Received upload logs message: &{DestLogs:defender_1681221297.tar.gz Lines:2}",
+                    "Time": "2023-04-11T13:54:57.862Z"
+                },
+                {
+                    "Level": "DEBUG",
+                    "Log": "ws.go:517 Received message with type uploadLogs",
+                    "Time": "2023-04-11T13:54:57.861Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Logs
+>|level|log|time|
+>|---|---|---|
+>| DEBUG | defender.go:2042 Received upload logs message: &{DestLogs:defender_1681221297.tar.gz Lines:2} | 2023-04-11T13:54:57.862Z |
+>| DEBUG | ws.go:517 Received message with type uploadLogs | 2023-04-11T13:54:57.861Z |
+
+
+### prisma-cloud-compute-logs-defender-download
+
+***
+Download a zip of all Defender logs.
+
+#### Base Command
+
+`prisma-cloud-compute-logs-defender-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | The Defender hostname. | Optional | 
+| lines | The number of log lines to fetch. Default is 100. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | The file name. | 
+| InfoFile.EntryID | String | The File entry ID. | 
+| InfoFile.Size | Number | The file size. | 
+| InfoFile.Type | String | The file type. | 
+| InfoFile.Info | String | Basic information of the file. | 
+| InfoFile.Extension | String | File extension. | 
+
+
+#### Command example
+```!prisma-cloud-compute-logs-defender-download hostname=`test-host.internal` lines=2```
+#### Context Example
+```json
+{
+    "InfoFile": {
+        "EntryID": "355@d93bd179-ac81-4015-8ddc-c904349d83e0",
+        "Extension": "gz",
+        "Info": "application/gzip",
+        "Name": "test-host.internal",
+        "Size": 682469,
+        "Type": "gzip compressed data"
+    }
+}
+```
+
+### prisma-cloud-compute-get-backups
+
+***
+Returns the available backups.
+
+#### Base Command
+
+`prisma-cloud-compute-get-backups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project | The project to retrieve the backups from. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.Backups.Id | String | The ID of the backup. | 
+| PrismaCloudCompute.Backups.Name | String | The name of the backup. | 
+| PrismaCloudCompute.Backups.Release | String | The release of the backup. | 
+| PrismaCloudCompute.Backups.Time | Date | The time of the backup. | 
+
+#### Command example
+```!prisma-cloud-compute-get-backups```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "Backups": [
+            {
+                "Id": "daily-22.12.585-1681184909.tar.gz",
+                "Name": "daily",
+                "Release": "22.12.585",
+                "Time": "2023-04-11T03:48:29Z"
+            },
+            {
+                "Id": "monthly-22.12.585-1679972425.tar.gz",
+                "Name": "monthly",
+                "Release": "22.12.585",
+                "Time": "2023-03-28T03:00:25Z"
+            },
+            {
+                "Id": "weekly-22.12.585-1681184909.tar.gz",
+                "Name": "weekly",
+                "Release": "22.12.585",
+                "Time": "2023-04-11T03:48:29Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|Id|Name|Release|Time|
+>|---|---|---|---|
+>| daily-22.12.585-1681184909.tar.gz | daily | 22.12.585 | 2023-04-11T03:48:29Z |
+>| monthly-22.12.585-1679972425.tar.gz | monthly | 22.12.585 | 2023-03-28T03:00:25Z |
+>| weekly-22.12.585-1681184909.tar.gz | weekly | 22.12.585 | 2023-04-11T03:48:29Z |
+

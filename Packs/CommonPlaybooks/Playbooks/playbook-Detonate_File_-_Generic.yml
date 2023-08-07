@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 454650df-c42f-4915-84cf-9a908e1bff04
+    taskid: bfe472b6-a9fd-40d6-846c-6219d9a54e72
     type: start
     task:
-      id: 454650df-c42f-4915-84cf-9a908e1bff04
+      id: bfe472b6-a9fd-40d6-846c-6219d9a54e72
       version: -1
       name: ""
       description: Playbook start point
@@ -24,7 +24,6 @@ tasks:
       - "13"
       - "14"
       - "15"
-      - "16"
       - "17"
       - "18"
       - "19"
@@ -32,11 +31,13 @@ tasks:
       - "21"
       - "22"
       - "23"
+      - "24"
+      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2415,
+          "x": 3275,
           "y": 50
         }
       }
@@ -45,12 +46,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
+    taskid: b0feb039-1a24-4bcb-8a2c-e9124b61cfa0
     type: title
     task:
-      id: 2a8f5bbb-7692-4ece-8abe-9801c7b05c3c
+      id: b0feb039-1a24-4bcb-8a2c-e9124b61cfa0
       version: -1
       name: Done
       description: Done
@@ -61,8 +65,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 370
+          "x": 3490,
+          "y": 545
         }
       }
     note: false
@@ -70,12 +74,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: f6627718-5952-4240-8fba-104c1350e79b
+    taskid: ff7f9bd2-f158-4812-8c7a-98c3c53151c2
     type: playbook
     task:
-      id: f6627718-5952-4240-8fba-104c1350e79b
+      id: ff7f9bd2-f158-4812-8c7a-98c3c53151c2
       version: -1
       name: Detonate File - JoeSecurity
       description: |-
@@ -90,7 +97,6 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      Comments: {}
       File:
         complex:
           root: inputs.File
@@ -98,8 +104,6 @@ tasks:
         simple: "True"
       Interval:
         simple: "1"
-      ReportFileType: {}
-      Systems: {}
       Timeout:
         simple: "15"
     separatecontext: true
@@ -112,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -120,12 +124,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: c04567fa-641d-4b51-8c94-561516554b3d
+    taskid: 053c6544-8faa-447a-893b-069da330da1e
     type: playbook
     task:
-      id: c04567fa-641d-4b51-8c94-561516554b3d
+      id: 053c6544-8faa-447a-893b-069da330da1e
       version: -1
       name: ATD - Detonate File
       description: |-
@@ -172,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -180,20 +187,18 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
+    taskid: db5fa9e8-1134-4369-815c-e5992cbb5896
     type: playbook
     task:
-      id: e82f2557-2a9d-4e13-81b1-ad3f4d685f3d
+      id: db5fa9e8-1134-4369-815c-e5992cbb5896
       version: -1
       name: Detonate File - ThreatGrid
-      description: Detonate one or more files using the ThreatGrid integration. This
-        playbook returns relevant reports to the War Room and file reputations to
-        the context data. The detonation supports the following file types - EXE,
-        DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ,
-        GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX,
-        BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+      description: Detonate one or more files using the ThreatGrid integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
       playbookName: Detonate File - ThreatGrid
       type: playbook
       iscommand: false
@@ -209,12 +214,8 @@ tasks:
         simple: file-detonated-via-demisto
       Interval:
         simple: "1"
-      Private: {}
-      Source: {}
-      Tags: {}
       Timeout:
         simple: "15"
-      VM: {}
       playbook:
         simple: default
     separatecontext: true
@@ -227,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -235,20 +236,18 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: f1c56438-d1b6-4848-8608-c6292f3905b9
+    taskid: fbcfafc2-80a7-4dc2-8390-0c90a83f3728
     type: playbook
     task:
-      id: f1c56438-d1b6-4848-8608-c6292f3905b9
+      id: fbcfafc2-80a7-4dc2-8390-0c90a83f3728
       version: -1
       name: CrowdStrike Falcon Sandbox - Detonate file
-      description: Detonate one or more files using the CrowdStrike Falcon Sandbox
-        integration. This playbook returns relevant reports to the War Room and file
-        reputations to the context data. The detonation supports the following file
-        types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML,
-        ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC,
-        JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+      description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
       playbookName: CrowdStrike Falcon Sandbox - Detonate file
       type: playbook
       iscommand: false
@@ -276,7 +275,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -284,12 +283,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
+    taskid: cdc7dce0-1029-4a8f-8a7a-eee17d570ea7
     type: playbook
     task:
-      id: 0a805640-8d5e-46d4-87f2-04a0781a6ca5
+      id: cdc7dce0-1029-4a8f-8a7a-eee17d570ea7
       version: -1
       name: WildFire - Detonate file
       description: |-
@@ -310,7 +312,6 @@ tasks:
           root: inputs.File
       Interval:
         simple: "1"
-      ReportFileType: {}
       Timeout:
         simple: "15"
     separatecontext: true
@@ -322,8 +323,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
-          "y": 195
+          "x": 1770,
+          "y": 370
         }
       }
     note: false
@@ -331,12 +332,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d8093197-7aa9-4b18-8774-563225e8c72b
+    taskid: 13d629fd-83d1-4096-8e89-4d8ca6b4322e
     type: playbook
     task:
-      id: d8093197-7aa9-4b18-8774-563225e8c72b
+      id: 13d629fd-83d1-4096-8e89-4d8ca6b4322e
       version: -1
       name: Detonate File - Lastline v2
       description: |-
@@ -368,7 +372,7 @@ tasks:
       {
         "position": {
           "x": 2200,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -376,12 +380,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 0e879eba-0377-44bf-81c4-83468555fec4
+    taskid: d8ff24bf-a089-4590-89f1-6640c60c44ea
     type: playbook
     task:
-      id: 0e879eba-0377-44bf-81c4-83468555fec4
+      id: d8ff24bf-a089-4590-89f1-6640c60c44ea
       version: -1
       name: Detonate File - Cuckoo
       description: Detonates a file using Cuckoo sandbox
@@ -410,7 +417,7 @@ tasks:
       {
         "position": {
           "x": 2630,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -418,64 +425,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: e69051d8-12bd-440c-85de-3f3c713d1556
-    type: playbook
-    task:
-      id: e69051d8-12bd-440c-85de-3f3c713d1556
-      version: -1
-      name: Detonate File - SNDBOX
-      description: |-
-        Detonates a File using the SNDBOX.
-        Advanced Threat Defense supports the following File Types:
-        Microsoft (2003 and earlier)
-        doc, dot, xls, csv, xlt, xlm, ppt, pot, pps
-
-        Microsoft (2007 and later):
-        docx, docm, dotx, dotm, dotm, xlsx, xlsm, xltx, xltm, xlsb, xla, xlam, iqy, pptx, pptm, potx, ppsx, xml
-
-        Other:
-        pe32, rtf, pdf, vbs, vbe, ps1, js, lnk, html, bat
-      playbookName: Detonate File - SNDBOX
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      File:
-        complex:
-          root: inputs.File
-      Interval:
-        simple: "1"
-      Timeout:
-        simple: "15"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 3060,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 8bcf20e7-7f82-434b-8b21-200f3423a0ce
+    taskid: 4a119863-747d-410c-83d2-37adac1e083c
     type: playbook
     task:
-      id: 8bcf20e7-7f82-434b-8b21-200f3423a0ce
+      id: 4a119863-747d-410c-83d2-37adac1e083c
       version: -1
       name: Detonate File - HybridAnalysis
       description: |-
@@ -490,7 +448,6 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      Comments: {}
       EnvironmentID:
         simple: "100"
       File:
@@ -500,16 +457,14 @@ tasks:
         simple: "True"
       Interval:
         simple: "1"
-      ReportFileType: {}
-      Systems: {}
       Timeout:
         simple: "15"
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 3490,
-          "y": 195
+          "x": 3060,
+          "y": 370
         }
       }
     note: false
@@ -517,12 +472,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 11d549c4-31e9-4cd9-8983-9e1a1c7c4baf
+    taskid: b8ddd535-06ef-401d-8981-a4abfae80dbf
     type: playbook
     task:
-      id: 11d549c4-31e9-4cd9-8983-9e1a1c7c4baf
+      id: b8ddd535-06ef-401d-8981-a4abfae80dbf
       version: -1
       name: Detonate File - ANYRUN
       description: |-
@@ -548,8 +506,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3920,
-          "y": 195
+          "x": 3490,
+          "y": 370
         }
       }
     note: false
@@ -557,20 +515,18 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 3727eda2-2c84-4730-8739-b54bc07a36c3
+    taskid: 1b28b735-33ac-4ddd-8649-6f05613db05d
     type: playbook
     task:
-      id: 3727eda2-2c84-4730-8739-b54bc07a36c3
+      id: 1b28b735-33ac-4ddd-8649-6f05613db05d
       version: -1
       name: Detonate File - FireEye AX
-      description: Detonate one or more files using the FireEye AX integration. This
-        playbook returns relevant reports to the War Room and file reputations to
-        the context data. The detonation supports the following file types - PE32,
-        EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP,
-        XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT,
-        HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM, JPG, JPEG, GIF, PNG, XLSX
+      description: Detonate one or more files using the FireEye AX integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM, JPG, JPEG, GIF, PNG, XLSX
       playbookName: Detonate File - FireEye AX
       type: playbook
       iscommand: false
@@ -595,8 +551,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4350,
-          "y": 195
+          "x": 3920,
+          "y": 370
         }
       }
     note: false
@@ -604,12 +560,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 77b7e144-a6a2-4e93-8e69-1160f9921573
+    taskid: 9d20f56a-244d-4697-8d0a-f8453eb7e638
     type: playbook
     task:
-      id: 77b7e144-a6a2-4e93-8e69-1160f9921573
+      id: 9d20f56a-244d-4697-8d0a-f8453eb7e638
       version: -1
       name: Detonate File - VMRay
       description: Detonates a file using VMRay
@@ -626,15 +585,8 @@ tasks:
           root: inputs.File
           transformers:
           - operator: uniq
-      archive_password: {}
-      document_password: {}
       interval:
         simple: "1"
-      max_jobs: {}
-      reanalyze: {}
-      sample_type: {}
-      shareable: {}
-      tags: {}
       timeout:
         simple: "10"
     separatecontext: true
@@ -646,8 +598,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4780,
-          "y": 195
+          "x": 4350,
+          "y": 370
         }
       }
     note: false
@@ -655,24 +607,18 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: d5fc7c74-18a2-47b3-884a-da98e6cf985c
+    taskid: fd1dbf17-5b12-4369-86c7-8082f714df31
     type: playbook
     task:
-      id: d5fc7c74-18a2-47b3-884a-da98e6cf985c
+      id: fd1dbf17-5b12-4369-86c7-8082f714df31
       version: -1
       name: Detonate File - Group-IB TDS Polygon
-      description: 'Detonate file using Group-IB TDS Polygon integration. This playbook
-        returns relevant reports to the War Room and file reputations to the context
-        data. The detonation supports the following file types: 7z, ace, ar, arj,
-        bat, bz2, cab, chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm,
-        dotx, eml, exe, gz, gzip, hta, htm, html, iqy, iso, jar, js, jse, lnk, lz,
-        lzma, lzo,  lzh, mcl, mht, msg, msi, msp, odp, ods, odt, ots, ott, pdf, pif,
-        potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, ps1, pub, py, pyc, r*, rar,
-        reg, rtf, scr, settingcontent-ms, stc, svg, sxc, sxw, tar, taz,  .tb2, .tbz,
-        .tbz2, tgz, tlz, txz, tzo, txt, url, uue, vbe, vbs, wsf, xar, xls, xlsb, xlsm,
-        xlsx, xml, xz, z*, zip.'
+      description: 'Detonate file using Group-IB TDS Polygon integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types: 7z, ace, ar, arj, bat, bz2, cab, chm, cmd, com, cpgz, cpl, csv, dat, doc, docm, docx, dot, dotm, dotx, eml, exe, gz, gzip, hta, htm, html, iqy, iso, jar, js, jse, lnk, lz, lzma, lzo,  lzh, mcl, mht, msg, msi, msp, odp, ods, odt, ots, ott, pdf, pif, potm, potx, pps, ppsm, ppsx, ppt, pptm, pptx, ps1, pub, py, pyc, r*, rar, reg, rtf, scr, settingcontent-ms, stc, svg, sxc, sxw, tar, taz,  .tb2, .tbz, .tbz2, tgz, tlz, txz, tzo, txt, url, uue, vbe, vbs, wsf, xar, xls, xlsb, xlsm, xlsx, xml, xz, z*, zip.'
       playbookName: Detonate File - Group-IB TDS Polygon
       type: playbook
       iscommand: false
@@ -692,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -380,
-          "y": 195
+          "x": 4780,
+          "y": 370
         }
       }
     note: false
@@ -701,12 +647,15 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: eacb2317-3f4c-4677-81ea-2870527bab0d
+    taskid: 2418c5d7-65e3-40ff-8281-fa47ad0369ca
     type: playbook
     task:
-      id: eacb2317-3f4c-4677-81ea-2870527bab0d
+      id: 2418c5d7-65e3-40ff-8281-fa47ad0369ca
       version: -1
       name: Detonate File - CrowdStrike Falcon Intelligence Sandbox
       description: |-
@@ -750,8 +699,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5220,
-          "y": 195
+          "x": 5210,
+          "y": 370
         }
       }
     note: false
@@ -761,12 +710,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 424a0a83-0985-4401-8d3a-8040b957c728
+    taskid: c28803a1-9938-4fa0-8994-4f1d01f7e800
     type: playbook
     task:
-      id: 424a0a83-0985-4401-8d3a-8040b957c728
+      id: c28803a1-9938-4fa0-8994-4f1d01f7e800
       version: -1
       name: Detonate File - SecneurX Analysis
       description: Detonates a file using the SecneurX Analysis Integration. Returns relevant reports to the War Room and file reputations to the context data.
@@ -781,8 +731,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5660,
-          "y": 195
+          "x": 5640,
+          "y": 370
         }
       }
     note: false
@@ -792,15 +742,138 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+    continueonerrortype: ""
+  "24":
+    id: "24"
+    taskid: f19de2c0-c4f0-4e34-8922-c319d40a1781
+    type: playbook
+    task:
+      id: f19de2c0-c4f0-4e34-8922-c319d40a1781
+      version: -1
+      name: Detonate File - JoeSecurity V2
+      description: The Detonate File using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
+      playbookName: Detonate File - JoeSecurity V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      InternetAccess:
+        simple: "True"
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 6070,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c2d10c29-3ea1-4468-8298-a0a9bf8bbe01
+    type: condition
+    task:
+      id: c2d10c29-3ea1-4468-8298-a0a9bf8bbe01
+      version: -1
+      name: Check if file exists
+      description: Checks if there is a file to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File.EntryID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6407.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 512ffcd3-2846-46d5-8e47-edceba820870
+    type: regular
+    task:
+      id: 512ffcd3-2846-46d5-8e47-edceba820870
+      version: -1
+      name: Detonate File - OPSWAT Filescan
+      description: Detonates a file using the OPSWAT-Filescan Integration. Returns relevant reports to the War Room and file reputations to the context data.
+      script: OPSWAT Filescan|||opswat-filescan-scan-file
+      type: regular
+      iscommand: true
+      brand: OPSWAT Filescan
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entry_id:
+        simple: ${inputs.File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6520,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 385,
-        "width": 6420,
-        "x": -380,
+        "height": 560,
+        "width": 6850,
+        "x": 50,
         "y": 50
       }
     }
@@ -1227,7 +1300,7 @@ outputs:
   description: Task analysis status.
   type: String
 - contextPath: VMRay.Job
-  description: ''
+  description: 'The Job Object'
   type: unknown
 - contextPath: VMRay.Job.JobID
   description: The ID of a new job.
@@ -1245,7 +1318,7 @@ outputs:
   description: The ID of virtual machine.
   type: number
 - contextPath: VMRay.Sample
-  description: ''
+  description: 'The Sample For Analysis'
   type: unknown
 - contextPath: VMRay.Sample.SampleID
   description: The sample ID of the task.
@@ -1275,8 +1348,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Sample.Type
   description: The file type.
@@ -1285,7 +1357,7 @@ outputs:
   description: The classifications of the sample.
   type: string
 - contextPath: VMRay.Submission
-  description: ''
+  description: 'Submission Object'
   type: unknown
 - contextPath: VMRay.Submission.SubmissionID
   description: The submission ID.
@@ -1312,8 +1384,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Submission.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: The SSDeep hash of the sample in submission.
@@ -1322,7 +1393,7 @@ outputs:
   description: The ID of the sample in submission.
   type: number
 - contextPath: VMRay.Sample.IOC.File
-  description: ''
+  description: 'File Object'
   type: unknown
 - contextPath: VMRay.Sample.IOC.File.AnalysisID
   description: The IDs of other analyses that contain the given file.
@@ -1340,7 +1411,7 @@ outputs:
   description: The type of the file.
   type: string
 - contextPath: VMRay.Sample.IOC.File.Hashes
-  description: ''
+  description: 'File Hashes Object'
   type: unknown
 - contextPath: VMRay.Sample.IOC.File.Hashes.MD5
   description: The MD5 hash of the given file.
@@ -1355,7 +1426,7 @@ outputs:
   description: The SHA1 hash of the given file.
   type: string
 - contextPath: VMRay.Sample.IOC.URL
-  description: ''
+  description: 'URL Object'
   type: unknown
 - contextPath: VMRay.Sample.IOC.URL.AnalysisID
   description: The IDs of the other analyses that contain the given URL.
@@ -1373,7 +1444,7 @@ outputs:
   description: The type of the URL.
   type: string
 - contextPath: VMRay.Sample.IOC.Domain
-  description: ''
+  description: 'Domain Object'
   type: unknown
 - contextPath: VMRay.Sample.IOC.Domain.AnalysisID
   description: The IDs of the other analyses that contain the given domain.
@@ -1388,7 +1459,7 @@ outputs:
   description: The type of the domain.
   type: string
 - contextPath: VMRay.Sample.IOC.IP
-  description: ''
+  description: 'IP Object'
   type: unknown
 - contextPath: VMRay.Sample.IOC.IP.AnalysisID
   description: The IDs of the other analyses that contain the given IP address.
@@ -1406,7 +1477,7 @@ outputs:
   description: The type of the IP address.
   type: string
 - contextPath: VMRay.Sample.IOC.Mutex
-  description: ''
+  description: 'Mutex Object'
   type: unknown
 - contextPath: VMRay.Sample.IOC.Mutex.AnalysisID
   description: The IDs of other analyses that contain the given IP address.
@@ -1424,7 +1495,7 @@ outputs:
   description: The type of the mutex.
   type: string
 - contextPath: VMRay.ThreatIndicator
-  description: ''
+  description: 'Indicator Object'
   type: unknown
 - contextPath: VMRay.ThreatIndicator.AnalysisID
   description: The list of connected analysis IDs.
@@ -1458,4 +1529,5 @@ outputs:
   type: String
 fromversion: 5.0.0
 tests:
+- Detonate File - No Files test
 - Detonate File - Generic Test

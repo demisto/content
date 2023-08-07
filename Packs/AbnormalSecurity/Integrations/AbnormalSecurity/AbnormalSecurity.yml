@@ -15,12 +15,12 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Abnormal Security detects the whole spectrum of email attacks, from vendor email compromise and spear-phishing to unwanted email spam and graymail. To stop these advanced attacks, Abnormal leverages the industry’s most advanced behavioral data science to baseline known good behavior and detects anomalies.
 display: Abnormal Security
 name: Abnormal Security
@@ -28,29 +28,17 @@ script:
   commands:
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only keys that are supported for `/threats` are `receivedTime` and `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`.
-      isArray: false
       name: filter
-      required: false
     - description: Number of threats that on in each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified.
-      isArray: false
       name: page_size
-      required: false
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
-      isArray: false
       name: page_number
-      required: false
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Filters threats based on the source of detection.
-      isArray: false
       name: source
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Get a list of threats
     name: abnormal-security-list-threats
     outputs:
@@ -66,17 +54,12 @@ script:
 
   - arguments:
     - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
-      isArray: false
       name: threat_id
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Get details of a threat
     name: abnormal-security-get-threat
     outputs:
@@ -152,17 +135,13 @@ script:
 
   - arguments:
     - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
-      isArray: false
       name: threat_id
       required: true
     - description: Action to perform on threat
-      isArray: false
       name: action
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     description: Manage a Threat identified by Abnormal Security
     name: abnormal-security-manage-threat
     outputs:
@@ -175,21 +154,15 @@ script:
 
   - arguments:
     - description: A UUID representing a threat campaign. Full list of threat IDs can be obtained by first running the command to list a threat
-      isArray: false
       name: threat_id
       required: true
     - description: A UUID representing the action id for a threat. Can be obtained from payload after performing an action on the threat
-      isArray: false
       name: action_id
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Check the status of an action requested on a threat.
     name: abnormal-security-check-threat-action-status
     outputs:
@@ -201,44 +174,26 @@ script:
       type: String
   - arguments:
     - description: Filter the results based on a filter key. Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. Supported keys - [`receivedTime`]
-      isArray: false
       name: filter
-      required: false
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Filters threats based on the source of detection.
-      isArray: false
       name: source
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Download data from Threat Log in .csv format
     name: abnormal-security-download-threat-log-csv
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only key that is supported for `/cases` is `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format.
-      isArray: false
       name: filter
-      required: false
     - description: Number of cases that are on each page. Each page of data will have at most page_size threats. Has no effect if filter is not specified.
-      isArray: false
       name: page_size
-      required: false
     - description: 1-indexed page number to get a particular page of cases. Has no effect if filter is not specified.
-      isArray: false
       name: page_number
-      required: false
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Get a list of Abnormal cases identified by Abnormal Security
     name: abnormal-security-list-abnormal-cases
     outputs:
@@ -257,17 +212,12 @@ script:
 
   - arguments:
     - description: A string representing the email case. Can be retrieved by first running command to list cases
-      isArray: false
       name: case_id
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Get details of an Abnormal case
     name: abnormal-security-get-abnormal-case
     outputs:
@@ -285,17 +235,13 @@ script:
       type: String
   - arguments:
     - description: A string representing the email case. Can be retrieved by first running command to list cases
-      isArray: false
       name: case_id
       required: true
     - description: Action to perform on case
-      isArray: false
       name: action
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     description: Manage an Abnormal Case.
     name: abnormal-security-manage-abnormal-case
     outputs:
@@ -307,21 +253,15 @@ script:
       type: String
   - arguments:
     - description: A string representing the email case. Can be retrieved by first running command to list cases
-      isArray: false
       name: case_id
       required: true
     - description: A string representing the email case. Can be retrieved from payload after performing an action on a case
-      isArray: false
       name: action_id
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Check the status of an action requested on a case.
     name: abnormal-security-check-case-action-status
     outputs:
@@ -333,17 +273,12 @@ script:
       type: String
   - arguments:
     - description: A string representing the email case. Can be retrieved by first running command to list cases
-      isArray: false
       name: case_id
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Provides the analysis and timeline details of a case
     name: abnormal-security-get-case-analysis-and-timeline
     outputs:
@@ -370,25 +305,15 @@ script:
       type: Unknown
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently only the key `lastReportedTime` is supported for `/abusecampaigns`. At least one of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ` format. Do note that provided filter time is in UTC.
-      isArray: false
       name: filter
-      required: false
     - description: Number of abuse campaigns shown on each page. Each page of data will have at most page_size abuse campaign IDs.
-      isArray: false
       name: page_size
-      required: false
     - description: 1-indexed page number to get a particular page of threats. Has no effect if filter is not specified.
-      isArray: false
       name: page_number
-      required: false
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Get a list of campaigns submitted to Abuse Mailbox
     name: abnormal-security-list-abuse-mailbox-campaigns
     outputs:
@@ -403,17 +328,12 @@ script:
       type: Number
   - arguments:
     - description: A UUID representing the abuse campaign id. Can be Can be retrieved by first running command to list abuse mailbox campaigns
-      isArray: false
       name: campaign_id
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Subtenant of the user (if applicable)
-      isArray: false
       name: subtenant
-      required: false
     description: Get details of an Abuse Mailbox campaign
     name: abnormal-security-get-abuse-mailbox-campaign
     outputs:
@@ -457,13 +377,10 @@ script:
   # Employee commands
   - arguments:
     - description: Email address of the employee you want to retrieve data for
-      isArray: false
       name: email_address
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     description: Get employee identity analysis (Genome) data
     name: abnormal-security-get-employee-identity-analysis
     outputs:
@@ -491,13 +408,10 @@ script:
 
   - arguments:
     - description: Email address of the employee you want to retrieve data for
-      isArray: false
       name: email_address
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     description: Get employee information
     name: abnormal-security-get-employee-information
     outputs:
@@ -516,26 +430,19 @@ script:
 
   - arguments:
     - description: Email address of the employee you want to retrieve data for
-      isArray: false
       name: email_address
       required: true
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     description: Get employee login information for last 30 days in csv format
     name: abnormal-security-get-employee-last-30-days-login-csv
   - arguments:
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     - description: Email of the reporter
-      isArray: false
       name: reporter
       required: true
     - description: Type of misjudgement reported
-      isArray: false
       name: report_type
       required: true
     description: Submit an Inquiry to request a report on misjudgement by Abnormal Security
@@ -547,15 +454,12 @@ script:
 
   - arguments:
     - description: Email address of the sender
-      isArray: false
       name: sender_email
       required: true
     - description: Email address of the recipient
-      isArray: false
       name: recipient_email
       required: true
     - description: Subject of email
-      isArray: false
       name: subject
       required: true
     description: Submit a False Negative Report
@@ -563,7 +467,6 @@ script:
 
   - arguments:
     - description: URL link of threat log in abnormal security portal
-      isArray: false
       name: portal_link
       required: true
     description: Submit a False Positive Report
@@ -571,13 +474,11 @@ script:
 
   - arguments:
     - description: Returns test data if set to `True`
-      isArray: false
       name: mock-data
-      required: false
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
-  dockerimage: demisto/python3:3.10.10.49934
-  isfetch: false
+    deprecated: true
+  dockerimage: demisto/python3:3.10.12.66339
   script: ''
   subtype: python3
   type: python

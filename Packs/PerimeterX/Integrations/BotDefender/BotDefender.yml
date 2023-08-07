@@ -15,12 +15,12 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: DBot Scoring - Bad Score Threshold
   name: dbotBadThreshold
   required: true
@@ -48,8 +48,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -58,13 +58,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 description: Gathers PerimeterX related data
 detaileddescription: This integration will query the PerimeterX API for useful information regarding the supplied item (IP, User Agent, path, etc...)
 display: PerimeterX BotDefender
@@ -76,11 +76,8 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
       default: true
-    deprecated: false
     description: Gets the PerimeterX DBotScore decision for a particular IP
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -104,7 +101,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score
       type: Number
-  isfetch: false
   runonce: false
   script: '-'
   type: python

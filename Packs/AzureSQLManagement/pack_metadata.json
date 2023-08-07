@@ -1,8 +1,8 @@
 {
-    "name": "Azure SQL Management (Beta)",
+    "name": "Azure SQL Management",
     "description": "Microsoft Azure SQL Database is a managed cloud database provided as part of Microsoft Azure",
     "support": "xsoar",
-    "currentVersion": "1.1.15",
+    "currentVersion": "1.1.25",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

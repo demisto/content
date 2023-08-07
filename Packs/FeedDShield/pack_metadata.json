@@ -2,7 +2,7 @@
     "name": "DShield Feed",
     "description": "Indicators feed from DShield",
     "support": "xsoar",
-    "currentVersion": "1.1.22",
+    "currentVersion": "1.1.26",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,10 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Plug & Fetch",
+        "Free Feed"
+    ],
     "useCases": [],
     "keywords": [
         "DShield",

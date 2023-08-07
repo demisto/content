@@ -1,0 +1,586 @@
+[
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetReportedAsMalicious",
+        "Scenario": "ACompanyEmailAddressReportedAsMalicious",
+        "Description": "A company email address reported as spamming"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetsEmbeddedInMalwareCode",
+        "Scenario": "CompanyDomainIsEmbeddedInAMalwareCode",
+        "Description": "A company domain name is embedded in malware code"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetsEmbeddedInMalwareCode",
+        "Scenario": "VirusTotalReferrer",
+        "Description": "A company domain name is embedded in malware code"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetsWereHacked",
+        "Scenario": "HackedIndication",
+        "Description": "Indication of scam or attack"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetsWereHacked",
+        "Scenario": "HackedIndicationMedia",
+        "Description": "Company assets targeted in a campaign"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetsWereHacked",
+        "Scenario": "IndicationOfScamIntentInvolvingTheCompanySector",
+        "Description": "Indication of scam intent involving the company sector/region"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetsWereHacked",
+        "Scenario": "WebsiteDefacement",
+        "Description": "A company website reported as defaced"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AssetsWereHacked",
+        "Scenario": "ZoneH",
+        "Description": "A company website reported as defaced"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AttackTargetList",
+        "Scenario": "AnIntentionToHackTheCompanyWebsite",
+        "Description": "An intent to hack the company website"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AttackTargetList",
+        "Scenario": "CardableWebsitesTargetList",
+        "Description": "A company website reported as cardable"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AttackTargetList",
+        "Scenario": "CompanyTargetIsOnAanCampaignTargetList",
+        "Description": "A company asset listed on a target list"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "AttackedByBlackList",
+        "Scenario": "Blacklist",
+        "Description": "A blacklist containing company asset"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "AHackingToolTargetingTheCompany",
+        "Description": "A hacking tool targeting the company"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "AnAttemptToRecruitACompanyInsider",
+        "Description": "An attempt to recruit a company insider"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "AnInsiderOfferingCompanyInformationForSale",
+        "Description": "An insider offering company information for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "BlackMarkets",
+        "Description": "A company product is offered for sale on the black market"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "CompanyAccountsAreOfferedForSaleOnTheBlackMarket",
+        "Description": "Company accounts with credit balance offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "CompanyGiftCardsOfferedForSale",
+        "Description": "Company gift cards offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "CreditCardDumpOfferedForSale",
+        "Description": "Credit card dump offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "CreditCardForSale",
+        "Description": "The details of a company active credit card offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "IntellectualPropertyRelatedToCompanySectorOfferedForSaleOrDownload",
+        "Description": "Intellectual Property related to company sector/region offered for sale or download"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "MuleAccounts",
+        "Description": "Company accounts suspected as Mule Accounts"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "PhishingKitForSale",
+        "Description": "Phishing Kit for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "ProxySocksServersConnectedToTheCompanyAreOfferedForSale",
+        "Description": "Proxy/Socks servers connected to the company are offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "ServersForSale",
+        "Description": "RDP servers connected to the company are offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "ThreateningProduct",
+        "Description": "Company product offered for sale illegitimately"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "ToolsForHackingCompanyUserAccountsOfferedForSale",
+        "Description": "Tools for hacking company user accounts offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BlackMarket",
+        "Scenario": "Xdedic"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "BotDataForSale",
+        "Scenario": "GenesisBot",
+        "Description": "Company related credentials offered for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "CreditCardsForSale",
+        "Scenario": "CreditCardsForSale",
+        "Description": "Credit cards for sale"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "CustomQueries",
+        "Scenario": "CustomQueryMatched"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "IPAddressOnABlackList",
+        "Scenario": "CompanyIpAddressWasAbused",
+        "Description": "Company IP address was abused"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "IRCHackerChat",
+        "Scenario": "IrcConversation"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "IntelliFindQueries",
+        "Scenario": "IntelliFindQueries",
+        "Description": "IntelliFind Queries"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "Malware",
+        "Scenario": "HybridAnalysis",
+        "Description": "A company domain name is embedded in malware code"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "Malware",
+        "Scenario": "PotentialMalwareDetectedOnCompanyWebsiteURL",
+        "Description": "Indication of company website infection"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "Malware",
+        "Scenario": "UnauthorizedBrandUse",
+        "Description": "Unauthorized Brand Use"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "Malware",
+        "Scenario": "VirusTotalTargeted",
+        "Description": "A company domain name is embedded in malware code"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "Malware",
+        "Scenario": "VirusTracker",
+        "Description": "A company asset communicating with a C&C server"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "Malware",
+        "Scenario": "VulnerabilityOrMalwareRelatedToCompanySectorDetected",
+        "Description": "Vulnerability or malware related to company sector/region detected"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "PhishingTargetList",
+        "Scenario": "TargetList"
+    },
+    {
+        "Type": "AttackIndication",
+        "SubType": "Scam",
+        "Scenario": "SuspiciousJobOffer",
+        "Description": "Attempted job scam using company-associated identity"
+    },
+    {
+        "Type": "BrandSecurity",
+        "SubType": "BrandReputation",
+        "Scenario": "ANegativeUseOfCompanyName",
+        "Description": "A negative use of the company's name was found"
+    },
+    {
+        "Type": "BrandSecurity",
+        "SubType": "SuspiciousSocialMediaProfile",
+        "Scenario": "FakeProfile",
+        "Description": "Unauthorized use of company trademark on a social media profile"
+    },
+    {
+        "Type": "BrandSecurity",
+        "SubType": "SuspiciousSocialMediaProfile",
+        "Scenario": "LinkedInProfileImpersonatingKeyCompanyEmployee",
+        "Description": "LinkedIn profile impersonating key company employee"
+    },
+    {
+        "Type": "BrandSecurity",
+        "SubType": "SuspiciousSocialMediaProfile",
+        "Scenario": "TwitterUnauthorizedAccount",
+        "Description": "Twitter unauthorized account"
+    },
+    {
+        "Type": "BrandSecurity",
+        "SubType": "TwitterChatter",
+        "Scenario": "TwitterChatter",
+        "Description": "A tweet mentioned a company asset"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "ConfidentialDocumentLeakage",
+        "Scenario": "ConfidentialDoc",
+        "Description": "Company confidential documents leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "ConfidentialDocumentLeakage",
+        "Scenario": "ConfidentialDocuments",
+        "Description": "Confidential Documents"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "ConfidentialDocumentLeakage",
+        "Scenario": "DlpIndicator"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "CredentialsLeakage",
+        "Scenario": "CompanyDBWasDetected",
+        "Description": "Company database leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "CredentialsLeakage",
+        "Scenario": "CredentialsLeakage",
+        "Description": "Company employee credentials leaked from a 3rd party service"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "CredentialsLeakage",
+        "Scenario": "GithubCredentials",
+        "Description": "Company internal servers credentials leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "CredentialsLeakage",
+        "Scenario": "LeakedDataFromACompanyDomain",
+        "Description": "Company employee credentials leaked from a 3rd party service"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "CredentialsLeakage",
+        "Scenario": "LeakedDatabase"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "CreditCardsLeaked",
+        "Scenario": "BinRegexMatched",
+        "Description": "Details of a company active credit card were leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "CreditCardsLeaked",
+        "Scenario": "DarkWebCompanyCreditCardDetailsLeakedExpired",
+        "Description": "The details of a company expired credit card were leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "LeakedEmailContent",
+        "Scenario": "EmailCorrespondence",
+        "Description": "Company email contents leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "PrivateDetailsLeakage",
+        "Scenario": "PersonallyIdentifiableInformation",
+        "Description": "Company executive SSN leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "PrivateDetailsLeakage",
+        "Scenario": "PrivateDetailsLeakage",
+        "Description": "Company employee private details leaked"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "RansomwareLeaks",
+        "Scenario": "CompanyRelatedFilesOrFoldersWereFoundInARansomwareLeak",
+        "Description": "Company related files or folders were found in a ransomware leak"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "SensitiveDataLeaked",
+        "Scenario": "CompanysSecretIsExposedPubliclyOnGitHub",
+        "Description": "Company's secret is exposed publicly on GitHub"
+    },
+    {
+        "Type": "DataLeakage",
+        "SubType": "SensitiveDataLeakedOnWikiLeaks",
+        "Scenario": "WikiLeaks",
+        "Description": "Company sensitive data leaked"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "DNSZoneTransferEnabled",
+        "Scenario": "DnsZoneTransfer",
+        "Description": "Company DNS servers have AXFR transfer enabled"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "DirectoryListingExposed",
+        "Scenario": "DirectoryListing",
+        "Description": "A company domain with directory listing publicly exposed"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalLoginPageExposed",
+        "Scenario": "CompanyInternalServicePublickyExposed",
+        "Description": "Company Internal service publicly exposed"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalLoginPageExposed",
+        "Scenario": "InternalLoginPage",
+        "Description": "A company internal login page is accessible outside of the organization"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalLoginPageExposed",
+        "Scenario": "OldInternalLoginPageIsExposedPublicly",
+        "Description": "Old internal login page is exposed publicly"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalLoginPageExposed",
+        "Scenario": "UnencryptedInternalLoginPageIsExposedPublicly",
+        "Description": "Unencrypted internal company login page"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalServiceExposed",
+        "Scenario": "3rdPartyROBOT",
+        "Description": "A company domain is vulnerable to ROBOT"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalServiceExposed",
+        "Scenario": "DeveloperServersPubliclyExposed",
+        "Description": "A company development environment publicly exposed"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalServiceExposed",
+        "Scenario": "IpDomainScanned",
+        "Description": "Public scan report containing company assets"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "InternalServiceExposed",
+        "Scenario": "OldAndUnmaintainedWebsiteIsExposedPublicly",
+        "Description": "Old and unmaintained website is exposed publicly"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "NetworkSecurity",
+        "Scenario": "ExposedServices",
+        "Description": "Exposed Services"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "OpenPorts",
+        "Scenario": "DatabaseManagementPortsExposed",
+        "Description": "Open ports on company databases"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "UnencryptedLoginPage",
+        "Scenario": "UnsafeLoginPage",
+        "Description": "Unencrypted login page"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "UnmaintainedWebPage",
+        "Scenario": "WebsiteInternalError"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "VulnerabilityInTechnologyInUse",
+        "Scenario": "ProblemsInACompanyDomainsDNSRecordsWereDetected",
+        "Description": "A problem in the company DNS server"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "VulnerabilityInTechnologyInUse",
+        "Scenario": "TechnologiesInUse",
+        "Description": "A vulnerability In company's technology in use was detected"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "VulnerabilityInTechnologyInUse",
+        "Scenario": "VulnerabilityInTheCompanyApplicationDetected",
+        "Description": "Vulnerability in the company application detected"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "3rdPartyCipherSuits",
+        "Description": "A company domain supports non-compliant cipher-suites"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "AssetOfferedOnTelegram",
+        "Description": "A company’s asset is offered on a suspicious Telegram group"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "CompanyWordpressUserListPubliclyAccessible",
+        "Description": "Company domain's WordPress user list is publicly accessible"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "SSLCertificateExpiresSoon",
+        "Description": "A company domain SSL certificate has expired"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "SqlInjection",
+        "Description": "A company domain vulnerable to SQL injection"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "VulnerabilityPost"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "VulnerabilityPostMedia"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "VulnerableService"
+    },
+    {
+        "Type": "ExploitableData",
+        "SubType": "WebVulnerabilitiesPublished",
+        "Scenario": "XSSVulnerabilityInTheCompanyWebsiteWasPublished",
+        "Description": "A company website vulnerable to XSS attacks"
+    },
+    {
+        "Type": "Phishing",
+        "SubType": "CompanyPhishingWebsite",
+        "Scenario": "PhishingWebsites",
+        "Description": "Phishing Websites"
+    },
+    {
+        "Type": "Phishing",
+        "SubType": "CompanyPhishingWebsite",
+        "Scenario": "Phishtank",
+        "Description": "Company Phishing Website"
+    },
+    {
+        "Type": "Phishing",
+        "SubType": "CompanyPhishingWebsite",
+        "Scenario": "PotentialPhishingWebsite",
+        "Description": "Potential Phishing Website"
+    },
+    {
+        "Type": "Phishing",
+        "SubType": "PhishingWatch",
+        "Scenario": "PhishingWatch",
+        "Description": "Phishing Watch"
+    },
+    {
+        "Type": "Phishing",
+        "SubType": "RegisteredSuspiciousDomain",
+        "Scenario": "SuspectedPhishingDomain",
+        "Description": "Suspected Phishing Domain"
+    },
+    {
+        "Type": "Phishing",
+        "SubType": "SuspiciousEmailAddress",
+        "Scenario": "FakeCompanyEmail",
+        "Description": "Potential Phishing Email"
+    },
+    {
+        "Type": "vip",
+        "SubType": "AttackTargetList",
+        "Scenario": "ACompanyExecutiveIsMentionedOnATargetList",
+        "Description": "A company executive is mentioned on a target list"
+    },
+    {
+        "Type": "vip",
+        "SubType": "BlackMarket",
+        "Scenario": "VIPPIIOnSale",
+        "Description": "A company executive PII offered for sale"
+    },
+    {
+        "Type": "vip",
+        "SubType": "Scam",
+        "Scenario": "CompanyExecutiveLoginCredentialsLeaked",
+        "Description": "Company executive login credentials leaked"
+    },
+    {
+        "Type": "vip",
+        "SubType": "SuspiciousSocialMediaProfile",
+        "Scenario": "VIPSuspiciousLinkedInAccountWithLinkToRealAccount",
+        "Description": "Company executive suspicious social media profile"
+    }
+]

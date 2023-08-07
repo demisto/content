@@ -1,0 +1,22 @@
+{
+    "value": [
+        {
+            "id": "id",
+            "authorizationSource": "RoleBased",
+            "managedByTenants": [],
+            "subscriptionId": "subscriptionId",
+            "tenantId": "tenantId",
+            "displayName": "displayName",
+            "state": "Enabled",
+            "subscriptionPolicies": {
+                "locationPlacementId": "locationPlacementId",
+                "quotaId": "quotaId",
+                "spendingLimit": "On"
+            }
+        }
+    ],
+    "count": {
+        "type": "Total",
+        "value": 1
+    }
+}

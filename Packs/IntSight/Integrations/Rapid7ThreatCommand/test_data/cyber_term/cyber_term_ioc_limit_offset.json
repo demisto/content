@@ -1,0 +1,85 @@
+{
+    "content": [
+        {
+            "ID": "57b59fd5a5b95fbe01eb4bbe",
+            "Value": "AnonGhost",
+            "Type": "ThreatActor",
+            "Severity": "High",
+            "Aliases": [],
+            "Origins": [
+                "Global"
+            ],
+            "TargetCountries": [
+                "Israel",
+                "Russian Federation",
+                "United States"
+            ],
+            "TargetSectors": [
+                "Banking",
+                "Government"
+            ],
+            "CreatedDate": "content[0]_CreatedDate",
+            "UpdatedDate": "content[0]_UpdatedDate",
+            "TTPs": [
+                "DDoS",
+                "Defacement",
+                "SQL Injection"
+            ],
+            "Overview": "AnonGhost is a disparate group of around 15 pro-Palestinian hacktivists who are based in Africa, the Middle East, and Europe. They have focused on disputing Israel in cyberspace since 2013 and have recently begun to target the US.\n\nThe AnonGhost Team appears to be headed by Mauritania Attacker. The group targets government, corporate and private websites around the world to bring attention to its extremist agenda. For several years,  AnonGhost\u2019s activity has primarily involved defacing websites with anti-western, anti-Israel, and anti-Semitic messages, especially during OpIsrael and OpUSA campaigns in recent years. In the past months, Anonghost declared their support of the Islamic State in Iraq and Syria (ISIS) and focused on targets in the U.S. \n\nIn addition to cyber-attacks, the network has launched a number of software tools designed to enable users to conduct their own cyber-attacks against their targets of choice. For example, in March 2015, AnonGhost alerted its supporters via its social media profiles to a new software which enables users to initiate denial of service (DOS) attacks.\n\nOn March 7, 2022, AnonGhost, affiliated with Anonymous, claimed to have hacked and shut down two Russian SCADA water supply systems.",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "Anonymous",
+                "Anonymous Kurdistan",
+                "Ghost Squad Hackers",
+                "HaX StroKE",
+                "Lous666",
+                "Mauritania Attacker",
+                "Mauritanian Hackers group",
+                "Mrlele",
+                "P@r@dox17",
+                "Ungku"
+            ],
+            "RelatedCampaigns": [
+                "OpBiz",
+                "OpCatalonia",
+                "OpIcarus",
+                "OpIsrael",
+                "OpNoDAPL",
+                "OpRussia 2022-2023",
+                "OpSingleGateway",
+                "OpUSA",
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        },
+        {
+            "ID": "622df6d1fc44af0671de66d5",
+            "Value": "Ghost Angel",
+            "Type": "ThreatActor",
+            "Severity": "Medium",
+            "Aliases": [],
+            "Origins": [],
+            "TargetCountries": [
+                "Russian Federation",
+                "United States"
+            ],
+            "TargetSectors": [],
+            "CreatedDate": "content[1]_CreatedDate",
+            "UpdatedDate": "content[1]_UpdatedDate",
+            "TTPs": [],
+            "Overview": "content[1]_Overview",
+            "AdditionalInformation": "N/A",
+            "RelatedMalware": [],
+            "RelatedThreatActors": [
+                "Anonymous"
+            ],
+            "RelatedCampaigns": [
+                "OpRussia 2022-2023",
+                "The 2022 Russia-Ukraine Cyberwarfare"
+            ],
+            "MitreAttack": []
+        }
+    ],
+    "nextOffset": "nextOffset"
+}

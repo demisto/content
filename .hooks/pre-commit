@@ -1,81 +1,24 @@
 #!/bin/bash
 
-# usable when running 'git rebase --interactive'
-if [[ $(git branch | grep '*' | sed 's/* //') == '(no branch)' ]]
-then
-  echo "Skipping the hooks. hooks should run in a branch only"
-  exit 0
+if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+    echo "This is a merge commit, skipping pre-commit"
+    exit 0
 fi
 
-# validating that each modified file has a valid schema, release notes, proper prefix & suffix
-echo "Validating files..."
-DO_DEACTIVATE=""
-DO_ACTIVATE=""
-if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/.venv" && -e "${VIRTUAL_ENV}/bin/activate" ]] && command -v deactivate >/dev/null 2>&1; then
-    # we are in a vritual env. Deactivate and store the previous VIRTUAL_ENV
-    echo "Deactivating current virtual env: $VIRTUAL_ENV"
-    DO_ACTIVATE="${VIRTUAL_ENV}"
-    deactivate
-fi
-if [ -e "./.venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
-    echo "Activating Demisto Content virtual env..."
-    source ./.venv/bin/activate
-    DO_DEACTIVATE=1
-fi
-
-# --staged flag runs only on files about to commit
-demisto-sdk validate -g --skip-pack-release-notes --staged
-RES=$?
-
-demisto-sdk secrets --ignore-entropy
-RES=$(($RES + $?))
-
-echo ""
-if [[ -n "$CONTENT_PRECOMMIT_RUN_DEV_TASKS" ]]; then
-    echo "Running content lint tasks (flake8, mypy, bandit, pylint, pytest) as env variable CONTENT_PRECOMMIT_RUN_DEV_TASKS is set."
-    SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-    if [[ -n "$SHOULD_LINT_ALL" ]]; then
-        echo -e  "----------\nNote: on  gitlab build, linting will be run on all files. This is because:\n$SHOULD_LINT_ALL\n----------"
-    fi
-    demisto-sdk lint -g
-    RES=$(($RES + $?))
-    if [[ -f "coverage_report/.coverage" ]]; then
-        demisto-sdk coverage-analyze --no-min-coverage-enforcement --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
-    fi
-    
-    RES=$(($RES + $?))
-else  
-    echo "Skipping running lint tasks (flake8, mypy, pylint, pytest). If you want to run this as part of the precommit hook"
-    echo 'set CONTENT_PRECOMMIT_RUN_DEV_TASKS=1. You can add the following line to ~/.zshrc:'
-    echo 'echo "export CONTENT_PRECOMMIT_RUN_DEV_TASKS=1" >> ~/.zshrc'
-    echo ""
-    echo 'Or if you want to manually run lint tasks: demisto-sdk lint -i <integration/script dir>'
-    echo 'Example: demisto-sdk lint -i Scripts/ParseEmailFiles'
-fi
-
-if [ -n "$DO_DEACTIVATE" ]; then
-    echo "Deactivating Demisto Content virtual env..."
-    deactivate
-fi
-if [ -n "$DO_ACTIVATE" ]; then
-    echo "Activating back previous virtual env: $DO_ACTIVATE"
-    source "${DO_ACTIVATE}/bin/activate"
-fi
-if [[ $RES -ne 0 ]]
-  then
-    echo "Please fix the aforementioned errors and then commit again"
+# poetry is installed in ~/.local/bin
+PATH=~/.local/bin:$PATH
+# check if poetry is installed
+if ! command -v poetry >/dev/null 2>&1; then
+    echo "ERROR: poetry is missing. Please run the following command to install poetry:
+            curl -sSL https://install.python-poetry.org | python3 -"
     exit 1
 fi
 
-
-# prevent push to master
-if [ -z "$1"  ]; then
-    protected_branch='master'
-    current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
-    if [ $protected_branch = $current_branch ]; then
-        echo "pushing to master is not allowed"
-        exit 1
-    fi
+# check if `poetry run demisto-sdk` is valid
+if ! poetry run demisto-sdk >/dev/null 2>&1; then
+    echo "ERROR: poetry run demisto-sdk is invalid. Please run the following command:
+         poetry install"
+    exit 1
 fi
 
-echo ""
+poetry run demisto-sdk pre-commit --staged-only --no-validate

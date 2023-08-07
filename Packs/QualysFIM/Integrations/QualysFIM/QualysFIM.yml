@@ -28,102 +28,80 @@ configuration:
   section: Connect
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - additionalinfo: First fetch timestamp (<number> <time unit>) e.g., 12 hours, 7 days etc.
   defaultvalue: 7 days
   display: Fetch time
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Max Fetch is limited to 200 incidents per fetch. Choose a value lower than 200.
   defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: |-
     Filter the incidents fetching by providing a query using Qualys syntax.
     i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
     Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
     https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
   display: Fetch Filter
-  hidden: false
   name: fetch_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Log and track file changes across global IT systems.
 display: Qualys FIM
 name: qualys_fim
 script:
   commands:
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7".
         Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The number of records to include.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of incident IDs to be included while searching for events in incidents.
-      isArray: false
+    - description: Comma-separated list of incident IDs to be included while searching for events in incidents.
       name: incident_ids
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: most_recent
       description: 'The method by which to sort the requested events. Possible values: "most_recent" and "least_recent".'
-      isArray: false
       name: sort
       predefined:
       - most_recent
       - least_recent
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of all FIM events from the current user account.
-    execution: false
     name: qualys-fim-events-list
     outputs:
     - contextPath: QualysFIM.Events.id
@@ -142,15 +120,10 @@ script:
       description: Agent ID.
       type: String
   - arguments:
-    - default: false
-      description: ID of the event to retrieve information about.
-      isArray: false
+    - description: ID of the event to retrieve information about.
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve information about a given event, by event ID.
-    execution: false
     name: qualys-fim-event-get
     outputs:
     - contextPath: QualysFIM.Event.id
@@ -178,53 +151,33 @@ script:
       description: List of all monitoring profiles name.
       type: unknown
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
         Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The number of records to include.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma-separated list of attributes to include in the response.
         By default, all attributes will be returned in the result,
         i.e., attributes="attributes=name,id".
       isArray: true
       name: attributes
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: most_recent
       description: 'The method by which to sort the requested events. Possible values: "most_recent" and "least_recent".'
-      isArray: false
       name: sort
       predefined:
       - most_recent
       - least_recent
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of all FIM incidents from the current user account.
-    execution: false
     name: qualys-fim-incidents-list
     outputs:
     - contextPath: QualysFIM.Incidents.id
@@ -246,48 +199,29 @@ script:
       description: Incident status.
       type: String
   - arguments:
-    - default: false
-      description: ID of the incident to retrieve the events for.
-      isArray: false
+    - description: ID of the incident to retrieve the events for.
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
         Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
-      isArray: false
       name: page_number
-      required: false
-      secret: false
     - default: true
       defaultValue: '10'
       description: The number of records to include.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma-separated list of attributes to include in the response.
         By default, all attributes will be returned in the result,
         i.e., attributes="attributes=name,id".
       isArray: true
       name: attributes
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of the events logged under an incident.
-    execution: false
     name: qualys-fim-incidents-get-events
     outputs:
     - contextPath: QualysFIM.IncidentEvents.id
@@ -315,56 +249,31 @@ script:
       description: Action that was taken that triggered the event creation.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Date from which to start the event search.
         Example format: yyyy-mm-dd, 2021-01-01.
-      isArray: false
       name: from_date
       predefined:
       - ''
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Date at which to stop the event search.
         Example format: yyyy-mm-dd, 2021-02-30.
-      isArray: false
       name: to_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter the events list by providing a query using Qualys syntax. i.e., "dateTime : ['2021-01-01'..'2021-03-29']
         When you use this argument it will overwrite the "from_date" and "to_date" arguments.
         If you don't use the filter, the query will include the events from the last 24 hours.
         Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
-      isArray: false
       name: filters
-      required: false
-      secret: false
-    - default: false
-      description: 'The name of the incident. Must be less than 128 characters.'
-      isArray: false
+    - description: 'The name of the incident. Must be less than 128 characters.'
       name: name
       required: true
-      secret: false
-    - default: false
-      description: Reviewers who will approve the incident.
-      isArray: false
+    - description: Reviewers who will approve the incident.
       name: reviewers
-      required: false
-      secret: false
-    - default: false
-      description: Comments for approval of the incident.
-      isArray: false
+    - description: Comments for approval of the incident.
       name: comment
-      required: false
-      secret: false
-    deprecated: false
     description: Create a manual FIM incident of type "DEFAULT".
-    execution: false
     name: qualys-fim-incident-create
     outputs:
     - contextPath: QualysFIM.CreatedIncident.id
@@ -387,20 +296,15 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: 'The approval status of the incident. Possible values: "APPROVED", "POLICY_VIOLATION", "UNAPPROVED".'
-      isArray: false
       name: approval_status
       predefined:
       - APPROVED
       - POLICY_VIOLATION
       - UNAPPROVED
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Type of incidents. Possible values: "MANUAL", "AUTOMATED", "COMPROMISE", "OTHER".'
-      isArray: false
       name: change_type
       predefined:
       - MANUAL
@@ -408,23 +312,14 @@ script:
       - COMPROMISE
       - OTHER
       required: true
-      secret: false
-    - default: false
-      description: Comments for the incidents.
-      isArray: false
+    - description: Comments for the incidents.
       name: comment
       required: true
-      secret: false
-    - default: false
-      description: Incident ID to approve.
-      isArray: false
+    - description: Incident ID to approve.
       name: incident_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The category of the incident created by the rule. Possible values: "PATCHING", "PRE_APPROVED_CHANGE_CONTROL", "CONFIGURATION_CHANGE", "HUMAN_ERROR", "DATA_CORRUPTION", "EMERGENCY_CHANGE", "CHANGE_CONTROL_VIOLATION", "GENERAL_HACKING", "MALWARE".'
-      isArray: false
       name: disposition_category
       predefined:
       - PATCHING
@@ -437,10 +332,7 @@ script:
       - GENERAL_HACKING
       - MALWARE
       required: true
-      secret: false
-    deprecated: false
     description: Mark an existing FIM incident as approved.
-    execution: false
     name: qualys-fim-incident-approve
     outputs:
     - contextPath: QualysFIM.ApprovedIncident.id
@@ -477,42 +369,25 @@ script:
       description: List of reviewers who will approve the incident.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         Comma-separated list of attributes to include in the response.
         By default, all attributes will be returned in the result,
         i.e., attributes="attributes=interfaces.hostname"
-      isArray: false
       name: attributes
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter the events list by providing a query using Qualys syntax.
         i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7"
         Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax:
         https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm
-      isArray: false
       name: filter
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page).
-      isArray: false
       name: page_number
-      required: false
-      secret: false
     - default: true
       defaultValue: '10'
       description: The number of records to include.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of all FIM assets.
-    execution: false
     name: qualys-fim-assets-list
     outputs:
     - contextPath: QualysFIM.Assets.hostname
@@ -524,11 +399,8 @@ script:
     - contextPath: QualysFIM.Assets.created
       description: Date the asset was created.
       type: String
-  dockerimage: demisto/python3:3.10.10.51930
-  feed: false
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

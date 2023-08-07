@@ -15,10 +15,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 51d76c40-db3f-4bfb-81b7-700c0be7d9c4
+    taskid: be549905-b8ff-4a41-865c-5efa5d989577
     type: start
     task:
-      id: 51d76c40-db3f-4bfb-81b7-700c0be7d9c4
+      id: be549905-b8ff-4a41-865c-5efa5d989577
       version: -1
       name: ""
       iscommand: false
@@ -26,7 +26,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     view: |-
       {
@@ -38,12 +38,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8c86995c-33dd-43ca-80f9-9850be9ae82c
+    taskid: a706ad98-4872-43d8-869f-a35144a2dee5
     type: regular
     task:
-      id: 8c86995c-33dd-43ca-80f9-9850be9ae82c
+      id: a706ad98-4872-43d8-869f-a35144a2dee5
       version: -1
       name: Delete Context
       description: Clear context for a fresh start of the test.
@@ -57,27 +62,28 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 180
+          "y": 840
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ba25bb46-15fd-4d06-8491-de100a9ca8b5
+    taskid: bc6977e0-7040-4c72-81b2-73ba44c13905
     type: regular
     task:
-      id: ba25bb46-15fd-4d06-8491-de100a9ca8b5
+      id: bc6977e0-7040-4c72-81b2-73ba44c13905
       version: -1
       name: Set hostnames in context
       description: Sets a value into the context with the given context key.
@@ -89,34 +95,10 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      append: {}
       key:
         simple: Endpoint.Hostname
       value:
         simple: '["moshe", "WIN-AQ0LQQOG4Q7", "WIN-B73RGE9AAIF", "AUTOMATIONPC", "DESKTOP-M7E991U"]'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 63ee6de7-76f6-4e99-88ad-0b0c217871fd
-    type: title
-    task:
-      id: 63ee6de7-76f6-4e99-88ad-0b0c217871fd
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -128,12 +110,45 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b32038d9-ccb0-4a5a-8322-6fcbfd001e19
+    type: title
+    task:
+      id: b32038d9-ccb0-4a5a-8322-6fcbfd001e19
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b07a17a8-6610-4437-8307-d9cd7197e5cd
+    taskid: 8412e521-872a-4d76-84b0-c29227462938
     type: condition
     task:
-      id: b07a17a8-6610-4437-8307-d9cd7197e5cd
+      id: 8412e521-872a-4d76-84b0-c29227462938
       version: -1
       name: Did enrichment work?
       description: Checks whether the enrichment outputs that we expected are in the context.
@@ -149,42 +164,63 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Endpoint.ID
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: Endpoint.ID
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CylanceProtectDevice
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: CylanceProtectDevice
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+        - operator: containsGeneral
           left:
             value:
               complex:
                 root: Endpoint
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: ID
-                      iscontext: true
-                    right:
-                      value:
-                        simple: DC=demisto,DC=ninja
+                accessor: ID
             iscontext: true
-      - - operator: isExists
-          left:
+          right:
             value:
-              simple: Endpoint.CbSensorID
-            iscontext: true
+              simple: DC=demisto,DC=ninja
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 660
+          "y": 1360
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ade5fa29-00fc-4a66-86f5-58a94dd3a4db
+    taskid: 55b078ce-0818-40d6-862d-e51686b2ab4a
     type: regular
     task:
-      id: ade5fa29-00fc-4a66-86f5-58a94dd3a4db
+      id: 55b078ce-0818-40d6-862d-e51686b2ab4a
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message
@@ -203,18 +239,23 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 840
+          "y": 1580
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d07d9734-b6b6-4e27-8518-1524bcb6f005
+    taskid: c986a247-1cfa-4775-8867-e84704644ad5
     type: playbook
     task:
-      id: d07d9734-b6b6-4e27-8518-1524bcb6f005
+      id: c986a247-1cfa-4775-8867-e84704644ad5
       version: -1
       name: Endpoint Enrichment - Generic v2.1
       playbookName: Endpoint Enrichment - Generic v2.1
@@ -230,18 +271,162 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 495
+          "y": 1175
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 103fa99e-e6e5-4777-8c58-d7b1ba6c5189
+    type: title
+    task:
+      id: 103fa99e-e6e5-4777-8c58-d7b1ba6c5189
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0f7e41d2-4a55-4181-8085-da54a6553260
+    type: title
+    task:
+      id: 0f7e41d2-4a55-4181-8085-da54a6553260
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: aaa69173-2d8a-446b-8896-21c1209fdd88
+    type: regular
+    task:
+      id: aaa69173-2d8a-446b-8896-21c1209fdd88
+      version: -1
+      name: Delete Context
+      description: Clear context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0b715e8f-8519-40fe-8da1-b303820e2220
+    type: playbook
+    task:
+      id: 0b715e8f-8519-40fe-8da1-b303820e2220
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      description: |-
+        Enrich an endpoint by hostname using one or more integrations.
+        Supported integrations:
+        - Active Directory Query v2
+        - McAfee ePO v2
+        - VMware Carbon Black EDR v2
+        - Cylance Protect v2
+        - CrowdStrike Falcon
+        - ExtraHop Reveal(x)
+
+        - Endpoint reputation using !endpoint command
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1025,
+        "height": 1765,
         "width": 680,
         "x": 450,
         "y": 50
@@ -251,4 +436,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-toversion: 6.7.9

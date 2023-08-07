@@ -19,26 +19,26 @@ configuration:
 - defaultvalue: '60'
   display: Request Timeout (Sec)
   name: requestTimeout
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: 'true'
   display: Enable Alert Notification Ingestion (Refresh Not Supported)
   name: enableAlertNotifications
-  required: false
   type: 8
+  required: false
 - defaultvalue: '200'
   display: Alert Notification Limit Per Request. (Max 500)
   name: alertLimit
-  required: false
   type: 0
+  required: false
 - display: Alert Notification Categories to Exclude
   name: alertCategories
   options:
@@ -47,22 +47,22 @@ configuration:
   - Access
   - Recon
   - Other
-  required: false
   type: 16
+  required: false
 - display: Alert Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
   name: alertSubCategories
-  required: false
   type: 12
+  required: false
 - defaultvalue: '0'
   display: Lower Bound of Severity for Alert Notification (0-1000)
   name: alertSeverityLower
-  required: false
   type: 0
+  required: false
 - defaultvalue: '1000'
   display: Upper Bound of Severity for Alert Notification (0-1000)
   name: alertSeverityUpper
-  required: false
   type: 0
+  required: false
 - display: Alert Notification Actions to Include (Alert Created enabled by default)
   name: alertActions
   options:
@@ -74,18 +74,18 @@ configuration:
   - Note Created
   - Note Updated
   - Alert Event Added
-  required: false
   type: 16
+  required: false
 - defaultvalue: 'false'
   display: Enable Event Notification Ingestion (Refresh Not Supported)
   name: enableEventNotifications
-  required: false
   type: 8
+  required: false
 - defaultvalue: '200'
   display: Event Notification Limit Per Request. (Max 500)
   name: eventLimit
-  required: false
   type: 0
+  required: false
 - display: Event Notification Categories to Exclude
   name: eventCategories
   options:
@@ -94,22 +94,22 @@ configuration:
   - Access
   - Recon
   - Other
-  required: false
   type: 16
+  required: false
 - display: Event Notification SubCategories to Exclude, See https://ironnet.atlassian.net/wiki/x/hADvGg for values (Enter in comma separated list format)
   name: eventSubCategories
-  required: false
   type: 12
+  required: false
 - defaultvalue: '0'
   display: Lower Bound of Severity for Event Notification (0-1000)
   name: eventSeverityLower
-  required: false
   type: 0
+  required: false
 - defaultvalue: '1000'
   display: Upper Bound of Severity for Event Notification (0-1000)
   name: eventSeverityUpper
-  required: false
   type: 0
+  required: false
 - display: Event Notification Actions to Include (Event Created enabled by default)
   name: eventActions
   options:
@@ -119,18 +119,18 @@ configuration:
   - Event Deleted
   - Event Alert Under Review
   - Event Alert Closed
-  required: false
   type: 16
+  required: false
 - defaultvalue: 'false'
   display: Enable Dome Notification Ingestion (Refresh Not Supported)
   name: enableDomeNotifications
-  required: false
   type: 8
+  required: false
 - defaultvalue: '500'
   display: Dome Notification Limit Per Request. (Max 500)
   name: domeLimit
-  required: false
   type: 0
+  required: false
 - display: Dome Notification Types to Exclude
   name: domeCategories
   options:
@@ -143,24 +143,19 @@ configuration:
   - Severity Malicious
   - Joined High Risk
   - High Cognitive System Score
-  required: false
   type: 16
+  required: false
 description: The IronDefense Integration for Cortex XSOAR allows users to interact with IronDefense alerts within Cortex XSOAR. The Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, to report observed bad activity, get alerts, get events, and get IronDome information.
 display: IronDefense
 name: IronDefense
 script:
   commands:
   - arguments:
-    - default: false
-      description: The ID of the IronDefense alert.
-      isArray: false
+    - description: The ID of the IronDefense alert.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The severity rating of the alert. Can be: "Undecided", "Benign", "Suspicious", "Malicious".'
-      isArray: false
       name: severity
       predefined:
       - Undecided
@@ -168,154 +163,90 @@ script:
       - Suspicious
       - Malicious
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Determines whether the rating was expected. Can be: "Unknown", "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
-      isArray: false
       name: expectation
       predefined:
       - Unknown
       - Expected
       - Unexpected
       required: true
-      secret: false
-    - default: false
-      description: Explains the rating of the alert.
-      isArray: false
+    - description: Explains the rating of the alert.
       name: comments
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to share the comment with IronDome.
-      isArray: false
       name: share_comment_with_irondome
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    deprecated: false
     description: Rates an IronDefense alert.
-    execution: false
     name: irondefense-rate-alert
   - arguments:
-    - default: false
-      description: The ID of the IronDefense alert.
-      isArray: false
+    - description: The ID of the IronDefense alert.
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: Explains the rating of the alert.
-      isArray: false
+    - description: Explains the rating of the alert.
       name: comment
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to share the comment with IronDome.
-      isArray: false
       name: share_comment_with_irondome
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    deprecated: false
     description: Adds a comment to an IronDefense alert.
-    execution: false
     name: irondefense-comment-alert
   - arguments:
-    - default: false
-      description: The ID of the IronDefense alert.
-      isArray: false
+    - description: The ID of the IronDefense alert.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The alert status to set. Can be: "Awaiting Review", "Under Review", "Closed".'
-      isArray: false
       name: status
       predefined:
       - Awaiting Review
       - Under Review
       - Closed
       required: true
-      secret: false
-    - default: false
-      description: Explains the status of the alert.
-      isArray: false
+    - description: Explains the status of the alert.
       name: comments
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to share the comment with IronDome.
-      isArray: false
       name: share_comment_with_irondome
       predefined:
       - 'True'
       - 'False'
       required: true
-      secret: false
-    deprecated: false
     description: Sets the status of an IronDefense alert.
-    execution: false
     name: irondefense-set-alert-status
   - arguments:
-    - default: false
-      description: The name of the Threat Intelligence Rule (TIR) to be created.
-      isArray: false
+    - description: The name of the Threat Intelligence Rule (TIR) to be created.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: A description of the observed bad endpoint.
-      isArray: false
+    - description: A description of the observed bad endpoint.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: The IP address of the observed bad endpoint.
-      isArray: false
+    - description: The IP address of the observed bad endpoint.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The domain name of the observed bad endpoint.
-      isArray: false
+    - description: The domain name of the observed bad endpoint.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: The start time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The start time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: activity_start_time
       required: true
-      secret: false
-    - default: false
-      description: The end time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The end time of the observed bad activity in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: activity_end_time
       required: true
-      secret: false
-    deprecated: false
     description: Submits an observed bad endpoint to IronDefense to create Threat. Intelligence Rules (TIR).
-    execution: false
     name: irondefense-report-observed-bad-activity
   - arguments:
-    - default: false
-      description: The ID of the IronDefense event.
-      isArray: false
+    - description: The ID of the IronDefense event.
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves an IronDefense event.
-    execution: false
     name: irondefense-get-event
     outputs:
     - contextPath: IronDefense.Event.id
@@ -412,16 +343,10 @@ script:
       description: Column values for the context table.
       type: String
   - arguments:
-    - default: false
-      description: The list of Alert IDs to filter by.
-      isArray: false
+    - description: The list of Alert IDs to filter by.
       name: alert_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The list of Alert categories to filter by.
-      isArray: false
       name: category
       predefined:
       - C2
@@ -429,159 +354,67 @@ script:
       - Access
       - Recon
       - Other
-      required: false
-      secret: false
-    - default: false
-      description: The list of Alert sub categories to filter by.
-      isArray: false
+    - description: The list of Alert sub categories to filter by.
       name: sub_category
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The list of Alert status to filter by.
-      isArray: false
       name: status
       predefined:
       - Awaiting Review
       - Under Review
       - Closed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The list of Alert analyst severity to filter by.
-      isArray: false
       name: analyst_severity
       predefined:
       - Undecided
       - Benign
       - Suspicious
       - Malicious
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The list of Alert analyst expectation to filter by.
-      isArray: false
       name: analyst_expectation
       predefined:
       - Unknown
       - Expected
       - Unexpected
-      required: false
-      secret: false
-    - default: false
-      description: The minimum Alert severity to filter by. (0-1000)
-      isArray: false
+    - description: The minimum Alert severity to filter by. (0-1000)
       name: min_severity
-      required: false
-      secret: false
-    - default: false
-      description: The maximum Alert severity to filter by. (0-1000)
-      isArray: false
+    - description: The maximum Alert severity to filter by. (0-1000)
       name: max_severity
-      required: false
-      secret: false
-    - default: false
-      description: The minimum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The minimum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: min_created
-      required: false
-      secret: false
-    - default: false
-      description: The maximum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The maximum Alert created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: max_created
-      required: false
-      secret: false
-    - default: false
-      description: The minimum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The minimum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: min_updated
-      required: false
-      secret: false
-    - default: false
-      description: The maximum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The maximum Alert updated date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: max_updated
-      required: false
-      secret: false
-    - default: false
-      description: The minimum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The minimum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: min_first_event_created
-      required: false
-      secret: false
-    - default: false
-      description: The maximum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The maximum Alert first event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: max_first_event_created
-      required: false
-      secret: false
-    - default: false
-      description: The minimum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The minimum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: min_last_event_created
-      required: false
-      secret: false
-    - default: false
-      description: The maximum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The maximum Alert last event created date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: max_last_event_created
-      required: false
-      secret: false
-    - default: false
-      description: The minimum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The minimum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: min_first_event_start_time
-      required: false
-      secret: false
-    - default: false
-      description: The maximum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The maximum Alert first event start date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: max_first_event_start_time
-      required: false
-      secret: false
-    - default: false
-      description: The minimum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The minimum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: min_last_event_end_time
-      required: false
-      secret: false
-    - default: false
-      description: The maximum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
-      isArray: false
+    - description: The maximum Alert last event end date to filter by in RFC 3339 format (E.g. 2017-10-13T07:20:50.52Z).
       name: max_last_event_end_time
-      required: false
-      secret: false
-    - default: false
-      description: The list of Alert analytic versions to filter by.
-      isArray: false
+    - description: The list of Alert analytic versions to filter by.
       name: analytic_version
-      required: false
-      secret: false
-    - default: false
-      description: The limit on the number of Alerts to be returned.
-      isArray: false
+    - description: The limit on the number of Alerts to be returned.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to skip - used for paging the results.
-      isArray: false
+    - description: The number of results to skip - used for paging the results.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The list of Alert fields to sort by.
-      isArray: false
+    - description: The list of Alert fields to sort by.
       name: sort
-      required: false
-      secret: false
-    deprecated: false
     description: Pulls Alerts from IronDefense.
-    execution: false
     name: irondefense-get-alerts
     outputs:
     - contextPath: IronDefense.Alert.id
@@ -639,15 +472,10 @@ script:
       description: The total number of results possible from the query.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the IronDefense alert.
-      isArray: false
+    - description: The ID of the IronDefense alert.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves IronDome information for an IronDefense alert.
-    execution: false
     name: irondefense-get-alert-irondome-information
     outputs:
     - contextPath: IronDome.Correlations.alert_id
@@ -855,27 +683,14 @@ script:
       description: The cognitive system score.
       type: Number
   - arguments:
-    - default: false
-      description: The ID of the IronDefense alert to retrieve events for.
-      isArray: false
+    - description: The ID of the IronDefense alert to retrieve events for.
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: The limit on the number of Events to be returned.
-      isArray: false
+    - description: The limit on the number of Events to be returned.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The number of results to skip - used for paging the results.
-      isArray: false
+    - description: The number of results to skip - used for paging the results.
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves IronDefense Events for a given Alert ID.
-    execution: false
     name: irondefense-get-events-from-alert
     outputs:
     - contextPath: IronDefense.Event.id
@@ -974,11 +789,8 @@ script:
     - contextPath: IronDefense.Query.GetEvents.total
       description: The total number of results possible from the query.
       type: Number
-  dockerimage: demisto/python3:3.10.10.50695
-  feed: false
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

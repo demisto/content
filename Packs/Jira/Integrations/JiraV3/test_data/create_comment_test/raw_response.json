@@ -1,0 +1,58 @@
+{
+    "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/issue/21487/comment/18395",
+    "id": "18395",
+    "author": {
+        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
+        "accountId": "dummy_account_id",
+        "emailAddress": "admin@demistodev.com",
+        "avatarUrls": {
+            "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+            "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+            "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+            "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+        },
+        "displayName": "Example User",
+        "active": true,
+        "timeZone": "Asia/Jerusalem",
+        "accountType": "atlassian"
+    },
+    "body": {
+        "type": "doc",
+        "version": 1,
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "text": " Dummy link",
+                        "type": "text"
+                    }
+                ]
+            }
+        ]
+    },
+    "renderedBody": "<p> Dummy link</p>",
+    "updateAuthor": {
+        "self": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/user?accountId=dummy_account_id",
+        "accountId": "dummy_account_id",
+        "emailAddress": "admin@demistodev.com",
+        "avatarUrls": {
+            "48x48": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/48",
+            "24x24": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/24",
+            "16x16": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/16",
+            "32x32": "https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/dummy_account_id/7db37854-040f-4c34-b7c3-203db2669142/32"
+        },
+        "displayName": "Example User",
+        "active": true,
+        "timeZone": "Asia/Jerusalem",
+        "accountType": "atlassian"
+    },
+    "created": "2023-04-27T22:12:46.451+0300",
+    "updated": "2023-04-27T22:12:46.451+0300",
+    "visibility": {
+        "type": "role",
+        "value": "Administrators",
+        "identifier": "Administrators"
+    },
+    "jsdPublic": true
+}

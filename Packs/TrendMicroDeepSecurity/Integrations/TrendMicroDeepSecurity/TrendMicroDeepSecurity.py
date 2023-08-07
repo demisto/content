@@ -1759,8 +1759,10 @@ def main():
 
     use_ssl = not params.get("insecure", False)
     use_proxy = params.get("proxy", False)
-
-    client = Client(params.get("server_url"), params.get("api_secret"), use_ssl, use_proxy)
+    api_secret = params.get('credentials_api_secret', {}).get('password') or params.get("api_secret")
+    if not api_secret:
+        return_error('API secret must be provided.')
+    client = Client(params.get("server_url"), api_secret, use_ssl, use_proxy)
 
     commands: Dict[str, Callable] = {"trendmicro-list-computers": list_computers_command,
                                      "trendmicro-create-computer": create_computer_command,

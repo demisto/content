@@ -1,0 +1,29 @@
+[MODEL: dataset = mcafee_nsm_raw]
+alter
+    event_message = arrayindex(regextract(_raw_log ,"\:\s(.*)"),0),
+    event_type = arrayindex(regextract(_raw_log ,"\s([A-Za-z]+)\:\s"),0),
+    target_hostname = arrayindex(regextract(_raw_log ,"\:\s([A-Za-z0-9\-\_]+)\sdetected"),0),
+    alert_severity = arrayindex(regextract(_raw_log ,"\(severity\s\=\s([A-Za-z]+)"),0),
+    attack_name = arrayindex(regextract(_raw_log ,"detected\s([^\:]+)\:"),0),
+    source_ipv4 = arrayindex(regextract(_raw_log,"(\d+\.\d+\.\d+\.\d+)\:\S+\s\-\>"),0),
+    source_port = arrayindex(regextract(_raw_log,"\d+\.\d+\.\d+\.\d+\:(\d+)\s\-\>"),0),
+    dst_ipv4 = arrayindex(regextract(_raw_log ,"\-\>\s(\d+\.\d+\.\d+\.\d+)\:\S+"),0),
+    dst_port = arrayindex(regextract(_raw_log ,"\-\>\s\d+\.\d+\.\d+\.\d+\:(\d+)"),0),
+    result = arrayindex(regextract(_raw_log ,"result\s\=\s([^\)]+)\)"),0),
+    observer_type = arrayindex(regextract(_raw_log ,"Fault\s\:\s([^\:]+)\:"),0)
+| alter
+        event_type = if(event_type = "SyslogAlertForwarder", "Alert", event_type = "SyslogFaultForwarder", "Fault", event_type = "SyslogAuditLogForwarder", "Audit", to_String(event_type))
+| alter
+    xdm.event.type = event_type,
+    xdm.event.description = event_message,
+    xdm.target.host.hostname = target_hostname,
+    xdm.alert.name = attack_name,
+    xdm.alert.severity = alert_severity,
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.port = to_integer(source_port),
+    xdm.target.ipv4 = dst_ipv4,
+    xdm.target.port = to_integer(dst_port),
+    xdm.event.outcome_reason = result,
+    xdm.observer.type = observer_type
+| alter
+        xdm.alert.description = if(event_type = "Fault",arrayindex(regextract(_raw_log ,"Fault\s\:\s[^\:]+\:\s(.*)"),0),_raw_log contains "CVE",arrayindex(regextract(_raw_log ,"\d+\:\d+\s[^\:]+\:\s*([^\)]+\))"),0),arrayindex(regextract(_raw_log ,"\d+\:\d+\s[^\:]+\:\s*([^\(]+)"),0));

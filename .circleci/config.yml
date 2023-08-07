@@ -138,6 +138,9 @@ references:
         ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
         ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH true
         ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_list.json $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_mpv2_list.json $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh Tests/Marketplace/core_packs_xpanse_list.json $CIRCLE_BRANCH true
 
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
@@ -231,11 +234,8 @@ references:
 
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
-        echo "flake8 py2 version: $(python2 -m flake8 --version)"
         echo "flake8 py3 version: $(python3 -m flake8 --version)"
-        echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
         echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-        echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
 

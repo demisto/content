@@ -465,13 +465,13 @@ def build_submission_data(raw_response, type_):
 
 def encode_file_name(file_name):
     """
-    encodes the file name - i.e ignoring non ASCII chars and removing backslashes
+    encodes the file name - i.e ignoring invalid chars and removing backslashes
     Args:
         file_name (str): name of the file
     Returns: encoded file name
     """
-    file_name = file_name.replace('\\', '')
-    return file_name.encode('ascii', 'ignore')
+    file_name = file_name.translate(dict.fromkeys(map(ord, "<>:\"/\\|?*")))
+    return file_name.encode('utf-8', 'ignore')
 
 
 def upload_sample_command():
@@ -675,7 +675,7 @@ def get_sample_command():
     entry = create_sample_entry(data)
     scores = dbot_score_by_hash(entry)
     entry_context = {
-        'VMRay.Sample(var.SampleID === obj.SampleID)': entry,
+        'VMRay.Sample(val.SampleID === obj.SampleID)': entry,
         outputPaths.get('dbotscore'): scores,
     }
 

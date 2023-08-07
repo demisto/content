@@ -2,8 +2,8 @@ var url = params.url;
 if (url.indexOf("https://") < 0) {
     url = 'https://' + url;
 }
-var username = params.username;
-var password = params.password;
+var username = params.credentials ?  params.credentials.identifier : params.username;
+var password = params.credentials ?  params.credentials.password : params.password;
 var proxy = params.proxy || false;
 var COOKIE_PREFIX = 'RSA_SA_LICENSE=true; JSESSIONID=';
 
@@ -43,6 +43,9 @@ function replaceAll(str, find, replace) {
 }
 
 function login(url, username, password) {
+    if (!(username && password)){
+        raise ('Username and Password must be provided.');
+    }
     var fullUrl = url + '/j_spring_security_check';
     var res = http(
         fullUrl,

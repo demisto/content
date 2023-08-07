@@ -15,30 +15,24 @@ configuration:
   type: 9
   additionalinfo: Token ID and Secret Key.
   displaypassword: "Secret Key"
-  hiddenusername: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: "Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints."
 display: Absolute
 name: Absolute
 script:
   commands:
   - arguments:
-    - default: false
-      description: The system unique identifier of the device.
-      isArray: false
+    - description: The system unique identifier of the device.
       name: device_id
       required: true
-      secret: false
-    deprecated: false
     description: Returns a list of custom device fields associated with the given device_id, based on the authorization token.
-    execution: false
     name: absolute-custom-device-field-list
     outputs:
     - contextPath: Absolute.CustomDeviceField.DeviceUID
@@ -66,109 +60,60 @@ script:
       description: 'The data type of the field value. Possible values are: Text, Date, Dropdown.'
       type: String
   - arguments:
-    - default: false
-      description: The system unique identifier of the device.
-      isArray: false
+    - description: The system unique identifier of the device.
       name: device_id
       required: true
-      secret: false
-    - default: false
-      description: 'The unique identifier of the custom device field. Note: In order to get this value, use the "absolute-custom-device-field-list" command.'
-      isArray: false
+    - description: 'The unique identifier of the custom device field. Note: In order to get this value, use the "absolute-custom-device-field-list" command.'
       name: cdf_uid
       required: true
-      secret: false
-    - default: false
-      description: The new value of the custom device field to be set.
-      isArray: false
+    - description: The new value of the custom device field to be set.
       name: value
       required: true
-      secret: false
-    deprecated: false
     description: Updates the value of the included custom device fields for the given device_id.
-    execution: false
     name: absolute-custom-device-field-update
   - arguments:
-    - default: false
-      description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is using up to 10,000 devices per request.
+    - description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is using up to 10,000 devices per request.
       isArray: true
       name: device_ids
       required: true
-      secret: false
-    - default: false
-      description: The user-defined name for the Freeze request. The name should be a non-unique string and has 1-250 characters.
-      isArray: false
+    - description: The user-defined name for the Freeze request. The name should be a non-unique string and has 1-250 characters.
       name: request_name
       required: true
-      secret: false
-    - default: false
-      description: The user-defined HTML coded message shown on devices when the Freeze is applied. The message should be in a non-unique HTML format and has 1-4000 characters.
-      isArray: false
+    - description: The user-defined HTML coded message shown on devices when the Freeze is applied. The message should be in a non-unique HTML format and has 1-4000 characters.
       name: html_message
       required: true
-      secret: false
-    - default: false
-      description: The user-defined name for the Freeze message.
-      isArray: false
+    - description: The user-defined name for the Freeze message.
       name: message_name
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of Freeze. You cannot freeze a device that has been reported stolen in the Absolute console. - OnDemand: Freezes a device on its next connection to the Absolute Monitoring Center, which is typically within 15 minutes. This applies for all supported operating systems. - Scheduled: Freezes a device on its next connection to the Absolute Monitoring Center on or after a specified date and time. This applies to Windows and Mac devices. The scheduled freeze date is specified in the scheduled_freeze_date argument. Scheduled Freeze requests are only supported on Windows and Mac devices with an active Absolute agent that is regularly connecting to the Absolute Monitoring Center. - Offline: Freezes a device if it has been offline for a specified period of time. Applies to Windows and Mac devices. Offline period is specified in the offline_time_seconds argument. Offline freeze is not available if your Absolute account has been migrated to Offline Freeze Rules. For more information, see the console Help.'
-      isArray: false
       name: device_freeze_type
       predefined:
       - 'OnDemand'
       - 'Scheduled'
       - 'Offline'
       required: true
-      secret: false
-    - default: false
-      description: 'The date and time (in UTC) when the device should be frozen in ISO 8601 format: YYYY-MM-DDThh:mm:ss.SSSZ. Required if device_freeze_type is Scheduled. For example, 2022-01-01T00:00:00.000Z.'
-      isArray: false
+    - description: 'The date and time (in UTC) when the device should be frozen in ISO 8601 format: YYYY-MM-DDThh:mm:ss.SSSZ. Required if device_freeze_type is Scheduled. For example, 2022-01-01T00:00:00.000Z.'
       name: scheduled_freeze_date
-      required: false
-      secret: false
-    - default: false
-      description: 'The length of time (in seconds) that a device can be offline before the device is frozen. Required if device_freeze_type is Offline. Must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days). Default value is 30 days.'
-      isArray: false
+    - description: 'The length of time (in seconds) that a device can be offline before the device is frozen. Required if device_freeze_type is Offline. Must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days). Default value is 30 days.'
       defaultValue: 22592000
       name: offline_time_seconds
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of passcode to unfreeze a device. - UserDefined: Manually set the passcode in passcode. You must specify the passcode argument. - RandomForEach: A unique passcode is randomly generated for each device. You must specify the passcode_length argument. - RandomForAll: A passcode is randomly generated and is the same for all devices. You must specify the passcode_length argument.'
-      isArray: false
       name: passcode_type
       predefined:
       - 'UserDefined'
       - 'RandomForEach'
       - 'RandomForAll'
       required: true
-      secret: false
-    - default: false
-      description: 'The passcode used to unfreeze the devices. Required if passcode_type is UserDefined. A valid passcode is a number that has 4-8 characters. For example, 12345678.'
-      isArray: false
+    - description: 'The passcode used to unfreeze the devices. Required if passcode_type is UserDefined. A valid passcode is a number that has 4-8 characters. For example, 12345678.'
       name: passcode
-      required: false
-      secret: false
-    - default: false
-      description: 'The length of the passcode when it is randomly generated. Required if passcode_type is RandomForEach or RandomForAll. A valid passcode is a number from 4 - 8. For example, 8.'
-      isArray: false
+    - description: 'The length of the passcode when it is randomly generated. Required if passcode_type is RandomForEach or RandomForAll. A valid passcode is a number from 4 - 8. For example, 8.'
       name: passcode_length
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of user-entered email addresses that will receive an email notification when the status of the Freeze request changes. The API supports up to 10 email addresses.'
+    - description: 'A comma-separated list of user-entered email addresses that will receive an email notification when the status of the Freeze request changes. The API supports up to 10 email addresses.'
       isArray: true
       name: notification_emails
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new Freeze request for the devices specified in the device_ids argument.
-    execution: false
     name: absolute-device-freeze-request
     outputs:
     - contextPath: Absolute.FreezeRequest.RequestUID
@@ -187,46 +132,29 @@ script:
       description: The reference key for the error message.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is to use up to 10,000 devices per request.
+    - description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is to use up to 10,000 devices per request.
       isArray: true
       name: device_ids
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to remove only a Scheduled Freeze request. Note: When setting to true, if the Freeze request is a Scheduled Freeze request, the Freeze request is removed. Otherwise, when setting to false, if the Freeze request is not a Scheduled Freeze request, the Freeze request is not removed.'
-      isArray: false
       name: remove_scheduled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Whether to remove only an Offline Freeze request. Note: When setting to true, if the Freeze request is an Offline Freeze request, the Freeze request is removed. Otherwise, when setting to false, if the Freeze request is not a Offline Freeze request, the Freeze request is not removed.'
-      isArray: false
       name: remove_offline
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: 'Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests, or remove outstanding Scheduled and Offline Freeze requests.'
-    execution: false
     name: absolute-device-remove-freeze-request
   - arguments:
-    - default: false
-      description: The system-defined, unique identifier of the Freeze request.
-      isArray: false
+    - description: The system-defined, unique identifier of the Freeze request.
       name: request_uid
       required: true
-      secret: false
-    deprecated: false
     description: Gets detailed information about the Freeze request specified by request_uid.
-    execution: false
     name: absolute-device-freeze-request-get
     outputs:
     - contextPath: Absolute.FreezeRequestDetail.ID
@@ -377,15 +305,9 @@ script:
       description: Internal flag.
       type: Boolean
   - arguments:
-    - default: false
-      description: The system-defined, unique identifier of the Freeze message.
-      isArray: false
+    - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets all the Freeze messages that are configured for the account by the given message_id. If message_id is not given all the messages will be returned.
-    execution: false
     name: absolute-device-freeze-message-list
     outputs:
     - contextPath: Absolute.FreezeMessage.ID
@@ -410,70 +332,42 @@ script:
       description: The date and time when the Freeze message was last modified.
       type: String
   - arguments:
-    - default: false
-      description: The user-defined, HTML coded message that shows on a device when a Device Freeze is applied. Should be in HTML format with 1-4000 characters.
-      isArray: false
+    - description: The user-defined, HTML coded message that shows on a device when a Device Freeze is applied. Should be in HTML format with 1-4000 characters.
       name: html_message
       required: true
-      secret: false
-    - default: false
-      description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
-      isArray: false
+    - description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
       name: message_name
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new Freeze message for the account.
-    execution: false
     name: absolute-device-freeze-message-create
     outputs:
     - contextPath: Absolute.FreezeMessage.ID
       description: The system-defined, unique identifier of the Freeze message.
       type: String
   - arguments:
-    - default: false
-      description: The user-defined, HTML coded message that shows on a device when a Device Freeze is applied. Should be in HTML format with 1-4000 characters.
-      isArray: false
+    - description: The user-defined, HTML coded message that shows on a device when a Device Freeze is applied. Should be in HTML format with 1-4000 characters.
       name: html_message
       required: true
-      secret: false
-    - default: false
-      description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
-      isArray: false
+    - description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
       name: message_name
       required: true
-      secret: false
-    - default: false
-      description: The system-defined, unique identifier of the Freeze message.
-      isArray: false
+    - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
       required: true
-      secret: false
-    deprecated: false
     description: Updates the content of an existing Freeze message.
-    execution: false
     name: absolute-device-freeze-message-update
   - arguments:
-    - default: false
-      description: The system-defined, unique identifier of the Freeze message.
-      isArray: false
+    - description: The system-defined, unique identifier of the Freeze message.
       name: message_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an existing Freeze message for the account.
-    execution: false
     name: absolute-device-freeze-message-delete
   - arguments:
-    - default: false
-      description: A comma-separated list of device UIDs that should be unenrolled.
+    - description: A comma-separated list of device UIDs that should be unenrolled.
       isArray: true
       name: device_ids
       required: true
-      secret: false
-    deprecated: false
     description: Initiates an unenroll request on a list of eligible devices.
-    execution: false
     name: absolute-device-unenroll
     outputs:
     - contextPath: Absolute.DeviceUnenroll.DeviceUid
@@ -495,83 +389,42 @@ script:
       description: The unique Electronic SerialNumber (ESN) that is assigned to the agent installed on the device.
       type: String
   - arguments:
-    - default: false
-      description: The query by which to filter the device applications. If this argument is set, it overrides the others. For example, appName eq 'someName' or availableVirtualMemoryBytes lt 1073741824.
-      isArray: false
+    - description: The query by which to filter the device applications. If this argument is set, it overrides the others. For example, appName eq 'someName' or availableVirtualMemoryBytes lt 1073741824.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of all specific values to return. If not set, all possible values will be returned.
+    - description: A comma-separated list of all specific values to return. If not set, all possible values will be returned.
       isArray: true
       name: return_fields
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the unique IDs associated with this Absolute account.
+    - description: A comma-separated list of the unique IDs associated with this Absolute account.
       isArray: true
       name: account_uids
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the system-defined unique identifier of the devices.
+    - description: A comma-separated list of the system-defined unique identifier of the devices.
       isArray: true
       name: device_ids
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the devices names.
+    - description: A comma-separated list of the devices names.
       isArray: true
       name: device_names
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the application names.
+    - description: A comma-separated list of the application names.
       isArray: true
       name: app_names
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the name of the software publishers of the application.
+    - description: A comma-separated list of the name of the software publishers of the application.
       isArray: true
       name: app_publishers
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the user names of the users logged in to the device.
+    - description: A comma-separated list of the user names of the users logged in to the device.
       isArray: true
       name: user_names
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the operating systems that are installed on the device.
+    - description: A comma-separated list of the operating systems that are installed on the device.
       isArray: true
       name: os
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device.
+    - description: A comma-separated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device.
       isArray: true
       name: esn
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page number of the results to retrieve. Minimum value is 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of device records and the corresponding software application data for each device on the account that you have access to or that meets the given filter.
-    execution: false
     name: absolute-device-application-list
     outputs:
     - contextPath: Absolute.DeviceApplication.DeviceAppId
@@ -626,70 +479,33 @@ script:
       description: The date and time (in Unix epoch time) of the most recent installed software (SNG) scan.
       type: Date
   - arguments:
-    - default: false
-      description: The query by which to filter all the devices managed by the account. If this argument is set, it overrides the others. For example, agentStatus eq 'A' or lastConnectedUtc lt datetime'2021-01-01T00:00:00Z'.
-      isArray: false
+    - description: The query by which to filter all the devices managed by the account. If this argument is set, it overrides the others. For example, agentStatus eq 'A' or lastConnectedUtc lt datetime'2021-01-01T00:00:00Z'.
       name: filter
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The status of the Absolute agent on the device.
-      isArray: false
       name: agent_status
       predefined:
       - 'Active'
       - 'Disabled'
       - 'Inactive'
-      required: false
-      secret: false
-    - default: false
-      description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
-      isArray: false
+    - description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
       name: os_name
-      required: false
-      secret: false
-    - default: false
-      description: The version of the operating system.
-      isArray: false
+    - description: The version of the operating system.
       name: os_version
-      required: false
-      secret: false
-    - default: false
-      description: The manufacturer of the device.
-      isArray: false
+    - description: The manufacturer of the device.
       name: manufacturer
-      required: false
-      secret: false
-    - default: false
-      description: The product name from the manufacturer.
-      isArray: false
+    - description: The product name from the manufacturer.
       name: model
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the usernames of the users who were logged in to the device at the time of the most recent agent call. If no user was logged in during the last agent call, the last detected username is used.
+    - description: A comma-separated list of the usernames of the users who were logged in to the device at the time of the most recent agent call. If no user was logged in during the last agent call, the last detected username is used.
       isArray: true
       name: user_names
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page number of the results to retrieve. Minimum value is 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of device records and their corresponding data that meets the required filter for all devices in your account, based on your authorization token.
-    execution: false
     name: absolute-device-list
     outputs:
     - contextPath: Absolute.Device.Id
@@ -735,39 +551,22 @@ script:
       description: The summarized encryption status of the device.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of all specific values to return.
+    - description: A comma-separated list of all specific values to return.
       isArray: true
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the system-defined unique identifier of the devices.
+    - description: A comma-separated list of the system-defined unique identifier of the devices.
       isArray: true
       name: device_ids
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the devices names.
+    - description: A comma-separated list of the devices names.
       isArray: true
       name: device_names
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the last known local IP addresses of a device.
+    - description: A comma-separated list of the last known local IP addresses of a device.
       isArray: true
       name: local_ips
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the last known public IP addresses of a device.
+    - description: A comma-separated list of the last known public IP addresses of a device.
       isArray: true
       name: public_ips
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a list of device records and their corresponding data that meets the required fields for all devices in your account.
-    execution: false
     name: absolute-device-get
     outputs:
     - contextPath: Absolute.Device.Id
@@ -873,15 +672,11 @@ script:
       description: The Service Set Identifier (SSID) of the connected Wi-Fi adapter.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of the system-defined unique identifier of the devices.
+    - description: A comma-separated list of the system-defined unique identifier of the devices.
       isArray: true
       name: device_ids
       required: true
-      secret: false
-    deprecated: false
     description: Gets a list of devices geo location records and their corresponding data that meets the required devices IDs.
-    execution: false
     name: absolute-device-location-get
     outputs:
     - contextPath: Absolute.LocationReport.Coordinates
@@ -911,12 +706,11 @@ script:
     - contextPath: Absolute.LocationReport.LastUpdate
       description: The date and time (in Unix epoch) when the device last changed its location.
       type: Number
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.0.0
 tests:
 - Absolute_TestPlaybook

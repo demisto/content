@@ -1,83 +1,38 @@
 args:
-- default: false
-  description: Incident ID to get the prediction of. If empty, predicts the current
-    incident ID.
-  isArray: false
+- description: Incident ID to get the prediction of. If empty, predicts the current incident ID.
   name: incidentId
   predefined:
   - ''
-  required: false
-  secret: false
-- default: false
-  defaultValue: '150'
-  description: 'The maximum number of incidents that an indicator can be associated
-    with to be retained. This helps to filter out indicators that appear in many incidents '
-  isArray: false
+- defaultValue: '150'
+  description: 'The maximum number of incidents that an indicator can be associated with to be retained. This helps to filter out indicators that appear in many incidents '
   name: maxIncidentsInIndicatorsForWhiteList
-  required: false
-  secret: false
-- default: false
-  defaultValue: '1'
-  description: The minimum number of indicators related to the incident required before
-    running the model.
-  isArray: false
+- defaultValue: '1'
+  description: The minimum number of indicators related to the incident required before running the model.
   name: minNumberOfIndicators
-  required: false
-  secret: false
-- default: false
-  defaultValue: '0'
+- defaultValue: '0'
   description: Threshold to similarity value which is between 0 and 1.
-  isArray: false
   name: threshold
-  required: false
-  secret: false
-- default: false
-  description: Type of indicators to take into account. If empty, uses all indicators
-    types.
-  isArray: false
+- description: Type of indicators to take into account. If empty, uses all indicators types.
   name: indicatorsTypes
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
   description: Whether to show the incident you are investigating.
-  isArray: false
   name: showActualIncident
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
-- default: false
-  defaultValue: '50'
+- defaultValue: '50'
   description: The maximum number of incidents to display.
-  isArray: false
   name: maxIncidentsToDisplay
-  required: false
-  secret: false
-- default: false
-  defaultValue: type, created, name
+- defaultValue: type, created, name
   description: Fields to add in the table of incident
-  isArray: false
   name: fieldsIncidentToDisplay
-  required: false
-  secret: false
-- default: false
-  defaultValue: 1 month ago
+- defaultValue: 1 month ago
   description: The start date by which we retrieve information on incidents.
-  isArray: false
   name: fromDate
-  required: false
-  secret: false
-- default: false
-  description: Argument for the query of similar incidents.
-  isArray: false
+- description: Argument for the query of similar incidents.
   name: query
-  required: false
-  secret: false
-comment: Finds similar incidents based on indicators' similarity. Indicators' contribution
-  to the final score is based on their scarcity.
+comment: Finds similar incidents based on indicators' similarity. Indicators' contribution to the final score is based on their scarcity.
 commonfields:
   id: DBotFindSimilarIncidentsByIndicators
   version: -1
@@ -85,12 +40,10 @@ enabled: true
 name: DBotFindSimilarIncidentsByIndicators
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.49819
+dockerimage: demisto/ml:1.0.0.57750
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

@@ -16,12 +16,12 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: "RunZero is a network discovery and asset inventory\n platform that uncovers every network in use and identifies every device connected – without credentials.\n Scan your network and build your asset inventory in minutes."
 display: 'RunZero'
 name: RunZero
@@ -29,57 +29,35 @@ script:
   commands:
   - name: runzero-asset-search
     description: Get assets.
-    deprecated: false
     arguments:
     - name: asset_ids
       description: A comma-separated list of asset IDs.
       isArray: true
-      required: false
-      secret: false
     - name: search
       description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288."
-      isArray: false
-      required: false
-      secret: false
     - name: ips
       description: A comma-separated list of IP addresses.
       isArray: true
-      required: false
-      secret: false
     - name: hostnames
       description: A comma-separated list of hostnames.
       isArray: true
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: false
       description: Whether to include the attributes section in the returned result.
-      isArray: false
       name: display_attributes
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: false
       description: Whether to include a services section in the returned result.
-      isArray: false
       name: display_services
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - name: limit
       description: Limit the number of assets returned.
-      default: false
       defaultValue: 50
-      isArray: false
-      secret: false
-    execution: false
     outputs:
     - contextPath: RunZero.Asset.ID
       description: Asset service ID.
@@ -173,51 +151,31 @@ script:
       type: String
   - name: runzero-asset-delete
     description: Bulk delete assets.
-    deprecated: false
     arguments:
     - name: asset_ids
       description: A comma-separated list of UUIDs of the asset to delete.
       isArray: true
       required: true
-      secret: false
-    execution: false
   - name: runzero-service-search
     description: Get services.
-    deprecated: false
     arguments:
     - name: service_id
       description: UUID of the service to retrieve.
-      isArray: false
-      required: false
-      secret: false
     - name: search
       description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288"
-      isArray: false
-      required: false
-      secret: false
     - name: service_addresses
       description: A comma-separated list of services by addresses.
       isArray: true
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: false
       description: Whether to include an attributes section in the returned result.
-      isArray: false
       name: display_attributes
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - name: limit
       description: Limit the number of assets returned.
-      default: false
       defaultValue: 50
-      isArray: false
-      secret: false
-    execution: false
     outputs:
     - contextPath: RunZero.Service.ID
       description: Service ID.
@@ -326,48 +284,30 @@ script:
       type: String
   - name: runzero-service-delete
     description: Delete a service.
-    deprecated: false
     arguments:
     - name: service_id
       description: UUID of the service to delete.
-      isArray: false
       required: true
-      secret: false
-    execution: false
   - name: runzero-comment-add
     description: Add a comment or override an existing asset comment.
-    deprecated: false
     arguments:
     - name: asset_id
       description: Asset ID.
-      isArray: false
       required: true
-      secret: false
     - name: comment
       description: Comment to add.
-      isArray: false
       required: true
-      secret: false
-    execution: false
   - name: runzero-tag-add
     description: Add tag or tags to the asset.
-    deprecated: false
     arguments:
     - name: asset_id
       description: Asset ID.
-      isArray: false
       required: true
-      secret: false
     - name: tags
       description: Tags to add to the asset.
-      isArray: false
       required: true
-      secret: false
-    execution: false
   - name: runzero-quota-get
     description: Get information about the API key used. Type, Limit, usage etc.
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: RunZero.Quota.id
       description: API key ID.
@@ -413,37 +353,24 @@ script:
       type: String
   - name: runzero-tag-delete
     description: Delete tags for specific asset.
-    deprecated: false
     arguments:
     - name: asset_id
       description: Asset ID from which to remove specified tags.
-      isArray: false
       required: true
-      secret: false
     - name: tags
       description: A comma separated list of tags to delete.
       isArray: true
       required: true
-      secret: false
-    execution: false
   - name: runzero-wireless-lan-search
     description: Get all wireless LANs.
-    deprecated: false
     arguments:
     - name: wireless_id
       description: The wireless LAN ID.
-      isArray: false
-      required: false
-      secret: false
     - name: search
       description: "The query by which to search. For information on the syntax, see: https://www.runzero.com/docs/runzero-manual.pdf page 288."
-      isArray: false
-      required: false
-      secret: false
     - name: limit
       description: Limit the number of wireless LAN returned.
       defaultValue: 50
-    execution: false
     outputs:
     - contextPath: RunZero.WirelessLAN.ID
       description: Wireless LAN ID.
@@ -489,19 +416,15 @@ script:
       type: String
   - name: runzero-wireless-lan-delete
     description: Remove a wireless LAN.
-    deprecated: false
     arguments:
     - name: wireless_id
       description: UUID of the wireless LAN to remove.
       required: true
-      isArray: false
-      secret: false
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.12.63474
 marketplaces:
 - xsoar
 fromversion: 6.5.0

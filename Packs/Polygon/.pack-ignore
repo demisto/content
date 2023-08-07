@@ -1,8 +1,8 @@
 [file:README.md]
 ignore=RM106
 
-[file:Polygon.yml]
-ignore=IN145
-
 [file:Polygon_image.png]
 ignore=IM111
+
+[known_words]
+THF

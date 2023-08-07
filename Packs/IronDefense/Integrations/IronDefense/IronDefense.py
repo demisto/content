@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import functools
 from typing import List, Dict
-import demistomock as demisto
 from http.client import HTTPException
-from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import urllib3
 # Disable insecure warnings

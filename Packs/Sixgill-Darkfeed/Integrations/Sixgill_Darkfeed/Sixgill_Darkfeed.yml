@@ -11,13 +11,24 @@ configuration:
   name: client_secret
   required: true
   type: 4
+- defaultvalue: 'all'
+  display: Sixgill Confidence
+  name: confidence
+  type: 15
+  options:
+  - all
+  - "90"
+  - "80"
+  - "70"
+  - "60"
+  additionalinfo: 'Ingest all IOCs=all, IOC exactly fits description=90, IOC almost exactly fits description=80, IOC mostly fits description=70, IOC generally fits description=60'
+  required: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -26,10 +37,9 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -41,59 +51,57 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
+  defaultvalue: B - Usually reliable
+- name: tlp_color
+  display: "Traffic Light Protocol Color"
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
-- defaultvalue: indicatorType
-  name: feedExpirationPolicy
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
+- defaultvalue: 'indicatorType'
   display: ""
+  name: feedExpirationPolicy
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
   required: false
-  type: 17
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - defaultvalue: '2'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
-- defaultvalue: '1000'
-  display: The maximum number of indicators to fetch.
+  required: false
+- display: The maximum number of indicators to fetch.
   name: maxIndicators
-  required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
+  defaultvalue: '1000'
   required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
   type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
 - display: Incremental Feed
+  name: feedIncremental
+  type: 8
   defaultvalue: 'true'
   hidden: true
-  name: feedIncremental
   required: false
-  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -101,11 +109,9 @@ configuration:
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
-description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
-  Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
-  straight into the XSOAR platform.
+  required: false
+description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses straight into the XSOAR platform.
 display: Sixgill DarkFeed Threat Intelligence
 name: Sixgill_Darkfeed
 script:
@@ -115,20 +121,15 @@ script:
     - default: true
       defaultValue: '50'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.50510
+  dockerimage: demisto/sixgill:1.0.0.66910
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   subtype: python3
   type: python
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

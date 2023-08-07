@@ -9,20 +9,27 @@ configuration:
   type: 0
 - display: Integration Key
   name: integration_key
-  required: true
   type: 0
+  hidden: true
+  required: false
 - display: Secret Key
   name: secret_key
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: Secret Key
+  name: credentials_key
+  display: Integration Key
+  type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: |-
   DUO for admins.
   Must have access to the admin api in order to use this.
@@ -266,17 +273,13 @@ script:
       name: admin_id
       required: true
     - description: The name of the admin.
-      required: false
       name: name
     - description: The phone number of the admin.
-      required: false
       name: phone
     - description: the password of the admin.
-      required: false
       name: password
     - description: a flag to determine if the password should change.
       defaultValue: 'false'
-      required: false
       auto: PREDEFINED
       predefined:
       - 'false'
@@ -291,50 +294,37 @@ script:
       required: true
     - description: The user name of the user.
       name: user_name
-      required: false
     - description: The real name of the user.
       name: realname
-      required: false
     - description: The status of the user.
       name: status
-      required: false
       auto: PREDEFINED
       predefined:
       - 'active'
       - 'disabled'
     - description: Notes for the user.
       name: notes
-      required: false
     - description: The email of the user.
       name: email
-      required: false
     - description: The first name of the user.
       name: first_name
-      required: false
     - description: The last name of the user.
-      required: false
       name: last_name
     - description: The first alias of the user.
       name: alias1
-      required: false
     - description: The second alias of the user.
       name: alias2
-      required: false
     - description: The third alias of the user.
       name: alias3
-      required: false
     - description: The fourth alias of the user.
       name: alias4
-      required: false
     - description: The aliases list of the user.
       name: aliases
       isArray: true
-      required: false
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
-  dockerimage: demisto/duoadmin3:1.0.0.51401
-  runonce: false
+  dockerimage: demisto/duoadmin3:1.0.0.65621
   script: ''
   type: python
   subtype: python3

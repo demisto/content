@@ -16,6 +16,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
+  display: ''
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -36,10 +37,10 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 script:
-  script: '-'
+  script: ''
   type: python
   subtype: python3
   commands:
@@ -47,12 +48,27 @@ script:
     arguments:
     - name: sample_id
       description: The sample ID
-      isArray: false
-      required: false
+    - name: user_only
+      description: It 'True' - Only display samples created by the current user, as determined by the value of api_key.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: It 'True' - Only display samples created by the current user's organization, as determined by the value of api_key.
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+    - name: sha256
+      description: A SHA256 of the submitted sample, only matches samples, not their artifacts.
+    - name: md5
+      description: A MD5 checksum of the submitted sample, only matches samples, not their artifacts.
+    - name: sha1
+      description: A sha1 of the submitted sample, only matches samples, not their artifacts.
     - name: artifact
       description: The artifact to download. Sample ID is required when choosing 'artifact'.
       auto: PREDEFINED
-      isArray: false
       predefined:
       - video.webm
       - network-artifacts.zip
@@ -64,20 +80,13 @@ script:
       - analysis.json
       - processes.json
       - network.pcap
-      required: false
     - name: page
       description: 'Page number of paginated results. Minimum value: 1'
-      isArray: false
-      required: false
     - name: page_size
       description: The number of items per page.
-      isArray: false
-      required: false
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
-      isArray: false
-      required: false
     outputs:
     - contextPath: ThreatGrid.Sample.id
       description: The sample id
@@ -131,32 +140,51 @@ script:
       description: Basic information about the file.
       type: String
     description: Search samples on the Threat Grid platform. Input parameters are ANDed together. Only finished samples can be searched (that is, the ones that are having a status of succ or fail.)
-    deprecated: false
-    execution: false
   - name: threat-grid-sample-upload
     arguments:
     - name: file_id
-      required: false
       description: The file ID. Click on the chain-like icon after you upload a file in Demisto to find the file_id.
-      isArray: false
     - description: "The URL to upload. "
-      isArray: false
       name: url
-      required: false
     - defaultValue: '10'
       description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
-      isArray: false
       name: interval_in_seconds
-      required: false
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence timeouts. Default is 60.
-      isArray: false
       name: timeout_in_seconds
-      required: false
     - description: The uploaded sample ID.
-      isArray: false
       name: sample_id
-      required: false
+    - name: tags
+      description: A comma-separated list of tags applied to this sample.
+    - name: private
+      description: Whether to mark the sample as private.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: playbook
+      auto: PREDEFINED
+      predefined:
+      - none
+      - default
+      - alt_tab_programs
+      - open_word_embedded_object
+      - visit_site
+      - close_file
+      - use_best_option
+      description: 'Name of a playbook to apply to this sample run. none: Explicitly disables playbooks, default: Default Playbook, alt_tab_programs: Conduct Active Window Change, open_word_embedded_object: Open Embedded Object in Word Document, use_best_option: allows Malware Analytics to select the best Playbook option based on the submitted sample, visit_site: Visit Website Using Internet Explorer, close_file: Close Active Window. The current list of playbooks endpoints can be obtained by querying /api/v3/configuration/playbooks.'
+    - name: vm
+      auto: PREDEFINED
+      predefined:
+      - win7-x64
+      - win7-x64-2
+      - win10
+      - win10-x64-2-beta
+      - win10-x64-browser
+      - win10-x64-jp
+      - win10-x64-kr
+      - win10-x64-phishing-beta
+      description: 'a string identifying a specific VM to use. Options: win7-x64: Windows 7 64bit, win7-x64-2: Windows 7 64-bit Profile 2, win10-x64-2-beta: Windows 10 LTSC 2019 (beta), win10-x64-browser: Windows 10 Browser, win10-x64-jp: Windows 10 Japanese, win10-x64-kr: Windows 10 Korean, win10-x64-phishing-beta: Windows 10 (Phishing), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese character sets, such as S-JIS, submit to the appropriate VM.'
     - name: hide_polling_output
       description: Whether to hide the polling result (automatically filled by polling).
       deprecated: true
@@ -189,34 +217,25 @@ script:
       description: The sample submission time
       type: String
     description: Submits a sample to threat grid for analysis. URL or file, not both.
-    deprecated: false
-    execution: false
     polling: true
   - name: threat-grid-submissions-search
     arguments:
     - name: query
       description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to true
-      isArray: false
-      required: false
     - name: user_only
       description: Only display submissions created by the current user, as determined by the value of api_key
       auto: PREDEFINED
-      isArray: false
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: Only display submissions created by the current user's organization, as determined by the value of api_key.
-      isArray: false
       name: org_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: Restrict matches to a subset of submission fields. The value of 'term' is a comma-delimited list of strings which select groups of fields
-      isArray: false
       name: term
       predefined:
       - antivirus
@@ -255,18 +274,12 @@ script:
       - url
       - analysis.urls.url
       - analysis.urls.url.whole.
-      required: false
     - description: "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"
-      isArray: false
       name: before
-      required: false
     - description: "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"
-      isArray: false
       name: after
-      required: false
     - auto: PREDEFINED
       description: Restrict match to submissions in specific state or states.
-      isArray: false
       name: state
       predefined:
       - wait
@@ -275,10 +288,8 @@ script:
       - proc
       - succ
       - fail
-      required: false
     - auto: PREDEFINED
       description: If not specified, results will be sorted by the search score, which is based on which fields match the query most accurately, and their weight.
-      isArray: false
       name: sort_by
       predefined:
       - timestamp
@@ -289,36 +300,25 @@ script:
       - state
       - threat or threat_score
       - login
-      required: false
     - auto: PREDEFINED
       description: desc or asc
-      isArray: false
       name: sort_order
       predefined:
       - desc
       - asc
-      required: false
     - auto: PREDEFINED
       description: Provide a 'matches' field in results, indicating which fields were matched
-      isArray: false
       name: highlight
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: 'Page number of paginated results. Minimum value: 1'
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     outputs:
     - contextPath: ThreatGrid.Sample.sample
       description: The sample ID
@@ -348,14 +348,11 @@ script:
       description: The threat score of the sample
       type: Number
     description: Search threat grid submissions
-    deprecated: false
-    execution: false
   - name: threat-grid-sample-summary-get
     arguments:
     - name: sample_id
       required: true
       description: The sample id
-      isArray: false
     outputs:
     - contextPath: ThreatGrid.SampleAnalysisSummary.sample
       description: The sample ID.
@@ -379,8 +376,6 @@ script:
       description: The timestamp when the sample was last seen.
       type: Date
     description: Returns summary analysis information
-    deprecated: false
-    execution: false
   - name: threat-grid-who-am-i
     outputs:
     - contextPath: ThreatGrid.User.email
@@ -390,18 +385,15 @@ script:
       description: Current user login name.
       type: string
     description: Get logged in user
-    deprecated: false
-    execution: false
+    arguments: []
   - name: threat-grid-rate-limit-get
     arguments:
     - name: login
       required: true
       default: true
       description: User login name
-      isArray: false
     - auto: PREDEFINED
       description: User or Organization
-      isArray: false
       name: entity_type
       predefined:
       - user
@@ -418,15 +410,12 @@ script:
       description: The number of submissions available for the specified username
       type: number
     description: Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
-    deprecated: false
-    execution: false
   - name: threat-grid-feed-specific-get
     arguments:
     - name: feed_name
       required: true
       description: The feed name.
       auto: PREDEFINED
-      isArray: false
       predefined:
       - autorun-registry
       - banking-dns
@@ -448,22 +437,16 @@ script:
       description: The output type
       defaultValue: "json"
       auto: PREDEFINED
-      isArray: false
       predefined:
       - json
       - csv
       - stix
       - snort
       - txt
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: before
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: after
-      required: false
     outputs:
     - contextPath: ThreatGrid.Feed.sample
       description: Feed sample.
@@ -472,14 +455,11 @@ script:
       description: Feed description.
       type: String
     description: Gets a specific threat feed
-    deprecated: false
-    execution: false
   - name: threat-grid-ip-search
     arguments:
     - name: ip
       required: true
       description: The IP to search for.
-      isArray: false
     outputs:
     - contextPath: ThreatGrid.search.ip
       description: IP item.
@@ -491,107 +471,70 @@ script:
       description: IP location details.
       type: string
     description: Search IPs. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
-    deprecated: false
-    execution: false
   - name: threat-grid-analysis-annotations-get
     arguments:
     - name: sample_id
       required: true
       description: The sample ID.
-      isArray: false
     outputs:
     - contextPath: ThreatGrid.SampleAnnotations.network
       description: IP address & timestamp in the annotation.
       type: String
     description: Returns data regarding the annotations of the analysis
-    deprecated: false
-    execution: false
   - name: threat-grid-url-search
     arguments:
     - name: url
       required: true
       description: The URL to search for (please provide the URL in the format http://example.com:80/. note that ThreatGrid only support '.com' domains).
-      isArray: false
     outputs:
     - contextPath: ThreatGrid.search.url
       description: URL item
       type: String
     description: Search urls. Please provide the URL in the format http://example.com:80/ (note that ThreatGrid only support '.com' domains).
-    deprecated: false
-    execution: false
   - name: threat-grid-feeds-artifact
     arguments:
     - name: sha256
-      required: false
       description: Restrict returned records with this sha256
-      isArray: false
     - description: Restrict returned records with this sha1
-      isArray: false
       name: sha1
-      required: false
     - description: Restrict returned records with this md5
-      isArray: false
       name: md5
-      required: false
     - description: Restrict returned records to this path or path fragment.
-      isArray: false
       name: path
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: before
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: after
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-      isArray: false
       name: confidence
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-      isArray: false
       name: severity
-      required: false
     - description: Restrict returned records to events of this type
-      isArray: false
       name: ioc
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples submitted by your organization"
-      isArray: false
       name: org_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples you submitted"
-      isArray: false
       name: user_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: A comma-separated list of sample IDs. Restrict results to these samples.
       isArray: true
       name: sample_id
-      required: false
     - description: The maximum number of records to retrieve.
-      isArray: false
       defaultValue: '50'
       name: limit
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - description: Page number of paginated results.
-      isArray: false
       name: page
-      required: false
     outputs:
     - contextPath: ThreatGrid.Artifact.confidence
       description: Artifact confidence
@@ -612,69 +555,44 @@ script:
       description: Artifact sample ID
       type: String
     description: Get artifacts threat feed
-    deprecated: false
-    execution: false
   - name: threat-grid-feeds-domain
     arguments:
     - name: domain
-      required: false
       description: Restrict returned records to this domain or hostname
-      isArray: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: before
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: after
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-      isArray: false
       name: confidence
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-      isArray: false
       name: severity
-      required: false
     - description: Restrict returned records to events of this type
-      isArray: false
       name: ioc
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples submitted by your organization"
-      isArray: false
       name: org_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples you submitted"
-      isArray: false
       name: user_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: A comma-separated list of sample IDs. Restrict results to these samples.
       isArray: true
       name: sample_id
-      required: false
     - description: Page number of paginated results.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
       defaultValue: '50'
-      required: false
     outputs:
     - contextPath: ThreatGrid.Domain.confidence
       description: "Domain confidence"
@@ -695,69 +613,44 @@ script:
       description: "The Domain "
       type: String
     description: Get domain threat feed
-    deprecated: false
-    execution: false
   - name: threat-grid-feeds-ip
     arguments:
     - name: ip
-      required: false
       description: Restrict returned records to this IP or CIDR block
-      isArray: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: before
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: after
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-      isArray: false
       name: confidence
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-      isArray: false
       name: severity
-      required: false
     - description: Restrict returned records to events of this type
-      isArray: false
       name: ioc
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples submitted by your organization"
-      isArray: false
       name: org_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples you submitted"
-      isArray: false
       name: user_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: A comma-separated list of sample IDs. Restrict results to these samples.
       isArray: true
       name: sample_id
-      required: false
     - description: Page number of paginated results.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
       defaultValue: '50'
-      required: false
     outputs:
     - contextPath: ThreatGrid.Ip.confidence
       description: IP confidence
@@ -781,73 +674,46 @@ script:
       description: The IP port
       type: Number
     description: Get ips threat feed
-    deprecated: false
-    execution: false
   - name: threat-grid-feeds-network-stream
     arguments:
     - name: ip
-      required: false
       description: Restrict returned records to this IP address
-      isArray: false
     - description: Restrict returned records to this port number
-      isArray: false
       name: port
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: before
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: after
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-      isArray: false
       name: confidence
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-      isArray: false
       name: severity
-      required: false
     - description: Restrict returned records to events of this type
-      isArray: false
       name: ioc
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples submitted by your organization"
-      isArray: false
       name: org_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples you submitted"
-      isArray: false
       name: user_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: A comma-separated list of sample IDs. Restrict results to these samples.
       isArray: true
       name: sample_id
-      required: false
     - description: Page number of paginated results.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
       defaultValue: '50'
-      required: false
     outputs:
     - contextPath: ThreatGrid.NetworkStreams.confidence
       description: "Network Streams confidence"
@@ -877,69 +743,44 @@ script:
       description: "The Network Streams destination port"
       type: Number
     description: Get network stream threat feed
-    deprecated: false
-    execution: false
   - name: threat-grid-feeds-path
     arguments:
     - name: path
-      required: false
       description: Restrict returned records to this path or path fragment
-      isArray: false
     - name: before
       description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: after
       description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-      isArray: false
       name: confidence
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-      isArray: false
       name: severity
-      required: false
     - description: Restrict returned records to events of this type
-      isArray: false
       name: ioc
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples submitted by your organization"
-      isArray: false
       name: org_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples you submitted"
-      isArray: false
       name: user_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: A comma-separated list of sample IDs. Restrict results to these samples.
       isArray: true
       name: sample_id
-      required: false
     - description: Page number of paginated results.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
       defaultValue: '50'
-      required: false
     outputs:
     - contextPath: ThreatGrid.Path.confidence
       description: "Path confidence"
@@ -957,70 +798,43 @@ script:
       description: "Path sample ID"
       type: String
     description: Get path threat feed
-    deprecated: false
-    execution: false
   - name: threat-grid-feeds-url
-    deprecated: false
     arguments:
     - name: url
-      required: false
       description: Restrict returned records to this URL or URL fragment
-      isArray: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: before
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: after
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-      isArray: false
       name: confidence
-      required: false
     - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-      isArray: false
       name: severity
-      required: false
     - description: Restrict returned records to events of this type
-      isArray: false
       name: ioc
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples submitted by your organization"
-      isArray: false
       name: org_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - auto: PREDEFINED
       description: "If “true”, will only match against samples you submitted"
-      isArray: false
       name: user_only
       predefined:
       - 'True'
       - 'False'
-      required: false
     - description: A comma-separated list of sample IDs. Restrict results to these samples.
-      isArray: false
       name: sample_id
-      required: false
     - description: Page number of paginated results.
-      isArray: false
       name: page
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
       defaultValue: '50'
-      required: false
     outputs:
     - contextPath: ThreatGrid.Url.confidence
       description: URL confidence
@@ -1041,34 +855,25 @@ script:
       description: The URL
       type: String
     description: Get url threat feed
-    execution: false
   - name: threat-grid-analysis-artifacts-get
     arguments:
     - description: the sample id
-      isArray: false
       name: sample_id
       required: true
     - description: The artifact id requested
-      isArray: false
       name: artifact_id
-      required: false
     outputs:
     - contextPath: ThreatGrid.ArtifactAnalysis.items
       description: List of artifact analysis of the sample.
       type: Unknown
     description: Returns the sample id artifact with artifact id
-    deprecated: false
-    execution: false
   - name: threat-grid-analysis-iocs-get
     arguments:
     - name: sample_id
       required: true
       description: the sample id
-      isArray: false
     - description: the IOC requested
-      isArray: false
       name: ioc
-      required: false
     outputs:
     - contextPath: ThreatGrid.IOCAnalysis.title
       description: 'The title of the IOC'
@@ -1092,15 +897,12 @@ script:
       description: The tags of the IOC
       type: String
     description: Returns data regarding the specified Indicator of Compromise
-    deprecated: false
-    execution: false
   - name: threat-grid-analysis-metadata-get
     arguments:
     - name: sample_id
       required: true
       default: true
       description: the sample id
-      isArray: false
     outputs:
     - contextPath: ThreatGrid.AnalysisMetadata.general_details
       description: The Metadata Analysis General Details
@@ -1112,19 +914,13 @@ script:
       description: "The Metadata Analysis Malware Sandcastle ENV"
       type: Unknown
     description: Returns metadata about the analysis
-    deprecated: false
-    execution: false
   - name: threat-grid-analysis-network-streams-get
-    deprecated: false
     arguments:
     - name: sample_id
       required: true
       description: the sample id
-      isArray: false
     - name: network_stream_id
       description: The network stream id
-      isArray: false
-      required: false
     outputs:
     - contextPath: ThreatGrid.NetworkAnalysis.protocol
       description: The network protocol
@@ -1142,20 +938,14 @@ script:
       description: The server IP
       type: String
     description: Returns data regarding a specific network stream
-    execution: false
   - name: threat-grid-analysis-processes-get
     arguments:
     - name: sample_id
       required: true
       description: the sample id
-      isArray: false
     - description: the process id requested
-      isArray: false
       name: process_id
-      required: false
     description: Returns data regarding the specific process id in the analysis
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: ThreatGrid.ProcessAnalysis.process_name
       description: The process name
@@ -1171,7 +961,7 @@ script:
       description: A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: true
     - auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       description: Whether to return full response for scans. Default is "false".
       name: long
       predefined:
@@ -1232,8 +1022,6 @@ script:
       description: ThreatGrid permanent link.
       type: string
     description: Checks the file reputation of the specified hash.
-    deprecated: false
-    execution: false
   - name: ip
     arguments:
     - name: ip
@@ -1244,7 +1032,7 @@ script:
     - name: long
       description: Whether to return full response for detected URLs. Default is "false".
       auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       predefined:
       - 'True'
       - 'False'
@@ -1262,13 +1050,11 @@ script:
     - name: fullResponse
       description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
       auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       predefined:
       - 'True'
       - 'False'
     description: Checks the reputation of an IP address.
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: IP.Address
       description: IP address.
@@ -1311,7 +1097,7 @@ script:
       description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
       name: sampleSize
     - auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       description: Whether to return the full response for the detected URLs.
       name: long
       predefined:
@@ -1366,8 +1152,6 @@ script:
       description: Number of positive engines
       type: Number
     description: Checks the reputation of a URL.
-    deprecated: false
-    execution: false
   - name: domain
     arguments:
     - name: domain
@@ -1378,7 +1162,7 @@ script:
     - name: long
       description: Whether to return the full response for detected URLs. Default is "false".
       auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       predefined:
       - 'True'
       - 'False'
@@ -1396,7 +1180,7 @@ script:
     - name: fullResponse
       description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
       auto: PREDEFINED
-      defaultValue: false
+      defaultValue: 'false'
       predefined:
       - 'True'
       - 'False'
@@ -1453,38 +1237,23 @@ script:
       description: The domain name.
       type: String
     description: Checks the reputation of a domain.
-    deprecated: false
-    execution: false
   - name: threat-grid-domain-samples-list
     arguments:
     - name: domain
       description: The domain to search for.
-      isArray: false
       required: true
     - name: after
       description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: before
       description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
-      isArray: false
-      required: false
     - name: page_size
       description: The number of items per page.
-      isArray: false
-      required: false
     - name: page
       description: Page number of paginated results.
-      isArray: false
-      required: false
     description: Returns a list of samples associated with a Domain.
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: ThreatGrid.DomainAssociatedSample.domain
       description: The domain.
@@ -1496,29 +1265,18 @@ script:
     arguments:
     - name: ip
       description: The IP to search for.
-      isArray: false
       required: true
     - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: after
-      required: false
     - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
       name: before
-      required: false
     - defaultValue: '50'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
     - description: The number of items per page.
-      isArray: false
       name: page_size
-      required: false
     - description: Page number of paginated results.
-      isArray: false
       name: page
-      required: false
     outputs:
     - contextPath: ThreatGrid.IpAssociatedSample.ip
       description: The IP.
@@ -1527,35 +1285,22 @@ script:
       description: The associated samples.
       type: string
     description: Returns a list of samples associated with an IP.
-    deprecated: false
-    execution: false
   - name: threat-grid-path-samples-list
     arguments:
     - name: path
       description: "The path to search for. A path is a slash-separated list of directory names followed by either a directory name or a file name. Path example: ‘/user/name/file’."
-      isArray: false
       required: true
     - name: after
       description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: before
       description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
-      isArray: false
-      required: false
     - name: page_zise
       description: The number of items per page.
-      isArray: false
-      required: false
     - name: page
       description: Page number of paginated results.
-      isArray: false
-      required: false
     outputs:
     - contextPath: ThreatGrid.PathAssociatedSample.path
       description: The Path.
@@ -1564,35 +1309,22 @@ script:
       description: The associated samples.
       type: string
     description: Returns a list of samples associated with a Path.
-    deprecated: false
-    execution: false
   - name: threat-grid-url-samples-list
     arguments:
     - name: url
       description: The target URL. Please provide the URL in the format http://example.com:80/ .
-      isArray: false
       required: true
     - name: after
       description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: before
       description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
-      isArray: false
-      required: false
     - name: page_zise
       description: The number of items per page.
-      isArray: false
-      required: false
     - name: page
       description: Page number of paginated results.
-      isArray: false
-      required: false
     outputs:
     - contextPath: ThreatGrid.UrlAssociatedSample.url
       description: The URL.
@@ -1601,35 +1333,22 @@ script:
       description: The associated samples.
       type: string
     description: Returns a list of samples associated with an URL.
-    deprecated: false
-    execution: false
   - name: threat-grid-registry-key-samples-list
     arguments:
     - name: registry_key
       description: The registry key to search for.
-      isArray: false
       required: true
     - name: after
       description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: before
       description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-      isArray: false
-      required: false
     - name: limit
       description: The maximum number of records to retrieve.
       defaultValue: '50'
-      isArray: false
-      required: false
     - name: page_size
       description: The number of items per page.
-      isArray: false
-      required: false
     - name: page
       description: Page number of paginated results.
-      isArray: false
-      required: false
     outputs:
     - contextPath: ThreatGrid.RegistryKeyAssociatedSample.key
       description: The Registry Key.
@@ -1638,13 +1357,10 @@ script:
       description: The associated samples.
       type: string
     description: Returns a list of samples associated with a specified registry key.
-    deprecated: false
-    execution: false
   - name: threat-grid-ip-associated-domains
     arguments:
     - name: ip
       description: The IP to search for.
-      isArray: false
       required: true
     outputs:
     - contextPath: ThreatGrid.IpAssociatedDomain.ip
@@ -1654,13 +1370,10 @@ script:
       description: The associated Domain.
       type: string
     description: Returns a list of domains associated with the IP.
-    deprecated: false
-    execution: false
   - name: threat-grid-ip-associated-urls
     arguments:
     - name: ip
       description: The IP to search for.
-      isArray: false
       required: true
     outputs:
     - contextPath: ThreatGrid.IpAssociatedUrl.ip
@@ -1670,13 +1383,10 @@ script:
       description: The associated URL.
       type: string
     description: Returns a list of URLs associated to the IP.
-    deprecated: false
-    execution: false
   - name: threat-grid-domain-associated-urls
     arguments:
     - name: domain
       description: The domain to search for.
-      isArray: false
       required: true
     outputs:
     - contextPath: ThreatGrid.DomainAssociatedUrl.domain
@@ -1686,17 +1396,12 @@ script:
       description: The associated URL.
       type: string
     description: Returns a list of URLs associated to the domain.
-    deprecated: false
-    execution: false
   - name: threat-grid-domain-associated-ips
     arguments:
     - name: domain
       required: true
       description: The domain to search for.
-      isArray: false
     description: Returns a list of IPs associated to the domain.
-    deprecated: false
-    execution: false
     outputs:
     - contextPath: ThreatGrid.DomainAssociatedIp.domain
       description: The Domain.
@@ -1704,19 +1409,7 @@ script:
     - contextPath: ThreatGrid.DomainAssociatedIp.ips
       description: The associated IP.
       type: String
-  runonce: false
-  dockerimage: demisto/python3:3.10.10.48392
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.65389
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
-detaileddescription: |-
-  1. In your threat grid instance, click your user name at the right top corner.
-  2. Select my account.
-  3. Under the API Key section in the left you will see your API.
-
-  ---
-  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/threat-grid)

@@ -1,22 +1,10 @@
-import shutil
 import demistomock as demisto  # noqa: F401
-import jwt
 from CommonServerPython import *  # noqa: F401
-from datetime import timedelta
+import shutil
+from ZoomApiModule import *
 from traceback import format_exc
+from datetime import datetime
 
-import dateparser
-
-
-OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
-# The token’s time to live is 1 hour,
-# two minutes were subtract for extra safety.
-TOKEN_LIFE_TIME = timedelta(minutes=58)
-# the lifetime for an JWT token is 90 minutes == 5400 seconds
-# 400 seconds were subtract for extra safety.
-JWT_LIFETIME = 5000
-# maximun records that the api can return in one request
-MAX_RECORDS_PER_PAGE = 300
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
@@ -44,10 +32,29 @@ FILE_TYPE_MAPPING = {
     'MP4': 'Video',
     'M4A': 'Audio'
 }
-# ERRORS
-INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
-INVALID_API_SECRET = 'Invalid API Secret. Verify that your API Secret is valid.'
-INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Verify that your ID and Secret is valid.'
+POSTING_PERMISSIONS_MAPPING = {
+    'All members can post': 1,
+    'Only the owner and admins can post': 2,
+    'Only the owner, admins and certain members can post': 3
+}
+
+MEMBER_PERMISSIONS_MAPPING = {
+    'All channel members can add': 1,
+    'Only channel owner and admins can add': 2
+}
+
+CHANNEL_TYPE_MAPPING = {
+    'Private channel': 1,
+    'Private channel with members that belong to one account': 2,
+    'Public channel': 3,
+    'New chat': 4
+}
+AT_TYPE = {
+    'Mention a contact': 1,
+    'Mention "all" to notify everyone in the channel.': 2
+
+}
+
 WRONG_TIME_FORMAT = "Wrong time format. Use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
 LIMIT_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose a limit,
                                        don't enter a user_id or page_size or next_page_token or page_number."""
@@ -70,108 +77,20 @@ You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
 OR the API Key and API Secret fields (JWT - Deprecated)."""
 RECURRING_MISSING_ARGUMENTS = """Missing arguments. A recurring meeting with a fixed
 time is missing this argument: recurrence_type."""
+MISSING_ARGUMENT = """Missing either a contact info or a channel id"""
+USER_NOT_FOUND = """ This user email can't be found """
+MARKDOWN_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose is_markdown,
+                    don't provide one of the following arguments: start_position, end_position, format_type, at_type,
+                    rt_start_position, rt_end_position or format_attr"""
+MARKDOWN_EXTRA_FORMATS = """Too many style in text. you can provide only one style type"""
+MARKDOWN_EXTRA_MENTIONS = """Too many mentions in text. you can provide only one mention in each message"""
+
+
 '''CLIENT CLASS'''
 
 
-class Client(BaseClient):
+class Client(Zoom_Client):
     """ A client class that implements logic to authenticate with Zoom application. """
-
-    def __init__(
-        self,
-        base_url: str,
-        api_key: str | None = None,
-        api_secret: str | None = None,
-        account_id: str | None = None,
-        client_id: str | None = None,
-        client_secret: str | None = None,
-        verify=True,
-        proxy=False,
-    ):
-        super().__init__(base_url, verify, proxy)
-        self.api_key = api_key
-        self.api_secret = api_secret
-        self.account_id = account_id
-        self.client_id = client_id
-        self.client_secret = client_secret
-        is_jwt = (api_key and api_secret) and not (client_id and client_secret and account_id)
-        if is_jwt:
-            # the user has chosen to use the JWT authentication method (deprecated)
-            self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
-        else:
-            # the user has chosen to use the OAUTH authentication method.
-            try:
-                self.access_token = self.get_oauth_token()
-            except Exception as e:
-                demisto.debug(f"Cannot get access token. Error: {e}")
-                self.access_token = None
-
-    def generate_oauth_token(self):
-        """
-    Generate an OAuth Access token using the app credentials (AKA: client id and client secret) and the account id
-
-    :return: valid token
-    """
-        token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
-                                       params={"account_id": self.account_id,
-                                               "grant_type": "account_credentials"},
-                                       auth=(self.client_id, self.client_secret))
-        return token_res.get('access_token')
-
-    def get_oauth_token(self, force_gen_new_token=False):
-        """
-            Retrieves the token from the server if it's expired and updates the global HEADERS to include it
-
-            :param force_gen_new_token: If set to True will generate a new token regardless of time passed
-
-            :rtype: ``str``
-            :return: Token
-        """
-        now = datetime.now()
-        ctx = get_integration_context()
-
-        if not ctx or not ctx.get('token_info').get('generation_time', force_gen_new_token):
-            # new token is needed
-            oauth_token = self.generate_oauth_token()
-            ctx = {}
-        else:
-            generation_time = dateparser.parse(ctx.get('token_info').get('generation_time'))
-            if generation_time:
-                time_passed = now - generation_time
-            else:
-                time_passed = TOKEN_LIFE_TIME
-            if time_passed < TOKEN_LIFE_TIME:
-                # token hasn't expired
-                return ctx.get('token_info').get('oauth_token')
-            else:
-                # token expired
-                oauth_token = self.generate_oauth_token()
-
-        ctx.update({'token_info': {'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
-        set_integration_context(ctx)
-        return oauth_token
-
-    def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
-                                   auth=None, json_data=None, params=None,
-                                   return_empty_response: bool = False, resp_type: str = 'json', stream: bool = False):
-
-        # all future functions should call this function instead of the original _http_request.
-        # This is needed because the OAuth token may not behave consistently,
-        # First the func will make an http request with a token,
-        # and if it turns out to be invalid, the func will retry again with a new token.
-        try:
-            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                         auth=auth, json_data=json_data, params=params,
-                                         return_empty_response=return_empty_response, resp_type=resp_type, stream=stream)
-        except DemistoException as e:
-            if ('Invalid access token' in e.message
-                    or "Access token is expired." in e.message):
-                self.access_token = self.generate_oauth_token()
-                headers = {'authorization': f'Bearer {self.access_token}'}
-                return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                             auth=auth, json_data=json_data, params=params,
-                                             return_empty_response=return_empty_response, resp_type=resp_type, stream=stream)
-            else:
-                raise DemistoException(e.message)
 
     def zoom_create_user(self, user_type_num: int, email: str, first_name: str, last_name: str):
         return self.error_handled_http_request(
@@ -243,7 +162,7 @@ class Client(BaseClient):
                 'page_number': page_number
             })
 
-    def zoom_fetch_recording(self, method: str, url_suffix: str = None, full_url: str = None,
+    def zoom_fetch_recording(self, method: str, url_suffix: str = '', full_url: str = '',
                              stream: bool = False, resp_type: str = 'json'):
         return self.error_handled_http_request(
             method=method,
@@ -254,23 +173,148 @@ class Client(BaseClient):
             headers={'authorization': f'Bearer {self.access_token}'},
         )
 
+    def zoom_list_channels(self, page_size: int, next_page_token: str = None, url_suffix: str = '',
+                           page_number: int = 1):
+        return self.error_handled_http_request(
+            method='GET',
+            url_suffix=f"chat/{url_suffix}",
+            headers={'authorization': f'Bearer {self.access_token}'},
+            params={
+                'page_size': page_size,
+                'page_number': page_number,
+                'next_page_token': next_page_token}
+        )
+
+    def zoom_create_channel(self, url_suffix: str, json_data: dict):
+        return self.error_handled_http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            json_data=json_data)
+
+    def zoom_update_channel(self, url_suffix: str, json_data: dict):
+        return self.error_handled_http_request(
+            method='PATCH',
+            url_suffix=url_suffix,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            json_data=json_data,
+            resp_type='response',
+            return_empty_response=True
+        )
+
+    def zoom_list_user_channels(self, user_id: str, page_size: int, next_page_token: str = None, url_suffix: str = '',
+                                page_number: int = None):
+        return self.error_handled_http_request(
+            method='GET',
+            url_suffix=f"chat/{url_suffix}",
+            headers={'authorization': f'Bearer {self.access_token}'},
+            params={
+                'user_id': user_id,
+                'page_size': page_size,
+                'page_number': page_number,
+                'next_page_token': next_page_token}
+        )
+
+    def zoom_delete_channel(self, url_suffix: str):
+        return self.error_handled_http_request(
+            method='DELETE',
+            url_suffix=url_suffix,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            resp_type='response',
+            return_empty_response=True
+        )
+
+    def zoom_invite_to_channel(self, members_json: str, url: str = None):
+        return self.error_handled_http_request(
+            method='POST',
+            url_suffix=url,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            json_data=members_json)
+
+    def zoom_remove_from_channel(self, url_suffix: str = None):
+        return self.error_handled_http_request(
+            method='DELETE',
+            url_suffix=url_suffix,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            resp_type='response',
+            return_empty_response=True)
+
+    def zoom_send_file(self, url_suffix: str, file_info: dict, json_data: dict):
+
+        files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
+
+        response = self.error_handled_http_request(
+            method='POST',
+            full_url=url_suffix,
+            headers={'Authorization': f'Bearer {self.access_token}'},
+            files=files,
+            data=json_data
+        )
+        return response
+
+    def zoom_upload_file(self, url_suffix: str, file_info: dict):
+        files = {'file': (file_info['name'], open(file_info['path'], 'rb'))}
+        return self._http_request('POST',
+                                  headers={'Authorization': f'Bearer {self.access_token}'},
+                                  files=files,
+                                  full_url=url_suffix)
+
+    def zoom_send_message(self, url_suffix: str, json_data: dict):
+        return self.error_handled_http_request(
+            method='POST',
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers={'authorization': f'Bearer {self.access_token}'}
+        )
+
+    def zoom_delete_message(self, url_suffix: str = None):
+        return self.error_handled_http_request(
+            method='DELETE',
+            url_suffix=url_suffix,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            resp_type='response',
+            return_empty_response=True)
+
+    def zoom_update_message(self, url_suffix: str, json_data: dict):
+        return self.error_handled_http_request(
+            method='PUT',
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            return_empty_response=True
+        )
+
+    def zoom_list_user_messages(self, user_id: str, date_arg: datetime, from_arg: datetime, to_arg: datetime, page_size: int,
+                                next_page_token: str = None, url_suffix: str = None, page_number: int = None,
+                                to_contact: str = None,
+                                to_channel: str = None,
+                                include_deleted_and_edited_message: bool = False,
+                                search_type: str = None,
+                                search_key: str = None,
+                                exclude_child_message: bool = False):
+
+        return self.error_handled_http_request(
+            method='GET',
+            url_suffix=f"chat/{url_suffix}",
+            headers={'authorization': f'Bearer {self.access_token}'},
+            params={
+                'user_id': user_id,
+                'page_size': page_size,
+                'page_number': page_number,
+                'next_page_token': next_page_token,
+                'to_contact': to_contact,
+                'to_channel': to_channel,
+                'date': date_arg,
+                'from': from_arg,
+                'to': to_arg,
+                'include_deleted_and_edited_message': include_deleted_and_edited_message,
+                'search_key': search_key,
+                'search_type': search_type,
+                'exclude_child_message': exclude_child_message}
+        )
+
 
 '''HELPER FUNCTIONS'''
-
-
-def get_jwt_token(apiKey: str, apiSecret: str) -> str:
-    """
-    Encode the JWT token given the api ket and secret
-    """
-    now = datetime.now()
-    expire_time = int(now.strftime('%s')) + JWT_LIFETIME
-    payload = {
-        'iss': apiKey,
-
-        'exp': expire_time
-    }
-    encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
-    return encoded
 
 
 def test_module(client: Client):
@@ -337,6 +381,37 @@ def manual_list_user_pagination(client: Client, next_page_token: str | None,
     return res
 
 
+def manual_list_channel_pagination(client: Client, next_page_token: str | None,
+                                   limit: int, url_suffix: str):
+    res = {}
+    page_size = min(limit, MAX_RECORDS_PER_PAGE)
+    while limit > 0:
+        response = client.zoom_list_channels(page_size=page_size,
+                                             next_page_token=next_page_token,
+                                             url_suffix=url_suffix)
+        next_page_token = response.get("next_page_token")
+
+        res.update(response)
+        limit -= MAX_RECORDS_PER_PAGE
+    return res
+
+
+def manual_list_user_channel_pagination(client: Client, user_id: str, next_page_token: str | None,
+                                        limit: int, url_suffix: str):
+    res = {}
+    page_size = min(limit, MAX_RECORDS_PER_PAGE)
+    while limit > 0:
+        response = client.zoom_list_user_channels(user_id=user_id,
+                                                  page_size=page_size,
+                                                  next_page_token=next_page_token,
+                                                  url_suffix=url_suffix)
+        next_page_token = response.get("next_page_token")
+
+        res.update(response)
+        limit -= MAX_RECORDS_PER_PAGE
+    return res
+
+
 def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token: str | None,
                                    limit: int, type: str | int | None):
     res = []
@@ -356,9 +431,7 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
 def remove_extra_info_list_users(limit, raw_data):
     """_summary_
     Due to the fact that page_size must be const,
-    Extra information may be provided to me, such as:
-    In the case of limit = 301, manual_list_users_pagination will return 600 users (MAX_RECORDS * 2),
-    The last 299 must be removed.
+    Extra information may be provided
 
     Args:
         limit (int): the number of records the user asked for
@@ -371,6 +444,23 @@ def remove_extra_info_list_users(limit, raw_data):
             all_info.append(user)
             if len(all_info) >= limit:
                 return all_info
+    return all_info
+
+
+def remove_extra_info_list(name, limit, raw_data):
+    """_summary_
+    Due to the fact that page_size must be const,
+    Extra information may be provided
+    Args:
+        limit (int): the number of records the user asked for
+        raw_data (dict):the entire response from the pagination function
+    """
+    all_info = []
+    channel_info = raw_data.get(name, [raw_data])
+    for channel in channel_info:
+        all_info.append(channel)
+        if len(all_info) >= limit:
+            return all_info
     return all_info
 
 
@@ -648,13 +738,13 @@ def zoom_fetch_recording_command(client: Client, **args):
                     )
                     results.append(CommandResults(
                         readable_output=f"The {file_type_as_literal} file {filename} was successfully removed from the cloud."))
-                except DemistoException as e:
+                except DemistoException as exp:
                     results.append(CommandResults(
-                        readable_output=f"Failed to delete file {filename}. {e}"))
+                        readable_output=f"Failed to delete file {filename}. {exp}"))
 
-        except DemistoException as e:
+        except DemistoException as exp:
             raise DemistoException(
-                f'Unable to download recording for meeting {meeting_id}: {e}')
+                f'Unable to download recording for meeting {meeting_id}: {exp}')
 
     return results
 
@@ -743,6 +833,797 @@ def check_authentication_type_parameters(api_key: str, api_secret: str,
         raise DemistoException(EXTRA_PARAMS)
 
 
+def zoom_list_account_public_channels_command(client, **args) -> CommandResults:
+    """
+    Lists public channels associated with a Zoom account.
+    """
+    # PREPROCESSING
+    client = client
+    page_size = arg_to_number(args.get('page_size', 50))
+    channel_id = args.get('channel_id')
+    next_page_token = args.get('next_page_token')
+    limit = arg_to_number(args.get('limit'))
+    page_number = arg_to_number(args.get('page_number', 1))
+
+    url_suffix = f'channels/{channel_id}' if channel_id else 'channels'
+
+    if limit:
+        if "page_size" in args or "page_number" in args or next_page_token or channel_id:
+            # arguments collision
+            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
+        else:
+            # multiple requests are needed
+            raw_data = manual_list_channel_pagination(
+                client=client, next_page_token=next_page_token, limit=limit, url_suffix=url_suffix)
+
+            data = remove_extra_info_list('channels', limit, raw_data)
+            token = raw_data.get('next_page_token', None)
+    else:
+        # only one request is needed
+        raw_data = client.zoom_list_channels(page_size=page_size, next_page_token=next_page_token,
+                                             url_suffix=url_suffix, page_number=page_number)
+        # parsing the data according to the different given arguments
+        data = [raw_data] if channel_id else raw_data.get("channels")
+        token = raw_data.get('next_page_token', None)
+    outputs = []
+    for i in data:
+        outputs.append({'Channel JID': i.get('jid'),
+                        'Channel ID': i.get('id'),
+                        'Channel name': i.get('name'),
+                        'Channel type': i.get('type'),
+                        'Channel url': i.get('channel_url')})
+
+    md = tableToMarkdown('Channels', outputs, removeNull=True)
+    md += '\n' + f'Channels Next Token: {token}'
+
+    return CommandResults(
+        outputs_prefix='Zoom.Channel',
+        readable_output=md,
+        outputs={**raw_data,
+                 'ChannelsNextToken': token},
+        raw_response=raw_data
+    )
+
+
+def zoom_list_user_channels_command(client, **args) -> CommandResults:
+    """
+    Lists channels associated with a specific Zoom user.
+    """
+    # PREPROCESSING
+    client = client
+    page_size = arg_to_number(args.get('page_size', 50))
+    channel_id = args.get('channel_id')
+    user_id = args.get('user_id', '')
+    next_page_token = args.get('next_page_token')
+    limit = arg_to_number(args.get('limit'))
+    page_number = arg_to_number(args.get('page_number', 1))
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    data = []
+    url_suffix = f'users/{user_id}/channels/{channel_id}' if channel_id else f'users/{user_id}/channels'
+    if limit:
+        if "page_size" in args or "page_number" in args or next_page_token:
+            # arguments collision
+            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
+        else:
+            # multiple requests are needed
+            raw_data = manual_list_user_channel_pagination(client=client, user_id=user_id,
+                                                           next_page_token=next_page_token, limit=limit,
+                                                           url_suffix=url_suffix)
+            data = remove_extra_info_list('channels', limit, raw_data)
+            token = raw_data.get('next_page_token', None)
+    else:
+        # only one request is needed
+        raw_data = client.zoom_list_user_channels(user_id=user_id, page_size=page_size,
+                                                  next_page_token=next_page_token, url_suffix=url_suffix,
+                                                  page_number=page_number)
+        # parsing the data according to the different given arguments
+        data = [raw_data] if channel_id else raw_data.get("channels")
+        token = raw_data.get('next_page_token', None)
+    outputs = []
+    for i in data:
+        outputs.append({'User id': user_id,
+                        'Channel ID': i.get('id'),
+                        'channel JID': i.get('jid'),
+                        'Channel name': i.get('name'),
+                        'Channel type': i.get('type'),
+                        'Channel url': i.get('channel_url')})
+    md = tableToMarkdown('Channels', outputs)
+
+    return CommandResults(
+        outputs_prefix='Zoom.Channel',
+        outputs_key_field='id',
+        readable_output=md,
+        outputs={**raw_data,
+                 'UserChannelsNextToken': token},
+        raw_response=raw_data
+    )
+
+
+def zoom_create_channel_command(client, **args) -> CommandResults:
+    """
+        Create a new zoom channel
+    """
+    client = client
+    user_id = args.get('user_id')
+    member_emails = argToList(args.get('member_emails'))
+    add_member_permissions = args.get('add_member_permissions', None)
+    add_member_permissions_num = MEMBER_PERMISSIONS_MAPPING.get(add_member_permissions)
+    posting_permissions = args.get('posting_permissions', None)
+    posting_permissions_num = POSTING_PERMISSIONS_MAPPING.get(posting_permissions)
+    new_members_can_see_prev_msgs = args.get('new_members_can_see_prev_msgs', True)
+    channel_name = args.get('channel_name')
+    channel_type = args.get('channel_type', None)
+    channel_type_num = CHANNEL_TYPE_MAPPING.get(channel_type)
+    json_all_data = {}
+    email_json = [{"email": email} for email in member_emails]
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+    # special section for recurring meeting with fixed time
+    json_all_data.update({
+        "channel_settings": {
+            "add_member_permissions": add_member_permissions_num,
+            "new_members_can_see_previous_messages_files": new_members_can_see_prev_msgs,
+            "posting_permissions": posting_permissions_num,
+        },
+        "name": channel_name,
+        "type": channel_type_num,
+        "members": email_json
+    })
+
+    json_data = remove_None_values_from_dict(json_all_data)
+    url_suffix = f"/chat/users/{user_id}/channels"
+    raw_data = client.zoom_create_channel(url_suffix, json_data)
+    # md = tableToMarkdown('Channel details', [raw_data], ['id', 'name', 'type', 'channel_url'])
+
+    outputs = []
+    outputs.append({'User id': user_id,
+                    'Channel ID': raw_data.get('id'),
+                    'Channel name': raw_data.get('name'),
+                    'Channel type': raw_data.get('type'),
+                    'Channel url': raw_data.get('channel_url')})
+
+    human_readable = tableToMarkdown('Channel details',
+                                     outputs,
+                                     removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='Zoom.Channel',
+        outputs_key_field='id',
+        readable_output=human_readable,
+        outputs=raw_data,
+        raw_response=raw_data
+    )
+
+
+def zoom_delete_channel_command(client, **args) -> CommandResults:
+    """
+       Delete a Zoom channel
+    """
+    client = client
+    channel_id = args.get('channel_id')
+    user_id = args.get('user_id')
+    url_suffix = f'/chat/users/{user_id}/channels/{channel_id}'
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    client.zoom_delete_channel(url_suffix)
+    return CommandResults(
+        readable_output=f'Channel {channel_id} was deleted successfully',
+    )
+
+
+def zoom_update_channel_command(client, **args) -> CommandResults:
+    """
+        Update a Zoom channel
+    """
+    client = client
+    add_member_permissions = args.get('add_member_permissions', None)
+    add_member_permissions_num = MEMBER_PERMISSIONS_MAPPING.get(add_member_permissions)
+    posting_permissions = args.get('posting_permissions', None)
+    posting_permissions_num = POSTING_PERMISSIONS_MAPPING.get(posting_permissions)
+    new_members_can_see_prev_msgs = args.get('new_members_can_see_prev_msgs', True)
+    channel_name = args.get('channel_name')
+    channel_id = args.get('channel_id')
+    user_id = args.get('user_id')
+    json_all_data = {}
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+    # special section for recurring meeting with fixed time
+    json_all_data.update({
+        "name": channel_name,
+        "channel_settings": {
+            "add_member_permissions": add_member_permissions_num,
+            "new_members_can_see_previous_messages_files": new_members_can_see_prev_msgs,
+            "posting_permissions": posting_permissions_num,
+        }})
+
+    json_data = remove_None_values_from_dict(json_all_data)
+    url_suffix = f"/chat/users/{user_id}/channels/{channel_id}"
+    client.zoom_update_channel(url_suffix, json_data)
+
+    return CommandResults(
+        readable_output=f"Channel {channel_id} was updated successfully",
+    )
+
+
+def zoom_invite_to_channel_command(client, **args) -> CommandResults:
+    """
+        invite users to Zoom channel
+    """
+    channel_id = args.get('channel_id')
+    user_id = args.get('user_id')
+    members = argToList(args.get('members'))
+    url_suffix = f'/chat/users/{user_id}/channels/{channel_id}/members'
+    json_members = [{"email": email} for email in members]
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    members_json = {'members': json_members}
+
+    raw_data = client.zoom_invite_to_channel(members_json, url_suffix)
+
+    outputs = [{
+        'User id': raw_data.get('ids'),
+        'Channel ID': channel_id,
+        'Added at date and time': raw_data.get('added_at')
+    }]
+
+    human_readable = tableToMarkdown('Channel details', outputs, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='Zoom.Channel',
+        outputs_key_field='id',
+        readable_output=human_readable,
+        outputs=raw_data,
+        raw_response=raw_data
+    )
+
+
+def zoom_remove_from_channel_command(client, **args) -> CommandResults:
+    """
+        Remove a user from Zoom channel
+    """
+    client = client
+    channel_id = args.get('channel_id')
+    member_id = args.get('member_id')
+    user_id = args.get('user_id')
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    url_suffix = f'/chat/users/{user_id}/channels/{channel_id}/members/{member_id}'
+    client.zoom_remove_from_channel(url_suffix)
+    return CommandResults(
+        readable_output=f'Member {member_id} was successfully removed from channel {channel_id}',
+    )
+
+
+def zoom_send_file_command(client, **args) -> CommandResults:
+    """
+        Send file in Zoom
+    """
+    client = client
+    user_id = args.get('user_id')
+    to_channel = args.get('to_channel')
+    to_contact = args.get('to_contact')
+    entry_id = args.get('entry_id')
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    if "to_contact" not in args and "to_channel" not in args:
+        raise DemistoException(MISSING_ARGUMENT)
+
+    file_info = demisto.getFilePath(entry_id)
+    upload_url = f'https://file.zoom.us/v2/chat/users/{user_id}/messages/files'
+    json_data = remove_None_values_from_dict({
+        'to_contact': to_contact,
+        'to_channel': to_channel})
+    upload_response = client.zoom_send_file(upload_url, file_info, json_data)
+
+    message_id = upload_response.get('id')
+    return CommandResults(
+        readable_output=f'Message with id {message_id} was successfully sent'
+    )
+
+
+def process_links(formatted_message, formats):
+    """
+    Processes markdown links in the formatted message.
+    for example- [my link](https://****.com)
+    Args:
+        formatted_message (str): The formatted message to process.
+
+    Returns:
+        str: The formatted message with links processed.
+    """
+    add_link_regex = r'\[([^[\]]*?)\]\((http[s]?://.*?)\)'
+    matches = re.findall(add_link_regex, formatted_message)
+
+    for match in matches:
+        link_text, link_url = match
+        add_link_range = {
+            "text": link_text,
+            "format_type": "AddLink",
+            "format_attr": link_url
+        }
+        formats.append(add_link_range)
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[" + link_text + "](" + link_url + ")", link_text)
+
+    return formatted_message, formats
+
+
+def process_mentions(formatted_message, formats, at_contact=None):
+    """
+    Processes mentions in the markdown message you can provide just one mention on each message.
+    for example-'@all'
+
+    Args:
+        formatted_message (str): The markdown message to process.
+        at_contact (str): The contact to mention.
+
+    Returns:
+        str: The formatted message without the mention markdown.
+    """
+    mention_regex = r"(@\w+)"
+
+    matches = re.findall(mention_regex, formatted_message)[:1]
+    for match in matches:
+        if match == '@all':
+            mention_range = {
+                'text': match,
+                "at_type": 2,
+                "at_contact": at_contact,
+            }
+            formats.append(mention_range)
+        elif at_contact:
+            mention_range = {
+                'text': match,
+                "at_contact": at_contact,
+                "at_type": 1,
+            }
+            formats.append(mention_range)
+    return formatted_message, formats
+
+
+def process_background_colors(formatted_message, formats):
+    """
+    Processes background colors in the markdown message.
+    for example- [#<rgb>bg](message that will be with background)
+
+    Args:
+        formatted_message (str): The markdown message to process.
+
+    Returns:
+        str: The formatted message without background color markdown.
+    """
+    bg_color_regex = r"\[#([A-Fa-f0-9]{6})bg\]\((.*?)\)"
+
+    matches = re.findall(bg_color_regex, formatted_message)
+    for match in matches:
+        bg_color, text = match
+        bg_color_range = {
+            "text": text,
+            "format_type": "BackgroundColor",
+            "format_attr": bg_color,
+        }
+        formats.append(bg_color_range)
+
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[#" + bg_color + "bg](" + text + ")", text)
+    return formatted_message, formats
+
+
+def process_font_sizes(formatted_message, formats):
+    """
+    Processes font sizes in the markdown message.
+    use s|m|l for text size
+    for example- [s](message)
+
+    Args:
+        formatted_message (str): The markdown message to process.
+
+    Returns:
+        str: The formatted message without fontsize markdown.
+    """
+    font_size_regex = "\\[(s|m|l)\\]\\((.*?)\\)"
+    matches = re.findall(font_size_regex, formatted_message)
+    for match in matches:
+        size, text = match
+        font_size_range = {
+            "text": text,
+            "format_type": "FontSize",
+            "format_attr": size
+        }
+        formats.append(font_size_range)
+
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[" + size + "](" + text + ")", text)
+    return formatted_message, formats
+
+
+def process_font_colors(formatted_message, formats):
+    """
+    Processes font colors in the formatted message.
+
+    Args:
+        formatted_message (str): The formatted message to process.
+
+    Returns:
+        str: The formatted message with font colors processed.
+    """
+    font_color_regex = "\\[#([A-Fa-f0-9]{6})\\]\\((.*?)\\)"
+    matches = re.findall(font_color_regex, formatted_message)
+    for match in matches:
+        color, text = match
+        font_color_range = {
+            "text": text,
+            "format_type": "FontColor",
+            "format_attr": color,
+        }
+        formats.append(font_color_range)
+
+        # Replace Markdown syntax with plain text
+        formatted_message = formatted_message.replace("[#" + color + "](" + text + ")", text)
+    return formatted_message, formats
+
+
+def process_left_indent_and_paragraphs(formatted_message, formats):
+    """
+    Processes left indents and paragraphs in the markdown message.
+    for left indents use >,>>,>>>
+    for paragraph usr #,##,### (up to 3)
+    this type of markdowns effect the whole line.
+
+    Args:
+        formatted_message (str): The formatted message to process.
+
+    Returns:
+        tuple: A tuple containing the formatted message, rich text formatting data, and @mention items.
+    """
+
+    left_indent_regex = r"(>{1,4})\s(.*?)$"
+    paragraph_regex = r"(#{1,4})\s(.*?)$"
+    lines = formatted_message.split("\n")
+    for i, line in enumerate(lines):
+        match = re.findall(left_indent_regex, line)
+        for matches in match:
+            indent_level, indent_text = matches
+            left_indent_range = {
+                "text": indent_text,
+                "format_type": "LeftIndent",
+                "format_attr": len(indent_level) * 20,
+            }
+            formats.append(left_indent_range)
+            # Replace Markdown syntax with plain text
+            lines[i] = indent_text
+
+        pp_matches = re.findall(paragraph_regex, line)
+        for p_matches in pp_matches:
+            heading_level, heading_text = p_matches
+            paragraph_range = {
+                "text": heading_text,
+                "format_type": "paragraph",
+                "format_attr": f"h{len(heading_level)}",
+            }
+            formats.append(paragraph_range)
+            lines[i] = heading_text
+    formatted_message = "\n".join(lines)
+    return formatted_message, formats
+
+
+def parse_markdown_message(markdown_message: str, at_contact: str = None):
+    """
+    Parses a Markdown message and extracts formatting information.
+
+    Args:
+        markdown_message (str): The Markdown message to parse.
+        at_contact (str, optional): The contact to mention. Defaults to None.
+
+    Returns:
+        tuple: A tuple containing the formatted message, rich text formatting data, and @mention items.
+    """
+
+    formats: List[dict] = []
+    at_items = []
+    rich_text = []
+    formatted_message, formats = process_links(markdown_message, formats)
+    formatted_message, formats = process_mentions(formatted_message, formats, at_contact)
+    formatted_message, formats = process_background_colors(formatted_message, formats)
+    formatted_message, formats = process_font_sizes(formatted_message, formats)
+    formatted_message, formats = process_font_colors(formatted_message, formats)
+    formatted_message, formats = process_left_indent_and_paragraphs(formatted_message, formats)
+
+    # extract the start,end positions
+    for i in range(len(formats)):
+        t = formats[i]['text']
+        start_position = formatted_message.find(t)
+        end_position = start_position + len(t) - 1
+        formats[i]["start_position"] = start_position
+        formats[i]["end_position"] = end_position
+        if formats[i].get('at_type'):
+            at_items.append(formats[i])
+        else:
+            rich_text.append(formats[i])
+
+    return formatted_message, {
+        "message": formatted_message,
+        "rich_text": rich_text,
+        "at_items": at_items
+    }
+
+
+def zoom_send_message_command(client, **args) -> CommandResults:
+    """
+        Send  Zoom chat message
+    """
+    client = client
+    at_contact = args.get('at_contact')
+    user_id = args.get('user_id')
+    message = args.get('message', '')
+    entry_ids = argToList(args.get('entry_ids', []))
+    reply_main_message_id = args.get('reply_main_message_id')
+    to_channel = args.get('to_channel')
+    to_contact = args.get('to_contact')
+    is_markdown = args.get('is_markdown', False)
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    url_suffix = f'/chat/users/{user_id}/messages'
+    upload_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
+    zoom_file_id: List = []
+    for id in entry_ids:
+        file_info = demisto.getFilePath(id)
+        res = client.zoom_upload_file(upload_file_url, file_info)
+        zoom_file_id.append(res.get('id'))
+
+    # check if the text contain markdown to parse and also provide text style arguments
+    if is_markdown:
+        # check if text have more then 1 mention
+        if message.count('@') > 1 and at_contact:
+            raise DemistoException(MARKDOWN_EXTRA_MENTIONS)
+
+        message, json_data_all = parse_markdown_message(message, at_contact)
+        json_data_all.update({"file_ids": zoom_file_id, "reply_main_message_id": reply_main_message_id, "to_channel": to_channel,
+                              "to_contact": to_contact})
+    else:
+        json_data_all = {
+            "message": message,
+            "file_ids": zoom_file_id,
+            "reply_main_message_id": reply_main_message_id,
+            "to_channel": to_channel,
+            "to_contact": to_contact
+        }
+    json_data = remove_None_values_from_dict(json_data_all)
+
+    raw_data = client.zoom_send_message(url_suffix, json_data)
+    data = {
+        'Mentioned user': at_contact,
+        'Channel ID ': to_channel,
+        'Message ID': raw_data.get('id'),
+        'Contact': to_contact
+    }
+
+    md = tableToMarkdown('Message', data, removeNull=True)
+    return CommandResults(
+        outputs_prefix='Zoom.ChatMessage',
+        readable_output=md,
+        outputs_key_field='id',
+        outputs=raw_data,
+        raw_response=raw_data
+    )
+
+
+def zoom_delete_message_command(client, **args) -> CommandResults:
+    """
+        Delete Zoom chat message
+    """
+    client = client
+    message_id = args.get('message_id')
+    to_contact = args.get('to_contact',)
+    user_id = args.get('user_id')
+    to_channel = args.get('to_channel')
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    if to_channel:
+        url_suffix = f'/chat/users/{user_id}/messages/{message_id}?to_channel={to_channel}'
+    elif to_contact:
+        url_suffix = f'/chat/users/{user_id}/messages/{message_id}?to_contact={to_contact}'
+    else:
+        raise DemistoException(MISSING_ARGUMENT)
+
+    client.zoom_delete_message(url_suffix)
+    return CommandResults(
+        readable_output=f'Message {message_id} was deleted successfully',
+    )
+
+
+def zoom_update_message_command(client, **args) -> CommandResults:
+    """
+        Update Zoom chat message
+    """
+    client = client
+    message_id = args.get('message_id')
+    to_contact = args.get('to_contact')
+    user_id = args.get('user_id')
+    to_channel = args.get('to_channel')
+    message = args.get('message')
+    entry_ids = argToList(args.get('entry_ids', []))
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+
+    upload_file_url = f'https://file.zoom.us/v2/chat/users/{user_id}/files'
+    zoom_file_id: List = []
+    demisto.debug(f'file id args {entry_ids}')
+    for id in entry_ids:
+        file_info = demisto.getFilePath(id)
+        res = client.zoom_upload_file(upload_file_url, file_info)
+        zoom_file_id.append(res.get('id'))
+    demisto.debug('upload the file without error')
+
+    url_suffix = f'/chat/users/{user_id}/messages/{message_id}'
+    json_data = remove_None_values_from_dict(
+        {
+            "message": message,
+            "file_ids": zoom_file_id,
+            "to_channel": to_channel,
+            "to_contact": to_contact})
+
+    client.zoom_update_message(url_suffix, json_data)
+    return CommandResults(
+        readable_output=f'Message {message_id} was successfully updated',
+    )
+
+
+def zoom_get_user_id_by_email(client, email):
+    """
+    Retrieves the user ID associated with the given email address.
+
+    :param client: The Zoom client object.,
+    email: The email address of the user.
+
+    :return: The user ID associated with the email address.
+    :rtype: str
+    """
+    user_url_suffix = f'users/{email}'
+    user_id = client.zoom_list_users(page_size=50, url_suffix=user_url_suffix).get('id')
+    if not user_id:
+        raise DemistoException(USER_NOT_FOUND)
+    return user_id
+
+
+def zoom_list_messages_command(client, **args) -> CommandResults:
+    """
+    Lists messages from Zoom chat.
+
+    :raises DemistoException: If a required argument is missing.
+    """
+
+    client = client
+    user_id = args.get('user_id')
+    to_contact = args.get('to_contact')
+    to_channel = args.get('to_channel')
+    date_arg = arg_to_datetime(args.get('date'))
+    from_arg = arg_to_datetime(args.get('from'))
+    to_arg = arg_to_datetime(args.get('to'))
+    date_arg = date_arg.strftime('%Y-%m-%dT%H:%M:%SZ') if date_arg else None
+    from_arg = from_arg.strftime('%Y-%m-%dT%H:%M:%SZ') if from_arg else None
+    to_arg = to_arg.strftime('%Y-%m-%dT%H:%M:%SZ') if to_arg else None
+    include_deleted_and_edited_message = args.get('include_deleted_and_edited_message')
+    search_type = args.get('search_type')
+    search_key = args.get('search_key')
+    exclude_child_message = args.get('exclude_child_message', False)
+    limit = arg_to_number(args.get('limit', 50))
+    page_size = arg_to_number(args.get('page_size'))
+
+    if limit and page_size and limit != 50:
+        raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
+    else:
+        limit = page_size if page_size else limit
+
+    if not to_contact and not to_channel:
+        raise DemistoException(MISSING_ARGUMENT)
+
+    if user_id and re.match(emailRegex, user_id):
+        user_id = zoom_get_user_id_by_email(client, user_id)
+    json_data = {
+        'user_id': user_id,
+        'to_contact': to_contact,
+        'to_channel': to_channel,
+        'date': date_arg,
+        'from': from_arg,
+        'to': to_arg,
+        'include_deleted_and_edited_message': include_deleted_and_edited_message,
+        'search_type': search_type,
+        'search_key': search_key,
+        'exclude_child_message': exclude_child_message,
+        'page_size': limit
+    }
+    # remove all keys with val of None
+    request_data = remove_None_values_from_dict(json_data)
+    url_suffix = f'users/{user_id}/messages'
+    all_messages: List = []
+    next_page_token = args.get('next_page_token', None)
+    while True:
+        try:
+            raw_data = client.zoom_list_user_messages(url_suffix=url_suffix,
+                                                      user_id=user_id,
+                                                      to_contact=to_contact,
+                                                      to_channel=to_channel,
+                                                      date_arg=date_arg,
+                                                      from_arg=from_arg,
+                                                      to_arg=to_arg,
+                                                      include_deleted_and_edited_message=include_deleted_and_edited_message,
+                                                      search_type=search_type,
+                                                      search_key=search_key,
+                                                      exclude_child_message=exclude_child_message,
+                                                      next_page_token=next_page_token,
+                                                      page_size=limit)
+            data = raw_data.get('messages', [])
+            if limit and len(all_messages) + len(data) > limit:
+                remaining_limit = limit - len(all_messages)
+                data = data[:remaining_limit]
+
+            all_messages.extend(data)
+
+            if limit and len(all_messages) >= limit:
+                all_messages = all_messages[:limit]
+                break
+            next_page_token = raw_data.get('next_page_token', None)
+            if next_page_token and next_page_token != '':
+                next_page_token = raw_data['next_page_token']
+            else:
+                break
+        except DemistoException as e:
+            error_message = e.message
+            if 'The next page token is invalid or expired.' in error_message and next_page_token:
+                raise DemistoException(f"Please ensure that the correct argument values are used when attempting to use \
+                                       the next_page_toke.\n \
+                                       Note that when using next_page_token it is mandatory to specify date time and not \
+                                       relative time.\n \
+                                       To find the appropriate values, refer to the ChatMessageNextToken located in the context. \
+                                       \n {error_message}")
+    outputs = []
+    for i in all_messages:
+        outputs.append({
+            'User id': user_id,
+            'Message Id': i.get('id'),
+            'Message text': i.get('message'),
+            'Message sender': i.get('sender'),
+            'Sender display name': i.get('sender_display_name'),
+            'Date Time': i.get('date_time'),
+            'From': str(from_arg),
+            'To': str(to_arg)})
+
+    md = tableToMarkdown('Messages', outputs)
+    md += '\n' + 'Messages next token:' + raw_data.get('next_page_token', '')
+
+    if raw_data.get('next_page_token'):
+        request_data.update({'next_page_token': raw_data.get('next_page_token')})
+    else:
+        request_data = None
+
+    return CommandResults(
+        outputs_prefix='Zoom',
+        readable_output=md,
+        outputs={'ChatMessage': {'messages': all_messages},
+                 'ChatMessageNextToken': request_data},
+        raw_response=raw_data
+    )
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -793,6 +1674,30 @@ def main():  # pragma: no cover
             results = zoom_fetch_recording_command(client, **args)
         elif command == 'zoom-list-users':
             results = zoom_list_users_command(client, **args)
+        elif command == 'zoom-list-account-public-channels':
+            results = zoom_list_account_public_channels_command(client, **args)
+        elif command == 'zoom-list-user-channels':
+            results = zoom_list_user_channels_command(client, **args)
+        elif command == 'zoom-create-channel':
+            results = zoom_create_channel_command(client, **args)
+        elif command == 'zoom-delete-channel':
+            results = zoom_delete_channel_command(client, **args)
+        elif command == 'zoom-update-channel':
+            results = zoom_update_channel_command(client, **args)
+        elif command == 'zoom-invite-to-channel':
+            results = zoom_invite_to_channel_command(client, **args)
+        elif command == 'zoom-remove-from-channel':
+            results = zoom_remove_from_channel_command(client, **args)
+        elif command == 'zoom-send-file':
+            results = zoom_send_file_command(client, **args)
+        elif command == 'zoom-list-messages':
+            results = zoom_list_messages_command(client, **args)
+        elif command == 'zoom-send-message':
+            results = zoom_send_message_command(client, **args)
+        elif command == 'zoom-delete-message':
+            results = zoom_delete_message_command(client, **args)
+        elif command == 'zoom-update-message':
+            results = zoom_update_message_command(client, **args)
         else:
             return_error('Unrecognized command: ' + demisto.command())
         return_results(results)

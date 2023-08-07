@@ -13,14 +13,13 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: Use the Cisco Firepower integration for unified management of firewalls,
-  application control, intrusion prevention, URL filtering, and advanced malware protection.
+  required: false
+description: Use the Cisco Firepower integration for unified management of firewalls, application control, intrusion prevention, URL filtering, and advanced malware protection.
 display: Cisco Firepower
 name: Cisco Firepower
 script:
@@ -31,23 +30,17 @@ script:
     - name: entry_id
       description: 'A file containing the custom Snort 3 intrusion rules. Supported file formats are .rules and .txt.'
       required: true
-      isArray: false
     - name: rule_import_mode
       description: 'Merge or replace the rules in the rule groups.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'MERGE'
       - 'REPLACE'
     - name: rule_group_ids
       description: 'A comma-separated list of rule groups to which rules should belong. Example are group-id1,group-id2. This is required when importing rules and can be acquired from: ciscofp-list-intrusion-rule-group'
-      required: false
       isArray: true
     - name: validate_only
       description: 'Define whether to validate or to validate and import rules. True is the default value and sets that rules should be validated and not imported.'
-      required: false
-      isArray: false
       defaultValue: 'True'
       auto: PREDEFINED
       predefined:
@@ -137,36 +130,23 @@ script:
     arguments:
     - name: intrusion_rule_id
       description: 'Snort 3 intrusion rule ID.'
-      required: false
-      isArray: false
     - name: expanded_response
       description: 'Whether to display an expanded response with a list of objects with additional attributes.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - name: sort
       description: 'Sorting parameters to be provided e.g. sid,-sid,gid,-gid,msg,-msg.'
-      required: false
       isArray: true
     - name: filter
       description: 'Filter the results. Can be any of the following formats: "gid:123;sid:456" or "fts:789" or "overrides:true;ipspolicy:{uuid1,uuid2,...}, where "ipspolicy" is a comma-separated list of Snort 3 Intrusion Policy IDs.'
-      required: false
-      isArray: false
     - name: limit
       description: 'The number of items to return.'
-      required: false
-      isArray: false
     - name: page
       description: 'The number of pages to return.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of items to return in a page.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.IntrusionRule.type
@@ -246,7 +226,6 @@ script:
     - name: rule_data
       description: 'The Snort Rule structure data. Guide to Snort rule structure: https://docs.snort.org/rules/'
       required: true
-      isArray: false
     - name: rule_group_ids
       description: 'Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group.'
       required: true
@@ -330,19 +309,13 @@ script:
     - name: intrusion_rule_id
       description: 'The Snort 3 intrusion rule ID.'
       required: true
-      isArray: false
     - name: rule_data
       description: 'The Snort rule structure data. Guide to Snort rule structure: https://docs.snort.org/rules/'
-      required: false
-      isArray: false
     - name: rule_group_ids
       description: 'Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group'
-      required: false
       isArray: true
     - name: update_strategy
       description: 'The update method to use in the command. Can be "MERGE" or "OVERRIDE". If "MERGE" is used, new rule groups will be appended. If "OVERRIDE" is used, old rule groups will be overwritten.'
-      required: false
-      isArray: false
       defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
@@ -427,18 +400,13 @@ script:
     - name: intrusion_rule_id
       description: 'The Snort 3 intrusion rule ID.'
       required: true
-      isArray: false
   - name: ciscofp-list-intrusion-policy
     description: 'Retrieves the intrusion policy associated with the specified ID. If no ID is specified, retrieves a list of all intrusion policies. Default list size is 50. GET arguments: intrusion_policy_id, include_count | LIST arguments: expanded_response, limit, page, page_size.'
     arguments:
     - name: intrusion_policy_id
       description: 'The intrusion policy ID.'
-      required: false
-      isArray: false
     - name: include_count
       description: 'Whether the number of rules should be included in the response.'
-      required: false
-      isArray: false
       defaultValue: 'False'
       auto: PREDEFINED
       predefined:
@@ -446,8 +414,6 @@ script:
       - 'False'
     - name: expanded_response
       description: 'Whether to display an expanded response with a list of objects with additional attributes.'
-      required: false
-      isArray: false
       defaultValue: 'False'
       auto: PREDEFINED
       predefined:
@@ -455,16 +421,10 @@ script:
       - 'False'
     - name: limit
       description: 'The number of items to return.'
-      required: false
-      isArray: false
     - name: page
       description: 'The number of pages to return.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of items to return in a page.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.IntrusionPolicy.name
@@ -565,19 +525,13 @@ script:
     - name: name
       description: 'The intrusion policy name.'
       required: true
-      isArray: false
     - name: description
       description: 'The intrusion policy description.'
-      required: false
-      isArray: false
     - name: basepolicy_id
       description: 'The base intrusion policy ID. Can be acquired from: ciscofp-list-intrusion-policy.'
       required: true
-      isArray: false
     - name: inspection_mode
       description: 'The inspection mode for Snort 3 engine. Can be either DETECTION or PREVENTION.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - DETECTION
@@ -682,31 +636,20 @@ script:
     - name: intrusion_policy_id
       description: 'The intrusion policy ID.'
       required: true
-      isArray: false
     - name: replicate_inspection_mode
       description: 'Whether to replicate inspection mode from Snort 3 to Snort 2.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - name: name
       description: 'The intrusion policy name.'
-      required: false
-      isArray: false
     - name: description
       description: 'The intrusion policy description.'
-      required: false
-      isArray: false
     - name: basepolicy_id
       description: 'The base intrusion policy ID. Can be acquired from: ciscofp-list-intrusion-policy.'
-      required: false
-      isArray: false
     - name: inspection_mode
       description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - DETECTION
@@ -811,38 +754,25 @@ script:
     - name: intrusion_policy_id
       description: 'The intrusion policy ID.'
       required: true
-      isArray: false
   - name: ciscofp-list-intrusion-rule-group
     description: 'Retrieves the Snort 3 intrusion rule group. If no ID is specified, retrieves a list of all Snort 3 Intrusion rule groups. The default list size is 50. GET arguments: rule_group_id | LIST arguments: expanded_response, filter, limit, page, page_size.'
     arguments:
     - name: rule_group_id
       description: 'The Snort 3 intrusion rule group ID.'
-      required: false
-      isArray: false
     - name: expanded_response
       description: 'Whether to display an expanded response with a list of objects with additional attributes.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - name: filter
       description: 'Filter the results. Can be any of the following formats: "name:Browser/Firefox" or "currentSecurityLevel:DISABLED" or "showonlyparents:{true/false}" or "includeCount:true".'
-      required: false
-      isArray: false
     - name: limit
       description: 'The number of items to return.'
-      required: false
-      isArray: false
     - name: page
       description: 'The number of pages to return.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of items to return in a page.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.IntrusionRuleGroup.name
@@ -937,11 +867,8 @@ script:
     - name: name
       description: 'The Snort 3 intrusion rule group name.'
       required: true
-      isArray: false
     - name: description
       description: 'The Snort 3 intrusion rule group description.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.IntrusionRuleGroup.name
@@ -1036,15 +963,11 @@ script:
     - name: rule_group_id
       description: 'The Snort 3 intrusion rule group ID.'
       required: true
-      isArray: false
     - name: name
       description: 'The Snort 3 intrusion rule group name.'
       required: true
-      isArray: false
     - name: description
       description: 'The Snort 3 intrusion rule group description.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.IntrusionRuleGroup.name
@@ -1139,11 +1062,8 @@ script:
     - name: rule_group_id
       description: 'The Snort 3 intrusion rule group ID.'
       required: true
-      isArray: false
     - name: delete_related_rules
       description: 'Whether or not to delete orphan rules. Mandatory if a custom rule group has unique/unshared rules which become orphans after custom rule group delete.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -1153,28 +1073,18 @@ script:
     arguments:
     - name: network_analysis_policy_id
       description: 'The network analysis policy ID.'
-      required: false
-      isArray: false
     - name: expanded_response
       description: 'Whether to display an expanded response with a list of objects with additional attributes.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - name: limit
       description: 'The number of items to return.'
-      required: false
-      isArray: false
     - name: page
       description: 'The number of pages to return.'
-      required: false
-      isArray: false
     - name: page_size
       description: 'The number of items to return in a page.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.NetworkAnalysisPolicy.name
@@ -1299,15 +1209,10 @@ script:
     - name: name
       description: 'The network analysis policy name.'
       required: true
-      isArray: false
     - name: description
       description: 'The network analysis policy description.'
-      required: false
-      isArray: false
     - name: inspection_mode
       description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - DETECTION
@@ -1315,7 +1220,6 @@ script:
     - name: basepolicy_id
       description: 'The base network analysis policy ID. Can be acquired from: ciscofp-list-network-analysis-policy.'
       required: true
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.NetworkAnalysisPolicy.name
@@ -1440,35 +1344,24 @@ script:
     - name: network_analysis_policy_id
       description: 'The network analysis policy ID.'
       required: true
-      isArray: false
     - name: replicate_inspection_mode
       description: 'Whether to replicate inspection mode from Snort 3 to Snort 2.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
     - name: name
       description: 'The network analysis policy name.'
-      required: false
-      isArray: false
     - name: description
       description: 'The network analysis policy description.'
-      required: false
-      isArray: false
     - name: inspection_mode
       description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - DETECTION
       - PREVENTION
     - name: basepolicy_id
       description: 'The base network analysis policy ID. Can be acquired from: ciscofp-list-network-analysis-policy.'
-      required: false
-      isArray: false
     outputs:
     - type: String
       contextPath: CiscoFP.NetworkAnalysisPolicy.name
@@ -1593,7 +1486,6 @@ script:
     - name: network_analysis_policy_id
       description: 'The network analysis policy ID.'
       required: true
-      isArray: false
   - arguments:
     - description: |-
         The number of items to return.
@@ -1677,8 +1569,7 @@ script:
         Index of the first item to return.
         The default is 0.
       name: offset
-    description: Retrieves the network objects associated with the specified ID. If
-      no ID is supplied, retrieves a list of all network objects.
+    description: Retrieves the network objects associated with the specified ID. If no ID is supplied, retrieves a list of all network objects.
     name: ciscofp-get-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
@@ -1707,8 +1598,7 @@ script:
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether the objects can be overridden. Can be TRUE or FALSE.
-        The default is FALSE.
+      description: Whether the objects can be overridden. Can be TRUE or FALSE. The default is FALSE.
       name: overridable
       predefined:
       - 'false'
@@ -1779,8 +1669,7 @@ script:
         Index of the first item to return.
         The default is 0.
       name: offset
-    description: Retrieves the groups of network objects and addresses associated
-      with the specified ID. If no ID is supplied, retrieves a list of all network objects.
+    description: Retrieves the groups of network objects and addresses associated with the specified ID. If no ID is supplied, retrieves a list of all network objects.
     name: ciscofp-get-network-groups-object
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
@@ -1816,8 +1705,7 @@ script:
       required: true
     - description: A comma-separated list of object IDs to add to the group.
       name: network_objects_id_list
-    - description: A comma-separated list of IP addresses or CIDR ranges to add the
-        group.
+    - description: A comma-separated list of IP addresses or CIDR ranges to add the group.
       name: network_address_list
     - description: The object description.
       name: description
@@ -1877,7 +1765,6 @@ script:
       - 'false'
     - name: update_strategy
       description: The update method to use in the command. Can be "MERGE" or "OVERRIDE". When merging, the changes requested are added to the existing rule. When overriding, the fields with the inputs provided will be overridden and any fields that were not provided will be deleted.
-      required: false
       defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
@@ -1885,7 +1772,6 @@ script:
       - OVERRIDE
     - description: The group name.
       name: name
-      required: false
     description: Updates a group of network objects.
     name: ciscofp-update-network-groups-objects
     outputs:
@@ -1961,8 +1847,7 @@ script:
         Index of the first item to return.
         The default is 0.
       name: offset
-    description: Retrieves the groups of host objects associated with the specified
-      ID. If no ID is passed, retrieves a list of all network objects.
+    description: Retrieves the groups of host objects associated with the specified ID. If no ID is passed, retrieves a list of all network objects.
     name: ciscofp-get-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
@@ -2106,8 +1991,7 @@ script:
         Index of the first item to return.
         The default is 0.
       name: offset
-    description: Retrieves the access control policy associated with the specified
-      ID. If no access policy ID is passed, all access control policies are returned.
+    description: Retrieves the access control policy associated with the specified ID. If no access policy ID is passed, all access control policies are returned.
     name: ciscofp-get-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
@@ -2347,9 +2231,7 @@ script:
       required: true
     - description: The rule ID.
       name: rule_id
-    description: Retrieves the access control rule associated with the specified policy
-      ID and rule ID. If no rule ID is specified, retrieves a list of all access rules
-      associated with the specified policy ID.
+    description: Retrieves the access control rule associated with the specified policy ID and rule ID. If no rule ID is specified, retrieves a list of all access rules associated with the specified policy ID.
     name: ciscofp-get-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
@@ -2422,8 +2304,7 @@ script:
       description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Whether the device will send events to Cisco.
-        Firepower.
+      description: Whether the device will send events to Cisco. Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
       description: The address type.
@@ -2502,8 +2383,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The rule's traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR",
-        "BLOCK_RESET", "BLOCK_INTERACTIVE", or "BLOCK_RESET_INTERACTIVE".
+      description: The rule's traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR", "BLOCK_RESET", "BLOCK_INTERACTIVE", or "BLOCK_RESET_INTERACTIVE".
       name: action
       predefined:
       - ALLOW
@@ -2524,53 +2404,40 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: A list of source zone object IDs. To get IDs use the ciscofp-list-zones
-        command.
+    - description: A list of source zone object IDs. To get IDs use the ciscofp-list-zones command.
       isArray: true
       name: source_zone_object_ids
     - description: The policy ID for which to create the new rule.
       name: policy_id
       required: true
-    - description: A list of destination zone object IDs. To get IDs, use the ciscofp-list-zones
-        command.
+    - description: A list of destination zone object IDs. To get IDs, use the ciscofp-list-zones command.
       isArray: true
       name: destination_zone_object_ids
-    - description: A list of VLAN tag object IDs. To get IDs, use the ciscofp-list-vlan-tags
-        command.
+    - description: A list of VLAN tag object IDs. To get IDs, use the ciscofp-list-vlan-tags command.
       isArray: true
       name: vlan_tag_object_ids
-    - description: A list of network object IDs. To get IDs, use the ciscofp-get-network-groups-object
-        command.
+    - description: A list of network object IDs. To get IDs, use the ciscofp-get-network-groups-object command.
       isArray: true
       name: source_network_object_ids
-    - description: A list of source IP addresses or CIDR ranges. To get the IP addresses
-        or ranges, use the ciscofp-get-network-object or ciscofp-get-host-object command,
-        respectively.
+    - description: A list of source IP addresses or CIDR ranges. To get the IP addresses or ranges, use the ciscofp-get-network-object or ciscofp-get-host-object command, respectively.
       isArray: true
       name: source_network_addresses
-    - description: A list of destination IP addresses or CIDR ranges. To get the addresses
-        or ranges, use the ciscofp-get-network-object or ciscofp-get-host-object command,
-        respectively.
+    - description: A list of destination IP addresses or CIDR ranges. To get the addresses or ranges, use the ciscofp-get-network-object or ciscofp-get-host-object command, respectively.
       isArray: true
       name: destination_network_object_ids
     - description: A list of destination addresses.
       isArray: true
       name: destination_network_addresses
-    - description: A list of port object IDs. To get the IDs,  use the ciscofp-get-network-object
-        or ciscofp-get-host-object commands.
+    - description: A list of port object IDs. To get the IDs,  use the ciscofp-get-network-object or ciscofp-get-host-object commands.
       name: source_port_object_ids
-    - description: A list of port object IDs. To get the IDs, use the ciscofp-list-ports
-        command.
+    - description: A list of port object IDs. To get the IDs, use the ciscofp-list-ports command.
       name: destination_port_object_ids
-    - description: A list of security group tag object IDs. To get the IDs, use the ciscofp-list-security-group-tags
-        command.
+    - description: A list of security group tag object IDs. To get the IDs, use the ciscofp-list-security-group-tags command.
       name: source_security_group_tag_object_ids
-    - description: A list of application object IDs. To get the IDs, use the ciscofp-list-applications
-        command.
+    - description: A list of application object IDs. To get the IDs, use the ciscofp-list-applications command.
       isArray: true
       name: application_object_ids
-    - description: A list of URL object IDs. To get the IDs, use the ciscofp-list-url-categories
-        command.
+    - description: A list of URL object IDs. To get the IDs, use the ciscofp-list-url-categories command.
       isArray: true
       name: url_object_ids
     - description: A list of URL addresses.
@@ -2649,8 +2516,7 @@ script:
       description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Whether the device will send events to Cisco.
-        Firepower.
+      description: Whether the device will send events to Cisco. Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
       description: The address type.
@@ -2739,9 +2605,7 @@ script:
       - override
       required: true
     - auto: PREDEFINED
-      description: The rule action that determines how the system handles matching
-        traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR", "BLOCK_RESET", "BLOCK_INTERACTIVE",
-        or "BLOCK_RESET_INTERACTIVE".
+      description: The rule action that determines how the system handles matching traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR", "BLOCK_RESET", "BLOCK_INTERACTIVE", or "BLOCK_RESET_INTERACTIVE".
       name: action
       predefined:
       - ALLOW
@@ -2875,8 +2739,7 @@ script:
       description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Whether the device will send events to Cisco.
-        Firepower.
+      description: Whether the device will send events to Cisco. Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
       description: The address type.
@@ -3033,8 +2896,7 @@ script:
       description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Whether the device will send events to Cisco.
-        Firepower.
+      description: Whether the device will send events to Cisco. Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
       description: The address type.
@@ -3122,7 +2984,6 @@ script:
       name: offset
     - description: The policy assignment ID.
       name: policy_assignment_id
-      required: false
     description: Retrieves the policy assignment associated with the specified ID. If no ID is specified, retrieves a list of all policy assignments to target devices.
     name: ciscofp-list-policy-assignments
     outputs:
@@ -3195,10 +3056,7 @@ script:
     - description: A list of device group IDs.
       name: device_group_ids
     - name: update_strategy
-      description: Update method to use in the command. Can be "MERGE" or "OVERRIDE".
-        If merged, the requested changes will be added to the existing rule.
-        If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
-      required: false
+      description: Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merged, the requested changes will be added to the existing rule. If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
       defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
@@ -3242,8 +3100,7 @@ script:
       name: offset
     - description: The container UUID.
       name: container_uuid
-    description: Retrieves a list of all devices with configuration changes that are
-      ready to deploy.
+    description: Retrieves a list of all devices with configuration changes that are ready to deploy.
     name: ciscofp-get-deployable-devices
     outputs:
     - contextPath: CiscoFP.DeployableDevices.CanBeDeployed
@@ -3328,8 +3185,7 @@ script:
       isArray: true
       name: device_ids
       required: true
-    - description: The version to deploy. To get versions, use the ciscofp-get-deployable-devices
-        command.
+    - description: The version to deploy. To get versions, use the ciscofp-get-deployable-devices command.
       name: version
       required: true
     description: Creates a request for deploying configuration changes to devices.
@@ -3354,8 +3210,7 @@ script:
     - description: The ID of the task for which to check the status.
       name: task_id
       required: true
-    description: Retrieves information about a previously submitted pending job or
-      task with the specified ID. Used for deploying.
+    description: Retrieves information about a previously submitted pending job or task with the specified ID. Used for deploying.
     name: ciscofp-get-task-status
     outputs:
     - contextPath: CiscoFP.TaskStatus.Status
@@ -3364,8 +3219,7 @@ script:
   - arguments:
     - description: The group ID. If not supplied, retrieves a list of all URL objects.
       name: id
-    description: Retrieves the groups of URL objects and addresses associated with
-      the specified ID. If not supplied, retrieves a list of all URL objects.
+    description: Retrieves the groups of URL objects and addresses associated with the specified ID. If not supplied, retrieves a list of all URL objects.
     name: ciscofp-get-url-groups-object
     outputs:
     - contextPath: CiscoFP.URLGroups.ID
@@ -3411,12 +3265,8 @@ script:
       - 'false'
     - description: The group name.
       name: name
-      required: false
     - name: update_strategy
-      description: Update method to use in the command. Can be "MERGE" or "OVERRIDE".
-        If merged, the requested changes will be added to the existing rule.
-        If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
-      required: false
+      description: Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merged, the requested changes will be added to the existing rule. If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
       defaultValue: OVERRIDE
       auto: PREDEFINED
       predefined:
@@ -3446,7 +3296,7 @@ script:
     - contextPath: CiscoFP.URLGroups.Overridable
       description: Whether objects can be overridden.
       type: string
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: ''
   subtype: python3

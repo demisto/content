@@ -972,9 +972,6 @@ def highriskemployee_remove_risk_tags_command(client, args):
 
 @logger
 def securitydata_search_command(client, args):
-    file_events_version = demisto.incident()["CustomFields"].get("code42fileeventsversion", "1")
-    if file_events_version == "2":
-        return_error("Integration has been configured for V2 file events, use '!code42-file-events-search' instead.")
     code42_security_data_context = []
     _json = args.get("json")
     file_context = []
@@ -1021,9 +1018,6 @@ def securitydata_search_command(client, args):
 
 @logger
 def file_events_search_command(client, args):
-    file_events_version = demisto.incident()["CustomFields"].get("code42fileeventsversion", "1")
-    if file_events_version != "2":
-        return_error("The current incident was created with V1 file events, use '!code42-securitydata-search' instead.")
     json_query = args.get("json")
     add_to_context = argToBoolean(args.get("add-to-context"))
     page_size = arg_to_number(args.get("results"), arg_name="results")
@@ -1292,6 +1286,23 @@ def update_user_risk_profile(client, args):
         outputs_key_field="Profile",
         outputs=outputs,
         readable_output=readable_outputs,
+    )
+
+
+@logger
+def get_user_risk_profile(client, args):
+    username = args.get("username")
+    resp = client.sdk.userriskprofile.get_by_username(username)
+    outputs = {
+        "Username": username,
+        "EndDate": resp.data.get("endDate"),
+        "StartDate": resp.data.get("startDate"),
+        "Notes": resp.data.get("notes"),
+    }
+    return CommandResults(
+        outputs_prefix="Code42.UserRiskProfiles",
+        outputs_key_field="Profile",
+        outputs=outputs,
     )
 
 
@@ -1569,6 +1580,7 @@ def main():
         "code42-user-unblock": user_unblock_command,
         "code42-user-deactivate": user_deactivate_command,
         "code42-user-reactivate": user_reactivate_command,
+        "code42-user-get-risk-profile": get_user_risk_profile,
         "code42-user-update-risk-profile": update_user_risk_profile,
         "code42-legalhold-add-user": legal_hold_add_user_command,
         "code42-legalhold-remove-user": legal_hold_remove_user_command,

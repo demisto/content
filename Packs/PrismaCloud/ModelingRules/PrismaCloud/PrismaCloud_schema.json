@@ -22,7 +22,7 @@
         },
         "status": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "name": {
             "type": "string",
@@ -84,10 +84,6 @@
             "type": "string",
             "is_array": false
         },
-        "userIdentity": {
-            "type": "string",
-            "is_array": false
-        },
         "anomalyDetail": {
             "type": "string",
             "is_array": false
@@ -105,8 +101,12 @@
             "is_array": false
         },
         "isSuccess": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "userIdentity": {
             "type": "string",
             "is_array": false
-        }                                                                                                                
+        }                                                                                                              
    }
 }

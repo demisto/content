@@ -9,11 +9,13 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
-MAX_ITERATIONS = 100
 
+MAX_ITERATIONS = 50
+MAX_EVENTS_PER_REQUEST = 1000
+MAX_LIMIT = 5000
+DEFAULT_LIMIT = 1000
 
 ''' CLIENT CLASS '''
 
@@ -101,7 +103,7 @@ class Client(BaseClient):
         token_response = self._http_request('POST', url_suffix='/oauth/token', params=params, headers=headers)
         return token_response.get('access_token'), token_response.get('expires_in')
 
-    def get_events_request(self):
+    def get_events_request(self, size: int = MAX_EVENTS_PER_REQUEST):
         """
         Get up to 100 event logs.
         """
@@ -110,6 +112,7 @@ class Client(BaseClient):
             url_suffix='/api/v1/log_events_bulk',
             resp_type='response',
             ok_codes=[200, 204],
+            params={"size": size}
         )
 
 
@@ -132,17 +135,30 @@ def is_token_expired(token_initiate_time: float, token_expiration_seconds: float
     return time.time() - token_initiate_time >= token_expiration_seconds - 60
 
 
-def validate_limit(limit: Optional[int]):
+def get_max_fetch(limit: Optional[int]) -> int:
     """
-    Validate that the limit/max fetch is a number divisible by the MAX_EVENTS_PER_REQUEST (100) and that it is not
-    a negative number.
+    Validate and get the max fetch accodring to the following rules:
+
+    1. if limit is negative raise an exception
+    2. if limit is less than 10, limit will be equal to 10
+    3. if limit is not dividable by 10, make sure it gets rounded down to a number that is dividable by 10.
+    4. if limit > MAX_LIMIT (5000) - make sure it will always be MAX_LIMIT (5000).
+    5. if limit is not provided, set it up for the default limit which is 1000.
     """
     if limit:
-        if limit % MAX_EVENTS_PER_REQUEST != 0:
-            raise DemistoException(f'fetch limit parameter should be divisible by {MAX_EVENTS_PER_REQUEST}')
-
         if limit <= 0:
             raise DemistoException('fetch limit parameter cannot be negative number or zero')
+        if limit < 10:
+            limit = 10
+        if limit > MAX_LIMIT:  # do not allow limit of more than 5000 to avoid timeouts
+            limit = MAX_LIMIT
+        if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS api limit)
+            # round down the limit
+            limit = int(limit // 10) * 10
+    else:
+        limit = DEFAULT_LIMIT
+
+    return limit
 
 
 ''' COMMAND FUNCTIONS '''
@@ -242,8 +258,8 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
-    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
-    validate_limit(max_fetch)
+
+    max_fetch = get_max_fetch(arg_to_number(args.get('limit') or params.get('max_fetch')))
     max_iterations = arg_to_number(params.get('max_iterations')) or MAX_ITERATIONS
 
     command = demisto.command()

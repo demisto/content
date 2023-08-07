@@ -1,0 +1,66 @@
+category: Analytics & SIEM
+commonfields:
+  id: Orca Event Collector
+  version: -1
+description: Orca Security event collector integration for Cortex XSIAM.
+display: Orca Event Collector
+name: Orca Event Collector
+configuration:
+- display: 'Server URL (for example: https://app.eu.orcasecurity.io)'
+  name: server_url
+  required: true
+  type: 0
+  additionalinfo: For more information about the different regions and ips in the link- https://docs.orcasecurity.io/docs/regions-and-ips
+  section: Connect
+- displaypassword: API Token
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+  section: Connect
+- name: first_fetch
+  defaultvalue: 3 days
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days)
+  type: 0
+  section: Collect
+  required: false
+- defaultvalue: 1000
+  display: The maximum number of events per fetch
+  name: max_fetch
+  type: 0
+  section: Collect
+  additionalinfo: The number of events to fetch. Maximum value is 1000
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  commands:
+  - description: Manual command to fetch events from Orca Security.
+    name: orca-security-get-events
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+  isfetchevents: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.66339
+fromversion: '6.8.0'
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)

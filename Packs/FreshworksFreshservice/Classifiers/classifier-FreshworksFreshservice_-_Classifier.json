@@ -1,0 +1,18 @@
+{
+    "description": "FreshworksFreshservice - Classifier",
+    "feed": false,
+    "id": "FreshworksFreshservice - Classifier",
+    "keyTypeMap": {
+        "change": "FreshworksFreshservice Change Request",
+        "problem": "FreshworksFreshservice Problem Request",
+        "release": "FreshworksFreshservice Release Request",
+        "ticket": "FreshworksFreshservice Ticket"
+    },
+    "name": "FreshworksFreshservice - Classifier",
+    "transformer": {
+        "simple": "ticket_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

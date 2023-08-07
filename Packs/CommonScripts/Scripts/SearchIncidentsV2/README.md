@@ -23,7 +23,7 @@ Sample usage of this script can be found in the following playbooks and scripts.
 * Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
 * MDE - False Positive Incident Handling
 * MDE - True Positive Incident Handling
-* Prisma Cloud Correlate Alerts
+* Prisma Cloud Correlate Alerts v2
 * Ransomware Enrich and Contain
 * SafeBreach - Create Incidents per Insight and Associate Indicators
 * SolarStorm and SUNBURST Hunting and Response Playbook
@@ -48,7 +48,7 @@ NGFW Scan
 NOBELIUM - wide scale APT29 spear-phishing
 NSA - 5 Security Vulnerabilities Under Active Nation-State Attack
 Phishing Alerts Investigation
-Prisma Cloud Correlate Alerts
+Prisma Cloud Correlate Alerts v2
 Ransomware Enrich and Contain
 SafeBreach - Create Incidents per Insight and Associate Indicators
 Send Investigation Summary Reports

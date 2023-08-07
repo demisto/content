@@ -11,103 +11,68 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: The service ID that is automatically used in every command where
-    service ID is required. Retrieve all service IDs with the rsa-nw-services-list
-    command. To overwrite with another service ID, use the command argument 'service_id'.
+- additionalinfo: The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'.
   display: Service Id
-  hidden: false
   name: service_id
-  required: false
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - additionalinfo: The maximum number of incidents to fetch
   defaultvalue: '50'
   display: Fetch Limit
-  hidden: false
   name: max_fetch
-  required: false
   type: 0
-- additionalinfo: First fetch timestamp (<number> <time unit>, for example, 12 hours,
-    7 days)
+  required: false
+- additionalinfo: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days)
   defaultvalue: 1 days
   display: Fetch Time
-  hidden: false
   name: first_fetch
-  required: false
   type: 0
+- defaultvalue: 'false'
+  display: On 'Fetch incidents' import all alerts related to the incident
+  name: import_alerts
+  type: 8
+- display: Alerts Limit
+  name: max_alerts
+  type: 0
+  required: false
+  additionalinfo: The maximum number of alerts to fetch for each incident. The maximum allowed is 50.
+  defaultvalue: '50'
 - defaultvalue: NetWitness Incident
   display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
-description: The RSA NetWitness integration provides system log, network, and endpoint
-  visibility for real-time collection, detection, and automated response with the
-  Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract
-  critical data and effectively run security operations automated playbooks.
+  required: false
+description: The RSA NetWitness integration provides system log, network, and endpoint visibility for real-time collection, detection, and automated response with the Cortex XSOAR Enterprise platform. Using full session analysis, customers can extract critical data and effectively run security operations automated playbooks.
 display: RSANetWitness v11.5
 name: RSANetWitnessv115
 script:
   commands:
   - arguments:
-    - default: false
-      description: A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents
-        created on and before this timestamp.
-      isArray: false
+    - description: A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents created on and before this timestamp.
       name: until
-      required: false
-      secret: false
-    - default: false
-      description: A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents
-        created on and after this timestamp.
-      isArray: false
+    - description: A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents created on and after this timestamp.
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of items to return in a single page. Cannot
-        be supplied with the limit argument.
-      isArray: false
+    - description: The maximum number of items to return in a single page. Cannot be supplied with the limit argument.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The requested page number, first page is 0. Cannot be supplied
-        with the limit argument.
-      isArray: false
+    - description: The requested page number, first page is 0. Cannot be supplied with the limit argument.
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to be returned. If not set, the first
-        50 results are returned. Cannot be supplied with page_size/page_number arguments.
-      isArray: false
+    - description: Maximum number of results to be returned. If not set, the first 50 results are returned. Cannot be supplied with page_size/page_number arguments.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: Enter an incident ID to receive its full details. For example,
-        'INC-40'
-      isArray: false
+    - description: Enter an incident ID to receive its full details. For example, `INC-40`.
       name: id
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a single incident by ID or multiple incidents by the date
-      and time they were created using the start time ('since') or end time ('until').
-      You can limit the results using the limit argument or the page size argument.
-      If no arguments are entered the last 50 results are returned.
-    execution: false
+    description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
     name: rsa-nw-list-incidents
     outputs:
     - contextPath: RSANetWitness115.Incidents.id
@@ -123,8 +88,7 @@ script:
       description: The incident priority. Can be Low, Medium, High, or Critical.
       type: String
     - contextPath: RSANetWitness115.Incidents.riskScore
-      description: The incident risk score is calculated based on the associated alert’s
-        risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Number
     - contextPath: RSANetWitness115.Incidents.status
       description: The current incident status.
@@ -133,12 +97,10 @@ script:
       description: The number of alerts associated with an incident.
       type: Number
     - contextPath: RSANetWitness115.Incidents.averageAlertRiskScore
-      description: The average risk score of the alerts associated with the incident.
-        Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: The average risk score of the alerts associated with the incident. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Number
     - contextPath: RSANetWitness115.Incidents.sealed
-      description: Indicates if additional alerts can be associated with an incident.
-        A sealed incident cannot be associated with additional alerts.
+      description: Indicates if additional alerts can be associated with an incident. A sealed incident cannot be associated with additional alerts.
       type: Boolean
     - contextPath: RSANetWitness115.Incidents.totalRemediationTaskCount
       description: The number of total remediation tasks for an incident.
@@ -153,12 +115,10 @@ script:
       description: The timestamp when the incident was last updated.
       type: Date
     - contextPath: RSANetWitness115.Incidents.lastUpdatedBy
-      description: The NetWitness user identifier of the user who last updated the
-        incident.
+      description: The NetWitness user identifier of the user who last updated the incident.
       type: String
     - contextPath: RSANetWitness115.Incidents.assignee
-      description: The NetWitness user identifier of the user currently working on
-        the incident.
+      description: The NetWitness user identifier of the user currently working on the incident.
       type: String
     - contextPath: RSANetWitness115.Incidents.sources
       description: Unique set of sources for all the alerts in an incident.
@@ -230,17 +190,11 @@ script:
       description: The total number of items available.
       type: Number
   - arguments:
-    - default: false
-      description: The incident ID.
-      isArray: false
+    - description: The incident ID.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The new incident status. Can be New, Assigned, InProgress, RemediationRequested,
-        RemediationComplete, Closed, ClosedFalsePositive.
-      isArray: false
+      description: The new incident status. Can be New, Assigned, InProgress, RemediationRequested, RemediationComplete, Closed, ClosedFalsePositive.
       name: status
       predefined:
       - New
@@ -250,159 +204,124 @@ script:
       - RemediationComplete
       - Closed
       - ClosedFalsePositive
-      required: false
-      secret: false
-    - default: false
-      description: The NetWitness user identifier of the user currently working on
-        the incident. You can find the list of assignees in the RSA Net Witness interface.
-      isArray: false
+    - description: The NetWitness user identifier of the user currently working on the incident. You can find the list of assignees in the RSA Net Witness interface.
       name: assignee
-      required: false
-      secret: false
-    deprecated: false
     description: Updates incident status and assignee.
-    execution: false
     name: rsa-nw-update-incident
     outputs:
-      - contextPath: RSANetWitness115.Incidents.id
-        description: The unique incident identifier.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.title
-        description: The incident title.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.summary
-        description: The incident summary.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.priority
-        description: The incident priority. Can be Low, Medium, High, or Critical.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.riskScore
-        description: The incident risk score is calculated based on the associated alert’s
-          risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
-        type: Number
-      - contextPath: RSANetWitness115.Incidents.status
-        description: The current incident status.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.alertCount
-        description: The number of alerts associated with an incident.
-        type: Number
-      - contextPath: RSANetWitness115.Incidents.averageAlertRiskScore
-        description: The average risk score of the alerts associated with the incident.
-          Risk score ranges from 0 (no risk) to 100 (highest risk).
-        type: Number
-      - contextPath: RSANetWitness115.Incidents.sealed
-        description: Indicates if additional alerts can be associated with an incident.
-          A sealed incident cannot be associated with additional alerts.
-        type: Boolean
-      - contextPath: RSANetWitness115.Incidents.totalRemediationTaskCount
-        description: The number of total remediation tasks for an incident.
-        type: Number
-      - contextPath: RSANetWitness115.Incidents.openRemediationTaskCount
-        description: The number of open remediation tasks for an incident.
-        type: Number
-      - contextPath: RSANetWitness115.Incidents.created
-        description: The timestamp when the incident was created.
-        type: Date
-      - contextPath: RSANetWitness115.Incidents.lastUpdated
-        description: The timestamp when the incident was last updated.
-        type: Date
-      - contextPath: RSANetWitness115.Incidents.lastUpdatedBy
-        description: The NetWitness user identifier of the user who last updated the
-          incident.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.assignee
-        description: The NetWitness user identifier of the user currently working on
-          the incident.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.sources
-        description: Unique set of sources for all the alerts in an incident.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.ruleId
-        description: The unique identifier of the rule that created the incident.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.firstAlertTime
-        description: The timestamp of the earliest occurring Alert in this incident.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.categories.id
-        description: The unique category identifier.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.categories.parent
-        description: The parent name of the category.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.categories.name
-        description: The friendly name of the category.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.journalEntries.id
-        description: The unique journal entry identifier.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.journalEntries.author
-        description: The author of this entry.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.journalEntries.notes
-        description: Notes and observations about the incident.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.journalEntries.created
-        description: The timestamp of the journal entry created date.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.journalEntries.lastUpdated
-        description: The timestamp of the journal entry last updated date.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.journalEntries.milestone
-        description: Incident milestone classifier.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.createdBy
-        description: The NetWitness user ID or name of the rule that created the incident.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.deletedAlertCount
-        description: The number of alerts that are deleted from the incident.
-        type: Number
-      - contextPath: RSANetWitness115.Incidents.eventCount
-        description: The number of events associated with incident.
-        type: Number
-      - contextPath: RSANetWitness115.Incidents.alertMeta.SourceIp
-        description: The unique source IP addresses.
-        type: String
-      - contextPath: RSANetWitness115.Incidents.alertMeta.DestinationIp
-        description: The unique destination IP addresses.
-        type: String
-  - arguments:
-    - default: false
+    - contextPath: RSANetWitness115.Incidents.id
       description: The unique incident identifier.
-      isArray: false
+      type: String
+    - contextPath: RSANetWitness115.Incidents.title
+      description: The incident title.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.summary
+      description: The incident summary.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.priority
+      description: The incident priority. Can be Low, Medium, High, or Critical.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.riskScore
+      description: The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.status
+      description: The current incident status.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.alertCount
+      description: The number of alerts associated with an incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.averageAlertRiskScore
+      description: The average risk score of the alerts associated with the incident. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.sealed
+      description: Indicates if additional alerts can be associated with an incident. A sealed incident cannot be associated with additional alerts.
+      type: Boolean
+    - contextPath: RSANetWitness115.Incidents.totalRemediationTaskCount
+      description: The number of total remediation tasks for an incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.openRemediationTaskCount
+      description: The number of open remediation tasks for an incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.created
+      description: The timestamp when the incident was created.
+      type: Date
+    - contextPath: RSANetWitness115.Incidents.lastUpdated
+      description: The timestamp when the incident was last updated.
+      type: Date
+    - contextPath: RSANetWitness115.Incidents.lastUpdatedBy
+      description: The NetWitness user identifier of the user who last updated the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.assignee
+      description: The NetWitness user identifier of the user currently working on the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.sources
+      description: Unique set of sources for all the alerts in an incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.ruleId
+      description: The unique identifier of the rule that created the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.firstAlertTime
+      description: The timestamp of the earliest occurring Alert in this incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.categories.id
+      description: The unique category identifier.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.categories.parent
+      description: The parent name of the category.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.categories.name
+      description: The friendly name of the category.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.id
+      description: The unique journal entry identifier.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.author
+      description: The author of this entry.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.notes
+      description: Notes and observations about the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.created
+      description: The timestamp of the journal entry created date.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.lastUpdated
+      description: The timestamp of the journal entry last updated date.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.journalEntries.milestone
+      description: Incident milestone classifier.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.createdBy
+      description: The NetWitness user ID or name of the rule that created the incident.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.deletedAlertCount
+      description: The number of alerts that are deleted from the incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.eventCount
+      description: The number of events associated with incident.
+      type: Number
+    - contextPath: RSANetWitness115.Incidents.alertMeta.SourceIp
+      description: The unique source IP addresses.
+      type: String
+    - contextPath: RSANetWitness115.Incidents.alertMeta.DestinationIp
+      description: The unique destination IP addresses.
+      type: String
+  - arguments:
+    - description: The unique incident identifier.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Remove a single incident using the incident’s unique identifier.
-    execution: false
     name: rsa-nw-remove-incident
   - arguments:
-    - default: false
-      description: The unique incident identifier.
-      isArray: false
+    - description: The unique incident identifier.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The NetWitness user ID of the user creating the journal entry.
-        Can be found in the RSA platform. If no author is provided the command lists
-        the user from the integration configuration as the author.
-      isArray: false
+    - description: The NetWitness user ID of the user creating the journal entry. Can be found in the RSA platform. If no author is provided the command lists the user from the integration configuration as the author.
       name: author
-      required: false
-      secret: false
-    - default: false
-      description: Notes and observations about the incident.
-      isArray: false
+    - description: Notes and observations about the incident.
       name: notes
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The incident milestone classifier. Can be Reconnaissance, Delivery,
-        Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment,
-        Eradication, Closure
-      isArray: false
+      description: The incident milestone classifier. Can be Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure.
       name: milestone
       predefined:
       - Reconnaissance
@@ -414,45 +333,19 @@ script:
       - Containment
       - Eradication
       - Closure
-      required: false
-      secret: false
-    deprecated: false
     description: Add a journal entry to an existing incident.
-    execution: false
     name: rsa-nw-incident-add-journal-entry
   - arguments:
-    - default: false
-      description: The unique incident identifier.
-      isArray: false
+    - description: The unique incident identifier.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The requested page number, first page is 0. Cannot be supplied
-        with the limit argument.
-      isArray: false
+    - description: The requested page number, first page is 0. Cannot be supplied with the limit argument.
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of items to return in a single page. Cannot
-        be supplied with the limit argument.
-      isArray: false
+    - description: The maximum number of items to return in a single page. Cannot be supplied with the limit argument.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results to be returned. If not set, the first
-        50 results are returned. cannot be supplied with page_size/page_number arguments.
-      isArray: false
+    - description: The maximum number of results to be returned. If not set, the first 50 results are returned. cannot be supplied with page_size/page_number arguments.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves all the alerts that are associated with an incident based
-      on the incident ID. you can limit the results using the limit argument or the
-      page size argument.
-    execution: false
+    description: Retrieves all the alerts that are associated with an incident based on the incident ID. you can limit the results using the limit argument or the page size argument.
     name: rsa-nw-incident-list-alerts
     outputs:
     - contextPath: RSANetWitness115.IncidentAlerts.id
@@ -462,15 +355,13 @@ script:
       description: The title or name of the rule that created the alert.
       type: String
     - contextPath: RSANetWitness115.IncidentAlerts.detail
-      description: The details of the alert. This can be the module name or meta that
-        the module included.
+      description: The details of the alert. This can be the module name or meta that the module included.
       type: String
     - contextPath: RSANetWitness115.IncidentAlerts.created
       description: The timestamp of the alert created date.
       type: Date
     - contextPath: RSANetWitness115.IncidentAlerts.source
-      description: The source of this alert. For example, Event Stream Analysis or
-        Malware Analysis.
+      description: The source of this alert. For example, Event Stream Analysis or Malware Analysis.
       type: String
     - contextPath: RSANetWitness115.IncidentAlerts.riskScore
       description: The risk score of this alert, usually in the range 0 - 100.
@@ -536,12 +427,10 @@ script:
       description: The destination top-level domain or Windows domain.
       type: String
     - contextPath: RSANetWitness115.IncidentAlerts.events.eventSource
-      description: The source of the event. This may be a fully-qualified hostname
-        with a port, or simple name.
+      description: The source of the event. This may be a fully-qualified hostname with a port, or simple name.
       type: String
     - contextPath: RSANetWitness115.IncidentAlerts.events.eventSourceId
-      description: The unique identifier of the event on the source. For Network and
-        Log events, this is the Nextgen Session ID.
+      description: The unique identifier of the event on the source. For Network and Log events, this is the Nextgen Session ID.
       type: String
     - contextPath: RSANetWitness115.paging.IncidentAlerts.pageNumber
       description: The requested page number.
@@ -562,20 +451,13 @@ script:
       description: Indicates if there is a page containing results before this page.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the service. For example, endpoint-server.
-      isArray: false
+    - description: The name of the service. For example, endpoint-server.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves a list of all services, or filter by name.
-    execution: false
     name: rsa-nw-services-list
     outputs:
     - contextPath: RSANetWitness115.ServicesList.id
-      description: The unique identifier of each service installed in the RSA NetWitness
-        suite.
+      description: The unique identifier of each service installed in the RSA NetWitness suite.
       type: String
     - contextPath: RSANetWitness115.ServicesList.name
       description: The name of the service. For example, endpoint- server.
@@ -590,72 +472,28 @@ script:
       description: The version of the service.
       type: String
   - arguments:
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
-    - default: false
-      description: The requested page number, first page is 0. Cannot be supplied
-        with the limit argument.
-      isArray: false
+    - description: The requested page number, first page is 0. Cannot be supplied with the limit argument.
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of items to return in a single page. Cannot
-        be supplied with the limit argument.
-      isArray: false
+    - description: The maximum number of items to return in a single page. Cannot be supplied with the limit argument.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results to be returned. If not set, the first
-        50 results are returned. Cannot be supplied with page_size/page_number arguments.
-      isArray: false
+    - description: The maximum number of results to be returned. If not set, the first 50 results are returned. Cannot be supplied with page_size/page_number arguments.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of host agent IDs.
+    - description: A comma-separated list of host agent IDs.
       isArray: true
       name: agent_id
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of host names.
+    - description: A comma-separated list of host names.
       isArray: true
       name: host_name
-      required: false
-      secret: false
-    - default: false
-      description: The host risk score. Returns all results with risk score greater
-        than or equal to.
-      isArray: false
+    - description: The host risk score. Returns all results with risk score greater than or equal to.
       name: risk_score
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of IPV4 in the network interface.
+    - description: A comma-separated list of IPV4 in the network interface.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Custom filter in JSON format.
-      isArray: false
+    - description: Custom filter in JSON format.
       name: filter
-      required: false
-      secret: false
-    deprecated: false
-    description: Lists all host information from a specific endpoint server. Filter
-      the results using the supplied arguments (can be a list) or use the 'filter'
-      argument. You can limit the results using the limit argument or the page size
-      argument.
-    execution: false
+    description: Lists all host information from a specific endpoint server. Filter the results using the supplied arguments (can be a list) or use the 'filter' argument. You can limit the results using the limit argument or the page size argument.
     name: rsa-nw-hosts-list
     outputs:
     - contextPath: RSANetWitness115.HostsList.agentId
@@ -713,28 +551,17 @@ script:
       description: Indicates if there is a page containing results before this page.
       type: Boolean
   - arguments:
-    - default: false
-      description: The endpoint ID.
+    - description: The endpoint ID.
       isArray: true
       name: id
-      required: false
-      secret: false
     - default: true
       description: The endpoint IP.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The endpoint hostname.
+    - description: The endpoint hostname.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves host information for a specific endpoint. To use this command,
-      service ID must be set in the integration configuration.
-    execution: false
+    description: Retrieves host information for a specific endpoint. To use this command, service ID must be set in the integration configuration.
     name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname
@@ -801,54 +628,28 @@ script:
       description: The processor model.
       type: String
   - arguments:
-    - default: false
-      description: The host agent ID.
-      isArray: false
+    - description: The host agent ID.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list os snapshot IDs for a given host.
-    execution: false
     name: rsa-nw-snapshots-list-for-host
     outputs:
     - contextPath: RSANetWitness115.SnapshotsListForHost
       description: The list of snapshot timestamps.
       type: Date
   - arguments:
-    - default: false
-      description: The host agent ID.
-      isArray: false
+    - description: The host agent ID.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The start time of the scan snapshot. Can be retrieved using the
-        'rsa-nw-snapshots-list-for-host' command.
-      isArray: false
+    - description: The start time of the scan snapshot. Can be retrieved using the 'rsa-nw-snapshots-list-for-host' command.
       name: snapshot_timestamp
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: A comma-separated list of categories to filter the results. For
-        example, PROCESSES,SERVICES.
+      description: A comma-separated list of categories to filter the results. For example, PROCESSES,SERVICES.
       isArray: true
       name: categories
       predefined:
@@ -861,27 +662,12 @@ script:
       - THREADS
       - IMAGE_HOOKS
       - KERNEL_HOOKS.
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results returned by the command.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The offset to receive results from. For example, offset=3 returns
-        results from the 3rd result onward.
-      isArray: false
+    - description: The offset to receive results from. For example, offset=3 returns results from the 3rd result onward.
       name: offset
-      required: false
-      secret: false
-    deprecated: false
-    description: Provides snapshot details of the given host for the specified snapshot
-      time. It is recommended to use categories to filter the results since this command
-      returns a large amount of data.
-    execution: false
+    description: Provides snapshot details of the given host for the specified snapshot time. It is recommended to use categories to filter the results since this command returns a large amount of data.
     name: rsa-nw-snapshot-details-get
     outputs:
     - contextPath: RSANetWitness115.SnapshotDetailsGet.machineOsType
@@ -942,8 +728,7 @@ script:
       description: The number of sub-folders in the same directory as the file.
       type: Number
     - contextPath: RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exeSameCompany
-      description: The number of executables with the same company name in the same
-        directory as the file.
+      description: The number of executables with the same company name in the same directory as the file.
       type: Number
     - contextPath: RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.hiddenFiles
       description: The count of hidden files in the same directory as the file.
@@ -1153,8 +938,7 @@ script:
       description: The hexadecimal bytes that overwrote the original code.
       type: String
     - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.currentAsm
-      description: The array of decoded ASM instructions that overwrote the original
-        code.
+      description: The array of decoded ASM instructions that overwrote the original code.
       type: Unknown
     - contextPath: RSANetWitness115.SnapshotDetailsGet.windows.kernelHooks.hookLocation.objectName
       description: Name of the object that was hooked in kernel.
@@ -1553,50 +1337,24 @@ script:
       description: The file format.
       type: String
     - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.fileStatus
-      description: The file status as assigned by the analyst. Can be Whitelist, Blacklist,
-        Neutral, or Graylist.
+      description: The file status as assigned by the analyst. Can be Whitelist, Blacklist, Neutral, or Graylist.
       type: String
     - contextPath: RSANetWitness115.SnapshotDetailsGet.fileProperties.remediationAction
-      description: The remediation action as assigned by the analyst. For example,
-        Blocked.
+      description: The remediation action as assigned by the analyst. For example, Blocked.
       type: String
     - contextPath: RSANetWitness115.SnapshotDetailsGet.localRiskScore
       description: The file score based on alerts triggered in the given agent.
       type: Number
   - arguments:
-    - default: false
-      description: The service ID of the specific endpoint Server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint Server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
-    - default: false
-      description: The requested page number, first page is number 0. Cannot be supplied
-        with the limit argument.
-      isArray: false
+    - description: The requested page number, first page is number 0. Cannot be supplied with the limit argument.
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of items to return in a single page. Cannot
-        be supplied with the limit argument.
-      isArray: false
+    - description: The maximum number of items to return in a single page. Cannot be supplied with the limit argument.
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results to be returned. If not set, the first
-        10 results are returned.  Cannot be supplied with page_size/page_number arguments.
-      isArray: false
+    - description: The maximum number of results to be returned. If not set, the first 10 results are returned.  Cannot be supplied with page_size/page_number arguments.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
-    description: Lists all related file information from a specific endpoint server.
-      You can limit the results using the limit argument or the page size argument.
-    execution: false
+    description: Lists all related file information from a specific endpoint server. You can limit the results using the limit argument or the page size argument.
     name: rsa-nw-files-list
     outputs:
     - contextPath: RSANetWitness115.FilesList.windows.autoruns.type
@@ -1639,8 +1397,7 @@ script:
       description: The hexadecimal bytes that overwrote the original code.
       type: String
     - contextPath: RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.currentAsm
-      description: The array of decoded ASM instructions that overwrote the original
-        code.
+      description: The array of decoded ASM instructions that overwrote the original code.
       type: Unknown
     - contextPath: RSANetWitness115.FilesList.windows.kernelHooks.hookLocation.objectName
       description: The name of the object that was hooked in the kernel.
@@ -2039,100 +1796,51 @@ script:
       description: The file format.
       type: String
     - contextPath: RSANetWitness115.FilesList.fileStatus
-      description: The file status as assigned by the analyst. Can be Whitelist, Blacklist,
-        Neutral, or Graylist.
+      description: The file status as assigned by the analyst. Can be Whitelist, Blacklist, Neutral, or Graylist.
       type: String
     - contextPath: RSANetWitness115.FilesList.remediationAction
-      description: The remediation action as assigned by the analyst. For example,
-        Blocked.
+      description: The remediation action as assigned by the analyst. For example, Blocked.
       type: String
     - contextPath: RSANetWitness115.FilesList.localRiskScore
       description: The file score based on alerts triggered in the given agent.
       type: Number
   - arguments:
-    - default: false
-      description: The host agent ID.
-      isArray: false
+    - description: The host agent ID.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
-    - default: false
-      description: You can use cpuMax to specify the amount of CPU the agent can use
-        to run the scan. You can choose a value from 5 to 100. If you do not specify
-        a value, the agent uses the default 25% CPU for the scan.
-      isArray: false
+    - description: You can use cpuMax to specify the amount of CPU the agent can use to run the scan. You can choose a value from 5 to 100. If you do not specify a value, the agent uses the default 25% CPU for the scan.
       name: cpu_max
-      required: false
-      secret: false
-    deprecated: false
-    description: Starts a scan for the host with the specified agent ID. Each scan
-      produces a snapshot, the full details can be seen using the 'rsa-nw-snapshot-details-get'
-      command.
-    execution: false
+    description: Starts a scan for the host with the specified agent ID. Each scan produces a snapshot, the full details can be seen using the 'rsa-nw-snapshot-details-get' command.
     name: rsa-nw-scan-request
   - arguments:
-    - default: false
-      description: Unique identifier of the host.
-      isArray: false
+    - description: Unique identifier of the host.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
-    deprecated: false
     description: Stop a scan for the host with the specified agent ID.
-    execution: false
     name: rsa-nw-scan-stop-request
   - arguments:
-    - default: false
-      description: Unique host identifier.
-      isArray: false
+    - description: Unique host identifier.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Filter alerts based on the category. Can be Critical, High, Medium,
-        or Low.
-      isArray: false
+      description: Filter alerts based on the category. Can be Critical, High, Medium, or Low.
       name: alert_category
       predefined:
       - Critical
       - High
       - Medium
       - Low
-      required: false
-      secret: false
-    deprecated: false
     description: Gets all alerts triggered for a given host.
-    execution: false
     name: rsa-nw-host-alerts-list
     outputs:
     - contextPath: RSANetWitness115.HostAlerts.id
-      description: The entity ID for which the score needs to be queried. Use agent
-        ID for hosts and checksum for files.
+      description: The entity ID for which the score needs to be queried. Use agent ID for hosts and checksum for files.
       type: String
     - contextPath: RSANetWitness115.HostAlerts.distinctAlertCount.critical
       description: The number of critical alerts.
@@ -2150,43 +1858,26 @@ script:
       description: The alert and event count for a file/host, categorized by severity.
       type: String
   - arguments:
-    - default: false
-      description: The file hash, either md5 or sha256.
-      isArray: false
+    - description: The file hash, either md5 or sha256.
       name: check_sum
       predefined:
       - ''
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Filter alerts based on the category.  Can be Critical, High, Medium,
-        or Low.
-      isArray: false
+      description: Filter alerts based on the category.  Can be Critical, High, Medium, or Low.
       name: alert_category
       predefined:
       - Critical
       - High
       - Medium
       - Low
-      required: false
-      secret: false
-    deprecated: false
     description: Gets all alerts triggered for a given file.
-    execution: false
     name: rsa-nw-file-alerts-list
     outputs:
     - contextPath: RSANetWitness115.FileAlerts.id
-      description: The entity ID for which score needs to be queried. Use agent ID
-        for hosts and checksum for files.
+      description: The entity ID for which score needs to be queried. Use agent ID for hosts and checksum for files.
       type: String
     - contextPath: RSANetWitness115.FileAlerts.distinctAlertCount.critical
       description: The number of critical alerts.
@@ -2204,252 +1895,115 @@ script:
       description: The alert and event count for a file/host, categorized by severity.
       type: String
   - arguments:
-    - default: false
-      description: The host agent ID.
-      isArray: false
+    - description: The host agent ID.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the specific endpoint server. View all service
-        IDs using the 'rsa-nw-services-list' command. If none is given, the service
-        ID configured in the integration configuration is used.
-      isArray: false
+    - description: The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used.
       name: service_id
-      required: false
-      secret: false
-    - default: false
-      description: The path where the files may be present, either specify a single
-        file path or use a wild card. for example - "C:\Users\sample\*" . To see scanned
-        files paths use the command 'rsa-nw-snapshot-details-get'
-      isArray: false
+    - description: The path where the files may be present. Either specify a single file path or use a wild card. For example - "C:\Users\sample\*" . To see scanned file paths, use the command 'rsa-nw-snapshot-details-get'.
       name: path
       required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: The maximum number of files returned by the host matching the wild
-        card path.
-      isArray: false
+    - defaultValue: '10'
+      description: The maximum number of files returned by the host matching the wild card path.
       name: count_files
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: The maximum size of each file (in MB) when using a wild card path.
-      isArray: false
       name: max_file_size
-      required: false
-      secret: false
-    deprecated: false
-    description: Initiate file download for a single file or multiple files to the
-      endpoint server.
-    execution: false
+    description: Initiate file download for a single file or multiple files to the endpoint server.
     name: rsa-nw-file-download
   - arguments:
-    - default: false
-      description: The host agent ID.
-      isArray: false
+    - description: The host agent ID.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the endpoint server to be connected.
-      isArray: false
+    - description: The service ID of the endpoint server to be connected.
       name: service_id
-      required: false
-      secret: false
-    deprecated: false
+    - description: Drive or NTFS mount path for which MFT is requested. this parameter is required when using API version 11.5 onwards.
+      name: path
     description: Initiates the MFT download to the endpoint server.
-    execution: false
     name: rsa-nw-mft-download-request
   - arguments:
-    - default: false
-      description: The host agent ID.
-      isArray: false
+    - description: The host agent ID.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the endpoint server to be connected.
-      isArray: false
+    - description: The service ID of the endpoint server to be connected.
       name: service_id
-      required: false
-      secret: false
-    deprecated: false
     description: Initiates the download of the system dump to the endpoint server.
-    execution: false
     name: rsa-nw-system-dump-download-request
   - arguments:
-    - default: false
-      description: The host agent ID.
-      isArray: false
+    - description: The host agent ID.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the endpoint server to be connected.
-      isArray: false
+    - description: The service ID of the endpoint server to be connected.
       name: service_id
-      required: false
-      secret: false
-    - default: false
-      description: The process ID.
-      isArray: false
+    - description: The process ID.
       name: process_id
       required: true
-      secret: false
-    - default: false
-      description: The process identifier in Windows.
-      isArray: false
+    - description: The process identifier in Windows.
       name: eprocess
       required: true
-      secret: false
-    - default: false
-      description: the file name.
-      isArray: false
+    - description: the file name.
       name: file_name
       required: true
-      secret: false
-    - default: false
-      description: The file path.
-      isArray: false
+    - description: The file path.
       name: path
-      required: false
-      secret: false
-    - default: false
-      description: The hash (sha256 or md5) of the file. Can be found in the 'rsa-nw-snapshot-details-get'
-        command response under field fileProperties.checksumSha256 or fileProperties.checksumMd5.
-      isArray: false
+    - description: The hash (sha256 or md5) of the file. Can be found in the 'rsa-nw-snapshot-details-get' command response under field fileProperties.checksumSha256 or fileProperties.checksumMd5.
       name: hash
       required: true
-      secret: false
-    - default: false
-      description: The process UTC created time. Can be found in the 'rsa-nw-snapshot-details-get'
-        response under field windows.processes.createUtcTime.
-      isArray: false
+    - description: The process UTC created time. Can be found in the 'rsa-nw-snapshot-details-get' response under field windows.processes.createUtcTime.
       name: process_create_utctime
       required: true
-      secret: false
-    deprecated: false
-    description: Initiates the download of the process dump to the endpoint server.
-      You can find the process details by using the 'rsa-nw-snapshot-details-get'
-      and filter by category=PROCESSES, or use the RSA NW UI.
-    execution: false
+    description: Initiates the download of the process dump to the endpoint server. You can find the process details by using the 'rsa-nw-snapshot-details-get' and filter by category=PROCESSES, or use the RSA NW UI.
     name: rsa-nw-process-dump-download-request
   - arguments:
-    - default: false
-      description: The unique host identifier.
-      isArray: false
+    - description: The unique host identifier.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the endpoint server to be connected.
-      isArray: false
+    - description: The service ID of the endpoint server to be connected.
       name: service_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Allow DNS communication.
-      isArray: false
       name: allow_dns_only_by_system
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of IPv4 or IPv6 addresses to excluded from
-        isolation. For example, 1.2.3.4,11:22:33:44
-      isArray: false
+    - description: A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.
       name: exclusion_list
-      required: false
-      secret: false
-    - default: false
-      description: Additional information.
-      isArray: false
+    - description: Additional information.
       name: comment
       required: true
-      secret: false
-    deprecated: false
     description: Isolates the host with the specified agent ID from the network.
-    execution: false
     name: rsa-nw-endpoint-isolate-from-network
   - arguments:
-    - default: false
-      description: The unique host identifier.
-      isArray: false
+    - description: The unique host identifier.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the endpoint server to be connected.
-      isArray: false
+    - description: The service ID of the endpoint server to be connected.
       name: service_id
-      required: false
-      secret: false
-    - default: false
-      description: Allows DNS communication.
-      isArray: false
+    - description: Allows DNS communication.
       name: allow_dns_only_by_system
-      required: false
-      secret: false
-    - default: false
-      description: ' A comma-separated list of IPv4 or IPv6 addresses to excluded
-        from isolation. For example, 1.2.3.4,11:22:33:44'
-      isArray: false
+    - description: 'A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44.'
       name: exclusion_list
       required: true
-      secret: false
-    - default: false
-      description: Additional information.
-      isArray: false
+    - description: Additional information.
       name: comment
       required: true
-      secret: false
-    deprecated: false
-    description: Updates the network isolation exclusion list for the host with the
-      specified agent ID.
-    execution: false
+    description: Updates the network isolation exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-update-exclusions
   - arguments:
-    - default: false
-      description: The unique host identifier.
-      isArray: false
+    - description: The unique host identifier.
       name: agent_id
       required: true
-      secret: false
-    - default: false
-      description: The service ID of the endpoint server to be connected.
-      isArray: false
+    - description: The service ID of the endpoint server to be connected.
       name: service_id
-      required: false
-      secret: false
-    - default: false
-      description: Allows DNS communication.
-      isArray: false
+    - description: Allows DNS communication.
       name: allow_dns_only_by_system
-      required: false
-      secret: false
-    - default: false
-      description: Additional information.
-      isArray: false
+    - description: Additional information.
       name: comment
       required: true
-      secret: false
-    deprecated: false
-    description: Restores the network connection and removes IP addresses added to
-      the exclusion list for the host with the specified agent ID.
-    execution: false
+    description: Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
     name: rsa-nw-endpoint-isolation-remove
-  dockerimage: demisto/python3:3.10.4.29342
-  feed: false
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

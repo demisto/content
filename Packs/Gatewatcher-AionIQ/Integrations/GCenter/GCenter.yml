@@ -15,8 +15,8 @@ configuration:
 - display: GCenter API token
   name: token
   type: 4
-  required: false
   additionalinfo: You must provide either an API token or a username and a password.
+  required: false
 - display: GCenter username
   displaypassword: GCenter password
   name: credentials
@@ -26,8 +26,7 @@ configuration:
   name: check_cert
   type: 8
   required: false
-description: This integration allows, via about twenty commands, to interact with
-  the GCenter appliance via its API.
+description: This integration allows, via about twenty commands, to interact with the GCenter appliance via its API.
 display: GCenter
 name: GCenter
 script:
@@ -82,8 +81,7 @@ script:
       description: The State Of The Alert
       type: String
     - contextPath: GCenter.Alert.List.matched_event
-      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation
-        Between Alerts)
+      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
       type: String
     - contextPath: GCenter.Alert.List.domain_name
       description: For Dga Alerts Only
@@ -344,8 +342,7 @@ script:
       description: The File Magic
       type: String
     - contextPath: GCenter.Alert.List.malware.total_found
-      description: The Malcore Number Of Engines That Found The File Suspicious /
-        The Total Number Of Engines
+      description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
       type: String
     - contextPath: GCenter.Alert.List.sigflow.alert.action
       description: Action
@@ -427,8 +424,7 @@ script:
       description: The State Of The Alert
       type: String
     - contextPath: GCenter.Alert.Single.matched_event
-      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation
-        Between Alerts)
+      description: Value Of The Id Of An Other Alert That Matched (Allows The Correlation Between Alerts)
       type: String
     - contextPath: GCenter.Alert.Single.domain_name
       description: For Dga Alerts Only
@@ -689,8 +685,7 @@ script:
       description: The File Magic
       type: String
     - contextPath: GCenter.Alert.Single.malware.total_found
-      description: The Malcore Number Of Engines That Found The File Suspicious /
-        The Total Number Of Engines
+      description: The Malcore Number Of Engines That Found The File Suspicious / The Total Number Of Engines
       type: String
     - contextPath: GCenter.Alert.Single.sigflow.alert.action
       description: Action
@@ -723,7 +718,6 @@ script:
     description: Get Elasticsearch data
     arguments:
     - name: index
-      required: false
       auto: PREDEFINED
       predefined:
       - suricata
@@ -737,7 +731,6 @@ script:
       description: Index to be queried
       defaultValue: suricata
     - name: query
-      required: false
       description: Elaticsearch query
       defaultValue: '{}'
   - name: gw-add-malcore-list-entry
@@ -754,10 +747,8 @@ script:
       required: true
       description: SHA256 to be added
     - name: comment
-      required: false
       description: Comment to be added
     - name: threat
-      required: false
       description: Comment to be added
     outputs:
     - contextPath: GCenter.Malcore.sha256
@@ -799,7 +790,6 @@ script:
       required: true
       description: Domain name to be added
     - name: comment
-      required: false
       description: Comment to be added
     outputs:
     - contextPath: GCenter.Dga.domain_name
@@ -855,12 +845,10 @@ script:
       description: Ignored Name For The Assets (Hostnames). Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.AssetName.is_startswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They Start With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.AssetName.is_endswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They End With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They End With This Name ?
       type: Boolean
   - name: gw-add-ignore-kuser-ip
     description: Ignore kuser IP
@@ -909,12 +897,10 @@ script:
       description: Ignored Name For The Kerberos Users. Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.KuserName.is_startswith_pattern
-      description: Should The Kerberos Users Be Ignored If They Start With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.KuserName.is_endswith_pattern
-      description: Should The Kerberos Users Be Ignored If They End With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They End With This Name ?
       type: Boolean
   - name: gw-add-ignore-mac-address
     description: Ignore mac address
@@ -940,8 +926,7 @@ script:
       description: Address
       type: String
     - contextPath: GCenter.Ignore.MacAddress.is_startswith_pattern
-      description: Should The Mac Addresses Be Ignored If They Start With This Address
-        Value ?
+      description: Should The Mac Addresses Be Ignored If They Start With This Address Value ?
       type: Boolean
   - name: gw-del-ignore-asset-name
     description: Delete an ignore asset ID
@@ -1084,11 +1069,9 @@ script:
       required: true
       description: File entry id
     - name: deep
-      required: false
       description: Deep scan
       defaultValue: false
     - name: timeout
-      required: false
       description: Deep scan timeout
       defaultValue: 120
     outputs:
@@ -1132,7 +1115,6 @@ script:
     - auto: PREDEFINED
       default: true
       description: index
-      isArray: false
       name: index
       predefined:
       - suricata
@@ -1144,9 +1126,7 @@ script:
       - retrohunt
       - iocs
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         List and count each distinct values of a document field using the terms aggregation
         If aggs_term is empty list hits value
@@ -1159,67 +1139,38 @@ script:
       - http.hostname
       - tls.sni
       - SHA256
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter document that match the value using the term query
         Exemple : "alert.severity=1,app_proto=http"
-      isArray: false
       name: must_match
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter document with existing key using the exists query
         Exemple : "http.hostname,http.url"
-      isArray: false
       name: must_exists
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '24'
+    - defaultValue: '24'
       description: Set the lower timerange in hour based on the now keyword
-      isArray: false
       name: timerange
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: True to get the list of aggregation value False to get entire response
-      isArray: false
       name: formatted
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Set the number of aggregate or hits value that can be returned
-      isArray: false
       name: size
-      required: false
-      secret: false
-    deprecated: false
     description: Get Elasticsearch data using a wrapper
-    execution: false
     name: gw-es-wrapper
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: List type
-      isArray: false
       name: type
       predefined:
       - white
       - black
       required: true
-      secret: false
-    deprecated: false
     description: Get the malcore whitelist/blacklist
-    execution: false
     name: gw-get-malcore-list-entry
     outputs:
     - contextPath: GCenter.Malcore.List.sha256
@@ -1236,18 +1187,13 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: List type
-      isArray: false
       name: type
       predefined:
       - white
       - black
       required: true
-      secret: false
-    deprecated: false
     description: Get the dga whitelist/blacklist
-    execution: false
     name: gw-get-dga-list-entry
     outputs:
     - contextPath: GCenter.Dga.List.domain_name
@@ -1262,9 +1208,7 @@ script:
     - contextPath: GCenter.Dga.List.is_wildcard
       description: Is Wildcard
       type: Boolean
-  - deprecated: false
-    description: Get all the ignored asset names
-    execution: false
+  - description: Get all the ignored asset names
     name: gw-get-ignore-asset-name
     outputs:
     - contextPath: GCenter.Ignore.AssetName.List.id
@@ -1280,16 +1224,12 @@ script:
       description: Ignored Name For The Assets (Hostnames). Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.AssetName.List.is_startswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They Start With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.AssetName.List.is_endswith_pattern
-      description: Should The Assets (Hostnames) Be Ignored If They End With This
-        Name ?
+      description: Should The Assets (Hostnames) Be Ignored If They End With This Name ?
       type: Boolean
-  - deprecated: false
-    description: Get all the ignored kuser IP
-    execution: false
+  - description: Get all the ignored kuser IP
     name: gw-get-ignore-kuser-ip
     outputs:
     - contextPath: GCenter.Ignore.KuserIP.List.id
@@ -1304,9 +1244,7 @@ script:
     - contextPath: GCenter.Ignore.KuserIP.List.ip
       description: Ignored Ip For The Kerberos Users
       type: String
-  - deprecated: false
-    description: Get all the ignored kuser name
-    execution: false
+  - description: Get all the ignored kuser name
     name: gw-get-ignore-kuser-name
     outputs:
     - contextPath: GCenter.Ignore.KuserName.List.id
@@ -1322,16 +1260,12 @@ script:
       description: Ignored Name For The Kerberos Users. Case Insensitive.
       type: String
     - contextPath: GCenter.Ignore.KuserName.List.is_startswith_pattern
-      description: Should The Kerberos Users Be Ignored If They Start With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They Start With This Name ?
       type: Boolean
     - contextPath: GCenter.Ignore.KuserName.List.is_endswith_pattern
-      description: Should The Kerberos Users Be Ignored If They End With This Name
-        ?
+      description: Should The Kerberos Users Be Ignored If They End With This Name ?
       type: Boolean
-  - deprecated: false
-    description: Get all the ignored mac addresses
-    execution: false
+  - description: Get all the ignored mac addresses
     name: gw-get-ignore-mac-address
     outputs:
     - contextPath: GCenter.Ignore.MacAddress.List.id
@@ -1347,61 +1281,38 @@ script:
       description: Address
       type: String
     - contextPath: GCenter.Ignore.MacAddress.List.is_startswith_pattern
-      description: Should The Mac Addresses Be Ignored If They Start With This Address
-        Value ?
+      description: Should The Mac Addresses Be Ignored If They Start With This Address Value ?
       type: Boolean
   - arguments:
-    - default: false
-      description: 'Set the lower timerange in minute based on the now keyword when
-        uuid is not given
+    - description: 'Set the lower timerange in minute based on the now keyword when uuid is not given
 
         Default value to 60 minutes'
-      isArray: false
       name: timerange
-      required: false
-      secret: false
-    - default: false
-      description: 'Set the number of aggregate value that can be returned when uuid
-        is not given
+    - description: 'Set the number of aggregate value that can be returned when uuid is not given
 
         Get all the values by default'
-      isArray: false
       name: size
-      required: false
-      secret: false
-    - default: false
-      description: The uuid of the file to get
-      isArray: false
+    - description: The uuid of the file to get
       name: uuid
-      required: false
-      secret: false
-    - default: false
-      description: 'The state of the files to get, in list, when uuid is not given
+    - description: 'The state of the files to get, in list, when uuid is not given
 
         Default value to Infected,Suspicious'
-      isArray: false
       name: state
       predefined:
       - ''
-      required: false
-      secret: false
-    deprecated: false
     description: 'Get a file from an uuid.
 
       If there is no uuid, get all the files infected from a time interval.'
-    execution: false
     name: gw-get-file-infected
     outputs:
     - contextPath: Gcenter.File.Infected
       description: File infected
       type: String
-  feed: false
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.52956
+  dockerimage: demisto/python3:3.10.12.67728
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook

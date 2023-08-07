@@ -1,0 +1,39 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "8639b80a-defb-4cdc-87a9-5552876d7787",
+    "isPredefined": true,
+    "name": "Use Cases In Pre-Production",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#295AFF": {
+                    "value": 0
+                },
+                "#989898": {
+                    "value": null
+                }
+            },
+            "type": "above"
+        },
+        "valuesFormat": "abbreviated"
+    },
+    "query": "usecasedevelopmentstage:\"Pre-Production\"",
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.8.0",
+    "description": ""
+}

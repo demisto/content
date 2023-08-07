@@ -354,12 +354,11 @@ script:
     - contextPath: PAM360.Account.operation.result.status
       description: Status of the operation.
       type: string
-  isfetch: false
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.12.65389
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

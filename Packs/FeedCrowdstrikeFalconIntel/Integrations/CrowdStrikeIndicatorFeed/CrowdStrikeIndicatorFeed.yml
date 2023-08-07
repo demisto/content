@@ -6,8 +6,8 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
-  required: false
   type: 8
+  required: false
 - display: CrowdStrike Base URL
   name: base_url
   required: true
@@ -15,22 +15,17 @@ configuration:
   defaultvalue: "https://api.crowdstrike.com/"
 - display: CrowdStrike API Client ID
   displaypassword: CrowdStrike API Client Secret
-  additionalinfo: 'For non 6.1 - enter your CrowdStrike API Client Secret in the password
-    field.'
+  additionalinfo: 'For non 6.1 - enter your CrowdStrike API Client Secret in the password field.'
   name: credentials
   type: 9
   required: true
-- display: The amount of time (in seconds) that a request will wait for a client to
-    establish a connection to a remote machine before a timeout occurs.
+- display: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
   name: timeout
   defaultvalue: "10"
   type: 0
   required: false
-- additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported
-    in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA-256", "IP",
-    "Registry Key", and "URL". The default is "ALL".'
+- additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA-256", "IP", "Registry Key", and "URL". The default is "ALL".'
   display: Type
-  hidden: false
   name: type
   options:
   - ALL
@@ -42,52 +37,45 @@ configuration:
   - IP
   - Registry Key
   - URL
-  required: false
   type: 16
+  required: false
 - display: First fetch time
   name: first_fetch
-  required: false
+  required: true
   type: 0
-  additionalinfo: The time range to consider for the initial data fetch. Leave empty
-    to fetch from the first available indicator.
+  additionalinfo: "The time range to consider for the initial data fetch. Warning: This feed may fetch tens of thousands of indicators per day. Please consider this when configuring this parameter to further in the past, as it may overload the system with indicators."
+  defaultvalue: '1 week'
 - display: Max. indicators per fetch
   defaultvalue: 5000
-  hidden: false
   name: max_indicator_to_fetch
-  required: false
   type: 0
-  additionalinfo: Maximum number of indicators per fetch. Value should be between
-    1 - 10000. A large value may result in a timeout.
+  additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
+  required: false
 - additionalinfo: Malicious confidence level to filter by.
   display: Malicious confidence
-  hidden: false
   name: malicious_confidence
   options:
   - high
   - medium
   - low
   - unverified
-  required: false
   type: 16
+  required: false
 - display: Include deleted indicators
   name: include_deleted
-  required: false
   type: 8
-- additionalinfo: "Advanced: FQL query. For more information visit the CrowdStrike\
-    \ documentation."
-  display: Filter
-  hidden: false
-  name: filter
   required: false
+- additionalinfo: "Advanced: FQL query. For more information visit the CrowdStrike documentation."
+  display: Filter
+  name: filter
   type: 0
+  required: false
 - display: Generic phrase match
   additionalinfo: Generic phrase match search across all indicator fields.
-  hidden: false
   name: generic_phrase
-  required: false
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -96,8 +84,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -111,8 +99,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   defaultvalue: GREEN
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -121,8 +108,8 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -131,71 +118,62 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
+  required: false
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'true'
+  type: 8
+  hidden: true
+  required: false
 description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
 display: CrowdStrike Indicator Feed
 name: CrowdStrike Indicator Feed
 script:
   commands:
   - arguments:
-    - default: false
-      description: The maximum number of indicators to return. Default is 50.
-      isArray: false
+    - description: The maximum number of indicators to return. Default is 50.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The index of the first indicator to fetch.
-      isArray: false
+    - description: The index of the first indicator to fetch.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The minimum timestamp to fetch indicators by
-      isArray: false
+    - description: The minimum timestamp to fetch indicators by
       name: last_run
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from the CrowdStrike Falcon Intel Feed.
-    execution: false
     name: crowdstrike-indicators-list
     outputs:
     - contextPath: CrowdStrikeFalconIntel.Indicators.id
@@ -249,15 +227,10 @@ script:
     - contextPath: CrowdStrikeFalconIntel.Indicators.rawJSON
       description: Raw response.
       type: Unknown
-  - deprecated: false
-    description: 'WARNING: This command will reset your fetch history.'
-    execution: false
+  - description: 'Resets the retrieving start time according to the `First Fetch Time` parameter, WARNING: This command will reset your fetch history.'
     name: crowdstrike-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.12.66339
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -17,172 +17,155 @@ configuration:
   displaypassword: ID (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
   section: Connect
+  required: false
 - name: creds_tenant_id
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
   section: Connect
+  required: false
 - name: creds_enc_key
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
   section: Connect
+  required: false
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
-  required: false
   type: 4
   hidden: true
+  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
   displaypassword: Private Key
   section: Connect
+  required: false
 - display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
   section: Connect
   advanced: true
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hidden: true
+  required: false
 - display: Private Key
   name: private_key
-  required: false
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
   section: Connect
-- display: Use a self-deployed Azure application
-  name: self_deployed
   required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
+  name: self_deployed
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
+  required: false
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
+  required: false
 - name: creds_auth_code
   type: 9
   displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
   hiddenusername: true
+  required: false
 - display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
   name: auth_code
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Suppress Errors for Non Found Users
   name: handle_error
-  required: false
   defaultvalue: 'true'
   type: 8
   section: Collect
   advanced: true
+  required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Azure Active Directory Users
 name: Microsoft Graph User
 script:
   commands:
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName
-      isArray: false
+    - description: User ID or userPrincipalName
       name: user
       required: true
-      secret: false
     deprecated: true
     description: |-
       Deprecated. Use the msgraph-user-account-disable command instead.
-    execution: false
     name: msgraph-user-terminate-session
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName
-      isArray: false
+    - description: User ID or userPrincipalName
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
       but does not terminate an existing session. Supported only in a self deployed app flow with the
       Permission: Directory.AccessAsUser.All(Delegated)
-    execution: false
     name: msgraph-user-account-disable
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName
-      isArray: false
+    - description: User ID or userPrincipalName
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: Unblock a user.
-    execution: false
     name: msgraph-user-unblock
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName to update properties for.
-      isArray: false
+    - description: User ID or userPrincipalName to update properties for.
       name: user
       required: true
-      secret: false
-    - default: false
-      description: "User fields to update (in a key=value format. Example: displayName=John"
-      isArray: false
+    - description: "User fields to update (in a key=value format. Example: displayName=John"
       name: updated_fields
       required: true
-      secret: false
-    - default: false
-      description: "Delimiter to use for passing multiple fields to the 'updated_fields' argument. Example using ',' as a delimiter: displayName=John,givenName=John,surname=Doe"
+    - description: "Delimiter to use for passing multiple fields to the 'updated_fields' argument. Example using ',' as a delimiter: displayName=John,givenName=John,surname=Doe"
       defaultValue: ','
-      isArray: false
       name: updated_fields_delimiter
-      required: false
-    deprecated: false
     description: |-
       Updates the properties of a user object.
       Permissions: - User.ReadWrite (Delegated & Application)
-    execution: false
     name: msgraph-user-update
     outputs:
     - contextPath: MSGraphUser.ID
@@ -219,13 +202,9 @@ script:
       description: User's principal name.
       type: String
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName to delete.
-      isArray: false
+    - description: User ID or userPrincipalName to delete.
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Deletes an existing user.
       Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
@@ -233,57 +212,31 @@ script:
     name: msgraph-user-delete
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: true if the account is enabled; otherwise, false.
-      isArray: false
       name: account_enabled
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The name to display in the address book.
-      isArray: false
+    - description: The name to display in the address book.
       name: display_name
       required: true
-      secret: false
-    - default: false
-      description: Only needs to be specified when creating a new user account if you are using a federated domain for the user's userPrincipalName (UPN) property.
-      isArray: false
+    - description: Only needs to be specified when creating a new user account if you are using a federated domain for the user's userPrincipalName (UPN) property.
       name: on_premises_immutable_id
-      required: false
-      secret: false
-    - default: false
-      description: The mail alias for the user.
-      isArray: false
+    - description: The mail alias for the user.
       name: mail_nickname
       required: true
-      secret: false
-    - default: false
-      description: The password profile for the user.
-      isArray: false
+    - description: The password profile for the user.
       name: password
       required: true
-      secret: false
-    - default: false
-      description: ' The user principal name, for example: foo@test.com. '
-      isArray: false
+    - description: ' The user principal name, for example: foo@test.com. '
       name: user_principal_name
       required: true
-      secret: false
-    - default: false
-      description: ' Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num" '
-      isArray: false
+    - description: ' Optional properties for the user, for example: "displayName=name,mobilePhone=phone-num" '
       name: other_properties
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Creates a new user.
       Permissions: - User.ReadWrite.All (Delegated & Application)
-    execution: false
     name: msgraph-user-create
     outputs:
     - contextPath: MSGraphUser.ID
@@ -344,17 +297,12 @@ script:
       description: The account entity type.
       type: String
   - arguments:
-    - default: false
-      description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
-      isArray: false
+    - description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
       name: properties
-      required: false
-      secret: false
     deprecated: true
     description: |-
       Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.
       Permissions: - User.Read (Delegated) - User.Read.All (Application)
-    execution: false
     name: msgraph-user-get-delta
     outputs:
     - contextPath: MSGraphUser.ID
@@ -391,23 +339,14 @@ script:
       description: User's principal name.
       type: String
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName
-      isArray: false
+    - description: User ID or userPrincipalName
       name: user
       required: true
-      secret: false
-    - default: false
-      description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
-      isArray: false
+    - description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
       name: properties
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
       Permissions: - User.Read (Delegated) - User.Read.All (Application)
-    execution: false
     name: msgraph-user-get
     outputs:
     - contextPath: MSGraphUser.ID
@@ -468,29 +407,15 @@ script:
       description: The account entity type.
       type: String
   - arguments:
-    - default: false
-      description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone"'
-      isArray: false
+    - description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone"'
       name: properties
-      required: false
-      secret: false
-    - default: false
-      description: The URL for the next page in the list.
-      isArray: false
+    - description: The URL for the next page in the list.
       name: next_page
-      required: false
-      secret: false
-    - default: false
-      description: 'Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.'
-      isArray: false
+    - description: 'Filter to be plugged directly into the API. For more information about the Filter syntax, see the Microsoft documentation: https://learn.microsoft.com/en-us/graph/filter-query-parameter?tabs=http.'
       name: filter
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Retrieves a list of user objects.
       Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
-    execution: false
     name: msgraph-user-list
     outputs:
     - contextPath: MSGraphUser.ID
@@ -554,15 +479,10 @@ script:
       description: The account entity type.
       type: String
   - arguments:
-    - default: false
-      description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
-      isArray: false
+    - description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the direct reports for a user. Direct reports are the people who have that user configured as their manager.
-    execution: false
     name: msgraph-direct-reports
     outputs:
     - contextPath: MSGraphUserDirectReports.Manager
@@ -602,15 +522,10 @@ script:
       description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
   - arguments:
-    - default: false
-      description: The User ID or userPrincipalName of the user for which to get the manager properties.
-      isArray: false
+    - description: The User ID or userPrincipalName of the user for which to get the manager properties.
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: "Retrieves the properties from the manager of a user."
-    execution: false
     name: msgraph-user-get-manager
     outputs:
     - contextPath: MSGraphUserManager.ID
@@ -650,91 +565,60 @@ script:
       description: User's principal name.
       type: String
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName of the user to which to assign a manager.
-      isArray: false
+    - description: User ID or userPrincipalName of the user to which to assign a manager.
       name: user
       required: true
-      secret: false
-    - default: false
-      description: User ID or userPrincipalName of the manager.
-      isArray: false
+    - description: User ID or userPrincipalName of the manager.
       name: manager
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Assigns a manager to the specified user.
       Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
-    execution: false
     name: msgraph-user-assign-manager
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName to update password for.
-      isArray: false
+    - description: User ID or userPrincipalName to update password for.
       name: user
       required: true
-      secret: false
-    - default: false
-      description: The new password.
-      isArray: false
+    - description: The new password.
       name: password
       required: true
       secret: true
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether the password will be changed on the next sign in.
-      isArray: false
       name: force_change_password_next_sign_in
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to change the password with MFA.
-      isArray: false
       name: force_change_password_with_mfa
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Changes the user password.
       Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
     execution: true
     name: msgraph-user-change-password
-  - deprecated: false
-    description: Tests connectivity to Microsoft Graph User.
-    execution: false
+  - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
-    - default: false
-      description: User ID or userPrincipalName
-      isArray: false
+    - description: User ID or userPrincipalName
       name: user
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
       Permission: Directory.AccessAsUser.All(Delegated)
-    execution: false
     name: msgraph-user-session-revoke
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: msgraph-user-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: msgraph-user-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

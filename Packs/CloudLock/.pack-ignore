@@ -1,5 +1,5 @@
 [file:CiscoCloudLock.yml]
-ignore=IN145
+ignore=RM110
 
 [file:CiscoCloudLock_image.png]
 ignore=IM111

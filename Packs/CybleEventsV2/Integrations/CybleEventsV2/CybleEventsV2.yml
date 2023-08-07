@@ -1,0 +1,178 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: cybleeventsv2
+  version: -1
+configuration:
+- additionalinfo: Server URL (e.g. <https://example.net>)
+  defaultvalue: <https://example.net>
+  display: URL
+  name: base_url
+  required: true
+  type: 0
+- displaypassword: Access Token
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Maximum incidents to be fetched every time. Upper limit is 1000 incidents.
+  defaultvalue: '1'
+  display: Incident Fetch Limit
+  name: max_fetch
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- additionalinfo: Time interval for first fetch (retroactive), by days only. Maximum of 7 days for retroactive value is allowed.
+  defaultvalue: '1'
+  display: First fetch time (by days)
+  name: first_fetch_timestamp
+  type: 0
+  required: false
+description: Cyble Events for Vision Users. Must have Vision API access to use the threat intelligence.
+display: CybleEvents v2
+name: cybleeventsv2
+script:
+  commands:
+  - description: Get list of Subscribed services
+    name: cyble-vision-subscribed-services
+    outputs:
+    - contextPath: CybleEvents.SubscribedServices
+      description: A list of subscribed services from Cyble vision.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Domain
+      description: Returns records according to their type (Domain, FileHash-MD5, FileHash-SHA1, FileHash-SHA256, IPv4, IPv6, URL, Email).
+      isArray: true
+      name: ioc_type
+      predefined:
+      - Domain
+      - FileHash-MD5
+      - FileHash-SHA1
+      - FileHash-SHA256
+      - IPv4
+      - IPv6
+      - URL
+      - Emai
+    - description: Returns records for the specified indicator value
+      name: ioc
+    - defaultValue: '0'
+      description: Returns records that starts from the given page number (the value of the form parameter) in the results list.
+      name: from
+    - defaultValue: '1'
+      description: Number of records to return (max 1000). Using a smaller limit will get faster responses.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: last_seen
+      description: Sorting based on the column(last_seen,first_seen,ioc_type)
+      name: sort_by
+      predefined:
+      - last_seen
+      - first_seen
+      - ioc_type
+    - auto: PREDEFINED
+      default: true
+      defaultValue: desc
+      description: A sorting order for ioc. Either Ascending or Descending. The default value is Descending.
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Returns records for the specified tags
+      name: tags
+    - description: Timeline start date in the format "YYYY-MM-DD". Should be used with start_date as timeline range.
+      name: start_date
+    - description: Timeline end date in the format "YYYY-MM-DD". Should be used with end_date as timeline range.
+      name: end_date
+    description: Fetch the indicators in the given timeline.
+    name: cyble-vision-fetch-iocs
+    outputs:
+    - contextPath: CybleEvents.IoCs.Data
+      description: Returns indicator with risk score, confident rating, first seen and last seen
+      type: String
+  - arguments:
+    - defaultValue: '5'
+      description: Number of records to return (max 50). Using a smaller limit will get faster responses.
+      name: limit
+    - description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+      name: start_date
+      required: true
+    - description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+      name: end_date
+      required: true
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: A sorting order for the fetched alerts. Either Ascending or Descending. The default value is Descending.
+      name: order_by
+      predefined:
+      - asc
+      - desc
+    - defaultValue: '0'
+      description: Returns records for the timeline starting from the given indice.
+      name: from
+    description: Fetch alerts based on the given parameters. The alerts would have multiple events grouped into one, based on a specific service type. This way the user will see, in some cases, more events than the limit provides.
+    execution: true
+    name: cyble-vision-fetch-alerts
+    outputs:
+    - contextPath: CybleEvents.Events.name
+      description: Return Event name
+      type: String
+    - contextPath: CybleEvents.Events.alert_group_id
+      description: Return alert group id
+      type: String
+    - contextPath: CybleEvents.Events.event_id
+      description: Return event id.
+      type: String
+    - contextPath: CybleEvents.Events.keyword
+      description: Return keywords
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: A sorting order for the fetched alerts. Either Ascending or Descending. he default value is Descending.
+      name: order_by
+      predefined:
+      - asc
+      - desc
+    - defaultValue: '5'
+      description: Number of records to return (max 50). Using a smaller limit will get faster responses.
+      name: limit
+    - description: Timeline start date in the format "%Y-%m-%dT%H:%M:%S%z" (iso-8601)
+      name: start_date
+      required: true
+    - description: Timeline end date in the format "%Y-%m-%dT%H:%M:%S%z"  (iso-8601)
+      name: end_date
+      required: true
+    - defaultValue: '0'
+      description: Returns records for the timeline starting from the given indice.
+      name: from
+      required: true
+    description: Fetch incident event group
+    name: cyble-vision-fetch-alert-groups
+    outputs:
+    - contextPath: CybleEvents.AlertGroup
+      description: Fetch all the alert groups
+      type: String
+  dockerimage: demisto/python3:3.10.12.63474
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

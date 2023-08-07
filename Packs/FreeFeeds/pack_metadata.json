@@ -1,0 +1,167 @@
+{
+    "name": "Free Feeds",
+    "description": "This content Pack helps set up free feeds (Plug & Fetch, Free with signup and Generic) available for TIM",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2023-05-02T12:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Free Feed",
+        "Plug & Fetch",
+        "Generic Feed"
+    ],
+    "itemPrefix": [
+    ],
+    "useCases": [
+    ],
+    "keywords": [
+        "Feed"
+    ],
+    "dependencies": {
+        "FeedAlienVault": {
+            "mandatory": false,
+            "display_name": "AlienVault Feed"
+        },
+        "FeedBlocklist_de": {
+            "mandatory": false,
+            "display_name": "Blocklist.de Feed"
+        },
+        "FeedBruteForceBlocker": {
+            "mandatory": false,
+            "display_name": "Brute force feed"
+        },
+        "FeedDshield": {
+            "mandatory": false,
+            "display_name": "DShield Feed"
+        },
+        "FeedFeodoTracker": {
+            "mandatory": false,
+            "display_name": "Feodo Tracker Feed"
+        },
+        "FeedMajesticMillion": {
+            "mandatory": false,
+            "display_name": "Majestic Million Feed"
+        },
+        "FeedMalwareBazaar": {
+            "mandatory": false,
+            "display_name": "Malware Bazaar Feed"
+        },
+        "FeedMitreAttack": {
+            "mandatory": false,
+            "display_name": "Mitre Att&ck Feed"
+        },
+        "FeedOpenCTI": {
+            "mandatory": false,
+            "display_name": "OpenCTI Feed"
+        },
+        "FeedPlainText": {
+            "mandatory": false,
+            "display_name": "Plain Text Feed"
+        },
+        "FeedSpamhaus": {
+            "mandatory": false,
+            "display_name": "Spamhaus Feed"
+        },
+        "FeedTalos": {
+            "mandatory": false,
+            "display_name": "Talos Feed"
+        },
+        "FeedTorExitAddresses": {
+            "mandatory": false,
+            "display_name": "Tor Exit Addresses Feed"
+        },
+        "Feedsslabusech": {
+            "mandatory": false,
+            "display_name": "SSL Abuse ch Feed"
+        },
+        "NationalVulnerabilityDatabaseFeed": {
+            "mandatory": false,
+            "display_name": "National Vulnerability DB Feed"
+        },
+        "SnortIPBlocklist": {
+            "mandatory": false,
+            "display_name": "Snort IP Blocklist Feed"
+        },
+        "URLHaus": {
+            "mandatory": false,
+            "display_name": "URL Haus Feed"
+        },
+        "FeedCSV": {
+            "mandatory": false,
+            "display_name": "CSV Feed"
+        },
+        "FeedElasticSearch": {
+            "mandatory": false,
+            "display_name": "ElasticSearch Feed"
+        },
+        "FeedJSON": {
+            "mandatory": false,
+            "display_name": "JSON Feed"
+        },
+        "FeedRSS": {
+            "mandatory": false,
+            "display_name": "RSS Feed"
+        },
+        "FeedTAXII": {
+            "mandatory": false,
+            "display_name": "TAXII Feed (1.x, 2.x)"
+        },
+        "FeedAWS": {
+            "mandatory": false,
+            "display_name": "AWS IP Feed"
+        },
+        "FeedAzure": {
+            "mandatory": false,
+            "display_name": "Azure IP Feed"
+        },
+        "CiscoWebExFeed": {
+            "mandatory": false,
+            "display_name": "Cisco webex assets Feed"
+        },
+        "FeedCloudflare": {
+            "mandatory": false,
+            "display_name": "Cloudflare IP Feed"
+        },
+        "FeedGCPWhitelist": {
+            "mandatory": false,
+            "display_name": "Google IP Feed"
+        },
+        "FeedAzureADConnectHealth": {
+            "mandatory": false,
+            "display_name": "Azure AD Connect Health assets Feed"
+        },
+        "FeedMicrosoftIntune": {
+            "mandatory": false,
+            "display_name": "Microsoft Intune assets Feed"
+        },
+        "FeedOffice365": {
+            "mandatory": false,
+            "display_name": "Office 365 assets Feed"
+        },
+        "FeedPublicDNS": {
+            "mandatory": false,
+            "display_name": "Public DNS servers IP Feed"
+        },
+        "FeedZoom": {
+            "mandatory": false,
+            "display_name": "Zoom assets Feed"
+        },
+        "FeedFastly": {
+            "mandatory": false,
+            "display_name": "Fastly IP Feed"
+        },
+        "FeedLOLBAS": {
+                "mandatory": false,
+                "display_name": "LOLBAS Tools Feed"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

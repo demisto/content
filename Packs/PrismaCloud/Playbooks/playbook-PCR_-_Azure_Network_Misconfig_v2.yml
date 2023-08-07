@@ -5,7 +5,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Prisma Cloud Remediation - Azure Network Misconfiguration v2
 description: |-
-  This playbook remediates Prisma Cloud Azure Network alerts.  It calls sub-playbooks that perform the actual remediation steps.
+  This playbook remediates Prisma Cloud Azure Network alerts. It calls sub-playbooks that perform the actual remediation steps.
 
   Remediation:
 

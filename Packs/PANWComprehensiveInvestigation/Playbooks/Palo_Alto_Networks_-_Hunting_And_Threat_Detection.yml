@@ -439,7 +439,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     continueonerrortype: ""
     evidencedata:
@@ -655,7 +655,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     continueonerrortype: ""
     evidencedata:
@@ -870,7 +870,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     continueonerrortype: ""
     evidencedata:
@@ -990,7 +990,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     continueonerrortype: ""
     evidencedata:

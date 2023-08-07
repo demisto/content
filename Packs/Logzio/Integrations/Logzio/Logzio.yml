@@ -26,7 +26,6 @@ configuration:
   name: region
   defaultvalue: us
   type: 15
-  required: false
   options:
   - us
   - eu
@@ -34,6 +33,7 @@ configuration:
   - nl
   - ca
   - au
+  required: false
 - display: Filter by rule name
   name: search
   type: 0
@@ -41,13 +41,13 @@ configuration:
 - display: Filter by rule severity
   name: severities
   type: 16
-  required: false
   options:
   - SEVERE
   - HIGH
   - MEDIUM
   - LOW
   - INFO
+  required: false
 - display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
   name: fetch_time
   defaultvalue: 1 hour
@@ -75,17 +75,14 @@ script:
     - name: query
       required: true
       default: true
-      description: A string specifying the search query, written in Apache Lucene
-        syntax e.g. 'fname:John AND sname:Smith' (limited to 2 days range).
+      description: A string specifying the search query, written in Apache Lucene syntax e.g. 'fname:John AND sname:Smith' (limited to 2 days range).
       defaultValue: '*'
     - name: size
       description: An integer specifying the maximum number of results to return.
     - name: from_time
-      description: Specifies the earliest timestamp to be returned
-        by the query.
+      description: Specifies the earliest timestamp to be returned by the query.
     - name: to_time
-      description: Specifies the latest timestamp to be returned by
-        the query.
+      description: Specifies the latest timestamp to be returned by the query.
     - name: timeout
       description: Timeout in seconds
       defaultValue: '2'
@@ -122,11 +119,9 @@ script:
     - contextPath: Logzio.Result.timestamp
       description: The log's timestamp
       type: date
-    description: Fetches the logs that triggered a security event in Logz.io Cloud
-      SIEM
-  dockerimage: demisto/python3:3.10.10.50695
+    description: Fetches the logs that triggered a security event in Logz.io Cloud SIEM
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

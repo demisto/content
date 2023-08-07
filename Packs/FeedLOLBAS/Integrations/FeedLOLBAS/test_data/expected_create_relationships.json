@@ -1,0 +1,30 @@
+[
+  [
+    {
+      "name": "related-to",
+      "reverseName": "related-to",
+      "type": "IndicatorToIndicator",
+      "entityA": "AppInstaller.exe",
+      "entityAFamily": "Indicator",
+      "entityAType": "Tool",
+      "entityB": "Test Mitre Name 1",
+      "entityBFamily": "Indicator",
+      "entityBType": "Attack Pattern",
+      "fields": {}
+    }
+  ],
+  [
+    {
+      "name": "related-to",
+      "reverseName": "related-to",
+      "type": "IndicatorToIndicator",
+      "entityA": "Aspnet_Compiler.exe",
+      "entityAFamily": "Indicator",
+      "entityAType": "Tool",
+      "entityB": "Test Mitre Name 2",
+      "entityBFamily": "Indicator",
+      "entityBType": "Attack Pattern",
+      "fields": {}
+    }
+  ]
+]

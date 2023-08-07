@@ -1,0 +1,21 @@
+{
+    "logs": [
+      "565c1b7b-c08b-4c87-a42a-ab08bad56071"
+    ],
+    "leql": {
+      "statement": "where(931dde6c60>=800)",
+      "during": {
+        "from": 1609629856000,
+        "to": 1609629992000
+      }
+    },
+    "progress": 0,
+    "id": "3:0:c:1:0:",
+    "events": [],
+    "links": [
+      {
+        "rel": "Self",
+        "href": "https://us.api.insight.rapid7.com/query/3:0:c:1:0"
+      }
+    ]
+  }

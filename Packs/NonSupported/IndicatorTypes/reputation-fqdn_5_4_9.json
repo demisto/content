@@ -15,7 +15,7 @@
   "enhancementScriptNames": [
     "DomainReputation"
   ],
-  "system": true,
+  "system": false,
   "locked": false,
   "disabled": false,
   "file": false,

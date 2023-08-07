@@ -14,56 +14,50 @@ configuration:
   type: 9
 - display: Tenant name
   name: tenant_name
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: Tenant name
+  name: cred_tenant_name
+  type: 9
+  hiddenusername: true
+  required: false
 - display: Token
   name: token
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: Token
+  name: cred_token
+  type: 9
+  hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Workday offers enterprise-level software solutions for financial management, human resources, and planning.
 display: Workday
 name: Workday
 script:
   commands:
   - arguments:
-    - default: false
-      description: Employee ID of the worker for which to get information.
-      isArray: false
+    - description: Employee ID of the worker for which to get information.
       name: employee_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: "50"
+    - defaultValue: "50"
       description: The maximum number of results to return. Default is 50.
-      isArray: false
       name: count
-      required: false
-      secret: false
-    - default: false
-      defaultValue: "1"
+    - defaultValue: "1"
       description: The page from which to get the employees' data.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: "3"
+    - defaultValue: "3"
       description: The number of managers to display.
-      isArray: false
       name: managers
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information for the specified workers.
-    execution: false
     name: workday-list-workers
     outputs:
     - contextPath: Workday.Worker.Worker_ID
@@ -261,12 +255,11 @@ script:
     - contextPath: Workday.Worker.Manager.Manager_Name
       description: The manager name.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 5.0.0
 tests:
 - Workday - Test

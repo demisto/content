@@ -53,20 +53,28 @@ def test_upload_sample_command(mocker):
     assert mocker_output.call_args.args[0] == expected_output
 
 
-def test_encoding_file_name():
+@pytest.mark.parametrize(
+    "file_name, expected",
+    [
+        ("abc.exe", b"abc.exe"),
+        ("<>:\"/\\|?*a.exe", b"a.exe"),
+        ("\\test\\encode\\file\\name", b"testencodefilename"),
+        ("ñá@.exe", b"\xc3\xb1\xc3\xa1@.exe"),
+    ]
+)
+def test_encoding_file_name(file_name, expected):
     """
     Given:
-        A string representing a file name with backslashes
+        A string representing a file name
     When:
-        encode_file_name is running
+        `encode_file_name` is running
     Then:
-        Verify the output of encode_file_name is the same as the input string (in bytes) without it's backslashes
+        Verify the output of `encode_file_name` is the same as the expected bytes.
+        Characters that Windows doesn't allow for filenames get removed from the string.
     """
-    file_name = '\\test\\encode\\file\\name'
-    expected_output = 'testencodefilename'
     from VMRay import encode_file_name
 
-    assert encode_file_name(file_name) == expected_output.encode('ascii', 'ignore')
+    assert encode_file_name(file_name) == expected
 
 
 def test_is_json():

@@ -7,7 +7,7 @@
   "title": "Daily Summary: Credentials Received over HTTP",
   "description": "Over the past day, servers received HTTP data with passwords or basic authentication headers. If the unencrypted HTTP data is accessible to an attacker, they can collect sensitive information. Confirm that the SSL/TLS protocol or HTTP Strict Transport Security (HSTS) policy is enabled for these servers.",
   "categories": [
-   "sec",
+   "sec.attack",
    "sec.caution"
   ],
   "risk_score": 60,
@@ -39,7 +39,7 @@
   "title": "Daily Summary: Credentials Received over HTTP",
   "description": "Over the past day, servers received HTTP data with passwords or basic authentication headers. If the unencrypted HTTP data is accessible to an attacker, they can collect sensitive information. Confirm that the SSL/TLS protocol or HTTP Strict Transport Security (HSTS) policy is enabled for these servers.",
   "categories": [
-   "sec",
+   "sec.attack",
    "sec.caution"
   ],
   "risk_score": 60,

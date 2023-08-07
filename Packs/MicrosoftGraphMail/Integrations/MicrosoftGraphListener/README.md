@@ -144,7 +144,6 @@ Replies to an email using Graph Mail Single User.
 | htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
 | attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
 | attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional | 
-| from | Email address of the sender. | Optional | 
 
 
 #### Context Output
@@ -190,7 +189,6 @@ Sends an email using Microsoft Graph.
 | attach_ids | A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8. | Optional | 
 | attach_names | A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs. | Optional | 
 | attach_cids | A comma-separated list of CIDs to embed attachments within the actual email. | Optional | 
-| from | The email address from which to reply. | Optional | 
 | replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional | 
 
 
@@ -274,17 +272,13 @@ Tests connectivity of the email.
 There is no context output for this command.
 ### msgraph-mail-auth-reset
 ***
-Run this command to rerun the authentication process.
-
+Run this command if for some reason you need to rerun the authentication process.
 
 #### Base Command
 
 `msgraph-mail-auth-reset`
 #### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 

@@ -1,0 +1,38 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "FreshworksFreshservice Ticket",
+        "FreshworksFreshservice Change Request",
+        "FreshworksFreshservice Problem Request"
+    ],
+    "caseInsensitive": false,
+    "cliName": "freshworksfreshserviceimpact",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_freshworksfreshserviceimpact",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FreshworksFreshservice Impact",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "Low",
+        "Medium",
+        "High"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

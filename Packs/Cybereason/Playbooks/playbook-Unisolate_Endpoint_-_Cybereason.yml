@@ -25,6 +25,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '1':
     id: '1'
     taskid: 29f3ba5b-96f3-4885-8d29-39d1927feb35
@@ -33,8 +36,7 @@ tasks:
       id: 29f3ba5b-96f3-4885-8d29-39d1927feb35
       version: -1
       name: Is Cybereason integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -56,6 +58,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '2':
     id: '2'
     taskid: 649ec0e2-13f5-4534-8e29-f052ece40603
@@ -75,12 +80,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: 409410a8-e855-455f-85fa-38ededec41d7
+    taskid: d2f9f02b-0f1b-48cd-8cad-6dafd2707221
     type: condition
     task:
-      id: 409410a8-e855-455f-85fa-38ededec41d7
+      id: d2f9f02b-0f1b-48cd-8cad-6dafd2707221
       version: -1
       name: Is there an endpoint to unisolate?
       type: condition
@@ -96,10 +104,11 @@ tasks:
     conditions:
     - label: yes
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.Hostname
+              complex:
+                root: inputs.Hostname
             iscontext: true
     view: "{\n  \"position\": {\n    \"x\": 750,\n    \"y\": 420\n  }\n}"
     note: false
@@ -107,6 +116,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '4':
     id: '4'
     taskid: b7f22dfd-7f2f-4340-8246-767d4570afc8
@@ -133,9 +145,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-view: "{\n  \"linkLabelsPosition\": {\n    \"3_2_#default#\": 0.37\n  },\n  \"paper\"\
-  : {\n    \"dimensions\": {\n      \"height\": 1045,\n      \"width\": 970,\n   \
-  \   \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"3_2_#default#\": 0.37\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1045,\n      \"width\": 970,\n      \"x\": 450,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: Hostname
   value: {}
@@ -146,3 +159,6 @@ outputs: []
 tests:
 - Cybereason Test
 fromversion: 5.5.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

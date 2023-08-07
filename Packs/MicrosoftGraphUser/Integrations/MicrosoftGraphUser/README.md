@@ -599,7 +599,7 @@ There is no context output for this command.
 ***
 Changes the user password.
 Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
-
+Note: In order to change the password, you need additional permissions: Auth Admin, Privileged Auth Admin or Global Admin, depending on the target user's role.
 
 #### Base Command
 
@@ -677,3 +677,18 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+
+
+### msgraph-user-auth-reset
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-user-auth-reset`
+#### Input
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

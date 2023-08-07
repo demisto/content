@@ -1,6 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import requests
+
+
 import dateparser
 
 from typing import Dict, Any
@@ -83,8 +85,11 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, headers, auth):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def get_incidents_request(self, creation_date: str = None, status_id: List[str] = None, severity: List[int] = None,
-                              incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE, order_by: bool = None):
+    def get_incidents_request(
+        self, creation_date: str = None, status_id: List[str] = None, severity: List[int] = None,
+        incident_type: List[str] = None, limit: int = MAX_PAGE_SIZE,
+        order_by: bool = None, raw_filter: str = None
+    ):
         """Returns incidents list
         in the input (dummy).
 
@@ -94,32 +99,42 @@ class Client(BaseClient):
         :param incident_type: The incident types to filter.
         :param limit: The limit of the incidents.
         :param order_by: If order by according the creation date or not
+        :param raw_filter: Full filter that is used for the body of the request, bypasses all other filters criteria.
 
         """
-        data = {"limit": limit, "select": INCIDENTS_LIST_BODY}
-        if order_by:
+        if raw_filter:
+            try:
+                data = json.loads(raw_filter)
+                data["limit"] = limit
+            except ValueError as e:
+                raise ValueError(f"The provided filter must be in JSON format as detailed"
+                                 f" at https://apidocs.securitycloud.symantec.com/#/: "
+                                 f"\nError: {e}")
+        else:
+            data = {"limit": limit, "select": INCIDENTS_LIST_BODY}
+            if order_by:
 
-            data["orderBy"] = [{"order": "ASC", "field": {"name": "creationDate"}}]
+                data["orderBy"] = [{"order": "ASC", "field": {"name": "creationDate"}}]
 
-        if creation_date or status_id or severity or incident_type:
+            if creation_date or status_id or severity or incident_type:
 
-            data['filter'] = {"booleanOperator": "AND", "filterType": "booleanLogic", "filters": []}
-            if creation_date:
-                data['filter']['filters'].append(  # type: ignore
-                    create_filter_dict(filter_type="localDateTime", filter_by="creationDate",
-                                       filter_value=[creation_date], operator="GT"))
-            if status_id:
-                data['filter']['filters'].append(  # type: ignore
-                    create_filter_dict(filter_type="long", filter_by="incidentStatusId",
-                                       filter_value=status_id, operator="IN"))
-            if severity:
-                data['filter']['filters'].append(  # type: ignore
-                    create_filter_dict(filter_type="long", filter_by="severityId",
-                                       filter_value=severity, operator="IN"))
-            if incident_type:
-                data['filter']['filters'].append(  # type: ignore
-                    create_filter_dict(filter_type="string", filter_by="messageSource",
-                                       filter_value=incident_type, operator="IN"))
+                data['filter'] = {"booleanOperator": "AND", "filterType": "booleanLogic", "filters": []}
+                if creation_date:
+                    data['filter']['filters'].append(  # type: ignore
+                        create_filter_dict(filter_type="localDateTime", filter_by="creationDate",
+                                           filter_value=[creation_date], operator="GT"))
+                if status_id:
+                    data['filter']['filters'].append(  # type: ignore
+                        create_filter_dict(filter_type="long", filter_by="incidentStatusId",
+                                           filter_value=status_id, operator="IN"))
+                if severity:
+                    data['filter']['filters'].append(  # type: ignore
+                        create_filter_dict(filter_type="long", filter_by="severityId",
+                                           filter_value=severity, operator="IN"))
+                if incident_type:
+                    data['filter']['filters'].append(  # type: ignore
+                        create_filter_dict(filter_type="string", filter_by="messageSource",
+                                           filter_value=incident_type, operator="IN"))
 
         headers = self._headers
         response = self._http_request(method='POST', url_suffix='/ProtectManager/webservices/v2/incidents',
@@ -198,6 +213,149 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix='/ProtectManager/webservices/v2/incidents/'
                                                                'protectOrPreventStatuses', headers=headers)
 
+        return response
+
+    def get_incident_original_message_request(self, incident_id: str) -> requests.Response:
+        """Returns incident original message.
+        :param incident_id: The incident ID.
+        """
+
+        headers = self._headers
+        response = self._http_request(method='GET', url_suffix=f'/ProtectManager/webservices/'
+                                                               f'v2/incidents/{incident_id}/originalMessage',
+                                      headers=headers, resp_type='bytes')
+        return response
+
+    def get_report_filters_request(self, report_id: str) -> Dict[str, str]:
+        """Returns incident static attributes.
+
+        :param report_id: The report id ID.
+
+        """
+
+        headers = self._headers
+        response = self._http_request(method='GET', url_suffix=f'/ProtectManager/webservices/'
+                                                               f'v2/savedReport/{report_id}',
+                                      headers=headers)
+
+        return response
+
+    def get_sdlp_users_request(self) -> List[dict]:
+        """Returns list of SDLP users
+        """
+
+        headers = self._headers
+        response = self._http_request(method='GET', url_suffix='/ProtectManager/webservices/v2/users',
+                                      headers=headers)
+
+        return response
+
+    def get_sender_recipient_pattern_request(self, pattern_id: str) -> Dict[str, str]:
+        """Returns incident static attributes.
+
+        :param incident_id: The incident ID.
+
+        """
+
+        headers = self._headers
+        response = self._http_request(method='GET', url_suffix=f'/ProtectManager/webservices/'
+                                                               f'v2/senderRecipientPattern/{pattern_id}',
+                                      headers=headers)
+
+        return response
+
+    def list_sender_recipient_patterns_request(self) -> List[dict]:
+        """Returns list of sender/recipient patterns
+        """
+
+        headers = self._headers
+        response = self._http_request(method='GET',
+                                      url_suffix='/ProtectManager/webservices/v2/senderRecipientPattern/list',
+                                      headers=headers)
+
+        return response
+
+    def update_sender_pattern_request(
+        self,
+        pattern_id: str,
+        pattern_name: str | None,
+        pattern_description: str | None,
+        new_ips: List[str] = None,
+        new_users: List[str] = None
+    ) -> Dict[str, str]:
+        """
+        Updates the sender pattern
+
+        :param pattern_id: The pattern ID to update
+        :param pattern_name: The new name for the sender pattern
+        :param pattern_description: The new description for the sender pattern
+        :param new_ips: List of new IP address values
+        :param new_users: List of new
+        """
+        headers = self._headers
+        data = {
+            "name": pattern_name,
+            "description": pattern_description,
+            "ruleType": 4  # ruleType 4 = Sender pattern
+        }
+
+        if new_ips:
+            data['ipAddresses'] = new_ips  # type: ignore[assignment]
+        if new_users:
+            data['userPatterns'] = new_users  # type: ignore[assignment]
+
+        response = self._http_request(method='PUT',
+                                      url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
+                                      headers=headers, json_data=data)
+        return response
+
+    def update_recipient_pattern_request(
+        self,
+        pattern_id: str,
+        pattern_name: str | None,
+        pattern_description: str | None,
+        new_ips: List[str] = None,
+        new_emails: List[str] = None,
+        new_domains: List[str] = None
+    ) -> Dict[str, str]:
+        """
+        Updates the sender pattern
+
+        :param pattern_id: The pattern ID to update
+        :param pattern_name: The new name for the sender pattern
+        :param pattern_description: The new description for the sender pattern
+        :param new_ips: List of new IP address values
+        :param new_emails: List of new email address values
+        :param new_domains: List of new domain values
+        """
+        headers = self._headers
+        data = {
+            "name": pattern_name,
+            "description": pattern_description,
+            "ruleType": 2  # ruleType 2 = Recipient pattern
+        }
+
+        if new_ips:
+            data['ipAddresses'] = new_ips  # type: ignore[assignment]
+        if new_emails:
+            data['emailAddresses'] = new_emails  # type: ignore[assignment]
+        if new_domains:
+            data['urlDomains'] = new_domains  # type: ignore[assignment]
+
+        response = self._http_request(method='PUT',
+                                      url_suffix=f'/ProtectManager/webservices/v2/senderRecipientPattern/{pattern_id}',
+                                      headers=headers, json_data=data)
+        return response
+
+    def get_message_body_request(self, incident_id: str) -> Dict[str, str]:
+        """Returns incident message body.
+        :param incident_id: The incident ID.
+        """
+
+        headers = self._headers
+        response = self._http_request(method='GET',
+                                      url_suffix=f'/ProtectManager/webservices/v2/incidents/{incident_id}/messageBody',
+                                      headers=headers)
         return response
 
 
@@ -560,21 +718,41 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 1))
     page_size = arg_to_number(args.get('page_size'))
-
-    incidents_result = client.get_incidents_request(creation_date, status_ids, severities_dlp, incident_types_dlp,
-                                                    limit * page)  # type: ignore
+    raw_filter = args.get('raw_filter')
+    try:
+        incidents_result = client.get_incidents_request(
+            creation_date,
+            status_ids,
+            severities_dlp,
+            incident_types_dlp,
+            limit * page,  # type: ignore[operator]
+            raw_filter=raw_filter
+        )
+    except DemistoException as error:
+        if raw_filter:
+            raise DemistoException(f'Please make sure the {raw_filter=} is correct, {error=}')
+        raise
     incidents_result = get_incidents_of_current_page(limit, page, page_size,
-                                                     incidents_list=incidents_result['incidents'])
-    list_incidents_hr = get_readable_output_incidents_list(incidents_result)
-    context_incidents_list = get_context_incidents_list(incidents_result)
+                                                     incidents_list=incidents_result.get('incidents', []))
+    if raw_filter:
+        list_incidents_hr = incidents_result
+        context_incidents_list = incidents_result
+        if incidents_result:
+            output_headers = list(incidents_result[0].keys())
+        else:
+            output_headers = None
+    else:
+        list_incidents_hr = get_readable_output_incidents_list(incidents_result)
+        context_incidents_list = get_context_incidents_list(incidents_result)
+        output_headers = ['ID', 'Severity', 'Status', 'Creation Date', 'Incident Type', 'Message Type', 'Policy ID',
+                          'Match Count']
 
     return CommandResults(
         readable_output=tableToMarkdown(
             "Symantec DLP incidents results",
             list_incidents_hr,
             removeNull=True,
-            headers=['ID', 'Severity', 'Status', 'Creation Date', 'Incident Type', 'Message Type', 'Policy ID',
-                     'Match Count']
+            headers=output_headers
         ),
         outputs_prefix='SymantecDLP.Incident',
         outputs_key_field='ID',
@@ -704,6 +882,170 @@ def get_list_remediation_status(client: Client) -> CommandResults:
     )
 
 
+def get_incident_original_message_command(client: Client, args: Dict[str, Any]):
+    """
+    Fetch the original message
+    """
+    try:
+        incident_id = args.get('incident_id', '')
+        results = client.get_incident_original_message_request(incident_id)
+        original_message_file = results.content
+
+        try:
+            original_filename = results.headers.get('Content-Disposition').split('=')[1]  # type: ignore[union-attr]
+        except (TypeError, IndexError, AttributeError):
+            original_filename = 'unknown'
+        return fileResult(original_filename, original_message_file)
+
+    except DemistoException as e:
+        if '401' in str(e):
+            raise DemistoException(f"Error 401: Incident access not authorized or the incident does not exist. {e.res}")
+        else:
+            raise DemistoException(f"Error {e.res}")
+
+
+def get_report_filters_command(client: Client, args: Dict[str, Any]):
+    """
+    Get report filters
+    """
+    try:
+        report_id = args.get('report_id', '')
+        report_results = client.get_report_filters_request(report_id)
+        report_results['filterString'] = json.dumps(report_results)
+        return CommandResults(
+            readable_output=f'Returned results for report id {report_id}',
+            outputs_prefix='SymantecDLP.ReportFilter',
+            outputs=report_results,
+            outputs_key_field="id"
+        )
+    except DemistoException as e:
+        if '401' in str(e):
+            raise DemistoException(f"Error 401: Report access not authorized or the report does not exist. {e.res}")
+        else:
+            raise DemistoException(f"Error {e.res}")
+
+
+def list_users_command(client: Client) -> CommandResults:
+    users_results = client.get_sdlp_users_request()
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Symantec DLP Users",
+            camelize(users_results),
+            removeNull=True,
+        ),
+        outputs_prefix='SymantecDLP.Users',
+        outputs_key_field='id',
+        outputs=users_results,
+    )
+
+
+def get_sender_recipient_pattern_command(client: Client, args: Dict[str, Any]):
+    """
+    Fetch the original message
+    """
+    pattern_id = args.get('pattern_id', '')
+    pattern_results = client.get_sender_recipient_pattern_request(pattern_id)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            name=pattern_results.get('name') or f'Pattern Results for Pattern ID {pattern_id}',
+            t=pattern_results,
+        ),
+        outputs_prefix='SymantecDLP.SenderRecipientPattern',
+        outputs=pattern_results,
+        outputs_key_field='id'
+    )
+
+
+def list_sender_recipient_patterns_command(client: Client) -> CommandResults:
+    patterns_results = client.list_sender_recipient_patterns_request()
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sender/Recipient Patterns",
+            patterns_results
+        ),
+        outputs_prefix='SymantecDLP.Patterns',
+        outputs=patterns_results,
+        outputs_key_field='id'
+    )
+
+
+def update_sender_pattern_command(client: Client, args: Dict[str, Any]):
+    """
+    Update the sender pattern
+    """
+    pattern_id = args.get('pattern_id', '')
+    pattern_name = args.get('name')
+    pattern_description = args.get('description')
+    new_ips = argToList(args.get('ips', []))
+    new_users = argToList(args.get('users', []))
+
+    update_results = client.update_sender_pattern_request(
+        pattern_id, pattern_name, pattern_description, new_ips, new_users
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sender Pattern Update Results",
+            update_results
+        ),
+        outputs_prefix='SymantecDLP.SenderUpdate',
+        outputs=update_results,
+        outputs_key_field="id"
+    )
+
+
+def update_recipient_pattern_command(client: Client, args: Dict[str, Any]):
+    """
+    Update the sender pattern
+    """
+    pattern_id = args.get('pattern_id', '')
+    pattern_name = args.get('name')
+    pattern_description = args.get('description')
+    new_ips = argToList(args.get('ips', []))
+    new_emails = argToList(args.get('emails', []))
+    new_domains = argToList(args.get('domains', []))
+
+    update_results = client.update_recipient_pattern_request(
+        pattern_id, pattern_name, pattern_description, new_ips, new_emails, new_domains)
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sender Pattern Update Results",
+            update_results
+        ),
+        outputs_prefix='SymantecDLP.RecipientUpdate',
+        outputs=update_results,
+        outputs_key_field="id"
+    )
+
+
+def get_message_body_command(client: Client, args: Dict[str, Any]):
+    """
+    Fetch the message body
+    """
+    try:
+        incident_id = args.get('incident_id', '')
+        body_results = client.get_message_body_request(incident_id)
+        results = {
+            "IncidentID": incident_id,
+            "MessageBody": body_results
+        }
+        return CommandResults(
+            readable_output=f'Message body for incident {incident_id} written to context data',
+            outputs_prefix='SymantecDLP.MessageBody',
+            outputs=results,
+            outputs_key_field="id"
+        )
+    except DemistoException as e:
+        if '401' in str(e):
+            raise DemistoException(f"Error 401: Incident access not authorized or the incident does not exist. {e.res}")
+        else:
+            raise DemistoException(f"Error {e.res}")
+
+
 def is_incident_already_fetched_in_previous_fetch(last_update_time, incident_creation_date):
     """
     Checks if the incident was already fetched
@@ -799,7 +1141,7 @@ def main() -> None:
         username = credentials.get('identifier', '')
         password = credentials.get('password', '')
         incident_type = argToList(params.get('fetchIncidentType'), 'Network,Discover,Endpoint')
-        incident_status_id = check_status_ids_type(argToList(params.get('incidentStatusId'), ''))
+        incident_status_id = check_status_ids_type(argToList(params.get('incidentStatusId', '')))
         incident_severity = argToList(params.get('incidentSeverity'), 'Medium,High')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
@@ -845,7 +1187,22 @@ def main() -> None:
             return_results(get_incident_history_command(client, args))
         elif demisto.command() == 'symantec-dlp-list-remediation-status':
             return_results(get_list_remediation_status(client))
-
+        elif demisto.command() == 'symantec-dlp-get-incident-original-message':
+            return_results(get_incident_original_message_command(client, args))
+        elif demisto.command() == 'symantec-dlp-get-report-filters':
+            return_results(get_report_filters_command(client, args))
+        elif demisto.command() == 'symantec-dlp-list-users':
+            return_results(list_users_command(client))
+        elif demisto.command() == 'symantec-dlp-get-sender-recipient-pattern':
+            return_results(get_sender_recipient_pattern_command(client, args))
+        elif demisto.command() == 'symantec-dlp-list-sender-recipient-patterns':
+            return_results(list_sender_recipient_patterns_command(client))
+        elif demisto.command() == 'symantec-dlp-update-sender-pattern':
+            return_results(update_sender_pattern_command(client, args))
+        elif demisto.command() == 'symantec-dlp-update-recipient-pattern':
+            return_results(update_recipient_pattern_command(client, args))
+        elif demisto.command() == 'symantec-dlp-get-message-body':
+            return_results(get_message_body_command(client, args))
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

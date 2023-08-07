@@ -21,16 +21,23 @@ configuration:
   name: token
   defaultvalue: ""
   type: 4
-  required: true
+  hidden: true
+  required: false
+- name: token_creds
+  type: 9
+  displaypassword: API token
+  hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-- display: Use system proxy settings
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
   type: 8
+
   required: false
 script:
   script: ''
@@ -43,12 +50,9 @@ script:
     - name: limit
       description: To determine the quantity of results to return in the response
     - name: order
-      description: Use the “order” parameter to indicate the order for your request
-        list result. For multiple sort orders use a comma-delimted list of sort parameters.
-        Default direction is ascending, and a leading “-” character denotes descending
+      description: Use the “order” parameter to indicate the order for your request list result. For multiple sort orders use a comma-delimted list of sort parameters. Default direction is ascending, and a leading “-” character denotes descending
     - name: platform
-      description: 'The application supplying the underlying data (i.e. Google Drive,
-        Google Sites). platform value should be in the format: <vendor>_<origin_type>'
+      description: 'The application supplying the underlying data (i.e. Google Drive, Google Sites). platform value should be in the format: <vendor>_<origin_type>'
     - name: users
       description: comma delimited list of owner email addresses
     - name: exposure
@@ -89,8 +93,7 @@ script:
       description: CloudLock user total entities
     - contextPath: CloudLock.Users.Entities.Exposed
       description: CloudLock user exposed entities
-    description: This endpoint will return data about the users in the cloud lock
-      system
+    description: This endpoint will return data about the users in the cloud lock system
   - name: cloudlock-get-user-apps
     arguments:
     - name: email
@@ -110,8 +113,7 @@ script:
       description: CloudLock user application name
     - contextPath: CloudLock.Users,Applications.Vendor
       description: CloudLock user application vendor
-    description: This endpoint returns all of the applications installed by a user
-      (based on the users email address)
+    description: This endpoint returns all of the applications installed by a user (based on the users email address)
   - name: cloudlock-get-activities
     description: Returns UBA (User Behavioral Analysis) activities
     arguments:
@@ -165,7 +167,6 @@ script:
       description: Activity vendor service
     - contextPath: CloudLock.Activities.User.FullName
       description: Activity user full name
-hidden: false
 tests:
 - No tests
 fromversion: 5.0.0

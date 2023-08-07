@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import logging
 
-import demistomock as demisto
-from CommonServerPython import *
 
 from typing import List, Dict, Set, Optional
 import json
@@ -250,8 +250,8 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             continue
         url = external_reference.get('url', '')
         description = external_reference.get('description')
-        source_name = external_reference.get('source_name')
         time_stamp = extract_date_time_from_description(description)
+        source_name = external_reference.get('source_name')
         publications.append({'link': url, 'title': description, 'source': source_name, 'timestamp': time_stamp})
 
     mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
@@ -263,6 +263,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         tags.extend(indicator_json.get('labels', ''))
 
     tlp = get_tlp(indicator_json)
+    indicator_json['description'] = remove_citations(indicator_json.get('description', ''))
 
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
@@ -322,6 +323,22 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     }
     generic_mapping_fields.update(mapping_by_type.get(indicator_type, {}))  # type: ignore
     return generic_mapping_fields
+
+
+def remove_citations(description: str) -> str:
+    """
+    Args:
+        description (str): input description string can contain Citation parts.
+        delimited by parenthesis.
+        i.e (Citation ...)
+    Returns:
+        str: description string with no Citation parts.
+    """
+    return "".join(
+        substring
+        for substring in re.findall(r'\([^)]*\)|[^()]+', description)
+        if 'Citation' not in substring
+    )
 
 
 def extract_date_time_from_description(description: str) -> str:

@@ -2,9 +2,9 @@ commonfields:
   id: Vectra
   version: -1
 name: Vectra
-display: Vectra
+display: Vectra (Deprecated)
 category: Network Security
-description: Automated attacker behavior analytics
+description: Deprecated. Use Vectra Detect instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -44,9 +44,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: min_id
       description: '>= the id provided'
     - name: max_id
@@ -128,8 +126,7 @@ script:
       description: The detection last time stamp
     - contextPath: Vectra.Detections.HostID
       description: The detection host id
-    description: Detection objects contain all the information related to security
-      events detected on the network
+    description: Detection objects contain all the information related to security events detected on the network
   - name: vectra-detections
     arguments:
     - name: detection_id
@@ -141,9 +138,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: min_id
       description: '>= the id provided'
     - name: max_id
@@ -225,8 +220,8 @@ script:
       description: The detection last time stamp
     - contextPath: Vectra.Detections.HostID
       description: The detection host id
-    description: Detection objects contain all the information related to security
-      events detected on the network
+    description: Detection objects contain all the information related to security events detected on the network
+    deprecated: true
   - name: vec-hosts
     deprecated: true
     arguments:
@@ -239,9 +234,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: name
       description: filter by name
     - name: state
@@ -259,8 +252,7 @@ script:
     - name: last_detection_timestamp
       description: filter by last_detection_timestamp
     - name: tags
-      description: filter by a tag or a comma-separated list of tags (returns hosts
-        that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+      description: filter by a tag or a comma-separated list of tags (returns hosts that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
     - name: key_assest
       description: 'filter by key asset: True, False'
     - name: mac_address
@@ -282,8 +274,7 @@ script:
       description: The current threat score correlated to this host
     - contextPath: Endpoint.CScore
       description: The current certainty score correlated to this host
-    description: Host information includes data that correlates the host data to detected
-      security events
+    description: Host information includes data that correlates the host data to detected security events
   - name: vectra-hosts
     arguments:
     - name: host_id
@@ -295,9 +286,7 @@ script:
     - name: page_size
       description: Page size. Possible values are a positive integer or all
     - name: ordering
-      description: Orders records by last timestamp, threat score and certainty score.
-        The default out sorts threat and certainty score in ascending order. Scores
-        can sorted in descending order by prepending the query with “minus” symbol
+      description: Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol
     - name: name
       description: filter by name
     - name: state
@@ -315,8 +304,7 @@ script:
     - name: last_detection_timestamp
       description: filter by last_detection_timestamp
     - name: tags
-      description: filter by a tag or a comma-separated list of tags (returns hosts
-        that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+      description: filter by a tag or a comma-separated list of tags (returns hosts that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
     - name: key_assest
       description: 'filter by key asset: True, False'
     - name: mac_address
@@ -338,30 +326,28 @@ script:
       description: The current threat score correlated to this host
     - contextPath: Endpoint.CScore
       description: The current certainty score correlated to this host
-    description: Host information includes data that correlates the host data to detected
-      security events
+    description: Host information includes data that correlates the host data to detected security events
+    deprecated: true
   - name: vec-settings
     deprecated: true
     arguments: []
-    description: The settings information includes S-series sensor and X-series configurations
-      input by the administrator
+    description: The settings information includes S-series sensor and X-series configurations input by the administrator
   - name: vectra-settings
     arguments: []
-    description: he settings information includes S-series sensor and X-series configurations
-      input by the administrator
+    description: he settings information includes S-series sensor and X-series configurations input by the administrator
+    deprecated: true
   - name: vec-health
     deprecated: true
     arguments:
     - name: path
       description: the path to query
-    description: The health configuration can be used to retrieve system health statistics
-      such as subnet counts, traffic bandwidth, headend and sensor information
+    description: The health configuration can be used to retrieve system health statistics such as subnet counts, traffic bandwidth, headend and sensor information
   - name: vectra-health
     arguments:
     - name: path
       description: the path to query
-    description: The health configuration can be used to retrieve system health statistics
-      such as subnet counts, traffic bandwidth, headend and sensor information
+    description: The health configuration can be used to retrieve system health statistics such as subnet counts, traffic bandwidth, headend and sensor information
+    deprecated: true
   - name: vec-triage
     deprecated: true
     arguments: []
@@ -398,8 +384,7 @@ script:
       description: Kerberos Account
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service
-    description: The rules branch can be used to retrieve a listing of configured
-      Triage rules
+    description: The rules branch can be used to retrieve a listing of configured Triage rules
   - name: vectra-triage
     arguments: []
     outputs:
@@ -435,8 +420,8 @@ script:
       description: Kerberos Account
     - contextPath: Vectra.Rule.Remote.Kerberos.Service
       description: Kerberos Service
-    description: The rules branch can be used to retrieve a listing of configured
-      Triage rules
+    description: The rules branch can be used to retrieve a listing of configured Triage rules
+    deprecated: true
   - name: vec-sensors
     deprecated: true
     arguments: []
@@ -463,8 +448,7 @@ script:
       description: The URI of the brain the sensor is paired
     - contextPath: Vectra.Sensor.LastSeen
       description: Timestamp of the last connection by the sensor to the brain
-    description: The sensors branch can retrieve a listing of sensors that collect
-      and feed data to the X-series
+    description: The sensors branch can retrieve a listing of sensors that collect and feed data to the X-series
   - name: vectra-sensors
     arguments: []
     outputs:
@@ -490,8 +474,8 @@ script:
       description: The URI of the brain the sensor is paired
     - contextPath: VectraSensor.LastSeen
       description: Timestamp of the last connection by the sensor to the brain
-    description: The sensors branch can retrieve a listing of sensors that collect
-      and feed data to the X-series
+    description: The sensors branch can retrieve a listing of sensors that collect and feed data to the X-series
+    deprecated: true
   - name: vec-get-host-by-id
     deprecated: true
     arguments:
@@ -525,5 +509,6 @@ script:
     description: Get detections by host id
   isfetch: true
 tests:
-- No test
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true

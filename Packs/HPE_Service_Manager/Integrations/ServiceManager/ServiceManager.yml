@@ -36,12 +36,9 @@ script:
       required: true
     - name: title
       description: The title of the incident.
-      required: false
     - name: description
       description: The description of the incident
-      required: false
     - name: service
-      required: false
       description: 'The service. For example: "CI1001060", "CI1001030".'
     - name: impact
       description: The impact. Default is 4. Should be a number like 3 or 4.
@@ -56,7 +53,6 @@ script:
     - name: affectedCI
       description: 'The affected CI. For example: "CI1000783".'
     - name: category
-      required: false
       description: 'Category of the incident. For example: "incident", "complaint".'
     - name: company
       description: 'The company. For example: "advantage".'
@@ -65,11 +61,9 @@ script:
     - name: status
       description: 'The status. For example: "Categorize".'
     - name: subarea
-      description: 'The sub-area. For example: system or application hangs, function
-        or feature not working, error message, job failed, hardware failure, etc.'
+      description: 'The sub-area. For example: system or application hangs, function or feature not working, error message, job failed, hardware failure, etc.'
     - name: customFields
-      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
-        Field name is case-sensitive.'
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}. Field name is case-sensitive.'
     outputs:
     - contextPath: Ticket.ID
       description: The ID of the ticket.
@@ -161,11 +155,9 @@ script:
     - name: status
       description: 'The status. For example: "Categorize".'
     - name: subarea
-      description: 'The sub-area. For example: system or application hangs, function
-        or feature not working, error message, job failed, hardware failure, etc.'
+      description: 'The sub-area. For example: system or application hangs, function or feature not working, error message, job failed, hardware failure, etc.'
     - name: customFields
-      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
-        Field name is case-sensitive.'
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}. Field name is case-sensitive.'
     outputs:
     - contextPath: Ticket.ID
       description: The ID of the ticket.
@@ -226,15 +218,13 @@ script:
   - name: hpsm-list-incidents
     arguments:
     - name: query
-      description: 'The query by which to limit the returned list of incidents. For
-        example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
+      description: 'The query by which to limit the returned list of incidents. For example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
     outputs:
     - contextPath: HPSM.IncidentIDs
       description: An array of incident IDs.
     description: Returns all incidents.
   - name: hpsm-get-incident-by-id
-    description: Returns a single incident by ID. If no incident exists with the specified
-      ID, an error will be returned.
+    description: Returns a single incident by ID. If no incident exists with the specified ID, an error will be returned.
     arguments:
     - name: incidentId
       required: true
@@ -330,11 +320,9 @@ script:
     - name: status
       description: 'The status. For example: "Categorize".'
     - name: subarea
-      description: 'The sub-area. For example: system or application hangs, function
-        or feature not working, error message, job failed, hardware failure, etc.'
+      description: 'The sub-area. For example: system or application hangs, function or feature not working, error message, job failed, hardware failure, etc.'
     - name: customFields
-      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
-        Field name is case-sensitive.'
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}. Field name is case-sensitive.'
     - name: resourceName
       required: true
       description: 'The resource name (API URI) that will be used. For example: "incidents".'
@@ -432,11 +420,9 @@ script:
     - name: status
       description: 'The status. For example: "Categorize".'
     - name: subarea
-      description: 'The sub-area. For example: system or application hangs, function
-        or feature not working, error message, job failed, hardware failure, etc.'
+      description: 'The sub-area. For example: system or application hangs, function or feature not working, error message, job failed, hardware failure, etc.'
     - name: customFields
-      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}.
-        Field name is case-sensitive.'
+      description: 'Custom fields in JSON format. For example: {"businessUnit":"5"}. Field name is case-sensitive.'
     - name: resourceName
       required: true
       description: 'The resource name (API URI) that will be used. For example: "incidents".'
@@ -504,8 +490,7 @@ script:
   - name: hpsm-list-resources
     arguments:
     - name: query
-      description: 'The query by which to limit the returned list of incidents. For
-        example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
+      description: 'The query by which to limit the returned list of incidents. For example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
     - name: resourceName
       required: true
       description: 'The resource name (API URI) that will be used. For example: "incidents".'
@@ -579,14 +564,12 @@ script:
       description: Resource update time.
     - contextPath: HPSM.Resources.Urgency
       description: Resource urgency.
-    description: Returns a single resource by ID. If no resource exists with the specified
-      ID, an error will be returned (beta).
+    description: Returns a single resource by ID. If no resource exists with the specified ID, an error will be returned (beta).
   - name: hpsm-list-devices
     description: 'Returns a list of devices, filtered according to query.'
     arguments:
     - name: query
-      description: 'The query by which to limit the returned list of incidents. For
-        example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
+      description: 'The query by which to limit the returned list of incidents. For example: field1=value1&field2=value2. For more information, see https://docs.microfocus.com/SM/9.41/Codeless/Content/Resources/PDF_PD/HP_Service_Manager_Web_Services_codeless.pdf.'
     outputs:
     - contextPath: HPSM.DeviceIDs
       description: "The IDs (configuration items) of the devices."
@@ -649,5 +632,4 @@ script:
     - contextPath: HPSM.ServiceRequest.Title
       description: Incident title
     description: Creates a new service request
-  runonce: false
 fromversion: 5.0.0

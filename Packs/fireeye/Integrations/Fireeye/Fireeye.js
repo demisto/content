@@ -203,6 +203,7 @@ var getFileName = function(args) {
 
 var sendRequest = function(url, method, token, setContentType, args) {
     var headers = {};
+    let clientToken = params.credentials_client_token ? params.credentials_client_token.password:params.clientToken;
     if (setContentType) {
       headers['Content-Type'] = ['application/json'];
     }
@@ -210,8 +211,8 @@ var sendRequest = function(url, method, token, setContentType, args) {
        Method: method,
        Body: (method === ('POST' && args) ? encodeToURLQuery(args).replace(/^\?/, '') : undefined)
     };
-    if (params.clientToken) {
-        headers['X-FeClient-Token'] = [params.clientToken];
+    if (clientToken) {
+        headers['X-FeClient-Token'] = [clientToken];
     }
     if (token) {
        headers['X-FeApi-Token'] = token;

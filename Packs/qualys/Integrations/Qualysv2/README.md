@@ -37,6 +37,7 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 33. qualys-report-template-list - Added new parameters, changed outputs.
 34. qualys-report-launch-map - changed existing parameters
 35. qualys-ip-restricted-manage - New command.
+36. qualys-purge-scan-host-data - New command.
 
 # Playbooks
 1. Vulnerability Management - Qualys (Job) - migrated to work with this new version
@@ -67,6 +68,11 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Asset Tag Commands
+There are several API endpoints on the Qualys API that can be used in the QualysV2 integration configuration as the `SERVER URL` parameter.
+When using `asset-tag` commands, the [official documentation](https://www.qualys.com/docs/qualys-asset-management-tagging-api-v2-user-guide.pdf) recommends that the `SERVER URL` parameter should be in the following format: `https://qualysapi.<tenant>.apps.qualys.com/<end-point>`.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

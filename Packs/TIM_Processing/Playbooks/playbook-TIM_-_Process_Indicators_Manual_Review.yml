@@ -1,6 +1,8 @@
 id: TIM - Process Indicators - Manual Review
 version: -1
 fromversion: 5.5.0
+marketplaces:
+- xsoar
 name: TIM - Process Indicators - Manual Review
 description: |-
   This playbook tags indicators ingested by feeds that require manual approval. The playbook is triggered due to a job. The indicators are tagged as requiring a manual review. The playbook optionally concludes with creating a new incident that includes all of the indicators that the analyst must review.

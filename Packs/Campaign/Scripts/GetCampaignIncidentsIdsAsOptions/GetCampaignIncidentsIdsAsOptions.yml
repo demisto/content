@@ -1,11 +1,10 @@
 commonfields:
   id: GetCampaignIncidentsIdsAsOptions
   version: -1
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: GetCampaignIncidentsIdsAsOptions
 runas: DBotWeakRole
-runonce: false
 script: ''
 comment: Get the campaign incident IDs as option values for Multi Select field.
 scripttarget: 0

@@ -1,6 +1,7 @@
 id: DLP Incident Feedback Loop
 version: -1
 fromversion: 6.0.0
+toversion: 6.7.9
 name: DLP Incident Feedback Loop
 description: Collects feedback from user about blocked files.
 starttaskid: "0"

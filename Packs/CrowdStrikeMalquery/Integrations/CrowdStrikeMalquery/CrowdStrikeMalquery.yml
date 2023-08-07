@@ -10,20 +10,28 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: true
   type: 4
+  hidden: true
+  required: false
 - display: Client Secret
   name: client_secret
-  required: true
   type: 4
+  hidden: true
+  required: false
+- display: Client ID
+  name: credentials_client
+  type: 9
+  displaypassword: Client Secret
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -36,8 +44,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -46,13 +54,13 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
+  required: false
 description: Use the MalQuery Integration to query the contents of clean and malicious binary files, which forms part of Falcon's search engine.
 display: CrowdStrike Malquery
 name: CrowdStrikeMalquery
@@ -90,10 +98,8 @@ script:
   - name: cs-malquery-hunt
     arguments:
     - name: yara_rule
-      required: false
       description: The YARA rule to search.
     - name: yar_file_entry_id
-      required: false
       description: A YAR file entry ID that contains the YARA rule to search. Only one Yara rule per request.
     - name: limit
       description: The maximum number of results to be returned.
@@ -359,12 +365,11 @@ script:
       description: The SHA256 hash of the file.
       type: String
     description: Retrieves indexed files metadata by their hash.
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - CrowdStrikeMalquery-Test

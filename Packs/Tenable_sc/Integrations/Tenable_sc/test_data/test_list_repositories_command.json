@@ -1,0 +1,11 @@
+{
+    "test_case_1":{
+        "args": {
+            "manageable": "true"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":[{"dataFormat":"IPv4","description":"","id":"1","name":"Local","uuid":"uuid"}],
+        "timestamp":1687157792,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan Repositories\n|ID|Name|\n|---|---|\n| 1 | Local |\n",
+        "expected_ec": [{"ID": "1", "Name": "Local"}]        
+    }
+}

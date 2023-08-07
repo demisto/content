@@ -1,0 +1,9 @@
+{
+    "admissionControlEnabled": false,
+    "admissionControlWebhookSuffix": "dhc17bcfn991kqcnhfc2ihecld6z",
+    "appEmbeddedFileSystemTracingEnabled": false,
+    "automaticUpgrade": false,
+    "disconnectPeriodDays": 1,
+    "hostCustomComplianceEnabled": false,
+    "listeningPort": 9998
+}

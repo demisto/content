@@ -15,19 +15,18 @@ configuration:
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: It is additional for MALWATION Content Analysis Platform.
   display: CAP API Key
-  hidden: false
   name: cap_apikey
-  required: false
   type: 4
+  required: false
 description: Malwation AIMA malware analysis sandboxing.
 display: Malwation AIMA
 name: MalwationAIMA
@@ -35,131 +34,84 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: win7x64
       description: Choose what environment you want to run your submission.
-      isArray: false
       name: environment
       predefined:
       - win7x64
       - win10x64
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Privacy of the submission.
-      isArray: false
       name: isPublic
       predefined:
       - 'true'
       - 'false'
       required: true
-      secret: false
-    - default: false
-      description: Entry ID of the file to submit.
-      isArray: false
+    - description: Entry ID of the file to submit.
       name: entry_id
       predefined:
       - ''
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: '1'
       description: Duration of the submission analysis.
-      isArray: false
       name: timeout
       predefined:
       - '1'
       - '2'
       - '5'
       - '8'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Enable human simulation.
-      isArray: false
       name: mouse_simulation
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Malware Config Extractor
-      isArray: false
       name: config_extractor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Https inspection to read encrypted traffic.
-      isArray: false
       name: https_inspection
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: If you want to access MemProcFS Module enable this metafield.
-      isArray: false
       name: full_memory_dump
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Enable Internet Connection
-      isArray: false
       name: enable_net
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: desktop
       description: The working path of the submission.
-      isArray: false
       name: work_path
       predefined:
       - desktop
       - appdata
       - windows
       - temp
-      required: false
-      secret: false
-    - default: false
-      description: Password of the zip file. Do not use if archive has no password.
-      isArray: false
+    - description: Password of the zip file. Do not use if archive has no password.
       name: zip_pass
-      required: false
-      secret: false
-    - default: false
-      description: 'Name of the sample in the zip file. '
-      isArray: false
+    - description: 'Name of the sample in the zip file. '
       name: file_from_zip
-      required: false
-      secret: false
-    deprecated: false
     description: Submits a sample to AIMA for analysis.
-    execution: false
     name: aima-upload-sample
     outputs:
     - contextPath: AIMA.Analysis.UUID
@@ -169,15 +121,10 @@ script:
       description: URL of analysis of sample.
       type: String
   - arguments:
-    - default: false
-      description: UUID of the submission.
-      isArray: false
+    - description: UUID of the submission.
       name: uuid
       required: true
-      secret: false
-    deprecated: false
     description: Retrive the analysis result from AIMA Sandbox.
-    execution: false
     name: aima-get-result
     outputs:
     - contextPath: AIMA.Result.STATUS
@@ -205,45 +152,30 @@ script:
       description: The ID of the submission
       type: String
   - arguments:
-    - default: false
-      description: The entry id of the file.
-      isArray: false
+    - description: The entry id of the file.
       name: entry_id
       required: true
-      secret: false
-    deprecated: false
     description: Submits sample to Malwation CAP for static analysis.
-    execution: false
     name: aima-cap-static-upload-sample
     outputs:
     - contextPath: CAP.Static.UUID
       description: The uuid value of the submission.
       type: String
   - arguments:
-    - default: false
-      description: The Entry id of the file.
-      isArray: false
+    - description: The Entry id of the file.
       name: entry_id
       required: true
-      secret: false
-    deprecated: false
     description: Submits sample to Malwation CAP for mav analysis.
-    execution: false
     name: aima-cap-mav-upload-sample
     outputs:
     - contextPath: CAP.Mav.UUID
       description: The uuid value of the submission.
       type: String
   - arguments:
-    - default: false
-      description: The uuid of the file.
-      isArray: false
+    - description: The uuid of the file.
       name: uuid
       required: true
-      secret: false
-    deprecated: false
     description: Retrive static analysis result from Malwation CAP.
-    execution: false
     name: aima-cap-static-get-submission
     outputs:
     - contextPath: CAP.Static.SCORE
@@ -262,15 +194,10 @@ script:
       description: The entropy value of sample.
       type: Number
   - arguments:
-    - default: false
-      description: The uuid value of submission
-      isArray: false
+    - description: The uuid value of submission
       name: uuid
       required: true
-      secret: false
-    deprecated: false
     description: Retrive mav analysis result from Malwation CAP.
-    execution: false
     name: aima-cap-mav-get-submission
     outputs:
     - contextPath: CAP.Mav.COUNT
@@ -285,11 +212,7 @@ script:
     - contextPath: CAP.Mav.STATUS
       description: The status of the submission scanning process.
       type: String
-  dockerimage: demisto/python3:3.10.10.50695
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.65389
   runonce: false
   script: '-'
   subtype: python3

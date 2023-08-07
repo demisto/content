@@ -16,8 +16,6 @@ args:
   isArray: true
   description: The array to count it's size
 - name: contextKey
-  required: false
-  default: false
   description: The Context key to place result in, default is ArraySize
 outputs:
 - contextPath: ArraySize

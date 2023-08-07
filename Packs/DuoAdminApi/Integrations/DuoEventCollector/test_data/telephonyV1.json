@@ -1,0 +1,12 @@
+[
+  {
+    "context": "authentication",
+    "credits": 1,
+    "isotimestamp": "2023-05-09T16:07:15+00:00",
+    "phone": "+111111111",
+    "timestamp": 1683648435,
+    "type": "sms",
+    "eventtype": "telephony",
+    "host": "api-1111111.duosecurity.com"
+  }
+]

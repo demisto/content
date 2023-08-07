@@ -1,7 +1,8 @@
-from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
 import copy
+import re
 from operator import itemgetter
 
 from typing import Tuple, Callable
@@ -208,6 +209,7 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"get_endpoints response = {reply}")
 
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
@@ -891,6 +893,8 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file = {reply}")
+
         return reply.get('reply')
 
     def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
@@ -912,7 +916,7 @@ class CoreClient(BaseClient):
                 files['windows'].append(file_path)
             elif 'linux' in endpoint_os_type.lower():
                 files['linux'].append(file_path)
-            elif 'macos' in endpoint_os_type.lower():
+            elif 'mac' in endpoint_os_type.lower():
                 files['macos'].append(file_path)
 
         # remove keys with no value
@@ -931,9 +935,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"retrieve_file_details = {reply}")
 
         return reply.get('reply').get('data')
 
+    @logger
     def get_scripts(self, name: list, description: list, created_by: list, windows_supported,
                     linux_supported, macos_supported, is_high_risk) -> Dict[str, Any]:
 
@@ -1078,12 +1084,13 @@ class CoreClient(BaseClient):
             timeout=self.timeout,
         )
         link = response.get('reply', {}).get('DATA')
+        demisto.debug(f"From the previous API call, this link was returned {link=}")
         # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
         if not link:
             raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
-            full_url=link,
+            url_suffix=re.findall('download.*', link)[0],
             resp_type='response',
         )
 
@@ -1098,8 +1105,11 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        demisto.debug(f"action_status_get = {reply}")
+
         return reply.get('reply').get('data')
 
+    @logger
     def get_file(self, file_link):
         reply = self._http_request(
             method='GET',
@@ -1118,13 +1128,17 @@ class CoreClient(BaseClient):
         )
         return reply
 
+    @logger
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
         filters = []
+
+        if not isinstance(status, list):
+            status = [status]
 
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status
         })
 
         if last_seen_gte:
@@ -1227,6 +1241,66 @@ class CoreClient(BaseClient):
             url_suffix=url_suffix,
             json_data=body_request,
             timeout=self.timeout
+        )
+
+    def list_users(self) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_users/',
+            json_data={"request_data": {}},
+        )
+
+    def risk_score_user_or_host(self, user_or_host_id: str) -> dict[str, dict[str, Any]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risk_score/',
+            json_data={"request_data": {"id": user_or_host_id}},
+        )
+
+    def list_risky_users(self) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risky_users/',
+        )
+
+    def list_risky_hosts(self) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/get_risky_hosts/',
+        )
+
+    def list_user_groups(self, group_names: list[str]) -> dict[str, list[dict[str, Any]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_user_group/',
+            json_data={"request_data": {"group_names": group_names}},
+        )
+
+    def list_roles(self, role_names: list[str]) -> dict[str, list[list[dict[str, Any]]]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/get_roles/',
+            json_data={"request_data": {"role_names": role_names}},
+        )
+
+    def set_user_role(self, user_emails: list[str], role_name: str) -> dict[str, dict[str, str]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/set_user_role/',
+            json_data={"request_data": {
+                "user_emails": user_emails,
+                "role_name": role_name
+            }},
+        )
+
+    def remove_user_role(self, user_emails: list[str]) -> dict[str, dict[str, str]]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/rbac/set_user_role/',
+            json_data={"request_data": {
+                "user_emails": user_emails,
+                "role_name": ""
+            }},
         )
 
 
@@ -1507,11 +1581,10 @@ def validate_args_scan_commands(args):
         if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
                 or ip_list or group_name or platform or alias or hostname:
             raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
+    elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+            and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+            and not alias and not hostname:
+        raise Exception(err_msg)
 
 
 def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
@@ -1652,6 +1725,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
         return int(date.timestamp() * 1000)
     if isinstance(arg, (int, float)):
         return arg
+    return None
 
 
 def create_account_context(endpoints):
@@ -1686,7 +1760,7 @@ def convert_os_to_standard(endpoint_os):
         os_type = "Windows"
     elif 'linux' in endpoint_os:
         os_type = "Linux"
-    elif 'macos' in endpoint_os:
+    elif 'mac' in endpoint_os:
         os_type = "Macos"
     elif 'android' in endpoint_os:
         os_type = "Android"
@@ -1740,7 +1814,7 @@ def get_endpoints_command(client, args):
     alias_name = argToList(args.get('alias_name'))
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    status = args.get('status')
+    status = argToList(args.get('status'))
 
     first_seen_gte = arg_to_timestamp(
         arg=args.get('first_seen_gte'),
@@ -2312,7 +2386,7 @@ def get_process_context(alert, process_type):
     remove_nulls_from_dictionary(process_context)
 
     # If the process contains only 'HostName' , don't create an indicator
-    if len(process_context.keys()) == 1 and 'Hostname' in process_context.keys():
+    if len(process_context.keys()) == 1 and 'Hostname' in process_context:
         return {}
     return process_context
 
@@ -2405,6 +2479,10 @@ def endpoint_command(client, args):
     endpoint_id_list = argToList(args.get('id'))
     endpoint_ip_list = argToList(args.get('ip'))
     endpoint_hostname_list = argToList(args.get('hostname'))
+
+    if not any((endpoint_id_list, endpoint_ip_list, endpoint_hostname_list)):
+        raise DemistoException(f'{args.get("integration_name", "CoreApiModule")} -'
+                               f' In order to run this command, please provide a valid id, ip or hostname')
 
     endpoints = client.get_endpoints(
         endpoint_id_list=endpoint_id_list,
@@ -2601,7 +2679,7 @@ def sort_by_key(list_to_sort, main_key, fallback_key):
 
 def drop_field_underscore(section):
     section_copy = section.copy()
-    for field in section_copy.keys():
+    for field in section_copy:
         if '_' in field:
             section[field.replace('_', '')] = section.get(field)
 
@@ -2659,7 +2737,7 @@ def get_distribution_versions_command(client, args):
     versions = client.get_distribution_versions()
 
     readable_output = []
-    for operation_system in versions.keys():
+    for operation_system in versions:
         os_versions = versions[operation_system]
 
         readable_output.append(
@@ -2913,7 +2991,8 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
 @polling_function(
     name=demisto.command(),
     interval=arg_to_number(demisto.args().get('polling_interval_in_seconds', 10)),
-    timeout=arg_to_number(demisto.args().get('polling_timeout', 600)),
+    # Check for both 'polling_timeout_in_seconds' and 'polling_timeout' to avoid breaking BC:
+    timeout=arg_to_number(demisto.args().get('polling_timeout_in_seconds', demisto.args().get('polling_timeout', 600))),
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
 def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
@@ -3177,14 +3256,16 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
-        except Exception:
+        except Exception as e:
+            demisto.debug("encountered the following while decoding dictionary values, skipping")
+            demisto.debug(e)
             continue
         # remove original_alert_json field and add its content to alert.
         alert.update(
@@ -3329,15 +3410,16 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for i, alert in enumerate(alerts):
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
             # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
             # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
             decode_dict_values(alert)
-        except Exception:
-            continue
+        except Exception as e:
+            demisto.debug("encountered the following while decoding dictionary values, skipping")
+            demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
         alert.update(alert.pop('original_alert_json', None))
         if demisto.get(alert, 'messageData.dynamicAnalysis'):
@@ -3377,7 +3459,7 @@ def create_request_filters(
         filters.append({
             'field': 'endpoint_status',
             'operator': 'IN',
-            'value': [status]
+            'value': status if isinstance(status, list) else [status]
         })
 
     if username:
@@ -3548,4 +3630,283 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
 
     return CommandResults(
         readable_output=f'Successfully removed tag {tag} from endpoint(s) {endpoint_ids}', raw_response=raw_response
+    )
+
+
+def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any],
+                               id_header: str,
+                               score_header: str,
+                               description_header: str
+                               ) -> dict[str, Any]:
+
+    reasons = user_or_host_data.get('reasons', [])
+    return {
+        id_header: user_or_host_data.get('id'),
+        score_header: user_or_host_data.get('score'),
+        description_header: reasons[0].get('description') if reasons else None,
+    }
+
+
+def parse_user_groups(group: dict[str, Any]) -> list[dict[str, Any]]:
+    return [
+        {
+            'User email': user,
+            'Group Name': group.get('group_name'),
+            'Group Description': group.get('description'),
+        }
+        for user in group.get("user_email", [])
+    ]
+
+
+def parse_role_names(role_data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "Role Name": role_data.get("pretty_name"),
+        "Description": role_data.get("description"),
+        "Permissions": role_data.get("permissions", []),
+        "Users": role_data.get("users", []),
+        "Groups": role_data.get("groups", []),
+    }
+
+
+def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, custom_message: str | None) -> str | None:
+    """
+    Attempts to parse additional info from an exception and return it as string. Returns `None` if it can't do that.
+
+    Args:
+        e (Exception): The error that occurred.
+        type (str | None): The type of resource associated with the error(Role id or Group), if applicable.
+        custom_message (str | None): A custom error message to be included in the raised ValueError, if desired.
+
+    Raises:
+        ValueError: If the error message indicates that the resource was not found, a more detailed error message
+            is constructed using the `find_the_cause_error` function and raised with the original error as the cause.
+    """
+    if (
+        e.res is not None
+        and e.res.status_code == 500
+        and 'was not found' in str(e)
+    ):
+        error_message: str = ''
+        pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
+        if match := re.search(pattern, str(e)):
+            error_message = f'Error: {match[1]} {match[2]} was not found. '
+
+        return (f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}'
+                f'Full error message: {e}')
+    return None
+
+
+def list_users_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Returns a list of all users using the Core API client.
+
+    Args:
+        client: A CoreClient instance used for connecting to the Core API.
+        args: A dictionary containing additional arguments. Possible keys include:
+            - integration_context_brand (str): The name of the integration context brand.
+
+    Returns:
+        A CommandResults object containing the readable_output and outputs fields.
+
+    Raises:
+        ValueError: If the API connection failed.
+    """
+
+    def parse_user(user: dict[str, Any]) -> dict[str, Any]:
+        return {
+            'User email': user.get('user_email'),
+            'First Name': user.get('user_first_name'),
+            'Last Name': user.get('user_last_name'),
+            'Role': user.get('role_name'),
+            'Type': user.get('user_type'),
+            'Groups': user.get('groups'),
+        }
+
+    listed_users: list[dict[str, Any]] = client.list_users().get('reply', [])
+    table_for_markdown = [parse_user(user) for user in listed_users]
+    readable_output = tableToMarkdown(name='Users', t=table_for_markdown)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.User',
+        outputs_key_field='user_email',
+        outputs=listed_users,
+    )
+
+
+def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+     Retrieves a list of user groups from the Core API module based on the specified group names.
+
+    Args:
+        client: A CoreClient object used to communicate with the Core API module.
+        args: A dictionary of arguments passed to the function. The following keys may be present:
+            - group_names (required): A list of group names to retrieve details for.
+
+    Returns:
+        A CommandResults object containing the table of user groups.
+
+    Raises:
+        ValueError: If the API connection fails or the specified group name(s) is not found.
+    """
+
+    group_names = argToList(args['group_names'])
+    try:
+        outputs = client.list_user_groups(group_names).get("reply", [])
+    except DemistoException as e:
+        custom_message = None
+        if len(group_names) > 1:
+            custom_message = "Note: If you sent more than one group name, they may not exist either. "
+
+        if error_message := enrich_error_message_id_group_role(e=e, type_="Group", custom_message=custom_message):
+            raise DemistoException(error_message)
+        raise
+
+    table_for_markdown: list[dict[str, str | None]] = []
+    for group in outputs:
+        table_for_markdown.extend(parse_user_groups(group))
+
+    headers = ["Group Name", "Group Description", "User email"]
+    readable_output = tableToMarkdown(name='Groups', t=table_for_markdown, headers=headers)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.UserGroup',
+        outputs_key_field='group_name',
+        outputs=outputs,
+    )
+
+
+def list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves a list of roles with the provided role names from the Core API.
+
+    Args:
+        client: A CoreClient object used to communicate with the Core API module.
+        args: A dictionary of arguments. The 'role_names' key should be present and contain a
+              comma-separated string of role names to retrieve.
+
+    Returns:
+         A CommandResults object containing the table of roles.
+
+    Raises:
+        DemistoException: If an error occurs while retrieving the data from the Core API.
+        ValueError: If the input argument is not valid.
+
+    """
+    role_names = argToList(args["role_names"])
+    try:
+        outputs = client.list_roles(role_names).get("reply", [])
+    except DemistoException as e:
+        custom_message = None
+        if len(role_names) > 1:
+            custom_message = "Note: If you sent more than one Role name, they may not exist either. "
+
+        if error_message := enrich_error_message_id_group_role(e=e, type_="Role", custom_message=custom_message):
+            raise DemistoException(error_message)
+        raise
+
+    headers = ["Role Name", "Description", "Permissions", "Users", "Groups"]
+    table_for_markdown = [parse_role_names(role[0]) for role in outputs if len(role) == 1]
+    readable_output = tableToMarkdown(
+        name='Roles',
+        t=table_for_markdown,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.Role',
+        outputs_key_field='pretty_name',
+        outputs=outputs,
+    )
+
+
+def change_user_role_command(client: CoreClient, args: dict[str, str]) -> CommandResults:
+    """
+     Changes or removes the role of user(s) in the system.
+
+    Args:
+        client (CoreClient): An instance of the CoreClient class used to interact with the system.
+        args (dict[str, str]): A dictionary containing the command arguments.
+            - 'user_emails' (str): A comma-separated string of user emails.
+            - 'role_name' (str, optional): The name of the role to assign to the user(s).
+              If not provided, the role for the user(s) will be removed.
+
+    Returns:
+        CommandResults: An object containing the result of the command execution.
+    """
+    user_emails = argToList(args['user_emails'])
+
+    if role_name := args.get('role_name'):
+        res = client.set_user_role(user_emails, role_name)["reply"]
+        action_message = "updated"
+    else:
+        res = client.remove_user_role(user_emails)["reply"]
+        action_message = "removed"
+
+    if not (count := int(res["update_count"])):
+        raise DemistoException(f"No user role has been {action_message}.")
+
+    plural_suffix = 's' if count > 1 else ''
+
+    return CommandResults(
+        readable_output=f"Role was {action_message} successfully for {count} user{plural_suffix}."
+    )
+
+
+def list_risky_users_or_host_command(client: CoreClient, command: str, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves a list of risky users or details about a specific user's risk score.
+
+    Args:
+        client: A CoreClient object used to communicate with the API.
+        args: A dictionary containing the following headers (optional):
+            - user_id [str]: ID of the user to retrieve risk score details for.
+            - limit [str]: Specifying the maximum number of risky users to return.
+
+    Returns:
+        A CommandResults object
+
+    Raises:
+        ValueError: If the API connection fails or the specified user ID is not found.
+
+    """
+
+    match command:
+        case "user":
+            id_key = "user_id"
+            table_title = "Risky Users"
+            outputs_prefix = "RiskyUser"
+            get_func = client.list_risky_users
+            table_headers = ["User ID", "Score", "Description"]
+        case 'host':
+            id_key = "host_id"
+            table_title = "Risky Hosts"
+            outputs_prefix = "RiskyHost"
+            get_func = client.list_risky_hosts
+            table_headers = ["Host ID", "Score", "Description"]
+
+    outputs: list[dict] | dict
+    if id_ := args.get(id_key):
+        try:
+            outputs = client.risk_score_user_or_host(id_).get('reply', {})
+        except DemistoException as e:
+            if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
+                raise DemistoException(error_message)
+            raise
+
+        table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
+
+    else:
+        list_limit = int(args.get('limit', 50))
+        outputs = get_func().get('reply', [])[:list_limit]
+
+        table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
+
+    readable_output = tableToMarkdown(name=table_title, t=table_for_markdown, headers=table_headers)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.{outputs_prefix}',
+        outputs_key_field='id',
+        outputs=outputs,
     )

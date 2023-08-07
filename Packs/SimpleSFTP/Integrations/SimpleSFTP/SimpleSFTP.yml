@@ -22,8 +22,8 @@ configuration:
   name: port
   defaultvalue: "22"
   type: 0
-  required: false
   additionalinfo: Defaults to 22
+  required: false
 script:
   script: ''
   type: python
@@ -36,10 +36,10 @@ script:
     description: List Directories SFTP command given directory path. Defaults to current directory upon sftp login.
   - name: sftp-copyfrom
     arguments:
-    - name: filePath
+    - name: file_path
       required: true
       description: Please provide file path as seen by the sftp user upon login
-    - name: returnFile
+    - name: return_file
       auto: PREDEFINED
       predefined:
       - "True"
@@ -47,8 +47,16 @@ script:
       description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
       defaultValue: "False"
     description: Copies contents of file specified from the sftp server and prints it to the war room
-  dockerimage: demisto/netmiko:1.0.0.34185
-  runonce: false
+  - name: sftp-upload-file
+    arguments:
+    - description: Directory to upload the file to
+      name: path
+      required: true
+    - description: Warroom Entry ID for the file to upload
+      name: file_entry_id
+      required: true
+    description: Upload a file to a path on the SFTP Server
+  dockerimage: demisto/netmiko:1.0.0.62777
   subtype: python3
 fromversion: 6.2.0
 tests:

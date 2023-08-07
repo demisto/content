@@ -27,42 +27,35 @@ configuration:
   required: true
   type: 15
 - defaultvalue: '7'
-  display: IP Threshold. Minimum risk score for the IP to be considered malicious
-    (ranges from 1 to 10).
-  hidden: false
+  display: IP Threshold. Minimum risk score for the IP to be considered malicious (ranges from 1 to 10).
   name: ip_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: '7'
-  display: URL Threshold. Minimum risk score for the URL to be considered malicious
-    (ranges from 1 to 10).
-  hidden: false
+  display: URL Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
   name: url_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: '5'
-  display: CVE Threshold. Minimum risk score for the URL to be considered malicious
-    (ranges from 1 to 10).
-  hidden: false
+  display: CVE Threshold. Minimum risk score for the URL to be considered malicious (ranges from 1 to 10).
   name: cve_threshold
-  required: false
   type: 0
+  required: false
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
-description: IBM X-Force Exchange lets you receive threat intelligence about applications,
-  IP addresses, URls and hashes
+  required: false
+description: IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
 display: IBM X-Force Exchange v2
 name: XFE_v2
 script:
@@ -73,18 +66,9 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default IP threshold, as configured in
-        the instance settings, will be used.
-      isArray: false
+    - description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: IP to check
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -121,23 +105,14 @@ script:
       description: The subnets of the IP.
       type: Unknown
   - arguments:
-    - default: false
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default URL threshold, as configured in
-        the instance settings, will be used.
-      isArray: false
+    - description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       name: threshold
-      required: false
-      secret: false
     - default: true
       description: The URL to check
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Check the given URL reputation
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -164,10 +139,7 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Check file reputation
-    execution: false
     name: file
     outputs:
     - contextPath: File.MD5
@@ -235,18 +207,9 @@ script:
       predefined:
       - ''
       required: true
-      secret: false
-    - default: false
-      description: If the score is above the given threshold, will be considered malicious.
-        If threshold is not specified, the default URL threshold, as configured in
-        the instance settings, will be used.
-      isArray: false
+    - description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Check domain reputation
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -273,10 +236,7 @@ script:
       isArray: true
       name: cve_id
       required: true
-      secret: false
-    deprecated: false
     description: Search for details about the given CVE
-    execution: false
     name: cve-search
     outputs:
     - contextPath: CVE.ID
@@ -319,31 +279,17 @@ script:
       description: The exploitability of the CVE.
       type: String
   - arguments:
-    - default: false
-      description: The number of results to return
-      isArray: false
+    - description: The number of results to return
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The start of the date range for searching.
         The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
-      isArray: false
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The end of the date range for searching.
         The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
-      isArray: false
       name: end_date
-      required: false
-      secret: false
-    deprecated: false
     description: Return the latest vulnerabilities found
-    execution: false
     name: cve-latest
     outputs:
     - contextPath: CVE.ID
@@ -388,13 +334,9 @@ script:
   - arguments:
     - default: true
       description: The host or address to search inside X-Force Exchange (e.g. google.com)
-      isArray: false
       name: host
       required: true
-      secret: false
-    deprecated: false
     description: Gets information about the given host address
-    execution: false
     name: xfe-whois
     outputs:
     - contextPath: XFE.Whois.Host
@@ -465,37 +407,21 @@ script:
       description: |-
         The query for the search.
         (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
-      isArray: false
       name: q
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The start of the date range for searching.
         The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
-      isArray: false
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The end of the date range for searching.
         The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
-      isArray: false
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Bookmark used to page through results.
         (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
-      isArray: false
       name: bookmark
-      required: false
-      secret: false
-    deprecated: false
     description: Gets list of all vulnerabilities associated with the search term.
-    execution: false
     name: xfe-search-cves
     outputs:
     - contextPath: CVE.ID
@@ -543,11 +469,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.10.10.51930
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

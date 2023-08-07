@@ -1,7 +1,7 @@
-import pandas as pd
-from typing import List, Dict
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import pandas as pd
+from typing import List, Dict
 
 
 def get_incidents_ids_from_context() -> list:

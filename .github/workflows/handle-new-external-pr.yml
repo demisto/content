@@ -13,11 +13,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.9'
-
+          python-version: '3.10'
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v8
       - name: Print Context
         run: |
           echo "$GITHUB_CONTEXT"
@@ -26,8 +30,8 @@ jobs:
 
       - name: Install Python Dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pipenv==2021.5.29
+          poetry install --with ci
+
       - name: Update External PR
         env:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
@@ -35,8 +39,7 @@ jobs:
         run: |
           echo "Updating External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
-          pipenv sync
-          pipenv run ./handle_external_pr.py
+          poetry run ./handle_external_pr.py
           echo "Finished Handling External PR"
       - name: Send Notification
         env:
@@ -46,4 +49,4 @@ jobs:
         run: |
           echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
-          pipenv run ./send_slack_message.py
+          poetry run ./send_slack_message.py

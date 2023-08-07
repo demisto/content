@@ -1,0 +1,840 @@
+[
+  {
+    "value": null,
+    "args": [
+      {}
+    ],
+    "result": []
+  },
+  {
+    "value": [
+      1,
+      2,
+      3
+    ],
+    "args": [
+      {}
+    ],
+    "result": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "value": [
+      1,
+      2,
+      3
+    ],
+    "args": [
+      {
+        "descending_keys": "*"
+      }
+    ],
+    "result": [
+      3,
+      2,
+      1
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": null
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1"
+      }
+    ],
+    "result": [
+      {
+        "key1": null
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "a": "c"
+        }
+      }
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": null
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1",
+        "descending_keys": "key1"
+      }
+    ],
+    "result": [
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": null
+      }
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": null
+      },
+      {
+        "key1": null,
+        "key2": "aaa"
+      },
+      {
+        "key1": null,
+        "key2": "bbb"
+      },
+      {
+        "key1": null,
+        "key2": "ccc"
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": 0,
+        "key2": "aaa"
+      },
+      {
+        "key1": 0,
+        "key2": "bbb"
+      },
+      {
+        "key1": 0,
+        "key2": "ccc"
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": "ABC",
+        "key2": "aaa"
+      },
+      {
+        "key1": "ABC",
+        "key2": "bbb"
+      },
+      {
+        "key1": "ABC",
+        "key2": "ccc"
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1,key2"
+      },
+      {
+        "keys": ["key1", "key2"]
+      }
+    ],
+    "result": [
+      {
+        "key1": null
+      },
+      {
+        "key1": null,
+        "key2": "aaa"
+      },
+      {
+        "key1": null,
+        "key2": "bbb"
+      },
+      {
+        "key1": null,
+        "key2": "ccc"
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": 0,
+        "key2": "aaa"
+      },
+      {
+        "key1": 0,
+        "key2": "bbb"
+      },
+      {
+        "key1": 0,
+        "key2": "ccc"
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": "ABC",
+        "key2": "aaa"
+      },
+      {
+        "key1": "ABC",
+        "key2": "bbb"
+      },
+      {
+        "key1": "ABC",
+        "key2": "ccc"
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "a": "c"
+        }
+      }
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": null
+      },
+      {
+        "key1": null,
+        "key2": "aaa"
+      },
+      {
+        "key1": null,
+        "key2": "bbb"
+      },
+      {
+        "key1": null,
+        "key2": "ccc"
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": 0,
+        "key2": "aaa"
+      },
+      {
+        "key1": 0,
+        "key2": "bbb"
+      },
+      {
+        "key1": 0,
+        "key2": "ccc"
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": "ABC",
+        "key2": "aaa"
+      },
+      {
+        "key1": "ABC",
+        "key2": "bbb"
+      },
+      {
+        "key1": "ABC",
+        "key2": "ccc"
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1,key2",
+        "descending_keys": "key1,key2"
+      },
+      {
+        "keys": ["key1", "key2"],
+        "descending_keys": ["key1", "key2"]
+      }
+    ],
+    "result": [
+      {
+        "key1": {
+          "a": "c"
+        }
+      },
+      {
+        "key1": {
+          "a": "b"
+        }
+      },
+      {
+        "key1": []
+      },
+      {
+        "key1": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "key1": "abc"
+      },
+      {
+        "key1": "ABC",
+        "key2": "ccc"
+      },
+      {
+        "key1": "ABC",
+        "key2": "bbb"
+      },
+      {
+        "key1": "ABC",
+        "key2": "aaa"
+      },
+      {
+        "key1": "ABC"
+      },
+      {
+        "key1": ""
+      },
+      {
+        "key1": 1
+      },
+      {
+        "key1": 0.5
+      },
+      {
+        "key1": 0,
+        "key2": "ccc"
+      },
+      {
+        "key1": 0,
+        "key2": "bbb"
+      },
+      {
+        "key1": 0,
+        "key2": "aaa"
+      },
+      {
+        "key1": 0
+      },
+      {
+        "key1": -0.5
+      },
+      {
+        "key1": -1
+      },
+      {
+        "key1": true
+      },
+      {
+        "key1": false
+      },
+      {
+        "key1": null,
+        "key2": "ccc"
+      },
+      {
+        "key1": null,
+        "key2": "bbb"
+      },
+      {
+        "key1": null,
+        "key2": "aaa"
+      },
+      {
+        "key1": null
+      }
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "b"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "bbb"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "ccc"
+          }
+        }
+      },
+      {
+        "key1": {
+          "key.2": "value"
+        },
+        "a": "x"
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1.key\\.2.key3,a"
+      },
+      {
+        "keys": ["key1.key\\.2.key3", "a"]
+      }
+    ],
+    "result": [
+      {
+        "key1": {
+          "key.2": "value"
+        },
+        "a": "x"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "b"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "bbb"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "ccc"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "value": [
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "b"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "bbb"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "ccc"
+          }
+        }
+      },
+      {
+        "key1": {
+          "key.2": "value"
+        },
+        "a": "x"
+      }
+    ],
+    "args": [
+      {
+        "keys": "key1.key\\.2.key3,a",
+        "descending_keys": "key1.key\\.2.key3,a"
+      },
+      {
+        "keys": ["key1.key\\.2.key3", "a"],
+        "descending_keys": ["key1.key\\.2.key3", "a"]
+      }
+    ],
+    "result": [
+      {
+        "key1": {
+          "key.2": {
+            "key3": "ccc"
+          }
+        }
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "bbb"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "b"
+      },
+      {
+        "key1": {
+          "key.2": {
+            "key3": "aaa"
+          }
+        },
+        "a": "a"
+      },
+      {
+        "key1": {
+          "key.2": "value"
+        },
+        "a": "x"
+      }
+    ]
+  }
+]

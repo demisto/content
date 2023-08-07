@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
@@ -42,8 +42,11 @@ RELEVANT_TOKEN_ENTRIES = {
     'url': 'TokenURL'
 }
 DEF_PARAMS = {
-    'auth_token': demisto.params().get('auth_token')
+    'auth_token': demisto.params().get('authentication_token', {}).get('password')
+    or demisto.params().get('auth_token', None)
 }
+if not DEF_PARAMS['auth_token']:
+    raise DemistoException('API Authentication Token must be provided.')
 '''HELPER FUNCTIONS'''
 
 

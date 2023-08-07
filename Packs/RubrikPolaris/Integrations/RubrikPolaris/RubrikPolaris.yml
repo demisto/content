@@ -4,43 +4,39 @@ commonfields:
   version: -1
 configuration:
 - display: Service Account JSON
-  hidden: false
   name: service_account_json
-  required: false
   type: 4
+  required: false
 - display: Polaris Account (e.g. ${polarisAccount}.my.rubrik.com)
   name: url
-  required: false
   type: 0
+  required: false
 - display: Email
   name: email
-  required: false
   type: 9
+  required: false
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
-- additionalinfo: The time interval for the first fetch (retroactive). Examples of
-    supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
+  required: false
+- additionalinfo: The time interval for the first fetch (retroactive). Examples of supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
-- additionalinfo: Maximum number of incidents to fetch every time. The maximum value
-    is 1000.
+  required: false
+- additionalinfo: Maximum number of incidents to fetch every time. The maximum value is 1000.
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)
   name: max_fetch
-  required: false
   type: 0
-- additionalinfo: When a Radar event of Critical severity is detected and fetched,
-    this setting indicates what severity will get assigned within XSOAR.
+  required: false
+- additionalinfo: When a Radar event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR HIGH
   display: Radar Critical Severity Level Mapping
   name: radar_critical_severity_mapping
@@ -49,10 +45,9 @@ configuration:
   - XSOAR HIGH
   - XSOAR MEDIUM
   - XSOAR LOW
-  required: false
   type: 15
-- additionalinfo: When a Radar event of Warning severity is detected and fetched,
-    this setting indicates what severity will get assigned within XSOAR.
+  required: false
+- additionalinfo: When a Radar event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR LOW
   display: Radar Warning Severity Level Mapping
   name: radar_warning_severity_mapping
@@ -61,44 +56,32 @@ configuration:
   - XSOAR HIGH
   - XSOAR MEDIUM
   - XSOAR LOW
-  required: false
   type: 15
+  required: false
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
-  hidden: false
   name: proxy
-  required: false
   type: 8
-- additionalinfo: Whether to allow connections without verifying SSL certificates
-    validity.
+  required: false
+- additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
-  required: false
   type: 8
-description: The Rubrik Radar integration will fetch the Rubrik Radar Anomaly Event
-  and is rich with commands to perform the on-demand scans, backups, recoveries and
-  many more features to manage and protect the organizational data.
+  required: false
+description: The Rubrik Radar integration will fetch the Rubrik Radar Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
 display: Rubrik Radar
 name: RubrikPolaris
 script:
   commands:
   - arguments:
-    - default: false
-      description: "The ID of the Polaris Event Series. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.\n\nNote: Users can retrieve the list of the activity series IDs by executing the \"rubrik-event-list\" command."
-      isArray: false
+    - description: "The ID of the Polaris Event Series. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.\n\nNote: Users can retrieve the list of the activity series IDs by executing the \"rubrik-event-list\" command."
       name: activitySeriesId
       required: true
-      secret: false
-    - default: false
-      description: "The ID of the CDM cluster. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "The ID of the CDM cluster. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: clusterId
       required: true
-      secret: false
     deprecated: true
     description: Check the Radar Event for updates.
-    execution: false
     name: rubrik-radar-analysis-status
     outputs:
     - contextPath: Rubrik.Radar.EventComplete
@@ -114,31 +97,20 @@ script:
       description: The ID of the cluster.
       type: String
   - arguments:
-    - default: false
-      description: |
+    - description: |
         The name of the Rubrik object to check for sensitive hits.  When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.
 
         Note: Users can get the list of the object names by executing the "rubrik-polaris-object-list" or "rubrik-polaris-object-search" command.
-      isArray: false
       name: objectName
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 7
+    - defaultValue: 7
       description: |
         The number of days in the past to look for sensitive hits. If no value is provided, then today's data will be returned and, if there is no data for today then the argument will default to 7 days.
-      isArray: false
       name: searchTimePeriod
-      required: false
-      secret: false
-    deprecated: false
     description: Find data classification hits on an object.
-    execution: false
     name: rubrik-sonar-sensitive-hits
     outputs:
     - contextPath: Rubrik.Sonar.totalHits
-      description: The total number of data classification hits found on the provided
-        object.
+      description: The total number of data classification hits found on the provided object.
       type: String
     - contextPath: Rubrik.Sonar.id
       description: ID of the sensitive hits object.
@@ -174,15 +146,10 @@ script:
       description: The ID of the Rubrik Polaris Activity Series.
       type: String
   - arguments:
-    - default: false
-      description: "The ID of the CDM cluster. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "The ID of the CDM cluster. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: clusterId
       required: true
-      secret: false
-    deprecated: false
     description: Find the CDM GeoLocation of a CDM Cluster.
-    execution: false
     name: rubrik-cdm-cluster-location
     outputs:
     - contextPath: Rubrik.CDM.Cluster.Location
@@ -192,15 +159,10 @@ script:
       description: The ID of the cluster.
       type: String
   - arguments:
-    - default: false
-      description: "The ID of the CDM cluster. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "The ID of the CDM cluster. When used in combination with \"Rubrik Radar Anomaly\" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: clusterId
       required: true
-      secret: false
-    deprecated: false
     description: Find the CDM Connection State of a CDM Cluster.
-    execution: false
     name: rubrik-cdm-cluster-connection-state
     outputs:
     - contextPath: Rubrik.CDM.Cluster.ConnectionState
@@ -210,650 +172,561 @@ script:
       description: The ID of the cluster.
       type: String
   - arguments:
-    - default: false
-      defaultValue: 50
-      description: Number of results to retrieve in the response. Maximum size allowed
-        is 1000.
-      isArray: false
+    - defaultValue: 50
+      description: Number of results to retrieve in the response. Maximum size allowed is 1000.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'The name of the object to search for.'
-      isArray: false
+    - description: 'The name of the object to search for.'
       name: object_name
       required: true
-      secret: false
-    - default: false
-      defaultValue: ID
+    - defaultValue: ID
       description: "Specify the field to use for sorting the response.\n\nNote: Supported values are \"ID\" and \"NAME\" only. For any other values, the obtained result is sorted or not is not confirmed."
-      isArray: false
       name: sort_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
-      isArray: false
       name: sort_order
       predefined:
       - ASC
       - DESC
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
-    deprecated: false
-    description: Search for Rubrik discovered objects of any type, return zero or more
-      matches.
-    execution: false
+    description: Search for Rubrik discovered objects of any type, return zero or more matches.
     name: rubrik-polaris-object-search
     outputs:
-      - contextPath: RubrikPolaris.GlobalSearchObject.id
-        description: The ID of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.name
-        description: The name of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.objectType
-        description: The type of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalPath.fid
-        description: The FID of the physical path of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalPath.name
-        description: The name of the physical path where the object relies.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalPath.objectType
-        description: The object type of the physical path where the object relies.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.azureRegion
-        description: The azure region of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.awsRegion
-        description: The aws region of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.emailAddress
-        description: The email address of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.isRelic
-        description: Whether the object is relic (historical) or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.id
-        description: The effective SLA domain ID of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.name
-        description: The effective SLA domain name of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.description
-        description: The effective SLA domain description of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.fid
-        description: The FID of the object's effective SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.cluster.id
-        description: The cluster ID of the object's effective SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.cluster.name
-        description: The cluster name of the object's effective SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.count
-        description: The count of physical child connection of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.id
-        description: The ID of physical child connection of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.name
-        description: The name of the physical child connection of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.replicatedObjects.cluster.id
-        description: The cluster ID of the replicated objects of physical child connection of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.replicatedObjects.cluster.name
-        description: The cluster name of the replicated objects of physical child connection of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.cluster.id
-        description: The cluster ID related to the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.cluster.name
-        description: The name of the cluster related to the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.primaryClusterLocation.id
-        description: The primary cluster location ID of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.gcpZone
-        description: The gcp zone of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.gcpRegion
-        description: The gcp region of the object.
-        type: String
-      - contextPath: RubrikPolaris.GlobalSearchObject.gcpNativeProject.name
-        description: The gcp native project name of the object.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.GlobalSearchObject.next_page_token
-        description: Next page token.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.GlobalSearchObject.name
-        description: Name of the command.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.GlobalSearchObject.has_next_page
-        description: Whether the result has the next page or not.
-        type: Boolean
-  - deprecated: false
-    description: Retrieve the list of all the available Sonar policies.
-    execution: false
+    - contextPath: RubrikPolaris.GlobalSearchObject.id
+      description: The ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.name
+      description: The name of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.objectType
+      description: The type of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalPath.fid
+      description: The FID of the physical path of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalPath.name
+      description: The name of the physical path where the object relies.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalPath.objectType
+      description: The object type of the physical path where the object relies.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.azureRegion
+      description: The azure region of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.awsRegion
+      description: The aws region of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.emailAddress
+      description: The email address of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.isRelic
+      description: Whether the object is relic (historical) or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.id
+      description: The effective SLA domain ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.name
+      description: The effective SLA domain name of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.description
+      description: The effective SLA domain description of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.fid
+      description: The FID of the object's effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.cluster.id
+      description: The cluster ID of the object's effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.effectiveSlaDomain.cluster.name
+      description: The cluster name of the object's effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.count
+      description: The count of physical child connection of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.id
+      description: The ID of physical child connection of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.name
+      description: The name of the physical child connection of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.replicatedObjects.cluster.id
+      description: The cluster ID of the replicated objects of physical child connection of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.physicalChildConnection.edges.node.replicatedObjects.cluster.name
+      description: The cluster name of the replicated objects of physical child connection of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.cluster.id
+      description: The cluster ID related to the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.cluster.name
+      description: The name of the cluster related to the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.primaryClusterLocation.id
+      description: The primary cluster location ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.gcpZone
+      description: The gcp zone of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.gcpRegion
+      description: The gcp region of the object.
+      type: String
+    - contextPath: RubrikPolaris.GlobalSearchObject.gcpNativeProject.name
+      description: The gcp native project name of the object.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.GlobalSearchObject.next_page_token
+      description: Next page token.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.GlobalSearchObject.name
+      description: Name of the command.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.GlobalSearchObject.has_next_page
+      description: Whether the result has the next page or not.
+      type: Boolean
+  - description: Retrieve the list of all the available Sonar policies.
     name: rubrik-sonar-policies-list
     outputs:
-      - contextPath: RubrikPolaris.SonarPolicy.id
-        description: Unique ID of the policy.
-        type: String
-      - contextPath: RubrikPolaris.SonarPolicy.name
-        description: Name of the policy.
-        type: String
-      - contextPath: RubrikPolaris.SonarPolicy.description
-        description: Descriptive name of the policy.
-        type: String
-      - contextPath: RubrikPolaris.SonarPolicy.creator.email
-        description: Email of the user who created the policy.
-        type: String
-      - contextPath: RubrikPolaris.SonarPolicy.totalObjects
-        description: Number of total objects present in the policy.
-        type: Number
-      - contextPath: RubrikPolaris.SonarPolicy.numAnalyzers
-        description: Number of analyzers present in the policy.
-        type: Number
-      - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.id
-        description: ID of the object present in the policy.
-        type: String
-      - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.latestSnapshotResult.snapshotFid
-        description: Snapshot ID of the object present in the policy.
-        type: String
-      - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.policyId
-        description: Policy ID.
-        type: String
-      - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.status
-        description: Policy status.
-        type: String
-  - deprecated: false
-    description: List the analyzer group policies.
-    execution: false
+    - contextPath: RubrikPolaris.SonarPolicy.id
+      description: Unique ID of the policy.
+      type: String
+    - contextPath: RubrikPolaris.SonarPolicy.name
+      description: Name of the policy.
+      type: String
+    - contextPath: RubrikPolaris.SonarPolicy.description
+      description: Descriptive name of the policy.
+      type: String
+    - contextPath: RubrikPolaris.SonarPolicy.creator.email
+      description: Email of the user who created the policy.
+      type: String
+    - contextPath: RubrikPolaris.SonarPolicy.totalObjects
+      description: Number of total objects present in the policy.
+      type: Number
+    - contextPath: RubrikPolaris.SonarPolicy.numAnalyzers
+      description: Number of analyzers present in the policy.
+      type: Number
+    - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.id
+      description: ID of the object present in the policy.
+      type: String
+    - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.latestSnapshotResult.snapshotFid
+      description: Snapshot ID of the object present in the policy.
+      type: String
+    - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.policyId
+      description: Policy ID.
+      type: String
+    - contextPath: RubrikPolaris.SonarPolicy.objectStatuses.policyStatuses.status
+      description: Policy status.
+      type: String
+  - description: List the analyzer group policies.
     name: rubrik-sonar-policy-analyzer-groups-list
     outputs:
-      - contextPath: RubrikPolaris.SonarAnalyzerGroup.id
-        description: The analyzer group ID.
-        type: String
-      - contextPath: RubrikPolaris.SonarAnalyzerGroup.name
-        description: The name of the analyzer group.
-        type: String
-      - contextPath: RubrikPolaris.SonarAnalyzerGroup.groupType
-        description: The analyzer group type.
-        type: String
-      - contextPath: RubrikPolaris.SonarAnalyzerGroup.analyzers.id
-        description: The ID of the analyzers belong to the group.
-        type: String
-      - contextPath: RubrikPolaris.SonarAnalyzerGroup.analyzers.name
-        description: The name of the analyzers belong to the group.
-        type: String
-      - contextPath: RubrikPolaris.SonarAnalyzerGroup.analyzers.analyzerType
-        description: The type of the analyzers belong to the group.
-        type: String
+    - contextPath: RubrikPolaris.SonarAnalyzerGroup.id
+      description: The analyzer group ID.
+      type: String
+    - contextPath: RubrikPolaris.SonarAnalyzerGroup.name
+      description: The name of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.SonarAnalyzerGroup.groupType
+      description: The analyzer group type.
+      type: String
+    - contextPath: RubrikPolaris.SonarAnalyzerGroup.analyzers.id
+      description: The ID of the analyzers belong to the group.
+      type: String
+    - contextPath: RubrikPolaris.SonarAnalyzerGroup.analyzers.name
+      description: The name of the analyzers belong to the group.
+      type: String
+    - contextPath: RubrikPolaris.SonarAnalyzerGroup.analyzers.analyzerType
+      description: The type of the analyzers belong to the group.
+      type: String
   - arguments:
-    - default: false
-      description: "The ID of the object to get details.\n\nNote: Users can get the list of the object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
-      isArray: false
+    - description: "The ID of the object to get details.\n\nNote: Users can get the list of the object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
       name: object_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve details for a Vsphere object based on the provided object ID.
-    execution: false
     name: rubrik-polaris-vm-object-metadata-get
     outputs:
-      - contextPath: RubrikPolaris.VSphereVm.id
-        description: Unique ID of the object.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.authorizedOperations
-        description: List of operations performed by the object.
-        type: Unknown
-      - contextPath: RubrikPolaris.VSphereVm.metadata.name
-        description: The name of the object.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.isRelic
-        description: Whether the object is relic or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.id
-        description: ID of the SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.name
-        description: Name of the SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.cluster.id
-        description: ID of the cluster of the SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.cluster.name
-        description: Name of the cluster of the SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.fid
-        description: SLA Source object FID.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.name
-        description: SLA source object name.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.objectType
-        description: SLA source object type.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.protectionDate
-        description: Protection date of the object.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.id
-        description: The ID of the snappable for a particular report related to an object. Snappable supports backups or filesets of physical machines using the rubrik connector.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.logicalBytes
-        description: Logical bytes of snappable report.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.physicalBytes
-        description: The physical byte of the snappable for a particular report related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.archiveStorage
-        description: The archived storage of the snappable for a particular report related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.id
-        description: Unique ID of the cluster which is the datastore for the recovered virtual machine.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.name
-        description: Cluster name of the VM to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.status
-        description: Cluster status of the VM to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.version
-        description: Cluster version of the VM to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.lastConnectionTime
-        description: Last time when the vm was connected to the cluster.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.defaultAddress
-        description: Default address where the cluster is stored.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.id
-        description: Node ID of the node connection related to cluster.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.status
-        description: Node status of the node connection related to cluster.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.ipAddress
-        description: IP address of the node connection related to cluster.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.state.connectedState
-        description: Connected state of the cluster.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.state.clusterRemovalState
-        description: State of the cluster if it is registered for removal or not.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.passesConnectivityCheck
-        description: Whether the cluster passes connectivity check or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.globalManagerConnectivityStatus.urls.url
-        description: URL of Global Manager Connectivity Status.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.globalManagerConnectivityStatus.urls.isReachable
-        description: Whether the url in global Manager Connectivity Status is reachable or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.connectivityLastUpdated
-        description: Date time when the connectivity status of the cluster is lastly updated.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.primaryClusterLocation.id
-        description: The location ID of the primary cluster to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.primaryClusterLocation.name
-        description: The location name of the primary cluster to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.arrayIntegrationEnabled
-        description: Whether the array integration is enabled or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.snapshotConsistencyMandate
-        description: "Data consistency in recovery points is the snapshot consistency mandate. It is broadly classified into 3 categories: inconsistent, crash-consistent, app-consistent."
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.agentStatus.agentStatus
-        description: The status of an agent related to an object. In Rubrik agents are connectors also known as Rubrik Backup Service.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.logicalPath.fid
-        description: The logical path ID of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.logicalPath.objectType
-        description: The logical object type of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.logicalPath.name
-        description: The logical name of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.physicalPath.fid
-        description: The physical path of where the VM resides.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.physicalPath.objectType
-        description: The physical path object type of the VM.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.physicalPath.name
-        description: The physical Name of the VM.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.vsphereTagPath.fid
-        description: FID of Vsphere tag.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.vsphereTagPath.objectType
-        description: Object type of Vsphere tag.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.vphereTagPath.name
-        description: Name of Vsphere tag.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.oldestSnapshot.id
-        description: The ID of the oldest snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.oldestSnapshot.date
-        description: The date when the oldest snapshot was generated.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.oldestSnapshot.isIndexed
-        description: Whether the oldest snapshot is indexed or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.totalSnapshots.count
-        description: Total snapshot counts.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.id
-        description: The ID of the object which is replicated in the VM.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.primaryClusterLocation.id
-        description: The primary cluster location ID where the replicated object resides.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.primaryClusterLocation.name
-        description: The primary cluster location name where the replicated object resides.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.cluster.name
-        description: The cluster name where the replicated object resides.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.cluster.id
-        description: The cluster ID where the replicated object resides.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.id
-        description: ID of the newest archived snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.date
-        description: The date when the newest archived snapshot was generated.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.isIndexed
-        description: Whether the newest archived snapshot is indexed or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.archivalLocations.id
-        description: ID of the archival location of the newest archived snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.archivalLocations.name
-        description: Name of the archival location of the newest archival snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.id
-        description: The ID of the newest replicated snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.date
-        description: The date when the newest replicated snapshot was generated.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.isIndexed
-        description: Whether the newest replicated snapshot is indexed or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.replicationLocations.id
-        description: The ID of the replication locations of the newest replicated snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.replicationLocations.name
-        description: The name of the replication locations of the newest replicated snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestSnapshot.id
-        description: The ID of the newest snapshot.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestSnapshot.date
-        description: The date when the newest snapshot was generated.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.metadata.newestSnapshot.isIndexed
-        description: Whether the newest snapshot is indexed or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.onDemandSnapshotCount
-        description: Count of how many on demand snapshot created in a VM.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.metadata.vmwareToolsInstalled
-        description: Whether the Vmware tools are installed or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.metadata.cdmLink
-        description: The Cloud Data Management link to navigate to the VM on cloud.
-        type: String
+    - contextPath: RubrikPolaris.VSphereVm.id
+      description: Unique ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.authorizedOperations
+      description: List of operations performed by the object.
+      type: Unknown
+    - contextPath: RubrikPolaris.VSphereVm.metadata.name
+      description: The name of the object.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.isRelic
+      description: Whether the object is relic or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.id
+      description: ID of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.name
+      description: Name of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.cluster.id
+      description: ID of the cluster of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaDomain.cluster.name
+      description: Name of the cluster of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.fid
+      description: SLA Source object FID.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.name
+      description: SLA source object name.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.effectiveSlaSourceObject.objectType
+      description: SLA source object type.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.protectionDate
+      description: Protection date of the object.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.id
+      description: The ID of the snappable for a particular report related to an object. Snappable supports backups or filesets of physical machines using the rubrik connector.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.logicalBytes
+      description: Logical bytes of snappable report.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.physicalBytes
+      description: The physical byte of the snappable for a particular report related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.metadata.reportSnappable.archiveStorage
+      description: The archived storage of the snappable for a particular report related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.id
+      description: Unique ID of the cluster which is the datastore for the recovered virtual machine.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.name
+      description: Cluster name of the VM to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.status
+      description: Cluster status of the VM to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.version
+      description: Cluster version of the VM to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.lastConnectionTime
+      description: Last time when the vm was connected to the cluster.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.defaultAddress
+      description: Default address where the cluster is stored.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.id
+      description: Node ID of the node connection related to cluster.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.status
+      description: Node status of the node connection related to cluster.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.clusterNodeConnection.nodes.ipAddress
+      description: IP address of the node connection related to cluster.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.state.connectedState
+      description: Connected state of the cluster.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.state.clusterRemovalState
+      description: State of the cluster if it is registered for removal or not.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.passesConnectivityCheck
+      description: Whether the cluster passes connectivity check or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.globalManagerConnectivityStatus.urls.url
+      description: URL of Global Manager Connectivity Status.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.globalManagerConnectivityStatus.urls.isReachable
+      description: Whether the url in global Manager Connectivity Status is reachable or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cluster.connectivityLastUpdated
+      description: Date time when the connectivity status of the cluster is lastly updated.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.primaryClusterLocation.id
+      description: The location ID of the primary cluster to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.primaryClusterLocation.name
+      description: The location name of the primary cluster to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.arrayIntegrationEnabled
+      description: Whether the array integration is enabled or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.snapshotConsistencyMandate
+      description: "Data consistency in recovery points is the snapshot consistency mandate. It is broadly classified into 3 categories: inconsistent, crash-consistent, app-consistent."
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.agentStatus.agentStatus
+      description: The status of an agent related to an object. In Rubrik agents are connectors also known as Rubrik Backup Service.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.logicalPath.fid
+      description: The logical path ID of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.logicalPath.objectType
+      description: The logical object type of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.logicalPath.name
+      description: The logical name of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.physicalPath.fid
+      description: The physical path of where the VM resides.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.physicalPath.objectType
+      description: The physical path object type of the VM.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.physicalPath.name
+      description: The physical Name of the VM.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.vsphereTagPath.fid
+      description: FID of Vsphere tag.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.vsphereTagPath.objectType
+      description: Object type of Vsphere tag.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.vphereTagPath.name
+      description: Name of Vsphere tag.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.oldestSnapshot.id
+      description: The ID of the oldest snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.oldestSnapshot.date
+      description: The date when the oldest snapshot was generated.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.oldestSnapshot.isIndexed
+      description: Whether the oldest snapshot is indexed or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.totalSnapshots.count
+      description: Total snapshot counts.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.id
+      description: The ID of the object which is replicated in the VM.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.primaryClusterLocation.id
+      description: The primary cluster location ID where the replicated object resides.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.primaryClusterLocation.name
+      description: The primary cluster location name where the replicated object resides.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.cluster.name
+      description: The cluster name where the replicated object resides.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.replicatedObjects.cluster.id
+      description: The cluster ID where the replicated object resides.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.id
+      description: ID of the newest archived snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.date
+      description: The date when the newest archived snapshot was generated.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.isIndexed
+      description: Whether the newest archived snapshot is indexed or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.archivalLocations.id
+      description: ID of the archival location of the newest archived snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestArchivedSnapshot.archivalLocations.name
+      description: Name of the archival location of the newest archival snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.id
+      description: The ID of the newest replicated snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.date
+      description: The date when the newest replicated snapshot was generated.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.isIndexed
+      description: Whether the newest replicated snapshot is indexed or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.replicationLocations.id
+      description: The ID of the replication locations of the newest replicated snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestReplicatedSnapshot.replicationLocations.name
+      description: The name of the replication locations of the newest replicated snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestSnapshot.id
+      description: The ID of the newest snapshot.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestSnapshot.date
+      description: The date when the newest snapshot was generated.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.metadata.newestSnapshot.isIndexed
+      description: Whether the newest snapshot is indexed or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.onDemandSnapshotCount
+      description: Count of how many on demand snapshot created in a VM.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.metadata.vmwareToolsInstalled
+      description: Whether the Vmware tools are installed or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.metadata.cdmLink
+      description: The Cloud Data Management link to navigate to the VM on cloud.
+      type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: "Filter based on whether VM objects are moved to relic/archive or not.\n\nPossible values are: \"True\", \"False\"."
-      isArray: false
       name: is_relic
-      required: false
-      secret: false
       predefined:
-        - "True"
-        - "False"
+      - "True"
+      - "False"
     - auto: PREDEFINED
-      default: false
       description: "Filter based on whether VM objects are replicated or not.\n\nPossible values are: \"True\", \"False\"."
-      isArray: false
       name: is_replicated
-      required: false
-      secret: false
       predefined:
-        - "True"
-        - "False"
-    - default: false
-      defaultValue: 50
+      - "True"
+      - "False"
+    - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ID
+    - defaultValue: ID
       description: "Specify the field to use for sorting the response.\n\nNote: Supported values are \"ID\" and \"NAME\" only. For any other values, the obtained result is sorted or not is not confirmed."
-      isArray: false
       name: sort_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
-      isArray: false
       name: sort_order
       predefined:
-        - ASC
-        - DESC
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+      - ASC
+      - DESC
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieve a list of all the objects of the Vsphere Vm known to the Rubrik.
-    execution: false
     name: rubrik-polaris-vm-objects-list
     outputs:
-      - contextPath: RubrikPolaris.VSphereVm.id
-        description: Unique ID of the object.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.name
-        description: Name of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.objectType
-        description: Object type of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.replicatedObjectCount
-        description: Number of objects replicated in the node in which the object relies.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.cluster.id
-        description: ID of the cluster which is the datastore for the recovered virtual machine.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.cluster.name
-        description: Cluster name of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.cluster.version
-        description: Cluster version of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.cluster.status
-        description: Cluster status of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.id
-        description: ID of the SLA domain which is simply a set of policies that define at what frequencies backups should be performed of the protected objects within Rubrik and for how long they should be either locally or a replication partner or on the archival location.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.name
-        description: Descriptive name of the SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.description
-        description: Description of the SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.fid
-        description: FID of the SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.cluster.id
-        description: ID of the cluster related to the effective SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.cluster.name
-        description: Name of the cluster related to the effective SLA domain.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaSourceObject.fid
-        description: SLA source object FID.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaSourceObject.name
-        description: SLA source object name.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.effectiveSlaSourceObject.objectType
-        description: SLA source object type.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.slaAssignment
-        description: A SLA rule when referred at assignment is SLA assignment.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.isRelic
-        description: Whether the object is relic or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.authorizedOperations
-        description: List of operations that can be performed on the object.
-        type: Unknown
-      - contextPath: RubrikPolaris.VSphereVm.primaryClusterLocation.id
-        description: The location ID of the primary cluster to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.primaryClusterLocation.name
-        description: The location name of the primary cluster to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.logicalPath.fid
-        description: The logical path ID of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.logicalPath.name
-        description: The logical path name of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.logicalPath.objectType
-        description: The logical object type of the node to which the object belongs.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.id
-        description: Rubrik uses a snapshot for powerful data protection. Snapshot distribution ID is the ID of the snapshot distribution node related to a particular object.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.onDemandCount
-        description: The demand count of distribution of snapshot related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.retrievedCount
-        description: The retrieved count of distribution of snapshot related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.scheduledCount
-        description: The scheduled count of distribution of snapshot related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.totalCount
-        description: The total count of distribution of snapshot related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.reportSnappable.id
-        description: The ID of the snappable for a particular report related to an object. Snapple supports backups or filesets of physical machines using the rubrik connector.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.reportSnappable.archieveStorage
-        description: The archived storage of the snappable for a particular report related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.reportSnappable.physicalBytes
-        description: The physical byte of the snappable for a particular report related to an object.
-        type: Number
-      - contextPath: RubrikPolaris.VSphereVm.vmwareToolsInstalled
-        description: Whether the vm tools are installed or not.
-        type: Boolean
-      - contextPath: RubrikPolaris.VSphereVm.agentStatus.agentStatus
-        description: The status of an agent related to an object. The Rubrik agents are connectors also known as Rubrik Backup Service.
-        type: String
-      - contextPath: RubrikPolaris.VSphereVm.agentStatus.disconnectReason
-        description: Displays the reason if the agent disconnects.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.VSphereVm.next_page_token
-        description: Next page token.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.VSphereVm.name
-        description: Name of the command.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.VSphereVm.has_next_page
-        description: Whether the result has the next page or not.
-        type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.id
+      description: Unique ID of the object.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.name
+      description: Name of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.objectType
+      description: Object type of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.replicatedObjectCount
+      description: Number of objects replicated in the node in which the object relies.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.cluster.id
+      description: ID of the cluster which is the datastore for the recovered virtual machine.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.cluster.name
+      description: Cluster name of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.cluster.version
+      description: Cluster version of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.cluster.status
+      description: Cluster status of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.id
+      description: ID of the SLA domain which is simply a set of policies that define at what frequencies backups should be performed of the protected objects within Rubrik and for how long they should be either locally or a replication partner or on the archival location.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.name
+      description: Descriptive name of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.description
+      description: Description of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.fid
+      description: FID of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.cluster.id
+      description: ID of the cluster related to the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaDomain.cluster.name
+      description: Name of the cluster related to the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaSourceObject.fid
+      description: SLA source object FID.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaSourceObject.name
+      description: SLA source object name.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.effectiveSlaSourceObject.objectType
+      description: SLA source object type.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.slaAssignment
+      description: A SLA rule when referred at assignment is SLA assignment.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.isRelic
+      description: Whether the object is relic or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.authorizedOperations
+      description: List of operations that can be performed on the object.
+      type: Unknown
+    - contextPath: RubrikPolaris.VSphereVm.primaryClusterLocation.id
+      description: The location ID of the primary cluster to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.primaryClusterLocation.name
+      description: The location name of the primary cluster to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.logicalPath.fid
+      description: The logical path ID of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.logicalPath.name
+      description: The logical path name of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.logicalPath.objectType
+      description: The logical object type of the node to which the object belongs.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.id
+      description: Rubrik uses a snapshot for powerful data protection. Snapshot distribution ID is the ID of the snapshot distribution node related to a particular object.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.onDemandCount
+      description: The demand count of distribution of snapshot related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.retrievedCount
+      description: The retrieved count of distribution of snapshot related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.scheduledCount
+      description: The scheduled count of distribution of snapshot related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.snapshotDistribution.totalCount
+      description: The total count of distribution of snapshot related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.reportSnappable.id
+      description: The ID of the snappable for a particular report related to an object. Snapple supports backups or filesets of physical machines using the rubrik connector.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.reportSnappable.archieveStorage
+      description: The archived storage of the snappable for a particular report related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.reportSnappable.physicalBytes
+      description: The physical byte of the snappable for a particular report related to an object.
+      type: Number
+    - contextPath: RubrikPolaris.VSphereVm.vmwareToolsInstalled
+      description: Whether the vm tools are installed or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.VSphereVm.agentStatus.agentStatus
+      description: The status of an agent related to an object. The Rubrik agents are connectors also known as Rubrik Backup Service.
+      type: String
+    - contextPath: RubrikPolaris.VSphereVm.agentStatus.disconnectReason
+      description: Displays the reason if the agent disconnects.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.VSphereVm.next_page_token
+      description: Next page token.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.VSphereVm.name
+      description: Name of the command.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.VSphereVm.has_next_page
+      description: Whether the result has the next page or not.
+      type: Boolean
   - arguments:
-    - default: false
-      description: |
+    - description: |
         Name of the scan. If not provided, it defaults to "<today's date> Classification".
-      isArray: false
       name: scan_name
-      required: false
-      secret: false
-    - default: false
-      description: "List of sonar policies to scan.\n\nNote: Users can get the list\
-        \ of analyzer groups by executing the \"rubrik-sonar-policy-analyzer-groups-list\"\
-        \ command. \n\nFormat Accepted: \n[\n        {\n            \"id\": \"543dd5e0-c72c-50e2-a3d9-1688343f472c\"\
-        ,\n            \"name\": \"HIPAA\",\n            \"groupType\": \"HIPAA\"\
-        ,\n            \"analyzers\": [\n                {\n                    \"\
-        id\": \"9da675b3-944b-5da3-a2da-ed149d300075\",\n                    \"name\"\
-        : \"US/UK Passport\",\n                    \"analyzerType\": \"PASSPORT\"\n\
-        \                },\n                {\n                    \"id\": \"18665533-c28c-5a40-b747-4b6508fecdfa\"\
-        ,\n                    \"name\": \"US NPI\",\n                    \"analyzerType\"\
-        : \"US_HEALTHCARE_NPI\"\n                }\n            ]\n      }\n]"
-      isArray: false
+    - description: "List of sonar policies to scan.\n\nNote: Users can get the list of analyzer groups by executing the \"rubrik-sonar-policy-analyzer-groups-list\" command. \n\nFormat Accepted: \n[\n        {\n            \"id\": \"543dd5e0-c72c-50e2-a3d9-1688343f472c\",\n            \"name\": \"HIPAA\",\n            \"groupType\": \"HIPAA\",\n            \"analyzers\": [\n                {\n                    \"id\": \"9da675b3-944b-5da3-a2da-ed149d300075\",\n                    \"name\": \"US/UK Passport\",\n                    \"analyzerType\": \"PASSPORT\"\n                },\n                {\n                    \"id\": \"18665533-c28c-5a40-b747-4b6508fecdfa\",\n                    \"name\": \"US NPI\",\n                    \"analyzerType\": \"US_HEALTHCARE_NPI\"\n                }\n            ]\n      }\n]"
       name: sonar_policy_analyzer_groups
       required: true
-      secret: false
-    - default: false
-      description: "List of VM object IDs to scan.\n\nNote: Users can get the list of\
-        \ VM object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
-      isArray: false
+    - description: "List of VM object IDs to scan.\n\nNote: Users can get the list of VM object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
       name: objects_to_scan
       required: true
-      secret: false
-    deprecated: false
-    description: "Trigger an on-demand scan of a system. Supports \"Vsphere VM\" object type only.\n\nNote:
-    To know the scan status use the \"rubrik-sonar-ondemand-scan-status\" command.
-    To download the completed request use the \"rubrik-sonar-ondemand-scan-result\" command."
-    execution: false
+    description: "Trigger an on-demand scan of a system. Supports \"Vsphere VM\" object type only.\n\nNote: To know the scan status use the \"rubrik-sonar-ondemand-scan-status\" command. To download the completed request use the \"rubrik-sonar-ondemand-scan-result\" command."
     name: rubrik-sonar-ondemand-scan
     outputs:
-      - contextPath: RubrikPolaris.SonarOndemandScan.crawlId
-        description: Unique crawl ID.
-        type: String
+    - contextPath: RubrikPolaris.SonarOndemandScan.crawlId
+      description: Unique crawl ID.
+      type: String
   - arguments:
-    - default: false
-      description: "ID for which scanning status is to be obtained.\n\nNote: Users can get the
-        crawl ID by executing the \"rubrik-sonar-ondemand-scan\" command."
-      isArray: false
+    - description: "ID for which scanning status is to be obtained.\n\nNote: Users can get the crawl ID by executing the \"rubrik-sonar-ondemand-scan\" command."
       name: crawl_id
       required: true
-      secret: false
-    deprecated: false
     description: "Retrieve the status of a scanned system.\n\nNote: To download the completed request use the \"rubrik-sonar-ondemand-scan-result\" command."
-    execution: false
     name: rubrik-sonar-ondemand-scan-status
     outputs:
     - contextPath: RubrikPolaris.SonarOndemandScan.crawlId
-      description: Crawl ID of the scan for which the rubrik-sonar-ondemand-scan command
-        is hit.
+      description: Crawl ID of the scan for which the rubrik-sonar-ondemand-scan command is hit.
       type: String
     - contextPath: RubrikPolaris.SonarOndemandScan.Status.error
       description: Error description if any.
@@ -931,74 +804,48 @@ script:
       description: Cluster type in which the object is getting scanned.
       type: String
   - arguments:
-    - default: false
-      description: "The object ID for which the snapshots are to be searched.\n\nNote: Users can get the list of the object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
-      isArray: false
+    - description: "The object ID for which the snapshots are to be searched.\n\nNote: Users can get the list of the object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
       name: object_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Day
       description: "Grouping the snapshots on the basis of the selected value.\n\nPossible values are: \"Month\", \"Day\", \"Year\", \"Week\", \"Hour\", \"Quarter\"."
-      isArray: false
       name: snapshot_group_by
       predefined:
-        - Month
-        - Day
-        - Year
-        - Week
-        - Hour
-        - Quarter
-      required: false
-      secret: false
+      - Month
+      - Day
+      - Year
+      - Week
+      - Hour
+      - Quarter
     - auto: PREDEFINED
-      default: false
-      defaultValue: Day
-      description: "Grouping the missed snapshots on the basis of the selected value.\n\nPossible values are: \"Month\", \"Day\", \"Year\", \"Week\", \"Hour\", \"Quarter\"."
-      isArray: false
+      defaultValue: DAY
+      description: "Grouping the missed snapshots on the basis of the selected value.\n\nPossible values are: \"MONTH\", \"DAY\", \"YEAR\", \"WEEK\", \"HOUR\", \"QUARTER\"."
       name: missed_snapshot_group_by
       predefined:
-        - Month
-        - Day
-        - Year
-        - Week
-        - Hour
-        - Quarter
-      required: false
-      secret: false
-    - default: false
-      description: "The start date to get snapshots from.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
-      isArray: false
+      - MONTH
+      - DAY
+      - YEAR
+      - WEEK
+      - HOUR
+      - QUARTER
+    - description: "The start date to get snapshots from.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
       name: start_date
       required: true
-      secret: false
-    - default: false
-      description: "The end date to get snapshots until.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
-      isArray: false
+    - description: "The end date to get snapshots until.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
       name: end_date
       required: true
-      secret: false
-    - default: false
-      description: "The timezone offset from UTC changes to match the configured time zone. Use this argument to filter the data according to the provided timezone offset.\n\nFormats accepted: 1, 1.5, 2, 2.5, 5.5, etc."
-      isArray: false
+    - description: "The timezone offset from UTC changes to match the configured time zone. Use this argument to filter the data according to the provided timezone offset.\n\nFormats accepted: 1, 1.5, 2, 2.5, 5.5, etc."
       name: timezone_offset
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "True"
       description: "Whether the cluster is connected or not.\n\nPossible values are: \"True\", \"False\"."
-      isArray: false
       name: cluster_connected
-      required: false
-      secret: false
       predefined:
-        - "True"
-        - "False"
-    deprecated: false
+      - "True"
+      - "False"
     description: "Search for a Rubrik snapshot of an object based on the provided snapshot ID, exact timestamp, or specific value like earliest/latest, or closest before/after a timestamp."
-    execution: false
     name: rubrik-polaris-vm-object-snapshot-list
     outputs:
     - contextPath: RubrikPolaris.VSphereVm.id
@@ -1026,20 +873,14 @@ script:
       description: Whether the node is unindexable or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: "ID for which file needs to be downloaded.\n\nNote: Users can\
-        \ get the crawl_id by executing the \"rubrik-sonar-ondemand-scan\" command."
-      isArray: false
+    - description: "ID for which file needs to be downloaded.\n\nNote: Users can get the crawl_id by executing the \"rubrik-sonar-ondemand-scan\" command."
       name: crawl_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The type of the file that needs to be downloaded.
 
         Possible values are: "ANY", "HITS", "STALE", "OPEN_ACCESS", "STALE_HITS", "OPEN_ACCESS_HITS".
-      isArray: false
       name: file_type
       predefined:
       - ANY
@@ -1049,10 +890,7 @@ script:
       - STALE_HITS
       - OPEN_ACCESS_HITS
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve the download link for the requested scanned file.
-    execution: false
     name: rubrik-sonar-ondemand-scan-result
     outputs:
     - contextPath: RubrikPolaris.SonarOndemandScan.crawlId
@@ -1062,27 +900,16 @@ script:
       description: Link to download the file when scan status is complete.
       type: String
   - arguments:
-    - default: false
-      description: "The unique ID of the cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "The unique ID of the cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
       required: true
-      secret: false
-    - default: false
-      description: "The snapshot ID.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
-      isArray: false
+    - description: "The snapshot ID.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
       name: snapshot_id
       required: true
-      secret: false
-    - default: false
-      description: "The VM object ID.\n\nNote: Users can retrieve the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
-      isArray: false
+    - description: "The VM object ID.\n\nNote: Users can retrieve the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
       name: object_id
       required: true
-      secret: false
-    deprecated: false
     description: Request for the analysis and retrieve the download link for the Radar CSV analyzed file.
-    execution: false
     name: rubrik-radar-anomaly-csv-analysis
     outputs:
     - contextPath: RubrikPolaris.RadarAnomalyCSV.clusterId
@@ -1098,35 +925,23 @@ script:
       description: The download link of the CSV analysis.
       type: String
   - arguments:
-    - default: false
-      description: "ID of the snapshot.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\"  command."
-      isArray: false
+    - description: "ID of the snapshot.\n\nNote: Users can retrieve the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\"  command."
       name: snapshot_id
       required: true
-      secret: false
-    - default: false
-      description: "Object ID.\n\nNote: Users can retrieve the list of object IDs by executing \"rubrik-polaris-vm-objects-list\" command."
-      isArray: false
+    - description: "Object ID.\n\nNote: Users can retrieve the list of object IDs by executing \"rubrik-polaris-vm-objects-list\" command."
       name: object_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: "The type of the file that needs to be downloaded.\n\nPossible values are: \"ANY\", \"HITS\", \"STALE\", \"OPEN_ACCESS\", \"STALE_HITS\", \"OPEN_ACCESS_HITS\"."
-      isArray: false
       name: file_type
       predefined:
-        - ANY
-        - HITS
-        - STALE
-        - OPEN_ACCESS
-        - STALE_HITS
-        - OPEN_ACCESS_HITS
-      required: false
-      secret: false
-    deprecated: false
+      - ANY
+      - HITS
+      - STALE
+      - OPEN_ACCESS
+      - STALE_HITS
+      - OPEN_ACCESS_HITS
     description: "Request to download the Sonar CSV Snapshot results file.\n\nNote: To know the ID and status of the download, use the \"rubrik-user-downloads-list\" command. To download the file, use the \"rubrik-sonar-csv-result-download\" command."
-    execution: false
     name: rubrik-sonar-csv-download
     outputs:
     - contextPath: RubrikPolaris.SonarCSVDownload.snapshotId
@@ -1139,198 +954,122 @@ script:
       description: The status of the download.
       type: Boolean
   - arguments:
-    - default: false
-      description: "The Snapshot ID of the file that needs to be downloaded.\n\nNote: Users can retrieve the list of the snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
-      isArray: false
+    - description: "The Snapshot ID of the file that needs to be downloaded.\n\nNote: Users can retrieve the list of the snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
       name: snapshot_id
       required: true
-      secret: false
-    - default: false
-      description: "The path of the folder to list the sub-files. If not provided the root directory files will be returned.\n\nFormat accepted : \"/<directory name>/<sub directory name or file name>\"\n\nExample: \"/C:\", \"/C:/Users\""
-      isArray: false
+    - description: "The path of the folder to list the sub-files. If not provided the root directory files will be returned.\n\nFormat accepted : \"/<directory name>/<sub directory name or file name>\"\n\nExample: \"/C:\", \"/C:/Users\""
       name: path
-      required: false
-      secret: false
-    - default: false
-      description: "Provide a keyword to search in the file names.\n\nExample: \"admin\""
-      isArray: false
+    - description: "Provide a keyword to search in the file names.\n\nExample: \"admin\""
       name: search_prefix
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
-    deprecated: false
     description: "Retrieve the list of the available files that can be downloaded.\n\nNote: To initiate the file download request use the \"rubrik-gps-snapshot-files-download\" command."
-    execution: false
     name: rubrik-gps-snapshot-files-list
     outputs:
-      - contextPath: RubrikPolaris.GPSSnapshotFile.snapshotId
-        description: Snapshot ID provided as an argument to retrieve the files.
-        type: String
-      - contextPath: RubrikPolaris.GPSSnapshotFile.node.absolutePath
-        description: The absolute path of the file.
-        type: String
-      - contextPath: RubrikPolaris.GPSSnapshotFile.node.displayPath
-        description: The display path of the file.
-        type: String
-      - contextPath: RubrikPolaris.GPSSnapshotFile.node.path
-        description: The path of the file.
-        type: String
-      - contextPath: RubrikPolaris.GPSSnapshotFile.node.filename
-        description: The name of the file.
-        type: String
-      - contextPath: RubrikPolaris.GPSSnapshotFile.node.fileMode
-        description: The mode of the file.
-        type: String
-      - contextPath: RubrikPolaris.GPSSnapshotFile.node.size
-        description: The size of the file.
-        type: String
-      - contextPath: RubrikPolaris.GPSSnapshotFile.node.lastModified
-        description: The last modified time of the file.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.GPSSnapshotFile.next_page_token
-        description: Next page token.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.GPSSnapshotFile.name
-        description: Name of the command.
-        type: String
-      - contextPath: RubrikPolaris.PageToken.GPSSnapshotFile.has_next_page
-        description: Whether the result has the next page or not.
-        type: Boolean
+    - contextPath: RubrikPolaris.GPSSnapshotFile.snapshotId
+      description: Snapshot ID provided as an argument to retrieve the files.
+      type: String
+    - contextPath: RubrikPolaris.GPSSnapshotFile.node.absolutePath
+      description: The absolute path of the file.
+      type: String
+    - contextPath: RubrikPolaris.GPSSnapshotFile.node.displayPath
+      description: The display path of the file.
+      type: String
+    - contextPath: RubrikPolaris.GPSSnapshotFile.node.path
+      description: The path of the file.
+      type: String
+    - contextPath: RubrikPolaris.GPSSnapshotFile.node.filename
+      description: The name of the file.
+      type: String
+    - contextPath: RubrikPolaris.GPSSnapshotFile.node.fileMode
+      description: The mode of the file.
+      type: String
+    - contextPath: RubrikPolaris.GPSSnapshotFile.node.size
+      description: The size of the file.
+      type: String
+    - contextPath: RubrikPolaris.GPSSnapshotFile.node.lastModified
+      description: The last modified time of the file.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.GPSSnapshotFile.next_page_token
+      description: Next page token.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.GPSSnapshotFile.name
+      description: Name of the command.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.GPSSnapshotFile.has_next_page
+      description: Whether the result has the next page or not.
+      type: Boolean
   - arguments:
-    - default: false
-      description: Name given to the VM that runs the snapshot. If not provided the
-        name will be "<Snapshot VM Name> <MM/DD of snapshot creation> <hh/mm of snapshot
-        creation> <Num>".
-      isArray: false
+    - description: Name given to the VM that runs the snapshot. If not provided the name will be "<Snapshot VM Name> <MM/DD of snapshot creation> <hh/mm of snapshot creation> <Num>".
       name: vm_name
-      required: false
-      secret: false
-    - default: false
-      description: "The VM object ID whose snapshot needs to be exported.\n\nNote:\
-        \ Users can get the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\"\
-        \ command."
-      isArray: false
+    - description: "The VM object ID whose snapshot needs to be exported.\n\nNote: Users can get the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
       name: object_id
       required: true
-      secret: false
-    - default: false
-      description: "The ID of the snapshot that is to be exported.\n\nNote: Users\
-        \ can get the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\"\
-        \ command."
-      isArray: false
+    - description: "The ID of the snapshot that is to be exported.\n\nNote: Users can get the list of snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
       name: snapshot_id
       required: true
-      secret: false
-    - default: false
-      description: "The ID of the datastore which will be used by the new VM.\n\n\
-        Note: Users can get the list of  datastore IDs by executing the \"rubrik-gps-vm-datastore-list\"\
-        \ command."
-      isArray: false
+    - description: "The ID of the datastore which will be used by the new VM.\n\nNote: Users can get the list of  datastore IDs by executing the \"rubrik-gps-vm-datastore-list\" command."
       name: datastore_id
       required: true
-      secret: false
-    - default: false
-      description: "The ID of the Vsphere ESXi host on which the new VM will be made. Either host_id or host_compute_cluster_id must be provided.\
-        \\n\nNote: Users can get the list of host IDs by executing the \"rubrik-gps-vm-host-list\" command."
-      isArray: false
+    - description: "The ID of the Vsphere ESXi host on which the new VM will be made. Either host_id or host_compute_cluster_id must be provided.\\n\nNote: Users can get the list of host IDs by executing the \"rubrik-gps-vm-host-list\" command."
       name: host_id
-      required: false
-      secret: false
-    - default: false
-      description: "The ID of the VSphere Compute Cluster of a host. Either host_id or host_compute_cluster_id must be provided.
-      \n\nNote: Users can get the list of Compute Cluster IDs by executing the \"rubrik-gps-vm-host-list\" command. The ID must belong to the VSphereComputeCluster objectType."
-      isArray: false
+    - description: "The ID of the VSphere Compute Cluster of a host. Either host_id or host_compute_cluster_id must be provided. \n\nNote: Users can get the list of Compute Cluster IDs by executing the \"rubrik-gps-vm-host-list\" command. The ID must belong to the VSphereComputeCluster objectType."
       name: host_compute_cluster_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Whether to turn on the new VM or not.
 
         Possible values are: "True", "False".
-      isArray: false
       name: power_on
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Whether the mac addresses of network devices of the new VM be removed or not.
 
         Possible values are: "True", "False".
-      isArray: false
       name: keep_mac_addresses
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Whether the network devices on the original VM be kept or not.
 
         Possible values are: "True", "False".
-      isArray: false
       name: remove_network_devices
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Whether to keep vSphere tags associated with the original VM or not.
 
         Possible values are: "True", "False".
-      isArray: false
       name: recover_tags
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         Whether to disable networking on the new VM or not.
 
         Possible values are: "True", "False".
-      isArray: false
       name: disable_network
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    deprecated: false
     description: "Request to initiate an export of a snapshot of a virtual machine.\n\nNote: To know about the exported VM's status, use the \"rubrik-gps-async-result\" command."
-    execution: false
     name: rubrik-gps-vm-export
     outputs:
     - contextPath: RubrikPolaris.GPSVMSnapshotExport.id
       description: Snapshot export request ID.
       type: String
-  - deprecated: false
-    description: "Retrieve the user downloads. This would return the current and past download history.\n\nNote: To download the requested Sonar CSV Snapshot results file use the \"rubrik-sonar-csv-result-download\" command."
-    execution: false
+  - description: "Retrieve the user downloads. This would return the current and past download history.\n\nNote: To download the requested Sonar CSV Snapshot results file use the \"rubrik-sonar-csv-result-download\" command."
     name: rubrik-user-downloads-list
     outputs:
     - contextPath: RubrikPolaris.UserDownload.id
@@ -1355,68 +1094,36 @@ script:
       description: The completion time of the download.
       type: String
   - arguments:
-    - default: false
-      description: Name of the SLA Domain to search for.
-      isArray: false
+    - description: Name of the SLA Domain to search for.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: "Cluster, the SLA domain is managed by.\n\nNote: Users can retrieve\
-        \ the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\"\
-        \ command."
-      isArray: false
+    - description: "Cluster, the SLA domain is managed by.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: "Filters SLA domain based on the provided object types. Supports comma separated values.
-      \n\nPossible values are: \"FILESET_OBJECT_TYPE\", \"VSPHERE_OBJECT_TYPE\"."
+      description: "Filters SLA domain based on the provided object types. Supports comma separated values. \n\nPossible values are: \"FILESET_OBJECT_TYPE\", \"VSPHERE_OBJECT_TYPE\"."
       isArray: true
       name: object_type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
-      description: "Whether to show Cluster SLAs and not Global SLAs. \"False\" value will result in showing only Global SLAs.
-      \n\nPossible values are: \"True\", \"False\"."
-      isArray: false
+      description: "Whether to show Cluster SLAs and not Global SLAs. \"False\" value will result in showing only Global SLAs. \n\nPossible values are: \"True\", \"False\"."
       name: show_cluster_slas_only
       predefined:
-        - 'True'
-        - 'False'
-      required: false
-      secret: false
+      - 'True'
+      - 'False'
     - auto: PREDEFINED
-      default: false
       defaultValue: NAME
-      description: "Specify the field to use for sorting the response.\n\nPossible\
-        \ values are: \"NAME\", \"PROTECTED_OBJECT_COUNT\"."
-      isArray: false
+      description: "Specify the field to use for sorting the response.\n\nPossible values are: \"NAME\", \"PROTECTED_OBJECT_COUNT\"."
       name: sort_by
       predefined:
       - NAME
       - PROTECTED_OBJECT_COUNT
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASC
-      description: "Specify the order to sort the data in.\n\nPossible values are:\
-        \ \"ASC\", \"DESC\"."
-      isArray: false
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
       name: sort_order
       predefined:
-        - ASC
-        - DESC
-      required: false
-      secret: false
-    deprecated: false
-    description: Enumerates the available SLA Domains to apply to the on-demand snapshot
-      as a retention policy.
-    execution: false
+      - ASC
+      - DESC
+    description: Enumerates the available SLA Domains to apply to the on-demand snapshot as a retention policy.
     name: rubrik-gps-sla-domain-list
     outputs:
     - contextPath: RubrikPolaris.GPSSLADomain.name
@@ -1453,8 +1160,7 @@ script:
       description: Target type of the archival target.
       type: String
     - contextPath: RubrikPolaris.GPSSLADomain.replicationSpec.replicationType
-      description: 'Enum value representing the type of replication. Values: UNKNOWN_REPLICATION_TYPE,
-        UNIDIRECTIONAL_REPLICATION_TO_CLUSTER, REPLICATION_TO_CLOUD_REGION, REPLICATION_TO_CLOUD_LOCATION.'
+      description: 'Enum value representing the type of replication. Values: UNKNOWN_REPLICATION_TYPE, UNIDIRECTIONAL_REPLICATION_TO_CLUSTER, REPLICATION_TO_CLOUD_REGION, REPLICATION_TO_CLOUD_LOCATION.'
       type: String
     - contextPath: RubrikPolaris.GPSSLADomain.replicationSpec.specificReplicationSpec.unidirectionalSpec.replicationTargetName
       description: Cloud replication target name.
@@ -1619,15 +1325,10 @@ script:
       description: List of object types associated with this SLA Domain.
       type: Unknown
   - arguments:
-    - default: false
-      description: "The ID of the download, requested using \"rubrik-sonar-csv-download\" command.\n\nNote: Users can retrieve the list of downloads containing ID by executing the \"rubrik-user-downloads-list\" command."
-      isArray: false
+    - description: "The ID of the download, requested using \"rubrik-sonar-csv-download\" command.\n\nNote: Users can retrieve the list of downloads containing ID by executing the \"rubrik-user-downloads-list\" command."
       name: download_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve the download link for the requested Sonar CSV Snapshot file.
-    execution: false
     name: rubrik-sonar-csv-result-download
     outputs:
     - contextPath: RubrikPolaris.SonarCSVDownload.downloadId
@@ -1637,24 +1338,12 @@ script:
       description: The link of the file that needs to be downloaded.
       type: String
   - arguments:
-    - default: false
-      description: "The ID of the object whose snapshot is to be created.
-      \n\nNote: Users can get the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
-      isArray: false
+    - description: "The ID of the object whose snapshot is to be created. \n\nNote: Users can get the list of object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
       name: object_id
       required: true
-      secret: false
-    - default: false
-      description: "The ID of the SLA domain retention policy to be applied on the\
-        \ object.\n\nNote: Users can get the list of SLA Domain IDs by executing\
-        \ the \"rubrik-gps-sla-domain-list\" command."
-      isArray: false
+    - description: "The ID of the SLA domain retention policy to be applied on the object.\n\nNote: Users can get the list of SLA Domain IDs by executing the \"rubrik-gps-sla-domain-list\" command."
       name: sla_domain_id
-      required: false
-      secret: false
-    deprecated: false
     description: "Triggers an on-demand snapshot of a system.\n\nNote: To know about the status of the on-demand snapshot creation, use the \"rubrik-gps-async-result\" command."
-    execution: false
     name: rubrik-gps-vm-snapshot-create
     outputs:
     - contextPath: RubrikPolaris.GPSOndemandSnapshot.id
@@ -1664,21 +1353,13 @@ script:
       description: Status of the requested snapshot.
       type: String
   - arguments:
-    - default: false
-      description: "The Snapshot ID of the file that needs to be downloaded.\n\nNote: Users can retrieve the list of the snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
-      isArray: false
+    - description: "The Snapshot ID of the file that needs to be downloaded.\n\nNote: Users can retrieve the list of the snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
       name: snapshot_id
       required: true
-      secret: false
-    - default: false
-      description: "The absolute path of the file to be downloaded. A list of files can be downloaded as a zip folder. Multiple file paths can be separated with comma(,).\n\nNote: Users can retrieve the list of the files with absolute path by executing the \"rubrik-gps-snapshot-files-list\" command.\n\nFormat accepted: \"/<directory name>/<sub directory name or file name>\"\n\nExample: \"/C:/PerfLogs/Admin\", \"/C:/Windows/Microsoft.NET\"."
-      isArray: false
+    - description: "The absolute path of the file to be downloaded. A list of files can be downloaded as a zip folder. Multiple file paths can be separated with comma(,).\n\nNote: Users can retrieve the list of the files with absolute path by executing the \"rubrik-gps-snapshot-files-list\" command.\n\nFormat accepted: \"/<directory name>/<sub directory name or file name>\"\n\nExample: \"/C:/PerfLogs/Admin\", \"/C:/Windows/Microsoft.NET\"."
       name: file_path
       required: true
-      secret: false
-    deprecated: false
     description: "Request to download the snapshot file from the backup.\n\nNote: To know about the file information and which file can be downloaded, use the \"rubrik-gps-snapshot-files-list\" command. To know about the status of the downloadable files, use the \"rubrik-gps-async-result\" command."
-    execution: false
     name: rubrik-gps-snapshot-files-download
     outputs:
     - contextPath: RubrikPolaris.GPSSnapshotFileDownload.id
@@ -1694,163 +1375,111 @@ script:
       description: Relationship of the download.
       type: String
   - arguments:
-    - default: false
-      description: "The ID of the snapshot that is to be mounted.\n\nNote: Users\
-        \ can get the snapshot ID by executing the \"rubrik-polaris-vm-object-snapshot-list\"\
-        \ command."
-      isArray: false
-      name: snapshot_id
+    - description: The snappable ID.
+      name: snappable_id
       required: true
-      secret: false
-    - default: false
-      description: |-
-        The ID of the Vsphere ESXi host on which the new VM will be mounted.
-
-        Note: Users can get the list of host IDs by executing the "rubrik-gps-vm-host-list" command.
-      isArray: false
-      name: host_id
-      required: false
-      secret: false
-    - default: false
-      description: Name given to the VM that runs the snapshot. If not provided the
-        name will be "<Snapshot VM Name> <MM/DD of snapshot creation> <hh/mm of snapshot
-        creation> <Num>".
-      isArray: false
-      name: vm_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'True'
       description: |-
-        Whether to power on the mount or not.
+        Whether to recover tags.
 
         Possible values are: "True", "False".
-      isArray: false
+      name: should_recover_tags
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: 'True'
+      description: |-
+        Whether to power on.
+
+        Possible values are: "True", "False".
       name: power_on
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: |-
-        Whether the mac addresses of network devices be removed or not.
+        Whether to keep MAC addresses.
 
         Possible values are: "True", "False".
-      isArray: false
       name: keep_mac_addresses
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'False'
       description: |-
-        Whether the network devices of the original VM be kept.
+        Whether to remove network interfaces from the VM.
 
         Possible values are: "True", "False".
-      isArray: false
       name: remove_network_devices
       predefined:
       - 'True'
       - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: |-
-        Whether to disable networking on the mount or not.
+    - description: |-
+        ID of the ESXi host to mount the new VM on.
 
-        Possible values are: "True", "False".
-      isArray: false
-      name: disable_network
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'True'
-      description: |-
-        Whether to keep vSphere tags associated with the VM or not.
+        Note: Users can get the list of host IDs by executing the "rubrik-gps-vm-host-list" command.
+      name: host_id
+    - description: ID of the compute cluster where the new VM will be mounted.
+      name: cluster_id
+    - description: ID of the resource pool where the new VM will be mounted.
+      name: resource_pool_id
+    - description: |-
+        ID of the snapshot to recover.
 
-        Possible values are: "True", "False".
-      isArray: false
-      name: recover_tags
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - default: false
-      description: "The name of the datastore that the live mount uses.\n\nNote:\
-        \ Users can get the datastore name by executing the \"rubrik-gps-vm-datastore-list\"\
-        \ command."
-      isArray: false
-      name: datastore_name
-      required: false
-      secret: false
-    deprecated: false
+        Note: Users can get the snapshot ID by executing the "rubrik-polaris-vm-object-snapshot-list" command.
+      name: snapshot_fid
+    - description: Name of the new VM. If not provided the name will be "<Snapshot VM Name> <MM/DD of snapshot creation> <hh/mm of snapshot creation> <Num>".
+      name: vm_name
+    - description: |-
+        List of network bindings for vNIC of the VM.
+
+        e.g. [
+              {
+                "backingNetworkInfo": {
+                  "moid": <string>,
+                  "name": <string>
+                },
+                "networkDeviceInfo": {
+                  "key": <int>,
+                  "name": <string>
+                }
+              }
+            ]
+      name: vnic_bindings
+    - description: |-
+        Point in time to recover to, e.g.: "2023-03-04T05:06:07.890"
+      name: recovery_point
     description: "Performs a live mount of a virtual machine snapshot.\n\nNote: To know about the live mount status, use the \"rubrik-gps-async-result\" command."
-    execution: false
     name: rubrik-gps-vm-livemount
     outputs:
     - contextPath: RubrikPolaris.GPSVMLiveMount.id
       description: ID of the Live mount request.
       type: String
   - arguments:
-    - default: false
-      description: The name of the host to search for.
-      isArray: false
+    - description: The name of the host to search for.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: "To list hosts from the specific cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "To list hosts from the specific cluster.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ID
+    - defaultValue: ID
       description: "Specify the field to use for sorting the response.\n\nNote: Supported values are \"ID\" and \"NAME\" only. For any other values, the obtained result is sorted or not is not confirmed."
-      isArray: false
       name: sort_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
-      isArray: false
       name: sort_order
       predefined:
       - ASC
       - DESC
-      required: false
-      secret: false
-    deprecated: false
     description: "Retrieve the list of available Vsphere Hosts."
-    execution: false
     name: rubrik-gps-vm-host-list
     outputs:
     - contextPath: RubrikPolaris.GPSVMHost.id
@@ -1878,52 +1507,27 @@ script:
       description: Whether the result has the next page or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: The name of the datastore to search for.
-      isArray: false
+    - description: The name of the datastore to search for.
       name: name
-      required: false
-      secret: false
-    - default: false
-      description: "The ID of a Vsphere host whose datastores are to be listed.\n\nNote: Users can get the list of host IDs by executing the \"rubrik-gps-vm-host-list\" command."
-      isArray: false
+    - description: "The ID of a Vsphere host whose datastores are to be listed.\n\nNote: Users can get the list of host IDs by executing the \"rubrik-gps-vm-host-list\" command."
       name: host_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ID
+    - defaultValue: ID
       description: "Specify the field to use for sorting the response.\n\nNote: Supported values are \"ID\" and \"NAME\" only. For any other values, the obtained result is sorted or not is not confirmed."
-      isArray: false
       name: sort_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
-      isArray: false
       name: sort_order
       predefined:
       - ASC
       - DESC
-      required: false
-      secret: false
-    deprecated: false
     description: "Retrieve the list of the available datastores on a Vsphere Host."
-    execution: false
     name: rubrik-gps-vm-datastore-list
     outputs:
     - contextPath: RubrikPolaris.GPSVMHost.id
@@ -1957,99 +1561,49 @@ script:
       description: Whether the result has the next page or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: "Filter the events based on the provided activity statuses. Supports comma separated values.\n\nPossible values are: \"TaskFailure\", \"Canceling\", \"TaskSuccess\", \"Info\", \"Failure\", \"Running\", \"Queued\", \"Warning\", \"Canceled\", \"Success\"."
-      isArray: false
+    - description: "Filter the events based on the provided activity statuses. Supports comma separated values.\n\nPossible values are: \"UNKNOWN_EVENT_STATUS\", \"TASK_FAILURE\", \"PARTIAL_SUCCESS\", \"TASK_SUCCESS\", \"INFO\", \"FAILURE\", \"RUNNING\", \"QUEUED\", \"WARNING\", \"CANCELED\", \"SUCCESS\"."
       name: activity_status
-      required: false
-      secret: false
-    - default: false
-      description: "Filter the events based on provided activity types. Supports comma separated values.\n\nPossible values are: \"Sync\", \"LocalRecovery\", \"TestFailover\", \"Anomaly\", \"RadarAnalysis\", \"Archive\", \"VolumeGroup\", \"VCenter\", \"Index\", \"CloudNativeVirtualMachine\", \"StormResource\", \"HostEvent\", \"Recovery\", \"Conversion\", \"CloudNativeVm\", \"EmbeddedEvent\", \"Maintenance\", \"Failover\", \"AuthDomain\", \"LegalHold\", \"Vcd\", \"Instantiate\", \"Configuration\", \"Fileset\", \"Discovery\", \"System\", \"Hdfs\", \"Classification\", \"StorageArray\", \"Storage\", \"Backup\", \"Hardware\", \"HypervServer\", \"HypervScvmm\", \"Diagnostic\", \"UnknownEventType\", \"Upgrade\", \"NutanixCluster\", \"Replication\", \"AwsEvent\", \"Support\", \"CloudNativeSource\", \"Download\", \"Connection\", \"ResourceOperations\"."
-      isArray: false
+    - description: "Filter the events based on provided activity types. Supports comma separated values.\n\nPossible values are: \"SYNC\", \"LOCAL_RECOVERY\", \"TEST_FAILOVER\", \"ANOMALY\", \"RANSOMWARE_INVESTIGATION_ANALYSIS\", \"ARCHIVE\", \"VOLUME_GROUP\", \"VCENTER\", \"INDEX\", \"CLOUD_NATIVE_VIRTUAL_MACHINE\", \"STORM_RESOURCE\", \"HOST_EVENT\", \"RECOVERY\", \"CONVERSION\", \"CLOUD_NATIVE_VM\", \"EMBEDDED_EVENT\", \"MAINTENANCE\", \"FAILOVER\", \"AUTH_DOMAIN\", \"LEGAL_HOLD\", \"VCD\", \"INSTANTIATE\", \"CONFIGURATION\", \"FILESET\", \"DISCOVERY\", \"SYSTEM\", \"HDFS\", \"CLASSIFICATION\", \"STORAGE_ARRAY\", \"STORAGE\", \"BACKUP\", \"HARDWARE\", \"HYPERV_SERVER\", \"HYPERV_SCVMM\", \"DIAGNOSTIC\", \"UNKNOWN_EVENT_TYPE\", \"UPGRADE\", \"NUTANIX_CLUSTER\", \"REPLICATION\", \"AWS_EVENT\", \"SUPPORT\", \"CLOUD_NATIVE_SOURCE\", \"DOWNLOAD\", \"CONNECTION\", \"RESOURCE_OPERATIONS\"."
       name: activity_type
-      required: false
-      secret: false
-    - default: false
-      description: "Filter the events based on provided severities. Supports comma separated values.\n\nPossible values are: \"Critical\", \"Warning\", \"Info\"."
-      isArray: false
+    - description: "Filter the events based on provided severities. Supports comma separated values.\n\nPossible values are: \"SEVERITY_CRITICAL\", \"SEVERITY_WARNING\", \"SEVERITY_INFO\"."
       name: severity
-      required: false
-      secret: false
-    - default: false
-      description: "Filter out events based on object name.\n\nNote: Users can get the object names by executing the \"rubrik-polaris-vm-objects-list\" or \"rubrik-polaris-object-search\" command."
-      isArray: false
+    - description: "Filter out events based on object name.\n\nNote: Users can get the object names by executing the \"rubrik-polaris-vm-objects-list\" or \"rubrik-polaris-object-search\" command."
       name: object_name
-      required: false
-      secret: false
-    - default: false
-      description: "Filter the events based on provided object types. Supports comma separated values.\n\nPossible values are: \"ShareFileset\", \"NutanixVm\", \"VolumeGroup\", \"HypervVm\", \"LinuxFileset\", \"WindowsFileset\", \"VmwareVm\".\n\nAdditional values can be found in the documentation."
-      isArray: false
+    - description: "Filter the events based on provided object types. Supports comma separated values.\n\nPossible values are: \"SHARE_FILESET\", \"NUTANIX_VM\", \"STORAGE_ARRAY_VOLUME_GROUP\", \"HYPERV_VM\", \"LINUX_FILESET\", \"WINDOWS_FILESET\", \"VMWARE_VM\".\n\nAdditional values can be found in the documentation."
       name: object_type
-      required: false
-      secret: false
-    - default: false
-      description: "Filter the events based on provided cluster IDs. Supports comma separated values.\n\nNote: Users can get the list of cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "Filter the events based on provided cluster IDs. Supports comma separated values.\n\nNote: Users can get the list of cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
-      required: false
-      secret: false
-    - default: false
-      description: "The start date to fetch updated events from.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
-      isArray: false
+    - description: "The start date to fetch updated events from.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: "The end date to fetch updated events until.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
-      isArray: false
+    - description: "The end date to fetch updated events until.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc."
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: LastUpdated
-      description: "Specify the field to use for sorting the response.\n\nNote: Possible values are: \"LastUpdated\", \"Location\", \"ObjectType\", \"ClusterName\", \"ObjectName\", \"StartTime\", \"ActivityType\", \"Severity\", \"ActivityStatus\"."
-      isArray: false
+      defaultValue: LAST_UPDATED
+      description: "Specify the field to use for sorting the response.\n\nNote: Possible values are: \"LAST_UPDATED\", \"LOCATION\", \"OBJECT_TYPE\", \"CLUSTER_NAME\", \"OBJECT_NAME\", \"START_TIME\", \"ACTIVITY_TYPE\", \"SEVERITY\", \"ACTIVITY_STATUS\"."
       name: sort_by
       predefined:
-      - LastUpdated
-      - Location
-      - ObjectType
-      - ClusterName
-      - ObjectName
-      - StartTime
-      - ActivityType
-      - Severity
-      - ActivityStatus
-      required: false
-      secret: false
+      - LAST_UPDATED
+      - LOCATION
+      - OBJECT_TYPE
+      - CLUSTER_NAME
+      - OBJECT_NAME
+      - START_TIME
+      - ACTIVITY_TYPE
+      - SEVERITY
+      - ACTIVITY_STATUS
     - auto: PREDEFINED
-      default: false
-      defaultValue: Desc
-      description: "Specify the order to sort the data in.\n\nPossible values are: \"Asc\", \"Desc\"."
-      isArray: false
+      defaultValue: DESC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
       name: sort_order
       predefined:
-        - Asc
-        - Desc
-      required: false
-      secret: false
-      deprecated: false
+      - ASC
+      - DESC
     description: "Retrieve the list of events."
-    execution: false
     name: rubrik-event-list
     outputs:
     - contextPath: RubrikPolaris.Event.id
@@ -2119,52 +1673,27 @@ script:
       description: Whether the result has the next page or not.
       type: Boolean
   - arguments:
-    - default: false
-      description: "Filter the objects based on the provided object types. Supports comma separated values.\n\nPossible values are: \"ShareFileset\", \"NutanixVirtualMachine\", \"VolumeGroup\", \"HypervVirtualMachine\", \"LinuxFileset\", \"WindowsFileset\", \"VmwareVirtualMachine\".\n\nAdditional values can be found in the documentation."
-      isArray: false
+    - description: "Filter the objects based on the provided object types. Supports comma separated values.\n\nPossible values are: \"ShareFileset\", \"NutanixVirtualMachine\", \"VolumeGroup\", \"HypervVirtualMachine\", \"LinuxFileset\", \"WindowsFileset\", \"VmwareVirtualMachine\".\n\nAdditional values can be found in the documentation."
       name: type_filter
-      required: false
-      secret: false
-    - default: false
-      description: "Filter the objects based on the provided cluster IDs. Supports comma separated values.\n\nNote: Users can get the list of cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+      required: true
+    - description: "Filter the objects based on the provided cluster IDs. Supports comma separated values.\n\nNote: Users can get the list of cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ID
+    - defaultValue: ID
       description: "Specify the field to use for sorting the response.\n\nNote: Supported values are \"ID\" and \"NAME\" only. For any other values, the obtained result is sorted or not is not confirmed."
-      isArray: false
       name: sort_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: ASC
       description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
-      isArray: false
       name: sort_order
       predefined:
-        - ASC
-        - DESC
-      required: false
-      secret: false
-      deprecated: false
+      - ASC
+      - DESC
     description: "Retrieve the list of Rubrik objects, based on the provided filters."
-    execution: false
     name: rubrik-polaris-object-list
     outputs:
     - contextPath: RubrikPolaris.Object.id
@@ -2228,57 +1757,28 @@ script:
       description: Next page token.
       type: String
   - arguments:
-    - default: false
-      description: "The object ID for which the snapshots are to be searched.\n\nNote: Users can get the list of the object IDs by executing the \"rubrik-polaris-object-list\" command."
-      isArray: false
+    - description: "The object ID for which the snapshots are to be searched.\n\nNote: Users can get the list of the object IDs by executing the \"rubrik-polaris-object-list\" command."
       name: object_id
       required: true
-      secret: false
-    - default: false
-      description: "The start date to get snapshots from.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nNote: start_date and end_date both or none must be initialized."
-      isArray: false
+    - description: "The start date to get snapshots from.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nNote: start_date and end_date both or none must be initialized."
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: "The end date to get snapshots until.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nNote: start_date and end_date both or none must be initialized."
-      isArray: false
+    - description: "The end date to get snapshots until.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\n\nNote: start_date and end_date both or none must be initialized."
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 50
+    - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The next page cursor to retrieve the next set of results.
-      isArray: false
+    - description: The next page cursor to retrieve the next set of results.
       name: next_page_token
-      required: false
-      secret: false
-    - default: false
-      description: "List of snapshot types to filter snapshots. Supports comma separated values.\n\nPossible values are: \"SCHEDULED\", \"ON_DEMAND\", \"DOWNLOADED\"."
-      isArray: false
+    - description: "List of snapshot types to filter snapshots. Supports comma separated values.\n\nPossible values are: \"SCHEDULED\", \"ON_DEMAND\", \"DOWNLOADED\"."
       name: snapshot_type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: Asc
-      description: "Specify the order to sort the data in.\n\nPossible values are: \"Asc\", \"Desc\"."
-      isArray: false
+      defaultValue: ASC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
       name: sort_order
       predefined:
-        - Asc
-        - Desc
-      required: false
-      secret: false
-      deprecated: false
+      - ASC
+      - DESC
     description: "Retrieve Rubrik snapshot(s) of an object, based on the provided object ID."
-    execution: false
     name: rubrik-polaris-object-snapshot-list
     outputs:
     - contextPath: RubrikPolaris.Object.id
@@ -2357,101 +1857,61 @@ script:
       description: Next Page Token.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the cluster on which to perform a scan.
 
         Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command.
-      isArray: false
       name: cluster_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Object ID of the system on which to perform the scan. Supports comma separated values.
 
         Note: Users can get the list of object IDs by executing the "rubrik-polaris-vm-objects-list" command.
       isArray: true
       name: object_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: PAXSOAR-1.1.0
+    - defaultValue: PAXSOAR-1.1.0
       description: Name of the scan.
-      isArray: false
       name: scan_name
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The type of the indicator to scan for.
 
         Possible values are: "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME", "INDICATOR_OF_COMPROMISE_TYPE_HASH", "INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE".
 
         Note: To provide multiple IOCs use the argument "advance_ioc".
-      isArray: false
       name: ioc_type
       predefined:
       - INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME
       - INDICATOR_OF_COMPROMISE_TYPE_HASH
       - INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Value of the indicator to scan for.
 
         Note: To provide multiple IOCs use the argument "advance_ioc".
-      isArray: false
       name: ioc_value
-      required: false
-      secret: false
-    - default: false
-      description: "Json encoded Indicators Of Compromise to scan. Json keys signify\
-        \ the type of IOC and the corresponding list of values are the values of the\
-        \ IOC's. If provided, will ignore the ioc_type and ioc_value arguments.\n\n\
-        Possible keys to indicate type of indicator: \nINDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, \
-        INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\n\
-        \nFormat Accepted:\n{\n\"<ioc_type1>\": [\"<ioc_value1>\", \"<ioc_value2>\"\
-        ],\n\"<ioc_type2>\": \"<ioc_value2>\"\n}\n\nExample:\n{\n\"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME\"\
-        : [\"C:\\Users\\Malware_Executible.ps1\", \"\\bin\\Malware_Executible\"],\n\
-        \"INDICATOR_OF_COMPROMISE_TYPE_HASH\": [\"e5c1b9c44be582f895eaea3d3738c5b4\", \"f541b9844be897f895eaea3d3738cfb2\"\
-        ],\n\"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\": \"rule match_everything {condition:true}\"\n}"
-      isArray: false
+    - description: "Json encoded Indicators Of Compromise to scan. Json keys signify the type of IOC and the corresponding list of values are the values of the IOC's. If provided, will ignore the ioc_type and ioc_value arguments.\n\nPossible keys to indicate type of indicator: \nINDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\n\nFormat Accepted:\n{\n\"<ioc_type1>\": [\"<ioc_value1>\", \"<ioc_value2>\"],\n\"<ioc_type2>\": \"<ioc_value2>\"\n}\n\nExample:\n{\n\"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME\": [\"C:\\Users\\Malware_Executible.ps1\", \"\\bin\\Malware_Executible\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_HASH\": [\"e5c1b9c44be582f895eaea3d3738c5b4\", \"f541b9844be897f895eaea3d3738cfb2\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\": \"rule match_everything {condition:true}\"\n}"
       name: advance_ioc
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
 
         Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
-      isArray: false
       name: start_date
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
 
         Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.
-      isArray: false
       name: end_date
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of snapshots to scan per object.
-      isArray: false
+    - description: Maximum number of snapshots to scan per object.
       name: max_snapshots_per_object
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: Maximum size of the file in bytes that will be included in the scan. The maximum allowed size is 15000000 bytes.
+      defaultValue: 5000000
+      name: max_file_size
+    - description: |-
         Provide comma separated snapshot IDs on which to perform a scan separated by colon for each object ID (in the same order). Supports comma separated values.
 
         Format accepted:
@@ -2465,53 +1925,37 @@ script:
         Note: Do not provide "snapshot_start_date", "snapshot_end_date" and, "max_snapshots_per_object" arguments if snapshot ID is provided.
       isArray: true
       name: snapshot_id
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Paths to include in the scan. Supports comma separated values.
 
         Format accepted:
         path_to_include_1, path_to_include_2
       isArray: true
       name: paths_to_include
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Paths to exclude from the scan. Supports comma separated values.
 
         Format accepted:
         path_to_exclude_1, path_to_exclude_2
       isArray: true
       name: paths_to_exclude
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Paths to exempt from exclusion. Supports comma separated values.
 
         Format accepted:
         path_to_exempt_1, path_to_exempt_2
       isArray: true
       name: paths_to_exempt
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The type of hash values of the matched files to return in the result. Supports comma separated values.
 
         Possible values are: "HASH_TYPE_M_D5", "HASH_TYPE_SH_A1", "HASH_TYPE_SH_A256".
       isArray: true
       name: requested_hash_types
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Triggers an IOC scan of a system.
 
       Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" command and to list the running/completed IOC scans on a cluster use the "rubrik-radar-ioc-scan-list" command.
-    execution: false
     name: rubrik-radar-ioc-scan
     outputs:
     - contextPath: RubrikPolaris.RadarIOCScan.id
@@ -2521,30 +1965,22 @@ script:
       description: Status of the IOC scan trigger request.
       type: String
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the IOC scan whose results are to be retrieved.
 
         Note: Users can get the scan ID by executing the "rubrik-radar-ioc-scan" command.
-      isArray: false
       name: scan_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         ID of the cluster on which the scan was performed.
 
         Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command.
-      isArray: false
       name: cluster_id
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Retrieves the results of IOC scan of a system.
 
       Note: To initiate a scan use the "rubrik-radar-ioc-scan" command and to list the running/completed scans on a cluster use the "rubrik-radar-ioc-scan-list" command.
-    execution: false
     name: rubrik-radar-ioc-scan-results
     outputs:
     - contextPath: RubrikPolaris.RadarIOCScan.id
@@ -2563,8 +1999,7 @@ script:
       description: ID of the system that was scanned.
       type: String
     - contextPath: RubrikPolaris.RadarIOCScan.results.snapshotResults.status
-      description: 'Status of the scan on the snapshot. Values: MALWARE_SCAN_IN_SNAPSHOT_STATUS_PENDING,
-        MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED, MALWARE_SCAN_IN_SNAPSHOT_STATUS_ERROR.'
+      description: 'Status of the scan on the snapshot. Values: MALWARE_SCAN_IN_SNAPSHOT_STATUS_PENDING, MALWARE_SCAN_IN_SNAPSHOT_STATUS_FINISHED, MALWARE_SCAN_IN_SNAPSHOT_STATUS_ERROR.'
       type: String
     - contextPath: RubrikPolaris.RadarIOCScan.results.snapshotResults.snapshotDate
       description: The date-time at which the snapshot was taken.
@@ -2609,26 +2044,15 @@ script:
       description: Hash value of the content at path.
       type: String
   - arguments:
-    - default: false
-      description: "ID of the request.\n\nNote: Users can get the request ID by executing any of the commands that make a request. Possible commands are mentioned in the command description."
-      isArray: false
+    - description: "ID of the request.\n\nNote: Users can get the request ID by executing any of the commands that make a request. Possible commands are mentioned in the command description."
       name: request_id
       required: true
-      secret: false
-    - default: false
-      description: "ID of the cluster on which request was made.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "ID of the cluster on which request was made.\n\nNote: Users can retrieve the list of the cluster IDs by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_id
       required: true
-      secret: false
-    - default: false
-      description: "IP address of the cluster node to access the download link. Only required to retrieve the results of the command \"rubrik-gps-snapshot-files-download\".\n\nNote: Users can retrieve the list of the IP addresses by executing the \"rubrik-gps-cluster-list\" command."
-      isArray: false
+    - description: "IP address of the cluster node to access the download link. Only required to retrieve the results of the command \"rubrik-gps-snapshot-files-download\".\n\nNote: Users can retrieve the list of the IP addresses by executing the \"rubrik-gps-cluster-list\" command."
       name: cluster_ip_address
-      required: false
-      secret: false
     description: "Retrieve the result of an asynchronous request. This command will retrieve the result of requests made by commands \"rubrik-gps-snapshot-files-download\", \"rubrik-gps-vm-livemount\", \"rubrik-gps-vm-export\", \"rubrik-gps-vm-snapshot-create\" and \"rubrik-gps-vm-recover-files\"."
-    execution: false
     name: rubrik-gps-async-result
     outputs:
     - contextPath: RubrikPolaris.GPSAsyncResult.id
@@ -2653,39 +2077,21 @@ script:
       description: Type of the resource pointed by the link.
       type: String
   - arguments:
-    - default: false
-      description: "Filter out clusters based on their type. Supports comma separated values.\n\nPossible values are: \"Cloud\", \"Robo\", \"ExoCompute\", \"OnPrem\", \"Polaris\", \"Unknown\"."
-      isArray: false
+    - description: "Filter out clusters based on their type. Supports comma separated values.\n\nPossible values are: \"Cloud\", \"Robo\", \"ExoCompute\", \"OnPrem\", \"Polaris\", \"Unknown\"."
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: "Filter out clusters based on name. Supports comma separated values."
-      isArray: false
+    - description: "Filter out clusters based on name. Supports comma separated values."
       name: name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ClusterName
+    - defaultValue: ClusterName
       description: "Specify the field to use for sorting the response.\n\nPossible values are: \"ClusterName\", \"ClusterType\", \"RegisteredAt\".\nAdditional values can be found in the documentation."
-      isArray: false
       name: sort_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: Asc
-      description: "Specify the order to sort the data in.\n\nPossible values are: \"Asc\", \"Desc\"."
-      isArray: false
+      defaultValue: ASC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
       name: sort_order
       predefined:
-        - Asc
-        - Desc
-      required: false
-      secret: false
-      deprecated: false
+      - ASC
+      - DESC
     description: "Retrieve the list of the available rubrik clusters."
-    execution: false
     name: rubrik-gps-cluster-list
     outputs:
     - contextPath: RubrikPolaris.GPSCluster.id
@@ -2782,21 +2188,16 @@ script:
       description: Whether Polaris Sonar was ever enabled on the cluster.
       type: Boolean
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the cluster whose IOC scans are to be listed.
 
         Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command.
-      isArray: false
       name: cluster_id
       required: true
-      secret: false
-    deprecated: false
     description: |-
       Lists the running/completed IOC scans on a cluster.
 
       Note: To know the results of the scan use the "rubrik-radar-ioc-scan-results" command. To initiate a scan use the "rubrik-radar-ioc-scan" command.
-    execution: false
     name: rubrik-radar-ioc-scan-list
     outputs:
     - contextPath: RubrikPolaris.RadarIOCScan.id
@@ -2815,64 +2216,44 @@ script:
       description: List of snapshot IDs that are included in the scan.
       type: Unknown
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         ID of the snapshot from which to recover files.
 
         Note: Users can get the snapshot ID by executing the "rubrik-polaris-vm-object-snapshot-list" command.
-      isArray: false
       name: snapshot_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         ID of the cluster where the snapshot resides.
 
         Note: Users can get the cluster ID by executing the "rubrik-gps-cluster-list" command.
-      isArray: false
       name: cluster_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         Comma separated paths of files and directories that will be recovered from the snapshot.
 
         Note: Users can get the list of paths in a snapshot by executing the "rubrik-gps-snapshot-files-list" command.
       isArray: true
       name: paths_to_recover
       required: true
-      secret: false
-    - default: false
-      description: Path on the destination object on which recovery will be done.
-      isArray: false
+    - description: Path on the destination object on which recovery will be done.
       name: restore_path
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         ID of the object where the files will be restored into. If not provided, Rubrik will use the snapshots object.
 
         Note: Users can get the object ID by executing the "rubrik-polaris-vm-objects-list" command.
-      isArray: false
       name: destination_object_id
-      required: false
-      secret: false
-    deprecated: false
     description: |-
       Recovers files from a snapshot backup, back into a system.
 
       Note: To know about the recovery status, use the "rubrik-gps-async-result" command.
-    execution: false
     name: rubrik-gps-vm-recover-files
     outputs:
     - contextPath: RubrikPolaris.GPSVMRecoverFiles.id
       description: Recover files request ID.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.51139
-  feed: false
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.66905
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

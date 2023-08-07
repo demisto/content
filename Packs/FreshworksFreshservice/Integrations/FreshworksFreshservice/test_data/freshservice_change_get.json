@@ -1,0 +1,30 @@
+{
+    "change": {
+        "agent_id": null,
+        "group_id": null,
+        "priority": 1,
+        "impact": 1,
+        "status": 1,
+        "risk": 1,
+        "change_type": 1,
+        "planned_start_date": "changes[0]_planned_start_date",
+        "planned_end_date": "changes[0]_planned_end_date",
+        "subject": "Getting ES3 back up to speed",
+        "department_id": null,
+        "category": null,
+        "sub_category": null,
+        "item_category": null,
+        "description": "<div>Hi Team, <br/><br/> One of our email servers, Exchange Server (ES3) has been acting up.  We tried rebooting it, but that didn\u2019t help. We need to get it replaced ASAP. <br/><br/>Regards<br/> Rachel<br/> </div>",
+        "description_text": null,
+        "id": 1,
+        "requester_id": 21001397561,
+        "approval_status": 4,
+        "change_window_id": null,
+        "created_at": "changes[0]_created_at",
+        "updated_at": "changes[0]_updated_at",
+        "maintenance_window": {},
+        "blackout_window": {},
+        "assets": [],
+        "impacted_services": []
+    }
+}

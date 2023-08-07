@@ -8,15 +8,15 @@ commonfields:
 configuration:
 - display: Fetch incidents
   name: isFetch
-  required: false
   defaultvalue: 'true'
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -25,9 +25,9 @@ configuration:
   - Incoming
   - Outgoing
   - Both
-  required: false
   type: 15
   section: Collect
+  required: false
 - display: Server URL (copy URL from XDR)
   name: url
   required: true
@@ -36,90 +36,90 @@ configuration:
 - displaypassword: API Key ID
   name: apikey_id_creds
   type: 9
-  required: false
   hiddenusername: true
   display: ''
   section: Connect
+  required: false
 - displaypassword: API Key
   name: apikey_creds
   type: 9
-  required: false
   hiddenusername: true
   display: ''
   section: Connect
+  required: false
 - display: API Key ID
   name: apikey_id
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: API Key
   name: apikey
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Only fetch starred incidents
   name: starred
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Fetches only starred incidents within the specified time range.
   defaultvalue: 3 days
   display: Starred incidents fetch window
   name: starred_incidents_fetch_window
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR.
   display: Sync Incident Owners
   name: sync_owners
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Prevent Only Mode
   name: prevent_only
-  required: false
   type: 8
   additionalinfo: Whether the XDR tenant Mode is prevent only
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Statuses to Fetch
   name: status
@@ -132,10 +132,10 @@ configuration:
   - resolved_security_testing
   - resolved_other
   - resolved_auto
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -599,7 +599,6 @@ script:
       - 'true'
     - description: Add a comment to the incident.
       name: add_comment
-      required: false
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
@@ -758,14 +757,9 @@ script:
       - 'true'
       - 'false'
   - arguments:
-    - description: The status of the endpoint to filter.
+    - description: 'A comma-separated list of endpoints statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
       name: status
-      auto: PREDEFINED
-      predefined:
-      - connected
-      - disconnected
-      - lost
-      - uninstalled
+      isArray: true
     - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_id_list
@@ -953,99 +947,99 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-      - description: The status of the endpoint to use as a filter.
-        name: status
-        auto: PREDEFINED
-        predefined:
-          - connected
-          - disconnected
-      - description: A comma-separated list of endpoint IDs to use as a filter.
-        isArray: true
-        name: endpoint_id_list
-      - description: |-
-          A comma-separated list of distribution package names or installation package names to use as a filter.
-          Example: dist_name1,dist_name2
-        isArray: true
-        name: dist_name
-      - description: |-
-          A comma-separated list of IP addresses to use as a filter.
-          Example: 8.8.8.8,1.1.1.1
-        isArray: true
-        name: ip_list
-      - description: A comma-separated list of group names to which the agent belongs to use as a filter.
-        isArray: true
-        name: group_name
-      - description: The endpoint platform to use as a filter.
-        isArray: true
-        name: platform
-        auto: PREDEFINED
-        predefined:
-          - windows
-          - linux
-          - macos
-          - android
-      - description: |-
-          A comma-separated list of alias names to use as a filter.
-          Examples: alias_name1,alias_name2
-        isArray: true
-        name: alias_name
-      - auto: PREDEFINED
-        description: Specifies whether the endpoint was isolated or unisolated to use as a filter.
-        name: isolate
-        predefined:
-          - isolated
-          - unisolated
-      - description: A comma-separated list of hostnames to use as a filter.
-        isArray: true
-        name: hostname
-      - description: |-
-          All the agents that were first seen after {first_seen_gte} to use as a filter.
-          Supported values:
-          1579039377301 (time in milliseconds)
-          "3 days" (relative date)
-          "2019-10-21T23:45:00" (date)
-        name: first_seen_gte
-      - description: |-
-          All the agents that were first seen before {first_seen_lte} to use as a filter.
-          Supported values:
-          1579039377301 (time in milliseconds)
-          "3 days" (relative date)
-          "2019-10-21T23:45:00" (date)
-        name: first_seen_lte
-      - description: |-
-          All the agents that were last seen after {last_seen_gte} to use as a filter.
-          Supported values:
-          1579039377301 (time in milliseconds)
-          "3 days" (relative date)
-          "2019-10-21T23:45:00" (date)
-        name: last_seen_gte
-      - description: |-
-          All the agents that were last seen before {last_seen_lte} to use as a filter.
-          Supported values:
-          1579039377301 (time in milliseconds)
-          "3 days" (relative date)
-          "2019-10-21T23:45:00" (date)
-        name: last_seen_lte
-      - name: username
-        description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
-        isArray: true
-      - name: new_alias_name
-        required: true
-        description: |-
-          The alias name to change to.
-          Note: If you send an empty field, (e.g new_alias_name=\"\") the current alias name is deleted.
-      - name: scan_status
-        description: The scan status of the endpoint to use as a filter.
-        auto: PREDEFINED
-        predefined:
-          - none
-          - pending
-          - in_progress
-          - canceled
-          - aborted
-          - pending_cancellation
-          - success
-          - error
+    - description: The status of the endpoint to use as a filter.
+      name: status
+      auto: PREDEFINED
+      predefined:
+      - connected
+      - disconnected
+    - description: A comma-separated list of endpoint IDs to use as a filter.
+      isArray: true
+      name: endpoint_id_list
+    - description: |-
+        A comma-separated list of distribution package names or installation package names to use as a filter.
+        Example: dist_name1,dist_name2
+      isArray: true
+      name: dist_name
+    - description: |-
+        A comma-separated list of IP addresses to use as a filter.
+        Example: 8.8.8.8,1.1.1.1
+      isArray: true
+      name: ip_list
+    - description: A comma-separated list of group names to which the agent belongs to use as a filter.
+      isArray: true
+      name: group_name
+    - description: The endpoint platform to use as a filter.
+      isArray: true
+      name: platform
+      auto: PREDEFINED
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+    - description: |-
+        A comma-separated list of alias names to use as a filter.
+        Examples: alias_name1,alias_name2
+      isArray: true
+      name: alias_name
+    - auto: PREDEFINED
+      description: Specifies whether the endpoint was isolated or unisolated to use as a filter.
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+    - description: A comma-separated list of hostnames to use as a filter.
+      isArray: true
+      name: hostname
+    - description: |-
+        All the agents that were first seen after {first_seen_gte} to use as a filter.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      name: first_seen_gte
+    - description: |-
+        All the agents that were first seen before {first_seen_lte} to use as a filter.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      name: first_seen_lte
+    - description: |-
+        All the agents that were last seen after {last_seen_gte} to use as a filter.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      name: last_seen_gte
+    - description: |-
+        All the agents that were last seen before {last_seen_lte} to use as a filter.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      name: last_seen_lte
+    - name: username
+      description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
+      isArray: true
+    - name: new_alias_name
+      required: true
+      description: |-
+        The alias name to change to.
+        Note: If you send an empty field, (e.g., new_alias_name=\"\") the current alias name is deleted.
+    - name: scan_status
+      description: The scan status of the endpoint to use as a filter.
+      auto: PREDEFINED
+      predefined:
+      - none
+      - pending
+      - in_progress
+      - canceled
+      - aborted
+      - pending_cancellation
+      - success
+      - error
     description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
     name: xdr-endpoint-alias-change
   - description: Gets a list of all the agent versions to use for creating a distribution list.
@@ -2665,7 +2659,6 @@ script:
     - description: The endpoint host name.
       isArray: true
       name: hostname
-      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2694,15 +2687,10 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The status of the endpoint to filter.
+    - description: 'A comma-separated list of enpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
       name: status
-      predefined:
-      - connected
-      - disconnected
-      - lost
-      - uninstalled
       required: true
+      isArray: true
     - description: |-
         All the agents that were last seen before {last_seen_gte}. Supported
                 values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
@@ -2960,15 +2948,9 @@ script:
     - description: Remote IP address for the connection.
       isArray: true
       name: action_remote_ip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert action status
-      isArray: false
       name: alert_action_status
-      required: false
-      secret: false
       predefined:
       - detected
       - detected (allowed the session)
@@ -3007,8 +2989,7 @@ script:
       - prevented (terminated the session and sent a tcp reset to the client)
       - prevented (terminated the session and sent a tcp reset to the server)
       - prevented (on write)
-    - default: false
-      description: The local IP address for the connection.
+    - description: The local IP address for the connection.
       isArray: true
       name: action_local_port
     - description: The remote port for the connection.
@@ -3294,9 +3275,182 @@ script:
       type: Number
     arguments: []
     description: Provides information about the tenant.
-  dockerimage: demisto/python3:3.10.10.49934
+  - name: xdr-list-users
+    description: Retrieve a list of the current users in the environment.
+    arguments: []
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.User.user_email
+      description: Email address of the user
+      type: string
+    - contextPath: PaloAltoNetworksXDR.User.user_first_name
+      description: First name of the user
+      type: string
+    - contextPath: PaloAltoNetworksXDR.User.user_last_name
+      description: Last name of the user.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.User.role_name
+      description: Role name associated with the user.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.User.last_logged_in
+      description: Timestamp of when the user last logged in.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.User.user_type
+      description: Type of user.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.User.groups
+      description: Name of user groups associated with the user, if applicable.
+      type: array
+    - contextPath: PaloAltoNetworksXDR.User.scope
+      description: Name of scope associated with the user, if applicable.
+      type: array
+  - arguments:
+    - description: |
+        Unique ID of a specific user.
+        User ID could be either of the `foo/dummy` format, or just `dummy`.
+      name: user_id
+    - description: Limit the number of users that will appear in the list. (Use limit when no specific host is requested.)
+      name: limit
+      defaultValue: 50
+    name: xdr-list-risky-users
+    description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.type
+      description: Form of identification element.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.id
+      description: Identification value of the type field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.score
+      description: The score assigned to the user.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.date created
+      description: Date when the incident was created.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.description
+      description: Description of the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
+      description: The severity of the incident
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
+      description: The incident status
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
+      description: The score.
+      type: Number
+  - arguments:
+    - description: >
+        Unique ID of a specific host.
+      name: host_id
+    - description: Limit the number of hosts that will appear in the list. By default, the limit is 50 hosts.(Use limit when no specific host is requested.)
+      name: limit
+      defaultValue: 50
+    name: xdr-list-risky-hosts
+    description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.type
+      description: Form of identification element.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.id
+      description: Identification value of the type field.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.score
+      description: The score assigned to the host.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
+      description: Date when the incident was created.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description
+      description: Description of the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.severity
+      description: The severity of the incident
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
+      description: The incident status
+      type: String
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
+      description: The score.
+      type: Number
+  - arguments:
+    - description: A comma-separated list of one or more user group names for which you want the associated users.
+      name: group_names
+      isArray: true
+      required: true
+    name: xdr-list-user-groups
+    description: Retrieve a list of the current user emails associated with one or more user groups in the environment.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.UserGroup.group_name
+      description: Name of the user group.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.UserGroup.description
+      description: Description of the user group, if available.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.UserGroup.pretty_name
+      description: Name of the user group as it appears in the management console.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.UserGroup.insert_time
+      description: Timestamp of when the user group was created.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.UserGroup.update_time
+      description: Timestamp of when the user group was last updated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.UserGroup.user_email
+      description: List of email addresses belonging to the users associated with the user group.
+      type: array
+    - contextPath: PaloAltoNetworksXDR.UserGroup.source
+      description: Type of user group.
+      type: String
+  - arguments:
+    - description: A comma-separated list of one or more role names in your environment for which you want detailed information.
+      name: role_names
+      required: true
+    name: xdr-list-roles
+    description: Retrieve information about one or more roles created in the environment.
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Role.pretty_name
+      description: Name of the role as it appears in the management console.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Role.permissions
+      description: List of permissions associated with this role.
+      type: array
+    - contextPath: PaloAltoNetworksXDR.Role.insert_time
+      description: Timestamp of when the role was created.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Role.update_time
+      description: Timestamp of when the role was last updated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Role.created_by
+      description: Email of the user who created the role.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Role.description
+      description: Description of the role, if available.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Role.groups
+      description: Group names associated with the role.
+      type: array
+    - contextPath: PaloAltoNetworksXDR.Role.users
+      description: Email address of users associated with the role.
+      type: array
+  - arguments:
+    - description: A comma-separated list of one or more user emails of users you want to add to a role.
+      name: user_emails
+      required: true
+      isArray: true
+    - description: Name of the role you want to add a user to.
+      name: role_name
+      required: true
+    name: xdr-set-user-role
+    description: Add one or more users to a role.
+  - arguments:
+    - description: A comma-separate list of one or more user emails of users you want to remove from a role.
+      name: user_emails
+      required: true
+      isArray: true
+    name: xdr-remove-user-role
+    description: Remove one or more users from a role.
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  runonce: false
   script: ''
   subtype: python3
   ismappable: true

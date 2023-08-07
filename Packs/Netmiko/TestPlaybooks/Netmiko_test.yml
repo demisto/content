@@ -1,0 +1,166 @@
+id: Netmiko_test
+version: -1
+name: Netmiko_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61485548-3e02-40e3-8af7-87b5a2380cd2
+    type: start
+    task:
+      id: 61485548-3e02-40e3-8af7-87b5a2380cd2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 750e06d9-e93d-450a-8ee2-27b0e4b8e9be
+    type: regular
+    task:
+      id: 750e06d9-e93d-450a-8ee2-27b0e4b8e9be
+      version: -1
+      name: Echo 'test'
+      description: Execute commands over SSH using Netmiko
+      script: Netmiko|||netmiko-cmds
+      type: regular
+      iscommand: true
+      brand: Netmiko
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmds:
+        simple: |-
+          echo 'test'
+          echo 'test2'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d4e16a00-c2b8-4efa-85fb-4ade8e1c9a34
+    type: condition
+    task:
+      id: d4e16a00-c2b8-4efa-85fb-4ade8e1c9a34
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Valid:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Valid
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Netmiko.Commands.[0].Output
+            iscontext: true
+          right:
+            value:
+              simple: test
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Netmiko.Commands.[1].Output
+            iscontext: true
+          right:
+            value:
+              simple: test2
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4a83fb0b-d37f-40b7-82f2-1699227f4cc4
+    type: title
+    task:
+      id: 4a83fb0b-d37f-40b7-82f2-1699227f4cc4
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.6.0
+description: ''

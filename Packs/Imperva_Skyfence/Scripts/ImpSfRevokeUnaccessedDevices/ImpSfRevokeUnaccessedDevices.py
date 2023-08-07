@@ -58,7 +58,7 @@ def main():
             if endpoint_status == 'managed':
                 # check if over three month passed
                 if timestamp and ((current_timestamp - timestamp) - THREE_MONTH_MILLISECOND) > 0:
-                    resp = demisto.executeCommand("ImpSfSetEndpointStatus", {
+                    resp = demisto.executeCommand("imp-sf-set-endpoint-status", {
                                                   'endpointId': user['endpoint_id'], 'action': 'revoke'})
                     if isError(resp):
                         error_users.append({"user_data": user, "user_error": resp})

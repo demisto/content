@@ -73,7 +73,6 @@ script:
     - name: time_last_after
       description: Filter results for entries seen for last time after (seconds)
     description: Lookup rrser records
-  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0

@@ -1,43 +1,41 @@
 category: Network Security
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: PaloAltoNetworks_PrismaCloudCompute
   version: -1
 configuration:
 - name: isFetch
   display: Fetch incidents
-  required: false
   type: 8
   section: Collect
+  required: false
 - name: address
-  display: Prisma Cloud Compute Console URL and Port
+  display: |-
+    Prisma Cloud Compute Console URL and Port
   required: true
   type: 0
   additionalinfo: URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, for example https://example.net:1234
   section: Connect
 - name: project
   display: Prisma Cloud Compute Project Name (if applicable)
-  required: false
   defaultvalue:
   type: 0
   additionalinfo: Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field.
   section: Connect
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
-  required: false
   type: 8
   additionalinfo: Skips verification of the CA certificate (not recommended).
   section: Connect
   advanced: true
+  required: false
 - name: proxy
   display: Use system proxy settings
-  required: false
   type: 8
   additionalinfo: Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.
   section: Connect
   advanced: true
+  required: false
 - name: credentials
   display: Username
   required: true
@@ -45,28 +43,25 @@ configuration:
   type: 9
   additionalinfo: Prisma Cloud Compute login credentials.
   displaypassword: ""
-  hiddenusername: false
   section: Connect
 - name: certificate
   display: Prisma Cloud Compute CA Certificate
-  required: false
   defaultvalue:
   type: 12
   additionalinfo: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
   section: Connect
+  required: false
 - name: incidentType
   display: Incident type
-  required: false
   type: 13
   section: Connect
+  required: false
 description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3
@@ -74,22 +69,16 @@ script:
   commands:
   - name: prisma-cloud-compute-profile-host-list
     description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
-    deprecated: false
     arguments:
     - name: hostname
       description: A comma-separated list of profile (hostname) IDs. For example, !prisma-cloud-compute-profile-host-list hostname="*149*,*257*".
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit
       description: The maximum number of hosts and their profile events to return. Must be between 1-50.
-      required: false
-      isArray: false
       defaultValue: "15"
     - name: offset
       description: The offset by which to begin listing hosts and their profile events.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.ProfileHost._id
@@ -232,52 +221,40 @@ script:
       type: Date
   - name: prisma-cloud-compute-profile-container-list
     description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
-    deprecated: false
     arguments:
     - name: cluster
       description: A comma-separated list of runtime profile Kubernetes clusters.
-      required: false
       isArray: true
       defaultValue: ""
     - name: id
       description: A comma-separated list of runtime profile (hostname) IDs. For example, !prisma-cloud-compute-profile-container-list id="*256*,*148*".
-      required: false
       isArray: true
       defaultValue: ""
     - name: image
       description: A comma-separated list of runtime profile images. For example, !prisma-cloud-compute-profile-container-list image="*console*,*defender*".
-      required: false
       isArray: true
       defaultValue: ""
     - name: image_id
       description: A comma-separated list of runtime profile image IDs. For example, !prisma-cloud-compute-profile-container-list image_id="*123*,*456*".
-      required: false
       isArray: true
       defaultValue: ""
     - name: namespace
       description: A comma-separated list of runtime profile Kubernetes namespaces. For example, !prisma-cloud-compute-profile-container-list namespace="*namespace1*,*namespace2*".
-      required: false
       isArray: true
       defaultValue: ""
     - name: os
       description: A comma-separated list of service runtime profile operating systems. For example, !prisma-cloud-compute-profile-container-list os="*Red Hat*,*Windows*".
-      required: false
       isArray: true
       defaultValue: ""
     - name: state
       description: A comma-separated list of runtime profile states. For example, !prisma-cloud-compute-profile-container-list state=*active*.
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit
       description: The maximum number of containers and their profile events. Must be between 1-50.
-      required: false
-      isArray: false
       defaultValue: "15"
     - name: offset
       description: The offset by which to begin listing containers and their profile events.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.ProfileContainer._id
@@ -531,22 +508,16 @@ script:
       type: String
   - name: prisma-cloud-compute-profile-container-hosts-list
     description: Get the hosts where a specific container is running.
-    deprecated: false
     arguments:
     - name: id
       description: Container profile ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
       required: true
-      isArray: false
       defaultValue: ""
     - name: limit
       description: The maximum number of hosts to return. Must be between 1-50.
-      required: false
-      isArray: false
       defaultValue: "50"
     - name: offset
       description: The offset by which to begin listing hosts of the container.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.ProfileContainerHost.containerID
@@ -557,37 +528,27 @@ script:
       type: String
   - name: prisma-cloud-compute-profile-container-forensic-list
     description: Get runtime forensics data for a specific container on a specific. host
-    deprecated: false
     arguments:
     - name: id
       description: The container ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
       required: true
-      isArray: false
       defaultValue: ""
     - name: collections
       description: The collections scoping the query.
-      required: false
-      isArray: false
       defaultValue: ""
     - name: hostname
       description: The hostname for which data should be fetched.
       required: true
-      isArray: false
       defaultValue: ""
     - name: incident_id
       description: A comma-separated list of incident IDs if the request type is an incident.
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit
       description: The maximum number of forensics data records to return. Must be between 1-50.
-      required: false
-      isArray: false
       defaultValue: "20"
     - name: offset
       description: The offset by which to begin listing records from.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.ContainerForensic.containerID
@@ -670,32 +631,24 @@ script:
       type: String
   - name: prisma-cloud-compute-host-forensic-list
     description: Get forensics on a specific host.
-    deprecated: false
     arguments:
     - name: id
       description: The host ID. Can be retrieved from the prisma-cloud-compute-profile-host-list command.
       required: true
-      isArray: false
       defaultValue: ""
     - name: collections
       description: A comma-separated list of collections.
-      required: false
       isArray: true
       defaultValue: ""
     - name: incident_id
       description: A comma-separated list of incident IDs in case the request type is an incident.
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit
       description: The maximum number of forensics data records to return. Must be between 1-50.
-      required: false
-      isArray: false
       defaultValue: "20"
     - name: offset
       description: The offset by which to begin listing host forensics from.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.HostForensic.Forensics.app
@@ -760,7 +713,6 @@ script:
       type: String
   - name: prisma-cloud-compute-console-version-info
     description: Get the console version.
-    deprecated: false
     arguments: []
     outputs:
     - contextPath: PrismaCloudCompute.Console.Version
@@ -768,7 +720,6 @@ script:
       type: String
   - name: prisma-cloud-compute-custom-feeds-ip-list
     description: Get all the blacklisted IP addresses in the system.
-    deprecated: false
     arguments: []
     outputs:
     - contextPath: PrismaCloudCompute.CustomFeedIP.digest
@@ -782,7 +733,6 @@ script:
       type: Date
   - name: prisma-cloud-compute-custom-feeds-ip-add
     description: Add a list of banned IP addresses to be blocked by the system.
-    deprecated: false
     arguments:
     - name: ip
       description: A comma-separated list of custom IP addresses to add to the banned IPs list that will be blocked. For example ip=1.1.1.1,2.2.2.2.
@@ -792,12 +742,9 @@ script:
     outputs: []
   - name: prisma-cloud-compute-custom-feeds-malware-list
     description: List all custom uploaded md5 malwares.
-    deprecated: false
     arguments:
     - name: limit
       description: The maximum number of records of custom md5 malwares to return.
-      required: false
-      isArray: false
       defaultValue: "50"
     outputs:
     - contextPath: PrismaCloudCompute.CustomFeedMalware.digest
@@ -817,12 +764,10 @@ script:
       type: Date
   - name: prisma-cloud-compute-custom-feeds-malware-add
     description: Add custom MD5 malware hashes.
-    deprecated: false
     arguments:
     - name: name
       description: The name that will be attached to the MD5 records.
       required: true
-      isArray: false
       defaultValue: ""
     - name: md5
       description: A comma-separated list of MD5 hashes to be added.
@@ -832,13 +777,16 @@ script:
     outputs: []
   - name: cve
     description: Get information about the CVEs in the system. Will return a maximum of 50 records. It is possible to query for a partial CVE description such as cve-2020 or cve-2014 or by severity/distro/package.
-    deprecated: false
     arguments:
     - name: cve_id
-      description: A comma-separated list of CVEs, for example, cve_id=cve-2016-223,cve-2020-3546.
-      required: true
+      description: Deprecated. Use the `cve` argument instead.
       isArray: true
       defaultValue: ""
+    - name: cve
+      description: A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546.
+      isArray: true
+      defaultValue: ""
+      default: true
     outputs:
     - contextPath: CVE.ID
       description: "The ID of the CVE, for example: CVE-2015-1653."
@@ -866,40 +814,27 @@ script:
       type: String
   - name: prisma-cloud-compute-defenders-list
     description: Retrieve a list of defenders and their information.
-    deprecated: false
     arguments:
     - name: cluster
       description: The cluster name by which to scope the query.
-      required: false
-      isArray: false
       defaultValue: ""
     - name: hostname
       description: Name of a specific defender to retrieve. Can be retrieved from !prisma-cloud-compute-profile-host-list.
-      required: false
-      isArray: false
       defaultValue: ""
     - name: type
       description: Indicates the defender types to return (e.g., docker, dockerWindows, cri, etc.).
-      required: false
-      isArray: false
       defaultValue: ""
     - name: connected
       description: Indicates whether to return only connected defenders (true) or disconnected defenders (false).
-      required: false
-      isArray: false
       defaultValue: ""
       predefined:
       - "true"
       - "false"
     - name: limit
       description: The maximum number of defender records to return.
-      required: false
-      isArray: false
       defaultValue: "20"
     - name: offset
       description: The offset number by which to begin listing defenders and their information.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.DefenderDetails.category
@@ -967,12 +902,9 @@ script:
       type: String
   - name: prisma-cloud-compute-collections-list
     description: Retrieves a list of all collections.
-    deprecated: false
     arguments:
     - name: limit
       description: The maximum number of collections to return.
-      required: false
-      isArray: false
       defaultValue: "50"
     outputs:
     - contextPath: PrismaCloudCompute.Collection.accountIDs
@@ -1025,22 +957,17 @@ script:
       type: Boolean
   - name: prisma-cloud-compute-container-namespace-list
     description: Get the containers namespaces names.
-    deprecated: false
     arguments:
     - name: cluster
       description: A comma-separated list of cluster names to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: collections
       description: A comma-separated list of collections to filter the results by. Can be retrieved from !prisma-cloud-compute-collections-list.
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit
       description: The maximum number of namespace name records to return.
-      required: false
-      isArray: false
       defaultValue: "50"
     outputs:
     - contextPath: PrismaCloudCompute.RadarContainerNamespace
@@ -1048,65 +975,49 @@ script:
       type: String
   - name: prisma-cloud-compute-images-scan-list
     description: Get images scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
-    deprecated: false
     arguments:
     - name: clusters
       description: A comma-separated list of cluster names to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: compact
       description: Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata).
-      required: false
-      isArray: false
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
     - name: fields
-      description: A comma-separated list of fields to return.
-      required: false
+      description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
       defaultValue: ""
     - name: hostname
       description: A comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list.
-      required: false
       isArray: true
       defaultValue: ""
     - name: id
       description: A comma-separated list of image IDs to filter the results by. Run !prisma-cloud-compute-images-scan-list without any arguments to get image IDs.
-      required: false
       isArray: true
       defaultValue: ""
     - name: name
       description: A comma-separated list of image names to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: registry
       description: A comma-separated list of image registries to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: repository
       description: A comma-separated list of image repositories to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit_record
       description: The maximum number of scan image records to return.
-      required: false
-      isArray: false
       defaultValue: "10"
     - name: limit_stats
       description: The maximum number of compliance/vulnerability records to return.
-      required: false
-      isArray: false
       defaultValue: "10"
     - name: offset
       description: The offset by which to begin listing image scan results.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.ReportsImagesScan._id
@@ -1288,55 +1199,41 @@ script:
       type: Number
   - name: prisma-cloud-compute-hosts-scan-list
     description: Get hosts scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
-    deprecated: false
     arguments:
     - name: clusters
       description: A comma-separated list of cluster names to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: compact
       description: Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata).
-      required: false
-      isArray: false
       defaultValue: "true"
       predefined:
       - "true"
       - "false"
     - name: distro
       description: A comma-separated list of operating system distros to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: fields
-      description: A comma-separated list of fields to return.
-      required: false
+      description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
       defaultValue: ""
     - name: hostname
       description: A comma-separated list of hostnames to filter the results by. Can be retrieved from !prisma-cloud-compute-profile-host-list.
-      required: false
       isArray: true
       defaultValue: ""
     - name: provider
       description: A comma-separated list of cloud providers to filter the results by.
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit_record
       description: The maximum number of scan host records to return.
-      required: false
-      isArray: false
       defaultValue: "10"
     - name: limit_stats
       description: The maximum number of compliance/vulnerability records to return.
-      required: false
-      isArray: false
       defaultValue: "10"
     - name: offset
       description: The offset by which to begin listing host scan results.
-      required: false
-      isArray: false
       defaultValue: "0"
     outputs:
     - contextPath: PrismaCloudCompute.ReportHostScan._id
@@ -1488,27 +1385,19 @@ script:
       type: Unknown
   - name: prisma-cloud-compute-vulnerabilities-impacted-resources-list
     description: Get the list of Prisma Cloud Compute vulnerabilities resources.
-    deprecated: false
     arguments:
     - name: cve
       description: A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535
-      required: false
       isArray: true
       defaultValue: ""
     - name: limit
       description: The maximum number of records of impacted hosts/images to return.
-      required: false
-      isArray: false
       defaultValue: "50"
     - name: offset
       description: The offset by which to begin listing impacted hosts/images records.
-      required: false
-      isArray: false
       defaultValue: "0"
     - name: resourceType
       description: ResourceType is the single resource type to return vulnerability data for.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'container'
@@ -1634,10 +1523,429 @@ script:
       required: true
       description: The type of audit alert to retrieve
     - name: limit
-      required: false
       description: The limit of the number of alerts to return
     description: Get the audits for the firewall container policies
     outputs: []
+  - arguments:
+    - description: The project to get the alert profiles for.
+      name: project
+    description: Get the available alert alert profiles from a specific project.
+    name: prisma-cloud-compute-get-alert-profiles
+    outputs:
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Application
+      description: The alert profile application.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.CredentialId
+      description: The credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Enabled
+      description: Whether the alert profile is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Cortex.Url
+      description: The alert profile URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.CredentialId
+      description: The alert profile credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.Enabled
+      description: The email setting for the alert profile.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.From
+      description: The from setting for the email profile.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.Port
+      description: The email alert profile port.
+      type: Number
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.SmtpAddress
+      description: The SMTP address.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Email.Ssl
+      description: The email alert profile SSL.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.CredentialId
+      description: The credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.Enabled
+      description: Whether the GCP Pub Sub is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.GcpPubsub.Topic
+      description: The GCP Pub Sub topic.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.BaseUrl
+      description: The Jira base URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CaCert
+      description: The Jira CA Cert.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.CredentialId
+      description: The Jira credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.Enabled
+      description: Jira alert profile status.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.IssueType
+      description: The Jira issue type.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Jira.Priority
+      description: The Jira priority.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.LastError
+      description: The last error.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Modified
+      description: The modified time.
+      type: Date
+    - contextPath: PrismaCloudCompute.AlertProfiles.Name
+      description: The alert profile name.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Owner
+      description: The alert profile owner.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Pagerduty.RoutingKey.Encrypted
+      description: The PagerDuty routing key encryption status.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Pagerduty.Severity
+      description: The PagerDuty severity.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Pagerduty.Summary
+      description: The PagerDuty summary.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Admission.AllRules
+      description: The policy all rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Admission.Enabled
+      description: Whether the admission is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.AllRules
+      description: The agentless app firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AgentlessAppFirewall.Enabled
+      description: Whether the agentless app firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.AllRules
+      description: App embedded firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedAppFirewall.Enabled
+      description: Whether the app embedded firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.AllRules
+      description: App embedded runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.AppEmbeddedRuntime.Enabled
+      description: Whether the app embedded runtime is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.AllRules
+      description: The cloud discovery rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CloudDiscovery.Enabled
+      description: Whether the cloud discovery is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.AllRules
+      description: The code repo vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.CodeRepoVulnerability.Enabled
+      description: Whether the code repo vulnerability is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.AllRules
+      description: The container app firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerAppFirewall.Enabled
+      description: Whether the container app firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.AllRules
+      description: The container compliance rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerCompliance.Enabled
+      description: Whether the container compliance is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.AllRules
+      description: The container compliance scan rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerComplianceScan.Enabled
+      description: Whether the container compliance scan is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.AllRules
+      description: The container runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerRuntime.Enabled
+      description: Whether the container runtime is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.AllRules
+      description: The container vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ContainerVulnerability.Enabled
+      description: Whether the container vulnerability is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Defender.AllRules
+      description: The Defender policy rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Defender.Enabled
+      description: Whether the Defender policy is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Docker.AllRules
+      description: The Docker rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Docker.Enabled
+      description: Whether the Docker rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.AllRules
+      description: The app host firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostAppFirewall.Enabled
+      description: Whether the host app firewall is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.AllRules
+      description: The host compliance rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostCompliance.Enabled
+      description: Whether the host compliance is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.AllRules
+      description: The host compliance scan rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostComplianceScan.Enabled
+      description: Whether the host compliance scan is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostRuntime.AllRules
+      description: The host runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostRuntime.Enabled
+      description: Whether the host runtime rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostVulnerability.AllRules
+      description: The host vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.HostVulnerability.Enabled
+      description: Whether the host vulnerability rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Incident.AllRules
+      description: The policy incident rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.Incident.Enabled
+      description: Whether the policy incident is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.AllRules
+      description: The K8S rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.KubernetesAudit.Enabled
+      description: Whether K8S is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.NetworkFirewall.AllRules
+      description: The network firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.NetworkFirewall.Enabled
+      description: Whether the network firewall rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.RegistryVulnerability.AllRules
+      description: The registry vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.RegistryVulnerability.Enabled
+      description: Whether the registry vulnerability rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.AllRules
+      description: The servervless app firewall rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessAppFirewall.Enabled
+      description: Whether the serverless app firewall rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessRuntime.AllRules
+      description: The serverless runtime rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.ServerlessRuntime.Enabled
+      description: Whether the serverless runtime rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmCompliance.AllRules
+      description: The VM compliance rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmCompliance.Enabled
+      description: Whether the VM compliance rule is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmVulnerability.AllRules
+      description: The VM vulnerability rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.VmVulnerability.Enabled
+      description: Whether the VM vulnerability rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.AllRules
+      description: The WAAS health rules.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Policy.WaasHealth.Enabled
+      description: Whether the WAAS health rules are enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.PreviousName
+      description: The alert profile previous name.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.CredentialID
+      description: The security advisor credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.Enabled
+      description: Whether the security advisor is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.FindingsURL
+      description: The security advisor findings URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.ProviderId
+      description: The security advisor provider ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityAdvisor.TokenURL
+      description: The security advisor token URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.CredentialId
+      description: The security center crendential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.Enabled
+      description: Whether the security center is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityCenter.SourceID
+      description: The security center source ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.AccountID
+      description: The security hub account ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.CredentialId
+      description: The security hub credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.Enabled
+      description: Whether the security hub is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.SecurityHub.Region
+      description: The security hub region.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.Application
+      description: The ServiceNow application.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.Assignee
+      description: The ServiceNow assignee.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.CredentialID
+      description: The ServiceNow credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.ServiceNow.Project
+      description: The ServiceNow project.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Slack.Enabled
+      description: Whether the Slack alert profile is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Slack.WebhookUrl
+      description: The Slack URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Splunk.AuthToken.Encrypted
+      description: The Splunk auth token.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Splunk.SourceType
+      description: The Splunk source type.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Splunk.Url
+      description: The Splunk URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.VulnerabilityImmediateAlertsEnabled
+      description: Whether the vulnerability alert is enabled.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.AlertProfiles.Webhook.CredentialId
+      description: The webhook credential ID.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles.Webhook.Url
+      description: The webhook URL.
+      type: String
+    - contextPath: PrismaCloudCompute.AlertProfiles._Id
+      description: The alert profile ID.
+      type: String
+  - arguments:
+    - description: The Defender hostname.
+      name: hostname
+    description: Get the Defender settings.
+    name: prisma-cloud-compute-get-settings-defender
+    outputs:
+    - contextPath: PrismaCloudCompute.DefenderSettings.AdmissionControlEnabled
+      description: The admission control setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.AdmissionControlWebhookSuffix
+      description: The webhook suffix.
+      type: String
+    - contextPath: PrismaCloudCompute.DefenderSettings.AppEmbeddedFileSystemTracingEnabled
+      description: The file tracing setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.AutomaticUpgrade
+      description: The automatic upgrade setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.DisconnectPeriodDays
+      description: The disconnect period in days.
+      type: Number
+    - contextPath: PrismaCloudCompute.DefenderSettings.HostCustomComplianceEnabled
+      description: The custom compliance setting.
+      type: Boolean
+    - contextPath: PrismaCloudCompute.DefenderSettings.ListeningPort
+      description: The defender listening port.
+      type: Number
+  - arguments:
+    - description: The Defender hostname.
+      name: hostname
+    - description: The number of log lines to fetch.
+      name: lines
+      defaultValue: 10
+    description: Download the Defender logs.
+    name: prisma-cloud-compute-logs-defender
+    outputs:
+    - contextPath: PrismaCloudCompute.Defenders.Hostname
+      description: The hostname the log was retrieved from.
+      type: String
+    - contextPath: PrismaCloudCompute.Defenders.Logs.Level
+      description: The log level.
+      type: String
+    - contextPath: PrismaCloudCompute.Defenders.Logs.Log
+      description: The log message.
+      type: String
+    - contextPath: PrismaCloudCompute.Defenders.Logs.Time
+      description: The time of the log.
+      type: Date
+  - arguments:
+    - description: The Defender hostname.
+      name: hostname
+    - description: The number of log lines to fetch.
+      name: lines
+      defaultValue: 100
+    description: Download a zip of all Defender logs.
+    name: prisma-cloud-compute-logs-defender-download
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The File entry ID.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The file size.
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: String
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: String
+  - arguments:
+    - description: The project to retrieve the backups from.
+      name: project
+    description: Returns the available backups.
+    name: prisma-cloud-compute-get-backups
+    outputs:
+    - contextPath: PrismaCloudCompute.Backups.Id
+      description: The ID of the backup.
+      type: String
+    - contextPath: PrismaCloudCompute.Backups.Name
+      description: The name of the backup.
+      type: String
+    - contextPath: PrismaCloudCompute.Backups.Release
+      description: The release of the backup.
+      type: String
+    - contextPath: PrismaCloudCompute.Backups.Time
+      description: The time of the backup.
+      type: Date
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect

@@ -15,20 +15,18 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Single Connect is a PAM product that enables enterprises to remove static passwords stored in applications by instead keeping passwords in a secure password vault. Single Connect provides a token-based authentication for 3rd party applications when accessing the password vault. This authentication process verifies the application identity and gives secure access to the password associated with that identity.
 display: Single Connect
 name: SingleConnect
 script:
   commands:
-  - deprecated: false
-    description: List all the accounts in the SAPM
-    execution: false
+  - description: List all the accounts in the SAPM
     name: single-connect-sapm-account-list-all
     outputs:
     - contextPath: SingleConnect.SapmAccount.dbId
@@ -104,27 +102,16 @@ script:
       description: The full path of the SAPM group that the account is under
       type: String
   - arguments:
-    - default: false
-      description: Password expiration time of account
-      isArray: false
+    - description: Password expiration time of account
       name: password_expiration_in_minute
       required: true
-      secret: false
-    - default: false
-      description: ID of SAPM account in the database (can be retrieved from single-connect-sapm-account-list-all or single-connect-sapm-account-search-with-secret-name commands' output)
-      isArray: false
+    - description: ID of SAPM account in the database (can be retrieved from single-connect-sapm-account-list-all or single-connect-sapm-account-search-with-secret-name commands' output)
       name: sapm_db_id
       required: true
-      secret: false
-    - default: false
-      description: Leave a comment explaining why the password is accessed
-      isArray: false
+    - description: Leave a comment explaining why the password is accessed
       name: comment
       required: true
-      secret: false
-    deprecated: false
     description: Get the password for a specific SAPM account.
-    execution: false
     name: single-connect-sapm-account-show-password
     outputs:
     - contextPath: SingleConnect.SapmAccount.passwordPart
@@ -137,15 +124,10 @@ script:
       description: Secret description defined for the account
       type: String
   - arguments:
-    - default: false
-      description: Full or partial IP address of device
-      isArray: false
+    - description: Full or partial IP address of device
       name: device_ip
       required: true
-      secret: false
-    deprecated: false
     description: List all the SAPM accounts on a specific device
-    execution: false
     name: single-connect-device-list-sapm-accounts
     outputs:
     - contextPath: SingleConnect.SapmAccount.dbId
@@ -209,15 +191,10 @@ script:
       description: The time the account was last edited
       type: Date
   - arguments:
-    - default: false
-      description: Full or partial account name of the SAPM account
-      isArray: false
+    - description: Full or partial account name of the SAPM account
       name: secret_name
       required: true
-      secret: false
-    deprecated: false
     description: List the accounts with given secretName
-    execution: false
     name: single-connect-sapm-account-search-with-secret-name
     outputs:
     - contextPath: SingleConnect.SapmAccount.dbId
@@ -292,11 +269,7 @@ script:
     - contextPath: SingleConnect.SapmAccount.groupFullPath
       description: The full path of the SAPM group that the account is under
       type: String
-  dockerimage: demisto/python3:3.10.10.52956
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.67728
   runonce: false
   script: '-'
   subtype: python3

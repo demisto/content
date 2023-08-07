@@ -2,7 +2,7 @@
     "name": "ExtraHop Reveal(x)",
     "description": "Network detection and response. Complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.",
     "support": "partner",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.2.1",
     "author": "ExtraHop",
     "url": "",
     "email": "support@extrahop.com",
@@ -34,10 +34,6 @@
             "mandatory": true,
             "display_name": "Common Types"
         },
-        "CVESearch": {
-            "mandatory": true,
-            "display_name": "CVE Search"
-        },
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
@@ -47,7 +43,6 @@
         "CommonScripts",
         "CoreAlertFields",
         "CommonTypes",
-        "CVESearch",
         "CommonPlaybooks"
     ]
 }

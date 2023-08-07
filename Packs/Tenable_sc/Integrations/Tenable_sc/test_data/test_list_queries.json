@@ -1,0 +1,25 @@
+{
+    "test_case_1": {
+        "mock_response": {"error_code":0,"error_msg":"",
+        "response": {
+            "manageable": [
+                {
+                    "id": "1", "name": "test_name", "description": "test_description", "filters": "filter"
+                },
+                {
+                    "id": "2", "name": "test_name", "description": "test_description", "filters": null
+                }
+            ],
+            "usable": [
+                {
+                    "id": "1", "name": "test_name", "description": "test_description", "filters": "filter"
+                },
+                {
+                    "id": "3", "name": "test_name", "description": "test_description", "filters": null
+                }
+            ]}, "timestamp":1684676253,"type":"regular","warnings":[]},
+        "expected_hr": "### Queries:\n|Query ID|Query  Name|Query Description|Query Filters|Query Manageable|Query Usable|\n|---|---|---|---|---|---|\n| 1 | test_name | test_description | filter | True | True |\n| 2 | test_name | test_description |  | True | False |\n| 3 | test_name | test_description |  | False | True |\n",
+        "expected_ec": {"manageable": [{"id": "1", "name": "test_name", "description": "test_description", "filters": "filter"}, {"id": "2", "name": "test_name", "description": "test_description", "filters": null}],
+                "usable": [{"id": "1", "name": "test_name", "description": "test_description", "filters": "filter"}, {"id": "3", "name": "test_name", "description": "test_description", "filters": null}]}
+    }
+}

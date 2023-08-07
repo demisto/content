@@ -2,7 +2,6 @@ import demistomock as demisto
 import json
 import pytest
 from CommonServerPython import entryTypes
-from MicrosoftTeams import send_message
 
 entryTypes['warning'] = 11
 
@@ -211,7 +210,6 @@ def test_member_added_handler(mocker, requests_mock):
     from MicrosoftTeams import member_added_handler
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(demisto, 'params', return_value={'bot_id': bot_id})
     requests_mock.get(
         f'{service_url}/v3/conversations/{team_id}/members',
         json=team_members
@@ -331,7 +329,7 @@ def test_mirror_investigation(mocker, requests_mock):
         'membershipType': 'standard'
     }
     assert requests_mock.request_history[3].json() == {
-        'text': 'This channel was created to mirror [incident 2](https://test-address:8443#/WarRoom/2) between '
+        'text': 'This channel was created to mirror [incident 2](https://test-address:8443/#/WarRoom/2) between '
                 'Teams and Demisto. In order for your Teams messages to be mirrored in Demisto, you need to'
                 ' mention the Demisto Bot in the message.',
         'type': 'message'
@@ -408,6 +406,7 @@ def test_mirror_investigation(mocker, requests_mock):
 def test_send_message_with_mirrored_message_or_low_severity(mocker, args):
     # verify that a mirrored message is skipped
     # verify notification from server with severity below threshold is not sent
+    from MicrosoftTeams import send_message
     mocker.patch.object(
         demisto,
         'params',
@@ -457,6 +456,7 @@ def test_send_message_raising_errors(mocker, args, result):
     # verify proper error is raised if both message and adaptive card were provided.
     # verify proper error is raised if neither message or adaptive card were provided.
 
+    from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'args', return_value=args)
     with pytest.raises(ValueError) as e:
         send_message()
@@ -465,7 +465,7 @@ def test_send_message_raising_errors(mocker, args, result):
 
 def test_send_message_with_user(mocker, requests_mock):
     # verify message is sent properly given user to send to
-
+    from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
 
     mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
@@ -510,7 +510,7 @@ def test_send_message_with_user(mocker, requests_mock):
 
 def test_send_message_with_channel(mocker, requests_mock):
     # verify message is sent properly given channel
-
+    from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
     mocker.patch('MicrosoftTeams.get_channel_type', return_value='standard')
 
@@ -541,7 +541,7 @@ def test_send_message_with_channel(mocker, requests_mock):
 
 def test_send_message_with_entitlement(mocker, requests_mock):
     # verify message is sent properly given entitlement
-
+    from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
 
     message: dict = {
@@ -627,7 +627,7 @@ def test_send_message_with_entitlement(mocker, requests_mock):
 
 def test_send_message_with_adaptive_card(mocker, requests_mock):
     # verify adaptive card sent successfully
-
+    from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
 
     adaptive_card: dict = {
@@ -674,6 +674,7 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
 
 
 def test_sending_message_using_email_address(mocker, requests_mock):
+    from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
     # verify message is sent properly given email with uppercase letters to send to
     mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
@@ -746,7 +747,7 @@ def test_send_message_server_notifications_incident_opened(mocker, requests_mock
         'args',
         return_value={
             'channel': 'incidentNotificationChannel',
-            'message': 'user has reported an incident tadam.\nView it on https://server#/WarRoom/3247',
+            'message': 'user has reported an incident tadam.\nView it on https://server/#/WarRoom/3247',
             'messageType': 'incidentOpened',
             'severity': 1,
             'to': ''
@@ -804,7 +805,7 @@ def test_send_message_server_notifications_incident_changed(mocker, requests_moc
         'args',
         return_value={
             'channel': 'incidentNotificationChannel',
-            'message': 'DBot has updated an incident tadam.\nView it on https://server#/WarRoom/3247',
+            'message': 'DBot has updated an incident tadam.\nView it on https://server/#/WarRoom/3247',
             'messageType': 'incidentChanged',
             'severity': 1,
             'to': ''
@@ -976,12 +977,16 @@ def test_is_investigation_mirrored():
     assert is_investigation_mirrored(non_existing_investigation_id, mirrored_channels) == -1
 
 
-def test_urlify_hyperlinks():
+@pytest.mark.parametrize('message, expected_result', [
+    ("Visit https://github.com/demisto/content and https://xsoar.pan.dev",
+     "Visit [https://github.com/demisto/content](https://github.com/demisto/content) and "
+     "[https://xsoar.pan.dev](https://xsoar.pan.dev)"),
+    ("Link: https://xsoar.pan.dev/page?parametized=true",
+     "Link: [https://xsoar.pan.dev/page?parametized=true](https://xsoar.pan.dev/page?parametized=true)"),
+])
+def test_urlify_hyperlinks(message: str, expected_result: str):
     from MicrosoftTeams import urlify_hyperlinks
-    message: str = 'Visit https://www.demisto.com and http://www.demisto.com'
-    formatted_message: str = 'Visit [https://www.demisto.com](https://www.demisto.com) ' \
-                             'and [http://www.demisto.com](http://www.demisto.com)'
-    assert urlify_hyperlinks(message) == formatted_message
+    assert urlify_hyperlinks(message) == expected_result
 
 
 def test_get_team_aad_id(mocker, requests_mock):
@@ -1409,7 +1414,11 @@ def test_update_message(requests_mock):
 
 def test_direct_message_handler(mocker, requests_mock):
     from MicrosoftTeams import direct_message_handler
-    mocker.patch.object(
+
+    mocker.patch('MicrosoftTeams.get_graph_access_token', return_value="token")
+    mocker.patch('MicrosoftTeams.get_bot_access_token', return_value="token")
+
+    create_incidents_mocker = mocker.patch.object(
         demisto,
         'createIncidents',
         return_value={
@@ -1430,23 +1439,40 @@ def test_direct_message_handler(mocker, requests_mock):
         'id': 'conversation-id'
     }
 
+    expected_created_incident: list = [
+        {
+            'name': 'GoFish',
+            'type': 'Phishing',
+            'rawJSON': '{"from": {"id": '
+                       '"29:1KZccCJRTxlPdHnwcKfxHAtYvPLIyHgkSLhFSnGXLGVFlnltovdZPmZAduPKQP6NrGqOcde7FXAF7uTZ_8FQOqg", '
+                       '"username": "Bruce Willis", "user_email": "bwillis@email.com"}}'
+        }
+    ]
+    expected_assigned_user = 'nice-demisto-id'
+
     # verify create incident fails on un allowed external incident creation and non found user
     message: str = 'create incident name=GoFish type=Phishing'
     mocker.patch.object(demisto, 'findUser', return_value=None)
     direct_message_handler(integration_context, request_body, conversation, message)
-    assert requests_mock.request_history[0].json() == {
-        'text': "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. You're not "
-                "allowed to run any command", 'type': 'message'
-    }
+
+    response = requests_mock.request_history[0].json()
+
+    assert response['type'] == "message"
+    assert response['text'] == \
+           "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
+           "You're not allowed to run any command"
 
     # verify create incident successfully
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})
     direct_message_handler(integration_context, request_body, conversation, message)
-    assert requests_mock.request_history[1].json() == {
-        'text': "Successfully created incident incidentnumberfour.\n"
-                "View it on: [https://test-address:8443#/WarRoom/4](https://test-address:8443#/WarRoom/4)",
-        'type': 'message'
-    }
+    response = requests_mock.request_history[1].json()
+
+    assert response['type'] == "message"
+    assert response['text'] == "Successfully created incident incidentnumberfour.\n" \
+                               "View it on: [https://test-address:8443/#/WarRoom/4]" \
+                               "(https://test-address:8443/#/WarRoom/4)"
+
+    create_incidents_mocker.assert_called_with(expected_created_incident, userID=expected_assigned_user)
 
     # verify get my incidents
     my_incidents: str = "```ID         | Name                 | Status      | Type        | Owner       | Created" \
@@ -2188,7 +2214,7 @@ def test_get_chat_id_and_type(mocker, requests_mock):
     create_chat_mock = mocker.patch('MicrosoftTeams.create_chat', return_value=test_data.get('create_oneOnOne_chat'))
 
     assert get_chat_id_and_type("test_admin") == \
-           ("19:82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces", 'oneOnOne')
+        ("19:82fe7758-5bb3-4f0d-a43f-e555fd399c6f_8c0a1a67-50ce-4114-bb6c-da9c5dbcf6ca@unq.gbl.spaces", 'oneOnOne')
     assert create_chat_mock.call_args.args == ('oneOnOne', [('user_id', 'Member')])
     assert get_user_mock.call_count == 1
     assert create_chat_mock.call_count == 1
@@ -2241,3 +2267,17 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftTeams.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+def test_is_bot_in_chat_parameters(mocker, requests_mock):
+    """
+    Given: some chat ID and bot ID
+    When: calling is_bot_in_chat() to check if the bot is already a member of the chat
+    Then: validate that the request is sent correctly and specifically that the BOT_ID is part of the query
+    """
+    request_mock = requests_mock.get(f'{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/installedApps', json={})
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
+    from MicrosoftTeams import is_bot_in_chat
+    is_bot_in_chat(GROUP_CHAT_ID)
+    filters = request_mock.last_request.qs.get('$filter')[0]
+    assert f"eq '{bot_id}'" in filters

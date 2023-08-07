@@ -6,50 +6,62 @@ commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
 configuration:
-- defaultvalue: https://api.securitycenter.windows.com
-  display: Host URL (e.g., https://api.securitycenter.windows.com)
-  name: url
-  required: true
-  type: 0
+- defaultvalue: Worldwide
+  display: Endpoint Type
+  name: endpoint_type
+  type: 15
   section: Connect
+  additionalinfo: |-
+    When selecting the Custom option, the Server URL parameter must be filled. More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-advanced-threat-protection
+  options:
+  - Worldwide
+  - EU Geo Proximity
+  - UK Geo Proximity
+  - US Geo Proximity
+  - US GCC
+  - US GCC-High
+  - DoD
+  - Custom
+  advanced: true
+  required: false
 - display: ID
   name: _auth_id
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Token
   name: _tenant_id
-  required: false
   type: 0
   section: Connect
+  required: false
 - displaypassword: Key
   name: credentials
-  required: false
   type: 9
   hiddenusername: true
+  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
-  required: false
   type: 9
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
-  required: false
   type: 14
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
   display: Authentication Type
   name: auth_type
@@ -61,28 +73,29 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions section
   hiddenusername: true
   name: auth_code
-  required: false
   type: 9
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -95,20 +108,20 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: New
   display: 'Status to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
   name: fetch_status
@@ -116,14 +129,30 @@ configuration:
   - New
   - InProgress
   - Resolved
-  required: false
   type: 16
   section: Collect
   advanced: true
+  required: false
+- display: 'DetectionSource to filter out alerts for fetching as incidents.'
+  name: fetch_detectionsource
+  options:
+  - Antivirus
+  - Automated investigation
+  - Custom detection
+  - Custom TI
+  - EDR
+  - Microsoft 365 Defender
+  - Microsoft Defender for Office 365
+  - Microsoft Defender Experts
+  - SmartScreen
+  - Third-party sensors
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
-  required: false
   type: 16
   options:
   - Informational
@@ -132,85 +161,92 @@ configuration:
   - High
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
+- display: Server URL (e.g., https://api.securitycenter.microsoft.com)
+  name: url
+  type: 0
+  section: Connect
+  advanced: true
+  defaultvalue:
+  additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
+  name: self_deployed
+  type: 8
+  section: Connect
+  advanced: false
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch alert evidence
   name: fetch_evidence
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
-- display: Use a self-deployed Azure Application
-  name: self_deployed
   required: false
-  type: 8
-  section: Connect
-  advanced: true
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_timestamp
-  required: false
   type: 0
   section: Collect
-- defaultvalue: 'false'
-  display: Using Microsoft GCC?
-  name: is_gcc
   required: false
+- display: Using Microsoft GCC? (Deprecated)
+  name: is_gcc
   type: 8
+  hidden: true
   section: Connect
   advanced: true
+  defaultvalue: 'false'
+  required: false
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated) section)
   name: tenant_id
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: enc_key
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
-  - deprecated: false
-    description: Tests connectivity to Microsoft Defender for Endpoint.
-    execution: false
+  - description: Tests connectivity to Microsoft Defender for Endpoint.
     name: microsoft-atp-test
     arguments:
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     polling: true
   - arguments:
     - default: true
@@ -218,29 +254,19 @@ script:
       isArray: true
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: A comment to associate with the action.
-      isArray: false
+    - description: A comment to associate with the action.
       name: comment
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Full isolation or selective isolation. (Restrict only limited set of applications from accessing the network).
-      isArray: false
       name: isolation_type
       predefined:
       - Full
       - Selective
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Isolates a machine from accessing external networks.
     execution: true
     name: microsoft-atp-isolate-machine
@@ -283,26 +309,17 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+    - description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Undo an isolation of a machine.
-    execution: false
     name: microsoft-atp-unisolate-machine
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
@@ -343,20 +360,12 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: A comma-separated list of computer DNS name.
+    - description: A comma-separated list of computer DNS name.
       isArray: true
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of the last machine IPs to access the internet.
-      isArray: false
+    - description: A comma-separated list of the last machine IPs to access the internet.
       name: ip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The machine risk score.
       isArray: true
       name: risk_score
@@ -364,44 +373,24 @@ script:
       - Low
       - Medium
       - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The machine health status.
-      isArray: false
       name: health_status
       predefined:
       - Active
       - Inactive
-      required: false
-      secret: false
-    - default: false
-      description: The machine's OS platform. Only a single platform can be added.
-      isArray: false
+    - description: The machine's OS platform. Only a single platform can be added.
       name: os_platform
-      required: false
-      secret: false
-    - default: false
-      description: Number of machines to return in a page - must be lower or equal to 10,000.
+    - description: Number of machines to return in a page - must be lower or equal to 10,000.
       name: page_size
-      required: false
-      secret: false
       defaultValue: '50'
-    - default: false
-      description: The page number to retrieve.
+    - description: The page number to retrieve.
       defaultValue: '1'
       name: page_num
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of machines that communicated with WDATP cloud in the last 30 days. Note - only IP or hostname can be a comma-separated list. If both are given as lists, an error will appear.
-    execution: false
     name: microsoft-atp-get-machines
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
@@ -460,20 +449,14 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: A comma-separated list of file SHA1 hashes to get the related machines.
+    - description: A comma-separated list of file SHA1 hashes to get the related machines.
       isArray: true
       name: file_hash
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Gets a collection of machines with a given file SHA1 hash.
-    execution: false
     name: microsoft-atp-get-file-related-machines
     outputs:
     - contextPath: MicrosoftATP.FileMachine.Machines.ID
@@ -540,15 +523,10 @@ script:
       isArray: true
       name: machine_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Get a machine's details by its identity.
-    execution: false
     name: microsoft-atp-get-machine-details
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
@@ -619,36 +597,24 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: A comma-separated list of machine IDs to run the scan on.
+    - description: A comma-separated list of machine IDs to run the scan on.
       isArray: true
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: A comment to associate with the action.
-      isArray: false
+    - description: A comment to associate with the action.
       name: comment
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Defines the scan type.
-      isArray: false
       name: scan_type
       predefined:
       - Quick
       - Full
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Initiate a Microsoft Defender Antivirus scan on a machine.
-    execution: false
     name: microsoft-atp-run-antivirus-scan
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
@@ -690,55 +656,31 @@ script:
     polling: true
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Alert severity.
-      isArray: false
       name: severity
       predefined:
       - High
       - Medium
       - Low
       - Informational
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert status.
-      isArray: false
       name: status
       predefined:
       - New
       - InProgress
       - Resolved
-      required: false
-      secret: false
-    - default: false
-      description: Alert category; only one can be added.
-      isArray: false
+    - description: Alert category; only one can be added.
       name: category
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of files to display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The creation timestamp from which to get alerts (<number> <time unit>, e.g., 12 hours, 7 days).
-      isArray: false
+    - description: The creation timestamp from which to get alerts (<number> <time unit>, e.g., 12 hours, 7 days).
       name: creation_time
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Gets a list of alerts present on the system. Filtering can be done only on a single argument.
-    execution: false
     name: microsoft-atp-list-alerts
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
@@ -836,45 +778,28 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: Alert ID to update.
-      isArray: false
+    - description: Alert ID to update.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert status to update.
-      isArray: false
       name: status
       predefined:
       - New
       - InProgress
       - Resolved
-      required: false
-      secret: false
-    - default: false
-      description: Owner of the alert.
-      isArray: false
+    - description: Owner of the alert.
       name: assigned_to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The specification of the alert.
-      isArray: false
       name: classification
       predefined:
       - Unknown
       - FalsePositive
       - TruePositive
       - InformationalExpectedActivity
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The determination of the alert.
-      isArray: false
       name: determination
       predefined:
       - NotAvailable
@@ -882,22 +807,12 @@ script:
       - SecurityTesting
       - UnwantedSoftware
       - Other
-      required: false
-      secret: false
-    - default: false
-      description: Comment to be added to the alert.
-      isArray: false
+    - description: Comment to be added to the alert.
       name: comment
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Update the properties of an alert entity.
-    execution: false
     name: microsoft-atp-update-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
@@ -979,31 +894,19 @@ script:
   - arguments:
     - default: true
       description: The query to run. Must be passed if query_batch argument is not provided.
-      isArray: false
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs. If specified with query_batch, will be applied to all queries in the array.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
     - name: time_range
       description: Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array.
-      required: false
-      isArray: false
       defaultValue: ''
       predefined:
       - ''
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    - default: false
-      description: |-
+    - description: |-
         A JSON array of queries, limited to 10 queries. Cannot be provided with the query argument. Example for input:
         [{
           "query": "query #1",
@@ -1018,19 +921,10 @@ script:
           "time_range": "6 days ago"
           }]
         The query and name fields are mandatory. If timeout and time_range are specified, they will override the {timeout} and {time_range} argument.
-      isArray: false
       name: query_batch
-      required: false
-      secret: false
-      deprecated: false
-    - default: false
-      description: If stated along with query, the response will be be saved in context under the Result.name path.
-      isArray: false
+    - description: If stated along with query, the response will be be saved in context under the Result.name path.
       name: name
-      required: false
-      secret: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
-    execution: false
     name: microsoft-atp-advanced-hunting
     outputs:
     - contextPath: MicrosoftATP.Hunt.Result
@@ -1038,58 +932,35 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: ID of the machine on which the event was identified.
-      isArray: false
+    - description: ID of the machine on which the event was identified.
       name: machine_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Severity of the alert.
-      isArray: false
       name: severity
       predefined:
       - Low
       - Medium
       - High
       required: true
-      secret: false
-    - default: false
-      description: Title for the alert.
-      isArray: false
+    - description: Title for the alert.
       name: title
       required: true
-      secret: false
-    - default: false
-      description: Description of the alert.
-      isArray: false
+    - description: Description of the alert.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: Recommended action for the security officer to take when analyzing the alert.
-      isArray: false
+    - description: Recommended action for the security officer to take when analyzing the alert.
       name: recommended_action
       required: true
-      secret: false
-    - default: false
-      description: The time of the event, as obtained from the advanced query.
-      isArray: false
+    - description: The time of the event, as obtained from the advanced query.
       name: event_time
       required: true
-      secret: false
-    - default: false
-      description: The report ID, as obtained from the advanced query.
-      isArray: false
+    - description: The report ID, as obtained from the advanced query.
       name: report_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: None
       description: Category of the alert.
-      isArray: false
       name: category
       predefined:
       - None
@@ -1124,15 +995,10 @@ script:
       - EnterprisePolicy
       - General
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Creates a new alert entity using event data, as obtained from the Advanced Hunting.
-    execution: false
     name: microsoft-atp-create-alert
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
@@ -1212,20 +1078,13 @@ script:
       type: Date
     polling: true
   - arguments:
-    - default: false
-      description: ID of the alert.
-      isArray: false
+    - description: ID of the alert.
       name: id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves the user associated with a specific alert.
-    execution: false
     name: microsoft-atp-get-alert-related-user
     outputs:
     - contextPath: MicrosoftATP.AlertUser.User.ID
@@ -1269,34 +1128,19 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: ID of the alert.
-      isArray: false
+    - description: ID of the alert.
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of files to display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page from which to get the related files.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves the files associated with a specific alert.
-    execution: false
     name: microsoft-atp-get-alert-related-files
     outputs:
     - contextPath: MicrosoftATP.AlertFile.Files.FilePublisher
@@ -1352,34 +1196,19 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: ID of the alert.
-      isArray: false
+    - description: ID of the alert.
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of IPs to display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page from which to get the related IPs.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves the IPs associated with a specific alert.
-    execution: false
     name: microsoft-atp-get-alert-related-ips
     outputs:
     - contextPath: MicrosoftATP.AlertIP.IPs.IpAddress
@@ -1390,34 +1219,19 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: ID of the alert.
-      isArray: false
+    - description: ID of the alert.
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of domains to display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page from which to get the related domains.
-      isArray: false
       name: offset
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves the domains associated with a specific alert.
-    execution: false
     name: microsoft-atp-get-alert-related-domains
     outputs:
     - contextPath: MicrosoftATP.AlertDomain.Domains.Domain
@@ -1428,16 +1242,10 @@ script:
       type: Unknown
     polling: true
   - arguments:
-    - default: false
-      description: ID of the action.
-      isArray: false
+    - description: ID of the action.
       name: id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The machine action status.
-      isArray: false
       name: status
       predefined:
       - Pending
@@ -1446,18 +1254,11 @@ script:
       - Failed
       - TimeOut
       - Cancelled
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of machine IDs on which the action was executed.
+    - description: A comma-separated list of machine IDs on which the action was executed.
       isArray: true
       name: machine_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The machine action type.
-      isArray: false
       name: type
       predefined:
       - RunAntiVirusScan
@@ -1468,31 +1269,17 @@ script:
       - StopAndQuarantineFile
       - RestrictCodeExecution
       - UnrestrictCodeExecution
-      required: false
-      secret: false
-    - default: false
-      description: The ID of the user that executed the action; only one can be added.
-      isArray: false
+    - description: The ID of the user that executed the action; only one can be added.
       name: requestor
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of machines to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: |-
       Return the machine's actions. If you set an action ID, it returns the info on the specific action.
       Filtering can be done only on one argument.
-    execution: false
     name: microsoft-atp-list-machine-actions-details
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
@@ -1533,26 +1320,16 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The machine ID.
-      isArray: false
+    - description: The machine ID.
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Collect an investigation package from a machine.
-    execution: false
     name: microsoft-atp-collect-investigation-package
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
@@ -1593,20 +1370,13 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: machine action ID.
-      isArray: false
+    - description: machine action ID.
       name: action_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Gets a URI that allows downloading an investigation package.
-    execution: false
     name: microsoft-atp-get-investigation-package-sas-uri
     outputs:
     - contextPath: MicrosoftATP.InvestigationURI.Link
@@ -1614,26 +1384,15 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The machine ID.
-      isArray: false
+    - description: The machine ID.
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Restricts the execution of all applications on the machine except for a predefined set.
-    execution: false
     name: microsoft-atp-restrict-app-execution
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
@@ -1674,26 +1433,16 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The machine ID.
-      isArray: false
+    - description: The machine ID.
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Enable the execution of any application on the machine.
-    execution: false
     name: microsoft-atp-remove-app-restriction
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
@@ -1734,34 +1483,23 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The machine ID. When providing multiple values, each value is checked for the same hash.
+    - description: The machine ID. When providing multiple values, each value is checked for the same hash.
       isArray: true
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The file SHA1 hash to stop and quarantine on the machine. 
         When providing multiple values, each value is checked for the same machine_id.
       isArray: true
       name: file_hash
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Stop the execution of a file on a machine and delete it.
-    execution: false
     name: microsoft-atp-stop-and-quarantine-file
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
@@ -1802,36 +1540,20 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: ID can be the investigation ID or the investigation triggering alert ID.
-      isArray: false
+    - description: ID can be the investigation ID or the investigation triggering alert ID.
       name: id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of investigations to display.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The page from which to get the investigations.
-      isArray: false
       name: offset
       predefined:
       - ''
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of investigations or retrieves a specific investigation by its ID.
-    execution: false
     name: microsoft-atp-list-investigations
     outputs:
     - contextPath: MicrosoftATP.Investigation.ID
@@ -1863,33 +1585,19 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The machine's ID.
-      isArray: false
+    - description: The machine's ID.
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Starts an automated investigation on a machine.
-    execution: false
     name: microsoft-atp-start-investigation
     outputs:
     - contextPath: MicrosoftATP.Investigation.ID
@@ -1921,20 +1629,13 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The domain address.
-      isArray: false
+    - description: The domain address.
       name: domain
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves statistics on the given domain.
-    execution: false
     name: microsoft-atp-get-domain-statistics
     outputs:
     - contextPath: MicrosoftATP.DomainStatistics.Statistics.Host
@@ -1951,20 +1652,13 @@ script:
       type: Date
     polling: true
   - arguments:
-    - default: false
-      description: The domain address.
-      isArray: false
+    - description: The domain address.
       name: domain
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of alerts related to a given domain address.
-    execution: false
     name: microsoft-atp-get-domain-alerts
     outputs:
     - contextPath: MicrosoftATP.DomainAlert.Domain
@@ -2047,20 +1741,13 @@ script:
       type: Date
     polling: true
   - arguments:
-    - default: false
-      description: The domain address.
-      isArray: false
+    - description: The domain address.
       name: domain
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of machines that have communicated to or from a given domain address.
-    execution: false
     name: microsoft-atp-get-domain-machines
     outputs:
     - contextPath: MicrosoftATP.DomainMachine.Domain
@@ -2122,20 +1809,13 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: File SHA1 hash to get statistics on.
-      isArray: false
+    - description: File SHA1 hash to get statistics on.
       name: file_hash
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves statistics for the given file.
-    execution: false
     name: microsoft-atp-get-file-statistics
     outputs:
     - contextPath: MicrosoftATP.FileStatistics.Sha1
@@ -2164,20 +1844,13 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: File SHA1 hash to get statistics on.
-      isArray: false
+    - description: File SHA1 hash to get statistics on.
       name: file_hash
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of alerts related to a given file hash.
-    execution: false
     name: microsoft-atp-get-file-alerts
     outputs:
     - contextPath: MicrosoftATP.FileAlert.Sha1
@@ -2260,20 +1933,13 @@ script:
       type: Date
     polling: true
   - arguments:
-    - default: false
-      description: The IP address.
-      isArray: false
+    - description: The IP address.
       name: ip
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves statistics for a given IP.
-    execution: false
     name: microsoft-atp-get-ip-statistics
     outputs:
     - contextPath: MicrosoftATP.IPStatistics.Statistics.IPAddress
@@ -2290,20 +1956,13 @@ script:
       type: Date
     polling: true
   - arguments:
-    - default: false
-      description: The IP address.
-      isArray: false
+    - description: The IP address.
       name: ip
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of alerts related to a given IP address.
-    execution: false
     name: microsoft-atp-get-ip-alerts
     outputs:
     - contextPath: MicrosoftATP.IPAlert.IPAddress
@@ -2386,22 +2045,15 @@ script:
       type: Date
     polling: true
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
          (e.g., to retrieve alerts for user1@test.com, use user1).
-      isArray: false
       name: username
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of alerts related to a given user ID.
-    execution: false
     name: microsoft-atp-get-user-alerts
     outputs:
     - contextPath: MicrosoftATP.UserAlert.Username
@@ -2484,22 +2136,15 @@ script:
       type: Date
     polling: true
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
         (e.g., to retrieve machines for user1@test.com, use user1).
-      isArray: false
       name: username
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of machines related to a given user ID.
-    execution: false
     name: microsoft-atp-get-user-machines
     outputs:
     - contextPath: MicrosoftATP.UserMachine.Username
@@ -2561,36 +2206,23 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The machine ID.
-      isArray: false
+    - description: The machine ID.
       name: machine_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The action to use for the tag.
-      isArray: false
       name: action
       predefined:
       - Add
       - Remove
       required: true
-      secret: false
-    - default: false
-      description: The tag name.
-      isArray: false
+    - description: The tag name.
       name: tag
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Adds or removes a tag on a specific machine.
-    execution: false
     name: microsoft-atp-add-remove-machine-tag
     outputs:
     - contextPath: MicrosoftATP.Machine.ID
@@ -2649,28 +2281,17 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Specifies the page size of the result set. Maximum is 200.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all indicators by the ID that the system creates when the indicator is ingested.
-    execution: false
     name: microsoft-atp-indicator-list
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -2851,18 +2472,13 @@ script:
   - arguments:
     - default: true
       description: The ID of the indicator to get.
-      isArray: false
       name: indicator_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets an indicator by its ID.
-    execution: false
     name: microsoft-atp-indicator-get-by-id
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -3042,9 +2658,7 @@ script:
     polling: true
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The action to apply if the indicator is matched from within the targetProduct security tool.
-      isArray: false
       name: action
       predefined:
       - unknown
@@ -3052,23 +2666,14 @@ script:
       - block
       - alert
       required: true
-      secret: false
-    - default: false
-      description: Brief description (100 characters or less) of the threat represented by the indicator.
-      isArray: false
+    - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-      isArray: false
+    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
       name: expiration_time
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Each indicator must have a valid Indicator Threat Type.
-      isArray: false
       name: threat_type
       predefined:
       - Botnet
@@ -3083,30 +2688,19 @@ script:
       - PUA
       - WatchList
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Traffic Light Protocol value for the indicator.
-      isArray: false
       name: tlp_level
       predefined:
       - unknown
       - white
       - green
       - amber
-      required: false
-      secret: false
-    - default: false
-      description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
-      isArray: false
+    - description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
       name: confidence
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: MediumHigh
       description: The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.
-      isArray: false
       name: severity
       predefined:
       - Informational
@@ -3114,30 +2708,14 @@ script:
       - MediumLow
       - MediumHigh
       - High
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list that stores arbitrary tags/keywords.
-      isArray: false
+    - description: A comma-separated list that stores arbitrary tags/keywords.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
-      isArray: false
+    - description: "DateTime the file was compiled. The timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
       name: file_compile_date_time
-      required: false
-      secret: false
-    - default: false
-      description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
-      isArray: false
+    - description: "DateTime the file was created. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z'"
       name: file_created_date_time
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The type of hash stored in fileHashValue.
-      isArray: false
       name: file_hash_type
       predefined:
       - unknown
@@ -3147,58 +2725,25 @@ script:
       - authenticodeHash256
       - lsHash
       - ctph
-      required: false
-      secret: false
-    - default: false
-      description: The file hash value.
-      isArray: false
+    - description: The file hash value.
       name: file_hash_value
-      required: false
-      secret: false
-    - default: false
-      description: The Mutex name used in file-based detections.
-      isArray: false
+    - description: The Mutex name used in file-based detections.
       name: file_mutex_name
-      required: false
-      secret: false
-    - default: false
-      description: The name of the file if the indicator is file-based. Supports comma-separated list of file names.
-      isArray: false
+    - description: The name of the file if the indicator is file-based. Supports comma-separated list of file names.
       name: file_name
-      required: false
-      secret: false
-    - default: false
-      description: The packer used to build the file in question.
-      isArray: false
+    - description: The packer used to build the file in question.
       name: file_packer
-      required: false
-      secret: false
-    - default: false
-      description: The path of the file indicating a compromise. May be a Windows or *nix style path.
-      isArray: false
+    - description: The path of the file indicating a compromise. May be a Windows or *nix style path.
       name: file_path
-      required: false
-      secret: false
-    - default: false
-      description: Size of the file in bytes.
-      isArray: false
+    - description: Size of the file in bytes.
       name: file_size
-      required: false
-      secret: false
-    - default: false
-      description: Text description of the type of file. For example, “Word Document” or “Binary”.
-      isArray: false
+    - description: Text description of the type of file. For example, “Word Document” or “Binary”.
       name: file_type
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a file indicator.
-    execution: false
     name: microsoft-atp-indicator-create-file
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -3369,9 +2914,7 @@ script:
     polling: true
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The action to apply if the indicator is matched from within the targetProduct security tool.
-      isArray: false
       name: action
       predefined:
       - unknown
@@ -3379,23 +2922,14 @@ script:
       - block
       - alert
       required: true
-      secret: false
-    - default: false
-      description: Brief description (100 characters or less) of the threat represented by the indicator.
-      isArray: false
+    - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: description
       required: true
-      secret: false
-    - default: false
-      description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-      isArray: false
+    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
       name: expiration_time
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Each indicator must have a valid Indicator Threat Type.
-      isArray: false
       name: threat_type
       predefined:
       - Botnet
@@ -3410,30 +2944,19 @@ script:
       - PUA
       - WatchList
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Traffic Light Protocol value for the indicator.'
-      isArray: false
       name: tlp_level
       predefined:
       - unknown
       - white
       - green
       - amber
-      required: false
-      secret: false
-    - default: false
-      description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
-      isArray: false
+    - description: An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest.
       name: confidence
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: MediumHigh
       description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
-      isArray: false
       name: severity
       predefined:
       - Informational
@@ -3441,131 +2964,50 @@ script:
       - MediumLow
       - MediumHigh
       - High
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list that stores arbitrary tags/keywords.
-      isArray: false
+    - description: A comma-separated list that stores arbitrary tags/keywords.
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Domain name associated with this indicator. Should be of the format subdomain.domain.topleveldomain (For example, example.domain.net).
-      isArray: false
+    - description: Domain name associated with this indicator. Should be of the format subdomain.domain.topleveldomain (For example, example.domain.net).
       name: domain_name
-      required: false
-      secret: false
-    - default: false
-      description: CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
-      isArray: false
+    - description: CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified.
       name: network_cidr_block
-      required: false
-      secret: false
-    - default: false
-      description: The destination autonomous system identifier of the network referenced in the indicator.
-      isArray: false
+    - description: The destination autonomous system identifier of the network referenced in the indicator.
       name: network_destination_asn
-      required: false
-      secret: false
-    - default: false
-      description: The CIDR Block notation representation of the destination network in this indicator.
-      isArray: false
+    - description: The CIDR Block notation representation of the destination network in this indicator.
       name: network_destination_cidr_block
-      required: false
-      secret: false
-    - default: false
-      description: The IPv4 IP address destination.
-      isArray: false
+    - description: The IPv4 IP address destination.
       name: network_destination_ipv4
-      required: false
-      secret: false
-    - default: false
-      description: |
+    - description: |
         The IPv6 IP address destination.
-      isArray: false
       name: network_destination_ipv6
-      required: false
-      secret: false
-    - default: false
-      description: The TCP port destination.
-      isArray: false
+    - description: The TCP port destination.
       name: network_destination_port
-      required: false
-      secret: false
-    - default: false
-      description: The IPv4 IP address. Use only if the Source and Destination cannot be identified.
-      isArray: false
+    - description: The IPv4 IP address. Use only if the Source and Destination cannot be identified.
       name: network_ipv4
-      required: false
-      secret: false
-    - default: false
-      description: The IPv6 IP address. Use only if the Source and Destination cannot be identified.
-      isArray: false
+    - description: The IPv6 IP address. Use only if the Source and Destination cannot be identified.
       name: network_ipv6
-      required: false
-      secret: false
-    - default: false
-      description: The TCP port. Use only if the Source and Destination cannot be identified.
-      isArray: false
+    - description: The TCP port. Use only if the Source and Destination cannot be identified.
       name: network_port
-      required: false
-      secret: false
-    - default: false
-      description: The decimal representation of the protocol field in the IPv4 header.
-      isArray: false
+    - description: The decimal representation of the protocol field in the IPv4 header.
       name: network_protocol
-      required: false
-      secret: false
-    - default: false
-      description: The source autonomous system identifier of the network referenced in the indicator.
-      isArray: false
+    - description: The source autonomous system identifier of the network referenced in the indicator.
       name: network_source_asn
-      required: false
-      secret: false
-    - default: false
-      description: The CIDR Block notation representation of the source network in this indicator.
-      isArray: false
+    - description: The CIDR Block notation representation of the source network in this indicator.
       name: network_source_cidr_block
-      required: false
-      secret: false
-    - default: false
-      description: The IPv4 IP address source.
-      isArray: false
+    - description: The IPv4 IP address source.
       name: network_source_ipv4
-      required: false
-      secret: false
-    - default: false
-      description: The IPv6 IP address source.
-      isArray: false
+    - description: The IPv6 IP address source.
       name: network_source_ipv6
-      required: false
-      secret: false
-    - default: false
-      description: The TCP port source.
-      isArray: false
+    - description: The TCP port source.
       name: network_source_port
-      required: false
-      secret: false
-    - default: false
-      description: Uniform Resource Locator. This URL must comply with RFC 1738.
-      isArray: false
+    - description: Uniform Resource Locator. This URL must comply with RFC 1738.
       name: url
-      required: false
-      secret: false
-    - default: false
-      description: User-Agent string from a web request that could indicate a compromise.
-      isArray: false
+    - description: User-Agent string from a web request that could indicate a compromise.
       name: user_agent
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a network indicator.
-    execution: false
     name: microsoft-atp-indicator-create-network
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -3723,16 +3165,11 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The ID of the indicator to update.
-      isArray: false
+    - description: The ID of the indicator to update.
       name: indicator_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: MediumHigh
+    - defaultValue: MediumHigh
       description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
-      isArray: false
       auto: PREDEFINED
       name: severity
       predefined:
@@ -3741,28 +3178,16 @@ script:
       - MediumLow
       - MediumHigh
       - High
-      required: false
-      secret: false
-    - default: false
-      description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-      isArray: false
+    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
       name: expiration_time
       required: true
-      secret: false
-    - default: false
-      description: Brief description (100 characters or less) of the threat represented by the indicator.
-      isArray: false
+    - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: description
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates the specified indicator.
-    execution: false
     name: microsoft-atp-indicator-update
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -3941,33 +3366,22 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The ID of the indicator to delete.
-      isArray: false
+    - description: The ID of the indicator to delete.
       name: indicator_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     deprecated: true
     description: Deprecated. Use the microsoft-atp-sc-indicator-delete command instead. Deletes the specified indicator.
-    execution: false
     name: microsoft-atp-indicator-delete
     polling: true
   - arguments:
-    - default: false
-      description: The value of the indicator to update.
-      isArray: false
+    - description: The value of the indicator to update.
       name: indicator_value
       required: true
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: 'Indicator Type.'
-      isArray: false
       name: indicator_type
       required: true
       predefined:
@@ -3977,79 +3391,46 @@ script:
       - IpAddress
       - DomainName
       - Url
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: 'The action taken if the indicator is discovered in the organization.'
-      isArray: false
       name: action
       required: true
       predefined:
       - Audit
+      - Block
       - BlockAndRemediate
       - Allowed
-    - default: false
-      auto: PREDEFINED
+      - Warn
+    - auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
-      isArray: false
       name: severity
       predefined:
       - Informational
       - Low
       - Medium
       - High
-      required: false
-      secret: false
-    - default: false
-      description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-      isArray: false
+    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
       defaultValue: 14 days
       name: expiration_time
-      required: false
-      secret: false
-    - default: false
-      description: Brief description (100 characters or less) of the threat represented by the indicator.
-      isArray: false
+    - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: indicator_description
       required: true
-      secret: false
-    - default: false
-      description: The indicator alert title.
-      isArray: false
+    - description: The indicator alert title.
       name: indicator_title
       required: true
-      secret: false
-    - default: false
-      description: The application associated with the indicator.
-      isArray: false
+    - description: The application associated with the indicator.
       name: indicator_application
-      required: false
-      secret: false
-    - default: false
-      description: The indicator alert recommended actions.
-      isArray: false
+    - description: The indicator alert recommended actions.
       name: recommended_actions
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of RBAC group names the indicator is applied to.
+    - description: A comma-separated list of RBAC group names the indicator is applied to.
       isArray: true
       name: rbac_group_names
-      required: false
-      secret: false
     - description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
       deprecated: true
-    - default: false
-      description: Whether to generate an alert for the indicator.
-      isArray: false
+    - description: Whether to generate an alert for the indicator.
       name: generate_alert
-      required: false
-      secret: false
-    deprecated: false
     description: Updates the specified indicator.
-    execution: false
     name: microsoft-atp-sc-indicator-update
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -4147,16 +3528,11 @@ script:
       type: Number
     polling: true
   - arguments:
-    - default: false
-      description: The value of the indicator to update.
-      isArray: false
+    - description: The value of the indicator to update.
       name: indicator_value
       required: true
-      secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: Indicator Type.
-      isArray: false
       name: indicator_type
       required: true
       predefined:
@@ -4166,79 +3542,46 @@ script:
       - IpAddress
       - DomainName
       - Url
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
       description: The action taken if the indicator is discovered in the organization.
-      isArray: false
       name: action
       required: true
       predefined:
       - Audit
+      - Block
       - BlockAndRemediate
       - Allowed
-    - default: false
-      auto: PREDEFINED
+      - Warn
+    - auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data within the indicator, where High is the most severe and Informational is not severe at all.'
-      isArray: false
       name: severity
       predefined:
       - Informational
       - Low
       - Medium
       - High
-      required: false
-      secret: false
-    - default: false
-      description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-      isArray: false
+    - description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
       defaultValue: 14 days
       name: expiration_time
-      required: false
-      secret: false
-    - default: false
-      description: Brief description (100 characters or less) of the threat represented by the indicator.
-      isArray: false
+    - description: Brief description (100 characters or less) of the threat represented by the indicator.
       name: indicator_description
       required: true
-      secret: false
-    - default: false
-      description: The indicator alert title.
-      isArray: false
+    - description: The indicator alert title.
       name: indicator_title
       required: true
-      secret: false
-    - default: false
-      description: The application associated with the indicator.
-      isArray: false
+    - description: The application associated with the indicator.
       name: indicator_application
-      required: false
-      secret: false
-    - default: false
-      description: The indicator alert recommended actions.
-      isArray: false
+    - description: The indicator alert recommended actions.
       name: recommended_actions
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of RBAC group names the indicator is applied to.
+    - description: A comma-separated list of RBAC group names the indicator is applied to.
       isArray: true
       name: rbac_group_names
-      required: false
-      secret: false
     - description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
       deprecated: true
-    - default: false
-      description: Whether to generate an alert for the indicator.
-      isArray: false
+    - description: Whether to generate an alert for the indicator.
       name: generate_alert
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new indicator.
-    execution: false
     name: microsoft-atp-sc-indicator-create
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -4336,37 +3679,23 @@ script:
       type: Number
     polling: true
   - arguments:
-    - default: false
-      description: The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command.
-      isArray: false
+    - description: The ID of the indicator to delete. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command.
       name: indicator_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Deletes the specified indicator.
-    execution: false
     name: microsoft-atp-sc-indicator-delete
     polling: true
   - arguments:
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     description: Lists all indicators by the ID that the system creates when the indicator is ingested.
-    execution: false
     name: microsoft-atp-sc-indicator-list
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -4466,18 +3795,12 @@ script:
   - arguments:
     - default: true
       description: The ID of the indicator to get. The ID can be retrieved by running the microsoft-atp-sc-indicator-list command.
-      isArray: false
       name: indicator_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Gets an indicator by its ID.
-    execution: false
     name: microsoft-atp-sc-indicator-get-by-id
     outputs:
     - contextPath: MicrosoftATP.Indicators.id
@@ -4575,12 +3898,8 @@ script:
       type: Number
     polling: true
   - arguments:
-    - default: false
-      description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
-      isArray: false
+    - description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
       name: id
-      secret: false
-    deprecated: false
     description: Retrieve a list of device references that has this software installed.
     name: microsoft-atp-list-machines-by-software
     outputs:
@@ -4600,13 +3919,9 @@ script:
       description: Machine group ID.
       type: Number
   - arguments:
-    - default: false
-      description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
-      isArray: false
+    - description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves missing KBs (security updates) by software ID.
     name: microsoft-atp-list-missing-kb-by-software
     outputs:
@@ -4632,13 +3947,9 @@ script:
       description: CVE addressed.
       type: Number
   - arguments:
-    - default: false
-      description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
-      isArray: false
+    - description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
       required: true
       name: id
-      secret: false
-    deprecated: false
     description: Retrieves a list of all the vulnerabilities affecting the organization per software.
     name: microsoft-atp-list-vulnerabilities-by-software
     outputs:
@@ -4682,29 +3993,21 @@ script:
       description: Exploit source URLs.
       type: String
   - arguments:
-    - default: false
-      description: Software ID.
+    - description: Software ID.
       isArray: true
       name: id
     - description: Software name.
       isArray: true
       name: name
-      default: false
-    - default: false
-      description: Software publisher name.
+    - description: Software publisher name.
       isArray: true
       name: vendor
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: Maximum number of results to retrieve.
-      isArray: false
       name: limit
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of items in the queried collection that are to be skipped and not included in the result..
-      isArray: false
       name: offset
-    deprecated: false
     description: Retrieves the organization software inventory.
     name: microsoft-atp-list-software
     outputs:
@@ -4745,54 +4048,33 @@ script:
       description: Software distributions.
       type: String
   - arguments:
-    - default: false
-      description: A comma-separated list of machine IDs used for getting the vulnerabilities.
+    - description: A comma-separated list of machine IDs used for getting the vulnerabilities.
       isArray: true
       name: machine_id
-      secret: false
     - description: A comma-separated list of software IDs used for getting the vulnerabilities.
       isArray: true
       name: software_id
-      default: false
-      secret: false
-    - default: false
-      description: A comma-separated list of CVE IDs used for getting the vulnerabilities.
+    - description: A comma-separated list of CVE IDs used for getting the vulnerabilities.
       isArray: true
       name: cve_id
-      secret: false
-    - default: false
-      description: A comma-separated list of product names used for getting the vulnerabilities.
+    - description: A comma-separated list of product names used for getting the vulnerabilities.
       isArray: true
       name: product_name
-      secret: false
-    - default: false
-      description: A comma-separated list of product versions used for getting the vulnerabilities.
+    - description: A comma-separated list of product versions used for getting the vulnerabilities.
       isArray: true
       name: product_version
-      secret: false
-    - default: false
-      description: 'A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical".'
+    - description: 'A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical".'
       isArray: true
       name: severity
-      secret: false
-    - default: false
-      description: A comma-separated list of product vendors used for getting the vulnerabilities.
+    - description: A comma-separated list of product vendors used for getting the vulnerabilities.
       isArray: true
       name: product_vendor
-      secret: false
-    - default: false
-      defaultValue: '25'
+    - defaultValue: '25'
       description: Maximum number of results to retrieve.
-      isArray: false
       name: limit
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of items in the queried collection that are to be skipped and not included in the result.
-      isArray: false
       name: offset
-      secret: false
-    deprecated: false
     description: Retrieves a list of all the vulnerabilities affecting the organization per machine.
     name: microsoft-atp-list-vulnerabilities-by-machine
     outputs:
@@ -4821,59 +4103,30 @@ script:
       description: 'Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical".'
       type: String
   - arguments:
-    - default: false
-      description: Vulnerability ID.
+    - description: Vulnerability ID.
       isArray: true
       name: id
-      secret: false
-    - default: false
-      description: Vulnerability title.
-      isArray: false
+    - description: Vulnerability title.
       name: name_equal
-      secret: false
-    - default: false
-      description: Vulnerability title. Does not work with another filter arguments.
-      isArray: false
+    - description: Vulnerability title. Does not work with another filter arguments.
       name: name_contains
-      secret: false
-    - default: false
-      description: Vulnerability description. Does not work with another filter arguments.
-      isArray: false
+    - description: Vulnerability description. Does not work with another filter arguments.
       name: description_contains
-      secret: false
-    - default: false
-      description: Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
-      isArray: false
+    - description: Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
       name: published_on
-      secret: false
-    - default: false
-      description: CVSS v3 score.
-      isArray: false
+    - description: CVSS v3 score.
       name: cvss
-      secret: false
-    - default: false
-      description: 'A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical".'
+    - description: 'A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical".'
       isArray: true
       name: severity
-      secret: false
     - description: Date when the vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
-      isArray: false
       name: updated_on
-      default: false
-      secret: false
-    - default: false
-      description: Maximum number of results to retrieve.
-      isArray: false
+    - description: Maximum number of results to retrieve.
       name: limit
       defaultValue: '25'
-      secret: false
-    - default: false
-      description: The number of items in the queried collection that are to be skipped and not included in the result.
-      isArray: false
+    - description: The number of items in the queried collection that are to be skipped and not included in the result.
       defaultValue: '0'
       name: offset
-      secret: false
-    deprecated: false
     description: Retrieves a list of all vulnerabilities.
     name: microsoft-atp-list-vulnerabilities
     outputs:
@@ -4917,12 +4170,8 @@ script:
       description: Exploit source URLs.
       type: String
   - arguments:
-    - default: false
-      description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
-      isArray: false
+    - description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
       name: id
-      secret: false
-    deprecated: false
     description: |-
       Retrieves a list of your organization's software version distribution.
     name: microsoft-atp-list-software-version-distribution
@@ -4942,15 +4191,10 @@ script:
       isArray: true
       name: cve_id
       required: true
-      secret: false
     - description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
       deprecated: true
-    deprecated: false
     description: Retrieves a list of machines affected by a vulnerability.
-    execution: false
     name: microsoft-atp-list-machines-by-vulnerability
     polling: true
     outputs:
@@ -4975,15 +4219,10 @@ script:
       isArray: true
       name: hash
       required: true
-      secret: false
     - description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
       deprecated: true
-    deprecated: false
     description: Retrieves file information by a file hash (SHA1 or SHA256).
-    execution: false
     name: microsoft-atp-get-file-info
     outputs:
     - contextPath: MicrosoftATP.File.Sha1
@@ -5051,32 +4290,20 @@ script:
       type: Number
     polling: true
   - arguments:
-    - default: false
-      description: The endpoint ID.
+    - description: The endpoint ID.
       isArray: true
       name: id
-      required: false
-      secret: false
     - default: true
       description: The endpoint IP address.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The endpoint hostname.
+    - description: The endpoint hostname.
       isArray: true
       name: hostname
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required - IP, hostname, or ID. Otherwise, an error appears.
-    execution: false
     name: endpoint
     outputs:
     - contextPath: Endpoint.ID
@@ -5175,18 +4402,12 @@ script:
     polling: true
   - name: microsoft-atp-indicator-batch-update
     description: Updates a batch of indicators. If an indicator does not exist, a new indicator is created.
-    deprecated: false
     arguments:
     - name: indicator_batch
       description: 'A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]'
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: ran_once_flag
       description: Flag for the rate limit retry.
-      required: false
-      isArray: false
       deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Indicators.ID
@@ -5202,21 +4423,15 @@ script:
       description: Whether the update failed.
       type: Boolean
     polling: true
-    execution: false
   - name: microsoft-atp-get-alert-by-id
     description: Retrieves a specific alert by the given alert ID.
-    deprecated: false
     arguments:
     - name: alert_ids
       description: A comma-separated list of alert IDs.
       required: true
       isArray: true
-      default: false
-      secret: false
     - name: ran_once_flag
       description: Flag for the rate limit retry.
-      required: false
-      isArray: false
       deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
@@ -5313,54 +4528,28 @@ script:
       description: The device RBAC group name.
       type: String
     polling: true
-    execution: false
   - name: microsoft-atp-live-response-get-file
     description: 'Collects a file from a device. Note: Backslashes in the path must be escaped.'
-    deprecated: false
     arguments:
     - name: machine_id
       description: Machine ID to add the file to.
       required: true
-      isArray: false
       default: true
-      secret: false
     - name: comment
       description: A comment to associate with the action.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: path
       description: File path to get from the device.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: machine_action_id
       description: Action ID to retrieve status and data for.
-      required: false
-      isArray: false
-      default: false
-      secret: false
       deprecated: true
     - name: interval_in_seconds
       description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      required: false
-      isArray: false
-      default: false
-      secret: false
-      deprecated: false
     - name: timeout_in_seconds
       description: Timeout for polling. Default is 600 seconds.
-      required: false
-      isArray: false
-      default: false
-      secret: false
-      deprecated: false
     - name: ran_once_flag
       description: Flag for the rate limit retry.
-      required: false
-      isArray: false
       deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.id
@@ -5449,57 +4638,28 @@ script:
   - name: microsoft-atp-live-response-run-script
     description: |-
       Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
-    deprecated: false
     arguments:
     - name: machine_id
       description: The machine ID to add the file to.
       required: true
-      isArray: false
       default: true
-      secret: false
     - name: comment
       description: A comment to associate with the action.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: scriptName
       description: The script name to run on the device.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: arguments
       description: Arguments to run the script with.
-      required: false
-      isArray: false
-      default: false
-      secret: false
     - name: machine_action_id
       description: The action ID to retrieve status and data for.
-      required: false
-      isArray: false
-      default: false
-      secret: false
       deprecated: true
     - name: interval_in_seconds
       description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      required: false
-      isArray: false
-      default: false
-      secret: false
-      deprecated: false
     - name: timeout_in_seconds
       description: Timeout for polling. Default is 600 seconds.
-      required: false
-      isArray: false
-      default: false
-      secret: false
-      deprecated: false
     - name: ran_once_flag
       description: Flag for the rate limit retry.
-      required: false
-      isArray: false
       deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.script_name
@@ -5518,51 +4678,26 @@ script:
     execution: true
   - name: microsoft-atp-live-response-put-file
     description: Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
-    deprecated: false
     arguments:
     - name: machine_id
       description: The machine ID to add the file to.
       required: true
-      isArray: false
       default: true
-      secret: false
     - name: comment
       description: A comment to associate with the action.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: file_name
       description: File name to take from the library to the device.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: machine_action_id
       description: Action ID to retrieve status and data for.
-      required: false
-      isArray: false
-      default: false
-      secret: false
       deprecated: true
     - name: interval_in_seconds
       description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      required: false
-      isArray: false
-      default: false
-      secret: false
-      deprecated: false
     - name: timeout_in_seconds
       description: Timeout for polling. Default is 600 seconds.
-      required: false
-      isArray: false
-      default: false
-      secret: false
-      deprecated: false
     - name: ran_once_flag
       description: Flag for the rate limit retry.
-      required: false
-      isArray: false
       deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.id
@@ -5650,24 +4785,16 @@ script:
     execution: true
   - name: microsoft-atp-live-response-result
     description: Gets a result file for a specified action.
-    deprecated: false
     arguments:
     - name: machine_action_id
       description: The action ID to retrieve status and data for.
       required: true
-      isArray: false
       default: true
-      secret: false
     - name: command_index
       description: A command index to retrieve the file for.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: ran_once_flag
       description: Flag for the rate limit retry.
-      required: false
-      isArray: false
       deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction
@@ -5676,37 +4803,27 @@ script:
     execution: true
   - name: microsoft-atp-live-response-cancel-action
     description: Cancels an action with an unfinished status.
-    deprecated: false
     arguments:
     - name: machine_action_id
       description: Action ID to retrieve status and data for.
       required: true
-      isArray: false
       default: true
-      secret: false
     - name: comment
       description: A comment to associate with the action.
       required: true
-      isArray: false
-      default: false
-      secret: false
     - name: ran_once_flag
       description: Flag for the rate limit retry.
-      required: false
-      isArray: false
       deprecated: true
     outputs: []
     polling: true
     execution: true
   - name: microsoft-atp-advanced-hunting-lateral-movement-evidence
     description: Detects evidence of attempted lateral movement. When you select a “query_purpose” argument, a designated query template is used.
-    deprecated: false
     arguments:
     - name: query_purpose
       auto: PREDEFINED
       description: When you select a “query_purpose” argument, a designated query template is used. "network_connections" - The network connections initiated by the host/file to other internal hosts. "smb_connections" - SMB connections. "credential_dumping" - Was there a use of credential dumping? If so can we detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts.
       required: true
-      isArray: false
       defaultValue: ''
       predefined:
       - network_connections
@@ -5715,83 +4832,49 @@ script:
       - management_connection
     - name: device_name
       description: Device name to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: remote_ip_count
       description: Threshold for network enumeration in smb_connection
-      required: false
-      isArray: false
       defaultValue: ''
     - name: file_name
       description: The file name to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha1
       description: The SHA1 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha256
       description: The SHA256 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: md5
       description: The MD5 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: device_id
       description: The device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: The query operator to use with provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: The maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
       description: The query results for network_connections query_purpose.
@@ -5808,7 +4891,6 @@ script:
     polling: true
   - arguments:
     - description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also the process_cmd argument to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created (on the local machine)? "new_group" - Was a new group created? "group_user_change" - Was a user added to a group (on the local machine)? "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?
-      isArray: false
       name: query_purpose
       required: true
       auto: PREDEFINED
@@ -5826,86 +4908,49 @@ script:
       - local_firewall_change
       - host_file_change
     - description: Device name to look for.
-      isArray: false
       name: device_name
-      required: false
       defaultValue: ''
     - name: file_name
       description: File name to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with the provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: Maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
-    - default: false
-      description: Process command line that initiated the registry entry. Can only be used with "registry_entry" query_purpose.
-      isArray: false
+    - description: Process command line that initiated the registry entry. Can only be used with "registry_entry" query_purpose.
       name: process_cmd
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
     name: microsoft-atp-advanced-hunting-persistence-evidence
     outputs:
@@ -5945,80 +4990,47 @@ script:
     polling: true
   - arguments:
     - description: Device name to look for.
-      isArray: false
       name: device_name
-      required: false
       defaultValue: ''
     - description: File name to look for.
-      isArray: false
       name: file_name
-      required: false
       defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: Maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Indicates how the file got on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
     name: microsoft-atp-advanced-hunting-file-origin
     outputs:
@@ -6028,7 +5040,6 @@ script:
     polling: true
   - arguments:
     - description: When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?
-      isArray: false
       name: query_purpose
       required: true
       auto: PREDEFINED
@@ -6041,80 +5052,47 @@ script:
       - powershell_execution_unsigned_files
       - process_excecution_powershell
     - description: Device name to look for.
-      isArray: false
       name: device_name
-      required: false
       defaultValue: ''
     - description: File name to look for.
-      isArray: false
       name: file_name
-      required: false
       defaultValue: ''
     - description: SHA1 hash to look for.
-      isArray: false
       name: sha1
-      required: false
       defaultValue: ''
     - description: SHA256 hash to look for.
-      isArray: false
       name: sha256
-      required: false
       defaultValue: ''
     - description: MD5 hash to look for.
-      isArray: false
       name: md5
-      required: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: Maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Detects process details. When you select a “query_purpose” argument, a designated query template is used.
     polling: true
     name: microsoft-atp-advanced-hunting-process-details
@@ -6139,7 +5117,6 @@ script:
       type: String
   - arguments:
     - description: When you select a “query_purpose” argument, a designated query template is used. "external_addresses" - Network connections to external addresses. "dns_query" - DNS query. Query by providing hash or filename or specific processes. At least one of file arguments (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id). "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required (device_name, device_id), at least one.
-      isArray: false
       name: query_purpose
       required: true
       auto: PREDEFINED
@@ -6150,78 +5127,46 @@ script:
       - encoded_commands
     - description: Device name to look for.
       name: device_name
-      required: false
-      isArray: false
       defaultValue: ''
     - description: File name to look for.
-      isArray: false
       name: file_name
-      required: false
       defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: Maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
     name: microsoft-atp-advanced-hunting-network-connections
     outputs:
@@ -6235,127 +5180,76 @@ script:
       description: The query results for encoded_commands query_purpose.
       type: String
     polling: true
-    deprecated: false
   - name: microsoft-atp-advanced-hunting-privilege-escalation
     description: Detects evidence of privilege escalation.
-    deprecated: false
     arguments:
     - name: device_name
       description: Device name to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: Maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
       description: The query results.
       type: String
   - name: microsoft-atp-advanced-hunting-tampering
     description: Detects evidence of MSDE agent/sensor manipulation.
-    deprecated: false
     arguments:
     - name: device_name
       description: Device name to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: Maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntTampering.Result
       description: The query results.
@@ -6363,13 +5257,11 @@ script:
     polling: true
   - name: microsoft-atp-advanced-hunting-cover-up
     description: Detects cover up actions. When you select a “query_purpose” argument, a designated query template is used.
-    deprecated: false
     arguments:
     - name: query_purpose
       auto: PREDEFINED
       description: When you select a “query_purpose” argument, a designated query template is used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and its activities. Requires only username argument. "connected_devices" - All connected devices by compromised user. Requires only username argument. "action_types" - All action types created by a user on each machine. Requires only username argument. "common_files" - Most common files associated with a user. Requires only username argument
       required: true
-      isArray: false
       defaultValue: ''
       predefined:
       - file_deleted
@@ -6380,83 +5272,49 @@ script:
       - common_files
     - name: device_name
       description: Device name to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: file_name
       description: File name to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: username
       description: Username to look for in relevant query types.
-      required: false
-      isArray: false
       defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
-      required: false
-      isArray: false
       defaultValue: or
       predefined:
       - or
       - and
     - name: limit
       description: Maximum number of results to retrieve.
-      required: false
-      isArray: false
       defaultValue: '50'
     - name: time_range
-      required: false
-      isArray: false
       description: Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc.
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The amount of time (in seconds) that a request waits for the query response before a timeout occurs.
-      isArray: false
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The page number from which to start a search. Default is 1.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
+    - defaultValue: 'false'
       description: Show the query as part of the entry result.
-      isArray: false
       name: show_query
-      required: false
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MicrosoftATP.HuntCoverUp.Result.file_deleted
       description: The query results for file_deleted query_purpose.
@@ -6480,18 +5338,12 @@ script:
   - arguments:
     - default: true
       description: A machine ID used for getting logged on users.
-      isArray: false
       name: machine_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of logged on users on a specific device.
-    execution: false
     name: microsoft-atp-get-machine-users
     outputs:
     - contextPath: MicrosoftATP.MachineUser.ID
@@ -6525,18 +5377,12 @@ script:
   - arguments:
     - default: true
       description: A machine ID used for getting machine related alerts.
-      isArray: false
       name: machine_id
       required: true
-      secret: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Retrieves a collection of alerts related to a specific device.
-    execution: false
     name: microsoft-atp-get-machine-alerts
     outputs:
     - contextPath: MicrosoftATP.MachineAlerts.ID
@@ -6571,46 +5417,23 @@ script:
       type: String
     polling: true
   - arguments:
-    - default: false
-      description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
-      isArray: false
+    - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
       required: true
-      secret: false
-    - default: false
-      description: Comment to associate with the action.
-      isArray: false
+    - description: Comment to associate with the action.
       name: comment
       required: true
-      secret: false
-    - default: false
-      description: Timeout for polling. Default is 600 seconds.
-      isArray: false
+    - description: Timeout for polling. Default is 600 seconds.
       name: timeout_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Action ID to retrieve status and data for. Retrieved from the 'get-machine-investigation-package' command.
-      isArray: false
+    - description: Action ID to retrieve status and data for. Retrieved from the 'get-machine-investigation-package' command.
       name: machine_action_id
-      required: false
-      secret: false
       deprecated: true
-    - default: false
-      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      isArray: false
+    - description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
       name: interval_in_seconds
-      required: false
-      secret: false
-      deprecated: false
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
-    deprecated: false
     description: Collect and download an investigation package from a machine.
-    execution: false
     polling: true
     name: microsoft-atp-request-and-download-investigation-package
     outputs:
@@ -6634,9 +5457,7 @@ script:
       required: true
     - deprecated: true
       description: Flag for the rate limit retry.
-      isArray: false
       name: ran_once_flag
-      required: false
     description: Offboard a machine from defender.
     execution: true
     name: microsoft-atp-offboard-machine
@@ -6682,14 +5503,14 @@ script:
       type: String
     polling: true
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: microsoft-atp-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.52480
-  feed: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: microsoft-atp-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.67448
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

@@ -12,12 +12,12 @@ configuration:
   type: 9
 - display: Raise error an empty result
   name: error_on_no_results
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Base URL
   name: base_url
   required: true
@@ -25,8 +25,8 @@ configuration:
   type: 0
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Use the Google Maps API.
 display: Google Maps
 name: GoogleMaps
@@ -35,13 +35,9 @@ script:
   - arguments:
     - default: true
       description: The physical address to be geocoded.
-      isArray: false
       name: search_address
       required: true
-      secret: false
-    deprecated: false
     description: Returns the coordinates of the given physical address. Only the first result is returned (the most relevant, according to Google Maps).
-    execution: false
     name: google-maps-geocode
     outputs:
     - contextPath: GoogleMaps.lat
@@ -59,11 +55,7 @@ script:
     - contextPath: GoogleMaps.Country
       description: The country or region where the provided location is, according to Google Maps.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

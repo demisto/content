@@ -2,15 +2,13 @@ comment: Load and return the processes file (generated from the cs-falcon-rtr-li
 commonfields:
   id: ReadNetstatFile
   version: -1
-enabled: false
 name: ReadNetstatFile
 script: '-'
-system: false
 type: python
 tags:
 - dynamic-section
 subtype: python3
-dockerimage: demisto/python3:3.10.9.46807
+dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

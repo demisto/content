@@ -1,4 +1,4 @@
-// Development container for Content. Poetry hash 1.11.0
+// Development container for Content. Demisto-SDK 1.14.5
 {
 	"name": "XSOAR Content",
 	"build": {
@@ -53,8 +53,6 @@
 			"extensions": [
 				"cortexxsoarext.xsoar",
 				"ms-python.python",
-				"ms-vscode.PowerShell",
-				"ms-toolsai.jupyter",
 				"timonwong.shellcheck",
 				"GitHub.vscode-pull-request-github",
 				"eamodio.gitlens",
@@ -72,7 +70,9 @@
 				"KevinRose.vsc-python-indent",
 				"rangav.vscode-thunder-client",
 				"ms-python.black-formatter",
-				"LittleFoxTeam.vscode-python-test-adapter"
+				"LittleFoxTeam.vscode-python-test-adapter",
+				"charliermarsh.ruff",
+				"ryanluker.vscode-coverage-gutters"
 			]
 		},
 		"codespaces": {
@@ -104,5 +104,11 @@
 // "overrideFeatureInstallOrder": [
 // 	"ghcr.io/devcontainers/features/common-utils:1"
 // ],
-"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh"
+"onCreateCommand": "dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && chmod +x .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
+"postStartCommand": "poetry install",
+"hostRequirements": {
+	"cpus": 4,
+	"memory": "8gb",
+	"storage": "32gb"
+ }
 }

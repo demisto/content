@@ -6,12 +6,18 @@ configuration:
 - defaultvalue: https://api.maltiverse.com
   display: Server URL
   name: server_url
-  required: false
   type: 0
+  required: false
 - display: API Key
   name: api_key
-  required: false
   type: 4
+  hidden: true
+  required: false
+- displaypassword: API Key
+  name: credentials_api_key
+  hiddenusername: true
+  type: 9
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -28,13 +34,12 @@ configuration:
   type: 15
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
-  required: false
   type: 8
+  required: false
 description: Use the Maltiverse integration to analyze suspicious hashes, URLs, domains and IP addresses.
 display: Maltiverse
 name: Maltiverse
@@ -46,17 +51,10 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -116,17 +114,10 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a domain.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -198,17 +189,10 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives is higher than the threshold, the URL address will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an URL.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -283,17 +267,10 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: If the number of positives AV detection is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
-      isArray: false
       name: threshold
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of a file by file hash.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Name
@@ -389,11 +366,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

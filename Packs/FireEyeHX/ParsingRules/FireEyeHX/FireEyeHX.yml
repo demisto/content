@@ -1,0 +1,6 @@
+name: FireEye HX Parsing Rule
+id: FireEye_HX_ParsingRule
+fromversion: 8.2.0
+tags: []
+rules: ''
+samples: ''

@@ -7,410 +7,402 @@ display: Cofense Triage v2
 category: Data Enrichment & Threat Intelligence
 description: Use the Cofense Triage integration to ingest reported phishing indicators.
 configuration:
-  - display: Server URL (e.g., https://192.168.0.1)
-    name: host
-    defaultvalue: ""
-    type: 0
-    required: true
-  - display: User
-    name: user
-    defaultvalue: ""
-    type: 0
-    required: true
-  - display: API Token
-    name: token
-    defaultvalue: ""
-    type: 4
-    required: true
-  - display: Fetch incidents
-    name: isFetch
-    type: 8
-    required: false
-  - display: Incident type
-    name: incidentType
-    type: 13
-    required: false
-  - display: "Mailbox Location"
-    name: mailbox_location
-    defaultvalue: Processed_Reports
-    type: 15
-    required: true
-    options:
-      - Inbox_Reports
-      - Processed_Reports
-  - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
-      1 year)
-    name: date_range
-    defaultvalue: 3 days
-    type: 0
-    required: false
-  - display: Category ID to fetch
-    name: category_id
-    additionalinfo: Corresponds to category IDs defined in Triage. Eg, "1".
-    defaultvalue: ""
-    type: 0
-    required: false
-  - display: Match Priority - the highest match priority based on rule hits for the
-      report
-    name: match_priority
-    defaultvalue: ""
-    type: 0
-    required: false
-  - display: 'Tags - CSV list of tags of processed reports by which to filter '
-    name: tags
-    defaultvalue: ""
-    type: 0
-    required: false
-  - display: Maximum number of incidents to fetch each time
-    name: max_fetch
-    defaultvalue: "30"
-    type: 0
-    required: false
-  - display: Trust any certificate (not secure)
-    name: insecure
-    defaultvalue: "false"
-    type: 8
-    required: false
-  - display: Use system proxy settings
-    name: proxy
-    required: false
-    type: 8
+- display: Server URL (e.g., https://192.168.0.1)
+  name: host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: User
+  name: user
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: "Mailbox Location"
+  name: mailbox_location
+  defaultvalue: Processed_Reports
+  type: 15
+  required: true
+  options:
+  - Inbox_Reports
+  - Processed_Reports
+- display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: date_range
+  defaultvalue: 3 days
+  type: 0
+  required: false
+- display: Category ID to fetch
+  name: category_id
+  additionalinfo: Corresponds to category IDs defined in Triage. Eg, "1".
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Match Priority - the highest match priority based on rule hits for the report
+  name: match_priority
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: 'Tags - CSV list of tags of processed reports by which to filter '
+  name: tags
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Maximum number of incidents to fetch each time
+  name: max_fetch
+  defaultvalue: "30"
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 script:
   script: '-'
   type: python
   subtype: python3
   commands:
-    - name: cofense-search-reports
-      arguments:
-        - name: file_hash
-          description: File hash, MD5 or SHA256.
-        - name: url
-          description: The reported URLs.
-        - name: subject
-          description: Report's subject
-        - name: reported_at
-          description: 'Retrieve reports that were reported after this time, for example: "2 hours,
-            4 minutes, 6 month, 1 day".'
-          defaultValue: 60 days
-        - name: created_at
-          description: 'Retrieve reports that were created after this time, for example: "2 hours,
-            4 minutes, 6 month, 1 day".'
-          defaultValue: 60 days
-        - name: reporter
-          description: Address or ID of the reporter.
-        - name: max_matches
-          default: true
-          description: Maximum number of matches to fetch. Default is 30.
-          defaultValue: "30"
-        - name: verbose
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Returns all fields of a report.
-      outputs:
-        - contextPath: Cofense.Report.ID
-          description: ID number of the report.
-        - contextPath: Cofense.Report.EmailAttachments
-          description: Email attachments.
-        - contextPath: Cofense.Report.EmailAttachments.id
-          description: Email attachment ID.
-        - contextPath: Cofense.Report.Tags
-          description: Report tags.
-          type: string
-        - contextPath: Cofense.Report.ClusterId
-          description: Cluster ID number.
-          type: number
-        - contextPath: Cofense.Report.CategoryId
-          description: Report category.
-          type: number
-        - contextPath: Cofense.Report.CreatedAt
-          description: Report creation date.
-          type: date
-        - contextPath: Cofense.Report.ReportedAt
-          description: Reporting time.
-          type: string
-        - contextPath: Cofense.Report.MatchPriority
-          description: The highest match priority based on rule hits for the report.
-          type: number
-        - contextPath: Cofense.Report.ReporterId
-          description: Reporter ID.
-          type: number
-        - contextPath: Cofense.Report.Location
-          description: Location of the report.
-          type: string
-        - contextPath: Cofense.Report.Reporter
-          description: Reporter email address.
-          type: string
-        - contextPath: Cofense.Report.SuspectFromAddress
-          description: Suspect from address.
-          type: string
-        - contextPath: Cofense.Report.ReportSubject
-          description: Report subject.
-          type: string
-        - contextPath: Cofense.Report.ReportBody
-          description: Report body.
-          type: string
-        - contextPath: Cofense.Report.Md5
-          description: MD5 hash of the file.
-          type: number
-        - contextPath: Cofense.Report.Sha256
-          description: SHA256 hash of the file.
-      description: 'Runs a query for reports.'
-    - name: cofense-search-inbox-reports
-      arguments:
-        - name: file_hash
-          description: File hash, MD5 or SHA256.
-        - name: url
-          description: The reported URLs.
-        - name: subject
-          description: Report's subject
-        - name: reported_at
-          description: 'Retrieve reports that were reported after this time, for example: "2 hours,
-            4 minutes, 6 month, 1 day".'
-          defaultValue: 60 days
-        - name: created_at
-          description: 'Retrieve reports that were created after this time, for example: "2 hours,
-            4 minutes, 6 month, 1 day".'
-          defaultValue: 60 days
-        - name: reporter
-          description: Address or ID of the reporter.
-        - name: max_matches
-          default: true
-          description: Maximum number of matches to fetch. Default is 30.
-          defaultValue: "30"
-        - name: verbose
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Returns all fields of a report.
-      outputs:
-        - contextPath: Cofense.Report.ID
-          description: ID number of the report.
-        - contextPath: Cofense.Report.EmailAttachments
-          description: Email attachments.
-        - contextPath: Cofense.Report.EmailAttachments.id
-          description: Email attachment ID.
-        - contextPath: Cofense.Report.Tags
-          description: Report tags.
-          type: string
-        - contextPath: Cofense.Report.ClusterId
-          description: Cluster ID number.
-          type: number
-        - contextPath: Cofense.Report.CategoryId
-          description: Report category.
-          type: number
-        - contextPath: Cofense.Report.CreatedAt
-          description: Report creation date.
-          type: date
-        - contextPath: Cofense.Report.ReportedAt
-          description: Reporting time.
-          type: string
-        - contextPath: Cofense.Report.MatchPriority
-          description: The highest match priority based on rule hits for the report.
-          type: number
-        - contextPath: Cofense.Report.ReporterId
-          description: Reporter ID.
-          type: number
-        - contextPath: Cofense.Report.Location
-          description: Location of the report.
-          type: string
-        - contextPath: Cofense.Report.Reporter
-          description: Reporter email address.
-          type: string
-        - contextPath: Cofense.Report.SuspectFromAddress
-          description: Suspect from address.
-          type: string
-        - contextPath: Cofense.Report.ReportSubject
-          description: Report subject.
-          type: string
-        - contextPath: Cofense.Report.ReportBody
-          description: Report body.
-          type: string
-        - contextPath: Cofense.Report.Md5
-          description: MD5 hash of the file.
-          type: number
-        - contextPath: Cofense.Report.Sha256
-          description: SHA256 hash of the file.
-      description: 'Runs a query for reports from the `inbox` mailbox.'
-    - name: cofense-get-attachment
-      arguments:
-        - name: attachment_id
-          required: true
-          description: ID of the attachment.
-      outputs:
-        - contextPath: File.Size
-          description: File size.
-          type: number
-        - contextPath: File.Type
-          description: 'File type, for example: "PE", "txt"'
-          type: string
-        - contextPath: File.EntryID
-          description: The file entry ID.
-          type: string
-        - contextPath: File.Name
-          description: File name.
-          type: string
-        - contextPath: File.SHA1
-          description: File SHA1 hash.
-          type: string
-        - contextPath: File.SHA256
-          description: File SHA256 hash.
-          type: string
-        - contextPath: File.MD5
-          description: File MD5 hash.
-          type: string
-      description: 'Retrieves an attachment by the attachment ID number. '
-    - name: cofense-get-reporter
-      arguments:
-        - name: reporter_id
-          required: true
-          description: ID of the reporter.
-      outputs:
-        - contextPath: Cofense.Reporter.ID
-          description: ID of the reporter.
-          type: number
-        - contextPath: Cofense.Reporter.Email
-          description: Reporter email address.
-          type: string
-        - contextPath: Cofense.Reporter.CreatedAt
-          description: Reporter creation date.
-          type: string
-        - contextPath: Cofense.Reporter.UpdatedAt
-          description: Reporter last-updated date.
-          type: string
-        - contextPath: Cofense.Reporter.CredibilityScore
-          description: Reporter credibility score.
-          type: number
-        - contextPath: Cofense.Reporter.ReportsCount
-          description: Number of reports.
-          type: number
-        - contextPath: Cofense.Reporter.LastReportedAt
-          description: Date of most recent report.
-          type: string
-        - contextPath: Cofense.Reporter.VIP
-          description: Whether Reporter is a VIP.
-          type: bool
-      description: Retrieves Email address of the reporter by ID
-    - name: cofense-get-report-by-id
-      arguments:
-        - name: report_id
-          required: true
-          description: ID of the report
-      outputs:
-        - contextPath: Cofense.Report.ID
-          description: ID number of the report.
-          type: number
-        - contextPath: Cofense.Report.EmailAttachments
-          description: Email attachments.
-          type: string
-        - contextPath: Cofense.Report.EmailAttachments.id
-          description: Email attachment ID.
-          type: string
-        - contextPath: Cofense.Report.Tags
-          description: Report tags.
-          type: string
-        - contextPath: Cofense.Report.ClusterId
-          description: Cluster ID number.
-          type: number
-        - contextPath: Cofense.Report.CategoryId
-          description: Report category.
-          type: number
-        - contextPath: Cofense.Report.CreatedAt
-          description: Report creation date.
-          type: string
-        - contextPath: Cofense.Report.ReportedAt
-          description: Reporting time.
-          type: string
-        - contextPath: Cofense.Report.MatchPriority
-          description: The highest match priority based on rule hits for the report.
-          type: number
-        - contextPath: Cofense.Report.ReporterId
-          description: Reporter ID.
-          type: number
-        - contextPath: Cofense.Report.Location
-          description: Location of the report.
-          type: string
-        - contextPath: Cofense.Report.Reporter
-          description: Reporter email address.
-          type: string
-        - contextPath: Cofense.Report.SuspectFromAddress
-          description: Suspect from address.
-          type: string
-        - contextPath: Cofense.Report.ReportSubject
-          description: Report subject.
-          type: string
-        - contextPath: Cofense.Report.ReportBody
-          description: Report body.
-          type: string
-        - contextPath: Cofense.Report.Md5
-          description: MD5 hash of the file.
-          type: number
-        - contextPath: Cofense.Report.Sha256
-          description: SHA256 hash of the file.
-      description: 'Retrieves a report by the report ID number. '
-    - name: cofense-get-report-png-by-id
-      arguments:
-        - name: report_id
-          required: true
-          description: Report ID PNG output
-        - name: set_white_bg
-          auto: PREDEFINED
-          predefined:
-            - "True"
-            - "False"
-          description: Change background to white
-          defaultValue: "False"
-      description: 'Retrieves a report by the report ID number and displays as PNG'
-    - name: cofense-get-threat-indicators
-      arguments:
-        - name: type
-          auto: PREDEFINED
-          description: indicator type
-          predefined:
-            - Domain
-            - URL
-            - MD5
-            - SHA256
-            - Subject
-            - Sender
-        - name: level
-          auto: PREDEFINED
-          description: indicator severity
-          predefined:
-            - Malicious
-            - Suspicious
-            - Benign
-        - name: start_date
-          description: "designated start date tagged by analyst (format example: YYYY-MM-DD+HH:MM:SS). Default: 6 days ago."
-        - name: end_date
-          description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS). Default: current date."
-      outputs:
-        - contextPath: Cofense.ThreatIndicators
-          description: Threat indicator output
-        - contextPath: Cofense.ThreatIndicators.ID
-          description: Threat indicator ID in Cofense Triage.
-          type: number
-        - contextPath: Cofense.ThreatIndicators.OperatorId
-          description: Cofense Triage operator who designated the threat indicator.
-          type: number
-        - contextPath: Cofense.ThreatIndicators.ReportId
-          description: Associated Report in Cofense Triage.
-          type: number
-        - contextPath: Cofense.ThreatIndicators.ThreatKey
-          description: Threat indicator type.
-          type: string
-        - contextPath: Cofense.ThreatIndicators.ThreatLevel
-          description: Threat indicator level.
-          type: string
-        - contextPath: Cofense.ThreatIndicators.ThreatValue
-          description: Value of the threat indicator.
-          type: string
-      description: Threat Indicators that are designated by analysts as malicious, suspicious
-        or benign
-  dockerimage: demisto/chromium:1.0.0.52187
+  - name: cofense-search-reports
+    arguments:
+    - name: file_hash
+      description: File hash, MD5 or SHA256.
+    - name: url
+      description: The reported URLs.
+    - name: subject
+      description: Report's subject
+    - name: reported_at
+      description: 'Retrieve reports that were reported after this time, for example: "2 hours, 4 minutes, 6 month, 1 day".'
+      defaultValue: 60 days
+    - name: created_at
+      description: 'Retrieve reports that were created after this time, for example: "2 hours, 4 minutes, 6 month, 1 day".'
+      defaultValue: 60 days
+    - name: reporter
+      description: Address or ID of the reporter.
+    - name: max_matches
+      default: true
+      description: Maximum number of matches to fetch. Default is 30.
+      defaultValue: "30"
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns all fields of a report.
+    outputs:
+    - contextPath: Cofense.Report.ID
+      description: ID number of the report.
+    - contextPath: Cofense.Report.EmailAttachments
+      description: Email attachments.
+    - contextPath: Cofense.Report.EmailAttachments.id
+      description: Email attachment ID.
+    - contextPath: Cofense.Report.Tags
+      description: Report tags.
+      type: string
+    - contextPath: Cofense.Report.ClusterId
+      description: Cluster ID number.
+      type: number
+    - contextPath: Cofense.Report.CategoryId
+      description: Report category.
+      type: number
+    - contextPath: Cofense.Report.CreatedAt
+      description: Report creation date.
+      type: date
+    - contextPath: Cofense.Report.ReportedAt
+      description: Reporting time.
+      type: string
+    - contextPath: Cofense.Report.MatchPriority
+      description: The highest match priority based on rule hits for the report.
+      type: number
+    - contextPath: Cofense.Report.ReporterId
+      description: Reporter ID.
+      type: number
+    - contextPath: Cofense.Report.Location
+      description: Location of the report.
+      type: string
+    - contextPath: Cofense.Report.Reporter
+      description: Reporter email address.
+      type: string
+    - contextPath: Cofense.Report.SuspectFromAddress
+      description: Suspect from address.
+      type: string
+    - contextPath: Cofense.Report.ReportSubject
+      description: Report subject.
+      type: string
+    - contextPath: Cofense.Report.ReportBody
+      description: Report body.
+      type: string
+    - contextPath: Cofense.Report.Md5
+      description: MD5 hash of the file.
+      type: number
+    - contextPath: Cofense.Report.Sha256
+      description: SHA256 hash of the file.
+    description: 'Runs a query for reports.'
+  - name: cofense-search-inbox-reports
+    arguments:
+    - name: file_hash
+      description: File hash, MD5 or SHA256.
+    - name: url
+      description: The reported URLs.
+    - name: subject
+      description: Report's subject
+    - name: reported_at
+      description: 'Retrieve reports that were reported after this time, for example: "2 hours, 4 minutes, 6 month, 1 day".'
+      defaultValue: 60 days
+    - name: created_at
+      description: 'Retrieve reports that were created after this time, for example: "2 hours, 4 minutes, 6 month, 1 day".'
+      defaultValue: 60 days
+    - name: reporter
+      description: Address or ID of the reporter.
+    - name: max_matches
+      default: true
+      description: Maximum number of matches to fetch. Default is 30.
+      defaultValue: "30"
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Returns all fields of a report.
+    outputs:
+    - contextPath: Cofense.Report.ID
+      description: ID number of the report.
+    - contextPath: Cofense.Report.EmailAttachments
+      description: Email attachments.
+    - contextPath: Cofense.Report.EmailAttachments.id
+      description: Email attachment ID.
+    - contextPath: Cofense.Report.Tags
+      description: Report tags.
+      type: string
+    - contextPath: Cofense.Report.ClusterId
+      description: Cluster ID number.
+      type: number
+    - contextPath: Cofense.Report.CategoryId
+      description: Report category.
+      type: number
+    - contextPath: Cofense.Report.CreatedAt
+      description: Report creation date.
+      type: date
+    - contextPath: Cofense.Report.ReportedAt
+      description: Reporting time.
+      type: string
+    - contextPath: Cofense.Report.MatchPriority
+      description: The highest match priority based on rule hits for the report.
+      type: number
+    - contextPath: Cofense.Report.ReporterId
+      description: Reporter ID.
+      type: number
+    - contextPath: Cofense.Report.Location
+      description: Location of the report.
+      type: string
+    - contextPath: Cofense.Report.Reporter
+      description: Reporter email address.
+      type: string
+    - contextPath: Cofense.Report.SuspectFromAddress
+      description: Suspect from address.
+      type: string
+    - contextPath: Cofense.Report.ReportSubject
+      description: Report subject.
+      type: string
+    - contextPath: Cofense.Report.ReportBody
+      description: Report body.
+      type: string
+    - contextPath: Cofense.Report.Md5
+      description: MD5 hash of the file.
+      type: number
+    - contextPath: Cofense.Report.Sha256
+      description: SHA256 hash of the file.
+    description: 'Runs a query for reports from the `inbox` mailbox.'
+  - name: cofense-get-attachment
+    arguments:
+    - name: attachment_id
+      required: true
+      description: ID of the attachment.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.Type
+      description: 'File type, for example: "PE", "txt"'
+      type: string
+    - contextPath: File.EntryID
+      description: The file entry ID.
+      type: string
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1 hash.
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256 hash.
+      type: string
+    - contextPath: File.MD5
+      description: File MD5 hash.
+      type: string
+    description: 'Retrieves an attachment by the attachment ID number. '
+  - name: cofense-get-reporter
+    arguments:
+    - name: reporter_id
+      required: true
+      description: ID of the reporter.
+    outputs:
+    - contextPath: Cofense.Reporter.ID
+      description: ID of the reporter.
+      type: number
+    - contextPath: Cofense.Reporter.Email
+      description: Reporter email address.
+      type: string
+    - contextPath: Cofense.Reporter.CreatedAt
+      description: Reporter creation date.
+      type: string
+    - contextPath: Cofense.Reporter.UpdatedAt
+      description: Reporter last-updated date.
+      type: string
+    - contextPath: Cofense.Reporter.CredibilityScore
+      description: Reporter credibility score.
+      type: number
+    - contextPath: Cofense.Reporter.ReportsCount
+      description: Number of reports.
+      type: number
+    - contextPath: Cofense.Reporter.LastReportedAt
+      description: Date of most recent report.
+      type: string
+    - contextPath: Cofense.Reporter.VIP
+      description: Whether Reporter is a VIP.
+      type: bool
+    description: Retrieves Email address of the reporter by ID
+  - name: cofense-get-report-by-id
+    arguments:
+    - name: report_id
+      required: true
+      description: ID of the report
+    outputs:
+    - contextPath: Cofense.Report.ID
+      description: ID number of the report.
+      type: number
+    - contextPath: Cofense.Report.EmailAttachments
+      description: Email attachments.
+      type: string
+    - contextPath: Cofense.Report.EmailAttachments.id
+      description: Email attachment ID.
+      type: string
+    - contextPath: Cofense.Report.Tags
+      description: Report tags.
+      type: string
+    - contextPath: Cofense.Report.ClusterId
+      description: Cluster ID number.
+      type: number
+    - contextPath: Cofense.Report.CategoryId
+      description: Report category.
+      type: number
+    - contextPath: Cofense.Report.CreatedAt
+      description: Report creation date.
+      type: string
+    - contextPath: Cofense.Report.ReportedAt
+      description: Reporting time.
+      type: string
+    - contextPath: Cofense.Report.MatchPriority
+      description: The highest match priority based on rule hits for the report.
+      type: number
+    - contextPath: Cofense.Report.ReporterId
+      description: Reporter ID.
+      type: number
+    - contextPath: Cofense.Report.Location
+      description: Location of the report.
+      type: string
+    - contextPath: Cofense.Report.Reporter
+      description: Reporter email address.
+      type: string
+    - contextPath: Cofense.Report.SuspectFromAddress
+      description: Suspect from address.
+      type: string
+    - contextPath: Cofense.Report.ReportSubject
+      description: Report subject.
+      type: string
+    - contextPath: Cofense.Report.ReportBody
+      description: Report body.
+      type: string
+    - contextPath: Cofense.Report.Md5
+      description: MD5 hash of the file.
+      type: number
+    - contextPath: Cofense.Report.Sha256
+      description: SHA256 hash of the file.
+    description: 'Retrieves a report by the report ID number. '
+  - name: cofense-get-report-png-by-id
+    arguments:
+    - name: report_id
+      required: true
+      description: Report ID PNG output
+    - name: set_white_bg
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Change background to white
+      defaultValue: "False"
+    description: 'Retrieves a report by the report ID number and displays as PNG'
+  - name: cofense-get-threat-indicators
+    arguments:
+    - name: type
+      auto: PREDEFINED
+      description: indicator type
+      predefined:
+      - Domain
+      - URL
+      - MD5
+      - SHA256
+      - Subject
+      - Sender
+    - name: level
+      auto: PREDEFINED
+      description: indicator severity
+      predefined:
+      - Malicious
+      - Suspicious
+      - Benign
+    - name: start_date
+      description: "designated start date tagged by analyst (format example: YYYY-MM-DD+HH:MM:SS). Default: 6 days ago."
+    - name: end_date
+      description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS). Default: current date."
+    outputs:
+    - contextPath: Cofense.ThreatIndicators
+      description: Threat indicator output
+    - contextPath: Cofense.ThreatIndicators.ID
+      description: Threat indicator ID in Cofense Triage.
+      type: number
+    - contextPath: Cofense.ThreatIndicators.OperatorId
+      description: Cofense Triage operator who designated the threat indicator.
+      type: number
+    - contextPath: Cofense.ThreatIndicators.ReportId
+      description: Associated Report in Cofense Triage.
+      type: number
+    - contextPath: Cofense.ThreatIndicators.ThreatKey
+      description: Threat indicator type.
+      type: string
+    - contextPath: Cofense.ThreatIndicators.ThreatLevel
+      description: Threat indicator level.
+      type: string
+    - contextPath: Cofense.ThreatIndicators.ThreatValue
+      description: Value of the threat indicator.
+      type: string
+    description: Threat Indicators that are designated by analysts as malicious, suspicious or benign
+  dockerimage: demisto/chromium:1.0.0.56296
   isfetch: true
-  runonce: false
 tests:
 - No test - partner integration (test pb exists - Cofense Triage Test)

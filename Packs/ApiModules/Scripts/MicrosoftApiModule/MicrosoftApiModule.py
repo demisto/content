@@ -1,27 +1,26 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
 import traceback
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import re
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from typing import Dict, Tuple, List, Optional
 
 
 class Scopes:
     graph = 'https://graph.microsoft.com/.default'
     security_center = 'https://api.securitycenter.windows.com/.default'
     security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
-    management_azure = 'https://management.azure.com/.default'
+    management_azure = 'https://management.azure.com/.default'  # resource_manager
 
 
 class Resources:
     graph = 'https://graph.microsoft.com/'
     security_center = 'https://api.securitycenter.microsoft.com/'
-    management_azure = 'https://management.azure.com/'
+    management_azure = 'https://management.azure.com/'  # resource_manager
     manage_office = 'https://manage.office.com/'
 
 
@@ -35,59 +34,598 @@ AUTHORIZATION_CODE = 'authorization_code'
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
+REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
 SESSION_STATE = 'session_state'
+
+# Deprecated, prefer using AZURE_CLOUDS
 TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.us',
     'gcc-high': 'https://login.microsoftonline.us',
     'dod': 'https://login.microsoftonline.us',
     'de': 'https://login.microsoftonline.de',
     'cn': 'https://login.chinacloudapi.cn',
 }
+
+# Deprecated, prefer using AZURE_CLOUDS
 GRAPH_ENDPOINTS = {
     'com': 'https://graph.microsoft.com',
+    'gcc': 'https://graph.microsoft.us',
     'gcc-high': 'https://graph.microsoft.us',
     'dod': 'https://dod-graph.microsoft.us',
     'de': 'https://graph.microsoft.de',
     'cn': 'https://microsoftgraph.chinacloudapi.cn'
 }
+
+# Deprecated, prefer using AZURE_CLOUDS
 GRAPH_BASE_ENDPOINTS = {
     'https://graph.microsoft.com': 'com',
+    # can't create an entry here for 'gcc' as the url is the same for both 'gcc' and 'gcc-high'
     'https://graph.microsoft.us': 'gcc-high',
     'https://dod-graph.microsoft.us': 'dod',
     'https://graph.microsoft.de': 'de',
     'https://microsoftgraph.chinacloudapi.cn': 'cn'
 }
 
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
+    "Worldwide": "com",
+    "US Geo Proximity": "geo-us",
+    "EU Geo Proximity": "geo-eu",
+    "UK Geo Proximity": "geo-uk",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+    "DoD": "dod",
+}
+
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM = "Custom"
+MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE = "com"
+
+# https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
+# https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
+MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
+    "com": "https://api.securitycenter.microsoft.com",
+    "geo-us": "https://api.securitycenter.microsoft.com",
+    "geo-eu": "https://api-eu.securitycenter.microsoft.com",
+    "geo-uk": "https://api-uk.securitycenter.microsoft.com",
+    "gcc": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+    "dod": "https://api-gov.securitycenter.microsoft.us",
+}
+
+# https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'geo-us': 'https://login.microsoftonline.com',
+    'geo-eu': 'https://login.microsoftonline.com',
+    'geo-uk': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.us',
+    'gcc-high': 'https://login.microsoftonline.us',
+    'dod': 'https://login.microsoftonline.us',
+}
+
+# https://learn.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints
+MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS = {
+    'com': 'https://graph.microsoft.com',
+    'geo-us': 'https://graph.microsoft.com',
+    'geo-eu': 'https://graph.microsoft.com',
+    'geo-uk': 'https://graph.microsoft.com',
+    'gcc': 'https://graph.microsoft.com',
+    'gcc-high': 'https://graph.microsoft.us',
+    'dod': 'https://dod-graph.microsoft.us',
+}
+
+MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
+    'com': 'https://securitycenter.onmicrosoft.com',
+    'geo-us': 'https://securitycenter.onmicrosoft.com',
+    'geo-eu': 'https://securitycenter.onmicrosoft.com',
+    'geo-uk': 'https://securitycenter.onmicrosoft.com',
+    'gcc': 'https://securitycenter.onmicrosoft.us',
+    'gcc-high': 'https://securitycenter.onmicrosoft.us',
+    'dod': 'https://securitycenter.onmicrosoft.us',
+}
+
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
+                             }  # See: https://login.microsoftonline.com/error?code=
+
+
+class CloudEndpointNotSetException(Exception):
+    pass
+
+
+class CloudSuffixNotSetException(Exception):
+    pass
+
+
+class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+
+    def __init__(self,  # pylint: disable=unused-argument
+                 management=None,
+                 resource_manager=None,
+                 sql_management=None,
+                 batch_resource_id=None,
+                 gallery=None,
+                 active_directory=None,
+                 active_directory_resource_id=None,
+                 active_directory_graph_resource_id=None,
+                 microsoft_graph_resource_id=None,
+                 active_directory_data_lake_resource_id=None,
+                 vm_image_alias_doc=None,
+                 media_resource_id=None,
+                 ossrdbms_resource_id=None,
+                 log_analytics_resource_id=None,
+                 app_insights_resource_id=None,
+                 app_insights_telemetry_channel_resource_id=None,
+                 synapse_analytics_resource_id=None,
+                 attestation_resource_id=None,
+                 portal=None,
+                 keyvault=None):
+        # Attribute names are significant. They are used when storing/retrieving clouds from config
+        self.management = management
+        self.resource_manager = resource_manager
+        self.sql_management = sql_management
+        self.batch_resource_id = batch_resource_id
+        self.gallery = gallery
+        self.active_directory = active_directory
+        self.active_directory_resource_id = active_directory_resource_id
+        self.active_directory_graph_resource_id = active_directory_graph_resource_id
+        self.microsoft_graph_resource_id = microsoft_graph_resource_id
+        self.active_directory_data_lake_resource_id = active_directory_data_lake_resource_id
+        self.vm_image_alias_doc = vm_image_alias_doc
+        self.media_resource_id = media_resource_id
+        self.ossrdbms_resource_id = ossrdbms_resource_id
+        self.log_analytics_resource_id = log_analytics_resource_id
+        self.app_insights_resource_id = app_insights_resource_id
+        self.app_insights_telemetry_channel_resource_id = app_insights_telemetry_channel_resource_id
+        self.synapse_analytics_resource_id = synapse_analytics_resource_id
+        self.attestation_resource_id = attestation_resource_id
+        self.portal = portal
+        self.keyvault = keyvault
+
+    def has_endpoint_set(self, endpoint_name):
+        try:
+            # Can't simply use hasattr here as we override __getattribute__ below.
+            # Python 3 hasattr() only returns False if an AttributeError is raised, but we raise
+            # CloudEndpointNotSetException. This exception is not a subclass of AttributeError.
+            getattr(self, endpoint_name)
+            return True
+        except Exception:  # pylint: disable=broad-except
+            return False
+
+    def __getattribute__(self, name):
+        val = object.__getattribute__(self, name)
+        if val is None:
+            raise CloudEndpointNotSetException("The endpoint '{}' for this cloud is not set but is used.")
+        return val
+
+
+class AzureCloudSuffixes:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+
+    def __init__(self,  # pylint: disable=unused-argument
+                 storage_endpoint=None,
+                 storage_sync_endpoint=None,
+                 keyvault_dns=None,
+                 mhsm_dns=None,
+                 sql_server_hostname=None,
+                 azure_datalake_store_file_system_endpoint=None,
+                 azure_datalake_analytics_catalog_and_job_endpoint=None,
+                 acr_login_server_endpoint=None,
+                 mysql_server_endpoint=None,
+                 postgresql_server_endpoint=None,
+                 mariadb_server_endpoint=None,
+                 synapse_analytics_endpoint=None,
+                 attestation_endpoint=None):
+        # Attribute names are significant. They are used when storing/retrieving clouds from config
+        self.storage_endpoint = storage_endpoint
+        self.storage_sync_endpoint = storage_sync_endpoint
+        self.keyvault_dns = keyvault_dns
+        self.mhsm_dns = mhsm_dns
+        self.sql_server_hostname = sql_server_hostname
+        self.mysql_server_endpoint = mysql_server_endpoint
+        self.postgresql_server_endpoint = postgresql_server_endpoint
+        self.mariadb_server_endpoint = mariadb_server_endpoint
+        self.azure_datalake_store_file_system_endpoint = azure_datalake_store_file_system_endpoint
+        self.azure_datalake_analytics_catalog_and_job_endpoint = azure_datalake_analytics_catalog_and_job_endpoint
+        self.acr_login_server_endpoint = acr_login_server_endpoint
+        self.synapse_analytics_endpoint = synapse_analytics_endpoint
+        self.attestation_endpoint = attestation_endpoint
+
+    def __getattribute__(self, name):
+        val = object.__getattribute__(self, name)
+        if val is None:
+            raise CloudSuffixNotSetException("The suffix '{}' for this cloud is not set but is used.")
+        return val
+
+
+class AzureCloud:  # pylint: disable=too-few-public-methods
+    """ Represents an Azure Cloud instance """
+
+    def __init__(self,
+                 origin,
+                 name,
+                 abbreviation,
+                 endpoints=None,
+                 suffixes=None):
+        self.name = name
+        self.abbreviation = abbreviation
+        self.origin = origin
+        self.endpoints = endpoints or AzureCloudEndpoints()
+        self.suffixes = suffixes or AzureCloudSuffixes()
+
+
+AZURE_WORLDWIDE_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureCloud',
+    'com',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.windows.net/',
+        resource_manager='https://management.azure.com/',
+        sql_management='https://management.core.windows.net:8443/',
+        batch_resource_id='https://batch.core.windows.net/',
+        gallery='https://gallery.azure.com/',
+        active_directory='https://login.microsoftonline.com',
+        active_directory_resource_id='https://management.core.windows.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://graph.microsoft.com/',
+        active_directory_data_lake_resource_id='https://datalake.azure.net/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.azure.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.windows.net',
+        app_insights_resource_id='https://api.applicationinsights.io',
+        log_analytics_resource_id='https://api.loganalytics.io',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.azure.com/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.net',
+        attestation_resource_id='https://attest.azure.net',
+        portal='https://portal.azure.com',
+        keyvault='https://vault.azure.net',
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.windows.net',
+        storage_sync_endpoint='afs.azure.net',
+        keyvault_dns='.vault.azure.net',
+        mhsm_dns='.managedhsm.azure.net',
+        sql_server_hostname='.database.windows.net',
+        mysql_server_endpoint='.mysql.database.azure.com',
+        postgresql_server_endpoint='.postgres.database.azure.com',
+        mariadb_server_endpoint='.mariadb.database.azure.com',
+        azure_datalake_store_file_system_endpoint='azuredatalakestore.net',
+        azure_datalake_analytics_catalog_and_job_endpoint='azuredatalakeanalytics.net',
+        acr_login_server_endpoint='.azurecr.io',
+        synapse_analytics_endpoint='.dev.azuresynapse.net',
+        attestation_endpoint='.attest.azure.net'))
+
+AZURE_US_GCC_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureUSGovernment',
+    'gcc',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.usgovcloudapi.net/',
+        resource_manager='https://management.usgovcloudapi.net/',
+        sql_management='https://management.core.usgovcloudapi.net:8443/',
+        batch_resource_id='https://batch.core.usgovcloudapi.net/',
+        gallery='https://gallery.usgovcloudapi.net/',
+        active_directory='https://login.microsoftonline.us',
+        active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://graph.microsoft.us/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.usgovcloudapi.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+        app_insights_resource_id='https://api.applicationinsights.us',
+        log_analytics_resource_id='https://api.loganalytics.us',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+        portal='https://portal.azure.us',
+        keyvault='https://vault.usgovcloudapi.net',
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.usgovcloudapi.net',
+        storage_sync_endpoint='afs.azure.us',
+        keyvault_dns='.vault.usgovcloudapi.net',
+        mhsm_dns='.managedhsm.usgovcloudapi.net',
+        sql_server_hostname='.database.usgovcloudapi.net',
+        mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+        postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+        mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+        acr_login_server_endpoint='.azurecr.us',
+        synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureUSGovernment',
+    'gcc-high',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.usgovcloudapi.net/',
+        resource_manager='https://management.usgovcloudapi.net/',
+        sql_management='https://management.core.usgovcloudapi.net:8443/',
+        batch_resource_id='https://batch.core.usgovcloudapi.net/',
+        gallery='https://gallery.usgovcloudapi.net/',
+        active_directory='https://login.microsoftonline.us',
+        active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://graph.microsoft.us/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.usgovcloudapi.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+        app_insights_resource_id='https://api.applicationinsights.us',
+        log_analytics_resource_id='https://api.loganalytics.us',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+        portal='https://portal.azure.us',
+        keyvault='https://vault.usgovcloudapi.net',
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.usgovcloudapi.net',
+        storage_sync_endpoint='afs.azure.us',
+        keyvault_dns='.vault.usgovcloudapi.net',
+        mhsm_dns='.managedhsm.usgovcloudapi.net',
+        sql_server_hostname='.database.usgovcloudapi.net',
+        mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+        postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+        mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+        acr_login_server_endpoint='.azurecr.us',
+        synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+AZURE_DOD_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureUSGovernment',
+    'dod',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.usgovcloudapi.net/',
+        resource_manager='https://management.usgovcloudapi.net/',
+        sql_management='https://management.core.usgovcloudapi.net:8443/',
+        batch_resource_id='https://batch.core.usgovcloudapi.net/',
+        gallery='https://gallery.usgovcloudapi.net/',
+        active_directory='https://login.microsoftonline.us',
+        active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://dod-graph.microsoft.us/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.usgovcloudapi.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+        app_insights_resource_id='https://api.applicationinsights.us',
+        log_analytics_resource_id='https://api.loganalytics.us',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+        portal='https://portal.azure.us',
+        keyvault='https://vault.usgovcloudapi.net',
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.usgovcloudapi.net',
+        storage_sync_endpoint='afs.azure.us',
+        keyvault_dns='.vault.usgovcloudapi.net',
+        mhsm_dns='.managedhsm.usgovcloudapi.net',
+        sql_server_hostname='.database.usgovcloudapi.net',
+        mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+        postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+        mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+        acr_login_server_endpoint='.azurecr.us',
+        synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+
+AZURE_GERMAN_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureGermanCloud',
+    'de',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.cloudapi.de/',
+        resource_manager='https://management.microsoftazure.de',
+        sql_management='https://management.core.cloudapi.de:8443/',
+        batch_resource_id='https://batch.cloudapi.de/',
+        gallery='https://gallery.cloudapi.de/',
+        active_directory='https://login.microsoftonline.de',
+        active_directory_resource_id='https://management.core.cloudapi.de/',
+        active_directory_graph_resource_id='https://graph.cloudapi.de/',
+        microsoft_graph_resource_id='https://graph.microsoft.de',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.cloudapi.de',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
+        portal='https://portal.microsoftazure.de',
+        keyvault='https://vault.microsoftazure.de'
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.cloudapi.de',
+        keyvault_dns='.vault.microsoftazure.de',
+        mhsm_dns='.managedhsm.microsoftazure.de',
+        sql_server_hostname='.database.cloudapi.de',
+        mysql_server_endpoint='.mysql.database.cloudapi.de',
+        postgresql_server_endpoint='.postgres.database.cloudapi.de',
+        mariadb_server_endpoint='.mariadb.database.cloudapi.de'))
+
+AZURE_CHINA_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureChinaCloud',
+    'cn',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.chinacloudapi.cn/',
+        resource_manager='https://management.chinacloudapi.cn',
+        sql_management='https://management.core.chinacloudapi.cn:8443/',
+        batch_resource_id='https://batch.chinacloudapi.cn/',
+        gallery='https://gallery.chinacloudapi.cn/',
+        active_directory='https://login.chinacloudapi.cn',
+        active_directory_resource_id='https://management.core.chinacloudapi.cn/',
+        active_directory_graph_resource_id='https://graph.chinacloudapi.cn/',
+        microsoft_graph_resource_id='https://microsoftgraph.chinacloudapi.cn',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.chinacloudapi.cn',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.chinacloudapi.cn',
+        app_insights_resource_id='https://api.applicationinsights.azure.cn',
+        log_analytics_resource_id='https://api.loganalytics.azure.cn',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.azure.cn/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.azure.cn',
+        portal='https://portal.azure.cn',
+        keyvault='https://vault.azure.cn',
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.chinacloudapi.cn',
+        keyvault_dns='.vault.azure.cn',
+        mhsm_dns='.managedhsm.azure.cn',
+        sql_server_hostname='.database.chinacloudapi.cn',
+        mysql_server_endpoint='.mysql.database.chinacloudapi.cn',
+        postgresql_server_endpoint='.postgres.database.chinacloudapi.cn',
+        mariadb_server_endpoint='.mariadb.database.chinacloudapi.cn',
+        acr_login_server_endpoint='.azurecr.cn',
+        synapse_analytics_endpoint='.dev.azuresynapse.azure.cn'))
+
+
+AZURE_CLOUD_NAME_MAPPING = {
+    "Worldwide": "com",
+    "Germany": "de",
+    "China": "cn",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+    "DoD": "dod",
+}
+
+AZURE_CLOUD_NAME_CUSTOM = "Custom"
+
+AZURE_CLOUDS = {
+    "com": AZURE_WORLDWIDE_CLOUD,
+    "gcc": AZURE_US_GCC_CLOUD,
+    "gcc-high": AZURE_US_GCC_HIGH_CLOUD,
+    "dod": AZURE_DOD_CLOUD,
+    "de": AZURE_GERMAN_CLOUD,
+    "cn": AZURE_CHINA_CLOUD,
+}
+
+
+class AzureCloudNames:
+    WORLDWIDE = "com"
+    GERMANY = "de"
+    CHINA = "cn"
+    US_GCC = "gcc"
+    US_GCC_HIGH = "gcc-high"
+    DOD = "dod"
+    CUSTOM = "custom"
+
+
+def create_custom_azure_cloud(origin: str,
+                              name: str | None = None,
+                              abbreviation: str | None = None,
+                              defaults: AzureCloud | None = None,
+                              endpoints: dict | None = None,
+                              suffixes: dict | None = None):
+    defaults = defaults or AzureCloud(origin, name, abbreviation)
+    endpoints = endpoints or {}
+    suffixes = suffixes or {}
+    return AzureCloud(
+        origin,
+        name or defaults.name,
+        abbreviation or defaults.abbreviation,
+        endpoints=AzureCloudEndpoints(
+            management=endpoints.get('management', defaults.endpoints.management),
+            resource_manager=endpoints.get('resource_manager', defaults.endpoints.resource_manager),
+            sql_management=endpoints.get('sql_management', defaults.endpoints.sql_management),
+            batch_resource_id=endpoints.get('batch_resource_id', defaults.endpoints.batch_resource_id),
+            gallery=endpoints.get('gallery', defaults.endpoints.gallery),
+            active_directory=endpoints.get('active_directory', defaults.endpoints.active_directory),
+            active_directory_resource_id=endpoints.get('active_directory_resource_id',
+                                                       defaults.endpoints.active_directory_resource_id),
+            active_directory_graph_resource_id=endpoints.get(
+                'active_directory_graph_resource_id', defaults.endpoints.active_directory_graph_resource_id),
+            microsoft_graph_resource_id=endpoints.get('microsoft_graph_resource_id',
+                                                      defaults.endpoints.microsoft_graph_resource_id),
+            active_directory_data_lake_resource_id=endpoints.get(
+                'active_directory_data_lake_resource_id', defaults.endpoints.active_directory_data_lake_resource_id),
+            vm_image_alias_doc=endpoints.get('vm_image_alias_doc', defaults.endpoints.vm_image_alias_doc),
+            media_resource_id=endpoints.get('media_resource_id', defaults.endpoints.media_resource_id),
+            ossrdbms_resource_id=endpoints.get('ossrdbms_resource_id', defaults.endpoints.ossrdbms_resource_id),
+            app_insights_resource_id=endpoints.get('app_insights_resource_id', defaults.endpoints.app_insights_resource_id),
+            log_analytics_resource_id=endpoints.get('log_analytics_resource_id', defaults.endpoints.log_analytics_resource_id),
+            app_insights_telemetry_channel_resource_id=endpoints.get(
+                'app_insights_telemetry_channel_resource_id', defaults.endpoints.app_insights_telemetry_channel_resource_id),
+            synapse_analytics_resource_id=endpoints.get(
+                'synapse_analytics_resource_id', defaults.endpoints.synapse_analytics_resource_id),
+            attestation_resource_id=endpoints.get('attestation_resource_id', defaults.endpoints.attestation_resource_id),
+            portal=endpoints.get('portal', defaults.endpoints.portal),
+            keyvault=endpoints.get('keyvault', defaults.endpoints.keyvault),
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint=suffixes.get('storage_endpoint', defaults.suffixes.storage_endpoint),
+            storage_sync_endpoint=suffixes.get('storage_sync_endpoint', defaults.suffixes.storage_sync_endpoint),
+            keyvault_dns=suffixes.get('keyvault_dns', defaults.suffixes.keyvault_dns),
+            mhsm_dns=suffixes.get('mhsm_dns', defaults.suffixes.mhsm_dns),
+            sql_server_hostname=suffixes.get('sql_server_hostname', defaults.suffixes.sql_server_hostname),
+            mysql_server_endpoint=suffixes.get('mysql_server_endpoint', defaults.suffixes.mysql_server_endpoint),
+            postgresql_server_endpoint=suffixes.get('postgresql_server_endpoint', defaults.suffixes.postgresql_server_endpoint),
+            mariadb_server_endpoint=suffixes.get('mariadb_server_endpoint', defaults.suffixes.mariadb_server_endpoint),
+            azure_datalake_store_file_system_endpoint=suffixes.get(
+                'azure_datalake_store_file_system_endpoint', defaults.suffixes.azure_datalake_store_file_system_endpoint),
+            azure_datalake_analytics_catalog_and_job_endpoint=suffixes.get(
+                'azure_datalake_analytics_catalog_and_job_endpoint',
+                defaults.suffixes.azure_datalake_analytics_catalog_and_job_endpoint),
+            acr_login_server_endpoint=suffixes.get('acr_login_server_endpoint', defaults.suffixes.acr_login_server_endpoint),
+            synapse_analytics_endpoint=suffixes.get('synapse_analytics_endpoint', defaults.suffixes.synapse_analytics_endpoint),
+            attestation_endpoint=suffixes.get('attestation_endpoint', defaults.suffixes.attestation_endpoint),
+        ))
+
+
+def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None):
+    # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
+    log_message_append = ""
+    if is_gcc:  # Backward compatible.
+        endpoint_type = "US GCC"
+        log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
+    elif endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type:
+        # When the integration was configured before our Azure Cloud support, the value will be None.
+        if not url:
+            if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+                raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+            raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
+    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(endpoint_type, 'com')
+    url = url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+    demisto.info(f"Using url:{url}, endpoint type:{endpoint_type}{log_message_append}")
+    return endpoint_type, url
+
+
+def get_azure_cloud(params, integration_name):
+    azure_cloud_arg = params.get('azure_cloud')
+    if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
+        # Backward compatibility before the azure cloud settings.
+        if 'server_url' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={'resource_manager': params.get('server_url')
+                                                        or 'https://management.azure.com'})
+        if 'azure_ad_endpoint' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={
+                                                 'active_directory': params.get('azure_ad_endpoint')
+                                                 or 'https://login.microsoftonline.com'
+                                             })
+
+    # There is no need for backward compatibility support, as the integration didn't support it to begin with.
+    return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
 
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
-                 enc_key: Optional[str] = '',
+                 enc_key: str | None = '',
                  token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
-                 refresh_token_param: Optional[str] = '',
                  auth_code: str = '',
                  scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
-                 resource: Optional[str] = '',
+                 resource: str | None = '',
                  multi_resource: bool = False,
-                 resources: List[str] = None,
+                 resources: list[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
-                 timeout: Optional[int] = None,
+                 timeout: int | None = None,
                  azure_ad_endpoint: str = '{endpoint}',
-                 endpoint: str = 'com',
-                 certificate_thumbprint: Optional[str] = None,
+                 azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
+                 endpoint: str = "__NA__",  # Deprecated
+                 certificate_thumbprint: str | None = None,
                  retry_on_rate_limit: bool = False,
-                 private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None,
-                 managed_identities_resource_uri: Optional[str] = None,
+                 private_key: str | None = None,
+                 managed_identities_client_id: str | None = None,
+                 managed_identities_resource_uri: str | None = None,
+                 base_url: str | None = None,
+                 command_prefix: str | None = "command_prefix",
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -98,22 +636,34 @@ class MicrosoftClient(BaseClient):
             contain the token url
             enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
             refresh_token: The current used refresh token.
-            refresh_token_param: The refresh token from the integration's parameters (i.e instance configuration).
             scope: The scope of the application (only if self deployed)
             resource: The resource of the application (only if self deployed)
             multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
             resources: Resources of the application (for multi-resource mode)
             verify: Demisto insecure parameter
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
+            timeout: Connection timeout
+            azure_ad_endpoint: Custom endpoint to Azure Active Directory URL
+            azure_cloud: Azure Cloud.
             certificate_thumbprint: Certificate's thumbprint that's associated to the app
             private_key: Private key of the certificate
             managed_identities_client_id: The Azure Managed Identities client id
             managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
             retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
                                  retry the request using a scheduled command.
+            base_url: Optionally override the calculated Azure endpoint, used for self-deployed and backward-compatibility with
+                      integration that supported national cloud before the *azure_cloud* parameter.
+            command_prefix: The prefix for all integration commands.
         """
-        super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
-        self.endpoint = endpoint
+        self.command_prefix = command_prefix
+        if endpoint != "__NA__":
+            # Backward compatible.
+            self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
+        else:
+            self.azure_cloud = azure_cloud
+
+        super().__init__(*args, verify=verify, base_url=base_url, **kwargs)  # type: ignore[misc]
+
         self.retry_on_rate_limit = retry_on_rate_limit
         if retry_on_rate_limit and (429 not in self._ok_codes):
             self._ok_codes = self._ok_codes + (429,)
@@ -128,20 +678,18 @@ class MicrosoftClient(BaseClient):
             self.app_name = app_name
             self.auth_id = auth_id
             self.enc_key = enc_key
-            self.tenant_id = tenant_id
             self.refresh_token = refresh_token
-            self.refresh_token_param = refresh_token_param
 
         else:
             self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
-                                                                  endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
+                                                                  endpoint=self.azure_cloud.endpoints.active_directory
+                                                                  .rstrip("/"))
             self.client_id = auth_id
             self.client_secret = enc_key
-            self.tenant_id = tenant_id
             self.auth_code = auth_code
             self.grant_type = grant_type
             self.resource = resource
-            self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
+            self.scope = scope.format(graph_endpoint=self.azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"))
             self.redirect_uri = redirect_uri
             if certificate_thumbprint and private_key:
                 try:
@@ -156,15 +704,17 @@ class MicrosoftClient(BaseClient):
             else:
                 self.jwt = None
 
+        self.tenant_id = tenant_id
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
-        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
+        self.azure_ad_endpoint = azure_ad_endpoint.format(
+            endpoint=self.azure_cloud.endpoints.active_directory.rstrip("/"))
         self.timeout = timeout  # type: ignore
 
         self.multi_resource = multi_resource
         if self.multi_resource:
             self.resources = resources if resources else []
-            self.resource_to_access_token: Dict[str, str] = {}
+            self.resource_to_access_token: dict[str, str] = {}
 
         # for Azure Managed Identities purpose
         self.managed_identities_client_id = managed_identities_client_id
@@ -181,7 +731,7 @@ class MicrosoftClient(BaseClient):
 
     def http_request(
             self, *args, resp_type='json', headers=None,
-            return_empty_response=False, scope: Optional[str] = None,
+            return_empty_response=False, scope: str | None = None,
             resource: str = '', overwrite_rate_limit_retry=False, **kwargs):
         """
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
@@ -190,7 +740,7 @@ class MicrosoftClient(BaseClient):
             resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
             headers: Headers to add to the request.
             return_empty_response: Return the response itself if the return_code is 206.
-            scope: A scope to request. Currently will work only with self-deployed app.
+            scope: A scope to request. Currently, will work only with self-deployed app.
             resource (str): The resource identifier for which the generated token will have access to.
             overwrite_rate_limit_retry : Skip rate limit retry
         Returns:
@@ -271,9 +821,9 @@ class MicrosoftClient(BaseClient):
                     ET.fromstring(response.text)
             return response
         except ValueError as exception:
-            raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
+            raise DemistoException(f'Failed to parse json object from response: {response.content}', exception)
 
-    def get_access_token(self, resource: str = '', scope: Optional[str] = None) -> str:
+    def get_access_token(self, resource: str = '', scope: str | None = None) -> str:
         """
         Obtains access and refresh token from oproxy server or just a token from a self deployed app.
         Access token is used and stored in the integration context
@@ -293,16 +843,12 @@ class MicrosoftClient(BaseClient):
         access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
         valid_until_keyword = f'{scope}_valid_until' if scope else 'valid_until'
 
-        if self.multi_resource:
-            access_token = integration_context.get(resource)
-        else:
-            access_token = integration_context.get(access_token_keyword)
+        access_token = integration_context.get(resource) if self.multi_resource else integration_context.get(access_token_keyword)
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        if access_token and valid_until:
-            if self.epoch_seconds() < valid_until:
-                return access_token
+        if access_token and valid_until and self.epoch_seconds() < valid_until:
+            return access_token
 
         if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
@@ -345,27 +891,29 @@ class MicrosoftClient(BaseClient):
         Args:
             oproxy_response: Raw response from the Oproxy server to parse.
         """
-        msg = 'Error in authentication. Try checking the credentials you entered.'
+        msg = 'Error in Microsoft authorization.'
         try:
-            demisto.info('Authentication failure from server: {} {} {}'.format(
-                oproxy_response.status_code, oproxy_response.reason, oproxy_response.text))
+            demisto.info(
+                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} '
+                f'{oproxy_response.text}'
+            )
+            msg += f" Status: {oproxy_response.status_code},"
+            search_microsoft_response = re.search(r'{.*}', oproxy_response.text)
+            microsoft_response = self.extract_microsoft_error(json.loads(search_microsoft_response.group())) \
+                if search_microsoft_response else ""
+            err_str = microsoft_response or oproxy_response.text
+            if err_str:
+                msg += f' body: {err_str}'
             err_response = oproxy_response.json()
-            server_msg = err_response.get('message')
-            if not server_msg:
-                title = err_response.get('title')
-                detail = err_response.get('detail')
-                if title:
-                    server_msg = f'{title}. {detail}'
-                elif detail:
-                    server_msg = detail
+            server_msg = err_response.get('message', '') or f'{err_response.get("title", "")}. {err_response.get("detail", "")}'
             if server_msg:
-                msg += ' Server message: {}'.format(server_msg)
+                msg += f' Server message: {server_msg}'
         except Exception as ex:
-            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+            demisto.error(f'Failed parsing error response - Exception: {ex}')
         raise Exception(msg)
 
-    def _oproxy_authorize_build_request(self, headers: Dict[str, str], content: str,
-                                        scope: Optional[str] = None, resource: str = ''
+    def _oproxy_authorize_build_request(self, headers: dict[str, str], content: str,
+                                        scope: str | None = None, resource: str = ''
                                         ) -> requests.Response:
         """
         Build the Post request sent to the Oproxy server.
@@ -391,7 +939,7 @@ class MicrosoftClient(BaseClient):
             verify=self.verify
         )
 
-    def _oproxy_authorize(self, resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _oproxy_authorize(self, resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing with oproxy.
         Args:
@@ -405,28 +953,7 @@ class MicrosoftClient(BaseClient):
         oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
 
         if not oproxy_response.ok:
-            # Try to send request to the Oproxy server with the refresh token from the integration parameters
-            # (instance configuration).
-            # Relevant for cases where the user re-generated his credentials therefore the refresh token was updated.
-            if self.refresh_token_param:
-                demisto.error('Error in authentication: Oproxy server returned error, perform a second attempt'
-                              ' authorizing with the Oproxy, this time using the refresh token from the integration'
-                              ' parameters (instance configuration).')
-                content = self.refresh_token_param
-                oproxy_second_try_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
-
-                if not oproxy_second_try_response.ok:
-                    demisto.error('Authentication failure from server (second attempt - using refresh token from the'
-                                  ' integration parameters: {} {} {}'.format(oproxy_second_try_response.status_code,
-                                                                             oproxy_second_try_response.reason,
-                                                                             oproxy_second_try_response.text))
-                    self._raise_authentication_error(oproxy_response)
-
-                else:  # Second try succeeded
-                    oproxy_response = oproxy_second_try_response
-
-            else:  # no refresh token for a second auth try
-                self._raise_authentication_error(oproxy_response)
+            self._raise_authentication_error(oproxy_response)
 
         # Oproxy authentication succeeded
         try:
@@ -444,9 +971,9 @@ class MicrosoftClient(BaseClient):
 
     def _get_self_deployed_token(self,
                                  refresh_token: str = '',
-                                 scope: Optional[str] = None,
-                                 integration_context: Optional[dict] = None
-                                 ) -> Tuple[str, int, str]:
+                                 scope: str | None = None,
+                                 integration_context: dict | None = None
+                                 ) -> tuple[str, int, str]:
         if self.managed_identities_client_id:
 
             if not self.multi_resource:
@@ -482,8 +1009,8 @@ class MicrosoftClient(BaseClient):
                 return '', expires_in, refresh_token
             return self._get_self_deployed_token_client_credentials(scope=scope)
 
-    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None,
-                                                    resource: Optional[str] = None) -> Tuple[str, int, str]:
+    def _get_self_deployed_token_client_credentials(self, scope: str | None = None,
+                                                    resource: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
@@ -527,7 +1054,7 @@ class MicrosoftClient(BaseClient):
         return access_token, expires_in, ''
 
     def _get_self_deployed_token_auth_code(
-            self, refresh_token: str = '', resource: str = '', scope: Optional[str] = None) -> Tuple[str, int, str]:
+            self, refresh_token: str = '', resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
         Returns:
@@ -536,7 +1063,7 @@ class MicrosoftClient(BaseClient):
         data = assign_params(
             client_id=self.client_id,
             client_secret=self.client_secret,
-            resource=self.resource if not resource else resource,
+            resource=resource if resource else self.resource,
             redirect_uri=self.redirect_uri
         )
 
@@ -603,10 +1130,11 @@ class MicrosoftClient(BaseClient):
             err = f'{str(e)}'
 
         return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+        return None
 
     def _get_token_device_code(
-            self, refresh_token: str = '', scope: Optional[str] = None, integration_context: Optional[dict] = None
-    ) -> Tuple[str, int, str]:
+        self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
+    ) -> tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application.
 
@@ -672,8 +1200,7 @@ class MicrosoftClient(BaseClient):
             execution_metrics.general_error += 1
         return_results(execution_metrics.metrics)
 
-    @staticmethod
-    def error_parser(error: requests.Response) -> str:
+    def error_parser(self, error: requests.Response) -> str:
         """
 
         Args:
@@ -686,17 +1213,42 @@ class MicrosoftClient(BaseClient):
         try:
             response = error.json()
             demisto.error(str(response))
-            inner_error = response.get('error', {})
-            if isinstance(inner_error, dict):
-                err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
-            else:
-                err_str = inner_error
+            err_str = self.extract_microsoft_error(response)
             if err_str:
                 return err_str
             # If no error message
             raise ValueError
         except ValueError:
             return error.text
+
+    def extract_microsoft_error(self, response: dict) -> str | None:
+        """
+        Extracts the Microsoft error message from the JSON response.
+
+        Args:
+            response (dict): JSON response received from the microsoft server.
+
+        Returns:
+            str or None: Extracted Microsoft error message if found, otherwise returns None.
+        """
+        inner_error = response.get('error', {})
+        error_codes = response.get("error_codes", [""])
+        err_desc = response.get('error_description', '')
+
+        if isinstance(inner_error, dict):
+            err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
+        else:
+            err_str = inner_error
+            re_search = re.search(REGEX_SEARCH_ERROR_DESC, err_desc)
+            err_str += f". \n{re_search['desc']}" if re_search else ""
+
+        if err_str:
+            if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
+                           f"to reset the authentication process."
+            return err_str
+        # If no error message
+        return None
 
     @staticmethod
     def epoch_seconds(d: datetime = None) -> int:
@@ -721,7 +1273,7 @@ class MicrosoftClient(BaseClient):
         return datetime.utcfromtimestamp(_time)
 
     @staticmethod
-    def get_encrypted(content: str, key: Optional[str]) -> str:
+    def get_encrypted(content: str, key: str | None) -> str:
         """
         Encrypts content with encryption key.
         Args:
@@ -766,13 +1318,13 @@ class MicrosoftClient(BaseClient):
         return encrypted
 
     @staticmethod
-    def _add_info_headers() -> Dict[str, str]:
+    def _add_info_headers() -> dict[str, str]:
         # pylint: disable=no-member
         headers = {}
         try:
             headers = get_x_content_info_headers()
         except Exception as e:
-            demisto.error('Failed getting integration info: {}'.format(str(e)))
+            demisto.error(f'Failed getting integration info: {str(e)}')
 
         return headers
 
@@ -800,7 +1352,7 @@ class MicrosoftClient(BaseClient):
         response = self.device_auth_request()
         message = response.get('message', '')
         re_search = re.search(REGEX_SEARCH_URL, message)
-        url = re_search.group('url') if re_search else None
+        url = re_search['url'] if re_search else None
         user_code = response.get('user_code')
 
         return f"""### Authorization instructions
@@ -820,8 +1372,9 @@ class NotFoundError(Exception):
         self.message = message
 
 
-def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
-    """"extract the Azure Managed Identities from the demisto params
+def get_azure_managed_identities_client_id(params: dict) -> str | None:
+    """
+    Extract the Azure Managed Identities from the demisto params
 
     Args:
         params (dict): the demisto params
@@ -839,16 +1392,24 @@ def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
     return None
 
 
-def generate_login_url(client: MicrosoftClient) -> CommandResults:
+def generate_login_url(client: MicrosoftClient,
+                       login_url: str = "https://login.microsoftonline.com/") -> CommandResults:
+    missing = []
+    if not client.client_id:
+        missing.append("client_id")
+    if not client.tenant_id:
+        missing.append("tenant_id")
+    if not client.scope:
+        missing.append("scope")
+    if not client.redirect_uri:
+        missing.append("redirect_uri")
+    if missing:
+        raise DemistoException("Please make sure you entered the Authorization configuration correctly. "
+                               f"Missing:{','.join(missing)}")
 
-    assert client.tenant_id \
-        and client.scope \
-        and client.client_id \
-        and client.redirect_uri, 'Please make sure you entered the Authorization configuration correctly.'
-
-    login_url = f'https://login.microsoftonline.com/{client.tenant_id}/oauth2/v2.0/authorize?' \
-                f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}' \
-                f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}'
+    login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
+                                   f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
+                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
@@ -858,3 +1419,53 @@ You will be automatically redirected to a link with the following structure:
 and paste it in your instance configuration under the **Authorization code** parameter.
     """
     return CommandResults(readable_output=result_msg)
+
+
+def get_from_args_or_params(args: dict[str, Any], params: dict[str, Any], key: str) -> Any:
+    """
+    Get a value from args or params, if the value is provided in both args and params, the value from args will be used.
+    if the value is not provided in args or params, an exception will be raised.
+    this function is used in commands that have a value that can be provided in the instance parameters or in the command,
+    e.g in azure-key-vault-delete 'subscription_id' can be provided in the instance parameters or in the command.
+    Args:
+        args (Dict[str, Any]): Demisto args.
+        params (Dict[str, Any]): Demisto params
+        key (str): Key to get.
+    """
+    if value := args.get(key, params.get(key)):
+        return value
+    else:
+        raise Exception(f'No {key} was provided. Please provide a {key} either in the \
+instance configuration or as a command argument.')
+
+
+def azure_tag_formatter(arg):
+    """
+    Formats a tag argument to the Azure format
+    Args:
+        arg (str): Tag argument as string
+    Returns:
+        str: Tag argument in Azure format
+    """
+    try:
+        tag = json.loads(arg)
+        tag_name = next(iter(tag))
+        tag_value = tag[tag_name]
+        return f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
+    except Exception as e:
+        raise Exception(
+            """Invalid tag format, please use the following format: '{"key_name":"value_name"}'""",
+            e,
+        ) from e
+
+
+def reset_auth() -> CommandResults:
+    """
+    This command resets the integration context.
+    After running the command, a new token/auth-code will need to be given by the user to regenerate the access token.
+    :return: Message about resetting the authorization process.
+    """
+    demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
+                                          'and then click **Test** to validate the credentials and connection.')

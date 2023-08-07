@@ -1,11 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-member
 # pylint: disable=no-name-in-module
 import ssl
 import urllib3
-import demistomock as demisto  # noqa: F401
 import pyVim.task
 import dateparser  # type: ignore
-from CommonServerPython import *  # noqa: F401
 from io import StringIO
 from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore

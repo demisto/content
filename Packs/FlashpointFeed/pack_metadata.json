@@ -2,7 +2,7 @@
     "name": "FlashpointFeed",
     "description": "Ingest indicator feeds from Flashpoint.",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.15",
     "author": "Flashpoint",
     "url": "https://www.flashpoint-intel.com/",
     "email": "demisto_support@flashpoint-intel.com",
@@ -12,8 +12,7 @@
     "tags": [
         "Threat Intelligence Management"
     ],
-    "useCases": [
-    ],
+    "useCases": [],
     "keywords": [
         "Flashpoint",
         "Indicators",

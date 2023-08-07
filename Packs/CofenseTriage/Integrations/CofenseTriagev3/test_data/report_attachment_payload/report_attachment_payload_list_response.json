@@ -1,0 +1,95 @@
+{
+  "data": [
+    {
+      "id": "74",
+      "type": "attachment_payloads",
+      "links": {
+        "self": "https://triage.example.com/api/public/v2/attachment_payloads/74"
+      },
+      "attributes": {
+        "mime_type": "application/xml; charset=us-ascii",
+        "md5": "99a9eb2612d7e84c5402fde1114c53ee",
+        "sha256": "22b3e2a4f41a0a0b6c93cd0da7b28b84a2375b815f787624e81acaaf32a5d191",
+        "risk_score": 0,
+        "created_at": "2020-10-21T20:57:56.750Z",
+        "updated_at": "2022-03-08T20:20:32.561Z"
+      },
+      "relationships": {
+        "attachments": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/74/relationships/attachments",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/74/attachments"
+          }
+        },
+        "clusters": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/74/relationships/clusters",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/74/clusters"
+          }
+        },
+        "integration_submissions": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/74/relationships/integration_submissions",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/74/integration_submissions"
+          }
+        },
+        "reports": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/74/relationships/reports",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/74/reports"
+          }
+        }
+      }
+    },
+    {
+      "id": "78",
+      "type": "attachment_payloads",
+      "links": {
+        "self": "https://triage.example.com/api/public/v2/attachment_payloads/78"
+      },
+      "attributes": {
+        "mime_type": "image/png; charset=binary",
+        "md5": "61da9c47fff9b04e59b951aa700c7980",
+        "sha256": "7757f5392a8971b280464ae0d760b04980b82a9a2a3105c2bd6c9293ff7f9b9a",
+        "risk_score": null,
+        "created_at": "2020-10-21T20:57:56.940Z",
+        "updated_at": "2020-10-21T20:57:56.940Z"
+      },
+      "relationships": {
+        "attachments": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/78/relationships/attachments",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/78/attachments"
+          }
+        },
+        "clusters": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/78/relationships/clusters",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/78/clusters"
+          }
+        },
+        "integration_submissions": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/78/relationships/integration_submissions",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/78/integration_submissions"
+          }
+        },
+        "reports": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachment_payloads/78/relationships/reports",
+            "related": "https://triage.example.com/api/public/v2/attachment_payloads/78/reports"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "record_count": 16,
+    "page_count": 8
+  },
+  "links": {
+    "first": "https://triage.example.com/api/public/v2/reports/47024/attachment_payloads?filter%5Bupdated_at_gteq%5D=2020-10-21T20%3A57%3A56.940Z&page%5Bnumber%5D=1&page%5Bsize%5D=2",
+    "next": "https://triage.example.com/api/public/v2/reports/47024/attachment_payloads?filter%5Bupdated_at_gteq%5D=2020-10-21T20%3A57%3A56.940Z&page%5Bnumber%5D=2&page%5Bsize%5D=2",
+    "last": "https://triage.example.com/api/public/v2/reports/47024/attachment_payloads?filter%5Bupdated_at_gteq%5D=2020-10-21T20%3A57%3A56.940Z&page%5Bnumber%5D=8&page%5Bsize%5D=2"
+  }
+}

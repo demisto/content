@@ -1,7 +1,9 @@
+deprecated: true
 id: Cortex XDR - Port Scan
 version: -1
 name: Cortex XDR - Port Scan
 description: |-
+  Deprecated. Use the Cortex XDR - Port Scan - Adjusted playbook instead.
   Investigates a Cortex XDR incident containing internal port scan alerts. The playbook:
   - Syncs data with Cortex XDR
   - Enriches the hostname and IP address of the attacking endpoint

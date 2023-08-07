@@ -1,12 +1,18 @@
 var sendRequest = function(method, url, body) {
+    var account_sid = params.credentials_token ? params.credentials_token.identifier : params.sid;
+    var auth_token = params.credentials_token ? params.credentials_token.password : params.token;
+
+    if (!(account_sid && auth_token)){
+        throw('Account SID and Auth token must be provided.');
+    }
     var res = http(
         params.server.replace(/[\/]+$/, '')+'/'+params.sid+'/Messages.json',
         {
             Method: method,
             Body: body,
             Headers: {'Content-Type': ['application/x-www-form-urlencoded']},
-            Username: params.sid,
-            Password: params.token
+            Username: account_sid,
+            Password: auth_token
         },
         params.insecure,
         params.proxy

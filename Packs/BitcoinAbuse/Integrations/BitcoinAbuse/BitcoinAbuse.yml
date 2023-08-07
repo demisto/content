@@ -5,21 +5,27 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  required: false
   type: 8
   defaultvalue: 'true'
+  required: false
 - display: API Key
   name: api_key
-  required: true
   type: 4
+  hidden: true
+  required: false
+- displaypassword: API Key
+  name: credentials_api_key
+  hiddenusername: true
+  type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: The time window for the first fetch (retroactive).
   defaultvalue: 30 Days
   display: First Fetch Time
@@ -29,8 +35,7 @@ configuration:
   - Forever
   required: true
   type: 15
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -39,8 +44,8 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  required: false
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -62,10 +67,9 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  required: false
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -73,31 +77,28 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
+  required: false
 - display: ''
   name: feedExpirationInterval
   type: 1
   required: false
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
-  required: false
   type: 0
-description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers
-  and criminals.
+  required: false
+description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.
 display: BitcoinAbuse Feed
 name: BitcoinAbuse
 script:
@@ -112,9 +113,7 @@ script:
     - description: Description of the abuse.
       name: description
     - auto: PREDEFINED
-      description: Type of abuse. The "abuse_type_other" field is required when the
-        value of the "abuse_type" field is "other". Possible values are "ransomware",
-        "darknet market", "bitcoin tumber", "blackmail scam", "sextortion", and "other"
+      description: Type of abuse. The "abuse_type_other" field is required when the value of the "abuse_type" field is "other". Possible values are "ransomware", "darknet market", "bitcoin tumber", "blackmail scam", "sextortion", and "other"
       name: abuse_type
       predefined:
       - ransomware
@@ -124,11 +123,9 @@ script:
       - sextortion
       - other
       required: true
-    - description: Description of the abuse type. The "abuse_type_other" field is
-        required when the value of the "abuse_type" field is "other".
+    - description: Description of the abuse type. The "abuse_type_other" field is required when the value of the "abuse_type" field is "other".
       name: abuse_type_other
-    description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field
-      is required when 'abuse_type' is other
+    description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is required when 'abuse_type' is other
     name: bitcoinabuse-report-address
   - arguments:
     - defaultValue: "50"
@@ -136,10 +133,9 @@ script:
       name: limit
     description: Gets indicators from the feed.
     name: bitcoinabuse-get-indicators
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.12.63474
   feed: true
   isFetchSamples: true
-  runonce: false
   script: ''
   subtype: python3
   type: python

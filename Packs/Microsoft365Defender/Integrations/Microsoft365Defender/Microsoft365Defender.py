@@ -1,9 +1,7 @@
-import json
-from typing import Dict
-
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -54,14 +52,15 @@ class Client:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.security_center
+            managed_identities_resource_uri=Resources.security_center,
+            command_prefix="microsoft-365-defender",
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     @logger
     def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
-                       skip: Optional[int] = None, odata: Optional[dict] = None) -> Dict:
+                       skip: Optional[int] = None, odata: Optional[dict] = None) -> dict:
         """
         GET request from the client using OData operators:
             - $top: how many incidents to receive, maximum value is 100
@@ -115,7 +114,7 @@ class Client:
     @logger
     def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
                         classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> Dict:
+                        determination: Optional[str], tags: Optional[List[str]], timeout: int, comment: str) -> dict:
         """
         PATCH request to update single incident.
         Args:
@@ -145,7 +144,7 @@ class Client:
         return updated_incident
 
     @logger
-    def get_incident(self, incident_id: int, timeout: int) -> Dict:
+    def get_incident(self, incident_id: int, timeout: int) -> dict:
         """
         GET request to get single incident.
         Args:
@@ -193,13 +192,6 @@ def start_auth(client: Client) -> CommandResults:
 def complete_auth(client: Client) -> CommandResults:
     client.ms_client.get_access_token()
     return CommandResults(readable_output='✅ Authorization completed successfully.')
-
-
-@logger
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!microsoft-365-defender-auth-start** and **!microsoft-365-defender-auth-complete**.')
 
 
 @logger
@@ -251,7 +243,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
+def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     """
     Calculated metadata for the gicen incident
     Args:
@@ -289,7 +281,7 @@ def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
     }
 
 
-def convert_incident_to_readable(raw_incident: Dict) -> Dict:
+def convert_incident_to_readable(raw_incident: dict) -> dict:
     """
     Converts incident received from microsoft 365 defender to readable format
     Args:
@@ -329,7 +321,7 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
 
 
 @logger
-def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_incidents_list_command(client: Client, args: dict) -> CommandResults:
     """
     Returns list of the latest incidents in microsoft 365 defender in readable table.
     The list can be filtered using the following arguments:
@@ -376,7 +368,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
 
 
 @logger
-def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_incident_update_command(client: Client, args: dict) -> CommandResults:
     """
     Update an incident.
     Args:
@@ -418,7 +410,7 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
 
 
 @logger
-def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_incident_get_command(client: Client, args: dict) -> CommandResults:
     """
     Get an incident.
     Args:
@@ -445,7 +437,7 @@ def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> C
 
 
 @logger
-def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[Dict]:
+def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -483,7 +475,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
 
     if len(incidents_queue) < fetch_limit:
 
-        incidents = list()
+        incidents = []
 
         # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
         # incident we skip (offset) the number of incidents we already fetched.
@@ -560,7 +552,7 @@ def _query_set_limit(query: str, limit: int) -> str:
 
 
 @logger
-def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) -> CommandResults:
+def microsoft_365_defender_advanced_hunting_command(client: Client, args: dict) -> CommandResults:
     """
     Sends a query for the advanced hunting tool.
     Args:
@@ -606,10 +598,10 @@ def main() -> None:
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
-    app_id = params.get('app_id') or params.get('_app_id')
+    app_id = params.get('creds_client_id', {}).get('password', '') or params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
 
-    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
+    tenant_id = params.get('creds_tenant_id', {}).get('password', '') or params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \

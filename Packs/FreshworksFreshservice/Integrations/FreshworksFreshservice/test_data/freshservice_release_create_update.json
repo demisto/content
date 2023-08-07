@@ -1,0 +1,27 @@
+{
+    "release": {
+        "id": 1,
+        "agent_id": null,
+        "description": "<div>Not given.</div>",
+        "description_text": "Not given.",
+        "assets": [],
+        "group_id": null,
+        "department_id": null,
+        "subject": "string",
+        "category": "Hardware",
+        "sub_category": null,
+        "item_category": null,
+        "planned_start_date": "release_planned_start_date",
+        "planned_end_date": "release_planned_end_date",
+        "status": 1,
+        "priority": 1,
+        "release_type": 1,
+        "work_start_date": "release_work_start_date",
+        "work_end_date": "release_work_end_date",
+        "created_at": "release_created_at",
+        "updated_at": "release_updated_at",
+        "associated_change_ids": [],
+        "custom_fields": {},
+        "planning_fields": {}
+    }
+}

@@ -25,40 +25,36 @@ configuration:
 - additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 days, 2 months, 2 years). Default is 1 day.
   defaultvalue: 1 day
   display: First fetch time interval
-  hidden: false
   name: first_fetch
-  required: false
   type: 0
   section: Collect
+  required: false
 - additionalinfo: The fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key.
   defaultvalue: 300
   display: Events Fetch Interval
-  hidden: false
   name: eventFetchInterval
-  required: false
   type: 19
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
 display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
 script:
   commands:
-  - deprecated: false
-    description: Manual command to fetch and display events.
-    execution: false
+  - description: Manual command to fetch and display events.
     name: kms-get-events
     arguments:
     - name: occurred_date
@@ -72,7 +68,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them. If setting to 'False', the returned events will be lost.
-      isArray: false
       name: should_push_events
       predefined:
       - 'True'
@@ -121,12 +116,11 @@ script:
     - contextPath: KMSat.Event.event_type.name
       description: The name of the event type.
       type: String
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.52956
+  dockerimage: demisto/python3:3.10.12.66339
   isfetchevents: true
 fromversion: 6.8.0
 tests:

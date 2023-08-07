@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import io
 from datetime import datetime
 from itertools import takewhile
@@ -5,9 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import json
 from dateutil.parser import parse
 
-import demistomock as demisto  # noqa: F401
 import urllib3
-from CommonServerPython import *  # noqa: F401
 from zipfile import ZipFile
 import dateparser
 
@@ -677,6 +677,10 @@ class Client(BaseClient):
                           f'failed.\n{reason}'
             demisto.error(err_msg)
             raise Exception(f'{err_msg}\n{exception}')
+
+        except requests.exceptions.InvalidHeader as exception:
+            set_integration_context({})
+            raise Exception(f"Invalid token generated from the API.\n{exception}")
 
         except Exception as exception:
             raise Exception(str(exception))

@@ -2,7 +2,7 @@
     "name": "Prisma SASE by Palo Alto Networks",
     "description": "Integrate with Palo Alto Networks Prisma SASE to query activity and take actions.",
     "support": "xsoar",
-    "currentVersion": "2.0.1",
+    "currentVersion": "2.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,7 +14,14 @@
         "Palo Alto Networks Products"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Access",
+        "Pan-os",
+        "PAN_OS",
+        "PAN-OS",
+        "pan-os",
+        "Panorama"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from datetime import datetime
 import urllib3
-from CommonServerPython import *
-import demistomock as demisto
 import dateparser
 from collections.abc import Generator
 from SiemApiModule import *  # noqa: E402
@@ -13,7 +13,7 @@ PRODUCT = 'github-audit'
 
 def get_github_timestamp_format(value):
     """Converting int(epoch), str(3 days) or datetime to github's api time"""
-    timestamp: Optional[datetime]
+    timestamp: Optional[datetime] = None
     if isinstance(value, int):
         value = str(value)
     if not isinstance(value, datetime):
@@ -40,7 +40,7 @@ class GithubParams(BaseModel):
 
 
 class GithubEventsRequestConfig(IntegrationHTTPRequest):
-    url = AnyUrl
+    url: AnyUrl
     method = Method.GET
     params: GithubParams  # type: ignore
 
@@ -79,7 +79,8 @@ class GithubGetEvents(IntegrationGetEvents):
         """
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
-
+        if not events:
+            return demisto.getLastRun()
         last_timestamp = events[-1]['@timestamp']
         last_time = last_timestamp / 1000
         next_fetch_time = datetime.fromtimestamp(last_time) + timedelta(

@@ -1,0 +1,66 @@
+[
+    {
+        "id": "statuscategorychangedate",
+        "key": "statuscategorychangedate",
+        "name": "Status Category Changed",
+        "custom": false,
+        "orderable": false,
+        "navigable": true,
+        "searchable": true,
+        "clauseNames": [
+            "statusCategoryChangedDate"
+        ],
+        "schema": {
+            "type": "datetime",
+            "system": "statuscategorychangedate"
+        }
+    },
+    {
+        "id": "parent",
+        "key": "parent",
+        "name": "Parent",
+        "custom": false,
+        "orderable": false,
+        "navigable": true,
+        "searchable": false,
+        "clauseNames": [
+            "parent"
+        ]
+    },
+    {
+        "id": "customfield_10070",
+        "key": "customfield_10070",
+        "name": "Responders",
+        "untranslatedName": "Responders",
+        "custom": true,
+        "orderable": true,
+        "navigable": true,
+        "searchable": true,
+        "clauseNames": [],
+        "schema": {
+            "type": "array",
+            "items": "string",
+            "custom": "com.atlassian.jira.modules.servicemanagement.responders-entity:responders-entity-field-cftype",
+            "customId": 10070
+        }
+    },
+    {
+        "id": "customfield_10071",
+        "key": "customfield_10071",
+        "name": "Time to resolution",
+        "untranslatedName": "Time to resolution",
+        "custom": true,
+        "orderable": true,
+        "navigable": true,
+        "searchable": true,
+        "clauseNames": [
+            "cf[10071]",
+            "Time to resolution"
+        ],
+        "schema": {
+            "type": "sd-servicelevelagreement",
+            "custom": "com.atlassian.servicedesk:sd-sla-field",
+            "customId": 10071
+        }
+    }
+]

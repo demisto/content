@@ -1,9 +1,23 @@
+
+const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
+
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
-if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
+// returns true if the current platform is XSIAM or XSOAR 8.0 and above.
+isHosted = function () {
+    res = getDemistoVersion();
+    platform = res.platform;
+    if  (((platform === "xsoar" || platform === "xsoar_hosted") && (isDemistoVersionGE(MIN_HOSTED_XSOAR_VERSION))) || platform === "x2") {
+        return true
+    }
+    return false
+}
+
+// only when using XSIAM or XSOAR >= 8.0 we will add the /xsoar suffix
+if  (isHosted()) {
     if (!serverURL.endsWith('/xsoar')){
         serverURL = serverURL + '/xsoar'
     }
@@ -118,7 +132,7 @@ sendMultipart = function (uri, entryID, body) {
 };
 
 var sendRequest = function(method, uri, body, raw) {
-    var requestUrl = getRequestURL(uri)
+    var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
     if (key == ''){
         throw 'API Key must be provided.';
@@ -299,9 +313,262 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
     }
 };
 
+
+/* helper functions */
+
+/**
+ * deletes an entry  by entryID by the key_to_delete
+Arguments:
+    @param {String} file_content -- content of the file to upload
+    @param {String} file_name  -- name of the file in the dest incident
+    @param {String} key_to_delete  -- the name of the key to delete
+    @param {String} incident_id  -- the incident id
+Returns:
+    CommandResults
+"""
+ */
+var uploadFile= function(incident_id, file_content, file_name) {
+    var body = {
+        file: 
+        {
+            value: [file_content],
+            options: {
+                filename: [file_name],
+                contentType: 'multipart/form-data'
+            }
+        },
+    };
+    var res = httpMultipart(`/entry/upload/${incident_id}`,file_content ,body);
+    if (isError(res[0])) {
+        throw res[0].Contents;
+    }
+    return res;
+};
+
+/**
+ * deletes an entry  by entryID by the key_to_delete
+Arguments:
+    @param {String} key_to_delete  -- the name of the key to delete
+    @param {String} incident_id  -- the incident id
+Returns:
+    CommandResults
+"""
+ */
+var deleteContextRequest = function (incident_id, key_to_delete) {
+    var body = JSON.stringify({
+        "args": null,
+        "id": "",
+        "investigationId": `${incident_id}`,
+        "data": `!DeleteContext key=${key_to_delete}\n`,
+        "markdown": false,
+        "version": 0
+    });
+   return sendRequest('POST', '/entry', body);
+};
+
+
+/**
+ * deletes a file  by entryID
+Arguments:
+    @param {String} delete_artifact  -- in order to delete the artifact 
+    @param {String} entry_id  -- entry ID of the file
+Returns:
+    CommandResults
+"""
+ */
+var deleteFileRequest = function (entry_id, delete_artifact = true) {
+    const body_content = JSON.stringify({
+        id: entry_id,
+        deleteArtifact: delete_artifact});
+    
+    return sendRequest( 'POST', '/entry/delete/v2', body_content);
+};
+
+
+/**
+ * Sends http request to delete attachment
+Arguments:
+    @param {String} incident_id  -- incident id to upload the file to
+    @param {String} file_path -- the file path to delete
+    @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
+Returns:
+    Results
+"""
+ */
+var deleteAttachmentRequest=function(incident_id, attachment_path, field_name = 'attachment') {
+    body = JSON.stringify({
+        fieldName: field_name,
+        files: {
+          [attachment_path]: {
+            path: attachment_path
+          }
+        },
+        originalAttachments: [
+          {
+            path: attachment_path
+          }
+        ]
+      });    
+    try{
+        return sendRequest('POST', `/incident/remove/${incident_id}`, body);
+    }
+    catch (e) {
+        throw new Error(`File already deleted or not found.\n${e}`);
+    }
+};
+
+/**
+ * Upload a new file
+Arguments:
+    @param {String} incident_id  -- incident id to upload the file to
+    @param {String} file_content -- content of the file to upload
+    @param {String} file_name  -- name of the file in the dest incident
+    @param {String} entryID  -- entry ID of the file
+Returns:
+    CommandResults -- Readable output
+Note:
+    You can give either the entryID or file_name.
+""" 
+ */
+var fileUploadCommand = function(incident_id, file_content, file_name, entryID ) {
+    incident_id = (incident_id === 'undefined')? investigation.id: incident_id;
+    if (incident_id!=investigation.id){
+        log(`Note that the file would be uploaded to ${incident_id} from incident ${investigation.id}`);
+    }
+    if ((!file_name) && (!entryID)) {
+        throw 'Either file_name or entry_id argument must be provided.';
+    }
+    var fileId = '';
+    if ((!entryID)) {
+        response = uploadFile(incident_id, file_content, file_name);
+        fileId = saveFile(file_content);
+    } else {
+        if (file_name === undefined) {
+            file_name = dq(invContext, `File(val.EntryID == ${entryID}).Name`);
+        }
+        if (Array.isArray(file_name)) {
+            if (file_name.length > 0) {
+                file_name = file_name[0];
+            } else {
+                file_name = undefined;
+            }
+        }
+        response_multi= sendMultipart(`/incident/upload/${incident_id}`,entryID,'{}');
+        return `The file ${entryID} uploaded successfully to incident ${incident_id}. `;
+        }
+    var md = `File ${file_name} uploaded successfully to incident ${incident_id}.`;
+    fileId = file_name ? fileId : entryID;
+    return {
+        Type: entryTypes.file,
+        FileID: fileId,
+        File: file_name,
+        Contents: file_content,
+        HumanReadable: md
+    };
+};
+
+
+
+/**
+ * Deletes a specific file.
+Arguments:
+    @param {String} entryId  -- entry ID of the file
+Returns:
+    Message that the file was deleted successfully + entry_id
+"""
+ */ 
+// getting the context data
+var fileDeleteCommand = function(EntryID) {
+    files =  invContext['File'];
+    if (!files){
+        throw new Error(`Files not found.`);
+    }
+    files = (invContext['File'] instanceof Array)? invContext['File']:[invContext['File']];
+    if (files[0]=='undefined'){
+        throw new Error(`Files not found.`);
+        
+    }
+    var edit_content_data_files = []
+    var not_found = true
+    for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
+        if (files[i]['EntryID'] != EntryID) {
+            edit_content_data_files.push(files[i]);
+        }
+        else{
+            not_found= false 
+        }
+        
+      }
+    if(not_found){
+        throw new Error(`File already deleted or not found.`);
+    }
+    deleteContextRequest(investigation.id, 'File');
+    deleteFileRequest(EntryID);
+    let context = {
+        'File(val.MD5==obj.MD5)': createContext(edit_content_data_files)
+    };
+    return  {Type: entryTypes.note,
+            Contents: '',
+            ContentsType: formats.json,
+            EntryContext: context,
+            HumanReadable: `File ${EntryID} was deleted successfully.`};
+
+
+}
+
+
+/**
+ This command checks if the file is existing.
+    Arguments:
+        @param {String} EntryID  -- entry ID of the file
+    Returns:
+        Dictionary with EntryID as key and boolean if the file exists as value.
+*/
+function coreApiFileCheckCommand(EntryID) {
+    files =  invContext['File']instanceof Array? invContext['File']:[invContext['File']];
+    var file_found = false;
+    var human_readable = `File ${EntryID} isn't exists`;
+    if (typeof files['0'] !== 'undefined') {
+        for (var i = 0 ;i <=Object.keys(files).length - 1;  i++) {
+            if (files[i]['EntryID'] == EntryID) {
+                file_found= true ;
+                human_readable = `File ${EntryID} exists`;
+            }
+          }    
+    }
+    return {
+        Type: entryTypes.note,
+        Contents: {[EntryID]:file_found},
+        HumanReadable: human_readable,
+        EntryContext: {[`IsFileExists(val.${EntryID}==${EntryID})`]:{[EntryID]:file_found}}
+    };
+        
+
+};
+
+/**
+ This command deletes attachment from an incident.
+    Arguments:
+        @param {String} incident_id  -- incident id to delete the file from
+        @param {String} attachment_path -- the file path
+        @param {String} field_name  -- Name of the field (type attachment) you want to remove the attachment
+    Returns:
+        Show a message that the file was deleted successfully
+*/
+var fileDeleteAttachmentCommand = function (attachment_path, incident_id, field_name){
+    incident_id = (incident_id=='undefined')? investigation.id: incident_id;    
+    deleteAttachmentRequest(incident_id, attachment_path, field_name);
+    return `Attachment ${attachment_path} deleted `;
+};
+
+
+
 switch (command) {
     case 'test-module':
-        sendRequest('GET','user');
+        res = sendRequest('GET','user');
+        if (res.response.id == undefined){
+            throw 'Test integration failed, The URL or The API key you entered might be incorrect.';
+        }
         return 'ok';
     case 'demisto-api-post':
     case 'core-api-post':
@@ -346,6 +613,14 @@ switch (command) {
     case 'demisto-api-install-packs':
     case 'core-api-install-packs':
         return installPacks(args.packs_to_install, args.file_url, args.entry_id, args.skip_verify, args.skip_validation);
+    case 'core-api-file-upload':
+        return fileUploadCommand(args.incident_id, args.file_content, args.file_name, args.entry_id)
+    case 'core-api-file-delete':
+        return fileDeleteCommand(args.entry_id);
+    case 'core-api-file-attachment-delete':
+        return fileDeleteAttachmentCommand(args.file_path, args.incident_id, args.field_name);
+    case 'core-api-file-check':
+        return coreApiFileCheckCommand(args.entry_id);
     default:
         throw 'Core REST APIs - unknown command';
 }

@@ -14,26 +14,25 @@ configuration:
   section: Connect
 - display: Client ID
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret
   section: Connect
+  required: false
 - display: Client ID
   name: client_id
-  required: false
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret
   name: secret
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: 'A+ - 3rd party enrichment'
   display: Source Reliability
   name: Reliability
-  required: false
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command.
   options:
@@ -46,27 +45,34 @@ configuration:
   - F - Reliability cannot be judged
   section: Collect
   advanced: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  required: false
   type: 0
   defaultvalue: '3 days'
   section: Collect
+  required: false
 - display: Max incidents per fetch
   name: incidents_per_fetch
-  required: false
   type: 0
   defaultvalue: '15'
   section: Collect
   advanced: true
-- display: Detections fetch query
-  name: fetch_query
   required: false
+- display: Endpoint Detections fetch query
+  name: fetch_query
   type: 0
   section: Collect
   advanced: true
-- display: Incidents fetch query
+  required: false
+- display: Endpoint Incidents fetch query
   name: incidents_fetch_query
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: IDP Detections fetch query
+  name: idp_detections_fetch_query
   required: false
   type: 0
   section: Collect
@@ -74,17 +80,16 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Mirroring Direction
   name: mirror_direction
-  required: false
   type: 15
   additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
   defaultvalue: None
@@ -94,66 +99,74 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   name: close_in_cs_falcon
-  required: false
   type: 8
   additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
-- additionalinfo: Choose what to fetch - incidents, detections, or both.
-  defaultvalue: 'Detections'
+  required: false
+- additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
+  defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
-  required: false
   type: 16
   options:
-  - Detections
-  - Incidents
+  - IDP Detection
+  - Endpoint Incident
+  - Endpoint Detection
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
-  required: false
   type: 19
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
   commands:
   - arguments:
+    - name: extended_data
+      predefined:
+      - Yes
+      - No
+      description: Whether or not to get additional data about the device.
+      auto: PREDEFINED
     - description: The query to filter the device.
       name: filter
     - description: A comma-separated list of device IDs to limit the results.
@@ -170,7 +183,7 @@ script:
       description: The host name of the device.
       name: hostname
       predefined:
-      - 
+      - ''
     - auto: PREDEFINED
       description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
       name: platform_name
@@ -399,7 +412,6 @@ script:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
       defaultValue: false
-      required: false
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -417,6 +429,10 @@ script:
       - read
       - write
       - admin
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     - auto: PREDEFINED
       defaultValue: batch
       description: 'The target to run the command for. Possible values are: "single" and "batch".'
@@ -684,6 +700,9 @@ script:
     - defaultValue: '30'
       description: Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes).
       name: timeout
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -1386,6 +1405,9 @@ script:
     - description: List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided.
       isArray: true
       name: host_groups
+    - description: List of tags to apply to the indicator.
+      isArray: true
+      name: tags
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -2054,7 +2076,6 @@ script:
       name: ip
     - description: The endpoint hostname.
       name: hostname
-      secret: false
     description: Returns information about an endpoint, does not support regex.
     name: endpoint
     outputs:
@@ -2397,6 +2418,9 @@ script:
       isArray: true
       name: process_ids
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2425,6 +2449,9 @@ script:
       - Linux
       - Mac
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2438,6 +2465,9 @@ script:
     - description: The host ID you want to get the processes list from.
       name: host_id
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2448,6 +2478,9 @@ script:
     - description: The host ID you want to get the network status and protocol statistics list from.
       name: host_id
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2463,6 +2496,9 @@ script:
       isArray: true
       name: registry_keys
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2470,6 +2506,9 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2482,7 +2521,7 @@ script:
       required: true
     - description: The file name to use for the archive name and the file within the archive.
       name: filename
-    - description: interval between polling. Default is 60 seconds. Must be higher than 10.
+    - description: Interval between polling. Default is 60 seconds. Must be higher than 10.
       name: interval_in_seconds
     - description: This is an internal argument used for the polling process, not to be used by the user.
       isArray: true
@@ -2490,6 +2529,9 @@ script:
     - description: This is an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: SHA256
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2573,46 +2615,35 @@ script:
   - arguments:
     - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'
       name: filter
-      required: false
     - description: Unique agent identifier (AID) of a sensor.
       name: aid
       isArray: true
-      required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_id
       isArray: true
-      required: false
     - description: "Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE."
       name: cve_severity
       isArray: true
-      required: false
     - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs.
       name: tags
       isArray: true
-      required: false
     - description: "Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired."
       name: status
       isArray: true
-      required: false
     - description: "Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux."
       name: platform_name
-      required: false
     - description: Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs.
       name: host_group
       isArray: true
-      required: false
     - description: Type of host a sensor is running on.
       name: host_type
       isArray: true
-      required: false
     - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10
       name: last_seen_within
-      required: false
     - auto: PREDEFINED
       description: Indicates if the vulnerability is suppressed by a suppression rule.
       name: is_suppressed
       isArray: true
-      required: false
       predefined:
       - 'true'
       - 'false'
@@ -2620,7 +2651,6 @@ script:
       description: Display remediation information type of data to be returned for each vulnerability entity.
       defaultValue: 'True'
       name: display_remediation_info
-      required: false
       predefined:
       - 'True'
       - 'False'
@@ -2628,7 +2658,6 @@ script:
       description: Whether to return logic information type of data for each vulnerability entity.
       defaultValue: 'True'
       name: display_evaluation_logic_info
-      required: false
       predefined:
       - 'True'
       - 'False'
@@ -2636,7 +2665,6 @@ script:
       description: Whether to return host information type of data for each vulnerability entity.
       name: display_host_info
       defaultValue: 'False'
-      required: false
       predefined:
       - 'True'
       - 'False'
@@ -2644,7 +2672,6 @@ script:
       defaultValue: '50'
       type: String
       name: limit
-      required: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-search-vulnerability
     outputs:
@@ -2790,10 +2817,14 @@ script:
       description: The vulnerability name.
       type: String
   - arguments:
-    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+    - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: true
+      deprecated: true
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve
+      isArray: true
+      default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -2813,7 +2844,6 @@ script:
     - description: Maximum number of items to return (1-5000).
       defaultValue: '50'
       name: limit
-      required: false
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_ids
       isArray: true
@@ -2897,6 +2927,618 @@ script:
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
   - arguments:
+    - description: Value to match for exclusion.
+      name: value
+      required: true
+    - description: "A comma-separated list from where to exclude the exclusion. Possible values are: blocking, extraction."
+      name: excluded_from
+      required: true
+      isArray: true
+    - description: Comment describing why the exclusions were created.
+      name: comment
+    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
+      name: groups
+      isArray: true
+    description: Create an ML exclusion.
+    name: cs-falcon-create-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion.id
+      description: The ML exclusion ID.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value
+      description: The ML exclusion value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.regexp_value
+      description: A regular expression for matching the excluded value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value_hash
+      description: An hash of the value field.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.excluded_from
+      description: What the exclusion applies to (e.g., a specific ML model).
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.id
+      description: Group's ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.MLExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: The ID of the exclusion to update.
+      name: id
+      required: true
+    - description: Value to match for the exclusion (the exclusion pattern).
+      name: value
+    - description: Comment describing why the exclusions were created.
+      name: comment
+    - description: A comma-separated list of group ID(s) impacted by the exclusion.
+      name: groups
+      isArray: true
+    description: Updates an ML exclusion. At least one argument is required in addition to the ID argument.
+    name: cs-falcon-update-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion.id
+      description: The ML exclusion ID.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value
+      description: The ML exclusion value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.regexp_value
+      description: A regular expression for matching the excluded value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value_hash
+      description: An hash of the value field.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.excluded_from
+      description: What the exclusion applies to (e.g., a specific ML model).
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.MLExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: A comma-separated list of exclusion IDs to delete.
+      name: ids
+      required: true
+      isArray: true
+    description: Delete the ML exclusions by ID.
+    name: cs-falcon-delete-ml-exclusion
+  - arguments:
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+      name: filter
+    - description: The value by which the exclusions should be filtered.
+      name: value
+    - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value.
+      name: ids
+      isArray: true
+    - description: The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied.
+      name: limit
+    - description: The offset to start retrieving records from. Applies only if the IDs argument is not supplied.
+      name: offset
+    - auto: PREDEFINED
+      description: How to sort the retrieved exclusions.
+      name: sort
+      predefined:
+      - applied_globally.asc
+      - applied_globally.desc
+      - created_by.asc
+      - created_by.desc
+      - created_on.asc
+      - created_on.desc
+      - last_modified.asc
+      - last_modified.desc
+      - modified_by.asc
+      - modified_by.desc
+      - value.asc
+      - value.desc
+    description: Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
+    name: cs-falcon-search-ml-exclusion
+    outputs:
+    - contextPath: CrowdStrike.MLExclusion.id
+      description: The ML exclusion ID.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value
+      description: The ML exclusion value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.regexp_value
+      description: A regular expression for matching the excluded value.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.value_hash
+      description: A hash of the value field.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.excluded_from
+      description: What the exclusion applies to (e.g., a specific ML model).
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.MLExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.MLExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.MLExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: Name of the exclusion.
+      name: exclusion_name
+      required: true
+    - description: Name of the exclusion pattern.
+      name: pattern_name
+    - description: ID of the exclusion pattern.
+      name: pattern_id
+      required: true
+    - description: Command line regular expression.
+      name: cl_regex
+      required: true
+    - description: Image file name regular expression.
+      name: ifn_regex
+      required: true
+    - description: Comment describing why the exclusions were created.
+      name: comment
+    - description: Exclusion description.
+      name: description
+    - description: JSON formatted detection template.
+      name: detection_json
+    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
+      name: groups
+      required: true
+      isArray: true
+    description: Create an IOA exclusion.
+    name: cs-falcon-create-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion.id
+      description: A unique identifier for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.name
+      description: The name of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.description
+      description: A description of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_id
+      description: The identifier of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_name
+      description: The name of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.ifn_regex
+      description: A regular expression used for file name matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.cl_regex
+      description: A regular expression used for command line matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.detection_json
+      description: A JSON string that describes the detection logic for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.IOAExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: ID of the exclusion to update.
+      name: id
+      required: true
+    - description: Name of the exclusion.
+      name: exclusion_name
+    - description: ID of the exclusion pattern to update.
+      name: pattern_id
+    - description: Name of the exclusion pattern.
+      name: pattern_name
+    - description: Command line regular expression.
+      name: cl_regex
+    - description: Image file name regular expression.
+      name: ifn_regex
+    - description: Comment describing why the exclusions was created.
+      name: comment
+    - description: Exclusion description.
+      name: description
+    - description: JSON formatted detection template.
+      name: detection_json
+    - description: A comma-separated list of group ID(s) impacted by the exclusion.
+      name: groups
+      isArray: true
+    description: Updates an IOA exclusion. At least one argument is required in addition to the ID argument.
+    name: cs-falcon-update-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion.id
+      description: A unique identifier for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.name
+      description: The name of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.description
+      description: A description of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_id
+      description: The identifier of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_name
+      description: The name of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.ifn_regex
+      description: A regular expression used for file name matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.cl_regex
+      description: A regular expression used for command line matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.detection_json
+      description: A JSON string that describes the detection logic for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.IOAExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: A comma-separated list of exclusion IDs to delete.
+      name: ids
+      required: true
+      isArray: true
+    description: Delete the IOA exclusions by ID.
+    name: cs-falcon-delete-ioa-exclusion
+  - arguments:
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
+      name: filter
+    - description: The name by which the exclusions should be filtered.
+      name: name
+    - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name.
+      name: ids
+      isArray: true
+    - description: The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied.
+      name: limit
+    - description: The offset of how many exclusions to skip. Default is 0. Applies only if the IDs argument is not supplied.
+      name: offset
+    description: Get a list of IOA exclusions by specifying their IDs or a filter.
+    name: cs-falcon-search-ioa-exclusion
+    outputs:
+    - contextPath: CrowdStrike.IOAExclusion.id
+      description: A unique identifier for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.name
+      description: The name of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.description
+      description: A description of the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_id
+      description: The identifier of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.pattern_name
+      description: The name of the pattern associated with the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.ifn_regex
+      description: A regular expression used for file name matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.cl_regex
+      description: A regular expression used for command line matching.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.detection_json
+      description: A JSON string that describes the detection logic for the IOA exclusion.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.id
+      description: Groups ID that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.group_type
+      description: Groups type that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.name
+      description: Groups name that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.description
+      description: Groups description that the exclusion rule is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.assignment_rule
+      description: Groups assignment rule that the exclusion is associated with.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_by
+      description: Indicate who created the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.created_timestamp
+      description: The date when the group was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_by
+      description: Indicate who last modified the group.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.groups.modified_timestamp
+      description: The date when the group was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.applied_globally
+      description: Whether the exclusion rule applies globally or only to specific entities.
+      type: Boolean
+    - contextPath: CrowdStrike.IOAExclusion.last_modified
+      description: The date when the exclusion rule was last modified.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.modified_by
+      description: Indicate who last modified the rule.
+      type: String
+    - contextPath: CrowdStrike.IOAExclusion.created_on
+      description: The date when the exclusion rule was created.
+      type: Date
+    - contextPath: CrowdStrike.IOAExclusion.created_by
+      description: Indicate who created the rule.
+      type: String
+  - arguments:
+    - description: A comma-separated list of quarantined file IDs to retrieve.
+      name: ids
+      isArray: true
+    - description: A custom filter by which the retrieve quarantined file should be filtered.
+      name: filter
+    - description: A comma-separated list of SHA256 hash of the files to retrieve.
+      name: sha256
+      isArray: true
+    - description: A comma-separated list of the name of the files to retrieve.
+      name: filename
+      isArray: true
+    - description: Filter the retrieved files by state.
+      name: state
+    - description: A comma-separated list of the hostnames of the files to retrieve.
+      name: hostname
+      isArray: true
+    - description: A comma-separated list of the usernames of the files to retrieve.
+      name: username
+      isArray: true
+    - description: Maximum number of IDs to return. Max 5000. Default 50.
+      name: limit
+    - description: Starting index of the overall result set from which to return IDs. Default 0.
+      name: offset
+    description: Get quarantine file metadata by specified IDs or filter.
+    name: cs-falcon-list-quarantined-file
+    outputs:
+    - contextPath: CrowdStrike.QuarantinedFile.id
+      description: A unique identifier for the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.aid
+      description: The agent identifier of the agent that quarantined the file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.cid
+      description: The unique identifier for the customer that who the agent.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.sha256
+      description: The SHA256 hash value of the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.paths.path
+      description: The full path of the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.paths.filename
+      description: The name of the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.paths.state
+      description: The current state of the quarantined file path (e.g., "purged").
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.state
+      description: The current state of the quarantined file (e.g., "unrelease_pending").
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.detect_ids
+      description: The detection identifiers associated with the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.hostname
+      description: The hostname of the agent that quarantined the file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.username
+      description: The username associated with the quarantined file.
+      type: String
+    - contextPath: CrowdStrike.QuarantinedFile.date_updated
+      description: The date the quarantined file was last updated.
+      type: Date
+    - contextPath: CrowdStrike.QuarantinedFile.date_created
+      description: The date the quarantined file was created.
+      type: Date
+  - arguments:
+    - description: A comma-separated list of quarantined file IDs to update.
+      name: ids
+      isArray: true
+    - auto: PREDEFINED
+      description: Action to perform against the quarantined file.
+      name: action
+      required: true
+      predefined:
+      - delete
+      - release
+      - unrelease
+    - description: Comment to appear along with the action taken.
+      name: comment
+      required: true
+    - description: Update files based on a custom filter.
+      name: filter
+    - description: A comma-separated list of quarantined files SHA256 to update.
+      name: sha256
+      isArray: true
+    - description: A comma-separated list of quarantined file names to update.
+      name: filename
+      isArray: true
+    - description: Update files based on the state.
+      name: state
+    - description: A comma-separated list of quarantined file hostnames to update.
+      name: hostname
+      isArray: true
+    - description: A comma-separated list of quarantined files username to update.
+      name: username
+      isArray: true
+    description: Apply action to quarantined file by file IDs or filter.
+    name: cs-falcon-apply-quarantine-file-action
+  - arguments:
     - description: A comma-separated list of incident IDs.
       isArray: true
       name: ids
@@ -2906,12 +3548,824 @@ script:
       required: true
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
-  dockerimage: demisto/python3:3.10.11.54132
+  - arguments:
+    - description: Whether to poll for results.
+      auto: PREDEFINED
+      name: wait_for_result
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      hidden: true
+    - description: Valid CS-Falcon-FQL filter to query with.
+      name: filter
+    - description: Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments.
+      isArray: true
+      name: ids
+    - description: Comma-separated list of scan initiation sources to filter by.
+      isArray: true
+      name: initiated_from
+    - description: Comma-separated list of scan statuses to filter by.
+      isArray: true
+      name: status
+    - description: Comma-separated list of scan severities to filter by.
+      isArray: true
+      name: severity
+    - description: UTC-format time of scan start to filter by.
+      name: scan_started_on
+    - description: UTC-format time of the scan completion to filter by.
+      name: scan_completed_on
+    - description: Starting index of overall result set from which to return IDs.
+      name: offset
+    - description: Maximum number of resources to return.
+      name: limit
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+      hidden: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+      hidden: true
+    - name: hide_polling_output
+      hidden: true
+      description: ''
+      defaultValue: true
+    description: Retrieve ODS scan details.
+    name: cs-falcon-ods-query-scan
+    polling: true
+    outputs:
+    - contextPath: CrowdStrike.ODSScan.id
+      description: A unique identifier for the scan event.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.cid
+      description: A unique identifier for the client that triggered the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.profile_id
+      description: A unique identifier for the scan profile used in the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.description
+      description: The ID of the description of the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.scan_inclusions
+      description: The files or folders included in the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.initiated_from
+      description: The source of the scan initiation.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.quarantine
+      description: Whether the scan was set to quarantine.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScan.cpu_priority
+      description: The CPU priority for the scan (1-5).
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.preemption_priority
+      description: The preemption priority for the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.host_id
+      description: A unique identifier for the host that was scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.host_scan_id
+      description: A unique identifier for the scan that was performed on the host.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.scan_host_metadata_id
+      description: A unique identifier for the metadata associated with the host scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.scanned
+      description: The number of files that were scanned.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.malicious
+      description: The number of files that were identified as malicious.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.quarantined
+      description: The number of files that were quarantined.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.skipped
+      description: The number of files that were skipped during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.traversed
+      description: The number of files that were traversed during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.status
+      description: The status of the scan on this host. (e.g., "pending", "running", "completed", or "failed").
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.started_on
+      description: The date and time that the scan started.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.metadata.completed_on
+      description: The date and time that the scan completed.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.metadata.last_updated
+      description: The date and time that the metadata was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.status
+      description: The status of the scan (e.g., "pending", "running", "completed", or "failed").
+      type: String
+    - contextPath: CrowdStrike.ODSScan.hosts
+      description: A list of the host IDs that were scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.endpoint_notification
+      description: A boolean value indicating whether endpoint notifications are enabled.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScan.pause_duration
+      description: The number of hours to pause between scanning each file.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.max_duration
+      description: The maximum amount of time to allow for the scan job in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.max_file_size
+      description: The maximum file size (in MB) to scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.sensor_ml_level_detection
+      description: The level of detection sensitivity for the local sensor machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.sensor_ml_level_prevention
+      description: The level of prevention sensitivity for the local sensor machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_ml_level_detection
+      description: The level of detection sensitivity for the cloud machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_ml_level_prevention
+      description: The level of prevention sensitivity for the cloud machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.policy_setting
+      description: A list of policy setting IDs for the scan job (these correspond to specific policy settings in the Falcon console).
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.scan_started_on
+      description: The timestamp when the scan was started.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.scan_completed_on
+      description: The timestamp when the scan was completed.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.created_on
+      description: The timestamp when the scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.created_by
+      description: The ID of the user who created the scan job.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.last_updated
+      description: The timestamp when the scan job was last updated.
+      type: Date
+  - arguments:
+    - description: Valid CS-Falcon-FQL filter to query with.
+      name: filter
+    - description: Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments.
+      isArray: true
+      name: ids
+    - description: Comma-separated list of scan initiation sources to filter by.
+      isArray: true
+      name: initiated_from
+    - description: Comma-separated list of scan statuses to filter by.
+      isArray: true
+      name: status
+    - description: UTC-format time of scan creation to filter by.
+      name: created_on
+    - description: UTC-format time of scan creator to filter by.
+      name: created_by
+    - description: UTC-format time of scan start to filter by.
+      name: start_timestamp
+    - description: Deleted scans only.
+      name: deleted
+    - description: Starting index of overall result set from which to return IDs.
+      name: offset
+    - description: Maximum number of resources to return.
+      name: limit
+    description: Retrieve ODS scheduled scan details.
+    name: cs-falcon-ods-query-scheduled-scan
+    outputs:
+    - contextPath: CrowdStrike.ODSScheduledScan.id
+      description: Unique identifier for the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.cid
+      description: Identifier for the customer or organization that owns the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.description
+      description: The ID of the description of the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.file_paths
+      description: The file or folder paths scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.scan_exclusions
+      description: The file or folder exclusions from the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.initiated_from
+      description: The source of the scan initiation.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.cpu_priority
+      description: The CPU priority for the scan (1-5).
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.preemption_priority
+      description: The preemption priority for the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.status
+      description: The status of the scan, whether it's "scheduled", "running", "completed", etc.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.host_groups
+      description: The host groups targeted by the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.endpoint_notification
+      description: Whether notifications of the scan were sent to endpoints.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.pause_duration
+      description: The pause duration of the scan in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.max_duration
+      description: The max duration of the scan in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.max_file_size
+      description: The maximum file size that the scan can handle in MB.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.sensor_ml_level_detection
+      description: The machine learning detection level for the sensor.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_detection
+      description: The machine learning detection level for the cloud.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.schedule.start_timestamp
+      description: The timestamp when the first scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.schedule.interval
+      description: The interval between scans.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.created_on
+      description: The timestamp when the scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.created_by
+      description: The user who created the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.last_updated
+      description: The timestamp when the scan was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.deleted
+      description: Whether the scan has been deleted.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.quarantine
+      description: Whether the scan was set to quarantine.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.metadata.host_id
+      description: Scan host IDs.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.metadata.last_updated
+      description: The date and time when the detection event was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention
+      description: The machine learning prevention level for the sensor.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention
+      description: The machine learning prevention level for the cloud.
+      type: Number
+  - arguments:
+    - description: Valid CS-Falcon-FQL filter to query with.
+      name: filter
+    - description: Comma-separated list of host IDs to filter by.
+      isArray: true
+      name: host_ids
+    - description: Comma-separated list of scan IDs to filter by.
+      isArray: true
+      name: scan_ids
+    - description: Comma-separated list of scan statuses to filter by.
+      isArray: true
+      name: status
+    - description: UTC-format time of scan start to filter by.
+      name: started_on
+    - description: UTC-format time of scan completion to filter by.
+      name: completed_on
+    - description: Starting index of overall result set from which to return IDs.
+      name: offset
+    - description: Maximum number of resources to return.
+      name: limit
+    description: Retrieve ODS scan host details.
+    name: cs-falcon-ods-query-scan-host
+    outputs:
+    - contextPath: CrowdStrike.ODSScanHost.id
+      description: A unique identifier for the scan event.
+      type: String
+    - contextPath: CrowdStrike.ODSScanHost.cid
+      description: A unique identifier for the client that triggered the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScanHost.scan_id
+      description: A unique identifier for the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScanHost.profile_id
+      description: A unique identifier for the scan profile used in the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScanHost.host_id
+      description: A unique identifier for the host that was scanned
+      type: String
+    - contextPath: CrowdStrike.ODSScanHost.host_scan_id
+      description: A unique identifier for the scan that was performed on the host.
+      type: String
+    - contextPath: CrowdStrike.ODSScanHost.filecount.scanned
+      description: The number of files that were scanned during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScanHost.filecount.malicious
+      description: The number of files that were detected as malicious during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScanHost.filecount.quarantined
+      description: The number of files that were quarantined during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScanHost.filecount.skipped
+      description: The number of files that were skipped during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScanHost.status
+      description: The status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed")
+      type: String
+    - contextPath: CrowdStrike.ODSScanHost.severity
+      description: A severity score assigned to the scan, ranging from 0 to 100
+      type: Number
+    - contextPath: CrowdStrike.ODSScanHost.started_on
+      description: The date and time when the scan was started.
+      type: Date
+    - contextPath: CrowdStrike.ODSScanHost.completed_on
+      description: The date and time when the scan was completed.
+      type: Date
+    - contextPath: CrowdStrike.ODSScanHost.last_updated
+      description: The date and time when the scan event was last updated.
+      type: Date
+  - arguments:
+    - description: Valid CS-Falcon-FQL filter to query with.
+      name: filter
+    - description: Comma-separated list of malicious file IDs to retrieve details about. If set, will override all other arguments.
+      isArray: true
+      name: file_ids
+    - description: Comma-separated list of host IDs to filter by.
+      isArray: true
+      name: host_ids
+    - description: Comma-separated list of scan IDs to filter by.
+      isArray: true
+      name: scan_ids
+    - description: Comma-separated list of file paths to filter by.
+      isArray: true
+      name: file_paths
+    - description: Comma-separated list of file names to filter by.
+      isArray: true
+      name: file_names
+    - description: Comma-separated list of hashes to filter by.
+      isArray: true
+      name: hash
+    - description: Starting index of overall result set from which to return IDs.
+      name: offset
+    - description: Maximum number of resources to return.
+      name: limit
+    description: Retrieve ODS malicious file details.
+    name: cs-falcon-ods-query-malicious-files
+    outputs:
+    - contextPath: CrowdStrike.ODSMaliciousFile.id
+      description: A unique identifier of the detection event.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.cid
+      description: A unique identifier for the client that triggered the detection event.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.scan_id
+      description: A unique identifier for the scan that triggered the detection event.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.host_id
+      description: A unique identifier for the host that was scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.host_scan_id
+      description: A unique identifier for the scan that detected the file on the host.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.filepath
+      description: The full path to the malicious file on the host system.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.filename
+      description: The name of the malicious file.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.hash
+      description: A SHA-256 hash of the malicious file, which can be used to identify it.
+      type: String
+    - contextPath: CrowdStrike.ODSMaliciousFile.pattern_id
+      description: The identifier of the pattern used to detect the malicious file.
+      type: Number
+    - contextPath: CrowdStrike.ODSMaliciousFile.severity
+      description: A severity score assigned to the detection event, ranging from 0 to 100.
+      type: Number
+    - contextPath: CrowdStrike.ODSMaliciousFile.quarantined
+      description: A Boolean value indicating whether the file has been quarantined.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSMaliciousFile.last_updated
+      description: The date and time when the detection event was last updated.
+      type: Date
+  - arguments:
+    - description: List of hosts to be scanned. "hosts" OR "host_groups" must be set.
+      isArray: true
+      name: hosts
+    - description: List of host groups to be scanned. "hosts" OR "host_groups" must be set.
+      isArray: true
+      name: host_groups
+    - description: List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set.
+      isArray: true
+      name: file_paths
+    - description: List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set.
+      isArray: true
+      name: scan_inclusions
+    - description: List of excluded files or locations for this scan.
+      isArray: true
+      name: scan_exclusions
+    - description: Scan origin.
+      name: initiated_from
+    - description: Set the scan CPU priority.
+      name: cpu_priority
+      auto: PREDEFINED
+      defaultValue: Low
+      predefined:
+      - Highest
+      - High
+      - Medium
+      - Low
+      - Lowest
+    - description: Scan description.
+      name: description
+    - description: Flag indicating if identified threats should be quarantined.
+      name: quarantine
+    - description: Amount of time (in hours) for scan pauses.
+      name: pause_duration
+      defaultValue: '2'
+    - description: Sensor ML detection level.
+      name: sensor_ml_level_detection
+    - description: Sensor ML prevention level.
+      name: sensor_ml_level_prevention
+    - description: Cloud ML detection level for the scan.
+      name: cloud_ml_level_detection
+    - description: Cloud ML prevention level for the scan.
+      name: cloud_ml_level_prevention
+    - description: Maximum time (in hours) the scan is allowed to execute.
+      name: max_duration
+      defaultValue: '2'
+    - description: The interval in seconds between each poll.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      defaultValue: '600'
+    description: Create an ODS scan and wait for results.
+    name: cs-falcon-ods-create-scan
+    polling: true
+    outputs:
+    - contextPath: CrowdStrike.ODSScan.id
+      description: A unique identifier for the scan event.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.cid
+      description: A unique identifier for the client that triggered the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.profile_id
+      description: A unique identifier for the scan profile used in the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.description
+      description: The ID of the description of the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.scan_inclusions
+      description: The files or folders included in the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.initiated_from
+      description: The source of the scan initiation.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.quarantine
+      description: Whether the scan was set to quarantine.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScan.cpu_priority
+      description: The CPU priority for the scan (1-5).
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.preemption_priority
+      description: The preemption priority for the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.host_id
+      description: A unique identifier for the host that was scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.host_scan_id
+      description: A unique identifier for the scan that was performed on the host.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.scan_host_metadata_id
+      description: A unique identifier for the metadata associated with the host scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.scanned
+      description: The number of files that were scanned.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.malicious
+      description: The number of files that were identified as malicious.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.quarantined
+      description: The number of files that were quarantined.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.skipped
+      description: The number of files that were skipped during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.filecount.traversed
+      description: The number of files that were traversed during the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.metadata.status
+      description: The status of the scan on this host (e.g., "pending", "running", "completed", or "failed").
+      type: String
+    - contextPath: CrowdStrike.ODSScan.metadata.started_on
+      description: The date and time that the scan started.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.metadata.completed_on
+      description: The date and time that the scan completed.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.metadata.last_updated
+      description: The date and time that the metadata was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.status
+      description: The status of the scan (e.g., "pending", "running", "completed", or "failed").
+      type: String
+    - contextPath: CrowdStrike.ODSScan.hosts
+      description: A list of the host IDs that were scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.endpoint_notification
+      description: A boolean value indicating whether endpoint notifications are enabled.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScan.pause_duration
+      description: The number of hours to pause between scanning each file.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.max_duration
+      description: The maximum amount of time to allow for the scan job in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.max_file_size
+      description: The maximum file size (in MB) to scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.sensor_ml_level_detection
+      description: The level of detection sensitivity for the local sensor machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.sensor_ml_level_prevention
+      description: The level of prevention sensitivity for the local sensor machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_ml_level_detection
+      description: The level of detection sensitivity for the cloud machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.cloud_ml_level_prevention
+      description: The level of prevention sensitivity for the cloud machine learning model.
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.policy_setting
+      description: A list of policy setting IDs for the scan job (these correspond to specific policy settings in the Falcon console).
+      type: Number
+    - contextPath: CrowdStrike.ODSScan.scan_started_on
+      description: The timestamp when the scan was started.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.scan_completed_on
+      description: The timestamp when the scan was completed.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.created_on
+      description: The timestamp when the scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScan.created_by
+      description: The ID of the user who created the scan job.
+      type: String
+    - contextPath: CrowdStrike.ODSScan.last_updated
+      description: The timestamp when the scan job was last updated.
+      type: Date
+  - arguments:
+    - description: List of host groups to be scanned.
+      isArray: true
+      name: host_groups
+      required: true
+    - description: List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set.
+      isArray: true
+      name: file_paths
+    - description: List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set.
+      isArray: true
+      name: scan_inclusions
+    - description: List of excluded files or locations for this scan.
+      isArray: true
+      name: scan_exclusions
+    - description: Scan origin.
+      name: initiated_from
+    - description: Set the scan CPU priority.
+      name: cpu_priority
+      auto: PREDEFINED
+      defaultValue: Low
+      predefined:
+      - Highest
+      - High
+      - Medium
+      - Low
+      - Lowest
+    - description: Scan description.
+      name: description
+    - description: Flag indicating if identified threats should be quarantined.
+      name: quarantine
+    - description: Amount of time (in hours) for scan pauses.
+      name: pause_duration
+      defaultValue: '2'
+    - description: Sensor ML detection level.
+      name: sensor_ml_level_detection
+    - description: Sensor ML prevention level.
+      name: sensor_ml_level_prevention
+    - description: Cloud ML detection level for the scan.
+      name: cloud_ml_level_detection
+    - description: Cloud ML prevention level for the scan.
+      name: cloud_ml_level_prevention
+    - description: Maximum time (in hours) the scan is allowed to execute.
+      name: max_duration
+      defaultValue: '2'
+    - description: When to start the first scan. Supports english expressions such as "tommorow" or "in an hour".
+      name: schedule_start_timestamp
+      required: true
+    - description: Set the schedule interval.
+      name: schedule_interval
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Never
+      - Daily
+      - Weekly
+      - Every other week
+      - Every four weeks
+      - Monthly
+    description: Create an ODS scheduled scan.
+    name: cs-falcon-ods-create-scheduled-scan
+    outputs:
+    - contextPath: CrowdStrike.ODSScheduledScan.id
+      description: Unique identifier for the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.cid
+      description: Identifier for the customer or organization that owns the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.description
+      description: The ID of the description of the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.file_paths
+      description: The file or folder paths scanned.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.scan_exclusions
+      description: The file or folder exclusions from the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.initiated_from
+      description: The source of the scan initiation.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.cpu_priority
+      description: The CPU priority for the scan (1-5).
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.preemption_priority
+      description: The preemption priority for the scan.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.status
+      description: The status of the scan, whether it's "scheduled", "running", "completed", etc.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.host_groups
+      description: The host groups targeted by the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.endpoint_notification
+      description: Whether notifications of the scan were sent to endpoints.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.pause_duration
+      description: The pause duration of scan in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.max_duration
+      description: The max duration of scan in hours.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.max_file_size
+      description: The maximum file size that the scan can handle in MB.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.sensor_ml_level_detection
+      description: The machine learning detection level for the sensor.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_detection
+      description: The machine learning detection level for the cloud.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.schedule.start_timestamp
+      description: The timestamp when the first scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.schedule.interval
+      description: The interval between scans.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.created_on
+      description: The timestamp when the scan was created.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.created_by
+      description: The user who created the scan.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.last_updated
+      description: The timestamp when the scan was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.deleted
+      description: Whether the scan has been deleted.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.quarantine
+      description: Whether the scan was set to quarantine.
+      type: Boolean
+    - contextPath: CrowdStrike.ODSScheduledScan.metadata.host_id
+      description: Scan host IDs.
+      type: String
+    - contextPath: CrowdStrike.ODSScheduledScan.metadata.last_updated
+      description: The date and time when the detection event was last updated.
+      type: Date
+    - contextPath: CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention
+      description: The machine learning prevention level for the sensor.
+      type: Number
+    - contextPath: CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention
+      description: The machine learning prevention level for the cloud.
+      type: Number
+  - arguments:
+    - description: Comma-separated list of scheduled scan IDs to delete.
+      isArray: true
+      name: ids
+    - description: Valid CS-Falcon-FQL filter to delete scans by.
+      name: filter
+    description: Delete ODS scheduled scans.
+    name: cs-falcon-ods-delete-scheduled-scan
+    outputs: []
+  - arguments:
+    - description: API type.
+      name: type
+      required: true
+      predefined:
+      - 'USER'
+      - 'ENDPOINT'
+      auto: PREDEFINED
+    - description: The key to sort by.
+      name: sort_key
+      predefined:
+      - RISK_SCORE
+      - PRIMARY_DISPLAY_NAME
+      - SECONDARY_DISPLAY_NAME
+      - MOST_RECENT_ACTIVITY
+      - ENTITY_ID
+      auto: PREDEFINED
+    - description: The sort order.
+      name: sort_order
+      predefined:
+      - 'DESCENDING'
+      - 'ASCENDING'
+      auto: PREDEFINED
+      defaultValue: ASCENDING
+    - description: Comma separated list of entity IDs to look for.
+      name: entity_id
+      isArray: true
+    - description: Primary display name to filter by.
+      name: primary_display_name
+      isArray: true
+    - description: Secondary display name to filter by.
+      name: secondary_display_name
+      isArray: true
+    - description: The maximum risk score severity to filter by.
+      name: max_risk_score_severity
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: The minimum risk score severity to filter by.
+      name: min_risk_score_severity
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: Whether to get only enabled or disabled identity entities.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - description: Filter by email.
+      name: email
+    - description: The hash for the next page.
+      name: next_token
+    - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
+      name: page_size
+      defaultValue: 50
+    - description: The page number. Default is 1.
+      name: page
+    - description: The maximum number of identity entities to list.
+      name: limit
+    description: List identity entities.
+    name: cs-falcon-list-identity-entities
+    outputs:
+      - contextPath: CrowdStrike.IDPEntity.IsHuman
+        description: Whether the identity entity is human made.
+        type: Boolean
+      - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+        description: Whether the identity entity is programmatic made.
+        type: Boolean
+      - contextPath: CrowdStrike.IDPEntity.IsAdmin
+        description: Whether the identity entity is admin made.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+        description: The identity entity primary display name.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+        description: The identity entity risk factor type.
+        type: Unknown
+      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+        description: The identity entity risk factor severity.
+        type: Unknown
+      - contextPath: CrowdStrike.IDPEntity.RiskScore
+        description: The identity entity risk score.
+        type: Number
+      - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+        description: The identity entity risk score severity.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+        description: The identity entity secondary display name.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+        description: The identity entity email address.
+        type: String
+  dockerimage: demisto/py3-tools:1.0.0.66062
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   script: '-'
   subtype: python3
   type: python

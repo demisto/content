@@ -78,9 +78,7 @@ script:
     - name: object
       description: Object to query
     - name: query
-      description: Defines a free query using account properties, including Safe,
-        folder, and object. When this method is specified, all other search criteria
-        are ignored
+      description: Defines a free query using account properties, including Safe, folder, and object. When this method is specified, all other search criteria are ignored
     - name: queryFormat
       auto: PREDEFINED
       predefined:
@@ -88,8 +86,7 @@ script:
       - Regexp
       description: Defines the query format, which can optionally use regular expressions
     - name: reason
-      description: The reason for retrieving the password. This reason will be audited
-        in the Credential Provider audit log.
+      description: The reason for retrieving the password. This reason will be audited in the Credential Provider audit log.
     - name: database
       description: Defines search criteria according to the Database account property
     outputs:
@@ -115,8 +112,7 @@ script:
       description: Account username
     - contextPath: CyberArk.AIM.DeviceType
       description: Account device type
-    description: Search credentials in CyberArk using arguments to narrow the search.
-      Cannot return more than one result.
+    description: Search credentials in CyberArk using arguments to narrow the search. Cannot return more than one result.
   - name: list-credentials
     arguments:
     - name: identifier
@@ -136,8 +132,7 @@ script:
       required: true
       default: true
       description: Account Id to reset password
-    description: 'This method marks the account for an immediate password change by
-      the CPM to a new random password. '
+    description: 'This method marks the account for an immediate password change by the CPM to a new random password. '
   - name: account-details
     arguments:
     - name: keywords
@@ -146,8 +141,7 @@ script:
       description: Keywords matching the account
     - name: safe
       description: Specify a safe rather then using instance specific.
-    description: This method returns information about an account. If more than one
-      account meets the search criteria, only the first account will be returned.
+    description: This method returns information about an account. If more than one account meets the search criteria, only the first account will be returned.
   runonce: false
 tests:
 - No test

@@ -21,12 +21,12 @@ configuration:
   type: 4
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 description: |-
   The BMC Service Request Management application enables an IT department and other business departments to easily define available services, publish those services in a service catalog, and automate fulfillment of those services for the user community, enabling users to help themselves.
   This integration uses SOAP API and supports SRM 9.0 version.
@@ -35,15 +35,10 @@ name: remedy_sr_beta
 script:
   commands:
   - arguments:
-    - default: false
-      description: Service request ID
-      isArray: false
+    - description: Service request ID
       name: service_request_id
       required: true
-      secret: false
-    deprecated: false
     description: Get ticket details
-    execution: false
     name: remedy-get-ticket
     outputs:
     - contextPath: Remedy.Ticket.RequesterEmail
@@ -101,81 +96,39 @@ script:
       description: Requester PERNR
       type: string
   - arguments:
-    - default: false
-      description: Ticket details
-      isArray: false
+    - description: Ticket details
       name: details
       required: true
-      secret: false
-    - default: false
-      description: Requester NTID
-      isArray: false
+    - description: Requester NTID
       name: requester_ntid
       required: true
-      secret: false
-    - default: false
-      description: Requester PERNR
-      isArray: false
+    - description: Requester PERNR
       name: requester_pernr
-      required: false
-      secret: false
-    - default: false
-      description: Contact Email
-      isArray: false
+    - description: Contact Email
       name: contact_email
-      required: false
-      secret: false
-    - default: false
-      description: Contact Name
-      isArray: false
+    - description: Contact Name
       name: contact_name
-      required: false
-      secret: false
-    - default: false
-      description: Contact Phone
-      isArray: false
+    - description: Contact Phone
       name: contact_phone
-      required: false
-      secret: false
-    - default: false
-      description: Email of User
-      isArray: false
+    - description: Email of User
       name: requester_email
       required: true
-      secret: false
-    - default: false
-      description: Requester First/Last Name
-      isArray: false
+    - description: Requester First/Last Name
       name: requester_name
       required: true
-      secret: false
-    - default: false
-      description: User Phone
-      isArray: false
+    - description: User Phone
       name: requester_phone
       required: true
-      secret: false
-    - default: false
-      description: Requester City
-      isArray: false
+    - description: Requester City
       name: requester_work_city
       required: true
-      secret: false
-    - default: false
-      description: Requester Office
-      isArray: false
+    - description: Requester Office
       name: requester_work_location
       required: true
-      secret: false
-    - default: false
-      description: Requester Street
-      isArray: false
+    - description: Requester Street
       name: requester_work_street
       required: true
-      secret: false
-    deprecated: false
     description: Create a ticket
-    execution: false
     name: remedy-create-ticket
     outputs:
     - contextPath: Remedy.Ticket.RequesterEmail
@@ -222,16 +175,12 @@ script:
       type: string
   - deprecated: true
     description: Update a ticket
-    execution: false
     name: remedy-update-ticket
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.66339
 tests:
 - No Test
 beta: true

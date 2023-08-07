@@ -8,11 +8,10 @@ commonfields:
 configuration:
 - defaultvalue: https://api.crowdstrike.com
   display: Cloud Base URL (e.g., https://api.crowdstrike.com)
-  hidden: false
   name: base_url
-  required: false
   type: 0
   section: Connect
+  required: false
 - display: Client ID
   name: credentials
   required: true
@@ -20,16 +19,16 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -44,89 +43,55 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   section: Collect
+  required: false
 description: Use the CrowdStrike Falcon Intelligence Sandbox integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon Intelligence Sandbox
 name: CrowdStrike Falcon X
 script:
   commands:
   - arguments:
-    - default: false
-      description: Name of the file to upload for sandbox analysis.
-      isArray: false
+    - description: Name of the file to upload for sandbox analysis.
       name: file_name
-      required: false
-      secret: false
-    - default: false
-      description: This ia an internal argument used for the polling process, not to be used by the user.
+    - description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
-      required: false
-      secret: false
-    - default: false
-      description: A descriptive comment to identify the file for other users.
-      isArray: false
+    - description: A descriptive comment to identify the file for other users.
       name: comment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Determines the visibility of this file in Falcon MalQuery. Can be "true" or "false". If "true", the file is confidential.
-      isArray: false
       name: is_confidential
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Content of the uploaded sample in binary format, This arg can also receive entry ID from war room.
-      isArray: false
+    - description: Content of the uploaded sample in binary format, This arg can also receive entry ID from war room.
       name: file
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If set to true, the report will return extended data which includes mitre attacks and signature information.
-      isArray: false
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
     - auto: PREDEFINED
       default:
       defaultValue: no
       description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
-      isArray: false
       name: submit_file
       predefined:
       - no
       - yes
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: "160: Windows 10"
       description: Sandbox environment used for analysis. Relevant if the submit_file parameter is set to true.
-      isArray: false
       name: environment_id
       predefined:
       - '300: Linux Ubuntu 16.04'
@@ -138,12 +103,8 @@ script:
       - 64-bit
       - '100: Windows 7'
       - 32-bit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Runtime script for sandbox analysis. Relevant if the submit_file parameter is set to true.
-      isArray: false
       name: action_script
       predefined:
       - default
@@ -151,51 +112,23 @@ script:
       - default_randomfiles
       - default_randomtheme
       - default_openie
-      required: false
-      secret: false
-    - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters. Relevant if the submit_file parameter is set to true.'
-      isArray: false
+    - description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters. Relevant if the submit_file parameter is set to true.'
       name: command_line
-      required: false
-      secret: false
-    - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. Relevant if the submit_file parameter is set to true.'
-      isArray: false
+    - description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters. Relevant if the submit_file parameter is set to true.'
       name: document_password
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the sandbox analysis routes network traffic via TOR. If true, sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter is set to true.
-      isArray: false
       name: enable_tor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Name of the malware sample that is used for file type detection and analysis. Relevant if the submit_file parameter is set to true.
-      isArray: false
+    - description: Name of the malware sample that is used for file type detection and analysis. Relevant if the submit_file parameter is set to true.
       name: submit_name
-      required: false
-      secret: false
-    - default: false
-      description: Set a custom date for the sandbox environment in the format yyyy-MM-dd. Relevant if the submit_file parameter is set to true.
-      isArray: false
+    - description: Set a custom date for the sandbox environment in the format yyyy-MM-dd. Relevant if the submit_file parameter is set to true.
       name: system_date
-      required: false
-      secret: false
-    - default: false
-      description: Sets a custom time for the sandbox environment in the format HH:mm. Relevant if the submit_file parameter is set to true.
-      isArray: false
+    - description: Sets a custom time for the sandbox environment in the format HH:mm. Relevant if the submit_file parameter is set to true.
       name: system_time
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a file for sandbox analysis.
-    execution: false
     name: cs-fx-upload-file
     polling: true
     outputs:
@@ -401,16 +334,10 @@ script:
       description: 'Name of the uploaded file. '
       type: String
   - arguments:
-    - default: false
-      description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
-      isArray: false
+    - description: SHA256 ID of the sample, which is a SHA256 hash value. Find the sample ID from the response when uploading a malware sample or search with the cs-fx-upload-file command.
       name: sha256
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sandbox environment used for analysis.
-      isArray: false
       name: environment_id
       predefined:
       - '300: Linux Ubuntu 16.04'
@@ -422,12 +349,8 @@ script:
       - 64-bit
       - '100: Windows 7'
       - 32-bit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Runtime script for sandbox analysis.
-      isArray: false
       name: action_script
       predefined:
       - default
@@ -435,85 +358,43 @@ script:
       - default_randomfiles
       - default_randomtheme
       - default_openie
-      required: false
-      secret: false
-    - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
-      isArray: false
+    - description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
       name: command_line
-      required: false
-      secret: false
-    - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
-      isArray: false
+    - description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       name: document_password
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR.
-      isArray: false
       name: enable_tor
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Name of the malware sample that’s used for file type detection. and analysis.
-      isArray: false
+    - description: Name of the malware sample that’s used for file type detection. and analysis.
       name: submit_name
-      required: false
-      secret: false
-    - default: false
-      description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
-      isArray: false
+    - description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
       name: system_date
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If set to true, the report will return extended data which includes mitre attacks and signature information.
-      isArray: false
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: This ia an internal argument used for the polling process, not to be used by the user.
+    - description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
-    - default: false
-      description: Sets a custom time for the sandbox environment in the format HH:mm.
-      isArray: false
+    - description: Sets a custom time for the sandbox environment in the format HH:mm.
       name: system_time
-      required: false
-      secret: false
-    deprecated: false
     polling: true
     description: Submits a sample SHA256 hash for sandbox analysis.
-    execution: false
     name: cs-fx-submit-uploaded-file
     outputs:
     - contextPath: csfalconx.resource.uploaded_id
@@ -766,25 +647,18 @@ script:
       description: Analysis ID received after submitting the file.
       type: String
   - arguments:
-    - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+    - description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If set to true, the report will return extended data which includes mitre attacks and signature information.
-      isArray: false
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Gets a full version of a sandbox report.
-    execution: false
     name: cs-fx-get-full-report
     outputs:
     - contextPath: csfalconx.resource.tags
@@ -1298,15 +1172,11 @@ script:
       description: Submit name.
       type: String
   - arguments:
-    - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
+    - description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file command.
       isArray: true
       name: ids
       required: true
-      secret: false
-    deprecated: false
     description: Gets a short summary version of a sandbox report.
-    execution: false
     name: cs-fx-get-report-summary
     outputs:
     - contextPath: csfalconx.resource.id
@@ -1373,15 +1243,11 @@ script:
       description: ID of the IOC pack to download (MAEC).
       type: String
   - arguments:
-    - default: false
-      description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
+    - description: ID of a submitted malware sample. Find a submission ID from the response when submitting a malware sample or search with the cs-fx-submit-uploaded-file/url command.
       isArray: true
       name: ids
       required: true
-      secret: false
-    deprecated: false
     description: Checks the status of a sandbox analysis.
-    execution: false
     name: cs-fx-get-analysis-status
     outputs:
     - contextPath: csfalconx.resource.id
@@ -1441,9 +1307,7 @@ script:
     - contextPath: csfalconx.resource.ioc_report_broad_maec_artifact_id
       description: ID of the IOC pack to download (MAEC).
       type: String
-  - deprecated: false
-    description: Returns the total quota number and the in use quota number.
-    execution: false
+  - description: Returns the total quota number and the in use quota number.
     name: cs-fx-check-quota
     outputs:
     - contextPath: csfalconx.resource.total
@@ -1456,43 +1320,22 @@ script:
       description: The number of calls in progress
       type: Number
   - arguments:
-    - default: false
-      description: Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided)
-      isArray: false
+    - description: Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided)
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: The offset from which to start retrieving reports.
-      isArray: false
+    - description: The offset from which to start retrieving reports.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hashes to search for. Overridden by the *filter* argument (if provided)
+    - description: SHA256 hashes to search for. Overridden by the *filter* argument (if provided)
       isArray: true
       name: hashes
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of report IDs to return. Maximum is 5000. Default is 50.
-      isArray: false
+    - description: Maximum number of report IDs to return. Maximum is 5000. Default is 50.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order. Can be "asc" or "desc".
-      isArray: false
       name: sort
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Finds sandbox reports by providing an FQL filter and paging details.
-    execution: false
     name: cs-fx-find-reports
     outputs:
     - contextPath: csfalconx.resource.resources
@@ -1505,37 +1348,19 @@ script:
       description: Set of report ids that match this queried SHA256 value.
       type: Number
   - arguments:
-    - default: false
-      description: Optional filter and sort criteria in the form of an FQL query.
-      isArray: false
+    - description: Optional filter and sort criteria in the form of an FQL query.
       name: filter
-      required: false
-      secret: false
-    - default: false
-      description: The offset from which to start retrieving reports.
-      isArray: false
+    - description: The offset from which to start retrieving reports.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of report IDs to return. Maximum is 5000.
-      isArray: false
+    - description: Maximum number of report IDs to return. Maximum is 5000.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Sort order. Can be "asc" or "desc".
-      isArray: false
       name: sort
       predefined:
       - asc
       - desc
-      required: false
-      secret: false
-    deprecated: false
     description: Finds submission IDs for uploaded files by providing an FQL filter and paging details. Returns a set of submission IDs that match the search criteria.
-    execution: false
     name: cs-fx-find-submission-id
     outputs:
     - contextPath: csfalconx.resource.resources
@@ -1548,10 +1373,7 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Gets reputation data for one or more files, by sha256 hashes.
-    execution: false
     name: file
     outputs:
     - contextPath: csfalconx.resource.id
@@ -1612,20 +1434,12 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         A web page or file URL. It can be HTTP(S) or FTP.
         For example: “https://url.com”,“ftp://ftp.com”
-      isArray: false
       name: url
-      required: false
-      secret: false
-    - default: false
-      description: Sandbox environment used for analysis.
-      isArray: false
+    - description: Sandbox environment used for analysis.
       name: environment_id
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - '300: Linux Ubuntu 16.04'
@@ -1637,95 +1451,51 @@ script:
       - 64-bit
       - '100: Windows 7'
       - 32-bit
-    - default: false
-      description: |-
+    - description: |-
         Runtime script for sandbox analysis. Values:
         default
         default_maxantievasion
         default_randomfiles
         default_randomtheme
         default_openie
-      isArray: false
       name: action_script
-      required: false
-      secret: false
-    - default: false
-      description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters'
-      isArray: false
+    - description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters'
       name: command_line
-      required: false
-      secret: false
-    - default: false
-      description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
-      isArray: false
+    - description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       name: document_password
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether the sandbox analysis routes network traffic via TOR. Can be "true" or "false". If true, sandbox analysis routes network traffic via TOR. Default is false.
-      isArray: false
       name: enable_tor
       predefined:
       - 'false'
       - ' true'
-      required: false
-      secret: false
-    - default: false
-      description: Name of the malware sample that is used for file type detection and analysis.
-      isArray: false
+    - description: Name of the malware sample that is used for file type detection and analysis.
       name: submit_name
-      required: false
-      secret: false
-    - default: false
-      description: Sets a custom date for the sandbox environment in the format yyyy-MM-dd.
-      isArray: false
+    - description: Sets a custom date for the sandbox environment in the format yyyy-MM-dd.
       name: system_date
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
-      isArray: false
       name: polling
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '600'
+    - defaultValue: '600'
       description: Interval in seconds between each poll.
-      isArray: false
       name: interval_in_seconds
-      required: false
-      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If set to true, the report will return extended data which includes mitre attacks and signature information.
-      isArray: false
       name: extended_data
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: This ia an internal argument used for the polling process, not to be used by the user.
+    - description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
-      required: false
-      secret: false
-    - default: false
-      description: Sets a custom time for the sandbox environment in the format HH:mm.
-      isArray: false
+    - description: Sets a custom time for the sandbox environment in the format HH:mm.
       name: system_time
-      required: false
-      secret: false
-    deprecated: false
     description: Submits a URL or FTP for sandbox analysis.
-    execution: false
     name: cs-fx-submit-url
     polling: true
     outputs:
@@ -1946,34 +1716,17 @@ script:
       description: Submitted URL.
       type: String
   - arguments:
-    - default: false
-      description: ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary.
-      isArray: false
+    - description: ID of an artifact, such as an IOC pack, PCAP file, or actor image. Find an artifact ID in a report or summary.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The name given to then downloaded file.
-      isArray: false
+    - description: The name given to then downloaded file.
       name: name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: gzip
+    - defaultValue: gzip
       description: Format used to compress the downloaded file. Currently, you must provide the value of the GZIP file.
-      isArray: false
       name: accept_encoding
-      required: false
-      secret: false
-    deprecated: false
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
-    execution: false
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.10.52956
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

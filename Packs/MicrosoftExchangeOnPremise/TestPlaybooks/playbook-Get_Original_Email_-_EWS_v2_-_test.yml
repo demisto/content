@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 15d27661-5221-4106-81cb-1beb7ce1e7fd
+    taskid: 03873e01-5b6e-43e1-82ac-28d95a1288b0
     type: start
     task:
-      id: 15d27661-5221-4106-81cb-1beb7ce1e7fd
+      id: 03873e01-5b6e-43e1-82ac-28d95a1288b0
       version: -1
       name: ""
       iscommand: false
@@ -19,6 +19,7 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -35,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f00380e0-6efc-4c9c-87ff-279b353d80a9
+    taskid: 1548afd0-21ca-4c8e-85d1-f2efa6e41c3a
     type: condition
     task:
-      id: f00380e0-6efc-4c9c-87ff-279b353d80a9
+      id: 1548afd0-21ca-4c8e-85d1-f2efa6e41c3a
       version: -1
       name: Check output
       description: Check the playbook outputs.
@@ -54,16 +55,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: SHA256
             iscontext: true
-          right:
-            value:
-              simple: b566b3812fcfaeb3474f9b43dc891a51e9a378d00d57d4e3048017715ef18fe1
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -80,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 23abaa87-7be6-4efa-84c3-d7e0689f3d27
+    taskid: 8b153235-d4eb-4f8c-898d-8cf985fe3dca
     type: regular
     task:
-      id: 23abaa87-7be6-4efa-84c3-d7e0689f3d27
+      id: 8b153235-d4eb-4f8c-898d-8cf985fe3dca
       version: -1
       name: Print success
       description: Prints text to war room (Markdown supported)
@@ -95,6 +94,7 @@ tasks:
       value:
         simple: SUCCESS
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: acf8565e-b649-41af-8631-75ddd75af037
+    taskid: 2634bc10-1180-4987-872e-80b1506eae70
     type: regular
     task:
-      id: acf8565e-b649-41af-8631-75ddd75af037
+      id: 2634bc10-1180-4987-872e-80b1506eae70
       version: -1
       name: Print Error
       description: Prints an error entry with a given message
@@ -126,6 +126,7 @@ tasks:
       message:
         simple: ERROR
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -142,10 +143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: eee8500a-b9c6-4e6e-8565-6b15a55d1ef2
+    taskid: c82679a1-c7e3-4716-8444-e12f787602d6
     type: playbook
     task:
-      id: eee8500a-b9c6-4e6e-8565-6b15a55d1ef2
+      id: c82679a1-c7e3-4716-8444-e12f787602d6
       version: -1
       name: Get Original Email - EWS v2
       description: |-
@@ -165,6 +166,7 @@ tasks:
       TargetMailbox:
         simple: ${inputs.UserID}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""

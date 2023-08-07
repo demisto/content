@@ -71,7 +71,7 @@ def test_get_installed_packs(mocker):
 
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
 
-    installed_packs = script.get_all_installed_packs(client)
+    installed_packs = script.get_all_installed_packs(client, ['Base'])
     assert 'HelloWorld' in installed_packs
     assert 'TestPack' in installed_packs
     assert 'Base' not in installed_packs
@@ -92,32 +92,13 @@ def test_uninstall_all_packs(mocker):
     mocker.patch.object(script, 'get_all_installed_packs', return_value=MOCK_PACKS_ID_TO_UNINSTALL)
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
 
-    success = script.uninstall_all_packs(client, 'hostname')
-
-    assert success is True
-
-
-def test_reset_base_pack_version(mocker):
-    """
-   Given
-   - Base pack with different version than production.
-   When
-   - Updating Base pack to prod version.
-   Then
-   - Ensure the pack version gets reset.
-   """
-    client = MockClient()
-    client.api_client.configuration.host = 'https://api-someurl.com/'  # disable-secrets-detection
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
-    mocker.patch('Tests.Marketplace.search_and_uninstall_pack.install_packs', return_value=True)
-    success = script.reset_base_pack_version(client)
+    success = script.uninstall_all_packs(client, 'hostname', ['Base'])
 
     assert success is True
 
 
 @pytest.mark.parametrize('def_call, return_val', [
-    (script.get_all_installed_packs, None),
-    (script.reset_base_pack_version, False)
+    (script.get_all_installed_packs, None)
 ])
 def test_exception_reset_base_pack(def_call, return_val, mocker):
     """
@@ -131,7 +112,7 @@ def test_exception_reset_base_pack(def_call, return_val, mocker):
    """
     client = MockClient()
     client.api_client.configuration.host = 'https://api-someurl.com/'  # disable-secrets-detection
-    ret_val_from_call = def_call(client)
+    ret_val_from_call = def_call(client, ['Base'])
     mocker.patch.object(demisto_client, 'generic_request_func', return_value=('', 500, None))
 
     assert ret_val_from_call == return_val

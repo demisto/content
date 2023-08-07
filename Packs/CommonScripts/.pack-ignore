@@ -1,9 +1,6 @@
 [file:GetDuplicatesMlv2.yml]
 ignore=SC100
 
-[file:playbook-Delete_Context_Subplaybook_Test.yml]
-ignore=auto-test
-
 [file:CompareIncidentsLabels.yml]
 ignore=SC105,BA124
 
@@ -171,6 +168,7 @@ parseyaml
 parses
 yaml
 indexerror
+gTLD
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
@@ -247,3 +245,14 @@ ignore=BA124
 [file:EditServerConfig.yml]
 ignore=BA124
 
+[tests_require_network]
+Ping
+GetDockerImageLatestTag
+GetDuplicatesMlv2
+DockerHardeningCheck
+
+[file:CloseInvestigationAsDuplicate.yml]
+ignore=BA124
+
+[file:ContextContains.yml]
+ignore=BA124

@@ -18,16 +18,16 @@ configuration:
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -40,9 +40,9 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
   type: 15
   section: Collect
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -51,17 +51,17 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
-  required: false
   type: 17
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
-  required: false
   type: 1
   section: Collect
   advanced: true
+  required: false
 description: Sixgill Darkfeed Enrichment – powered by the broadest automated collection from the deep and dark web – is the most comprehensive IOC enrichment solution on the market. By enriching Palo Alto Networks Cortex XSOAR IOCs with Darkfeed, customers gain unparalleled context and essential explanations in order to accelerate their incident prevention and response and stay ahead of the threat curve. Automatically enrich Cortex XSOAR IOCs (machine to machine) via Darkfeed. Block threats and enrich endpoint protection in real-time from the Cortex XSOAR dashboard, gain contextual and actionable insights with essential explanations of Cortex XSOAR IOCs.
 display: Sixgill DarkFeed Enrichment
 name: Sixgill_Darkfeed_Enrichment
@@ -73,17 +73,10 @@ script:
       isArray: true
       name: ip
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each IP in the input list.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -164,17 +157,10 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each domain name in the input list.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -255,17 +241,10 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each URL in the input list.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -346,17 +325,10 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each file hash in the input list.
-    execution: false
     name: file
     outputs:
     - contextPath: DBotScore.Indicator
@@ -446,17 +418,10 @@ script:
       isArray: true
       name: actor
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per actor to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each actor in the input list.
-    execution: false
     name: sixgill-get-actor
     outputs:
     - contextPath: SixgillDarkfeed.Actor.created
@@ -522,17 +487,10 @@ script:
       isArray: true
       name: post_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The number of outputs per post ID to be skipped when returning the result set. Default is 0.
-      isArray: false
       name: skip
-      required: false
-      secret: false
-    deprecated: false
     description: Returns information and a reputation for each post ID in the input list.
-    execution: false
     name: sixgill-get-post-id
     outputs:
     - contextPath: SixgillDarkfeed.Postid.created
@@ -592,11 +550,7 @@ script:
     - contextPath: SixgillDarkfeed.Postid.external_reference
       description: Link to the IOC on Virustotal and an abstraction of the number of detections; MITRE ATT&CK tactics and techniques.
       type: Unknown
-  dockerimage: demisto/sixgill:1.0.0.50510
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/sixgill:1.0.0.66910
   runonce: false
   script: '-'
   subtype: python3

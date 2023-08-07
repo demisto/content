@@ -3,6 +3,7 @@ from freezegun import freeze_time
 import json
 import os
 import zipfile
+from typing import Any
 
 import pytest
 
@@ -10,7 +11,8 @@ import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
-    isolate_endpoint_command
+    isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
+    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -136,8 +138,8 @@ def test_endpoint_command(requests_mock):
                                         'IsIsolated': 'No'}]}
 
     results = outputs[0].to_context()
-    for key, val in results.get("EntryContext").items():
-        assert results.get("EntryContext")[key] == get_endpoints_response[key]
+    for key, value in results.get("EntryContext", {}).items():
+        assert get_endpoints_response[key] == value
     assert results.get("EntryContext") == get_endpoints_response
 
 
@@ -1819,14 +1821,14 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
             pass
 
     request.addfinalizer(cleanup)
-    zip_link = 'https://example-link'
+    zip_link = 'https://download/example-link'
     zip_filename = 'file.zip'
     requests_mock.post(
         f'{Core_URL}/public_api/v1/scripts/get_script_execution_results_files',
         json={'reply': {'DATA': zip_link}}
     )
     requests_mock.get(
-        zip_link,
+        f"{Core_URL}/public_api/v1/download/example-link",
         content=b'PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\r\x00\x00'
                 b'\x00your_file.txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00'
                 b'\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file'
@@ -3164,3 +3166,461 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
     else:
         assert (command_to_run(client, args).readable_output == "The operation executed is not supported on the given "
                                                                 "machine.")
+
+
+@pytest.mark.parametrize(
+    "command, func_http, args, excepted_calls, path_test_data",
+    [
+        (
+            "user",
+            "list_risky_users",
+            {"user_id": "test"},
+            {"risk_score_user_or_host": 1, "list_risky_users": 0},
+            "./test_data/list_risky_users_hosts.json"
+
+        ),
+        (
+            "user",
+            "list_risky_users",
+            {},
+            {"risk_score_user_or_host": 0, "list_risky_users": 1},
+            "./test_data/list_risky_users.json"
+        ),
+        (
+            "host",
+            "list_risky_hosts",
+            {"host_id": "test"},
+            {"risk_score_user_or_host": 1, "list_risky_hosts": 0},
+            "./test_data/list_risky_users_hosts.json"
+        ),
+        (
+            "host",
+            "list_risky_hosts",
+            {},
+            {"risk_score_user_or_host": 0, "list_risky_hosts": 1},
+            "./test_data/list_risky_hosts.json"
+        ),
+    ],
+)
+def test_list_risky_users_or_hosts_command(
+    mocker, command: str, func_http: str, args: dict[str, str], excepted_calls: dict[str, int], path_test_data: str
+):
+    """
+    Test case to verify the behavior of the 'list_risky_users_or_hosts_command' function.
+
+    Args:
+        mocker (Any): The mocker object to patch the required methods.
+        command (str): The command to be tested ('user' or 'host').
+        func_http (str): The name of the HTTP function to be called.
+        args (dict[str, str]): The arguments for the command.
+        expected_calls (dict[str, int]): The expected number of calls for each mocked method.
+
+    Returns:
+        None
+    """
+    test_data = load_test_data(path_test_data)
+    client = CoreClient("test", {})
+
+    risk_by_user_or_host = mocker.patch.object(
+        CoreClient, "risk_score_user_or_host", return_value=test_data
+    )
+    list_risky_users = mocker.patch.object(CoreClient, func_http, return_value=test_data)
+
+    result = list_risky_users_or_host_command(client=client, command=command, args=args)
+
+    assert result.outputs == test_data["reply"]
+    assert (
+        risk_by_user_or_host.call_count
+        == excepted_calls["risk_score_user_or_host"]
+    )
+    assert list_risky_users.call_count == excepted_calls[func_http]
+
+
+@pytest.mark.parametrize(
+    "command ,id_",
+    [
+        ('user', "user_id"),
+        ('host', "host_id"),
+    ],
+)
+def test_list_risky_users_hosts_command_raise_exception(
+    mocker, command: str, id_: str
+):
+    """
+    Test case to verify if the 'list_risky_users_or_host_command' function raises the expected exception.
+
+    Args:
+        mocker (Any): The mocker object to patch the 'risk_score_user_or_host' method.
+        command (str): The command to be tested ('user' or 'host').
+        id_ (str): The ID parameter for the command.
+
+    Raises:
+        DemistoException: If the expected exception is not raised or the error message doesn't match.
+
+    Returns:
+        None
+    """
+
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        "risk_score_user_or_host",
+        side_effect=DemistoException(
+            message="id 'test' was not found", res=MockException(500)
+        ),
+    )
+    with pytest.raises(
+        DemistoException,
+        match="Error: id test was not found. Full error message: id 'test' was not found"
+    ):
+        list_risky_users_or_host_command(client, command, {id_: "test"})
+
+
+def test_list_user_groups_command(mocker):
+    """
+    Test function to validate the behavior of the `list_user_groups_command` function.
+
+    Args:
+        mocker: Pytest mocker object.
+        args (dict): A dictionary containing optional `group_names` argument.
+
+    Returns:
+        None
+
+    Raises:
+        AssertionError: If the expected output doesn't match the actual output.
+    """
+    client = CoreClient("test", {})
+    test_data = load_test_data("./test_data/get_list_user_groups.json")
+    mocker.patch.object(CoreClient, "list_user_groups", return_value=test_data)
+
+    results = list_user_groups_command(client=client, args={"group_names": "test"})
+    assert test_data["reply"] == results.outputs
+
+
+@pytest.mark.parametrize(
+    "data, expected_results",
+    [
+        (
+            {
+                "group_name": "Group2",
+                "description": None,
+                "pretty_name": "dummy1",
+                "insert_time": 1111111111111,
+                "update_time": 2222222222222,
+                "user_email": [
+                    "dummy1@gmail.com",
+                    "dummy2@gmail.com",
+                ],
+                "source": "Custom",
+            },
+            [
+                {'User email': 'dummy1@gmail.com', 'Group Name': 'Group2', 'Group Description': None},
+                {'User email': 'dummy2@gmail.com', 'Group Name': 'Group2', 'Group Description': None}
+            ]
+        )
+    ],
+)
+def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str, Any]]):
+    """
+    Test the 'parse_user_groups' function that parses user group information.
+
+    Args:
+        data (dict): A dictionary containing a sample user group data.
+
+    Returns:
+        None
+
+    Raises:
+        AssertionError: If the parsing of user groups data fails.
+    """
+    assert parse_user_groups(data) == expected_results
+
+
+@pytest.mark.parametrize(
+    "test_data, excepted_error",
+    [
+        ({"group_names": "test"}, "Error: Group test was not found. Full error message: Group 'test' was not found"),
+        ({"group_names": "test, test2"}, "Error: Group test was not found. Note: If you sent more than one group name, "
+         "they may not exist either. Full error message: Group 'test' was not found")
+    ]
+)
+def test_list_user_groups_command_raise_exception(mocker, test_data: dict[str, str], excepted_error: str):
+    """
+    Tests that the 'list_user_groups_command' function raises an exception when the 'list_user_groups' method of
+    the 'CoreClient' class raises a 'DemistoException'.
+
+    Args:
+        mocker: The pytest mocker object.
+
+    Raises:
+        Exception: If the 'list_user_groups_command' function does not raise an exception when expected.
+
+    Returns:
+        None.
+    """
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        "list_user_groups",
+        side_effect=DemistoException(
+            message="Group 'test' was not found", res=MockException(500)
+        ),
+    )
+    with pytest.raises(
+        DemistoException,
+        match=excepted_error,
+    ):
+        list_user_groups_command(client, test_data)
+
+
+def test_list_users_command(mocker):
+    """
+    Tests the `list_users_command` function.
+
+    Args:
+        mocker: The pytest mocker object.
+
+    Returns:
+        None.
+
+    Raises:
+        AssertionError: If the test fails.
+    """
+    client = CoreClient("test", {})
+    test_data = load_test_data("./test_data/get_list_users.json")
+    mocker.patch.object(CoreClient, "list_users", return_value=test_data)
+
+    results = list_users_command(client=client, args={})
+    assert test_data["reply"] == results.outputs
+
+
+@pytest.mark.parametrize(
+    "role_data",
+    [
+
+        {
+            "reply": [
+                [
+                    {
+                        "pretty_name": "test",
+                        "description": "test",
+                        "permissions": "test",
+                        "users": "test",
+                        "groups": "test",
+                    }
+                ]
+            ]
+        },
+
+    ],
+)
+def test_list_roles_command(
+    mocker, role_data: dict[str, str]
+) -> None:
+    """
+    Tests the 'list_roles_command' function.
+
+    Args:
+        mocker: A pytest-mock object.
+        role_data (dict): A dictionary containing the test data for the roles.
+        expected_output (str): The expected output for the test.
+
+    Raises:
+        AssertionError: If the test fails.
+    """
+    client = CoreClient("test", {})
+
+    mocker.patch.object(CoreClient, "list_roles", return_value=role_data)
+
+    results = list_roles_command(client=client, args={"role_names": "test"})
+
+    assert role_data["reply"] == results.outputs
+
+
+@pytest.mark.parametrize(
+    "func, args, update_count, expected_output",
+    [
+        (
+            "remove_user_role",
+            {"user_emails": "test1@example.com,test2@example.com"},
+            {"reply": {"update_count": "2"}},
+            "Role was removed successfully for 2 users."
+        ),
+        (
+            "remove_user_role",
+            {"user_emails": "test1@example.com,test2@example.com"},
+            {"reply": {"update_count": "1"}},
+            "Role was removed successfully for 1 user."
+        ),
+        (
+            "set_user_role",
+            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
+            {"reply": {"update_count": "2"}},
+            "Role was updated successfully for 2 users."
+        ),
+    ]
+)
+def test_change_user_role_command_happy_path(
+    mocker, func: str,
+    args: dict[str, str],
+    update_count: dict[str, dict[str, str]],
+    expected_output: str
+):
+    """
+    Given:
+    - Valid user emails and role name provided.
+
+    When:
+    - Running the change_user_role_command function.
+
+    Then:
+    - Ensure the function returns a CommandResults object with the expected readable output.
+    """
+
+    client = CoreClient("test", {})
+    mocker.patch.object(CoreClient, func, return_value=update_count)
+
+    result = change_user_role_command(client, args)
+
+    assert result.readable_output == expected_output
+
+
+@pytest.mark.parametrize(
+    "func, args, update_count, expected_output",
+    [
+        (
+            "remove_user_role",
+            {"user_emails": "test1@example.com,test2@example.com"},
+            {"reply": {"update_count": 0}},
+            "No user role has been removed."
+        ),
+        (
+            "set_user_role",
+            {"user_emails": "test1@example.com,test2@example.com", "role_name": "admin"},
+            {"reply": {"update_count": 0}},
+            "No user role has been updated."
+        )
+    ]
+)
+def test_change_user_role_command_with_raise(
+    mocker, func: str,
+    args: dict[str, str],
+    update_count: dict[str, dict[str, int]],
+    expected_output: str
+):
+    client = CoreClient("test", {})
+    mocker.patch.object(CoreClient, func, return_value=update_count)
+
+    with pytest.raises(DemistoException, match=expected_output):
+        change_user_role_command(client, args)
+
+
+def test_endpoint_command_fails(requests_mock):
+    """
+    Given:
+    - no arguments
+    When:
+    - we mock the endpoint command
+    Then:
+    - Validate that there is a correct error
+    """
+    from CoreIRApiModule import endpoint_command, CoreClient
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args: dict = {}
+    with pytest.raises(DemistoException) as e:
+        endpoint_command(client, args)
+    assert 'In order to run this command, please provide a valid id, ip or hostname' in str(e)
+
+
+def test_generate_files_dict(mocker):
+    """
+    Given:
+    - no arguments
+    When:
+    - we mock the get_endpoints command with mac, linux and windows endpoints
+    Then:
+    - Validate that the dict is generated right
+    """
+
+    mocker.patch.object(test_client, "get_endpoints",
+                        side_effect=[load_test_data('test_data/get_endpoints_mac_response.json'),
+                                     load_test_data('test_data/get_endpoints_linux_response.json'),
+                                     load_test_data('test_data/get_endpoints_windows_response.json')])
+
+    res = test_client.generate_files_dict(endpoint_id_list=['1', '2', '3'],
+                                          file_path_list=['fake\\path1', 'fake\\path2', 'fake\\path3'])
+
+    assert res == {"macos": ['fake\\path1'], "linux": ['fake\\path2'], "windows": ['fake\\path3']}
+
+
+def test_get_script_execution_result_files(mocker):
+    """
+    Given:
+    - no arguments
+    When:
+    - executing the get_script_execution_result_files command
+    Then:
+    - Validate that the url_suffix generated correctly
+    """
+    http_request = mocker.patch.object(test_client, '_http_request',
+                                       return_value={
+                                           "reply": {
+                                               "DATA": "https://test_api/public_api/v1/download/test"
+                                           }
+                                       })
+    test_client.get_script_execution_result_files(action_id="1", endpoint_id="1")
+    http_request.assert_called_with(method='GET', url_suffix="download/test", resp_type="response")
+
+
+@pytest.mark.parametrize(
+    "error_message, expected_error_message",
+    [
+        (
+            "id 'test' was not found",
+            ["Error: id test was not found. Full error message: id 'test' was not found"],
+        ),
+        ("some error", [None]),
+    ],
+)
+def test_enrich_error_message_id_group_role(error_message: str, expected_error_message: list):
+    """
+    Test case for the enrich_error_message_id_group_role function.
+
+    Args:
+        error_message (str): The error message to be passed to the function.
+        expected_error_message (str): The expected error message after enriching.
+
+    Raises:
+        AssertionError: If the error response from the function does not match the expected error message.
+    """
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    error_response = enrich_error_message_id_group_role(
+        DemistoException(message=error_message, res=MockException(500)), "test", "test"
+    )
+    assert error_response == expected_error_message[0]

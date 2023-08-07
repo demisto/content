@@ -12,140 +12,150 @@ configuration:
   required: true
   type: 0
   section: Connect
-- name: creds_auth_id
+- defaultvalue: Alerts v2
+  display: MS graph security alert API Version
+  name: api_version
+  type: 15
+  options:
+  - Legacy Alerts
+  - Alerts v2
+  section: Connect
   required: false
+- name: creds_auth_id
   type: 9
   section: Connect
   displaypassword: Application ID or Client ID
   hiddenusername: true
-- name: creds_tenant_id
   required: false
+- name: creds_tenant_id
   type: 9
   section: Connect
   displaypassword: Token or Tenant ID
   hiddenusername: true
-- name: creds_enc_key
   required: false
+- name: creds_enc_key
   type: 9
   section: Connect
   displaypassword: Key or Client Secret
   hiddenusername: true
+  required: false
 - additionalinfo: See the Help tab.
   display: Application ID or Client ID
   name: auth_id
-  required: false
   type: 4
   section: Connect
   hidden: true
+  required: false
 - additionalinfo: See the Help tab.
   display: Token or Tenant ID
   name: tenant_id
-  required: false
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Key or Client Secret
   name: enc_key
-  required: false
   type: 4
   section: Connect
   additionalinfo: See the Help tab.
   hidden: true
+  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
-  required: false
   type: 9
   section: Connect
   displaypassword: Private Key
+  required: false
 - display: Certificate Thumbprint
   name: certificate_thumbprint
-  required: false
   type: 4
   section: Connect
   additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   hidden: true
+  required: false
 - display: Private Key
   name: private_key
-  required: false
   type: 14
   section: Connect
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+  required: false
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
-- display: Use a self-deployed Azure application
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
   name: self_deployed
-  required: false
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - defaultvalue: 1 day
-  display: First fetch time range
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
-  hidden: false
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '10'
-  display: How many incidents to fetch each time
-  hidden: false
+  display: Max incidents per fetch
   name: fetch_limit
-  required: false
   type: 0
   section: Collect
-- display: Fetch incidents of the given providers only.
-  additionalinfo: Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
-  hidden: false
-  name: fetch_providers
   required: false
+- display: Fetch incidents of the given providers only.
+  additionalinfo: Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provider}". If empty, incidents of all providers will be fetched.
+  name: fetch_providers
   type: 0
   section: Collect
   advanced: true
+  required: false
+- display: Fetch incidents of the given service sources only.
+  additionalinfo: Relevant only for Alerts v2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity",. If empty, incidents of all providers will be fetched.
+  name: fetch_service_sources
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
 - display: Fetched incidents filter
   additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
-  hidden: false
   name: fetch_filter
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
@@ -153,20 +163,14 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: When the alert was last modified in the following string format - YYYY-MM-DD
-      isArray: false
       name: last_modified
       predefined:
       - Last24Hours
       - Last48Hours
       - LastWeek
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert severity - set by vendor/provider.
-      isArray: false
       name: severity
       predefined:
       - unknown
@@ -174,221 +178,572 @@ script:
       - low
       - medium
       - high
-      required: false
-      secret: false
-    - default: false
-      description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
-      isArray: false
+    - description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
-      isArray: false
+    - description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
       name: time_from
-      required: false
-      secret: false
-    - default: false
-      description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
-      isArray: false
+    - description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
       name: time_to
-      required: false
-      secret: false
-    - default: false
-      description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
-      isArray: false
+    - description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
       name: filter
-      required: false
-      secret: false
-    deprecated: false
+    - auto: PREDEFINED
+      description: Relevant only for Alerts v2. Use this field to filter by an alert's classification.
+      name: classification
+      predefined:
+      - unknown
+      - truePositive
+      - falsePositive
+      - benignPositive
+    - auto: PREDEFINED
+      description: Relevant only for Alerts v2. Use this field to filter the alerts by the service or product that created this alert.
+      name: service_source
+      predefined:
+      - microsoftDefenderForEndpoint
+      - microsoftDefenderForIdentity
+      - microsoftDefenderForOffice365
+      - microsoft365Defender
+      - microsoftAppGovernance
+      - microsoftDefenderForCloudApps
+    - auto: PREDEFINED
+      description: Relevant only for Alerts v2. Use this field to filter by alert's status.
+      name: status
+      predefined:
+      - unknown
+      - new
+      - inProgress
+      - resolved
+    - description: Page number to return, zero indexed. The maximum number of alerts that can be skipped for Legacy Alerts is 500 (i.e., page * page_size must be <= 500).
+      name: page
+    - description: Number of results in a page. Default is 50. The limit for Legacy Alerts is 1000. The limit for Alerts v2 is 2000. When using Legacy Alerts, the response will provide <page_size> results for each provider.
+      name: page_size
+    - description: Number of total results to return. Default is 50.
+      name: limit
+      defaultValue: 50
     description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
-    execution: false
     name: msg-search-alerts
     outputs:
     - contextPath: MsGraph.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: MsGraph.Alert.Title
-      description: Alert title
+      description: Alert title.
       type: string
     - contextPath: MsGraph.Alert.Category
-      description: Alert category
+      description: Alert category.
       type: string
     - contextPath: MsGraph.Alert.Severity
-      description: Alert severity
+      description: Alert severity.
       type: string
     - contextPath: MsGraph.Alert.CreatedDate
-      description: Alert created date
+      description: Alert created date.
       type: date
     - contextPath: MsGraph.Alert.EventDate
-      description: Alert event time
+      description: Relevant only for Legacy Alerts. Alert event time.
       type: date
     - contextPath: MsGraph.Alert.Status
-      description: Alert status
+      description: Alert status.
       type: string
     - contextPath: MsGraph.Alert.Vendor
-      description: Alert vendor/provider
+      description: Relevant only for Legacy Alerts. Alert vendor.
       type: string
     - contextPath: MsGraph.Alert.MalwareStates
-      description: Alert malware states
-      type: string
-    - contextPath: MsGraph.Alert.Vendor
-      description: Alert vendor
+      description: Relevant only for Legacy Alerts. Alert malware states.
       type: string
     - contextPath: MsGraph.Alert.Provider
-      description: Alert provider
+      description: Relevant only for Legacy Alerts. Alert provider.
       type: string
+    - contextPath: MsGraph.Alert.ActorDisplayName
+      description: Relevant only for Alerts v2. Alert actor name.
+      type: Unknown
+    - contextPath: MsGraph.Alert.AlertWebUrl
+      description: Relevant only for Alerts v2. Alert web URL.
+      type: String
+    - contextPath: MsGraph.Alert.AssignedTo
+      description: Relevant only for Alerts v2. Alert assignee.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Classification
+      description: Relevant only for Alerts v2. Alert classification.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Description
+      description: Relevant only for Alerts v2. Alert description.
+      type: String
+    - contextPath: MsGraph.Alert.DetectionSource
+      description: Relevant only for Alerts v2. Alert detection source.
+      type: String
+    - contextPath: MsGraph.Alert.DetectorId
+      description: Relevant only for Alerts v2. Alert detector ID.
+      type: String
+    - contextPath: MsGraph.Alert.Determination
+      description: Relevant only for Alerts v2. Alert determination.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.@odata.Type
+      description: Relevant only for Alerts v2. Alert evidence type
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.AzureAdDeviceId
+      description: Relevant only for Alerts v2. Evidence azure device ID.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.CreatedDate
+      description: Relevant only for Alerts v2. Evidence creation time.
+      type: Date
+    - contextPath: MsGraph.Alert.Evidence.DefenderAvStatus
+      description: Relevant only for Alerts v2. Evidence Defender AV status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.DeviceDnsName
+      description: Relevant only for Alerts v2. Evidence device DNS name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.FirstSeenDateTime
+      description: Relevant only for Alerts v2. Evidence first seen time.
+      type: Date
+    - contextPath: MsGraph.Alert.Evidence.HealthStatus
+      description: Relevant only for Alerts v2. Evidence health status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.MdeDeviceId
+      description: Relevant only for Alerts v2. Evidence MDE device ID.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.OnboardingStatus
+      description: Relevant only for Alerts v2. Evidence onboarding status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.OsBuild
+      description: Relevant only for Alerts v2. Evidence OS build.
+      type: Number
+    - contextPath: MsGraph.Alert.Evidence.OsPlatform
+      description: Relevant only for Alerts v2. Evidence OS platform.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.RbacGroupId
+      description: Relevant only for Alerts v2. Evidence RBAC group ID.
+      type: Number
+    - contextPath: MsGraph.Alert.Evidence.RbacGroupName
+      description: Relevant only for Alerts v2. Evidence RBAC group name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.RemediationStatus
+      description: Relevant only for Alerts v2. Evidence remediation status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.RemediationStatusDetails
+      description: Relevant only for Alerts v2. Evidence remediation status details.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.RiskScore
+      description: Relevant only for Alerts v2. Evidence risk score.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.Tags
+      description: Relevant only for Alerts v2. Evidence tags.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.Verdict
+      description: Relevant only for Alerts v2. Evidence verdict.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.Version
+      description: Relevant only for Alerts v2. Evidence version.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.VmMetadata
+      description: Relevant only for Alerts v2. Evidence VM metadata.
+      type: Unknown
+    - contextPath: MsGraph.Alert.FirstActivityDateTime
+      description: Relevant only for Alerts v2. Evidence first activity time.
+      type: Date
+    - contextPath: MsGraph.Alert.IncidentId
+      description: Relevant only for Alerts v2. Alert incident ID.
+      type: String
+    - contextPath: MsGraph.Alert.IncidentWebUrl
+      description: Relevant only for Alerts v2. Alert incident URL.
+      type: String
+    - contextPath: MsGraph.Alert.LastActivityDateTime
+      description: Relevant only for Alerts v2. Alert last activity time.
+      type: Date
+    - contextPath: MsGraph.Alert.LastUpdateDateTime
+      description: Relevant only for Alerts v2. Alert last update time.
+      type: Date
+    - contextPath: MsGraph.Alert.ProviderAlertId
+      description: Relevant only for Alerts v2. Alert provider ID.
+      type: String
+    - contextPath: MsGraph.Alert.RecommendedActions
+      description: Relevant only for Alerts v2. Alert recommended action.
+      type: String
+    - contextPath: MsGraph.Alert.ResolvedDateTime
+      description: Relevant only for Alerts v2. Alert closing time.
+      type: Date
+    - contextPath: MsGraph.Alert.ServiceSource
+      description: Relevant only for Alerts v2. Alert service source.
+      type: String
+    - contextPath: MsGraph.Alert.TenantId
+      description: Relevant only for Alerts v2. Alert tenant ID.
+      type: String
+    - contextPath: MsGraph.Alert.ThreatDisplayName
+      description: Relevant only for Alerts v2. Alert threat display name.
+      type: Unknown
+    - contextPath: MsGraph.Alert.ThreatFamilyName
+      description: Relevant only for Alerts v2. Alert threat family name.
+      type: Unknown
   - arguments:
     - default: true
       description: The Alert ID - Provider-generated GUID/unique identifier.
-      isArray: false
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: All
-      description: 'Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
-      isArray: false
+    - defaultValue: All
+      description: 'Relevant only for Legacy Alerts. Fields to fetch for a specified alert apart from the basic properties, given as comma separated values, e.g., NetworkConnections,Processes. The possible values are: All, NetworkConnections, Processes, RegistryKeys, UserStates, HostStates, FileStates, CloudAppStates, MalwareStates, CustomerComments, Triggers, VendorInformation, VulnerabilityStates. Default is All.'
       name: fields_to_include
-      required: false
-      secret: false
-    deprecated: false
     description: Get details for a specific alert.
-    execution: false
     name: msg-get-alert-details
     outputs:
     - contextPath: MsGraph.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: MsGraph.Alert.Title
-      description: Alert title
+      description: Alert title.
       type: string
     - contextPath: MsGraph.Alert.Category
-      description: Alert category
+      description: Alert category.
       type: string
     - contextPath: MsGraph.Alert.Severity
-      description: Alert severity
+      description: Alert severity.
       type: string
     - contextPath: MsGraph.Alert.CreatedDate
-      description: Alert created date
+      description: Alert created date.
       type: date
     - contextPath: MsGraph.Alert.EventDate
-      description: Alert event date
+      description: Relevant only for Legacy Alerts. Alert event time.
       type: date
     - contextPath: MsGraph.Alert.Status
-      description: Alert status
+      description: Alert status.
       type: string
     - contextPath: MsGraph.Alert.Vendor
-      description: Alert vendor
+      description: Relevant only for Legacy Alerts. Alert vendor/provider.
       type: string
     - contextPath: MsGraph.Alert.Provider
-      description: Alert provider
+      description: Relevant only for Legacy Alerts. Alert provider.
+      type: string
+    - contextPath: MsGraph.Alert.@odata.Context
+      description: Relevant only for Alerts v2. Alert odata context.
+      type: String
+    - contextPath: MsGraph.Alert.ActorDisplayName
+      description: Relevant only for Alerts v2. Alert actor name.
+      type: Unknown
+    - contextPath: MsGraph.Alert.AlertWebUrl
+      description: Relevant only for Alerts v2. Alert web URL.
+      type: String
+    - contextPath: MsGraph.Alert.AssignedTo
+      description: Relevant only for Alerts v2. Alert assignee.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Classification
+      description: Relevant only for Alerts v2. Alert classification.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Comments.Comment
+      description: Relevant only for Alerts v2. Alert comment.
+      type: String
+    - contextPath: MsGraph.Alert.Comments.CreatedByDisplayName
+      description: Relevant only for Alerts v2. Alert comment creator name.
+      type: String
+    - contextPath: MsGraph.Alert.Comments.CreatedDate
+      description: Relevant only for Alerts v2. Alert comment creation time
+      type: Date
+    - contextPath: MsGraph.Alert.Description
+      description: Relevant only for Alerts v2. Alert description.
+      type: String
+    - contextPath: MsGraph.Alert.DetectionSource
+      description: Relevant only for Alerts v2. Alert detection source.
+      type: String
+    - contextPath: MsGraph.Alert.DetectorId
+      description: Relevant only for Alerts v2. Alert detector ID.
+      type: String
+    - contextPath: MsGraph.Alert.Determination
+      description: Relevant only for Alerts v2. Alert determination.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.@odata.Type
+      description: Relevant only for Alerts v2. Alert evidence.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.CreatedDate
+      description: Relevant only for Alerts v2. Evidence creation time.
+      type: Date
+    - contextPath: MsGraph.Alert.Evidence.DetectionStatus
+      description: Relevant only for Alerts v2. Evidence detection status.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.FileName
+      description: Relevant only for Alerts v2. Evidence image file name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.FilePath
+      description: Relevant only for Alerts v2. Evidence image file path.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.FilePublisher
+      description: Relevant only for Alerts v2. Evidence image file publisher.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.FileSize
+      description: Relevant only for Alerts v2. Evidence image file size.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.Issuer
+      description: Relevant only for Alerts v2. Evidence image file issuer.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.Sha1
+      description: Relevant only for Alerts v2. Evidence image file SHA1 hash.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.Sha256
+      description: Relevant only for Alerts v2. Evidence image file SHA256 hash.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.ImageFile.Signer
+      description: Relevant only for Alerts v2. Evidence image file signer.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.MdeDeviceId
+      description: Relevant only for Alerts v2. Evidence MDE device ID.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.ParentProcessCreationDateTime
+      description: Relevant only for Alerts v2. Evidence parent process creation time.
+      type: Date
+    - contextPath: MsGraph.Alert.Evidence.ParentProcessId
+      description: Relevant only for Alerts v2. Evidence parent process process ID.
+      type: Number
+    - contextPath: MsGraph.Alert.Evidence.ParentProcessImageFile
+      description: Relevant only for Alerts v2. Evidence parent process image file.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.ProcessCommandLine
+      description: Relevant only for Alerts v2. Evidence process command line.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.ProcessCreationDateTime
+      description: Relevant only for Alerts v2.  Evidence process creation time.
+      type: Date
+    - contextPath: MsGraph.Alert.Evidence.ProcessId
+      description: Relevant only for Alerts v2.  Evidence process ID.
+      type: Number
+    - contextPath: MsGraph.Alert.Evidence.RemediationStatus
+      description: Relevant only for Alerts v2. Evidence remediation status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.RemediationStatusDetails
+      description: Relevant only for Alerts v2. Evidence remediation status details.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.UserAccount.AccountName
+      description: Relevant only for Alerts v2. Evidence user account name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.UserAccount.AzureAdUserId
+      description: Relevant only for Alerts v2. Evidence user account Azure AD user ID.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.UserAccount.DisplayName
+      description: Relevant only for Alerts v2. Evidence user account display name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.UserAccount.DomainName
+      description: Relevant only for Alerts v2. Evidence user account domain name.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.UserAccount.UserPrincipalName
+      description: Relevant only for Alerts v2. Evidence user account user principal name.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.UserAccount.UserSid
+      description: Relevant only for Alerts v2. Evidence user account user SID.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.Verdict
+      description: Relevant only for Alerts v2. Evidence verdict.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.FileName
+      description: Relevant only for Alerts v2. Evidence file details file name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.FilePath
+      description: Relevant only for Alerts v2. Evidence file details file path.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.FilePublisher
+      description: Relevant only for Alerts v2. Evidence file details file publisher.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.FileSize
+      description: Relevant only for Alerts v2. Evidence file details file size.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.Issuer
+      description: Relevant only for Alerts v2. Evidence file details file issuer.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.Sha1
+      description: Relevant only for Alerts v2. Evidence file details SHA1 hash.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.Sha256
+      description: Relevant only for Alerts v2. Evidence file details SHA256 hash.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.FileDetails.Signer
+      description: Relevant only for Alerts v2. Evidence file details file signer.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.CֹountryLetterCode
+      description: Relevant only for Alerts v2. Evidence country letter code.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.IpAddress
+      description: Relevant only for Alerts v2. Evidence IP address.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.AzureAdDeviceId
+      description: Relevant only for Alerts v2. Evidence Azure AD device ID.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.DefenderAvStatus
+      description: Relevant only for Alerts v2. Evidence Defender AV status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.DeviceDnsName
+      description: Relevant only for Alerts v2. Evidence device DNS name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.FirstSeenDateTime
+      description: Relevant only for Alerts v2. Evidence first seen time.
+      type: Date
+    - contextPath: MsGraph.Alert.Evidence.HealthStatus
+      description: Relevant only for Alerts v2. Evidence health status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.OnboardingStatus
+      description: Relevant only for Alerts v2. Evidence onboarding status.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.OsBuild
+      description: Relevant only for Alerts v2. Evidence OS build.
+      type: Unknown
+    - contextPath: MsGraph.Alert.Evidence.OsPlatform
+      description: Relevant only for Alerts v2. Evidence OS platform.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.RbacGroupId
+      description: Relevant only for Alerts v2. Evidence RBAC group ID.
+      type: Number
+    - contextPath: MsGraph.Alert.Evidence.RbacGroupName
+      description: Relevant only for Alerts v2. Evidence RBAC group name.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.RiskScore
+      description: Relevant only for Alerts v2. Evidence risk score.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.Version
+      description: Relevant only for Alerts v2. Evidence version.
+      type: String
+    - contextPath: MsGraph.Alert.Evidence.VmMetadata
+      description: Relevant only for Alerts v2. Evidence VM metadata.
+      type: Unknown
+    - contextPath: MsGraph.Alert.FirstActivityDateTime
+      description: Relevant only for Alerts v2. Evidence first activity time.
+      type: Date
+    - contextPath: MsGraph.Alert.IncidentId
+      description: Relevant only for Alerts v2. Alert incident ID.
+      type: String
+    - contextPath: MsGraph.Alert.IncidentWebUrl
+      description: Relevant only for Alerts v2. Alert incident URL.
+      type: String
+    - contextPath: MsGraph.Alert.LastActivityDateTime
+      description: Relevant only for Alerts v2. Alert last activity time.
+      type: Date
+    - contextPath: MsGraph.Alert.LastUpdateDateTime
+      description: Relevant only for Alerts v2. Alert last update time.
+      type: Date
+    - contextPath: MsGraph.Alert.ProviderAlertId
+      description: Relevant only for Alerts v2. Alert provider ID.
+      type: String
+    - contextPath: MsGraph.Alert.RecommendedActions
+      description: Relevant only for Alerts v2. Alert recommended action.
+      type: String
+    - contextPath: MsGraph.Alert.ResolvedDateTime
+      description: Relevant only for Alerts v2. Alert closing time.
+      type: Date
+    - contextPath: MsGraph.Alert.ServiceSource
+      description: Relevant only for Alerts v2. Alert service source.
+      type: String
+    - contextPath: MsGraph.Alert.TenantId
+      description: Relevant only for Alerts v2. Alert tenant ID.
+      type: String
+    - contextPath: MsGraph.Alert.ThreatDisplayName
+      description: Relevant only for Alerts v2. Alert threat display name.
+      type: Unknown
+    - contextPath: MsGraph.Alert.ThreatFamilyName
+      description: Relevant only for Alerts v2. Alert threat family name.
       type: Unknown
   - arguments:
-    - default: false
-      description: The Alert ID. Provider-generated GUID/unique identifier.
-      isArray: false
+    - description: The Alert ID. Provider-generated GUID/unique identifier.
       name: alert_id
       required: true
-      secret: false
-    - default: false
-      description: Name of the analyst the alert is assigned to for triage, investigation, or remediation.
-      isArray: false
+    - description: Name of the analyst the alert is assigned to for triage, investigation, or remediation.
       name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: Time the alert was closed in the string format MM/DD/YYYY.
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.
       name: closed_date_time
-      required: false
-      secret: false
-    - default: false
-      description: Analyst comments on the alert (for customer alert management).
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).
       name: comments
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Analyst feedback on the alert.
-      isArray: false
+      description: Relevant only for Legacy Alerts. Analyst feedback on the alert.
       name: feedback
       predefined:
       - unknown
       - truePositive
       - falsePositive
       - benignPositive
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert lifecycle status (stage).
-      isArray: false
       name: status
       predefined:
       - unknown
       - newAlert
       - inProgress
       - resolved
-      required: false
-      secret: false
-    - default: false
-      description: User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
-      isArray: false
+    - description: Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Details about the security service vendor, for example Microsoft.
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.
       name: vendor_information
-      required: true
-      secret: false
-    - default: false
-      description: Details about the security service vendor, for example Windows Defender ATP.
-      isArray: false
+    - description: Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.
       name: provider_information
-      required: true
-      secret: false
-    deprecated: false
+    - auto: PREDEFINED
+      description: Relevant only for Alerts v2. Use this field to update the alert's classification.
+      name: classification
+      predefined:
+      - unknown
+      - truePositive
+      - falsePositive
+      - benignPositive
+    - auto: PREDEFINED
+      description: Relevant only for Alerts v2. Use this field to update the alert's determination.
+      name: determination
+      predefined:
+      - unknown
+      - apt
+      - malware
+      - phishing
+      - other
+      - securityPersonnel
+      - securityTesting
+      - multiStagedAttack
+      - maliciousUserActivity
+      - lineOfBusinessApplication
+      - unwantedSoftware
     description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
-    execution: false
     name: msg-update-alert
     outputs:
     - contextPath: MsGraph.Alert.ID
       description: Alert ID
       type: string
     - contextPath: MsGraph.Alert.Status
-      description: Alert status
-      type: string
-  - deprecated: true
-    description: Deprecated. Use the Azure Active Directory Users integration instead.
-    execution: false
-    name: msg-get-users
-    outputs:
-    - contextPath: MsGraph.User.Email
-      description: User email address
-      type: string
-    - contextPath: MsGraph.User.ID
-      description: User ID
-      type: string
-    - contextPath: MsGraph.User.Title
-      description: User job title
-      type: string
-    - contextPath: MsGraph.User.Name
-      description: User name
+      description: Alert status, will appear only if changed.
       type: string
   - arguments:
     - default: true
-      description: User ID of user to retreive
-      isArray: false
+      description: The alert ID - Provider-generated GUID/unique identifier.
+      name: alert_id
+      required: true
+    - description: The comment to add to each alert.
+      isArray: true
+      name: comment
+      required: true
+      type: string
+    description: Relevant only for Alerts v2. create a comment for an existing alert.
+    name: msg-create-alert-comment
+    outputs:
+    - contextPath: MsGraph.AlertComment.ID
+      description: The alert ID that the comment was added to.
+      type: String
+    - contextPath: MsGraph.AlertComment.Comments.Comment
+      description: The comment itself.
+      type: String
+    - contextPath: MsGraph.AlertComment.Comments.CreatedByDisplayName
+      description: The comment's creator display name.
+      type: String
+    - contextPath: MsGraph.AlertComment.Comments.CreatedDate
+      description: The comment's creation time.
+      type: Date
+  - deprecated: true
+    description: Deprecated. Use the Azure Active Directory Users integration instead.
+    name: msg-get-users
+    outputs:
+    - contextPath: MsGraph.User.Email
+      description: User email address.
+      type: string
+    - contextPath: MsGraph.User.ID
+      description: User ID.
+      type: string
+    - contextPath: MsGraph.User.Title
+      description: User job title.
+      type: string
+    - contextPath: MsGraph.User.Name
+      description: User name.
+      type: string
+  - arguments:
+    - default: true
+      description: User ID of user to retreive.
       name: user_id
       required: true
-      secret: false
     deprecated: true
     description: Deprecated. Use the Azure Active Directory Users integration instead.
-    execution: false
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
@@ -403,11 +758,12 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.52480
-  feed: false
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: ms-graph-security-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
@@ -415,4 +771,8 @@ script:
 tests:
 - Microsoft Graph Security Test dev
 - Microsoft Graph Security Test prod
+- Microsoft Graph Security Test self deployed
+- Microsoft Graph Security Test dev v2
+- Microsoft Graph Security Test prod v2
+- Microsoft Graph Security Test self deployed v2
 fromversion: 5.0.0

@@ -1,8 +1,8 @@
 {
-    "name": "IntSights",
-    "description": "Use IntSights to manage and mitigate threats.",
+    "name": "Rapid7 - Threat Command (IntSights)",
+    "description": "Use Threat Command to manage alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.",
     "support": "xsoar",
-    "currentVersion": "2.0.3",
+    "currentVersion": "3.0.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -16,5 +16,9 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "itemPrefix": [
+        "ThreatCommand",
+        "Rapid7 ThreatCommand"
     ]
 }
