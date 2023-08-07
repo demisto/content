@@ -54,7 +54,8 @@ tasks:
     quietmode: 0
     scriptarguments:
       query:
-        simple: incident.id:${incident.id} tags:"Hunting Session - Exist In Environment"
+        value:
+          simple: incident.id:${incident.id} tags:"Hunting Session - Exist In Environment"
     separatecontext: false
     skipunavailable: false
     task:
@@ -386,7 +387,8 @@ tasks:
     quietmode: 0
     scriptarguments:
       query:
-        simple: incident.id:${incident.id} tags:"Hunting Session"
+        value:
+          simple: incident.id:${incident.id} tags:"Hunting Session"
     separatecontext: false
     skipunavailable: false
     task:
