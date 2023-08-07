@@ -50,6 +50,7 @@ configuration:
   additionalinfo: Only for Long running Integration
 - display: Incident type
   name: incidentType
+  defaultvalue: Commvault Suspicious File Activity
   required: false
   type: 13
 - defaultvalue: '60'

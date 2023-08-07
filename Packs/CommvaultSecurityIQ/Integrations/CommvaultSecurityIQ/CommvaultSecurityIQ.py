@@ -5,6 +5,7 @@ import time
 from copy import copy
 from dataclasses import dataclass
 from datetime import datetime
+from tempfile import NamedTemporaryFile
 from traceback import format_exc
 from typing import Any
 
@@ -25,7 +26,6 @@ from urllib.parse import urlparse
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
@@ -469,8 +469,8 @@ class Client(BaseClient):
             "scope": 2,
             "tokenName": token_name,
         }
-        response = self.http_request("POST", "/ApiToken/User", None, request_body)
         try:
+            response = self.http_request("POST", "/ApiToken/User", None, request_body)
             new_access_token = response.get("token")
             current_epoch = int(datetime.now().timestamp())
             self.current_api_token = str(new_access_token)
@@ -488,7 +488,7 @@ class Client(BaseClient):
             )
             demisto.setIntegrationContext(current_token_dict)
 
-        except KeyError as error:
+        except Exception as error:
             demisto.debug(f"Could not generate access token [{error}]")
             return False
         return True
@@ -510,18 +510,18 @@ class Client(BaseClient):
         Returns:
             (StreamServer): Server to listen to Syslog messages.
         """
-        server = StreamServer(
-            ("0.0.0.0", port),
-            self.perform_long_running_execution,  # disable-secrets-detection
-        )
-        """if certificate_path and private_key_path:
+        if certificate_path and private_key_path:
             server = StreamServer(
                 ("0.0.0.0", port),  # disable-secrets-detection
                 self.perform_long_running_execution,
                 keyfile=private_key_path,
                 certfile=certificate_path,
             )
-        else:"""
+        else:
+            server = StreamServer(
+                ("0.0.0.0", port),  # disable-secrets-detection
+                self.perform_long_running_execution,
+            )
 
         return server
 
@@ -1137,9 +1137,9 @@ class Client(BaseClient):
         """
         try:
             ssl_args = {}  # type: ignore
-            """if certificate_path and private_key_path:
+            if certificate_path and private_key_path:
                 ssl_args["ssl_certfile"] = certificate_path
-                ssl_args["ssl_keyfile"] = private_key_path"""
+                ssl_args["ssl_keyfile"] = private_key_path
             integration_logger = IntegrationLogger()
             integration_logger.buffering = False
             log_config = dict(uvicorn.config.LOGGING_CONFIG)
@@ -1163,12 +1163,6 @@ class Client(BaseClient):
                 f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
             )
             demisto.updateModuleHealth(f"An error occurred: {str(error)}")
-        finally:
-            if certificate_path:
-                os.unlink(certificate_path)
-            if private_key_path:
-                os.unlink(private_key_path)
-            time.sleep(5)
 
 
 def fetch_incidents(
@@ -1248,9 +1242,9 @@ def disable_data_aging(client):
     else:
         err_resp = "Error disabling data aging on the client"
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.Response",
-        outputs_key_field="Response",
-        outputs={"Response": err_resp},
+        outputs_prefix="CommvaultSecurityIQ.CommandResult.DisableDataAging",
+        outputs_key_field="DisableDataAgingResponse",
+        outputs={"DisableDataAgingResponse": err_resp},
     )
 
 
@@ -1270,9 +1264,9 @@ def generate_access_token(client, cv_api_token):
     else:
         raise DemistoException("Could not generate access token")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.Response",
-        outputs_key_field="Response",
-        outputs={"Response": resp},
+        outputs_prefix="CommvaultSecurityIQ.CommandResult.GenerateToken",
+        outputs_key_field="GenerateTokenResponse",
+        outputs={"GenerateTokenResponse": resp},
     )
 
 
@@ -1284,9 +1278,9 @@ def fetch_and_disable_saml_identity_provider(client):
     else:
         raise DemistoException("Could not disable SAML identity provider")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.Response",
-        outputs_key_field="Response",
-        outputs={"Response": resp},
+        outputs_prefix="CommvaultSecurityIQ.CommandResult.DisableSaml",
+        outputs_key_field="DisableSamlResponse",
+        outputs={"DisableSamlResponse": resp},
     )
 
 
@@ -1298,9 +1292,9 @@ def disable_user(client, user_email):
     else:
         raise DemistoException(f"Could not disable user :- {user_email}")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.Response",
-        outputs_key_field="Response",
-        outputs={"Response": resp},
+        outputs_prefix="CommvaultSecurityIQ.CommandResult.DisableUser",
+        outputs_key_field="DisableUserResponse",
+        outputs={"DisableUserResponse": resp},
     )
 
 
@@ -1310,17 +1304,17 @@ def get_secret_from_key_vault(client):
     if resp is None:
         raise DemistoException("Could not get access token fro keyvault")
     return CommandResults(
-        outputs_prefix="CommvaultSecurityIQ.Response",
-        outputs_key_field="Response",
-        outputs={"Response": resp},
+        outputs_prefix="CommvaultSecurityIQ.CommandResult.GetAccessToken",
+        outputs_key_field="GetAccessTokenResponse",
+        outputs={"GetAccessTokenResponse": resp},
     )
 
 
 def get_params(params):
     return (
         params.get("first_fetch", "1 day").strip(),
-        params.get("certificate"),
-        params.get("private_key"),
+        params.get('creds_certificate', {}).get('identifier'),
+        params.get('creds_certificate', {}).get('password', ''),
         params.get("CVWebserviceUrl", ""),
         params.get("incidentType", "Commvault Suspicious File Activity"),
         params.get("CommvaultAPIToken", {}).get("password"),
@@ -1343,7 +1337,7 @@ def validate_inputs(
             )
         if not is_valid_cv_token:
             raise DemistoException(
-                "Invalid Commvault API token. Please check service URL or API token."
+                "Invalid Commvault API token/service URL."
             )
         if not is_fetch and not is_long_running:
             raise DemistoException(
@@ -1447,7 +1441,7 @@ def main() -> None:
                 )
         elif command == "long-running-execution":
             try:
-                """certificate_path = ""
+                certificate_path = ""
                 private_key_path = ""
                 if certificate and private_key:
                     with NamedTemporaryFile(delete=False) as certificate_file:
@@ -1455,25 +1449,25 @@ def main() -> None:
                         certificate_file.write(bytes(certificate, "utf-8"))
                     with NamedTemporaryFile(delete=False) as private_key_file:
                         private_key_path = private_key_file.name
-                        private_key_file.write(bytes(private_key, "utf-8"))"""
+                        private_key_file.write(bytes(private_key, "utf-8"))
                 if forwarding_rule_type == Constants.source_syslog:
                     server: StreamServer = client.prepare_globals_and_create_server(
-                        port, None, None
+                        port, certificate_path, private_key_path
                     )
                     server.serve_forever()
                 if forwarding_rule_type == Constants.source_webhook:
-                    client.run_uvicorn_server(port, None, None)
+                    client.run_uvicorn_server(port, certificate_path, private_key_path)
             except Exception as error:
                 demisto.error(
                     f"An error occurred in the long running loop: {str(error)} - {format_exc()}"
                 )
                 demisto.updateModuleHealth(f"An error occurred: {str(error)}")
-            """finally:
+            finally:
                 if certificate_path:
                     os.unlink(certificate_path)
                 if private_key_path:
                     os.unlink(private_key_path)
-                time.sleep(5)"""
+                time.sleep(5)
         elif command == "commvault-security-set-disable-data-aging":
             return_results(disable_data_aging(client))
         elif command == "commvault-security-get-generate-token":

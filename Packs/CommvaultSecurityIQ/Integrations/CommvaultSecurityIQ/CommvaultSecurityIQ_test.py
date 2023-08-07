@@ -25,12 +25,6 @@ from CommvaultSecurityIQ import (
 
 
 class CommvaultClientMock(Client):
-    def disable_data_aging(self):
-        """
-        Function to disable DA
-        """
-        return "Successfully disabled data aging on the client"
-
     def http_request(
         self,
         method: str,
@@ -204,8 +198,8 @@ def test_disable_data_aging():
         proxy=False,  # disable-secrets-detection
     )
     response = disable_data_aging(client)
-    expected_resp = {"Response": "Successfully disabled data aging on the client"}
-    assert response.raw_response["Response"] == expected_resp["Response"]
+    expected_resp = {"DisableDataAgingResponse": "Error disabling data aging on the client"}
+    assert response.raw_response["DisableDataAgingResponse"] == expected_resp["DisableDataAgingResponse"]
 
 
 def test_copy_files_to_war_room():
@@ -222,8 +216,8 @@ def test_generate_access_token():
         proxy=False,  # disable-secrets-detection
     )
     resp = generate_access_token(client, "")
-    expected_resp = {"Response": "Successfully generated access token"}
-    assert resp.raw_response["Response"] == expected_resp["Response"]
+    expected_resp = {"GenerateTokenResponse": "Successfully generated access token"}
+    assert resp.raw_response["GenerateTokenResponse"] == expected_resp["GenerateTokenResponse"]
 
 
 def test_fetch_and_disable_saml_identity_provider():
@@ -234,8 +228,8 @@ def test_fetch_and_disable_saml_identity_provider():
         proxy=False,  # disable-secrets-detection
     )
     resp = fetch_and_disable_saml_identity_provider(client)
-    expected_resp = {"Response": "Successfully disabled SAML identity provider"}
-    assert resp.raw_response["Response"] == expected_resp["Response"]
+    expected_resp = {"DisableSamlResponse": "Successfully disabled SAML identity provider"}
+    assert resp.raw_response["DisableSamlResponse"] == expected_resp["DisableSamlResponse"]
 
 
 def test_disable_user():
@@ -246,8 +240,8 @@ def test_disable_user():
         proxy=False,  # disable-secrets-detection
     )
     resp = disable_user(client, "dummy@email.com")
-    expected_resp = {"Response": "Successfully disabled user"}
-    assert resp.raw_response["Response"] == expected_resp["Response"]
+    expected_resp = {"DisableUserResponse": "Successfully disabled user"}
+    assert resp.raw_response["DisableUserResponse"] == expected_resp["DisableUserResponse"]
 
 
 def test_get_access_token_from_keyvault():
@@ -256,8 +250,8 @@ def test_get_access_token_from_keyvault():
         base_url="https://webservice_url:81", verify=False, proxy=False
     )
     resp = get_secret_from_key_vault(client)
-    expected_resp = {"Response": "secret"}
-    assert resp.raw_response["Response"] == expected_resp["Response"]
+    expected_resp = {"GetAccessTokenResponse": "secret"}
+    assert resp.raw_response["GetAccessTokenResponse"] == expected_resp["GetAccessTokenResponse"]
 
 
 def test_fetch_incidents():
@@ -408,6 +402,7 @@ def test_misc_functions():
 
     client.disable_data_aging()
     client.run_uvicorn_server(0, "", "")
+    client.run_uvicorn_server(0, "/home", "/home")
 
     resp = get_params({})
 
