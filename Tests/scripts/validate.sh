@@ -5,7 +5,8 @@ echo "CI_COMMIT_BRANCH: $CI_COMMIT_BRANCH CI: $CI DEMISTO_README_VALIDATION: $DE
 if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
     if [[ -n "${PACKS_TO_UPLOAD}" ]]; then
         PACKS_LIST=""
-        for item in $PACKS_TO_UPLOAD; do
+        PACKS_TO_UPLOAD_SPACED=${PACKS_TO_UPLOAD//,/ }
+        for item in $PACKS_TO_UPLOAD_SPACED; do
             PACKS_LIST=$PACKS_LIST"Packs/"$item" "
         done
         PACKS_LIST=${PACKS_LIST%?} # remove last space
