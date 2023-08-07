@@ -1012,7 +1012,7 @@ script:
       isArray: true
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.0.2.63879
+  dockerimage: demisto/py-ews:5.0.2.68133
   isfetch: true
   runonce: false
   script: '-'
