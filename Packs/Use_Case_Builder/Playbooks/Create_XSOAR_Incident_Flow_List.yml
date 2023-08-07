@@ -1,17 +1,8 @@
 id: Create XSOAR Incident Flow List
-version: 2
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: generator
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Create XSOAR Incident Flow List
-description: This playbooks creates the html process flow list
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -128,6 +120,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -158,8 +151,8 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Create Use Case Template List
 quiet: true
 fromversion: 6.10.0
 tests:
 - Run all tests
+description: 'This playbooks creates the html process flow list'

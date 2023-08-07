@@ -3,10 +3,7 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.11.57293
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: CreateUseCaseTemplateList
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''

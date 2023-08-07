@@ -1,17 +1,8 @@
 id: Use Case Builder
-version: 11
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Use Case Builder 4-21
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Use Case Builder
-description: The main playbook for the Use Case Builder
 starttaskid: "0"
 tasks:
   "0":
@@ -24,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -510,6 +502,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -748,6 +741,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -933,6 +927,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -963,6 +958,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -991,6 +987,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -1030,7 +1027,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 06e4c9a7-3bb3-420f-83f7-1ea94546cc1d
 fromversion: 6.10.0
 tests:
 - Run all tests
+description: 'The main playbook for the Use Case Builder'

@@ -1,15 +1,7 @@
 id: Generate Playbooks Based On Category
-version: 14
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Use Case Builder 4-21
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Generate Playbooks Based On Category
 description: Takes the use case selected category and auto creates an example playbook
 starttaskid: "0"
@@ -24,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
