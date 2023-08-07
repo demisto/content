@@ -542,7 +542,7 @@ tasks:
       extend-context:
         simple: AzureScriptBasedUserAgent=
       ignore-outputs:
-        simple: "true"
+        simple: "false"
       query:
         simple: "AuditLogs \n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName == \"${inputs.Username}\" \n| where AdditionalDetails[0].value contains \"python\" or AdditionalDetails[0].value contains \"curl\" or AdditionalDetails[0].value contains \"axios\" or AdditionalDetails[0].value contains \"httpie\" or AdditionalDetails[0].value contains \"wget\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(AdditionalDetails)"
     separatecontext: false
@@ -655,7 +655,7 @@ tasks:
       extend-context:
         simple: AzureAdminActivities=
       ignore-outputs:
-        simple: "true"
+        simple: "false"
       query:
         simple: "AuditLogs\n| where parse_json(tostring(InitiatedBy.user)).userPrincipalName ==  \"${inputs.Username}\" \n| where Category in (\"ApplicationManagement\", \"UserManagement\", \"PolicyManagement\", \"GroupManagement\")| where Result == \"success\"\n| where TimeGenerated > ${inputs.AzureSearchTime}\n| summarize Count = count(), Events = make_list(OperationName)"
     separatecontext: false

@@ -331,11 +331,12 @@ tasks:
       id: c9691f70-47a1-450c-8dcc-11b0aec1c07e
       version: -1
       name: AWS - User Investigation
+      description: |
+        This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail.
       playbookName: AWS - User Investigation
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -363,7 +364,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -375,11 +376,12 @@ tasks:
       id: 539ff9cb-ec93-4373-83b2-1e60c7e75240
       version: -1
       name: GCP - User Investigation
+      description: |
+        This playbook performs an investigation on a specific user in GCP environments, using queries and logs from G Suite Auditor, and GCP Logging.
       playbookName: GCP - User Investigation
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -410,7 +412,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -422,11 +424,12 @@ tasks:
       id: 42fecd76-1d2a-4ed2-84b6-5a0701d7d569
       version: -1
       name: Azure - User Investigation
+      description: |
+        This playbook performs an investigation on a specific user in Azure environments, using queries and logs from Azure Log Analytics.
       playbookName: Azure - User Investigation
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -460,7 +463,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
