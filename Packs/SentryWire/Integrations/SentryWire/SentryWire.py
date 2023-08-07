@@ -32,10 +32,10 @@ class Client(BaseClient):
             'begin_time': args.get('begin_time'),
             'end_time': args.get('end_time')
         }
-        target_list = args.get('target_list')
+        fmgroups = args.get('fmgroups')
         max_packets = args.get('max_packets')
-        if target_list:
-            json_data['target_list'] = target_list
+        if fmgroups:
+            json_data['fmgroups'] = fmgroups
         if max_packets:
             json_data['max_packets'] = max_packets
 
@@ -118,7 +118,38 @@ class Client(BaseClient):
         if isinstance(response, Dict):
             return str(response.get('rest_token'))
         else:
-            raise Exception('Authentication failed: Unexpected response')
+            raise Exception(f'Authentication failed, unexpected response: {response}')
+
+
+''' HELPER FUNCTIONS '''
+
+
+def bytes_to_readable(response):
+    # Search was cancelled
+    if response["SearchResult"] == "Cancelled":
+        readable_output = "Search was cancelled"
+        response["SearchStatus"] = "Cancelled"
+        response["SearchResult"] = "NoPcapData"
+    # Search was completed with no pcap data
+    elif response["SearchResult"] == "NoPcapData":
+        readable_output = "Search completed: No results found"
+        response["SearchStatus"] = "Completed"
+    else:
+        # Default
+        results = response["SearchResult"]
+        sizestr = response["SearchResult"].split(" ")[-1].split("=")[-1]
+        size, unit = re.match(r"(\d+)(\D+)", sizestr).groups()
+        if unit == "KB":
+            response["PcapSize"] = int(size) * 1024
+        elif unit == "MB":
+            response["PcapSize"] = int(size) * (1024 ** 2)
+        elif unit == "GB":
+            response["PcapSize"] = int(size) * (1024 ** 3)
+        else:
+            response["PcapSize"] = ">=1TB"
+        readable_output = f"Search completed: {results}"
+        response["SearchStatus"] = "Completed"
+    return response, readable_output
 
 
 ''' COMMANDS '''
@@ -183,7 +214,7 @@ def download_pcap_command(client: Client, args: Dict[str, Any]):
         filename=f'{SearchID}.pcap',
         data=client.download_pcap(search_id=str(SearchID), node_name=str(nodename)).content
     )
-    return_results(file_entry)
+    return file_entry
 
 
 def download_metadata_command(client: Client, args: Dict[str, Any]):
@@ -193,7 +224,7 @@ def download_metadata_command(client: Client, args: Dict[str, Any]):
         filename=f'{SearchID}.zip',
         data=client.download_metadata(search_id=str(SearchID), node_name=str(nodename)).content
     )
-    return_results(file_entry)
+    return file_entry
 
 
 def get_search_status_command(client: Client, args: Dict[str, Any]):
@@ -223,32 +254,8 @@ def get_search_status_command(client: Client, args: Dict[str, Any]):
             pass
 
     # Parse status
-    # Very ugly, will need to fix
     if "SearchResult" in response:
-        # Search was cancelled
-        if response["SearchResult"] == "Cancelled":
-            readable_output = "Search was cancelled"
-            response["SearchStatus"] = "Cancelled"
-            response["SearchResult"] = "NoPcapData"
-        # Search was completed with no pcap data
-        elif response["SearchResult"] == "NoPcapData":
-            readable_output = "Search completed: No results found"
-            response["SearchStatus"] = "Completed"
-        else:
-            # Default
-            results = response["SearchResult"]
-            sizestr = response["SearchResult"].split(" ")[-1].split("=")[-1]
-            size, unit = re.match(r"(\d+)(\D+)", sizestr).groups()
-            if unit == "KB":
-                response["PcapSize"] = int(size) * 1024
-            elif unit == "MB":
-                response["PcapSize"] = int(size) * (1024 ** 2)
-            elif unit == "GB":
-                response["PcapSize"] = int(size) * (1024 ** 3)
-            else:
-                response["PcapSize"] = ">=1TB"
-            readable_output = f"Search completed: {results}"
-            response["SearchStatus"] = "Completed"
+        response, readable_output = bytes_to_readable(response)
     else:
         results = response["SearchStatus"]
         readable_output = f"Search status: {results}"
@@ -280,7 +287,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def main() -> None:
+def main() -> None: # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
