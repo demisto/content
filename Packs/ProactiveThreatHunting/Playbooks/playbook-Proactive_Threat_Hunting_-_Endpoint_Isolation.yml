@@ -1,0 +1,406 @@
+description: |
+  This playbook will be executed from the "Proactive Threat Hunting" layout button with the objective of isolating a host specified by the analyst.
+id: Proactive Threat Hunting - Endpoint Isolation
+inputs: []
+name: Proactive Threat Hunting - Endpoint Isolation
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d8cb08d9-07e7-4890-8e1d-d62d3e3dee96
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d8cb08d9-07e7-4890-8e1d-d62d3e3dee96
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Endpoint_hostname:
+        complex:
+          accessor: "0"
+          root: Select Endpoint To Isolate.Answers
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: Select Endpoint To Isolate.Answers.0
+            operator: SetIfEmpty
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      id: aebc98b0-46ba-46e0-8239-b2b67e256c9b
+      iscommand: false
+      name: Isolate Endpoint - Generic V2
+      playbookId: Isolate Endpoint - Generic V2
+      type: playbook
+      version: -1
+    taskid: aebc98b0-46ba-46e0-8239-b2b67e256c9b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 670
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Endpoint Isolation Status
+      output:
+        simple: Executed
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Endpoint isolation procedure has executed. Follow the work plan to continue.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 66dba88b-62e6-42e7-83a7-c27389fdb346
+      iscommand: false
+      name: Print update to notes
+      script: Print
+      type: regular
+      version: -1
+    taskid: 66dba88b-62e6-42e7-83a7-c27389fdb346
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Select Endpoint To Isolate
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            accessor: affectedhosts
+            root: incident
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      sender: ""
+      title: Select Endpoint To Isolate
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 5f5c7254-9fd8-4565-8acb-fcf280e9b066
+      iscommand: false
+      name: Select endpoint to isolate
+      type: collection
+      version: -1
+    taskid: 5f5c7254-9fd8-4565-8acb-fcf280e9b066
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Select Endpoint To Isolate.Answers
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: a737e454-e5de-4fbf-8c5b-6739e12459ae
+      iscommand: false
+      name: Has endpoint to isolate?
+      type: condition
+      version: -1
+    taskid: a737e454-e5de-4fbf-8c5b-6739e12459ae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cde3f3de-0a07-487e-8107-9ebb7fd0cdf2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: cde3f3de-0a07-487e-8107-9ebb7fd0cdf2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 840
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: freestylehunt
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: e007a627-8957-418d-8e32-0ebccb79775c
+      iscommand: false
+      name: Executed from freestyle hunt?
+      type: condition
+      version: -1
+    taskid: e007a627-8957-418d-8e32-0ebccb79775c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter Endpoint Name To Isolate
+        options: []
+        optionsarg:
+        - {}
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Enter Endpoint Name To Isolate
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: f559bc37-cb07-4afd-8935-1f364e8fbf38
+      iscommand: false
+      name: Enter endpoint name to isolate
+      type: collection
+      version: -1
+    taskid: f559bc37-cb07-4afd-8935-1f364e8fbf38
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 340
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_#default#": 0.55,
+      "6_3_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1035,
+        "width": 790,
+        "x": 450,
+        "y": -130
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

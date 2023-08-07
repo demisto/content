@@ -1,0 +1,396 @@
+description: This playbook will be executed from the "Proactive Threat Hunting" layout button with the objective of blocking a user specified by the analyst.
+id: Proactive Threat Hunting - Block Account
+inputs: []
+name: Proactive Threat Hunting - Block Account
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d7417066-4771-4d97-8d7f-d88a6bad855e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d7417066-4771-4d97-8d7f-d88a6bad855e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: User Block Status
+      output:
+        simple: Executed
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Block account procedure has executed. Follow the work plan to continue.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 4bacea38-fadc-400b-896a-4b1e17995274
+      iscommand: false
+      name: Print update to notes
+      script: Print
+      type: regular
+      version: -1
+    taskid: 4bacea38-fadc-400b-896a-4b1e17995274
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Select account to block
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            accessor: affectedusers
+            root: incident
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      sender: ""
+      title: Select Account To Block
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 884c68a6-6af0-438e-8303-f46f4b097166
+      iscommand: false
+      name: Select account to block
+      type: collection
+      version: -1
+    taskid: 884c68a6-6af0-438e-8303-f46f4b097166
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Select Account To Block.Answers
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 066967a8-267b-4403-8dc7-1e16416d117d
+      iscommand: false
+      name: Has account to block?
+      type: condition
+      version: -1
+    taskid: 066967a8-267b-4403-8dc7-1e16416d117d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab1fa8ce-2617-4030-8229-8aaa4ec6053b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: ab1fa8ce-2617-4030-8229-8aaa4ec6053b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 840
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      username:
+        complex:
+          accessor: "0"
+          root: Select Account To Block.Answers
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                iscontext: true
+                value:
+                  simple: Enter Account Name To Block.Answers.0
+            operator: SetIfEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'This script allows disabling a specified user using one or more of the following integrations: SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser, and IAM.'
+      id: 4e62c271-85c7-4c81-8738-5d297079e6f3
+      iscommand: false
+      name: Block chosen account
+      script: DisableUserWrapper
+      type: regular
+      version: -1
+    taskid: 4e62c271-85c7-4c81-8738-5d297079e6f3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 670
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: freestylehunt
+                root: incident
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 1c0ec268-db67-4b0c-8cbe-e9df8d9498cb
+      iscommand: false
+      name: Executed from freestyle hunt?
+      type: condition
+      version: -1
+    taskid: 1c0ec268-db67-4b0c-8cbe-e9df8d9498cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Enter Account Name To Block
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Enter Account Name To Block
+      totalanswers: 0
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 21bb865d-52e4-4e8b-8e17-d69528cc7bb7
+      iscommand: false
+      name: Enter account name to block
+      type: collection
+      version: -1
+    taskid: 21bb865d-52e4-4e8b-8e17-d69528cc7bb7
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 340
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_#default#": 0.55,
+      "7_3_#default#": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 820,
+        "x": 450,
+        "y": -120
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

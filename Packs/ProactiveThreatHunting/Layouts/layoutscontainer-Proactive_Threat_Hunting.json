@@ -1,0 +1,1327 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Evidance",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-caseinfoid-field-changed-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Updates For The Hunter",
+                        "static": false,
+                        "type": "notes",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "i": "caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-33264160-09c0-11ee-8f72-f32dc12d5a8f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Evidence Results",
+                        "sort": {
+                            "asc": false,
+                            "field": "description"
+                        },
+                        "static": false,
+                        "type": "evidence",
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 4,
+                        "i": "caseinfoid-b0fe00d0-2fb0-11ee-a284-cde109092515",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Instructions",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "sdoname"
+                                }
+                            },
+                            "operator": "isNotEmpty",
+                            "right": null,
+                            "type": "markdown"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "lsqweemtuk",
+                "name": "Hunt Results",
+                "sections": [
+                    {
+                        "description": "The hunted SDO details. These details include the SDO's name, source feed, as well as any associated attack patterns and related tools. It's important to note that the hunt will only cover attack patterns and techniques that have relevant tool data from the existing Threat Intelligence Management (TIM) feeds",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-d2cabf40-bcf7-11ed-b6eb-39368307a439",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "sdoname",
+                                "height": 106,
+                                "id": "0aa3c270-09bc-11ee-9e2b-251d921ea3e1",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-d2cabf40-bcf7-11ed-b6eb-39368307a439",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "sdofeed",
+                                "height": 106,
+                                "id": "950b2600-14c6-11ee-b61f-5f6ef40adff4",
+                                "index": 1,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-d2cabf40-bcf7-11ed-b6eb-39368307a439",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "tools",
+                                "height": 53,
+                                "id": "29fbafb0-d1f0-11ed-acc6-b384b0c94da3",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-d2cabf40-bcf7-11ed-b6eb-39368307a439",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "attackpatterns",
+                                "height": 53,
+                                "id": "26f94520-d1f0-11ed-acc6-b384b0c94da3",
+                                "index": 2,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-d2cabf40-bcf7-11ed-b6eb-39368307a439",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Hunting Hypothesis - SDO Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "description": "A summary of the hunt results including tool usage found, affected hosts and affected users",
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-7d826ee0-d1d6-11ed-b353-b1e63aacf41c",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "toolusagefound",
+                                "height": 53,
+                                "id": "d36d36c0-04f6-11ee-b4d9-19f1ef96b1ee",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-7d826ee0-d1d6-11ed-b353-b1e63aacf41c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "affectedhosts",
+                                "height": 53,
+                                "id": "50637f10-09e6-11ee-abc4-2b5a1ddfcac7",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-7d826ee0-d1d6-11ed-b353-b1e63aacf41c",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "affectedusers",
+                                "height": 53,
+                                "id": "2804c340-0a7b-11ee-83e6-29d08fecc6d3",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-7d826ee0-d1d6-11ed-b353-b1e63aacf41c",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SDO Hunt Results - Summary",
+                        "static": false,
+                        "w": 2,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "description": "IOCs to search in the hunt",
+                        "h": 3,
+                        "i": "caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-c990b6e0-0460-11ee-8ee6-8b736c56904f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Hunting Hypothesis - SDO Related IOCs",
+                        "query": "tags:\"Hunting Session\"",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "description": "IOCs found during the hunt",
+                        "h": 8,
+                        "i": "caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fd726570-09d9-11ee-816a-29823d8f2014",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detected IOCs",
+                        "query": "tags:\"Hunting Session - Exist In Environment\"",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": true,
+                        "i": "caseinfoid-field-changed-caseinfoid-1e1fa8e5-2083-11ee-8b39-a7ebb8a31864",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "suspiciousexecutionsfound",
+                                "height": 106,
+                                "id": "714751f0-2086-11ee-8b39-a7ebb8a31864",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Suspicious",
+                        "static": false,
+                        "w": 2,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": true,
+                        "i": "caseinfoid-field-changed-caseinfoid-25d429d5-2083-11ee-8b39-a7ebb8a31864",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "stringsimilarityresults",
+                                "height": 106,
+                                "id": "25d429d2-2083-11ee-8b39-a7ebb8a31864",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-7d826ee0-d1d6-11ed-b353-b1e63aacf41c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SDO Hunt Results",
+                        "static": false,
+                        "w": 2,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 10
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-field-changed-caseinfoid-04121060-2096-11ee-8b39-a7ebb8a31864",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Updates For The Hunter",
+                        "static": false,
+                        "type": "notes",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "huntingsessionstatus"
+                                }
+                            },
+                            "operator": "isNotEmpty",
+                            "right": null,
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "fvtmv2oyuw",
+                "name": "Investigation \u0026 Response",
+                "sections": [
+                    {
+                        "description": "Upon executing a entity enrichment, the results will be promptly displayed in this section.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-51034f40-09eb-11ee-abc4-2b5a1ddfcac7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "endpointsdetails",
+                                "height": 44,
+                                "id": "1f477c20-1403-11ee-85c9-5b605042f1e1",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-51034f40-09eb-11ee-abc4-2b5a1ddfcac7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "usersdetails",
+                                "height": 44,
+                                "id": "1d661c80-1404-11ee-a9af-a9d9f3be4779",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "relatedalerts",
+                                "height": 44,
+                                "id": "e5f60f70-140e-11ee-a9af-a9d9f3be4779",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Entity Enrichment",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "description": "Set of post-hunting actions. There is a manual Collection task before the actual remediation. Executing a new action will abort the previous one, if hasn't done yet.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                        "items": [
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Entity Enrichment"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "91a70bf0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 0,
+                                "name": "Entity Enrichment",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Execute Query"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "74341230-14c0-11ee-985b-5d9798906d26",
+                                "index": 1,
+                                "name": "Execute Custom Query",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Endpoint Isolation"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "a60e1cb0-2096-11ee-8b39-a7ebb8a31864",
+                                "index": 2,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "name": "Isolate Endpoint",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Block Indicators"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "92b065a0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 4,
+                                "name": "Block IOCs",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Block Account"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "23f8b020-0ec9-11ee-a51d-a990e3e96055",
+                                "index": 4,
+                                "name": "Block Account",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Quarantine File"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "5b971bd0-2499-11ee-8af3-f160d3812173",
+                                "index": 5,
+                                "name": "Quarantine File",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "closeNotes": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "closeReason": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "907087c0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 6,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "name": "Close Hunting Session",
+                                "scriptId": "Builtin|||closeInvestigation",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "endpointisolationstatus",
+                                "height": 53,
+                                "id": "b785d850-0ab3-11ee-b966-55e2f7a73dc9",
+                                "index": 7,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "userblockstatus",
+                                "height": 53,
+                                "id": "51929c50-0ee0-11ee-9be8-03c60dac9e17",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "blockindicatorsstatus",
+                                "height": 53,
+                                "id": "f057cf80-0a1d-11ee-94e8-b97b8109133e",
+                                "index": 9,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-4fcf36a0-2095-11ee-8b39-a7ebb8a31864",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Updates For The Hunter",
+                        "static": false,
+                        "type": "notes",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Follow the instruction to build and execute your hunting query.",
+                        "h": 4,
+                        "i": "caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-5bbc3120-2095-11ee-8b39-a7ebb8a31864",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Instructions",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "description": "Upon executing a custom query, the results will be promptly displayed in this section.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-333e7890-2480-11ee-a551-4de127fb8d67",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "customqueryresults",
+                                "height": 106,
+                                "id": "68e0f1c0-249a-11ee-b86a-459fde83cad3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Query Results",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "freestylehunt"
+                                }
+                            },
+                            "operator": "isEqualString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "True"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "loos7lrdto",
+                "name": "Freestyle Hunting",
+                "sections": [
+                    {
+                        "description": "Upon executing a entity enrichment, the results will be promptly displayed in this section.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-51034f40-09eb-11ee-abc4-2b5a1ddfcac7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "endpointsdetails",
+                                "height": 44,
+                                "id": "1f477c20-1403-11ee-85c9-5b605042f1e1",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-51034f40-09eb-11ee-abc4-2b5a1ddfcac7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "usersdetails",
+                                "height": 44,
+                                "id": "1d661c80-1404-11ee-a9af-a9d9f3be4779",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "relatedalerts",
+                                "height": 44,
+                                "id": "e5f60f70-140e-11ee-a9af-a9d9f3be4779",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Entity Enrichment",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "description": "Set of post-hunting actions. There is a manual Collection task before the actual remediation. Executing a new action will abort the previous one, if hasn't done yet.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                        "items": [
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Entity Enrichment"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "91a70bf0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 0,
+                                "name": "Entity Enrichment",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Search And Block Software - Generic"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "09b7c210-314b-11ee-9036-1938f862dddc",
+                                "index": 1,
+                                "name": "Search And Block Software",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Execute Query"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "74341230-14c0-11ee-985b-5d9798906d26",
+                                "index": 2,
+                                "name": "Execute Custom Query",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Endpoint Isolation"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "a60e1cb0-2096-11ee-8b39-a7ebb8a31864",
+                                "index": 2,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "name": "Isolate Endpoint",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Block Indicators"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "92b065a0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 3,
+                                "name": "Upload \u0026 Block IOCs",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Block Account"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "23f8b020-0ec9-11ee-a51d-a990e3e96055",
+                                "index": 4,
+                                "name": "Block Account",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Quarantine File"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "5b971bd0-2499-11ee-8af3-f160d3812173",
+                                "index": 5,
+                                "name": "Quarantine File",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "closeNotes": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "closeReason": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "907087c0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 6,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "name": "Close Hunting Session",
+                                "scriptId": "Builtin|||closeInvestigation",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "endpointisolationstatus",
+                                "height": 53,
+                                "id": "b785d850-0ab3-11ee-b966-55e2f7a73dc9",
+                                "index": 7,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "userblockstatus",
+                                "height": 53,
+                                "id": "51929c50-0ee0-11ee-9be8-03c60dac9e17",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "blockindicatorsstatus",
+                                "height": 53,
+                                "id": "f057cf80-0a1d-11ee-94e8-b97b8109133e",
+                                "index": 9,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-4fcf36a0-2095-11ee-8b39-a7ebb8a31864",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Updates For The Hunter",
+                        "static": false,
+                        "type": "notes",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Follow the instruction to build and execute your hunting query.",
+                        "h": 4,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-5bbc3120-2095-11ee-8b39-a7ebb8a31864",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Query Instructions",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "description": "Upon executing a custom query, the results will be promptly displayed in this section.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-field-changed-caseinfoid-333e7890-2480-11ee-a551-4de127fb8d67",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "customqueryresults",
+                                "height": 106,
+                                "id": "68e0f1c0-249a-11ee-b86a-459fde83cad3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Query Results",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "huntingsessionstatus"
+                                }
+                            },
+                            "operator": "isNotEmpty",
+                            "right": null,
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": true,
+                "id": "upjje5nuji",
+                "name": "Investigation \u0026 Response copy",
+                "sections": [
+                    {
+                        "description": "To get entities details, click \"Entity Enrichment\" in the actions section.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-51034f40-09eb-11ee-abc4-2b5a1ddfcac7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "endpointsdetails",
+                                "height": 44,
+                                "id": "1f477c20-1403-11ee-85c9-5b605042f1e1",
+                                "index": 0,
+                                "listId": "caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-51034f40-09eb-11ee-abc4-2b5a1ddfcac7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "usersdetails",
+                                "height": 44,
+                                "id": "1d661c80-1404-11ee-a9af-a9d9f3be4779",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "relatedalerts",
+                                "height": 44,
+                                "id": "e5f60f70-140e-11ee-a9af-a9d9f3be4779",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Entity Enrichment",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "description": "Set of post-hunting actions. There is a manual Collection task before the actual remediation. Executing a new action will abort the previous one, if hasn't done yet.",
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                        "items": [
+                            {
+                                "args": {
+                                    "closeNotes": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "closeReason": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "907087c0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 0,
+                                "name": "Close Hunting Session",
+                                "scriptId": "Builtin|||closeInvestigation",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Entity Enrichment"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "91a70bf0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 1,
+                                "name": "Entity Enrichment",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Execute Query"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "74341230-14c0-11ee-985b-5d9798906d26",
+                                "index": 2,
+                                "name": "Execute Custom Query",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Block Indicators"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "92b065a0-0a1c-11ee-94e8-b97b8109133e",
+                                "index": 3,
+                                "name": "Block IOCs",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "a60e1cb0-2096-11ee-8b39-a7ebb8a31864",
+                                "index": 4,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Proactive Threat Hunting - Block Account"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 53,
+                                "id": "23f8b020-0ec9-11ee-a51d-a990e3e96055",
+                                "index": 5,
+                                "name": "Block Account",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "endpointisolationstatus",
+                                "height": 53,
+                                "id": "b785d850-0ab3-11ee-b966-55e2f7a73dc9",
+                                "index": 6,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "userblockstatus",
+                                "height": 53,
+                                "id": "51929c50-0ee0-11ee-9be8-03c60dac9e17",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "blockindicatorsstatus",
+                                "height": 53,
+                                "id": "f057cf80-0a1d-11ee-94e8-b97b8109133e",
+                                "index": 8,
+                                "listId": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-field-changed-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-74d80420-0a1c-11ee-94e8-b97b8109133e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-caseinfoid-6d0c67f0-14c0-11ee-985b-5d9798906d26",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "customqueryresults",
+                                "height": 106,
+                                "id": "cab9bab0-14c0-11ee-985b-5d9798906d26",
+                                "index": 0,
+                                "listId": "caseinfoid-6d0c67f0-14c0-11ee-985b-5d9798906d26",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Custom Query Results",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-4fcf36a0-2095-11ee-8b39-a7ebb8a31864",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Query Status ",
+                        "static": false,
+                        "type": "notes",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "Follow the instruction to build and execute your hunting query.",
+                        "h": 4,
+                        "i": "caseinfoid-5bbc3120-2095-11ee-8b39-a7ebb8a31864",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Query Instructions",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": true,
+                "id": "ifeizyi4oe",
+                "name": "Control Panel copy",
+                "sections": [
+                    {
+                        "h": 3,
+                        "i": "caseinfoid-lsqweemtuk-caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-caseinfoid-field-changed-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Query Status ",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "description": "Follow the instruction to build and execute your hunting query.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "caseinfoid-lsqweemtuk-caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-field-changed-caseinfoid-field-changed-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Query Instructions",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "caseinfoid-lsqweemtuk-caseinfoid-field-changed-caseinfoid-lsqweemtuk-caseinfoid-lsqweemtuk-caseinfoid-fvtmv2oyuw-caseinfoid-fvtmv2oyuw-lsqweemtuk-caseinfoid-33264160-09c0-11ee-8f72-f32dc12d5a8f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Evidence Results",
+                        "sort": {
+                            "asc": false,
+                            "field": "description"
+                        },
+                        "static": false,
+                        "type": "evidence",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "hidden": false,
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tags",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Proactive Threat Hunting",
+    "name": "Proactive Threat Hunting",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.9.0",
+    "description": ""
+}
