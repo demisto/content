@@ -317,7 +317,6 @@
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
-    - echo "ofri test"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
         echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
