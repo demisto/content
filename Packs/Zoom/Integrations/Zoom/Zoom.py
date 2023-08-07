@@ -501,7 +501,6 @@ def process_entitlement_reply(
         "account_id": accountId
     }
     CLIENT.zoom_send_notification(url_suffix, json_data_all)
-    return 
 
 
 def answer_question(text: str, question: dict, email: str = ''):
@@ -530,8 +529,8 @@ async def handle_listen_error(error: str):
 async def handle_authorization():
     demisto.debug("auto:")
     return Response(status_code=status.HTTP_200_OK)
-    
-    
+
+
 @app.post('/')
 async def handle_zoom_button_click(request: Request):
     demisto.debug(f"request: {request}")
