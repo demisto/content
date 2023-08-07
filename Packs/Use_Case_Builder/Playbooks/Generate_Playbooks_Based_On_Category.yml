@@ -88,6 +88,7 @@ tasks:
       name: Is the category Phishing?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -138,6 +139,7 @@ tasks:
       version: -1
       name: Is the category Case Management
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -193,6 +195,7 @@ tasks:
       name: Is the category Data Enrichment and Threat Intel?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -247,6 +250,7 @@ tasks:
       name: Is the category Malware?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -301,6 +305,7 @@ tasks:
       name: Is the category Network Security?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -535,6 +540,7 @@ tasks:
       name: Is it a New Use Case?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -614,6 +620,7 @@ tasks:
       scriptName: UseCasePlaybookAutoGenerator
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -645,6 +652,7 @@ tasks:
       scriptName: PlaybookAutoGeneratorDynamicSectionMessage
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     separatecontext: false
     continueonerrortype: ""

@@ -89,6 +89,7 @@ tasks:
       scriptName: CreateUseCaseTemplateList
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':

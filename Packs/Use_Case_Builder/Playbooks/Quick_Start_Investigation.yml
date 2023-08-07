@@ -45,6 +45,7 @@ tasks:
       name: Do we need to Enrich indicators?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -89,6 +90,7 @@ tasks:
       name: Do we need to detonate files in Sandbox?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -134,6 +136,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -242,6 +245,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "17"
@@ -808,6 +812,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -874,6 +879,7 @@ tasks:
       name: Do you want to refine exclusion list?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -918,6 +924,7 @@ tasks:
       name: Delete and exclude selected indicators
       scriptName: DeleteAndExcludeIndicators
       type: regular
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -961,6 +968,7 @@ tasks:
       name: Are there indicators to be deleted and excluded?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':

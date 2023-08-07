@@ -102,6 +102,7 @@ tasks:
       version: -1
       name: Which type of event generated this incident?
       type: collection
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -178,6 +179,7 @@ tasks:
       version: -1
       name: Perform Deduplication?
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -228,6 +230,7 @@ tasks:
       version: -1
       name: Provide Similar Fields
       type: collection
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -384,6 +387,7 @@ tasks:
     task:
       id: 4408e0d6-64c3-4867-8e2a-d782b3c0542f
       version: -1
+      description: ""
       name: Close as False Positive?
       type: condition
       iscommand: false
@@ -559,6 +563,7 @@ tasks:
       name: What is  the selected Ticketing type?
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       Jira:
@@ -834,6 +839,7 @@ tasks:
       name: Gathered required info to create a ServiceNow Ticket
       type: collection
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -914,6 +920,7 @@ tasks:
       name: Gathered required info to create a Jira Ticket
       type: collection
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':

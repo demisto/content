@@ -44,6 +44,7 @@ tasks:
       version: -1
       name: Select Remediation Steps
       type: collection
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -456,6 +457,7 @@ tasks:
       name: Block on Firewall
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -499,6 +501,7 @@ tasks:
       name: Block Account
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -541,6 +544,7 @@ tasks:
       id: 384b6b9f-f97a-4ba2-8165-5cdc3b41ac04
       version: -1
       name: Block File
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -586,6 +590,7 @@ tasks:
       version: -1
       name: Notify Teams
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -631,6 +636,7 @@ tasks:
       name: Block Domain
       type: condition
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#default#':
@@ -674,6 +680,7 @@ tasks:
       version: -1
       name: Reset Password
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -718,6 +725,7 @@ tasks:
       version: -1
       name: Quarantine Device
       type: condition
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:

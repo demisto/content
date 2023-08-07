@@ -89,6 +89,7 @@ tasks:
       scriptName: CreateXSOARIncidentFlowList
       type: regular
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':

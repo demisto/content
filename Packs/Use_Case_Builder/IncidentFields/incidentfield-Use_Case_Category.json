@@ -32,7 +32,7 @@
     "threshold": 72,
     "type": "singleSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.8.0"
