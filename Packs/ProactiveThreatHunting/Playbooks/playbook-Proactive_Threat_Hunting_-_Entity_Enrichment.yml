@@ -1,0 +1,1259 @@
+description: This playbook will be executed from the "Proactive Threat Hunting" layout button with the objective of enriching information on hosts and users specified by the analyst.
+id: Proactive Threat Hunting - Entity Enrichment
+inputs: []
+name: Proactive Threat Hunting - Entity Enrichment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "28"
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3c4fd296-88b2-43c2-8498-c6bc05dcbedb
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 3c4fd296-88b2-43c2-8498-c6bc05dcbedb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -90
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Endpoints Details
+      output:
+        simple: ${shouldbeempty}
+    - incidentfield: Related Alerts
+      output:
+        simple: ${shouldbeempty}
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Entity enrichment has executed. Follow the work plan and see the the results under "Investigation and Response" tab.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 7a4ed82d-bb5e-4701-8bb3-4b8cfd310250
+      iscommand: false
+      name: Print update to notes
+      script: Print
+      type: regular
+      version: -1
+    taskid: 7a4ed82d-bb5e-4701-8bb3-4b8cfd310250
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 50
+        }
+      }
+  "4":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostname:
+        complex:
+          accessor: "0"
+          root: Choose entities to enrich.Answers
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Returns information about an endpoint.
+      id: 1b622dcf-2e0d-4063-8f76-e620a507d40f
+      iscommand: true
+      name: Endpoint enrichment
+      script: '|||endpoint'
+      type: regular
+      version: -1
+    taskid: 1b622dcf-2e0d-4063-8f76-e620a507d40f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 830
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Hostname
+                root: Endpoint
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 063d48f0-6344-43fe-858d-6fb2296513bd
+      iscommand: false
+      name: Has endpoint enrichment results
+      type: condition
+      version: -1
+    taskid: 063d48f0-6344-43fe-858d-6fb2296513bd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 990
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Choose endpoint to enrich
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            accessor: affectedhosts
+            root: incident
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Choose user to enrich
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            accessor: affectedusers
+            root: incident
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: multiSelect
+      sender: ""
+      title: Choose entities to enrich
+      totalanswers: 0
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 73789b2e-95a6-4dc6-81ac-21a74b8ba5ab
+      iscommand: false
+      name: Choose entities to enrich
+      type: collection
+      version: -1
+    taskid: 73789b2e-95a6-4dc6-81ac-21a74b8ba5ab
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 220
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Hunting Endpoint Enrichment
+      output:
+        simple: "True"
+    - incidentfield: Endpoints Details
+      output:
+        simple: ${endpointsdetailsmarkdown}
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: endpointsdetailsmarkdown=
+      title:
+        simple: Endpoints Details
+      value:
+        complex:
+          root: Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Accepts a json object and returns a markdown.
+      id: 41f3e374-9a9c-4430-8c04-3112776f3c4c
+      iscommand: false
+      name: Set endpoint enrichment data to layout
+      script: JsonToTable
+      type: regular
+      version: -1
+    taskid: 41f3e374-9a9c-4430-8c04-3112776f3c4c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 1160
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 43fc02e8-1308-44fb-855e-978ec775d10f
+      iscommand: false
+      name: Endpoint Details
+      type: title
+      version: -1
+      description: ''
+    taskid: 43fc02e8-1308-44fb-855e-978ec775d10f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 690
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aedf05b6-53ee-4de4-8f4e-c0e830b51ab5
+      iscommand: false
+      name: Alerts Related To The Endpoint
+      type: title
+      version: -1
+      description: ''
+    taskid: aedf05b6-53ee-4de4-8f4e-c0e830b51ab5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 690
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PaloAltoNetworksXDR.Alert
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: fb8821c1-c998-4b14-8db6-73ba82852847
+      iscommand: false
+      name: Related alerts found?
+      type: condition
+      version: -1
+    taskid: fb8821c1-c998-4b14-8db6-73ba82852847
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 990
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Related Alerts
+      output:
+        simple: ${relatedalertsmarkdown}
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: relatedalertsmarkdown=
+      title:
+        simple: Alerts Related To The Entities
+      value:
+        complex:
+          root: relatedalertsnoempty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Accepts a json object and returns a markdown.
+      id: fba78e75-3d40-48b9-82e3-238b7fdcdf54
+      iscommand: false
+      name: Set related alerts to layout
+      script: JsonToTable
+      type: regular
+      version: -1
+    taskid: fba78e75-3d40-48b9-82e3-238b7fdcdf54
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1330
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "agent_hostname",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${Choose endpoint to enrich.Answers.0}"
+                    }
+                  ]
+               }
+      time_frame:
+        simple: 24 hours
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: aa91639d-1c03-457c-8003-9b888ee7c4d0
+      iscommand: true
+      name: Search alerts related to endpoint
+      script: '|||xdr-get-alerts'
+      type: regular
+      version: -1
+    taskid: aa91639d-1c03-457c-8003-9b888ee7c4d0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 820
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7dc348a7-1bca-4981-814a-c3563a6ec5a4
+      iscommand: false
+      name: Endpoint Enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: 7dc348a7-1bca-4981-814a-c3563a6ec5a4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 390
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dccc55d2-c585-458a-853a-2ec14191ed29
+      iscommand: false
+      name: User Enrichments
+      type: title
+      version: -1
+      description: ''
+    taskid: dccc55d2-c585-458a-853a-2ec14191ed29
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 390
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 52caf803-4131-40da-8460-77e6ebba29dd
+      iscommand: false
+      name: User Details
+      type: title
+      version: -1
+      description: ''
+    taskid: 52caf803-4131-40da-8460-77e6ebba29dd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 690
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Domain:
+        complex:
+          accessor: "1"
+          root: Choose entities to enrich.Answers
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "1"
+            operator: Cut
+      Username:
+        complex:
+          accessor: "1"
+          root: Choose entities to enrich.Answers
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: \
+              fields:
+                value:
+                  simple: "2"
+            operator: Cut
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+        - SailPoint IdentityNow
+        - SailPoint IdentityIQ
+        - PingOne
+        - Okta
+        - AWS IAM
+
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+      id: 88ed19f4-decc-4e7c-8b51-f2e056f75d8f
+      iscommand: false
+      name: Account Enrichment - Generic v2.1
+      playbookId: Account Enrichment - Generic v2.1
+      type: playbook
+      version: -1
+    taskid: 88ed19f4-decc-4e7c-8b51-f2e056f75d8f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 820
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 540ea721-6a4e-423a-8b5c-594dc4964014
+      iscommand: false
+      name: Alerts Related To The User
+      type: title
+      version: -1
+      description: ''
+    taskid: 540ea721-6a4e-423a-8b5c-594dc4964014
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 690
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      custom_filter:
+        simple: |-
+          {
+                  "AND": [
+                    {
+                      "SEARCH_FIELD": "actor_effective_username",
+                      "SEARCH_TYPE": "CONTAINS",
+                      "SEARCH_VALUE": "${Choose endpoint to enrich.Answers.1}"
+                    }
+                  ]
+               }
+      time_frame:
+        simple: 24 hours
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      id: 118f5ba3-e522-4999-8258-b4fc1717bd26
+      iscommand: true
+      name: Search alerts related to endpoint
+      script: '|||xdr-get-alerts'
+      type: regular
+      version: -1
+    taskid: 118f5ba3-e522-4999-8258-b4fc1717bd26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 820
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: acdce72f-e021-4d93-8153-625552bc9c63
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: acdce72f-e021-4d93-8153-625552bc9c63
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1600
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "1"
+                root: Choose entities to enrich.Answers
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "18"
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 2a2ff024-f5db-424f-8243-e91057661cab
+      iscommand: false
+      name: Has user to enrich?
+      type: condition
+      version: -1
+    taskid: 2a2ff024-f5db-424f-8243-e91057661cab
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -110,
+          "y": 520
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7e3c1314-4843-41ae-8d3a-957520b7375f
+      iscommand: false
+      name: User Enrichment Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: 7e3c1314-4843-41ae-8d3a-957520b7375f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1460
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: "0"
+                root: Choose entities to enrich.Answers
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "9"
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 6be6371d-9be3-45cc-8e44-6a74a6365c1c
+      iscommand: false
+      name: Has endpoint to enrich?
+      type: condition
+      version: -1
+    taskid: 6be6371d-9be3-45cc-8e44-6a74a6365c1c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 520
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b69a7ae8-5ce8-4421-853a-e5ddcec0d60b
+      iscommand: false
+      name: Endpoint Enrichment Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: b69a7ae8-5ce8-4421-853a-e5ddcec0d60b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1460
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Username
+                root: Account
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: fc3fb9c7-378a-4997-885a-0159b53ee62c
+      iscommand: false
+      name: Has user enrichment results?
+      type: condition
+      version: -1
+    taskid: fc3fb9c7-378a-4997-885a-0159b53ee62c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 990
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Users Details
+      output:
+        simple: ${usersdetailsmarkdown}
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: usersdetailsmarkdown=
+      title:
+        simple: Users Details
+      value:
+        complex:
+          root: Account
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Accepts a json object and returns a markdown.
+      id: c7ff90ca-7678-41bf-86a9-e69595144ae2
+      iscommand: false
+      name: Set user enrichment data to layout
+      script: JsonToTable
+      type: regular
+      version: -1
+    taskid: c7ff90ca-7678-41bf-86a9-e69595144ae2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -880,
+          "y": 1160
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: relatedalertsnoempty
+      value:
+        complex:
+          accessor: Alert
+          root: PaloAltoNetworksXDR
+          transformers:
+          - args:
+              empty_values:
+                value:
+                  simple: FALSE,null,UNKNOWN,NO
+              remove_keys:
+                value:
+                  simple: "true"
+            operator: RemoveEmpty
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 7cc54632-316e-422e-88cb-583e745788a4
+      iscommand: false
+      name: Set results without empty fields
+      script: Set
+      type: regular
+      version: -1
+    taskid: 7cc54632-316e-422e-88cb-583e745788a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1160
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: endpointsdetailsmarkdown
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 7d183c61-0d6f-430c-8ee2-15258b8f1e0e
+      iscommand: false
+      name: Delete context to avoid duplications - endpointsdetailsmarkdown
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 7d183c61-0d6f-430c-8ee2-15258b8f1e0e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 50
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: relatedalertsmarkdown
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 305bae10-f1bd-4682-881c-83a19c3bf490
+      iscommand: false
+      name: Delete context to avoid duplications - relatedalertsmarkdown
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 305bae10-f1bd-4682-881c-83a19c3bf490
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 50
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      endpointsdetails:
+        simple: '#### No endpoint results found'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 4797f0a2-af07-4efb-8dda-169504366c08
+      iscommand: true
+      name: Set no results found
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 4797f0a2-af07-4efb-8dda-169504366c08
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1160
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      relatedalerts:
+        simple: '#### No related alerts found'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: a1fcaadc-7e2c-408d-8169-bb6a65a3bdd6
+      iscommand: true
+      name: Set no results found
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a1fcaadc-7e2c-408d-8169-bb6a65a3bdd6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1160
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      usersdetails:
+        simple: '#### No user details found'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 7ff4506d-2921-4315-85f8-1ccc8477d033
+      iscommand: true
+      name: Set no results found
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 7ff4506d-2921-4315-85f8-1ccc8477d033
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 1160
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_24_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 2800,
+        "x": -880,
+        "y": -90
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

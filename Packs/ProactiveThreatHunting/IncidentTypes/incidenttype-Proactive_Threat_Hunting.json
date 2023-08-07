@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#F8E7A5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Proactive Threat Hunting",
+    "layout": "2ad23b56-7140-4579-88ce-409b2806ce83",
+    "locked": false,
+    "name": "Proactive Threat Hunting",
+    "onChangeRepAlg": 0,
+    "playbookId": "b780077b-ac36-4b98-80bd-d87cc648e8d5",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.9.0"
+}

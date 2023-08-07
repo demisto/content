@@ -1,0 +1,745 @@
+description: |-
+  This playbook will be executed from the "Proactive Threat Hunting" layout button with the objective of executing a query that will be provided by the analyst. The playbook supports executing a query using the following integrations:
+
+  - Cortex XDR XQL Engine
+  - Microsoft Defender For Endpoint
+id: Proactive Threat Hunting - Execute Query
+inputs: []
+name: Proactive Threat Hunting - Execute Query
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: da2e4044-109f-4d97-854a-ede202f6bc4b
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: da2e4044-109f-4d97-854a-ede202f6bc4b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Endpoint Isolation Status
+      output:
+        simple: Executed
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Custom query execution procedure has executed. Follow the work plan to continue.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: f450f9f6-7d4c-40e6-80c1-08ed03dd1fd4
+      iscommand: false
+      name: Print update to notes
+      script: Print
+      type: regular
+      version: -1
+    taskid: f450f9f6-7d4c-40e6-80c1-08ed03dd1fd4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: |-
+        Supported systems:
+        - Cortex XDR XQL Engine
+        - Microsoft Defender For Endpoint
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Please provide query to execute
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            accessor: affectedhosts
+            root: incident
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: 'Supported systems: - Cortex XDR XQL Engine - Microsoft Defender For Endpoint'
+        type: longText
+      sender: ""
+      title: Please provide query to execute
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "6"
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: cf55fad8-c696-4f90-8cb8-42fd43f5140e
+      iscommand: false
+      name: Please provide query to execute
+      type: collection
+      version: -1
+    taskid: cf55fad8-c696-4f90-8cb8-42fd43f5140e
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ad50208d-43e6-426b-8cc6-84ad81ecc7fb
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: ad50208d-43e6-426b-8cc6-84ad81ecc7fb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cortex XDR - XQL Query Engine
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 7a1f7c2b-8782-4538-87f3-c40042d9190f
+      iscommand: false
+      name: Is Cortex XDR Query Engine enabled?
+      type: condition
+      version: -1
+    taskid: 7a1f7c2b-8782-4538-87f3-c40042d9190f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 520
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: "0"
+          root: Please provide query to execute.Answers
+      query_name:
+        simple: Hunting Session
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      id: 9031c68a-ee79-4cc5-84be-86d43a561349
+      iscommand: true
+      name: Execute custom query - XQL Engine
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      version: -1
+    taskid: 9031c68a-ee79-4cc5-84be-86d43a561349
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 700
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Custom Query Results
+      output:
+        simple: ${customquerymarkdown}
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: customquerymarkdown=
+      value:
+        complex:
+          accessor: results
+          root: PaloAltoNetworksXQL.GenericQuery
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Accepts a json object and returns a markdown.
+      id: 58d64fc9-710a-413d-8f57-a0f9a85139a6
+      iscommand: false
+      name: Set custom query results to layout
+      script: JsonToTable
+      type: regular
+      version: -1
+    taskid: 58d64fc9-710a-413d-8f57-a0f9a85139a6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1050
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 0893394f-91d6-4f39-892a-041a165f1f95
+      iscommand: false
+      name: Delete context to avoid duplications - PaloAltoNetworksXQL
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0893394f-91d6-4f39-892a-041a165f1f95
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 0
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Custom Query Results
+      output:
+        simple: ${needtobeempty}
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: customquerymarkdown
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: ecb8cab4-6292-4190-8b1d-cb12315d64f6
+      iscommand: false
+      name: Delete context to avoid duplications - customquerymarkdown
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: ecb8cab4-6292-4190-8b1d-cb12315d64f6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 0
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: results
+                root: PaloAltoNetworksXQL.GenericQuery
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 35491319-bc31-4cd4-8413-11992ee92332
+      iscommand: false
+      name: Has custom query results?
+      type: condition
+      version: -1
+    taskid: 35491319-bc31-4cd4-8413-11992ee92332
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 860
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: Please provide query to execute
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: c3453c12-2fe1-418e-88a9-05eea5ae5d1e
+      iscommand: false
+      name: Delete context to avoid duplications - "Please provide query to execute"
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: c3453c12-2fe1-418e-88a9-05eea5ae5d1e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: "0"
+          root: Please provide query to execute.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
+      id: c590407e-68f2-48cd-8bdd-f7e7dee3dc35
+      iscommand: true
+      name: Execute custom query - Microsoft defender
+      script: '|||microsoft-atp-advanced-hunting'
+      type: regular
+      version: -1
+    taskid: c590407e-68f2-48cd-8bdd-f7e7dee3dc35
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 700
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Microsoft Defender Advanced Threat Protection
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: c3e0c746-9e14-4262-8e98-a490abecd42b
+      iscommand: false
+      name: Is Microsoft Defender enabled?
+      type: condition
+      version: -1
+    taskid: c3e0c746-9e14-4262-8e98-a490abecd42b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 520
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Result
+                root: MicrosoftATP.Hunt
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: d30aa69e-11b3-4172-8509-47ba9cdcc567
+      iscommand: false
+      name: Has custom query results?
+      type: condition
+      version: -1
+    taskid: d30aa69e-11b3-4172-8509-47ba9cdcc567
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 860
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Custom Query Results
+      output:
+        simple: ${customquerymarkdown}
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: customquerymarkdown=
+      value:
+        complex:
+          accessor: Result
+          root: MicrosoftATP.Hunt
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Accepts a json object and returns a markdown.
+      id: 2ecae88f-51fa-4352-8879-61c295a0ac71
+      iscommand: false
+      name: Set custom query results to layout
+      script: JsonToTable
+      type: regular
+      version: -1
+    taskid: 2ecae88f-51fa-4352-8879-61c295a0ac71
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 1040
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      customqueryresults:
+        simple: '#### No results found'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 9c9315b4-5c3a-4d4c-8e93-c19106f9a50d
+      iscommand: true
+      name: Set no results found
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 9c9315b4-5c3a-4d4c-8e93-c19106f9a50d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_5_#default#": 0.9,
+      "6_5_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1585,
+        "width": 1460,
+        "x": -40,
+        "y": -140
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
