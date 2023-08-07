@@ -1,5 +1,4 @@
 import unittest
-import pytest
 from HuntingFromIndicatorLayout import hunting_from_indicator_layout, CommandResults
 
 
