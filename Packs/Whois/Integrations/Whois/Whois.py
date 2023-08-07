@@ -8510,10 +8510,9 @@ def get_whois_ip(ip: str,
         if rate_limit_errors_suppressed:
             demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
             return None
-        
+
         demisto.error(f'HTTPError when trying to lookup rdap info. Error: {e}')
         raise e
-
 
 
 def get_param_or_arg(param_key: str, arg_key: str):
@@ -8545,7 +8544,8 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
     for ip in argToList(ips):
 
         try:
-            response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds, rate_limit_errors_suppressed=rate_limit_errors_suppressed)
+            response = get_whois_ip(ip, retry_count=rate_limit_retry_count, rate_limit_timeout=rate_limit_wait_seconds,
+                                    rate_limit_errors_suppressed=rate_limit_errors_suppressed)
             if response:
                 execution.success += 1
                 dbot_score = Common.DBotScore(
@@ -8832,7 +8832,7 @@ def setup_proxy():
 ''' EXECUTION CODE '''
 
 
-def main():
+def main():  # pragma: no cover
     demisto.debug(f"command is {demisto.command()}")
     command = demisto.command()
     should_error = argToBoolean(demisto.params().get('with_error', False))
