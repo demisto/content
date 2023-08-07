@@ -434,7 +434,7 @@ class PackSupportCondition(MetadataCondition):
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
         support_type = self.branch_metadata.get(Metadata.SUPPORT)
-        if support_type not in self.ALLOWED_SUPPORT_TYPE:
+        if support_type not in self.ALLOWED_SUPPORT_TYPES:
             return ConditionResult(
                 should_skip=True,
                 reason=self.generate_skip_reason(support_type=support_type),
