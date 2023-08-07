@@ -1,4 +1,4 @@
-name: Check Partner-Approved label is set
+name: Partner-Approved label verification
 on:
   pull_request:
     types: [opened, synchronize, labeled, unlabeled]
