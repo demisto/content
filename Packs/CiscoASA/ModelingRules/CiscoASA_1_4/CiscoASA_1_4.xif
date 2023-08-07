@@ -884,3 +884,49 @@ config case_sensitive = true
     xdm.event.outcome_reason = action,
     xdm.observer.name = observer_name,
     xdm.event.is_completed = if(action contains "Teardown",true, false);
+
+config case_sensitive =true timeframe =1y | dataset = ciscoasa_concentrix_not_supported_raw
+| alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-[session]*\-*\d\-(\d+)\:"),0))
+| filter event_id in (210022,302010,216004,308001,323006,336013,402123,411004,411002,411001,409023,502103,502102,502101,717058,717055,717054,717037,717028,717022,717007,711004,611104,506001,505011,768004,746016,735014,735013,812007)
+//
+| alter protocol1 = uppercase(arrayindex(regextract(_raw_log ,"\sfor\s([A-Za-z]+)\sprotocol"),0)),
+    trustpoint = arrayindex(regextract(_raw_log , "\strustpoint\s\<([^\>]+)\>"),0),
+    subject_name1 = arrayindex(regextract(_raw_log ,"\sSubject\sName\s\<([^\>]+)\>"),0),
+    subject_name2 = arrayindex(regextract(_raw_log ,"subject\sname\:\s([^\,]+)\,"),0),
+    issuer_name1 = arrayindex(regextract(_raw_log ,"\sIssuer\sName\s\<([^\>]+)\>"),0),
+    issuer_name2 = arrayindex(regextract(_raw_log ,"issuer_name\:\s([^\,]+)\,"),0),
+    serial_number1 = arrayindex(regextract(_raw_log ,"\sSerial\sNumber\s\<([^\>]+)\>"),0),
+    serial_number2 = arrayindex(regextract(_raw_log ,"serial\snumber\:\s([^\,]+)\,"),0),
+    outcome1 = arrayindex(regextract(_raw_log ,"mode\sconfiguration\s([A-Za-z]+)"),0),
+    outcome2 = arrayindex(regextract(_raw_log , "channel\scommunication\s([A-Za-z]+)\,"),0),
+    status1 = arrayindex(regextract(_raw_log ,"data\schannel\sis\s([A-Z]+)"),0),
+    status2 = arrayindex(regextract(_raw_log ,"changed\sstate\sto\s([A-Za-z]+)"),0),
+    target_url = arrayindex(regextract(_raw_log ,"DNS\slookup\sfor\s(\S+)\s"),0),
+    outcome_reason = arrayindex(regextract(_raw_log ,"reason\:(.*)"),0),
+    source_function_filename = arrayindex(regextract(_raw_log ,"in\s\S+\sat\s(\S+)\(\d+\)\s\-\s"),0),
+    target_interface1 = arrayindex(regextract(_raw_log ,"\son\sInterface\s([A-Za-z0-9\/\-\_]+)"),0),
+    target_interface2 = arrayindex(regextract(_raw_log ,"411004\:\sInterface\s([^\,]+)\,"),0), // spesific for event id 411004
+    target_username = arrayindex(regextract(_raw_log ,"Uname\:\s(\S+)\s"),0),
+    source_app_name = arrayindex(regextract(_raw_log ,"\(from\s([^\)]+)\)"),0),
+    source_process = arrayindex(regextract(_raw_log ,"\sProcess\s\=\s([^\,]+)\,"),0),
+    source_hostname = arrayindex(regextract(_raw_log ,"\sPC\s\=\s([^\,]+)\,"),0)
+| alter outcome = coalesce(outcome1 ,outcome2),
+    status = coalesce(status1,status2),
+    serial_number = coalesce(serial_number1, serial_number2),
+    issuer_name = coalesce(issuer_name1,issuer_name2),
+    subject_name = coalesce(subject_name1,subject_name2),
+    target_interface = coalesce(target_interface1,target_interface2)
+| alter xdm.target.resource.name = trustpoint,
+    xdm.network.tls.client_certificate.subject = subject_name,
+    xdm.network.tls.client_certificate.issuer = issuer_name,
+    xdm.network.tls.client_certificate.serial = serial_number,
+    //xdm.event.outcome = if(outcome in("failed","failure") , xdm_const_outcome_failed,null)
+    xdm.target.resource.value = status,
+    xdm.target.url = target_url,
+    xdm.event.outcome_reason = outcome_reason,
+    xdm.source.process.executable.filename = source_function_filename,
+    xdm.target.zone = target_interface,
+    xdm.target.interface = target_interface,
+    xdm.source.application.name = source_app_name,
+    xdm.source.process.name = source_process,
+    xdm.source.host.hostname = source_hostname
