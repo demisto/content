@@ -87,6 +87,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
     syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
+    process_identifier = arrayindex(regextract(syslog_msg, "\[([\w-]+)\]\s+\w+\s+opId="), 0),
     pool_id = arrayindex(regextract(syslog_msg, "pool\-(\d+)\-thread\-\d+"), 0),
     thread_id = arrayindex(regextract(syslog_msg, "thread\-(\d+)\]"), 0),
     msg_severity = arrayindex(regextract(syslog_msg, "\[[\w-]+\]\s+(\w+)"), 0),
@@ -101,14 +102,16 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     port = arrayindex(regextract(url, ":(\d+)"), 0)
 | alter
+    xdm.alert.severity = msg_severity,
+    xdm.event.type = event_type,
     xdm.event.id = operation_id,
     xdm.event.description = event_details,
     xdm.event.duration = to_number(coalesce(ms1, ms2)),
-    xdm.alert.severity = msg_severity,
-    xdm.event.type = event_type,
     xdm.observer.name = hostname, 
     xdm.session_context_id = pool_id,
     xdm.source.process.thread_id = to_integer(thread_id),
+    xdm.source.process.name = event_type,
+    xdm.source.process.identifier = process_identifier, 
     xdm.source.application.name = app_component, 
     xdm.source.host.hostname = hostname, 
     xdm.target.port = to_integer(port),
@@ -122,20 +125,30 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
     syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
-| alter
+| alter 
+    process_identifier = arrayindex(regextract(syslog_msg, "\w+\s+\[(\S+)"), 0),
     pool_id = arrayindex(regextract(syslog_msg, "pool\-(\d+)\-thread\-\d+"), 0),
     thread_id = arrayindex(regextract(syslog_msg, "pool\-\d+\-thread\-(\d+)"), 0),
-    msg_severity = arrayindex(regextract(syslog_msg, "\[\S+\s+\[[^\]]*\]\s+(\w+)"), 0),
-    app_component = arrayindex(regextract(syslog_msg, "\[\S+\s+\[[^\]]*\]\s+\w+\s+(\S+)"), 0),
-    operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0)
-    event_details = arrayindex(regextract(syslog_msg, "opId=\S*\]\s+(.+)"), 0)
+    msg_severity = arrayindex(regextract(syslog_msg, "(\w+)\s+\S+\s+opId="), 0),
+    app_component = arrayindex(regextract(syslog_msg, "\w+\s+(\S+)\s+opId="), 0),
+    operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0),
+    event_details = arrayindex(regextract(syslog_msg, "opId=\S*\]\s+(.+)"), 0), 
+    operation = arrayindex(regextract(syslog_msg, "Operation (\S+) took"), 0), 
+    ms = arrayindex(regextract(syslog_msg, "took\s+(\S+)\s+ms"), 0) 
 | alter
-    xdm.event.id = operation_id,
-    xdm.event.description = event_details,
     xdm.alert.severity = msg_severity,
     xdm.event.type = event_type,
+    xdm.event.id = operation_id,
+    xdm.event.description = event_details,
+    xdm.event.operation_sub_type = operation, 
+    xdm.event.duration = to_number(ms),
+    xdm.network.application_protocol = if(event_details ~= "LDAP", "LDAP"),
+    xdm.network.ldap.operation = if(event_details ~= "Requesting LDAP connection", XDM_CONST.LDAP_OPERATION_BIND_REQUEST), 
     xdm.observer.name = hostname, 
+    xdm.observer.action = operation, 
     xdm.session_context_id = pool_id,
     xdm.source.process.thread_id = to_integer(thread_id),
+    xdm.source.process.name = event_type,
+    xdm.source.process.identifier = process_identifier, 
     xdm.source.application.name = app_component, 
     xdm.source.host.hostname = hostname;
