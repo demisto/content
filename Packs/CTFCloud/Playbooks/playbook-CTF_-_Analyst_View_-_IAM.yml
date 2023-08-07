@@ -72,7 +72,7 @@ tasks:
     task:
       id: 42b1a8fb-034d-4bf0-8ff1-d9c2b66b2f6c
       version: -1
-      name: 'Check the IP and reputation / Q2: Which vendor has defined this IP as malicious'
+      name: 'Investigate incident indicators'
       type: title
       iscommand: false
       brand: ""
@@ -103,7 +103,7 @@ tasks:
     task:
       id: 50c655b4-36a6-44db-8d81-537a94730c3c
       version: -1
-      name: Check the AWS Account / Q3 what is the Account name
+      name: "Let's check the affected Asset"
       type: title
       iscommand: false
       brand: ""
@@ -134,7 +134,7 @@ tasks:
     task:
       id: 02e4d4e5-02a4-4ab7-83bf-621bc87a6c44
       version: -1
-      name: Check the AWS Account / Q4 What other operations were performed with those same creds
+      name: Investigate the attacker actions
       type: title
       iscommand: false
       brand: ""
@@ -165,7 +165,7 @@ tasks:
     task:
       id: 10e3c0c2-effe-4eb1-8ee8-f4d657ce6b63
       version: -1
-      name: Check the AWS Account / Q5 to check if those creds were leaked (let's say GitHub or Pastebin or even a platform such as Insights ).
+      name: Identify any other realated alerts
       type: title
       iscommand: false
       brand: ""
