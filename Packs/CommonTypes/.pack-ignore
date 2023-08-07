@@ -210,6 +210,9 @@ ignore=IF100
 [file:incidentfield-Alert_Name.json]
 ignore=IF100
 
+[file:incidentfield-Related_Alerts.json]
+ignore=IF100
+
 [file:incidentfield-Event_Descriptions.json]
 ignore=IF100
 
