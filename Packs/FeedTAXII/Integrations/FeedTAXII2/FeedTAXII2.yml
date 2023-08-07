@@ -102,6 +102,7 @@ configuration:
   required: false
 - display: STIX Objects To Fetch
   name: objects_to_fetch
+  additionalinfo: 'Choose which STIX objects to fetch from the TAXII server. If left empty, all available objects will be fetched.'
   defaultvalue: indicator,report,malware,campaign,attack-pattern,course-of-action,intrusion-set,tool,threat-actor,infrastructure
   type: 16
   options:
