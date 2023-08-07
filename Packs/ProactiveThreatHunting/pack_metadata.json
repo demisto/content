@@ -6,8 +6,12 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
-    "tags": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Hunting"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
