@@ -10,5 +10,10 @@ This API key is used in the *API Key* field in the integration configuration.
 - Prisma Access
 - XSOAR TIM
 
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***wildfire-upload-url***
+- ***wildfire-get-url-webartifacts***
+See the vendor’s documentation for more details.
+
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/wild-fire-v2)
