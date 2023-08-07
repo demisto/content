@@ -1,47 +1,65 @@
-import pytest
+import unittest
 from unittest.mock import patch
 from HuntingFromIndicatorLayout import hunting_from_indicator_layout
+from demisto_sdk.commands.common.tools import CommandResults
 
 
-@pytest.fixture
-def mock_demisto():
-    with patch('HuntingFromIndicatorLayout.demisto') as mock:
-        yield mock
+class TestHuntingFromIndicatorLayout(unittest.TestCase):
+
+    @patch('demisto.executeCommand')
+    def test_hunting_session_creation_success(self, mock_execute_command):
+        # Mock the demisto.executeCommand response
+        mock_execute_command.return_value = [
+            {
+                'Type': 1,
+                'Contents': 'success',
+                'ContentsFormat': 'json',
+                'HumanReadable': 'Proactive Threat Hunting Incident Created: Threat Hunting Session - sdo_value',
+                'EntryContext': {}
+            }
+        ]
+
+        sdo_value = "some_sdo_value"
+        expected_output = CommandResults(
+            readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo_value}"
+        )
+
+        # Call the function to be tested
+        result = hunting_from_indicator_layout(sdo_value)
+
+        # Assertions
+        self.assertEqual(result, expected_output)
+        mock_execute_command.assert_called_once_with(
+            "createNewIncident",
+            {
+                "name": f"Threat Hunting Session - {sdo_value}",
+                "sdoname": f"{sdo_value}",
+                "type": "Proactive Threat Hunting"
+            }
+        )
+
+    @patch('demisto.executeCommand')
+    def test_hunting_session_creation_failure(self, mock_execute_command):
+        # Mock the demisto.executeCommand response when an exception occurs
+        mock_execute_command.side_effect = Exception("Some error message")
+
+        sdo_value = "some_sdo_value"
+
+        # Call the function to be tested and expect a DemistoException to be raised
+        with self.assertRaises(DemistoException) as context:
+            hunting_from_indicator_layout(sdo_value)
+
+        # Assertions
+        self.assertIn("Failed to create hunting session:", str(context.exception))
+        mock_execute_command.assert_called_once_with(
+            "createNewIncident",
+            {
+                "name": f"Threat Hunting Session - {sdo_value}",
+                "sdoname": f"{sdo_value}",
+                "type": "Proactive Threat Hunting"
+            }
+        )
 
 
-def test_hunting_from_indicator_layout_success(mock_demisto):
-    # Mocking the executeCommand function to return a desired response
-    mock_demisto.executeCommand.return_value = [
-        {
-            "Type": 1,
-            "Contents": "Incident created successfully"
-        }
-    ]
-
-    # Call the hunting_from_indicator_layout function
-    sdo = "example_sdo"
-    result = hunting_from_indicator_layout(sdo)
-
-    # Assert the expected function calls and return value
-    mock_demisto.executeCommand.assert_called_once_with("createNewIncident", {
-        "name": f"Threat Hunting Session - {sdo}",
-        "sdoname": f"{sdo}",
-        "type": "Proactive Threat Hunting"
-    })
-    assert result.outputs_prefix == 'CreateNewIncident'
-    assert result.outputs_key_field == 'id'
-    assert result.outputs == [{"id": "Incident created successfully"}]
-    assert result.readable_output == f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo}"
-
-
-def test_hunting_from_indicator_layout_failure(mock_demisto):
-    # Mocking the executeCommand function to raise an exception
-    mock_demisto.executeCommand.side_effect = Exception("Test exception")
-
-    # Call the hunting_from_indicator_layout function
-    sdo = "example_sdo"
-    with pytest.raises(DemistoException) as cm:
-        hunting_from_indicator_layout(sdo)
-
-    # Assert the raised exception message
-    assert str(cm.value) == 'Failed to create hunting session: Test exception'
+if __name__ == '__main__':
+    unittest.main()
