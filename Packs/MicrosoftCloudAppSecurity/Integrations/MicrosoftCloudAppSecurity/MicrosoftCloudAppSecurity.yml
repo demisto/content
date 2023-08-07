@@ -17,43 +17,43 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: |-
-    More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-cloud-app-security
-  defaultvalue: Worldwide
-  display: Endpoint Type
+- display: Endpoint Type
   name: endpoint_type
   required: false
   type: 15
   section: Connect
+  additionalinfo: |-
+    More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-cloud-app-security
+  defaultvalue: Worldwide
   options:
   - Worldwide
   - US GCC
   - US GCC-High
-- display: Server URL (e.g., https://example.net)
-  name: url
-  required: true
+- name: url
   type: 0
   section: Connect
+  required: true
+  display: Server URL (e.g., https://example.net)
   additionalinfo: In the Security Center, go to Settings > Clod Apps > About tab, where the API URL is displayed.
 - name: creds_token
   type: 9
-  displaypassword: User's key to access the API (for legacy method)
-  hiddenusername: true
   section: Connect
   required: false
+  displaypassword: User's key to access the API (for legacy method)
+  hiddenusername: true
 - display: User's key to access the API (for legacy method)
   name: token
   type: 4
-  hidden: true
   section: Connect
-  advanced: true
   required: false
-- display: Application ID
+  hidden: true
+  advanced: true
+- display: 'Application ID'
   name: app_id
   type: 0
   section: Connect
-  additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
   required: false
+  additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
 - display: 'Tenant ID (for Client Credentials mode)'
   name: tenant_id
   type: 0
@@ -62,10 +62,10 @@ configuration:
 - display: ''
   name: client_id
   type: 9
-  displaypassword: Client Secret (for Client Credentials mode)
-  hiddenusername: true
   section: Connect
   required: false
+  displaypassword: Client Secret (for Client Credentials mode)
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -85,40 +85,40 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
   section: Connect
   advanced: true
-  required: false
 - display: Incident severity
   name: severity
   type: 16
+  required: false
   options:
   - Low
   - Medium
   - High
   - All
-  required: false
 - display: Maximum alerts to fetch
   name: max_fetch
   type: 0
-  defaultvalue: '50'
   required: false
+  defaultvalue: '50'
 - display: First fetch time
   name: first_fetch
   type: 0
-  additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   section: Collect
   required: false
-- display: Incident resolution status
+  additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- display: 'Incident resolution status'
   name: resolution_status
   type: 16
+  section: Collect
+  advanced: true
+  required: false
   options:
   - Open
   - Dismissed
   - Resolved
   - All
-  section: Collect
-  advanced: true
-  required: false
 - additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: {"severity":{"eq":2}}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: {"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"}" please query on {"entity.policy":{"eq":1234}}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
   display: 'Custom Filter'
   name: custom_filter
@@ -888,7 +888,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.67955
   isfetch: true
   runonce: false
   script: '-'

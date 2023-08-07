@@ -4,7 +4,6 @@ import urllib3
 
 from MicrosoftApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
-from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -980,7 +979,7 @@ def main():  # pragma: no cover
                 'microsoft-cas-auth-start': start_auth,
                 'microsoft-cas-auth-complete': complete_auth,
                 'microsoft-cas-auth-reset': reset_auth,
-                'microsoft-cas-auth-test': connection_test,
+                'microsoft-cas-auth-test': test_connection,
                 'microsoft-cas-alerts-list': list_alerts_command,
                 'microsoft-cas-alert-dismiss-bulk': bulk_dismiss_alert_command,  # Deprecated.
                 'microsoft-cas-alert-resolve-bulk': bulk_resolve_alert_command,  # Deprecated.

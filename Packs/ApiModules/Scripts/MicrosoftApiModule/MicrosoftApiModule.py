@@ -583,12 +583,11 @@ def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None
     if is_gcc:  # Backward compatible.
         endpoint_type = "US GCC"
         log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
-    elif endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type:
+    elif endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type and not url:
         # When the integration was configured before our Azure Cloud support, the value will be None.
-        if not url:
-            if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
-                raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
-            raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
+        if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+            raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+        raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
     endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(endpoint_type, 'com')
     url = url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
     demisto.info(f"Using url:{url}, endpoint type:{endpoint_type}{log_message_append}")
@@ -906,8 +905,7 @@ class MicrosoftClient(BaseClient):
 
         return access_token
 
-    @staticmethod
-    def _raise_authentication_error(oproxy_response: requests.Response):
+    def _raise_authentication_error(self, oproxy_response: requests.Response):
         """
         Raises an exception for authentication error with the Oproxy server.
         Args:

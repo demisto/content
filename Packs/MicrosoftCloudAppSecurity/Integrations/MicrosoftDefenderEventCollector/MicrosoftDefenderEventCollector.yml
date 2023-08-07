@@ -49,33 +49,33 @@ configuration:
   name: scope
   type: 0
   section: Connect
-  additionalinfo: The scope of the application (only if self-deployed).
   required: true
+  additionalinfo: The scope of the application (only if self-deployed).
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: after
   type: 0
   section: Collect
   required: false
-- defaultvalue: '1000'
-  additionalinfo: Due to API limitations, the maximum is 10,000.
-  display: Number of alerts for each fetch.
+- display: Number of alerts for each fetch.
   name: limit
   type: 0
   section: Collect
   required: false
+  defaultvalue: '1000'
+  additionalinfo: Due to API limitations, the maximum is 10,000.
 - display: Fetch events
   name: isFetchEvents
   type: 8
   section: Collect
   required: false
-- defaultvalue: 'true'
-  display: Verify SSL Certificate
+- display: Verify SSL Certificate
   name: verify
   type: 8
   section: Connect
   advanced: true
   required: false
+  defaultvalue: 'true'
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -110,7 +110,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/pydantic-jwt3:1.0.0.64406
+  dockerimage: demisto/pydantic-jwt3:1.0.0.68063
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
