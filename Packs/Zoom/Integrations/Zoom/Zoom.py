@@ -1,11 +1,10 @@
-from fastapi.responses import JSONResponse
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import shutil
 from ZoomApiModule import *
 from traceback import format_exc
 from datetime import datetime
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response, status
 from pydantic import BaseModel
 import uvicorn
 
@@ -350,6 +349,7 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
         If the message contains entitlement, return a reply.
     """
     integration_context = get_integration_context(SYNC_CONTEXT)
+    demisto.debug(f"context: {integration_context}")
     messages = integration_context.get('messages', [])
     demisto.debug(f"check_and_handle_entitlements: {messages}")
     if messages and message_id:
@@ -357,11 +357,10 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
         message_filter = list(filter(lambda q: q.get('message_id') == message_id, messages))
         if message_filter:
             message = message_filter[0]
-            message.get('entitlement')
+            entitlement = message.get('entitlement')
             reply = message.get('reply', 'Thank you for your response.')
-            # guid, incident_id, task_id = extract_entitlement(entitlement, text)
-            # demisto.handleEntitlementForUser(incident_id, guid, user_name, text,
-            #                                 task_id)
+            guid, incident_id, task_id = extract_entitlement(entitlement)
+            demisto.handleEntitlementForUser(incident_id, guid, user_name, text, task_id)
             demisto.debug(f'message_filter: {message_filter}')
             message['remove'] = True
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
@@ -470,7 +469,7 @@ def long_running(port):
             time.sleep(5)
 
 
-async def process_entitlement_reply(
+def process_entitlement_reply(
     entitlement_reply: str,
     accountId: str,
     robotJid: str,
@@ -501,7 +500,8 @@ async def process_entitlement_reply(
         "robot_jid": robotJid,
         "account_id": accountId
     }
-    await CLIENT.zoom_send_notification(url_suffix, json_data_all)
+    CLIENT.zoom_send_notification(url_suffix, json_data_all)
+    return 
 
 
 def answer_question(text: str, question: dict, email: str = ''):
@@ -515,37 +515,49 @@ def answer_question(text: str, question: dict, email: str = ''):
     return incident_id
 
 
+async def handle_listen_error(error: str):
+    """
+    Logs an error and updates the module health accordingly.
+
+    Args:
+        error: The error string.
+    """
+    demisto.error(error)
+    demisto.updateModuleHealth(error)
+
+
+@app.get('/')
+async def handle_authorization():
+    demisto.debug("auto:")
+    return Response(status_code=status.HTTP_200_OK)
+    
+    
 @app.post('/')
 async def handle_zoom_button_click(request: Request):
+    demisto.debug(f"request: {request}")
     request = await request.json()
     demisto.debug(f"request: {request}")
     event_type = request['event']
     payload = request['payload']
-    if event_type == 'interactive_message_actions':
-        action = payload['actionItem']['value']
-        message_id = payload['messageId']
-        account_id = payload['accountId']
-        robot_jid = payload['robotJid']
-        to_jid = payload['toJid']
-        demisto.debug(f"message_id: {message_id}")
-        entitlement_reply = await check_and_handle_entitlement(action, message_id)  # type: ignore
-        if entitlement_reply:
-            await process_entitlement_reply(entitlement_reply, account_id, robot_jid, action, to_jid)
-        #    demisto.updateModuleHealth("")
-        demisto.debug(f"button was clicked {action} on message {message_id}")
-        return {"message": "success"}
-    else:
-        return {"message": "Invalid event type."}
-
-
-@app.get('/authorize')
-def authorize():
-    return JSONResponse(content='https://zoom.us/launch/chat?jid=robot_v16tba1o08roqyncjqo5slvq@xmpp.zoom.us')
-
-
-@app.get('/')
-def index(request: Request):
-    return 'Welcome to the xsoar Chatbot for Zoom!'
+    try:
+        if event_type == 'interactive_message_actions':
+            action = payload['actionItem']['value']
+            message_id = payload['messageId']
+            account_id = payload['accountId']
+            robot_jid = payload['robotJid']
+            to_jid = payload['toJid']
+            user_name = payload['userName']
+            demisto.debug(f"message_id: {message_id}")
+            entitlement_reply = await check_and_handle_entitlement(action, message_id, user_name)  # type: ignore
+            if entitlement_reply:
+                process_entitlement_reply(entitlement_reply, account_id, robot_jid, action, to_jid)
+                #  demisto.updateModuleHealth("")
+            demisto.debug(f"button was clicked {action} on message {message_id}")
+            return Response(status_code=status.HTTP_200_OK)
+        else:
+            return Response(status_code=status.HTTP_200_OK)
+    except Exception as e:
+        await handle_listen_error(f'Error occurred while handel response from Zoom: {e}')
 
 
 def test_module(client: Client):
