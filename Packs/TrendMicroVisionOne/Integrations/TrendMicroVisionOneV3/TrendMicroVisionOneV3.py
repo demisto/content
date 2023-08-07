@@ -2307,9 +2307,6 @@ def main():  # pragma: no cover
 
         assert base_url is not None
         client = Client(base_url, api_key, proxy, verify)
-        # v1_client: pytmv1.Client = _get_client(
-        #     "Trend Micro Vision One V3", api_key, base_url
-        # )
 
         command = demisto.command()
         demisto.debug(COMMAND_CALLED.format(command=command))
