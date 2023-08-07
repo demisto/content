@@ -2126,6 +2126,7 @@ def file_create_command(client: Client, args: Dict[str, Any], organization: Opti
         raw_response=response
     )
 
+
 def file_update_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                         project: Optional[str]) -> CommandResults:
     """
@@ -2146,6 +2147,7 @@ def file_update_command(client: Client, args: Dict[str, Any], organization: Opti
         raw_response=response
     )
 
+
 def file_delete_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                         project: Optional[str]) -> CommandResults:
     """
@@ -2165,6 +2167,7 @@ def file_delete_command(client: Client, args: Dict[str, Any], organization: Opti
         outputs=response,
         raw_response=response
     )
+
 
 def file_list_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                       project: Optional[str]) -> CommandResults:
@@ -2210,9 +2213,11 @@ def file_get_command(client: Client, args: Dict[str, Any], organization: Optiona
     return fileResult(filename=file_name, data=data, file_type=file_type)
 
 
-def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any]):
-    params = demisto.params()
-    branch_list = branch_list_command(client, args, params.get('repository'), params.get('project'))
+def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], org_repo_project_tuple: namedtuple):
+    """
+    This function converts a branch name to branch id. If the given branch does not exist, returns None.
+    """
+    branch_list = branch_list_command(client, args, org_repo_project_tuple.repository, org_repo_project_tuple.project)
     for branch in branch_list.outputs:
         if branch.get("name").endswith(args["reference_branch_name"]):
             return branch.get("objectId")
@@ -2227,7 +2232,7 @@ def branch_create_command(client: Client, args: Dict[str, Any], organization: Op
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
     # convert reference_branch_name to branch id
     if args.get("reference_branch_name"):
-        args["branch_id"] = mapping_branch_name_to_branch_id(client, args)
+        args["branch_id"] = mapping_branch_name_to_branch_id(client, args, org_repo_project_tuple)
 
     response = client.branch_create_request(org_repo_project_tuple, args=args)
 
