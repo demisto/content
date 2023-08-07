@@ -6,12 +6,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* URL Enrichment - Generic v2
 * Account Enrichment - Generic v2.1
 * File Reputation
-* Domain Enrichment - Generic v2
-* Get prevalence for IOCs
 * IP Enrichment - Generic v2
+* Domain Enrichment - Generic v2
+* URL Enrichment - Generic v2
+* Get prevalence for IOCs
 
 ### Integrations
 
@@ -19,8 +19,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchAlertsV2
 * Set
+* SearchIncidentsV2
 
 ### Commands
 
