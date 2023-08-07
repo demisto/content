@@ -1256,7 +1256,7 @@ def build_filters(filters: str | None) -> dict:
 
     Args:
         filters (str, optional): A string containing filters in the format "name quality value" separated by commas.
-                                 Escaped commas (\\,) are treated as literal commas.
+                                 Escaped commas (\\,) and spaces (\\s) are treated as literal characters.
                                  Defaults to None.
 
     Returns:
@@ -1264,14 +1264,14 @@ def build_filters(filters: str | None) -> dict:
               and values correspond to the name, quality, and value of each filter component.
 
     Example:
-        filters = "name1,good,value1\\,with\\,commas name2,excellent,value2"
+        filters = "name1 good value1\\,with\\,commas, name2\\swith\\sspaces excellent value2"
         result = build_filters(filters)
         # Output:
         # {
         #     'filter.0.filter': 'name1',
         #     'filter.0.quality': 'good',
         #     'filter.0.value': 'value1,with,commas',
-        #     'filter.1.filter': 'name2',
+        #     'filter.1.filter': 'name2 with spaces',
         #     'filter.1.quality': 'excellent',
         #     'filter.1.value': 'value2'
         # }
@@ -1344,6 +1344,7 @@ def export_scan_command(args: dict[str, Any], client: Client) -> PollResult:
 
     status_response = client.check_export_scan_status(scan_id, file_id)
     demisto.debug(f'{status_response=}')
+
     match status_response.get('status'):
         case 'ready':
             return PollResult(
