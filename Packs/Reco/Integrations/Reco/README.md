@@ -28,6 +28,25 @@ Reco is a Saas data security solution that protects your data from accidental le
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+### reco-add-exclusion-filter
+
+***
+Add exclusion filter to Reco Classifier
+
+#### Base Command
+
+`reco-add-exclusion-filter`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| values_to_add | Values to add to the exclusion filter (split by ','). | Required | 
+| key_to_add | key too add to the exclusion filter (e.g. "CASE_SENSITIVE_TERMS", "LOCATION_CASE_INSENSITIVE_TERMS", "OWNERS", "FILE_IDS", "LOCATIONS"). | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 ### reco-update-incident-timeline
 
 ***
@@ -104,12 +123,10 @@ Tag a user as risky in Reco
 #### Context Output
 
 There is no context output for this command.
-
-
 ### reco-get-assets-user-has-access-to
 
 ***
-Get assets user has access to (optional to get only sensitive assets)
+Get all files user has access to from Reco
 
 #### Base Command
 
@@ -117,78 +134,21 @@ Get assets user has access to (optional to get only sensitive assets)
 
 #### Input
 
-| **Argument Name** | **Description**                                   | **Required** |
-|-------------------|---------------------------------------------------|--------------|
-| asset_owner       | Email address of the user who owns all the assets | Required     | 
-| only_sensitive    | Get only sensitive files                          | Optional     |
-
-
-#### Context Output
-
-| **Path**    | **Type** | **Description** |
-|-------------|----------|----------------|
-| Reco.Assets | string   | Assets         | 
-
-
-
-### reco-get-sensitive-assets-by-name
-
-***
-Get sensitive assets by name (optional to search by regex)
-
-#### Base Command
-
-`reco-get-sensitive-assets-by-name`
-
-#### Input
-
-| **Argument Name** | **Description**                               | **Required** |
-|-------------------|-----------------------------------------------|--------------|
-| asset_name        | Asset Name to search                          | Required     | 
-| regex_search      | Search assets by regex (Default string equal) | Optional     |
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email_address | Email address of the user. | Required | 
+| only_sensitive | Return only sensitive assets owned by this user. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
-
-
-### reco-get-sensitive-assets-by-id
-
-***
-Get sensitive assets by id
-
-#### Base Command
-
-`reco-get-sensitive-assets-by-id`
-
-#### Input
-
-| **Argument Name** | **Description**    | **Required** |
-|-------------------|--------------------|--------------|
-| asset_id          | Asset ID to search | Required     |
-
-
-#### Context Output
-
-
-| **Path**    | **Type** | **Description** |
-|-------------|----------|----------------|
-| Reco.SensitiveAssets.file_name | string   |  The name of the asset |
-| Reco.SensitiveAssets.file_owner | string   | The owner of the asset |
-| Reco.SensitiveAssets.file_url | Unknown     |  Json string of the asset's url and the name |
-| Reco.SensitiveAssets.currently_permitted_users | String   | List of currently permitted users |
-| Reco.SensitiveAssets.visibility | string   |  Visibility of the asset |
-| Reco.SensitiveAssets.location | string   |  The path of the asset |
-| Reco.SensitiveAssets.source | string   |  SaaS tool source of the asset |
-| Reco.SensitiveAssets.sensitivity_level | Number  | The sensitivity level of the asset |
-
-
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets | unknown | Assets user has access to | 
 
 ### reco-add-leaving-org-user-label
 
 ***
-Tag a user as leaving employee in Reco
+Tag a user as leaving org user in Reco
 
 #### Base Command
 
@@ -196,19 +156,64 @@ Tag a user as leaving employee in Reco
 
 #### Input
 
-| **Argument Name** | **Description**                                                         | **Required** |
-| --- |-------------------------------------------------------------------------| --- |
-| email_address | Email address of the user to add to the leaving org users list in Reco. | Required | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email_address | Email address of the user to tag as levaing org user. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+### reco-get-sensitive-assets-by-name
 
+***
+Get all sensitive assets from Reco by name
+
+#### Base Command
+
+`reco-get-sensitive-assets-by-name`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_name | Asset name to search for. | Required | 
+| regex_search | Return only sensitive assets owned by this user. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### reco-get-sensitive-assets-by-id
+
+***
+Get all sensitive assets from Reco by id
+
+#### Base Command
+
+`reco-get-sensitive-assets-by-id`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Asset id to search for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.SensitiveAssets.file_name | String | The name of the asset | 
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset | 
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name | 
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users | 
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset | 
+| Reco.SensitiveAssets.location | String | The path of the asset | 
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset | 
 
 ### reco-get-link-to-user-overview-page
 
 ***
-Get link to user overview page in Reco
+Generate a magic link for reco UI (overview page)
 
 #### Base Command
 
@@ -216,36 +221,14 @@ Get link to user overview page in Reco
 
 #### Input
 
-| **Argument Name** | **Description**                                                             | **Required** |
-|-------------------|-----------------------------------------------------------------------------| --- |
-| entity_id         | Email address of the user to get the link to the user overview page in Reco. | Required |
-| link_type         | Type of the link                                                            | Required |
-
-
-### reco-get-sensitive-assets-with-public-link
-
-***
-Get all sensitive assets with public link from Reco
-
-#### Base Command
-
-`reco-get-sensitive-assets-with-public-link`
-
-#### Input
-
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity | Entity Type (RM_LINK_TYPE_USER). | Required | 
+| param | Entity ID (user email). | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Reco.Assets.asset_id | String | The asset id | 
-| Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
-| Reco.Assets.data_category | String | The data category of the asset | 
-| Reco.Assets.data_categories | String | The data categories of the asset | 
-| Reco.SensitiveAssets.location | String | The path of the asset | 
-| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
-| Reco.Assets.last_access_date | String | The last access date of the asset | 
+There is no context output for this command.
 ### reco-get-3rd-parties-accessible-to-data-list
 
 ***
@@ -270,6 +253,33 @@ Get 3rd parties accessible to sensitive assets
 | Reco.Domains.num_files | Number | The number of files the 3rd party has access to | 
 | Reco.Domains.num_users | Number | The number of users the 3rd party has access to | 
 | Reco.Domains.data_category | String | The data category of the assets the 3rd party has access to | 
+
+### reco-get-sensitive-assets-with-public-link
+
+***
+Get all sensitive assets with public link from Reco
+
+#### Base Command
+
+`reco-get-sensitive-assets-with-public-link`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Reco.Assets.asset_id | String | The asset id | 
+| Reco.Assets.asset | Unknown | Json string of the asset's url and the name | 
+| Reco.Assets.data_category | String | The data category of the asset | 
+| Reco.Assets.data_categories | String | The data categories of the asset | 
+| Reco.SensitiveAssets.location | String | The path of the asset | 
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
+| Reco.Assets.last_access_date | String | The last access date of the asset | 
+
 ### reco-get-files-shared-with-3rd-parties
 
 ***
@@ -297,21 +307,22 @@ Get files shared with 3rd parties
 | Reco.Assets.data_category | String | The data category of the assets the 3rd party has access to | 
 | Reco.Assets.last_access_date | String | The last access date of the asset | 
 | Reco.Assets.domain | String | The domain of the 3rd party | 
-### reco-add-exclusion-filter
+
+### reco-change-alert-status
 
 ***
-Add exclusion filter to Reco Classifier
+update alert status in Reco
 
 #### Base Command
 
-`reco-add-exclusion-filter`
+`reco-change-alert-status`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| values_to_add | Values to add to the exclusion filter. | Required | 
-| key_to_add | key too add to the exclusion filter (e.g. "case_sensitive_terms", "file_ids", "location_case_insensitive_terms", "locations", "owners"). | Required | 
+| alert_id | alert id to get. | Required | 
+| status | status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED"). | Required | 
 
 #### Context Output
 
