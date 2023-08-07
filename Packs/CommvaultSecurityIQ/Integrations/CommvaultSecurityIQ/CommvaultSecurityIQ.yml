@@ -79,13 +79,11 @@ configuration:
   required: false
   type: 0
   defaultvalue: '50'
-- display: Certificate
-  name: certificate
-  type: 12
-  required: false
-- display: Private key
-  name: private_key
-  type: 12
+- name: creds_certificate
+  display: Certificate
+  type: 9
+  section: Connect
+  displaypassword: Private Key
   required: false
 description: Commvault Security IQ provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
 display: Commvault Security IQ
