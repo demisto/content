@@ -38,7 +38,7 @@ class Request(BaseModel):  # pragma: no cover
     url: AnyUrl
     headers: Optional[Union[Json[dict], dict]]
     params: Optional[ReqParams]
-    verify = True
+    verify: bool = True
     data: Optional[str] = None
 
 
