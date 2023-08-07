@@ -299,13 +299,11 @@ def main():  # pragma: no cover
         github_repo_obj=github_repo_obj,
         run_id=run_id,
     )
-    try:
-        res = autobump_manager.manage()
-        print(f"{t.green}{res}")
-        sys.exit(0)
-    except Exception as e:
-        print(f"Failed to execute autobump in branch {ORGANIZATION_NAME}/{REPO_MANE}./n {e}/n")
-        sys.exit("Bump version pack manually")
+
+    res = autobump_manager.manage()
+    print(f"{t.green}{res}")
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":
