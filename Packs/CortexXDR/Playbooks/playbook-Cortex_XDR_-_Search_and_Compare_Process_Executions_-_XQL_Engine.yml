@@ -1,0 +1,574 @@
+description: |-
+  This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR - XQL Engine" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+  Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+  - value: *process name*
+  -commands: *command-line arguments*
+id: Cortex XDR - Search and Compare Process Executions - XQL Engine
+inputs:
+- description: ""
+  key: Processes
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  key: HuntingTimeFrame
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 7 days
+- description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  key: StringSimilarityThreshold
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "0.5"
+name: Cortex XDR - Search and Compare Process Executions - XQL Engine
+outputs:
+- contextPath: StringSimilarity
+  description: StringSimilarity results.
+  type: unknown
+- contextPath: Findings
+  description: Suspicious process executions found.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 92eff83b-1cfb-4e55-875d-efd9c64debde
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 92eff83b-1cfb-4e55-875d-efd9c64debde
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ProcessToSearch
+      value:
+        complex:
+          root: inputs.Processes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: e169c8b6-fc4d-456c-8327-eea2ba7b1cfa
+      iscommand: false
+      name: Set process to search
+      script: Set
+      type: regular
+      version: -1
+    taskid: e169c8b6-fc4d-456c-8327-eea2ba7b1cfa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 200
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: cmd
+                root: PaloAltoNetworksXQL.GenericQuery.results
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 247e6298-919d-4fce-8e68-f98cc3e080a1
+      iscommand: false
+      name: Has query results?
+      type: condition
+      version: -1
+    taskid: 247e6298-919d-4fce-8e68-f98cc3e080a1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 530
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c1e49ce0-5cfc-46ec-82c4-dc3a28b64dd7
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c1e49ce0-5cfc-46ec-82c4-dc3a28b64dd7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      similarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+      similiarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+      string_A:
+        complex:
+          accessor: cmd
+          root: PaloAltoNetworksXQL.GenericQuery.results
+          transformers:
+          - operator: uniq
+      string_B:
+        complex:
+          accessor: commands
+          root: ProcessToSearch
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation calculates the similarity ratio between text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+      id: 663d69c0-4c90-4690-80d4-f54ff8b59a5f
+      iscommand: false
+      name: Compare query results to given command-line patterns
+      script: StringSimilarity
+      type: regular
+      version: -1
+    taskid: 663d69c0-4c90-4690-80d4-f54ff8b59a5f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 700
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 8466e3c1-e48a-4093-8236-25689e23cb59
+      iscommand: false
+      name: Delete context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8466e3c1-e48a-4093-8236-25689e23cb59
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1210
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: StringA
+                root: StringSimilarity
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 7243e1ff-bbc2-4958-8f6a-7d2c931e556f
+      iscommand: false
+      name: Execution is suspicious?
+      type: condition
+      version: -1
+    taskid: 7243e1ff-bbc2-4958-8f6a-7d2c931e556f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 860
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Tool Usage Found
+      output:
+        complex:
+          accessor: processname
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.StringA
+          root: PaloAltoNetworksXQL.GenericQuery.results
+    - incidentfield: Affected Hosts
+      output:
+        complex:
+          accessor: hostname
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.StringA
+          root: PaloAltoNetworksXQL.GenericQuery.results
+    - incidentfield: Affected Users
+      output:
+        complex:
+          accessor: username
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.StringA
+          root: PaloAltoNetworksXQL.GenericQuery.results
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Findings
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.StringA
+          root: PaloAltoNetworksXQL.GenericQuery.results
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 38361085-b772-49bf-8d5d-b11f3ebab915
+      iscommand: false
+      name: Set findings
+      script: Set
+      type: regular
+      version: -1
+    taskid: 38361085-b772-49bf-8d5d-b11f3ebab915
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 1040
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cortex XDR - XQL Query Engine
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: e6f771d7-f624-49b6-813b-9784f2f3449d
+      iscommand: false
+      name: Does XQL Query Engine integration enabled?
+      type: condition
+      version: -1
+    taskid: e6f771d7-f624-49b6-813b-9784f2f3449d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: value
+          root: ProcessToSearch
+          transformers:
+          - operator: StringifyArray
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' OR action_process_image_name = '
+              toReplace:
+                value:
+                  simple: ','
+            operator: replace
+          - args:
+              prefix:
+                value:
+                  simple: "config case_sensitive = false\n| dataset = xdr_data  \n| filter action_process_image_name = "
+              suffix:
+                value:
+                  simple: '| fields agent_hostname as hostname, actor_effective_username as username, action_process_image_name as processname, action_process_image_command_line as cmd'
+            operator: concat
+      query_name:
+        simple: hunt
+      time_frame:
+        complex:
+          root: inputs.HuntingTimeFrame
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      id: 5884cd87-5d89-4ef2-8469-a557b677cda1
+      iscommand: true
+      name: Execute query to search given process executions
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      version: -1
+    taskid: 5884cd87-5d89-4ef2-8469-a557b677cda1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_6_#default#": 0.21,
+      "7_6_#default#": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1555,
+        "width": 1030,
+        "x": 450,
+        "y": -100
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
