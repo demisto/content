@@ -1,0 +1,28 @@
+[MODEL: dataset = microsoft_amsi_raw]
+alter
+	get_originalsize = to_integer(json_extract_scalar(event_data ,"$.originalsize")),
+	get_contentsize = to_integer(json_extract_scalar(event_data ,"$.contentsize")),
+	get_scanResult = json_extract_scalar(event_data ,"$.scanResult")
+| alter
+	xdm.event.id = to_string(event_id),
+	xdm.observer.type = provider_name,
+	xdm.session_context_id = to_string(record_id),
+	xdm.source.host.os = os_subtype,
+	xdm.source.process.command_line = replex(process_cmd, "^\"|\"$", ""),
+	xdm.source.process.executable.md5 = process_md5,
+	xdm.source.process.executable.path = coalesce(json_extract_scalar(event_data ,"$.ProcessName"),process_path), // Need to check
+	xdm.source.process.executable.sha256 = process_sha256,
+	xdm.source.process.name = coalesce(arrayindex(regextract(json_extract_scalar(event_data ,"$.ProcessName"),"\\([^\\]+)$"),0),process_name), // Need to verify the extract
+	xdm.source.process.pid = to_integer(process_pid),
+	xdm.source.process.thread_id = to_integer(process_thread_id),
+	xdm.source.user.identifier = json_extract_scalar(event_data ,"$.SubjectUserSid"),
+	xdm.event.log_level = if(LogLevel ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, LogLevel ~= "err", XDM_CONST.LOG_LEVEL_ERROR, LogLevel ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, LogLevel="crit", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(opcode,log_level))),
+	xdm.source.application.name = json_extract_scalar(event_data ,"$.appname"),
+	xdm.event.description = message,
+	xdm.alert.description = json_extract_scalar(event_data ,"$.content"),
+	xdm.target.resource.name = json_extract_scalar(event_data ,"$.contentname"),
+	xdm.source.sent_bytes = coalesce(get_originalsize, get_contentsize),
+	xdm.target.module.sha256 = json_extract_scalar(event_data ,"$.hash"),
+	xdm.source.user.username = json_extract_scalar(event_data ,"$.SubjectUserName"),
+	xdm.event.outcome = if( scanResult = "0", XDM_CONST.OUTCOME_SUCCESS, scanResult = "1", XDM_CONST.OUTCOME_UNKNOWN, scanResult = "0x8000", XDM_CONST.OUTCOME_PARTIAL, scanResult = "0x4000", XDM_CONST.OUTCOME_FAILED, scanResult !~= "0x40{3}", XDM_CONST.OUTCOME_FAILED, null),
+	xdm.event.outcome_reason = if( scanResult = "0", "AMSI_RESULT_CLEAN", scanResult = "1", "AMSI_RESULT_NOT_DETECTED",  scanResult = "0x8000", "AMSI_RESULT_DETECTED", scanResult = "0x4000", "AMSI_RESULT_BLOCKED_BY_ADMIN_BEGIN", scanResult !~= "0x40{3}", "AMSI_RESULT_BLOCKED_BY_ADMIN_END", null);
