@@ -13,7 +13,7 @@ def main():
                                                                "sdoname": f"{sdo}",
                                                                "type": "Proactive Threat Hunting"})
     except Exception:
-        return_results("Error - the field SDO Name does not exist. please install Proactive Threat Hunting pack to support this feature")
+        return_results("Error - Please install Proactive Threat Hunting pack to support this feature")
 
     result = CommandResults(
         readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo}"

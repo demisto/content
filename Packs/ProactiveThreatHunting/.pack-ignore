@@ -18,3 +18,6 @@ ignore=IF113
 
 [file:incidentfield-Hunting_Session_Status.json]
 ignore=IF113
+
+[file:incidentfield-Choose_SDO_To_Hunt_for.json]
+ignore=IF113
