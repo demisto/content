@@ -66,6 +66,10 @@ def get_pack_support_level(file_paths: list[str]) -> str:
 
 
 def main():
+    """
+    this script is checking that "partner-approved" label exists for a PR
+    in case the label exists the workflow will pass, if the label is missing the workflow will fail
+    """
     options = arguments_handler()
     pr_number = options.pr_number
     github_token = options.github_token
@@ -82,17 +86,18 @@ def main():
     pr_files = [file.filename for file in pr.get_files()]
     print(f'pr files are {pr_files}')
     support_level = get_pack_support_level(pr_files)
-    print (f'support level is: {support_level}')
+    print(f'support level is: {support_level}')
     partner_approved = PARTNER_APPROVED_LABEL in pr_label_names
 
     if "partner" not in support_level:
-        print("PR is not from partner, approving the flow and exiting")
+        print("PR doesn't include changes in partner-supported packs, approving the flow and exiting")
         sys.exit(0)
-    else:
+    else:  # PR contains changes in Partner-supported packs
         print(f'{t.cyan}Checking if {PARTNER_APPROVED_LABEL} label exist in PR {pr_number}')
         if not partner_approved:
             print(
-                f'{t.red}ERROR: Label Partner-Approved was not added to PR: {pr_number}')
+                f'{t.red}ERROR: Label Partner-Approved was not added to PR: {pr_number}. Please ask the partner to review'
+                f' the code and add the label after his approval.')
             sys.exit(1)
 
         print(f'{t.cyan}PR labels {pr_label_names} are valid for PR: {pr_number}')
