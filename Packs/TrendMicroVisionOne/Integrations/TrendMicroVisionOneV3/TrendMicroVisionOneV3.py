@@ -49,6 +49,7 @@ TARGET_VALUE = "target_value"
 DESCRIPTION = "description"
 MESSAGE_ID = "message_id"
 MAILBOX = "mail_box"
+APP_NAME = "Trend Micro Vision One V3"
 FIELD = "field"
 ENDPOINT = "endpoint"
 QUERY_OP = "query_op"
@@ -259,7 +260,7 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
-    def status_check(self, v1_client: pytmv1.Client, data: Dict[str, Any]) -> Any:
+    def status_check(self, data: Dict[str, Any]) -> Any:
         """
         Check the status of particular task.
         :type data: ``dict``
@@ -271,6 +272,10 @@ class Client(BaseClient):
         poll = data.get(POLL, FALSE)
         poll_time_sec = data.get(POLL_TIME_SEC, 0)
         message: dict[str, Any] = {}
+
+        # Initialize pytmv1 client
+        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
+
         # Make rest call
         resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)
         # Check if error response is returned
@@ -302,9 +307,7 @@ class Client(BaseClient):
             outputs=message,
         )
 
-    def sandbox_submission_polling(
-        self, v1_client: pytmv1.Client, data: Dict[str, Any]
-    ) -> Any:
+    def sandbox_submission_polling(self, data: Dict[str, Any]) -> Any:
         """
         Check the status of sandbox submission
         :type data: ``dict``
@@ -313,6 +316,10 @@ class Client(BaseClient):
         :rtype: ``Any``
         """
         task_id = data.get(TASKID, EMPTY_STRING)
+
+        # Initialize pytmv1 client
+        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
+
         resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
         # Check if error response is returned
         if (err := _is_pytmv1_error(resp)) is not None:
@@ -397,7 +404,7 @@ class Client(BaseClient):
             indicator=Common.File(file_entry),
         )
 
-    def exception_list_count(self, v1_client: pytmv1.Client) -> int:
+    def exception_list_count(self) -> int:
         """
         Gets the count of object present in exception list
 
@@ -405,6 +412,9 @@ class Client(BaseClient):
         :rtype: ``int``
         """
         new_exceptions: List[ExceptionObject] = []
+        # Initialize pytmv1 client
+        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
+
         try:
             v1_client.consume_exception_list(
                 lambda exception: new_exceptions.append(exception)
@@ -414,13 +424,15 @@ class Client(BaseClient):
         # Return length of exception list
         return len(new_exceptions)
 
-    def suspicious_list_count(self, v1_client: pytmv1.Client) -> int:
+    def suspicious_list_count(self) -> int:
         """
         Gets the count of object present in suspicious list
         :return: number of suspicious object.
         :rtype: ``int``
         """
         new_suspicious: List[SuspiciousObject] = []
+        # Initialize pytmv1 client
+        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
 
         try:
             v1_client.consume_suspicious_list(
@@ -431,7 +443,9 @@ class Client(BaseClient):
         # Return length of suspicious list
         return len(new_suspicious)
 
-    def get_workbench_histories(self, v1_client, start, end) -> list:
+    def get_workbench_histories(self, start, end) -> list:
+        # Initialize pytmv1 client
+        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
         if not check_datetime_aware(start):
             start = start.astimezone()
         if not check_datetime_aware(end):
@@ -510,7 +524,7 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
 
 
 def run_polling_command(
-    args: Dict[str, Any], cmd: str, client: Client, v1_client: pytmv1.Client
+    args: Dict[str, Any], cmd: str, client: Client
 ) -> Union[str, CommandResults]:
     """
     Performs polling interval to check status of task.
@@ -527,9 +541,9 @@ def run_polling_command(
     interval_in_secs = int(args.get("interval_in_seconds", 30))
     task_id = args.get(TASKID, EMPTY_STRING)
     if cmd == CHECK_TASK_STATUS_COMMAND:
-        command_results = client.status_check(v1_client, args)
+        command_results = client.status_check(args)
     else:
-        command_results = client.sandbox_submission_polling(v1_client, args)
+        command_results = client.sandbox_submission_polling(args)
     statuses = [
         "succeeded",
         "failed",
@@ -557,9 +571,7 @@ def run_polling_command(
     return command_results
 
 
-def get_task_status(
-    args: Dict[str, Any], client: Client, v1_client: pytmv1.Client
-) -> Union[str, CommandResults]:
+def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandResults]:
     """
     check status of task.
 
@@ -569,11 +581,11 @@ def get_task_status(
     :type client: ``Client``
     :param client: client object to use http_request.
     """
-    return run_polling_command(args, CHECK_TASK_STATUS_COMMAND, client, v1_client)
+    return run_polling_command(args, CHECK_TASK_STATUS_COMMAND, client)
 
 
 def get_sandbox_submission_status(
-    args: Dict[str, Any], client: Client, v1_client: pytmv1.Client
+    args: Dict[str, Any], client: Client
 ) -> Union[str, CommandResults]:
     """
     call polling command to check status of sandbox submission.
@@ -582,17 +594,18 @@ def get_sandbox_submission_status(
     :type client: ``Client``
     :param client: client object to use http_request.
     """
-    return run_polling_command(
-        args, SANDBOX_SUBMISSION_POLLING_COMMAND, client, v1_client
-    )
+    return run_polling_command(args, SANDBOX_SUBMISSION_POLLING_COMMAND, client)
 
 
-def test_module(v1_client: pytmv1.Client) -> Any:
+def test_module(client: Client) -> Any:
     """
     Performs basic get request to get item samples.
     :type client: ``Client``
     :param client: client object to use http_request.
     """
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+    # Make rest call
     resp = v1_client.check_connectivity()
     if _is_pytmv1_error(resp) is not None:
         return "Connectivity failed!"
@@ -600,7 +613,7 @@ def test_module(v1_client: pytmv1.Client) -> Any:
 
 
 def enable_or_disable_user_account(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
+    client: Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Enable allows the user to sign in to new application and browser sessions.
@@ -628,6 +641,8 @@ def enable_or_disable_user_account(
     )
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ENABLE_USER_ACCOUNT_COMMAND:
         # Make rest call
@@ -685,9 +700,7 @@ def enable_or_disable_user_account(
     )
 
 
-def force_sign_out(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Signs the user out of all active application and browser sessions.
     Supported IAM systems: Azure AD
@@ -707,6 +720,8 @@ def force_sign_out(
     )
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     for account in account_identifiers:
         resp = v1_client.sign_out_account(
@@ -742,7 +757,7 @@ def force_sign_out(
 
 
 def force_password_reset(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Signs the user out of all active application and browser sessions,
@@ -764,6 +779,8 @@ def force_password_reset(
     )
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     for account in account_identifiers:
         resp = v1_client.reset_password_account(
@@ -799,7 +816,7 @@ def force_password_reset(
 
 
 def get_endpoint_info(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve information about the endpoint queried and
@@ -826,6 +843,8 @@ def get_endpoint_info(
 
     new_endpoint_data: List[Any] = []
     endpoint_data: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     try:
         v1_client.consume_endpoint_data(
@@ -881,7 +900,7 @@ def get_endpoint_info(
 
 
 def add_or_remove_from_block_list(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
+    client: Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve data from the add or remove from block list and
@@ -905,6 +924,8 @@ def add_or_remove_from_block_list(
     block_objects: List[Dict[str, str]] = json.loads(args.get("block_objects", [{}]))
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     if command == ADD_BLOCKLIST_COMMAND:
         # Make rest call
         for block in block_objects:
@@ -965,7 +986,7 @@ def add_or_remove_from_block_list(
     )
 
 
-def fetch_incidents(client: Client, v1_client: pytmv1.Client):
+def fetch_incidents(client: Client):
     """
     This function executes to get all workbench alerts by using
     startDateTime, endDateTime
@@ -980,7 +1001,7 @@ def fetch_incidents(client: Client, v1_client: pytmv1.Client):
         start = end + timedelta(days=-days)
 
     alerts: List[Any] = []
-    alerts.extend(client.get_workbench_histories(v1_client, start, end))
+    alerts.extend(client.get_workbench_histories(start, end))
 
     incidents: List[Dict[str, Any]] = []
     if alerts:
@@ -1008,7 +1029,7 @@ def fetch_incidents(client: Client, v1_client: pytmv1.Client):
 
 
 def quarantine_or_delete_email_message(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
+    client: Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve data from the quarantine or delete email message and
@@ -1034,6 +1055,8 @@ def quarantine_or_delete_email_message(
     )
     message: Dict[str, Any] = {}
     multi_resp: List[MsData] = []
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == QUARANTINE_EMAIL_COMMAND:
         # Make rest call
@@ -1112,7 +1135,7 @@ def quarantine_or_delete_email_message(
 
 
 def isolate_or_restore_connection(
-    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
+    client: Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve data from the isolate or restore endpoint connection and
@@ -1138,6 +1161,8 @@ def isolate_or_restore_connection(
     )
     message: Dict[str, Any] = {}
     multi_resp: List[MsData] = []
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ISOLATE_ENDPOINT_COMMAND:
         for endpnt in endpoint_identifiers:
@@ -1196,7 +1221,7 @@ def isolate_or_restore_connection(
 
 
 def terminate_process(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Terminate the process running on the end point and
@@ -1217,6 +1242,9 @@ def terminate_process(
     )
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Make rest call
     for process in process_identifiers:
         resp = v1_client.terminate_process(
@@ -1254,7 +1282,7 @@ def terminate_process(
 
 
 def add_or_delete_from_exception_list(
-    client: Client, v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
+    client: Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Add or Delete the exception object to exception list and
@@ -1279,6 +1307,8 @@ def add_or_delete_from_exception_list(
 
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ADD_EXCEPTION_LIST_COMMAND:
         # Make rest call
@@ -1328,7 +1358,7 @@ def add_or_delete_from_exception_list(
             else:
                 multi_resp.append(unwrap(resp.response).items[0])
 
-    exception_list_count = client.exception_list_count(v1_client)
+    exception_list_count = client.exception_list_count()
     # Aggregate of all results to be sent to the War Room
     message = {
         "message": "success",
@@ -1344,7 +1374,7 @@ def add_or_delete_from_exception_list(
 
 
 def add_to_suspicious_list(
-    client: Client, v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Add suspicious object to suspicious list and
@@ -1364,7 +1394,8 @@ def add_to_suspicious_list(
 
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
-
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     for block in block_objects:
         resp = v1_client.add_to_suspicious_list(
             pytmv1.SuspiciousObjectTask(
@@ -1389,7 +1420,7 @@ def add_to_suspicious_list(
         else:
             multi_resp.append(unwrap(resp.response).items[0])
 
-    suspicious_list_count = client.suspicious_list_count(v1_client)
+    suspicious_list_count = client.suspicious_list_count()
 
     message = {
         "message": "success",
@@ -1407,7 +1438,7 @@ def add_to_suspicious_list(
 
 
 def delete_from_suspicious_list(
-    client: Client, v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Delete the suspicious object from suspicious list and
@@ -1428,6 +1459,8 @@ def delete_from_suspicious_list(
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
 
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     for block in block_objects:
         resp = v1_client.remove_from_suspicious_list(
@@ -1450,7 +1483,7 @@ def delete_from_suspicious_list(
         else:
             multi_resp.append(unwrap(resp.response).items[0])
     # Fetch suspicious list count
-    suspicious_list_count = client.suspicious_list_count(v1_client)
+    suspicious_list_count = client.suspicious_list_count()
 
     message = {
         "message": "success",
@@ -1468,7 +1501,7 @@ def delete_from_suspicious_list(
 
 
 def get_file_analysis_status(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Get the status of file based on task id and
@@ -1487,7 +1520,8 @@ def get_file_analysis_status(
     task_id = args.get(TASKID, EMPTY_STRING)
 
     message: Dict[str, Any] = {}
-
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
 
@@ -1526,7 +1560,7 @@ def get_file_analysis_status(
 
 
 def get_file_analysis_result(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Get the report of file based on report id and sends the result to demist war room
@@ -1543,7 +1577,8 @@ def get_file_analysis_result(
     poll = args.get(POLL, FALSE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
     message: Dict[str, Any] = {}
-
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_sandbox_analysis_result(
         submit_id=report_id,
@@ -1612,9 +1647,7 @@ def get_file_analysis_result(
         )
 
 
-def collect_file(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Collect forensic file and sends the result to demist war room
     :type client: ``Client``
@@ -1629,7 +1662,8 @@ def collect_file(
 
     multi_resp: List[MsData] = []
     message: Dict[str, Any] = {}
-
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     for data in collect_files:
         resp = v1_client.collect_file(
@@ -1664,7 +1698,7 @@ def collect_file(
 
 
 def download_information_collected_file(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[Any, CommandResults]:
     """
     Get the analysis report of file based on action id and sends
@@ -1681,6 +1715,8 @@ def download_information_collected_file(
     # Optional Params
     poll = args.get(POLL, FALSE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_base_task_result(
         task_id=task_id,
@@ -1719,7 +1755,7 @@ def download_information_collected_file(
 
 
 def download_analysis_report(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[Any, CommandResults]:
     """
     Get the analysis report of file based on action id and sends
@@ -1737,6 +1773,8 @@ def download_analysis_report(
     poll = args.get(POLL, FALSE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
     file_name = args.get(FILE_NAME)
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # If a file name is not provided, default value of Sandbox_Analysis_Report is set.
     if not file_name:
@@ -1785,7 +1823,7 @@ def download_analysis_report(
 
 
 def download_investigation_package(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[Any, CommandResults]:
     """
     Downloads the Investigation Package of the specified object based on
@@ -1803,6 +1841,8 @@ def download_investigation_package(
     poll = args.get(POLL, FALSE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
     file_name = args.get(FILE_NAME)
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # If a file name is not provided, default value of
     # Sandbox_Investigation_Package is set for the package.
     if not file_name:
@@ -1855,7 +1895,7 @@ def download_investigation_package(
 
 
 def download_suspicious_object_list(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Downloads the suspicious object list associated to the specified object
@@ -1872,6 +1912,8 @@ def download_suspicious_object_list(
     # Optional Params
     poll = args.get(POLL, FALSE)
     poll_time_sec = args.get(POLL_TIME_SEC, 0)
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_sandbox_suspicious_list(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec
@@ -1913,7 +1955,7 @@ def download_suspicious_object_list(
 
 
 def submit_file_to_sandbox(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     submit file to sandbox and sends the result to demist war room
@@ -1931,7 +1973,8 @@ def submit_file_to_sandbox(
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
     archive_pass = args.get(ARCHIVE_PASSWORD, EMPTY_STRING)
     arguments = args.get(ARGUMENTS, EMPTY_STRING)
-
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.submit_file_to_sandbox(
         file=file_path,
@@ -1972,7 +2015,7 @@ def submit_file_to_sandbox(
 
 
 def submit_file_entry_to_sandbox(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     submit file entry to sandbox and sends the result to demist war room
@@ -1989,6 +2032,8 @@ def submit_file_entry_to_sandbox(
     archive_pass = args.get(ARCHIVE_PASSWORD, EMPTY_STRING)
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
     arguments = args.get(ARGUMENTS, EMPTY_STRING)
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Use entry ID to get file details from demisto
     file_ = demisto.getFilePath(entry)
     file_name = file_.get("name", EMPTY_STRING)
@@ -2039,7 +2084,7 @@ def submit_file_entry_to_sandbox(
 
 
 def submit_urls_to_sandbox(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     submit Urls to sandbox and send the result to demist war room
@@ -2055,6 +2100,8 @@ def submit_urls_to_sandbox(
 
     message: Dict[str, Any] = {}
     submit_urls_resp: List[MsData] = []
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # Make rest call
     for url in urls:
@@ -2088,7 +2135,7 @@ def submit_urls_to_sandbox(
 
 
 def get_alert_details(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
+    client: Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Fetch information for a specific alert and display in war room.
@@ -2103,6 +2150,8 @@ def get_alert_details(
     workbench_id: str = args.get("workbench_id", EMPTY_STRING)
 
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_alert_details(alert_id=workbench_id)
     # Check if an error occurred during rest call
@@ -2133,9 +2182,7 @@ def get_alert_details(
     )
 
 
-def add_note(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Adds a note to an existing workbench alert
     :type client: ``Client``
@@ -2150,6 +2197,8 @@ def add_note(
     content = args.get(CONTENT, EMPTY_STRING)
 
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.add_alert_note(alert_id=workbench_id, note=content)
     # Check if an error occurred during rest call
@@ -2181,9 +2230,7 @@ def add_note(
     )
 
 
-def update_status(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Updates the status of an existing workbench alert
     :type client: ``Client``
@@ -2199,6 +2246,8 @@ def update_status(
     if_match = args.get(IF_MATCH, EMPTY_STRING)
 
     message: Dict[str, Any] = {}
+    # Initialize pytmv1 client
+    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Choose Status Enum
     sts = status.upper()
     if sts not in InvestigationStatus.__members__:
@@ -2258,103 +2307,101 @@ def main():  # pragma: no cover
 
         assert base_url is not None
         client = Client(base_url, api_key, proxy, verify)
-        v1_client: pytmv1.Client = _get_client(
-            "Trend Micro Vision One V3", api_key, base_url
-        )
+        # v1_client: pytmv1.Client = _get_client(
+        #     "Trend Micro Vision One V3", api_key, base_url
+        # )
 
         command = demisto.command()
         demisto.debug(COMMAND_CALLED.format(command=command))
         args = demisto.args()
 
         if command == TEST_MODULE:
-            return_results(test_module(v1_client))
+            return_results(test_module(client))
 
         elif command == FETCH_INCIDENTS:
-            return_results(fetch_incidents(client, v1_client))
+            return_results(fetch_incidents(client))
 
         elif command in (ENABLE_USER_ACCOUNT_COMMAND, DISABLE_USER_ACCOUNT_COMMAND):
-            return_results(enable_or_disable_user_account(v1_client, command, args))
+            return_results(enable_or_disable_user_account(client, command, args))
 
         elif command == FORCE_SIGN_OUT_COMMAND:
-            return_results(force_sign_out(v1_client, args))
+            return_results(force_sign_out(client, args))
 
         elif command == FORCE_PASSWORD_RESET_COMMAND:
-            return_results(force_password_reset(v1_client, args))
+            return_results(force_password_reset(client, args))
 
         elif command in (ADD_BLOCKLIST_COMMAND, REMOVE_BLOCKLIST_COMMAND):
-            return_results(add_or_remove_from_block_list(v1_client, command, args))
+            return_results(add_or_remove_from_block_list(client, command, args))
 
         elif command in (QUARANTINE_EMAIL_COMMAND, DELETE_EMAIL_COMMAND):
-            return_results(quarantine_or_delete_email_message(v1_client, command, args))
+            return_results(quarantine_or_delete_email_message(client, command, args))
 
         elif command in (ISOLATE_ENDPOINT_COMMAND, RESTORE_ENDPOINT_COMMAND):
-            return_results(isolate_or_restore_connection(v1_client, command, args))
+            return_results(isolate_or_restore_connection(client, command, args))
 
         elif command == TERMINATE_PROCESS_COMMAND:
-            return_results(terminate_process(v1_client, args))
+            return_results(terminate_process(client, args))
 
         elif command in (ADD_EXCEPTION_LIST_COMMAND, DELETE_EXCEPTION_LIST_COMMAND):
-            return_results(
-                add_or_delete_from_exception_list(client, v1_client, command, args)
-            )
+            return_results(add_or_delete_from_exception_list(client, command, args))
 
         elif command == ADD_SUSPICIOUS_LIST_COMMAND:
-            return_results(add_to_suspicious_list(client, v1_client, args))
+            return_results(add_to_suspicious_list(client, args))
 
         elif command == DELETE_SUSPICIOUS_LIST_COMMAND:
-            return_results(delete_from_suspicious_list(client, v1_client, args))
+            return_results(delete_from_suspicious_list(client, args))
 
         elif command == GET_FILE_ANALYSIS_STATUS_COMMAND:
-            return_results(get_file_analysis_status(v1_client, args))
+            return_results(get_file_analysis_status(client, args))
 
         elif command == GET_FILE_ANALYSIS_RESULT_COMMAND:
-            return_results(get_file_analysis_result(v1_client, args))
+            return_results(get_file_analysis_result(client, args))
 
         elif command == GET_ENDPOINT_INFO_COMMAND:
-            return_results(get_endpoint_info(v1_client, args))
+            return_results(get_endpoint_info(client, args))
 
         elif command == COLLECT_FILE_COMMAND:
-            return_results(collect_file(v1_client, args))
+            return_results(collect_file(client, args))
 
         elif command == DOWNLOAD_COLLECTED_FILE_COMMAND:
-            return_results(download_information_collected_file(v1_client, args))
+            return_results(download_information_collected_file(client, args))
 
         elif command == FILE_TO_SANDBOX_COMMAND:
-            return_results(submit_file_to_sandbox(v1_client, args))
+            return_results(submit_file_to_sandbox(client, args))
 
         elif command == FILE_ENTRY_TO_SANDBOX_COMMAND:
-            return_results(submit_file_entry_to_sandbox(v1_client, args))
+            return_results(submit_file_entry_to_sandbox(client, args))
 
         elif command == SANDBOX_SUBMISSION_POLLING_COMMAND:
             if args.get(POLLING) == TRUE:
-                cmd_res = get_sandbox_submission_status(args, client, v1_client)
+                cmd_res = get_sandbox_submission_status(args, client)
                 if cmd_res is not None:
                     return_results(cmd_res)
             else:
-                return_results(client.sandbox_submission_polling(v1_client, args))
+                return_results(client.sandbox_submission_polling(args))
 
         elif command == DOWNLOAD_ANALYSIS_REPORT_COMMAND:
-            return_results(download_analysis_report(v1_client, args))
+            return_results(download_analysis_report(client, args))
 
         elif command == DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND:
-            return_results(download_investigation_package(v1_client, args))
+            return_results(download_investigation_package(client, args))
 
         elif command == DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND:
-            return_results(download_suspicious_object_list(v1_client, args))
+            return_results(download_suspicious_object_list(client, args))
 
         elif command == UPDATE_STATUS_COMMAND:
-            return_results(update_status(v1_client, args))
+            return_results(update_status(client, args))
 
         elif command == ADD_NOTE_COMMAND:
-            return_results(add_note(v1_client, args))
+            return_results(add_note(client, args))
 
         elif command == CHECK_TASK_STATUS_COMMAND:
             if args.get(POLLING) == TRUE:
-                cmd_res = get_task_status(args, client, v1_client)
+                cmd_res = get_task_status(args, client)
                 if cmd_res is not None:
                     return_results(cmd_res)
             else:
-                return_results(client.status_check(v1_client, args))
+                return_results(client.status_check(args))
 
         else:
             demisto.error(f"{command} command is not implemented.")
