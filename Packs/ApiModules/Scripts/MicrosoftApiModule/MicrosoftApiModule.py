@@ -79,7 +79,6 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
 
 MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM = "Custom"
 MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE = "com"
-MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE_CUSTOM = "Custom"
 
 
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
@@ -137,6 +136,13 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
     "Worldwide": "com",
     "US GCC": "gcc",
     "US GCC-High": "gcc-high",
+}
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.us',
+    'gcc-high': 'https://login.microsoftonline.us',
+    'dod': 'https://login.microsoftonline.us',
 }
 
 # Azure Managed Identities
@@ -583,7 +589,7 @@ def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None
     if is_gcc:  # Backward compatible.
         endpoint_type = "US GCC"
         log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
-    elif endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type and not url:
+    elif (endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type) and not url:
         # When the integration was configured before our Azure Cloud support, the value will be None.
         if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
             raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")

@@ -1,3 +1,4 @@
+import pytest
 from dateparser import parse
 from pytz import utc
 import urllib3
@@ -104,7 +105,7 @@ class LegacyClient(BaseClient):
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, endpoint_type: str, base_url: str, auth_mode: str,
-                 azure_cloud: AzureCloud, tenant_id: str = None, enc_key: str = None, headers=None):
+                 azure_cloud: AzureCloud, tenant_id: str = None, enc_key: str = None, headers: Optional[dict] = None):
         if headers is None:
             headers = {}
         self.auth_mode = auth_mode
@@ -125,7 +126,8 @@ class Client:
 
             if self.auth_mode == 'device code flow':
                 resource = MICROSOFT_DEFENDER_FOR_APPLICATION_API[endpoint_type]
-                token_retrieval_url = f'{TOKEN_RETRIEVAL_ENDPOINTS[endpoint_type]}/organizations/oauth2/v2.0/token'
+                token_retrieval_url = (f'{MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS[endpoint_type]}'
+                                       '/organizations/oauth2/v2.0/token')
             else:
                 resource = None
                 token_retrieval_url = None
@@ -389,6 +391,7 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
+@pytest.mark.skip("Not a pytest")
 def test_module(client: Client, is_fetch: Optional[Any], custom_filter: Optional[str]):
     try:
         if client.auth_mode == "device code flow":
@@ -974,12 +977,14 @@ def main():  # pragma: no cover
                 look_back=look_back)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+        elif command == 'microsoft-cas-auth-reset':
+            return_results(reset_auth())
+        elif command == 'microsoft-cas-auth-test':
+            return_results(test_connection(client))
         else:
             commands = {
                 'microsoft-cas-auth-start': start_auth,
                 'microsoft-cas-auth-complete': complete_auth,
-                'microsoft-cas-auth-reset': reset_auth,
-                'microsoft-cas-auth-test': test_connection,
                 'microsoft-cas-alerts-list': list_alerts_command,
                 'microsoft-cas-alert-dismiss-bulk': bulk_dismiss_alert_command,  # Deprecated.
                 'microsoft-cas-alert-resolve-bulk': bulk_resolve_alert_command,  # Deprecated.

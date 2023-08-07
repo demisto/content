@@ -1,3 +1,5 @@
+import pytest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-name-in-module
@@ -351,6 +353,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 ''' COMMAND FUNCTIONS '''
 
 
+@pytest.mark.skip("Not a pytest")
 def test_module(get_events: DefenderGetEvents) -> str:
     """Tests API connectivity and authentication'
 
