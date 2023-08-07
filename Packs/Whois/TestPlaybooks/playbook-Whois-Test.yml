@@ -286,7 +286,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: ${Domain.Name}
