@@ -138,8 +138,6 @@ class BranchAutoBumper:
         6. Pushes the changes.
         """
         body = PR_COMMENT_TITLE.format(self.github_run_id)
-        if self.branch != 'maimorag:maimorag-test-old-docker':
-            return
         with Checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
