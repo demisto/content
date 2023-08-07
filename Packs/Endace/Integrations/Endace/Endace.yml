@@ -15,9 +15,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Information is available at EndaceProbe -> Management Summary page
   display: EndaceProbe System Hostname
   name: hostname
@@ -264,7 +266,7 @@ script:
     - contextPath: Endace.ArchivedFile.Delete.Error
       description: Delete Error
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

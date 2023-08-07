@@ -478,7 +478,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Malicious or Suspicious Indicators",
-                        "query": "reputation:Benign OR reputation:Suspicious OR reputation:Malicious",
+                        "query": "reputation:Suspicious OR reputation:Malicious",
                         "queryType": "input",
                         "static": false,
                         "type": "indicators",
@@ -571,7 +571,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Cloud Indicators",
-                        "query": "99900222-7570-4e56-8fa6-1206e76be060",
+                        "query": "displayCloudIndicators",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
@@ -1404,5 +1404,6 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
+    "marketplaces": ["marketplacev2"],
     "description": ""
 }

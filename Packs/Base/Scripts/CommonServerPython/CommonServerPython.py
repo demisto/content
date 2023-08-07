@@ -44,6 +44,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -10645,7 +10646,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
-    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents_res),
+    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents),
                                                                                       [incident[id_field] for incident in incidents]))
     return incidents[:fetch_limit]
 
@@ -10701,16 +10702,18 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     :return: The new incidents ids
     :rtype: ``dict``
     """
-    demisto.debug('lb: Remove old incidents ids')
+    demisto.debug('lb: Remove old incidents ids, current time is {}'.format(current_time))
     look_back_in_seconds = look_back * 60
     deletion_threshold_in_seconds = look_back_in_seconds * 2
 
     new_found_incidents_ids = {}
     for inc_id, addition_time in found_incidents_ids.items():
 
-        if current_time - addition_time < deletion_threshold_in_seconds:
+        if current_time - addition_time <= deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
-
+            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
+        else:
+            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
     demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
@@ -10786,27 +10789,23 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
                   "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
     remove_incident_ids = True
-
+    new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
+            'limit': fetch_limit
         }
-    elif len(incidents) < fetch_limit or look_back == 0:
+    else:        
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
             'time': latest_incident_fetched_time,
+            'limit': new_limit if look_back > 0 else fetch_limit
         }
-    else:
-        remove_incident_ids = False
-        new_last_run = {
-            'time': start_fetch_time,
-        }
-
-    if look_back > 0:
-        new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
-    else:
-        new_last_run['limit'] = fetch_limit
+        if latest_incident_fetched_time == start_fetch_time:
+            # we are still on the same time, no need to remove old incident ids
+            remove_incident_ids = False
+            
 
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
@@ -10868,9 +10867,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
 
-    if found_incidents:
-        updated_last_run.update({'found_incident_ids': found_incidents})
-
+    updated_last_run['found_incident_ids'] = found_incidents
     last_run.update(updated_last_run)
 
     return last_run
@@ -11083,11 +11080,12 @@ def split_data_to_chunks(data, target_chunk_size):
     :type data: ``list`` or a ``string``
     :param data: A list of data or a string delimited with \n  to split to chunks.
     :type target_chunk_size: ``int``
-    :param target_chunk_size: The maximum size of each chunk.
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
 
-    :return: : An iterable of lists where each list contains events with approx size of chunk size.
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
+    target_chunk_size = min(target_chunk_size,  XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
@@ -11103,7 +11101,8 @@ def split_data_to_chunks(data, target_chunk_size):
         yield chunk
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11127,6 +11126,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
     :return: None
     :rtype: ``None``
@@ -11204,7 +11206,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
+    data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)

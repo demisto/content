@@ -26,26 +26,31 @@ configuration:
   options:
   - v1
   - v2
+  required: false
 - additionalinfo: 'The first fetch is limited to the last 50,000 events (for each event type).'
   defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   section: Collect
   type: 0
+  required: false
 - additionalinfo: The maximum amount of events to retrieve for each event type (up to 30000 events). For more information about event types see the help section.
   defaultvalue: '1000'
   display: Max events per fetch
   section: Collect
   name: max_fetch
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   section: Connect
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   section: Connect
   name: proxy
   type: 8
+  required: false
 description: Netskope Event Collector integration.
 display: Netskope Event Collector
 name: NetskopeEventCollector
@@ -64,7 +69,7 @@ script:
       name: limit
     description: Returns events extracted from SaaS traffic and or logs.
     name: netskope-get-events
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

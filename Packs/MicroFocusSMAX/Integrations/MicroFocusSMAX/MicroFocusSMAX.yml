@@ -10,6 +10,7 @@ configuration:
   - Incident
   - Request
   type: 15
+  required: false
 - defaultvalue: https://us1-smax.saas.microfocus.com
   display: Your SMAX Management URL
   name: url
@@ -19,6 +20,7 @@ configuration:
   display: Tenant ID
   name: tenant_id
   type: 0
+  required: false
 - additionalinfo: The admin credentials used to integration with SMAX
   display: Username
   name: credentials
@@ -28,32 +30,40 @@ configuration:
   display: Fetch Filter
   name: fetch_query_filter
   type: 0
+  required: false
 - additionalinfo: 'Fields to return, for example: "Priority,Category" for an entity of type "Incident'
   display: Fields To Fetch
   name: fetch_fields
   type: 0
+  required: false
 - additionalinfo: The maximum number of incidents to fetch per fetch command
   defaultvalue: '100'
   display: Fetch Limit
   name: fetch_limit
   type: 0
+  required: false
 - additionalinfo: Fetch start in days
   defaultvalue: '1'
   display: Fetch Start
   name: fetch_start
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: Fetch SMAX cases and automate  differen SMAX case management actions
 display: MicroFocus SMAX
 name: MicroFocusSMAX
@@ -333,7 +343,7 @@ script:
     - contextPath: MicroFocus.SMAX.Entities.properties.completion_status
       description: Query result status
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   script: '-'

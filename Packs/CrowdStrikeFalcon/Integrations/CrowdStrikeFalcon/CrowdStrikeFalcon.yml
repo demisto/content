@@ -17,16 +17,19 @@ configuration:
   type: 9
   displaypassword: Secret
   section: Connect
+  required: false
 - display: Client ID
   name: client_id
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret
   name: secret
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: 'A+ - 3rd party enrichment'
   display: Source Reliability
   name: Reliability
@@ -42,24 +45,35 @@ configuration:
   - F - Reliability cannot be judged
   section: Collect
   advanced: true
+  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   defaultvalue: '3 days'
   section: Collect
+  required: false
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
   defaultvalue: '15'
   section: Collect
   advanced: true
-- display: Detections fetch query
+  required: false
+- display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
   section: Collect
   advanced: true
-- display: Incidents fetch query
+  required: false
+- display: Endpoint Incidents fetch query
   name: incidents_fetch_query
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: IDP Detections fetch query
+  name: idp_detections_fetch_query
+  required: false
   type: 0
   section: Collect
   advanced: true
@@ -68,10 +82,12 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Mirroring Direction
   name: mirror_direction
   type: 15
@@ -83,16 +99,19 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
@@ -100,6 +119,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   name: close_in_cs_falcon
@@ -107,22 +127,26 @@ configuration:
   additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
-- additionalinfo: Choose what to fetch - incidents, detections, or both.
-  defaultvalue: 'Detections'
+  required: false
+- additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
+  defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
   type: 16
   options:
-  - Detections
-  - Incidents
+  - IDP Detection
+  - Endpoint Incident
+  - Endpoint Detection
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   type: 19
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
@@ -130,6 +154,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -404,6 +429,10 @@ script:
       - read
       - write
       - admin
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     - auto: PREDEFINED
       defaultValue: batch
       description: 'The target to run the command for. Possible values are: "single" and "batch".'
@@ -2788,10 +2817,14 @@ script:
       description: The vulnerability name.
       type: String
   - arguments:
-    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+    - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: true
+      deprecated: true
+    - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
+      name: cve
+      isArray: true
+      default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -4231,7 +4264,104 @@ script:
     description: Delete ODS scheduled scans.
     name: cs-falcon-ods-delete-scheduled-scan
     outputs: []
-  dockerimage: demisto/python3:3.10.12.63474
+  - arguments:
+    - description: API type.
+      name: type
+      required: true
+      predefined:
+      - 'USER'
+      - 'ENDPOINT'
+      auto: PREDEFINED
+    - description: The key to sort by.
+      name: sort_key
+      predefined:
+      - RISK_SCORE
+      - PRIMARY_DISPLAY_NAME
+      - SECONDARY_DISPLAY_NAME
+      - MOST_RECENT_ACTIVITY
+      - ENTITY_ID
+      auto: PREDEFINED
+    - description: The sort order.
+      name: sort_order
+      predefined:
+      - 'DESCENDING'
+      - 'ASCENDING'
+      auto: PREDEFINED
+      defaultValue: ASCENDING
+    - description: Comma separated list of entity IDs to look for.
+      name: entity_id
+      isArray: true
+    - description: Primary display name to filter by.
+      name: primary_display_name
+      isArray: true
+    - description: Secondary display name to filter by.
+      name: secondary_display_name
+      isArray: true
+    - description: The maximum risk score severity to filter by.
+      name: max_risk_score_severity
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: The minimum risk score severity to filter by.
+      name: min_risk_score_severity
+      predefined:
+      - 'NORMAL'
+      - 'MEDIUM'
+      - 'HIGH'
+      auto: PREDEFINED
+    - description: Whether to get only enabled or disabled identity entities.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
+    - description: Filter by email.
+      name: email
+    - description: The hash for the next page.
+      name: next_token
+    - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
+      name: page_size
+      defaultValue: 50
+    - description: The page number. Default is 1.
+      name: page
+    - description: The maximum number of identity entities to list.
+      name: limit
+    description: List identity entities.
+    name: cs-falcon-list-identity-entities
+    outputs:
+      - contextPath: CrowdStrike.IDPEntity.IsHuman
+        description: Whether the identity entity is human made.
+        type: Boolean
+      - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+        description: Whether the identity entity is programmatic made.
+        type: Boolean
+      - contextPath: CrowdStrike.IDPEntity.IsAdmin
+        description: Whether the identity entity is admin made.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+        description: The identity entity primary display name.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+        description: The identity entity risk factor type.
+        type: Unknown
+      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+        description: The identity entity risk factor severity.
+        type: Unknown
+      - contextPath: CrowdStrike.IDPEntity.RiskScore
+        description: The identity entity risk score.
+        type: Number
+      - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+        description: The identity entity risk score severity.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+        description: The identity entity secondary display name.
+        type: String
+      - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+        description: The identity entity email address.
+        type: String
+  dockerimage: demisto/py3-tools:1.0.0.66062
   isfetch: true
   ismappable: true
   isremotesyncin: true

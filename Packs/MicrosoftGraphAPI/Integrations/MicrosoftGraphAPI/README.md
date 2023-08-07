@@ -124,6 +124,22 @@ The context data output depends on the resource executed.
 The *populate_context* argument sets whether to output to the context data, under the path **MicrosoftGraph**.
 For resources which return a large response, we recommend to narrow the results by using the *odata* argument or outputting to the context data using [Extend Context](https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context).
 
+### msgraph-api-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-api-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
 
 ## Usage
 Let's say we want to [list all the applications](https://docs.microsoft.com/en-us/graph/api/application-list?view=graph-rest-1.0&tabs=http).

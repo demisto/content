@@ -32,4 +32,4 @@ args:
 scripttarget: 0
 tests:
 - No test
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474

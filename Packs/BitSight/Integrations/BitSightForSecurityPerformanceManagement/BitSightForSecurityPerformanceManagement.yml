@@ -11,16 +11,19 @@ configuration:
   display: Company's GUID
   name: guid
   type: 0
+  required: false
 - additionalinfo: Enter the number in days. When the fetch incident runs for first time, incidents will be fetched for a given number of days.
   defaultvalue: '3'
   display: First fetch time in days
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: Maximum number of incidents to fetch. The maximum value is 200.
   defaultvalue: '25'
   display: Max Fetch
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: Minimum severity of the findings to fetch.
   defaultvalue: Material
   display: Findings Minimum Severity
@@ -31,6 +34,7 @@ configuration:
   - Material
   - Severe
   type: 15
+  required: false
 - additionalinfo: Filter by the asset category (critical, high, medium, low).
   defaultvalue: High
   display: Findings Minimum Asset Category
@@ -41,6 +45,7 @@ configuration:
   - High
   - Critical
   type: 15
+  required: false
 - additionalinfo: Filter the result by the value of grade.
   defaultvalue: WARN,BAD
   display: Findings Grade
@@ -52,6 +57,7 @@ configuration:
   - BAD
   - NEUTRAL
   type: 16
+  required: false
 - additionalinfo: This parameter supports comma separated list of values. By default 'All' will be selected, if you need only particular values you can unselect 'All' and select the required values.
   defaultvalue: All
   display: Risk Vector ('All' has been selected by default)
@@ -80,18 +86,23 @@ configuration:
   - Unsolicited Communications
   - All
   type: 16
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 description: Use the "BitSight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
 display: BitSight for Security Performance Management
 name: BitSight for Security Performance Management
@@ -531,7 +542,7 @@ script:
     - contextPath: BitSight.MyCompany.guid
       description: The unique identifier of my company.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   isfetch: true
   runonce: false
   script: '-'

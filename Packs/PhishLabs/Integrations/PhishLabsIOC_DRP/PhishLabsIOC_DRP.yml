@@ -15,13 +15,16 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: 1 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   type: 0
+  required: false
 - defaultvalue: dateModified
   display: Fetch by date field
   name: fetchByDate
@@ -30,16 +33,20 @@ configuration:
   - dateClosed
   - dateCreated
   type: 15
+  required: false
 - defaultvalue: '20'
   display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Retrieves Digital Risk cases Protection from PhishLabs.
 display: PhishLabs IOC DRP
 name: PhishLabs IOC DRP
@@ -849,7 +856,7 @@ script:
     - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.NameServers
       description: The name servers of the URL.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
   runonce: false
   script: '-'

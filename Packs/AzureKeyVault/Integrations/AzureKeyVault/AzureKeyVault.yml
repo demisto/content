@@ -17,15 +17,18 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  required: false
 - display: Client ID
   name: client_id
   type: 0
   section: Connect
+  required: false
 - name: credentials
   type: 9
   displaypassword: Client Secret
   hiddenusername: true
   section: Connect
+  required: false
 - display: Tenant ID
   name: tenant_id
   required: true
@@ -36,17 +39,27 @@ configuration:
   name: certificate_thumbprint
   type: 4
   section: Connect
+  hidden: true
+  required: false
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  displaypassword: Certificate Thumbprint
+  name:  credentials_certificate_thumbprint
+  required: false
+  hiddenusername: true
+  type: 9
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 14
   section: Connect
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   name: use_managed_identities
   type: 8
   display: Use Azure Managed Identities
   section: Connect
   advanced: true
+  required: false
 - name: managed_identities_client_id
   type: 9
   additionalinfo: The managed identities client ID for authentication. Relevant only if the integration is running on Azure VM.
@@ -54,6 +67,7 @@ configuration:
   hiddenusername: true
   section: Connect
   advanced: true
+  required: false
 - display: Default Subscription ID
   name: subscription_id
   required: true
@@ -68,24 +82,29 @@ configuration:
   name: isFetchCredentials
   type: 8
   section: Collect
+  required: false
 - display: Key Vault names - comma seperated list of Key Vaults to fetch secrets from.
   name: key_vaults
   type: 0
   section: Collect
+  required: false
 - display: Secret names - comma seperated list of secrets to fetch.
   name: secrets
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Use the Azure Key Vault integration to safeguard and manage cryptographic keys and secrets used by cloud applications and services.
 display: Azure Key Vault
 name: AzureKeyVault
@@ -941,7 +960,11 @@ script:
       type: Unknown
     - contextPath: AzureKeyVault.ResourceGroup.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.63672
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-key-vault-auth-reset
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

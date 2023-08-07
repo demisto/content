@@ -29,9 +29,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: python
@@ -218,7 +220,7 @@ script:
     - name: userId
       description: User id.
     description: Delete a PingOne user. One of the following has to be given username or userId.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   subtype: python3
 fromversion: 6.0.0

@@ -12,17 +12,21 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Credentials JSON
   name: credentials_json
   type: 4
   hidden: true
+  required: false
 - displaypassword: Credentials JSON
   name: cred_json
   hiddenusername: true
   type: 9
+  required: false
 - display: User ID for Fetching Incidents
   name: as_user
   type: 0
+  required: false
 - display: Types of Events to Ingest as Incidents
   name: event_type
   type: 16
@@ -120,29 +124,36 @@ configuration:
   - USER_AUTHENTICATE_OAUTH2_ACCESS_TOKEN_CREATE
   - WATERMARK_LABEL_CREATE
   - WATERMARK_LABEL_DELETE
+  required: false
 - additionalinfo: 'When the as-user argument is not provided, the command will be executed using this user ID.'
   display: Default User
   name: default_user
   type: 0
+  required: false
 - display: Auto-detect user IDs based on their email address.
   name: search_user_id
   type: 8
   additionalinfo: 'Note: If more than one user exists for the email address, the commands will fail.'
   defaultvalue: 'true'
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: '50'
   display: The maximum amount of incidents to fetch at once
   name: max_fetch
   type: 0
+  required: false
 description: Manage Box users.
 display: Box v2
 name: Box v2
@@ -2485,7 +2496,7 @@ script:
     - contextPath: Box.Folder.item_status
       description: The status of the parent of the item.
       type: String
-  dockerimage: demisto/pyjwt3:1.0.0.63826
+  dockerimage: demisto/pyjwt3:1.0.0.67573
   isfetch: true
   runonce: false
   script: '-'

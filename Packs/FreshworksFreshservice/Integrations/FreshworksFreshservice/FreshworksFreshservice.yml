@@ -20,11 +20,13 @@ configuration:
   display: First fetch timestamp
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
   defaultvalue: '50'
   display: Maximum incidents per fetch
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: All
   display: Ticket type to fetch as incidents.
   name: ticket_type
@@ -35,6 +37,7 @@ configuration:
   - Change Request
   - Release Request
   type: 16
+  required: false
 - additionalinfo: Incident priorities to fetch. The default is All. You can choose multiple priorities.
   defaultvalue: All
   display: Ticket Priority
@@ -46,6 +49,7 @@ configuration:
   - High
   - Urgent
   type: 16
+  required: false
 - additionalinfo: Incident impacts to fetch. The default is All. You can choose multiple impacts.
   defaultvalue: All
   display: Ticket Impact
@@ -56,6 +60,7 @@ configuration:
   - Medium
   - High
   type: 16
+  required: false
 - additionalinfo: The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s).
   defaultvalue: All
   display: Ticket Status
@@ -76,6 +81,7 @@ configuration:
   - Completed
   - Closed
   type: 16
+  required: false
 - additionalinfo: The risk of the tickets to fetch. Available only for the 'Change Request' ticket type.
   defaultvalue: All
   display: Ticket Risk
@@ -87,6 +93,7 @@ configuration:
   - High
   - Very High
   type: 16
+  required: false
 - additionalinfo: The urgency of the tickets to fetch. Available only for the 'Incident/Service Request' ticket type. The default is All. You can choose multiple urgencies.
   defaultvalue: All
   display: Ticket Urgency
@@ -97,6 +104,7 @@ configuration:
   - Medium
   - High
   type: 16
+  required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Freshservice to Cortex XSOAR), Outgoing (from Cortex XSOAR to Freshservice), or Incoming and Outgoing (from/to Cortex XSOAR and Freshservice).'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -107,36 +115,44 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   type: 15
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: When selected, closing the Freshservice ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   type: 8
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Freshservice.
   defaultvalue: 'false'
   display: Close Mirrored Freshservice Ticket
   name: close_ticket
   type: 8
+  required: false
 - additionalinfo: Fetch tasks for each ticket type and consider them in the mirroring (requires an additional API request per ticket).
   defaultvalue: 'false'
   display: Fetch tickets tasks
   name: fetch_ticket_task
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 description: Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation.
 display: Freshworks Freshservice
 name: FreshworksFreshservice
@@ -3432,7 +3448,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   ismappable: true
   isremotesyncin: true

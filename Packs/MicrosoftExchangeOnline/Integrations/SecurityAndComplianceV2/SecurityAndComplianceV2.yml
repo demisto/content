@@ -13,6 +13,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Certificate
   name: certificate
   type: 4
@@ -20,24 +21,28 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: UPN/Email
   additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
   name: delegated_auth
   required: true
   type: 9
   displaypassword: Password
+  hiddenpassword: true
   section: Connect
 - display: The organization used in app-only authentication.
   name: organization
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: The application ID from the Azure portal
   name: app_id
   type: 0
   section: Connect
   advanced: true
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
@@ -45,11 +50,13 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Connection URI
   name: connection_uri
   type: 0
@@ -57,6 +64,7 @@ configuration:
   additionalinfo: Please refer to the documentation for a list of known endpoints.
   section: Connect
   advanced: true
+  required: false
 - display: AzureADAuthorizedEndpointURI Base
   name: azure_ad_authorized_endpoint_uri_base
   type: 0
@@ -64,11 +72,18 @@ configuration:
   defaultvalue: https://login.microsoftonline.com
   section: Connect
   advanced: true
+  required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
 script:
   commands:
+  - description: OAuth2.0 - Start authorization.
+    name: o365-sc-auth-start
+  - description: OAuth2.0 - Complete authorization.
+    name: o365-sc-auth-complete
+  - description: OAuth2.0 - Test authorization.
+    name: o365-sc-auth-test
   - description: Create compliance search in the Security & Compliance Center.
     name: o365-sc-new-search
     arguments:
@@ -1082,7 +1097,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.49044
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.67595
   runonce: true
   script: '-'
   type: powershell

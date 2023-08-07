@@ -10,20 +10,25 @@ configuration:
 - display: Username
   name: credentials
   type: 9
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch each time
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: unresolved
   display: Alert states to filter by in fetch incidents command. Empty list won't filter the incidents by state.
   name: filter_alerts_by_state
@@ -33,10 +38,12 @@ configuration:
   - resolved
   - suppressed
   type: 16
+  required: false
 - display: Label name to filter by in fetch incidents command. Leave empty to not filter the incidents by label name.
   name: filter_by_label_name
   type: 0
   defaultvalue: ''
+  required: false
 - defaultvalue: 3.x
   display: API Version
   additionalinfo: the version of Tanium Threat Response your instance supports.
@@ -45,16 +52,20 @@ configuration:
   - 3.x
   - 4.x
   type: 15
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 description: Use the Tanium Threat Response integration to manage endpoint processes, evidence, alerts, files, snapshots, and connections. This integration works with Tanium Threat Response version 3.0.159 and above.
 display: Tanium Threat Response v2
 name: Tanium Threat Response v2
@@ -1904,7 +1915,7 @@ script:
     - contextPath: Tanium.ResponseActions.eid
       description: ''
       type: String
-  dockerimage: demisto/lxml:1.0.0.63707
+  dockerimage: demisto/lxml:1.0.0.66590
   isfetch: true
   script: ''
   subtype: python3

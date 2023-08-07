@@ -7,7 +7,8 @@
 	"defaultIncidentType": "CrowdStrike Falcon Incident",
 	"keyTypeMap": {
 		"detection": "CrowdStrike Falcon Detection",
-		"incident": "CrowdStrike Falcon Incident"
+		"incident": "CrowdStrike Falcon Incident",
+		"IDP detection": "CrowdStrike Falcon IDP Detection"
 	},
 	"transformer": {
 		"complex": null,

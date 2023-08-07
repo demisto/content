@@ -14,18 +14,22 @@ configuration:
   type: 0
   defaultvalue: 1 day
   section: Collect
+  required: false
 - additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
   defaultvalue: "1000"
   display: Max events per fetch
   section: Collect
   name: max_fetch
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: "BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats."
 display: "Infoblox BloxOne Threat Defense Event Collector"
 name: Infoblox BloxOne Threat Defense Event Collector
@@ -65,7 +69,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.10.0
 marketplaces:
 - marketplacev2

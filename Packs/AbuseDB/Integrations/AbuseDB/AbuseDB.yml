@@ -17,11 +17,13 @@ configuration:
   displaypassword: API Key (v2)
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key (v2)
   name: apikey
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
@@ -43,27 +45,32 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Maximum reports age (in days)
   name: days
   type: 0
   defaultvalue: '30'
   section: Collect
   advanced: true
+  required: false
 - display: Disregard quota errors
   name: disregard_quota
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.
 display: AbuseIPDB
 name: AbuseIPDB

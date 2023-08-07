@@ -10,61 +10,76 @@ configuration:
 - display: Username (Basic Authentication)
   name: username
   type: 0
+  required: false
 - display: Password (Deprecated - Use API token)
   name: password
   type: 4
+  required: false
 - displaypassword: API token (Recommended)
   name: credentials
   type: 9
   hiddenusername: true
   display: ''
+  required: false
 - defaultvalue: OauthKey
   additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   type: 0
+  required: false
 - display: Access Token
   additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
   name: accessToken
   type: 0
+  required: false
 - display: Private key (PKCS8 format)
   name: privateKey
   type: 14
+  required: false
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents.
   name: query
   type: 0
+  required: false
 - additionalinfo: This parameter is dismissed while "Use created field to fetch incidents" is checked.
   display: Issue index to start fetching incidents from
   name: idOffset
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Mirror incoming incidents
   hidden:
   - marketplacev2
   name: incoming_mirror
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Use created field to fetch incidents
   name: fetchByCreated
   type: 8
+  required: false
 - display: Mirror outgoing incidents
   hidden:
   - marketplacev2
   name: outgoing_mirror
   type: 8
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
   defaultvalue: attachment
   display: File entry tag
@@ -72,6 +87,7 @@ configuration:
   - marketplacev2
   name: file_tag
   type: 0
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
   display: Comment entry tag
@@ -79,22 +95,27 @@ configuration:
   - marketplacev2
   name: comment_tag
   type: 0
+  required: false
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
   type: 8
+  required: false
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   name: fetch_attachments
   type: 8
+  required: false
 - display: API token (Deprecated)
   name: APItoken
   type: 4
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 description: Use the Jira integration to manage issues, create Cortex XSOAR incidents from Jira projects, and mirror issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2

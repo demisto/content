@@ -342,22 +342,10 @@ credentials = None
 # NOTE: Same method used in EWSMailSender
 # If you are modifying this probably also need to modify in the other file
 def exchangelib_cleanup():     # pragma: no cover
-    key_protocols = list(exchangelib.protocol.CachingProtocol._protocol_cache.items())
     try:
         exchangelib.close_connections()
     except Exception as ex:
         demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
-    for key, protocol in key_protocols:
-        try:
-            if "thread_pool" in protocol.__dict__:
-                demisto.debug('terminating thread pool key{} id: {}'.format(key, id(protocol.thread_pool)))
-                protocol.thread_pool.terminate()
-                del protocol.__dict__["thread_pool"]
-            else:
-                demisto.info(
-                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
-        except Exception as ex:
-            demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
 
 # Prep Functions
@@ -1060,8 +1048,9 @@ def parse_object_as_dict_with_serialized_items(object):
         for field in object.FIELDS:
             try:
                 v = getattr(object, field.name, None)
-                json.dumps(v)
-                raw_dict[field.name] = v
+                if v is not None:
+                    json.dumps(v)
+                    raw_dict[field.name] = v
             except (TypeError, OverflowError):
                 demisto.debug(f'Data in field {field.name} is not serilizable, skipped field')
                 continue
@@ -1107,7 +1096,10 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
                        'extern_id', 'received_by', 'received_representing', 'reply_to', 'sender', 'folder']:
         value = getattr(item, dict_field, None)
         if value:
-            raw_dict[dict_field] = parse_object_as_dict(value)
+            if type(value) is list:
+                raw_dict[dict_field] = [parse_object_as_dict(x) for x in value]
+            else:
+                raw_dict[dict_field] = parse_object_as_dict(value)
 
     for list_dict_field in ['headers', 'cc_recipients', 'to_recipients']:
         value = getattr(item, list_dict_field, None)

@@ -11,9 +11,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: API Key
   name: apikey
   required: true
@@ -22,6 +24,7 @@ configuration:
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 127.0.0.1
   display: Repository  URL
   name: Repository URL
@@ -36,17 +39,21 @@ configuration:
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
+  required: false
 - name: max_fetch
   display: Maximum number of incidents to fetch every time
   type: 0
   defaultvalue: '50'
+  required: false
 description: >-
   The CimTrak integration helps you detect unexpected system/device/config
   modifications and automatically respond/react to threats
@@ -2296,7 +2303,7 @@ script:
     - contextPath: CimTrak.Object.agentObjectId
       description: Agent Object Id
       type: number
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   longRunning: true
   script: ''

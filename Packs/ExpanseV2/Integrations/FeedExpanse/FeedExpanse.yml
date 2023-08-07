@@ -15,29 +15,36 @@ configuration:
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: API Key
   name: apikey
   type: 4
   additionalinfo: The API Key to use for connection
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - defaultvalue: '20000'
   display: The maximum number of indicators to fetch.
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: '7'
   name: min_last_observed
   display: 'Retrieve indicators observed in the last specified number of days'
   type: 0
+  required: false
 - defaultvalue: 'suddenDeath'
   display: ''
   name: feedExpirationPolicy
@@ -47,18 +54,22 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 - display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
   defaultvalue: '720'
+  required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   display: Source Reliability
   name: feedReliability
@@ -81,10 +92,12 @@ configuration:
   - Good
   - Suspicious
   - Bad
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -94,6 +107,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 script:
   commands:
   - name: feedexpanse-get-indicators
@@ -119,7 +133,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test

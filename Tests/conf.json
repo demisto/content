@@ -79,6 +79,7 @@
         {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
+
         },
         {
             "integrations": [
@@ -125,14 +126,16 @@
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_device_code",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 900
         },
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 500
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -199,7 +202,8 @@
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": [
@@ -224,7 +228,8 @@
         {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": "FireEye Central Management",
@@ -674,11 +679,12 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
-            "timeout": 600,
+            "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
+            "timeout": 900,
             "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
             "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
@@ -686,7 +692,8 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod",
-            "is_mockable": false
+            "is_mockable": false,
+            "memory_threshold": 300
         },
         {
             "integrations": "CloudShark",
@@ -1530,7 +1537,8 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 300
+            "timeout": 400,
+            "memory_threshold": 150
         },
         {
             "integrations": "PagerDuty v2",
@@ -1666,7 +1674,8 @@
             "instance_names": [
                 "ews_mail_sender_labdemisto"
             ],
-            "playbookID": "EWS V2 Send Mail Test 2"
+            "playbookID": "EWS V2 Send Mail Test 2",
+            "memory_threshold": 150
         },
         {
             "integrations": [
@@ -2082,7 +2091,7 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2145,7 +2154,8 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod v2",
             "instance_names": "ms_graph_security_prod_v2",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Graph",
@@ -3069,6 +3079,9 @@
             "playbookID": "sumList - Test"
         },
         {
+            "playbookID": "AnyMatch_Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
         },
@@ -3679,7 +3692,8 @@
         },
         {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
-            "playbookID": "Audit Log - Test"
+            "playbookID": "Audit Log - Test",
+            "memory_threshold": 220
         },
         {
             "integrations": "Nutanix Hypervisor",
@@ -3687,7 +3701,8 @@
         },
         {
             "integrations": "Azure Storage",
-            "playbookID": "Azure Storage - Test"
+            "playbookID": "Azure Storage - Test",
+            "is_mockable": false
         },
         {
             "integrations": "MicrosoftGraphApplications",
@@ -3770,7 +3785,8 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout": 600
+            "timeout": 600,
+            "is_mockable": false
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -4366,7 +4382,8 @@
         {
             "playbookID": "Test-GitLab-v2",
             "fromversion": "6.5.0",
-            "integrations": "GitLabv2"
+            "integrations": "GitLabv2",
+            "is_mockable": false
         },
         {
             "playbookID": "LGTM-test-playbook",
@@ -4432,6 +4449,7 @@
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
             "instance_names": "aks_device_code_instance",
+            "is_mockable": false,
             "integrations": [
                 "Azure Kubernetes Services"
             ]
@@ -4611,7 +4629,7 @@
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
             ],
-            "memory_threshold": 160,
+            "memory_threshold": 350,
             "pid_threshold": 80,
             "is_mockable": false
         },
@@ -4704,7 +4722,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "GoogleDrive"
-            ]
+            ],
+            "memory_threshold": 300
         },
         {
             "playbookID": "RiskIQDigitalFootprint-Test",
@@ -4958,6 +4977,7 @@
         {
             "playbookID": "Microsoft Teams - Test",
             "fromversion": "5.0.0",
+            "memory_threshold": 300,
             "instance_names": "ms_teams_management_device_code",
             "integrations": [
                 "Microsoft Teams Management",
@@ -5179,7 +5199,8 @@
                 "ewso365_dev_team"
             ],
             "fromversion": "6.5.0",
-            "timeout": 600
+            "timeout": 600,
+            "memory_threshold": 300
         },
         {
             "integrations": "OpsGenieV3",
@@ -5299,7 +5320,8 @@
                 "GoogleDrive"
             ],
             "playbookID": "GoogleSheets-Test",
-            "fromversion": "6.1.0"
+            "fromversion": "6.1.0",
+            "memory_threshold": 500
         },
         {
             "integrations": "CloudflareWAF",
@@ -5469,9 +5491,15 @@
         {
             "integrations": "Kaspersky Security Center",
             "playbookID": "Kaspersky Security Center - Test"
+        },
+        {
+            "integrations": "Forcepoint Security Management Center",
+            "playbookID": "ForcepointSecurityManagementCenter_test",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
+        "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
@@ -5609,7 +5637,6 @@
         "Git_Integration-Test": "Issue 37800",
         "RecordedFutureFeed - Test": "Issue 43923",
         "SymantecEndpointProtection_Test": "Issue 30157",
-        "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
         "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350",
         "Elasticsearch_v2_test-v8": "CRTX-61980",
@@ -5630,7 +5657,6 @@
         "Microsoft Graph Groups - Test dev": "No Working Instance",
         "Microsoft Graph Groups - Test prod": "No Working Instance",
         "Microsoft Graph Groups - Test": "No Working Instance",
-        "Azure Kubernetes Services - Test": "No Working Instance",
         "playbook-AzureDevOps-Test": "No Working Instance",
         "test playbook - Google Cloud Functions": "No Working Instance",
         "playbook-GCP-IAM_Test": "No Working Instance",
@@ -5646,8 +5672,12 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "Audit Log - Test": "Basic Auth is no longer supported, only OAuth 2.0 is (which requires an update to the playbook). - XSUP-23266",
-        "EWS_O365_test": "Issue CIAC-6753"
+        "EWS_O365_test": "Issue CIAC-6753",
+        "MSGraph_DeviceManagement_Test_dev": "Issue CIAC-7430",
+        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5776,7 +5806,8 @@
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
-        "CheckPhish": "Issue CRTX-86562"
+        "CheckPhish": "Issue CRTX-86562",
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
     },
     "nightly_packs": [
         "CommonScripts",
@@ -6016,8 +6047,9 @@
             "demisto/pytan": {
                 "pid_threshold": 11
             },
-            "demisto/google-k8s-engine:1.0.0.9467": {
-                "pid_threshold": 11
+            "demisto/google-k8s-engine1.0.0.64696": {
+                "pid_threshold": 11,
+                "memory_threshold": 110
             },
             "demisto/threatconnect-tcex": {
                 "pid_threshold": 11
@@ -6051,7 +6083,7 @@
                 "memory_threshold": 105
             },
             "demisto/googleapi-python3": {
-                "memory_threshold": 200
+                "memory_threshold": 300
             },
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85

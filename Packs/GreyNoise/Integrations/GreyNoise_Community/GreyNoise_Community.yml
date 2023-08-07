@@ -15,6 +15,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -24,10 +25,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 - display: API Key
   name: api_key
   required: true
@@ -36,6 +39,7 @@ configuration:
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats. This Integration is design specifically for GreyNoise Community users and only provides the subset of intel available via the GreyNoise Community API.
 display: GreyNoise Community
 name: GreyNoise Community
@@ -98,7 +102,7 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-  dockerimage: demisto/greynoise:1.0.0.63695
+  dockerimage: demisto/greynoise:1.0.0.66584
   runonce: false
   script: '-'
   subtype: python3

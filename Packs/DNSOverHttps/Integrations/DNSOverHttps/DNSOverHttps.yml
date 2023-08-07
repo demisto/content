@@ -15,9 +15,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Query dns names over https from Cloudflare or Google
 display: DNSOverHttps
 name: DNSOverHttps
@@ -51,7 +53,7 @@ script:
     - contextPath: DNSoOverHTTPS.Results
       description: DNS query results
       type: list
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
   script: ''
   subtype: python3
   type: python
