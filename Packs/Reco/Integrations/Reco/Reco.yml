@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.12.67728
   isfetch: true
   runonce: false
   script: "-"
@@ -259,17 +259,17 @@ script:
       description: The domain of the 3rd party
       type: String
   - arguments:
-      - description: alert id to get
-        name: alert_id
-        required: true
-      - description: status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED")
-        name: status
-        required: true
-        auto: PREDEFINED
-        predefined:
-          - ALERT_STATUS_NEW
-          - ALERT_STATUS_IN_PROGRESS
-          - ALERT_STATUS_CLOSED
+    - description: alert id to get
+      name: alert_id
+      required: true
+    - description: status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED")
+      name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ALERT_STATUS_NEW
+      - ALERT_STATUS_IN_PROGRESS
+      - ALERT_STATUS_CLOSED
     description: update alert status in Reco
     name: reco-change-alert-status
 tests:
