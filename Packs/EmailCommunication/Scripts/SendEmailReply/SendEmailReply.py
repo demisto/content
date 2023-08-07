@@ -429,7 +429,7 @@ def get_reply_body(notes, incident_id, attachments, async_call=False):
 
         entry_note = json.dumps(
             [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
-        entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id, async_call: async_call})
+        entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id, 'reputationCalcAsync': async_call})
 
         entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
             {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
