@@ -111,8 +111,10 @@ class Client(BaseClient):
                 headers=self.headers,
                 params=params
             )
-
-            demisto.info(f"after request, params: {params}")
+            try:
+                demisto.info(f"after request, params: {params}")
+            except Exception:
+                demisto.info("after request")
 
         elif service == 'fusion':
             url = self.BASE_URL + 'fusion/files/?path='
@@ -129,7 +131,10 @@ class Client(BaseClient):
         else:
             raise DemistoException(f'Service unknown: {service}')
 
-        demisto.info(f"response from the API: {response}")
+        try:
+            demisto.info(f"response from the API: {response}")
+        except Exception:
+            demisto.info("could not parse response.")
 
         return response.prepare()
 
@@ -451,7 +456,10 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
 
                 indicators.append(indicator_obj)
 
-                demisto.info(f"added indicator to indicators list. indicators count: {len(indicators)}")
+                try:
+                    demisto.info(f"added indicator to indicators list. indicators count: {len(list(indicators))}")
+                except Exception:
+                    demisto.info("added indicator to indicators list. couldn't parse length")
 
             yield indicators
 
