@@ -44,7 +44,7 @@ script:
       secret: false
     - default: false
       isArray: false
-      name: targetlist
+      name: fmgroups
       required: false
       secret: false
     - default: false
