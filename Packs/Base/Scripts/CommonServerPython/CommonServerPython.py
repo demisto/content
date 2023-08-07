@@ -7965,11 +7965,13 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
     if utc:
-        end_time = datetime.utcnow() + timedelta(hours=timezone)
-        start_time = datetime.utcnow() + timedelta(hours=timezone)
+        utc_now = datetime.utcnow()
+        end_time = utc_now + timedelta(hours=timezone)
+        start_time = utc_now + timedelta(hours=timezone)
     else:
-        end_time = datetime.now() + timedelta(hours=timezone)
-        start_time = datetime.now() + timedelta(hours=timezone)
+        now = datetime.now()
+        end_time = now + timedelta(hours=timezone)
+        start_time = now + timedelta(hours=timezone)
 
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
