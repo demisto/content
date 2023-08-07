@@ -26,7 +26,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def search_events(self, prev_id, alert_status):
+    def search_events(self, prev_id, alert_status, limit, from_date=None):
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -34,6 +34,8 @@ class Client(BaseClient):
         Args:
             prev_id: previous id that was fetched.
             alert_status:
+            limit: limit.
+            from_date: get events from from_date.
 
         Returns:
             dict: the next event
@@ -51,7 +53,7 @@ class Client(BaseClient):
         }]
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client, params: Dict[str, Any], first_fetch_time) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -61,7 +63,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     Args:
         client (Client): HelloWorld client to use.
         params (Dict): Integration parameters.
-        first_fetch_time (int): The first fetch time as configured in the integration params.
+        first_fetch_time: The first fetch time as configured in the integration params.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
@@ -75,6 +77,7 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
             last_run={},
             first_fetch_time=first_fetch_time,
             alert_status=alert_status,
+            max_events_per_fetch=1,
         )
 
     except Exception as e:
@@ -86,25 +89,30 @@ def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -
     return 'ok'
 
 
-def get_events(client, alert_status):
+def get_events(client, alert_status, args):
+    limit = args.get('limit', 50)
+    from_date = args.get('from_date')
     events = client.search_events(
         prev_id=0,
-        alert_status=alert_status
+        alert_status=alert_status,
+        limit=limit,
+        from_date=from_date,
     )
     hr = tableToMarkdown(name='Test Event', t=events)
     return events, CommandResults(readable_output=hr)
 
 
 def fetch_events(client: Client, last_run: Dict[str, int],
-                 first_fetch_time: Optional[int], alert_status: Optional[str]
+                 first_fetch_time, alert_status: Optional[str], max_events_per_fetch: int
                  ):
     """
     Args:
         client (Client): HelloWorld client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
+        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching events.
         alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+        max_events_per_fetch (int): number of events per fetch
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
@@ -115,7 +123,8 @@ def fetch_events(client: Client, last_run: Dict[str, int],
 
     events = client.search_events(
         prev_id=prev_id,
-        alert_status=alert_status
+        alert_status=alert_status,
+        limit=max_events_per_fetch
     )
     demisto.info(f'Fetched event with id: {prev_id + 1}.')
 
@@ -156,15 +165,10 @@ def main() -> None:
     next_run = None
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    assert isinstance(first_fetch_timestamp, int)
+    first_fetch_time = datetime.now()
     proxy = params.get('proxy', False)
     alert_status = params.get('alert_status', None)
+    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -179,12 +183,12 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_timestamp)
+            result = test_module(client, params, first_fetch_time)
             return_results(result)
 
         elif command == 'hello-world-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status)
+            events, results = get_events(client, alert_status, demisto.args())
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
@@ -199,8 +203,9 @@ def main() -> None:
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                first_fetch_time=first_fetch_timestamp,
+                first_fetch_time=first_fetch_time,
                 alert_status=alert_status,
+                max_events_per_fetch=max_events_per_fetch,
             )
 
             add_time_to_events(events)

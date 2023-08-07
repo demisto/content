@@ -28,10 +28,10 @@ configuration:
   - CLOSED
   required: false
   type: 15
-- defaultvalue: 3 days
+- defaultvalue: 10000
   section: Collect
-  display: First fetch time
-  name: first_fetch
+  display: Max events number per fetch
+  name: max_events_per_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -73,8 +73,12 @@ script:
       description: Maximum results to return.
       isArray: false
       name: limit
-      required: false
+      required: true
       secret: false
+    - default: false
+      description: From date to get events from.
+      name: from_date
+      required: false
     deprecated: false
     description: Gets events from Hello World.
     execution: false
