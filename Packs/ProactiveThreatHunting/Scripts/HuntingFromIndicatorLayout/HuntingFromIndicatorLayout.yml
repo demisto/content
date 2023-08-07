@@ -1,9 +1,9 @@
 commonfields:
-  id: ExecuteHuntingSessionFromIndicatorLayout
+  id: HuntingFromIndicatorLayout
   version: -1
 dockerimage: demisto/python3:3.10.11.61265
 enabled: true
-name: ExecuteHuntingSessionFromIndicatorLayout
+name: HuntingFromIndicatorLayout
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -11,6 +11,7 @@ scripttarget: 0
 subtype: python3
 tags:
 - indicator-action-button
+comment: Executing hunting session(incident with incident type "proactive threat hunting") from indicator layout
 type: python
 fromversion: 6.9.0
 tests:
