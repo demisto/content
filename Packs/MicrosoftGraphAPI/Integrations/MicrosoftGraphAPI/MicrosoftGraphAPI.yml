@@ -78,8 +78,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: Azure AD endpoint associated with a national cloud.
-  defaultvalue: https://login.microsoftonline.com
+- defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
   required: false
@@ -87,7 +86,6 @@ configuration:
   advanced: true
   additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
-  required: false
 - display: Scope (Required for using Cortex XSOAR Azure app)
   name: scope
   type: 12
@@ -164,7 +162,7 @@ script:
     execution: false
     name: msgraph-api-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.67955
   runonce: false
   script: '-'
   subtype: python3
