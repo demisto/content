@@ -1,0 +1,567 @@
+description: |-
+  This playbook is a generic playbook that receives process name and command-line argument, and uses "Microsoft Defender For Endpoint" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+  Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+  - value: *process name*
+  -commands: *command-line arguments*
+id: MDE - Search and Compare Process Executions
+inputs:
+- description: ""
+  key: Processes
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  key: HuntingTimeFrame
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 7 days
+- description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  key: StringSimilarityThreshold
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "0.5"
+name: MDE - Search and Compare Process Executions
+outputs:
+- contextPath: StringSimilarity
+  description: StringSimilarity results.
+  type: unknown
+- contextPath: Findings
+  description: Suspicious process executions found.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e7bf5297-5a54-4574-83fe-5c1618cf5a63
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e7bf5297-5a54-4574-83fe-5c1618cf5a63
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ProcessToSearch
+      value:
+        complex:
+          root: inputs.Processes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f8ea3c73-999e-4fb8-8d5c-f8d5c77d6261
+      iscommand: false
+      name: Set process to search
+      script: Set
+      type: regular
+      version: -1
+    taskid: f8ea3c73-999e-4fb8-8d5c-f8d5c77d6261
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 220
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8e8900e6-0785-4f98-87c5-98450d4ed4d2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 8e8900e6-0785-4f98-87c5-98450d4ed4d2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1380
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 8b5a962a-1c0d-4c3d-8a5b-5ecc285127a3
+      iscommand: false
+      name: Delete context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8b5a962a-1c0d-4c3d-8a5b-5ecc285127a3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1210
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: cmd
+                root: MicrosoftATP.Hunt.Result
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 2fb5edd4-3c63-4766-8dff-920aa2027c2f
+      iscommand: false
+      name: Has query results?
+      type: condition
+      version: -1
+    taskid: 2fb5edd4-3c63-4766-8dff-920aa2027c2f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 540
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      similarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+      similiarity_threshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+      string_A:
+        complex:
+          accessor: cmd
+          root: MicrosoftATP.Hunt.Result
+          transformers:
+          - operator: uniq
+      string_B:
+        complex:
+          accessor: commands
+          root: ProcessToSearch
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation calculates the similarity ratio between text and a list of strings and outputs a decimal value between 0.0 and 1.0 (1.0 if the sequences are identical, and 0.0 if they don't have anything in common).
+      id: 324684ef-232e-4b5d-8c51-7b1c7a3e8cd1
+      iscommand: false
+      name: Compare query results to given command-line patterns
+      script: StringSimilarity
+      type: regular
+      version: -1
+    taskid: 324684ef-232e-4b5d-8c51-7b1c7a3e8cd1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 710
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: StringA
+                root: StringSimilarity
+          operator: containsGeneral
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: cmd
+                root: MicrosoftATP.Hunt.Result
+      label: "yes"
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 2498307c-2d8d-46b4-8512-0deb6c4874ca
+      iscommand: false
+      name: execution is suspicious?
+      type: condition
+      version: -1
+    taskid: 2498307c-2d8d-46b4-8512-0deb6c4874ca
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 870
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Tool Usage Found
+      output:
+        complex:
+          accessor: processname
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.string_A
+          root: PaloAltoNetworksXQL.GenericQuery.results
+    - incidentfield: Affected Hosts
+      output:
+        complex:
+          accessor: hostname
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.string_A
+          root: PaloAltoNetworksXQL.GenericQuery.results
+    - incidentfield: Affected Users
+      output:
+        complex:
+          accessor: username
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.string_A
+          root: PaloAltoNetworksXQL.GenericQuery.results
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Findings
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: MicrosoftATP.Hunt.Result.cmd
+              operator: in
+              right:
+                iscontext: true
+                value:
+                  simple: StringSimilarity.StringA
+          root: MicrosoftATP.Hunt.Result
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f59e5022-18a8-4494-8c38-9da693895ffb
+      iscommand: false
+      name: Set findings
+      script: Set
+      type: regular
+      version: -1
+    taskid: f59e5022-18a8-4494-8c38-9da693895ffb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1040
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Microsoft Defender Advanced Threat Protection
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 7c1f96f3-88f9-48c1-8a1b-19aa0336f469
+      iscommand: false
+      name: Defender For Endpoint Enabled?
+      type: condition
+      version: -1
+    taskid: 7c1f96f3-88f9-48c1-8a1b-19aa0336f469
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        complex:
+          accessor: value
+          root: ProcessToSearch
+          transformers:
+          - operator: StringifyArray
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+            operator: replace
+          - args:
+              prefix:
+                value:
+                  simple: |-
+                    DeviceProcessEvents
+                    | where FileName in~ (
+              suffix:
+                value:
+                  simple: |-
+                    )
+                    | project-rename processname=FileName, cmd=ProcessCommandLine, hostname=DeviceName, username=AccountName, _time=ProcessCreationTime
+                    | project processname, cmd, hostname, username, _time
+            operator: concat
+      time_range:
+        complex:
+          root: inputs.HuntingTimeFrame
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
+      id: 21256e50-9f6a-4691-814d-682ef546cc1f
+      iscommand: true
+      name: Execute query to search given process executions
+      script: '|||microsoft-atp-advanced-hunting'
+      type: regular
+      version: -1
+    taskid: 21256e50-9f6a-4691-814d-682ef546cc1f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 380
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_6_#default#": 0.47,
+      "15_16_yes": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 1020,
+        "x": 450,
+        "y": -80
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
