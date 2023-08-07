@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+from time import sleep
 
 import requests
 import urllib3
@@ -40,6 +41,12 @@ def trigger_generic_webhook(options):
     }
     # post to Content Gold
     res = requests.post(secrets_instance_url, json=body, auth=(username, password))
+
+    if res.status_code >= 500:
+        # Try again after two minutes in case getting 500 errors codes
+        # as there are some cases with small connection problems
+        sleep(120.0)
+        res = requests.post(secrets_instance_url, json=body, auth=(username, password))
 
     if res.status_code != 200:
         raise ConnectionError(
