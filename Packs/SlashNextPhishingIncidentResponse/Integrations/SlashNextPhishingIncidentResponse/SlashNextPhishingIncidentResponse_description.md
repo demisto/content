@@ -7,3 +7,9 @@ Use cases include abuse inbox management where SOC teams can automate URL analys
 SlashNext not only provides accurate, binary verdicts (rather than threat scores), it provides IOC metadata and screen shots of detected phishing pages. These enables easier classification and reporting. Screen shots can be used as an aid in on-going employee phishing awareness training and testing.
 
 The SlashNext Phishing Incident Response integration app uses an API key to authenticate with SlashNext cloud. If you don't have a valid API key, contact the SlashNext team: support@slashnext.com 
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***url***
+- ***slashnext-url-reputation***
+- ***slashnext-host-reputation***
+See the vendor’s documentation for more details.
