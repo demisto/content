@@ -7,6 +7,7 @@ class TestHuntingFromIndicatorLayout(unittest.TestCase):
 
     # @pytest.mark.parametrize('sdo_name', ['sdoname'])  # 'sdoname' should be a list
     sdo_name = 'sdoname'
+
     def test_hunting_from_indicator_layout(self, sdo_name):
         expected_output = CommandResults(
             readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo_name}")
