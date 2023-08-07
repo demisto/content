@@ -1,6 +1,5 @@
 id: Ataya_Webhook
-version: 1
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Ataya_Webhook
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -115,10 +115,7 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
-          \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\"
-          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
-          \         </login> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -145,6 +142,7 @@ tasks:
       id: 73a7cdcc-c0e6-4509-8cbc-308097a820d7
       version: -1
       name: Event Type Inspection
+      description: Event Type Inspection
       type: condition
       iscommand: false
       brand: ""
@@ -220,10 +218,7 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
-          \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\"
-          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
-          \         </logout> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </logout> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -257,10 +252,7 @@ tasks:
       brand: ""
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type>
-          \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\"
-          ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n
-          \         </login> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -293,3 +285,7 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
+description: ''

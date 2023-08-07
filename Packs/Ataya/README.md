@@ -15,25 +15,17 @@ The configuration instruction of Generic Webhook application and Ataya Harmony P
 2. Choose _Ataya Mapping_ as the incident type
 3. Configure the webhook server setting (listen port and credentials)
 
-![](./doc_files/generic_webhook_config.png)
-
-
 ### Ataya Harmony
 Enable Webhook on Harmony Dashboard
 1. Login to Ataya Harmony
 2. Navigate to **Organization** > **Setting** > **Webhook**.
 3. Right-click **+Webhook**, and fill the configuration related to Generic Webhook server.
 
-![](./doc_files/harmony_webhook_config.png)
-
-
 ### Supported Published Events
 - Session Create
 - Session Modification
 - Session Delete
 
-![](./doc_files/integration_example.png)
-
 _Check [Ataya Inc.](https://www.ataya.io/) for product details on Ataya Harmony Platform_
 
-[![](./doc_files/Ataya_image.png)](https://www.ataya.io/)
+[![Ataya Overview](https://www.ataya.io/wp-content/uploads/2022/12/Blue.svg)](https://www.ataya.io/)

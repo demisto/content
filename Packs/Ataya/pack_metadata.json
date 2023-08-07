@@ -10,7 +10,8 @@
         "Network Security"
     ],
     "tags": [
-        "5g"
+        "Network",
+	"Security"
     ],
     "useCases": [],
     "keywords": [],
@@ -18,16 +19,6 @@
         "xsoar",
         "marketplacev2"
     ],
-    "dependencies": {
-        "Base": {
-            "mandatory": true,
-            "name": "Base"
-        },
-        "GenericWebhook": {
-            "mandatory": true,
-            "name": "Generic Webhook"
-        }
-    },
     "githubUser": [
         "tony19911010"
     ]

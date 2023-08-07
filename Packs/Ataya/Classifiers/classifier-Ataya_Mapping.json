@@ -1,105 +1,86 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "8e0672f5-f7d5-490f-8aa3-94e5d3fa96af",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 4,
-	"mapping": {
-		"ataya": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Additional Data": {
-					"complex": {
-						"filters": [],
-						"root": "eventType",
-						"transformers": []
-					}
-				},
-				"Ataya_IMEI": {
-					"complex": {
-						"accessor": "imei",
-						"filters": [],
-						"root": "sessionInfo.info",
-						"transformers": []
-					}
-				},
-				"Ataya_IMSI": {
-					"complex": {
-						"accessor": "imsi",
-						"filters": [],
-						"root": "sessionInfo.clientID",
-						"transformers": []
-					}
-				},
-				"Ataya_IP": {
-					"complex": {
-						"accessor": "ip",
-						"filters": [],
-						"root": "sessionInfo",
-						"transformers": []
-					}
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Ataya_IMEI": {
-					"complex": {
-						"accessor": "imei",
-						"filters": [],
-						"root": "sessionInfo.info",
-						"transformers": []
-					}
-				},
-				"Ataya_IMSI": {
-					"complex": {
-						"accessor": "imsi",
-						"filters": [],
-						"root": "sessionInfo.clientID",
-						"transformers": []
-					}
-				},
-				"Ataya_IP": {
-					"complex": {
-						"accessor": "ip",
-						"filters": [],
-						"root": "sessionInfo",
-						"transformers": []
-					}
-				},
-				"Ataya_eventType": {
-					"complex": {
-						"filters": [],
-						"root": "eventType",
-						"transformers": []
-					}
-				},
-				"name": {
-					"simple": "Ataya ${eventType} Incident ${sessionInfo.clientName} ${sessionInfo.info.imei}"
-				}
-			}
-		}
-	},
-	"name": "Ataya Mapping",
-	"nameRaw": "Ataya Mapping",
-	"packID": "",
-	"packName": "",
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Ataya Mapping",
+    "mapping": {
+        "ataya": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Additional Data": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventType",
+                        "transformers": []
+                    }
+                },
+                "Ataya_IMEI": {
+                    "complex": {
+                        "accessor": "imei",
+                        "filters": [],
+                        "root": "sessionInfo.info",
+                        "transformers": []
+                    }
+                },
+                "Ataya_IMSI": {
+                    "complex": {
+                        "accessor": "imsi",
+                        "filters": [],
+                        "root": "sessionInfo.clientID",
+                        "transformers": []
+                    }
+                },
+                "Ataya_IP": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "sessionInfo",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Ataya_IMEI": {
+                    "complex": {
+                        "accessor": "imei",
+                        "filters": [],
+                        "root": "sessionInfo.info",
+                        "transformers": []
+                    }
+                },
+                "Ataya_IMSI": {
+                    "complex": {
+                        "accessor": "imsi",
+                        "filters": [],
+                        "root": "sessionInfo.clientID",
+                        "transformers": []
+                    }
+                },
+                "Ataya_IP": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "sessionInfo",
+                        "transformers": []
+                    }
+                },
+                "Ataya_eventType": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventType",
+                        "transformers": []
+                    }
+                },
+                "name": {
+                    "simple": "Ataya ${eventType} Incident ${sessionInfo.clientName} ${sessionInfo.info.imei}"
+                }
+            }
+        }
+    },
+    "name": "Ataya Mapping",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.9.0"
 }

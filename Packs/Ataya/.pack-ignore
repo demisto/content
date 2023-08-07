@@ -1,0 +1,12 @@
+[file:incidentfield-Ataya_IP.json]
+ignore=IF115
+
+[file:incidentfield-Ataya_eventType.json]
+ignore=IF115
+
+[file:incidentfield-Ataya_IMEI.json]
+ignore=IF115
+
+[file:incidentfield-Ataya_IMSI.json]
+ignore=IF115
+
