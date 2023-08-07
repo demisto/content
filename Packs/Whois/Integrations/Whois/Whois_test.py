@@ -7,6 +7,7 @@ import subprocess
 import time
 import tempfile
 import sys
+from typing import Any
 
 from CommonServerPython import DBotScoreReliability, EntryType, ExecutionMetrics, ErrorTypes
 from Whois import (
@@ -15,6 +16,7 @@ from Whois import (
     increment_metric,
     WhoisInvalidDomain,
     whois_command,
+    domain_command,
     get_domain_from_query,
     ip_command,
     get_root_server
@@ -639,3 +641,30 @@ def test_get_root_server_invalid_domain(domain: str, capfd: pytest.CaptureFixtur
     """
     with capfd.disabled(), pytest.raises(WhoisInvalidDomain):
         get_root_server(domain)
+
+
+@pytest.mark.parametrize('args, expected_res', [
+    ({"domain": "cnn.com", "is_recursive": "true", "verbose": "true", "should_error": "false"}, 2),
+    ({"domain": "cnn.com", "is_recursive": "true", "should_error": "false"}, 2)
+])
+def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixture):
+    """
+    Given:
+        - The args for the domain command.
+    When:
+        - calling the whois command.
+    Then:
+        - validate that another context path is added for the raw-response if verbose arg is true.
+    """
+    mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
+    mocker.patch.object(demisto, 'command', 'domain')
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch('Whois.get_domain_from_query', return_value='cnn.com')
+    with open('test_data/cnn_pickled', 'rb') as f:
+        get_whois_ret_value = pickle.load(f)
+    mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
+
+    result = domain_command(
+        reliability='B - Usually reliable'
+    )
+    assert len(result) == expected_res
