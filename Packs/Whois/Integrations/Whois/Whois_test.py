@@ -198,8 +198,8 @@ def test_ip_command(mocker: MockerFixture):
     mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=True)
     response = load_test_data('./test_data/ip_output.json')
     mocker.patch.object(Whois, 'get_whois_ip', return_value=response)
+    mocker.patch.object(demisto, 'args', return_value={"ip": "4.4.4.4,8.8.8.8"})
     result = ip_command(
-        ips='4.4.4.4,4.4.4.4',
         reliability=DBotScoreReliability.B,
         should_error=False
     )
@@ -331,10 +331,7 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
     mocker.patch('Whois.get_whois', return_value=get_whois_ret_value)
 
     result = Whois.whois_command(
-        reliability='B - Usually reliable',
-        query=args['query'],
-        is_recursive=args['is_recursive'],
-        should_error=args['should_error']
+        reliability='B - Usually reliable'
     )
     assert len(result) == expected_res
 
@@ -489,17 +486,16 @@ def test_execution_metrics_appended(
     mocker.patch.object(ExecutionMetrics, 'is_supported', return_value=execution_metrics_supported)
     mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
     with capfd.disabled():
-        results = whois_command(reliability=DBotScoreReliability.B, query=args['query'], is_recursive=False)
+        results = whois_command(reliability=DBotScoreReliability.B)
         assert len(results) == expected_entries
 
 
-@pytest.mark.parametrize('args,with_error,entry_type', [
-    ({"query": "1.1.1.1", "is_recursive": "true"}, True, EntryType.ERROR),
-    ({"query": "1.1.1.1", "is_recursive": "true"}, False, EntryType.WARNING)
+@pytest.mark.parametrize('args,entry_type', [
+    ({"query": "1.1.1.1", "is_recursive": "true", "with_error": True}, EntryType.ERROR),
+    ({"query": "1.1.1.1", "is_recursive": "true", "with_error": False}, EntryType.WARNING)
 ])
 def test_error_entry_type(
     args: dict[str, str],
-    with_error: bool,
     entry_type: EntryType,
     mocker: MockerFixture,
     capfd: pytest.CaptureFixture
@@ -509,12 +505,7 @@ def test_error_entry_type(
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(Whois, "get_whois_raw", return_value=load_test_data('./test_data/whois_raw_response.json')['result'])
     with capfd.disabled(), pytest.raises(Exception) as exc:
-        results = Whois.whois_command(
-            reliability=DBotScoreReliability.B,
-            query=args['query'],
-            is_recursive=False,
-            should_error=with_error
-        )
+        results = Whois.whois_command(reliability=DBotScoreReliability.B)
         assert results[0].entry_type == entry_type
         assert "caught performing whois lookup with domain" in exc.value
 
