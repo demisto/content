@@ -1,4 +1,4 @@
-![Content logo](xsoar_content_logo.png)
+ ![Content logo](xsoar_content_logo.png)
 
 [![CircleCI](https://circleci.com/gh/demisto/content.svg?style=svg)](https://circleci.com/gh/demisto/content)
 [![Open in Visual Studio Code](https://img.shields.io/badge/Open%20in%20Visual%20Studio%20Code-0078d7.svg?&logo=visual-studio-code)](https://open.vscode.dev/demisto/content)
