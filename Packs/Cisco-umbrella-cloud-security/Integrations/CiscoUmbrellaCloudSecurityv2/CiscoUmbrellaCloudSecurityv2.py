@@ -18,7 +18,7 @@ DESTINATION_LIST_OUTPUT_PREFIX = 'DestinationLists'
 
 ID_OUTPUTS_KEY_FIELD = 'id'
 
-API_LIMIT = 100
+MAX_LIMIT = 100
 DEFAULT_LIMIT = 50
 
 DESTINATION_LIST_HEADERS = ['id', 'name', 'access', 'isGlobal', 'destinationCount']
@@ -374,14 +374,14 @@ def get_json_table(obj: OptionalDictOrList, json_transformer: JsonTransformer) -
     if not obj:
         return obj
 
-    def get_json_table_for_dict(data: dict[str, Any]) -> dict[str, Any]:
-        """Convert a dict to a table.
+    def transform_json_to_dict(data: dict[str, Any]) -> dict[str, Any]:
+        """Use a JsonTransformer to extract the given keys from a dict and reconstruct it.
 
         Args:
-            data (dict[str, Any]): The dict to convert.
+            data (dict[str, Any]): The dict to transform.
 
         Returns:
-            dict[str, Any]: The converted dict.
+            dict[str, Any]: The transformed dict.
         """
         return {
             transformed_data[1]: transformed_data[2]
@@ -389,9 +389,9 @@ def get_json_table(obj: OptionalDictOrList, json_transformer: JsonTransformer) -
         }
 
     if isinstance(obj, list):
-        return [get_json_table_for_dict(o) for o in obj]
+        return [transform_json_to_dict(o) for o in obj]
 
-    return get_json_table_for_dict(obj)
+    return transform_json_to_dict(obj)
 
 
 def get_single_or_full_list(items: list) -> list | dict:
@@ -435,10 +435,9 @@ def handle_pagination(
             A tuple containing the list of items and raw responses, or a single item and raw response if page is None.
     """
     if page:
-        page_size = min(page_size or DEFAULT_LIMIT, API_LIMIT)
+        page_size = min(page_size or DEFAULT_LIMIT, MAX_LIMIT)
         demisto.debug(f'Calling list command with {args=}, {page=}, limit={page_size}')
         raw_response = list_command(*args, page=page, limit=page_size, **kwargs)
-
         return raw_response.get('data', []), raw_response
 
     page = 1
@@ -448,8 +447,8 @@ def handle_pagination(
 
     # Keep calling the API until the required amount of items have been met.
     while limit > 0:
-        demisto.debug(f'Calling list command with {args=}, {page=}, limit={API_LIMIT}')
-        raw_response = list_command(*args, page=page, limit=API_LIMIT, **kwargs)
+        demisto.debug(f'Calling list command with {args=}, {page=}, limit={MAX_LIMIT}')
+        raw_response = list_command(*args, page=page, limit=MAX_LIMIT, **kwargs)
 
         # If the API returned no items, we're done.
         if not (output := raw_response.get('data')):
@@ -466,7 +465,7 @@ def handle_pagination(
         outputs += output
 
         # If the API returned less than the required amount of items, we're done.
-        if received_items < API_LIMIT:
+        if received_items < MAX_LIMIT:
             demisto.debug(f'These are the last items in the API {page=}, stopping')
             break
 
@@ -545,8 +544,8 @@ def find_destinations(
     raw_responses: list[dict[str, Any]] = []
 
     while destinations or destination_ids:
-        demisto.debug(f'Calling list command with {destination_list_id=}, {page=}, limit={API_LIMIT}')
-        raw_response = list_command(destination_list_id=destination_list_id, page=page, limit=API_LIMIT)
+        demisto.debug(f'Calling list command with {destination_list_id=}, {page=}, limit={MAX_LIMIT}')
+        raw_response = list_command(destination_list_id=destination_list_id, page=page, limit=MAX_LIMIT)
         items = raw_response.get('data', [])
 
         if not items:
@@ -570,7 +569,7 @@ def find_destinations(
             ):
                 outputs.append(item)
 
-        if len(items) < API_LIMIT:
+        if len(items) < MAX_LIMIT:
             demisto.debug(f'These are the last items in the API {page=}, stopping')
             break
 
