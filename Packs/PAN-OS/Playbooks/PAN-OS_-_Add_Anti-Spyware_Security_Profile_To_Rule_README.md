@@ -1,5 +1,14 @@
-This playbook is used to add an Anti-Spyware security profile to a security rule in PAN-OS in a safe manner: it provides granular control over the behavior for cases where a rule already has an Anti-Spyware profile attached, or has a security profile group configured to it with/without an Anti-Spyware profile.
-The playbook outputs the Anti-Spyware profile configured for the rule at the time the playbook finished. This could be the previous profile if it was not overwritten, or it could be a new one that it was overwritten with or has just been added.
+This playbook is designed to enhance the security level in PAN-OS firewalls by safely adding an Anti-Spyware security profile to a security rule.
+
+The playbook provides control over the behavior when a rule:
+- Already has an Anti-Spyware profile
+- Uses a security profile group, with or without an Anti-Spyware profile
+
+The output of the playbook is the Anti-Spyware profile configured for the rule upon playbook completion. This can be:
+- The initial profile, if untouched
+- A newly overwritten profile
+- A newly added profile
+
 
 ## Dependencies
 
@@ -19,10 +28,10 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* pan-os-create-anti-spyware-best-practice-profile
-* pan-os-list-rules
 * pan-os-get-security-profiles
+* pan-os-create-anti-spyware-best-practice-profile
 * pan-os-apply-security-profile
+* pan-os-list-rules
 
 ## Playbook Inputs
 
@@ -40,7 +49,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AntiSpywareProfileNameApplied | The name of the Anti-Spyware Security Profile that is applied to the rule. The value could be the name of the rule that was added, overwritten with, or left untouched - for the specified rule. | unknown |
+| AntiSpywareProfileNameApplied | The name of the Anti-Spyware Security Profile that is applied to the rule. The value could be the name of the profile that was added, overwritten with, or left untouched - for the specified rule. | unknown |
 
 ## Playbook Image
 

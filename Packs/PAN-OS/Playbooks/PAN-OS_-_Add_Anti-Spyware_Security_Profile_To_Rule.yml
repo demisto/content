@@ -1,9 +1,16 @@
 id: PAN-OS - Add Anti-Spyware Security Profile To Rule
 version: -1
 name: PAN-OS - Add Anti-Spyware Security Profile To Rule
-description: |-
-  This playbook is used to add an Anti-Spyware security profile to a security rule in PAN-OS in a safe manner: it provides granular control over the behavior for cases where a rule already has an Anti-Spyware profile attached, or has a security profile group configured to it with/without an Anti-Spyware profile.
-  The playbook outputs the Anti-Spyware profile configured for the rule at the time the playbook finished. This could be the previous profile if it was not overwritten, or it could be a new one that it was overwritten with or has just been added.
+description: |
+  This playbook is designed to enhance the security level in PAN-OS firewalls by safely adding an Anti-Spyware security profile to a security rule.
+  The playbook provides control over the behavior when a a rule:
+  - Already has an Anti-Spyware profile
+  - Uses a security profile group, with or without an Anti-Spyware profile
+
+  The output of the playbook is the Anti-Spyware profile configured for the rule upon playbook completion. This can be:
+  - The initial profile, if untouched
+  - A newly overwritten profile
+  - A newly added profile
 tags:
 - PAN-OS
 starttaskid: "0"
@@ -40,28 +47,34 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a65e9138-07cf-4003-82f8-e223e6d6ac59
+    taskid: 23837a9f-eb83-4e85-8dec-6fa7d71f43d6
     type: condition
     task:
-      id: a65e9138-07cf-4003-82f8-e223e6d6ac59
+      id: 23837a9f-eb83-4e85-8dec-6fa7d71f43d6
       version: -1
-      name: Does it have an anti-spyware profile already?
-      description: Checks whether the rule already has an anti-spyware profile attached.
+      name: Can a new anti-spyware profile be applied?
+      description: |-
+        Checks whether the rule can have the anti spyware profile applied to it.
+        There are 4 different possible scenarios:
+        1. It has no profile, so the specified profile can be applied.
+        2. It has a profile, but it should not be overwritten with a new anti spyware profile.
+        3. It has a security profile group, and the anti-spyware profile specified can be added to that group.
+        4. It has a security profile group, but the anti-spyware profile can be applied only if the group doesn't already have an anti spyware profile in it.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      Add/Overwrite Profile:
-      - "18"
-      Don't Overwrite Profile:
-      - "27"
-      Has Group, Don't Overwrite:
+      Maybe, if group is empty:
       - "35"
-      Has group, Overwrite:
+      No, profile exists:
+      - "27"
+      Yes, add/overwrite profile:
+      - "18"
+      Yes, edit group:
       - "29"
     separatecontext: false
     conditions:
-    - label: Add/Overwrite Profile
+    - label: Yes, add/overwrite profile
       condition:
       - - operator: isEqualString
           left:
@@ -82,7 +95,7 @@ tasks:
             value:
               simple: Panorama.SecurityRule.SecurityProfileGroup
             iscontext: true
-    - label: Has group, Overwrite
+    - label: Yes, edit group
       condition:
       - - operator: isNotEmpty
           left:
@@ -98,7 +111,7 @@ tasks:
             value:
               simple: "True"
           ignorecase: true
-    - label: Don't Overwrite Profile
+    - label: No, profile exists
       condition:
       - - operator: isEqualString
           left:
@@ -114,7 +127,7 @@ tasks:
             value:
               simple: Panorama.SecurityRule.SecurityProfileGroup
             iscontext: true
-    - label: Has Group, Don't Overwrite
+    - label: Maybe, if group is empty
       condition:
       - - operator: isNotEmpty
           left:
@@ -463,10 +476,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 3eb0e662-435d-4723-8cd5-e55e08f9b51f
+    taskid: b7663e7d-ba72-409c-8cfb-6be52619e5f1
     type: condition
     task:
-      id: 3eb0e662-435d-4723-8cd5-e55e08f9b51f
+      id: b7663e7d-ba72-409c-8cfb-6be52619e5f1
       version: -1
       name: Does the profile we are applying already exist?
       description: Checks whether the profile we want to apply already exists or needs to be created.
@@ -486,12 +499,12 @@ tasks:
           left:
             value:
               complex:
-                root: Panorama.Spyware.Rules.Name
+                root: Panorama.Spyware.Name
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Panorama.Spyware.Rules.Name
+                        simple: Panorama.Spyware.Name
                       iscontext: true
                     right:
                       value:
@@ -747,12 +760,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 55051065-5381-4fa2-886d-9f2b8a3f568b
+    taskid: d5aa2d6b-bcb1-4a4f-8fce-98bd7dba3894
     type: collection
     task:
-      id: 55051065-5381-4fa2-886d-9f2b8a3f568b
+      id: d5aa2d6b-bcb1-4a4f-8fce-98bd7dba3894
       version: -1
-      name: Provide the name of the existing security profile
+      name: Provide the name of the existing anti-spyware profile
       description: Please review the the security profile group described below in your PAN-OS firewall instance which is configured in XSOAR, and answer the question.
       type: collection
       iscommand: false
@@ -776,7 +789,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Please provide the name of the existing security profile for proper execution of the playbook.
+        simple: Please provide the name of the existing anti-spyware profile for proper execution of the playbook.
       methods: []
       format: ""
       bcc:
@@ -803,7 +816,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: PAN-OS - Adding a Security Profile to a Group
+      title: PAN-OS - Adding an Anti-Spyware Profile to a Group
       description: ""
       sender: ""
       expired: false
@@ -847,10 +860,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 78dfa352-67e4-4b04-851a-bf8547213b22
+    taskid: 28f54f2d-4730-4237-8262-45e47586db1a
     type: regular
     task:
-      id: 78dfa352-67e4-4b04-851a-bf8547213b22
+      id: 28f54f2d-4730-4237-8262-45e47586db1a
       version: -1
       name: Save the existing profile to outputs
       description: |-
@@ -979,9 +992,9 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_18_Add/Overwrite Profile": 0.89,
-      "1_27_Don't Overwrite Profile": 0.82,
-      "1_29_Has group, Overwrite": 0.3,
+      "1_18_Yes, add/overwrite profile": 0.89,
+      "1_27_No, profile exists": 0.82,
+      "1_29_Yes, edit group": 0.3,
       "22_14_Yes": 0.43,
       "22_20_#default#": 0.49,
       "2_7_#default#": 0.1,
@@ -1022,7 +1035,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: AntiSpywareProfileNameApplied
-  description: The name of the Anti-Spyware Security Profile that is applied to the rule. The value could be the name of the rule that was added, overwritten with, or left untouched - for the specified rule.
+  description: The name of the Anti-Spyware Security Profile that is applied to the rule. The value could be the name of the profile that was added, overwritten with, or left untouched - for the specified rule.
   type: unknown
 tests:
 - PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
