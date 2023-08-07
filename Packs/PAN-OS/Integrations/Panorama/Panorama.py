@@ -827,7 +827,6 @@ def list_device_groups_names():
 
     return CommandResults(
         outputs_prefix='Panorama.DeviceGroupNames',
-        outputs_key_field='Group Name',
         outputs=device_group_names,
         readable_output=tableToMarkdown('Device Group Names:', device_group_names, ['Group Name']),
     )

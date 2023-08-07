@@ -8968,8 +8968,7 @@ There is no context output for this command.
 ### pan-os-list-device-groups
 
 ***
-Returns a list of device groups from Panorama.
-
+Returns a list of all device groups from Panorama.
 #### Base Command
 
 `pan-os-list-device-groups`
@@ -8983,4 +8982,4 @@ Returns a list of device groups from Panorama.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DeviceGroupNames | string | The list of device groups. |
+| Panorama.DeviceGroupNames | string | The list of device groups. |

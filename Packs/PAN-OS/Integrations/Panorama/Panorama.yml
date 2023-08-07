@@ -9325,9 +9325,9 @@ script:
     name: pan-os-delete-tag
   - arguments: []
     name: pan-os-list-device-groups
-    description: Returns a list of device groups from Panorama.
+    description: Returns all device groups from Panorama (use only in Panorama instances).
     outputs:
-    - contextPath: DeviceGroupNames
+    - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
   dockerimage: demisto/pan-os-python:1.0.0.68093
