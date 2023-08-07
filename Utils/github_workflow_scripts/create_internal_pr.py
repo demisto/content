@@ -78,7 +78,7 @@ def main():
     # Set PR assignees
     assignees = [assignee.login for assignee in merged_pr.assignees]
 
-    # Unassign the tech writer
+    # Un-assign the tech writer (cause the docs reviewed has already been done on the external PR)
     content_roles = load_json(CONTENT_ROLES_PATH)
     if content_roles:
 
