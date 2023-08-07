@@ -33,5 +33,5 @@ alter
     xdm.target.user.username = if(len(duser) > 0, duser, cs1),
     xdm.target.file.filename = fname,
     xdm.target.resource.name = if(cs2_len > 0, cs2), // name of the target safe 
-    xdm.target.resource.type = if(cs2_len > 0, trim(cs2, "\"")); // "Safe Name" label
+    xdm.target.resource.type = if(cs2_len > 0, trim(cs2Label, "\"")); // "Safe Name" label
     
