@@ -561,10 +561,10 @@ tasks:
     continueonerrortype: ""
   "47":
     id: "47"
-    taskid: b4894f8f-75e3-4406-86f3-06500e96ba77
+    taskid: 0568e33e-3cce-41b0-8611-a80abe914f91
     type: condition
     task:
-      id: b4894f8f-75e3-4406-86f3-06500e96ba77
+      id: 0568e33e-3cce-41b0-8611-a80abe914f91
       version: -1
       name: What integration to use for create the pull request
       description: Check the GitIntegration input to know which git integration we want to use to create the pull request.
@@ -580,6 +580,8 @@ tasks:
       - "49"
       GitLab:
       - "53"
+      AzureDevOps:
+      - "58"
     separatecontext: false
     conditions:
     - label: github
@@ -615,6 +617,16 @@ tasks:
           right:
             value:
               simple: gitlab
+    - label: AzureDevOps
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GitIntegration
+            iscontext: true
+          right:
+            value:
+              simple: azuredevops
     view: |-
       {
         "position": {
@@ -672,10 +684,10 @@ tasks:
     continueonerrortype: ""
   "49":
     id: "49"
-    taskid: 0f8941a5-780f-4aec-8b31-f19ab6d3af24
+    taskid: e7f96b02-ad82-43c2-8e1c-ad81ca6e4424
     type: playbook
     task:
-      id: 0f8941a5-780f-4aec-8b31-f19ab6d3af24
+      id: e7f96b02-ad82-43c2-8e1c-ad81ca6e4424
       version: -1
       name: Pull Request Creation - Bitbucket
       description: This playbook creates a pull request using Bitbucket integration.
@@ -861,13 +873,109 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: d31a006f-21fe-4dff-87a2-33746d1a1c63
+    type: regular
+    task:
+      id: d31a006f-21fe-4dff-87a2-33746d1a1c63
+      version: -1
+      name: Set incident fields values
+      description: |-
+        Update the following incident fields with the relevant data:
+        - cicdreviewer
+        - cicdpullrequestlink
+        - cicdpackname
+        - cicdbranch
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      cicdbranch:
+        complex:
+          root: BranchName
+      cicdpackname:
+        complex:
+          root: PackName
+      cicdpullrequestlink:
+        simple: https://github.com/${GitHub.PR.Head.Repo.FullName}/pull/${GitHub.PR.Number}
+      cicdreviewer:
+        complex:
+          root: GitLab.MergeRequest.reviewers
+          accessor: account_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: a20e1120-9ea5-4ca4-841a-5c81ca7e2eb5
+    type: playbook
+    task:
+      id: a20e1120-9ea5-4ca4-841a-5c81ca7e2eb5
+      version: -1
+      name: Pull Request Creation - AzureDevOps
+      description: This playbook creates a pull request using AzureDevOps integration.
+      playbookName: Pull Request Creation - AzureDevOps
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      File:
+        simple: ${File}
+      MainBranch:
+        simple: ${inputs.MainBranch}
+      PackName:
+        simple: ${PackName}
+      PullRequestTemplate:
+        simple: ${inputs.PullRequestTemplate}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2425,
-        "width": 1750,
+        "width": 2190,
         "x": -30,
         "y": 50
       }
@@ -887,17 +995,25 @@ inputs:
   playbookInputQuery:
 - key: MainBranch
   value:
-    simple: main
+    simple: ${incident.cicdbranch}
   required: true
   description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
   playbookInputQuery:
 - key: GitIntegration
   value:
-    simple: gitlab
+    simple: azuredevops
   required: true
-  description: Which version control integration to use. We support github, gitlab and bitbucket.
+  description: Which version control integration to use. We support github, gitlab, bitbucket and azuredevops.
+  playbookInputQuery:
+- key: ""
+  value: {}
+  required: false
+  description: ""
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
