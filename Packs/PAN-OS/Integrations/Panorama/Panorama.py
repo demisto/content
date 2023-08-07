@@ -824,15 +824,13 @@ def list_device_groups_names():
     Get device group names in the Panorama
     """
     device_group_names = get_device_groups_names()
-    
-    command_results = CommandResults(
+
+    return CommandResults(
         outputs_prefix='Panorama.DeviceGroupNames',
         outputs_key_field='Group Name',
         outputs=device_group_names,
         readable_output=tableToMarkdown('Device Group Names:', device_group_names, ['Group Name']),
     )
-
-    return_results(command_results)
 
 
 def device_group_test():
