@@ -101,7 +101,8 @@ def add_entries(email_reply, email_related_incident, reputation_calc_async=False
         email_related_incident: The related incident.
     """
     entries_str = json.dumps([{"Type": 1, "ContentsFormat": 'html', "Contents": email_reply, "tags": ['email-thread']}])
-    res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident, 'reputationCalcAsync': reputation_calc_async})
+    res = demisto.executeCommand("addEntries", {"entries": entries_str,
+                                 'id': email_related_incident, 'reputationCalcAsync': reputation_calc_async})
     if is_error(res):
         demisto.error(ERROR_TEMPLATE.format('addEntries', res['Contents']))
         raise DemistoException(ERROR_TEMPLATE.format('addEntries', res['Contents']))
@@ -287,6 +288,7 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
                         return str(incident.get('id'))
             except Exception as e:
                 demisto.error(f'Exception while retrieving thread context: {e}')
+    return None
 
 
 def get_unique_code():
@@ -325,7 +327,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
         incident_id: ID of the related incident
         attachments: File attachments from the email
     """
-    thread_number = str()
+    thread_number = ''
     thread_found = False
     try:
         # Get current email threads from context if any are present

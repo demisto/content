@@ -157,7 +157,7 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
         incident_id: ID of the related incident
         new_attachment_names: File attachments sent with the email
     """
-    thread_number = str()
+    thread_number = ''
     thread_found = False
     try:
         incident_email_threads = get_email_threads(incident_id)
@@ -429,7 +429,8 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
 
         entry_note = json.dumps(
             [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
-        entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id, 'reputationCalcAsync': reputation_calc_async})
+        entry_tags_res = demisto.executeCommand(
+            "addEntries", {"entries": entry_note, 'id': incident_id, 'reputationCalcAsync': reputation_calc_async})
 
         entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
             {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
@@ -613,6 +614,7 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
     else:
         return_error(f'The selected Thread Number to respond to ({email_selected_thread}) '
                      f'does not exist.  Please choose a valid Thread Number and re-try.')
+        return None
 
 
 def format_body(new_email_body):
@@ -748,13 +750,13 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
         Tuple containing details of the selected email thread for re-use in creating reply message
     """
     thread_found = False
-    reply_to_message_id = str()
-    reply_recipients = str()
-    reply_subject = str()
-    reply_mailbox = str()
-    thread_cc = str()
-    thread_bcc = str()
-    reply_code = str()
+    reply_to_message_id = ''
+    reply_recipients = ''
+    reply_subject = ''
+    reply_mailbox = ''
+    thread_cc = ''
+    thread_bcc = ''
+    reply_code = ''
     outbound_only = True
     last_thread_processed = 0
 
@@ -973,7 +975,7 @@ def main():
     email_selected_thread = custom_fields.get('emailselectedthread')
     subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
 
-    reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
+    argToBoolean(args.get('reputation_calc_async', False))
 
     if new_email_attachments:
         new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
