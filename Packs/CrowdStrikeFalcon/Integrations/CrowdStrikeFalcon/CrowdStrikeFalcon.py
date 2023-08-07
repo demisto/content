@@ -2184,6 +2184,7 @@ def get_remote_idp_detection_data(remote_incident_id):
 
 
 def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str):
+    demisto.debug(f'in set_xsoar_incident_entries({updated_object=}, {entries=}, {remote_incident_id=})')
     if demisto.params().get('close_incident'):
         demisto.debug('incident is being closed')
         if updated_object.get('status') == 'Closed':
