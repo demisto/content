@@ -66,7 +66,10 @@ class Client(BaseClient):
         if tags is None:
             tags = []
         try:
-            self.polling_timeout = int(polling_timeout)
+            self.polling_timeout = min(int(polling_timeout), 1500)
+
+            demisto.info(f"set timeout on request to {self.polling_timeout}. Decreased as docker times out after 30 minutes")
+
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
 
@@ -100,12 +103,16 @@ class Client(BaseClient):
             params = self.PARAMS
             params['gzip'] = True
 
+            demisto.info("before request")
+
             response = requests.Request(
                 'GET',
                 url,
                 headers=self.headers,
                 params=params
             )
+
+            demisto.info(f"after request, params: {params}")
 
         elif service == 'fusion':
             url = self.BASE_URL + 'fusion/files/?path='
@@ -121,6 +128,9 @@ class Client(BaseClient):
                                         params=self.PARAMS)
         else:
             raise DemistoException(f'Service unknown: {service}')
+
+        demisto.info(f"response from the API: {response}")
+
         return response.prepare()
 
     def build_iterator(self, service, indicator_type, risk_rule: Optional[str] = None):
@@ -177,6 +187,9 @@ class Client(BaseClient):
             columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
             batch_size = limit if limit else BATCH_SIZE
+
+            demisto.info(f"batch_size is: {batch_size}")
+
             while True:
 
                 feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
@@ -185,7 +198,11 @@ class Client(BaseClient):
                     file_stream.close()
                     return
                 yield csv.DictReader(feed_batch, fieldnames=columns)
+
         finally:
+
+            demisto.info("in finally")
+
             try:
                 os.remove("response.txt")
             except OSError:
@@ -381,6 +398,9 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
     indicators_value_set: Set[str] = set()
     for service in client.services:
         client.build_iterator(service, indicator_type, risk_rule)
+
+        demisto.info("after building iterator")
+
         feed_batches = client.get_batches_from_file(limit)
         for feed_dicts in feed_batches:
             indicators = []
@@ -425,6 +445,8 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
                     indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
 
                 indicators.append(indicator_obj)
+
+                demisto.info(f"added indicator to indicators list. indicators count: {len(indicators)}")
 
             yield indicators
 
