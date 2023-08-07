@@ -12,7 +12,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-  description: If set, failed command results will be returned as warnings instead of errors.
+  additionalinfo: If set, failed command results will be returned as warnings instead of errors.
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
   name: proxy_url
