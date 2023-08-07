@@ -15,7 +15,6 @@ def main():
     except Exception:
         return_results("Error - the field SDO Name does not exist. please install Proactive Threat Hunting pack to support this feature")
 
-    # TODO pretty format of md table in warroom results
     result = CommandResults(
         readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo}"
     )
