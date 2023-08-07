@@ -426,7 +426,7 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_fetch_incidents_without_assets_info(
-        requests_mock, reco_client: RecoClient
+    requests_mock, reco_client: RecoClient
 ) -> None:
     random_incidents = get_random_table_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
@@ -451,7 +451,7 @@ def test_fetch_incidents_without_assets_info(
 
 
 def test_fetch_assets_with_empty_response(
-        requests_mock, reco_client: RecoClient
+    requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.get(
@@ -559,7 +559,7 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
 
 
 def test_update_reco_incident_timeline_error(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.put(
@@ -585,7 +585,7 @@ def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> Non
 
 
 def test_resolve_visibility_event_error(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     entry_id = uuid.uuid1()
     requests_mock.put(
@@ -610,7 +610,7 @@ def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_get_risky_users_bad_response(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
@@ -645,7 +645,7 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
 
 
 def test_get_assets_user_bad_response(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
@@ -772,3 +772,16 @@ def test_add_exclusion_filter(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/algo/add_values_to_data_type_exclude_analyzer", json={}, status_code=200
     )
     reco_client.add_exclusion_filter("key", ["val1", "val2"])
+
+
+def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
+    alert_id = uuid.uuid1()
+    status = 'ALERT_STATUS_CLOSED'
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{str(alert_id)}/status/{status}",
+        json={},
+        status_code=200,
+    )
+    res = reco_client.change_alert_status(alert_id=str(alert_id),
+                                          status=status)
+    assert res == {}
