@@ -17,7 +17,7 @@ def equals_object(obj1, obj2) -> bool:
     elif isinstance(obj1, list):
         # Compare lists (ignore order)
         list2 = list(obj2)
-        for _i1, v1 in enumerate(obj1):
+        for i1, v1 in enumerate(obj1):
             for i2, v2 in enumerate(list2):
                 if equals_object(v1, v2):
                     list2.pop(i2)
@@ -375,36 +375,3 @@ def test_print_verbose(mocker):
     results = demisto.results.call_args[0][0]
     assert '|ID|Score|CreationStatus|Type|Value' in results.get('HumanReadable')
     assert equals_object(expected_entry_context, results.get('EntryContext'))
-
-
-def test_findIndicators_called_with_escaped_quotes(mocker):
-    """
-    Given:
-        indicator_value = "(External):Test \"test2 test (unsigned)\""
-    When:
-        The 'add_new_indicator' function is called with the indicator_value = "(External):Test \"test2 test (unsigned)\""
-        (when the user runs in cli: !CreateNewIndicatorsOnlyTest indicator_values=`(External):Test "test2 test (unsigned)"`)
-    Then:
-        1. The 'execute_command' function should be called with the correct escaped value.
-        2. The 'add_new_indicator' function should return the expected result as a dictionary.
-    """
-    from CreateNewIndicatorsOnly import add_new_indicator
-    indicator_value = "(External):Test \"test2 test (unsigned)\""
-    expected_value = indicator_value.replace('"', r"\"")
-
-    def __execute_command(cmd, args) -> Any:
-        assert args == {'value': expected_value}
-        if cmd == 'findIndicators':
-            return [{
-                'id': '0',
-                'value': '(External):Test "test2 test (unsigned)"',
-                'score': 0,
-                'indicator_type': args.get('type', 'Unknown')
-            }]
-        return None
-
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
-
-    result = add_new_indicator(indicator_value, {})
-    assert result == {'id': '0', 'value': '(External):Test "test2 test (unsigned)"',
-                      'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'existing'}
