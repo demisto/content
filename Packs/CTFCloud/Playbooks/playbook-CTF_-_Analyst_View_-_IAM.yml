@@ -496,7 +496,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: Give an example of one suspicious activity that can indicate persistence ( mention the eventType).
+          simple: Give an example of one suspicious activity that can indicate persistence ( mention the eventName).
         required: true
         gridcolumns: []
         defaultrows: []
