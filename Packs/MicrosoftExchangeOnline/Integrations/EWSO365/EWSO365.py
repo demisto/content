@@ -2463,6 +2463,7 @@ def sub_main():     # pragma: no cover
             incident_filter = params.get('incidentFilter', RECEIVED_FILTER)
             if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
                 incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
+            demisto.debug(f"{incident_filter=}")
             incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
 
