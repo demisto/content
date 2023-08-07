@@ -2,7 +2,7 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
 
-# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. slack notification
+# used for jobs which we want to run in a pipeline even when previous jobs in the pipeline fail e.g. Slack notification
 .sdk-nightly-schedule-rule-always:
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
@@ -174,10 +174,13 @@ demisto-sdk-nightly:run-commands-against-instance:
     INSTANCE_ROLE: "Server Master"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
-  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   script:
     - !reference [.ssh-config-setup]
-    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - section_start "Wait Until Server Ready"
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
+    - section_end "Wait Until Server Ready"
     - !reference [.download-demisto-conf]
     - |
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
@@ -208,7 +211,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --aritfacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - section_end "Destroy instances"
     - job-done
 
@@ -231,7 +234,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
   script:
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b master --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git@${SDK_REF} $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
       TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
