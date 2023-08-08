@@ -668,6 +668,7 @@ class TestFetchingStixObjects:
         else:
             mock_as_pages.assert_called_with([], per_request=1)
 
+
 class TestParsingIndicators:
 
     # test examples taken from here - https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_64yvzeku5a5c
@@ -1183,17 +1184,18 @@ class TestParsingIndicators:
         Then:
          - Make sure all the fields are being parsed correctly.
         """
-        indicator_obj = {"id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85,
-                         "lang": "en", "type": "indicator", "created": "2020-05-14T00:14:05.401Z",
-                         "modified": "2020-05-14T00:14:05.401Z", "name": "suspicious_domain: test.org",
-                         "description": "TS ID: 55475482483; iType: suspicious_domain; ",
-                         "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
-                         "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
-                         "labels": ["medium"],
-                         "indicator_types": ["anomalous-activity"],
-                         "extensions": {
-                             "extension-definition--1234": {"CustomFields": {"tags": ["medium"], "description": "test"}}},
-                         "pattern_version": "2.1", "spec_version": "2.1"}
+        indicator_obj = {
+            "id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85, "lang": "en",
+            "type": "indicator", "created": "2020-05-14T00:14:05.401Z", "modified": "2020-05-14T00:14:05.401Z",
+            "name": "suspicious_domain: test.org", "description": "TS ID: 55475482483; iType: suspicious_domain; ",
+            "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
+            "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+            "labels": ["medium"],
+            "indicator_types": ["anomalous-activity"],
+            "extensions":
+            {"extension-definition--1234": {"CustomFields": {"tags": ["medium"],
+                                                             "description": "test"}}},
+            "pattern_version": "2.1", "spec_version": "2.1"}
 
         indicator_obj['value'] = 'test.org'
         indicator_obj['type'] = 'Domain'
