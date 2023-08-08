@@ -1,7 +1,7 @@
 import SplunkConvertCommentsToTable
 
 EXPECTED_TABLE = ('|Comment|\n'
-                  '|---|---|---|\n'
+                  '|---|\n'
                   '| new comment |\n')
 
 

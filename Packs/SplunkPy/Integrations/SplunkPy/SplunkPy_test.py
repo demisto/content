@@ -1170,8 +1170,7 @@ def test_get_remote_data_command_add_comment(mocker, notable_data: dict,
     splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False),
                                    comment_tag_from_splunk='from_splunk', **func_call_kwargs)
     results = demisto.results.call_args[0][0][0]
-    notable_data.update({'SplunkComments': [{'Comment': 'new comment from splunk',
-                        'Comment time': '1612881691.589575', 'Reviwer': 'admin'}]})
+    notable_data.update({'SplunkComments': [{'Comment': 'new comment from splunk'}]})
     note_results = demisto.results.call_args[0][0][1]
 
     expected_results = [notable_data][0]
