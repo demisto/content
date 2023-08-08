@@ -16,6 +16,13 @@ description: |-
   * Envoy IAM
   * ExceedLMS IAM
   * Okta
+  * Microsoft Graph User (Azure Active Directory Users)
+  * Slack IAM
+  * ServiceNow IAM
+  * Prisma Cloud IAM
+  * Zoom IAM
+  * Atlassian IAM
+  * GitHub IAM
 starttaskid: "0"
 tasks:
   "0":

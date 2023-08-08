@@ -10,6 +10,13 @@ Supported integrations for this playbook:
 * Envoy IAM
 * ExceedLMS IAM
 * Okta
+* Microsoft Graph User (Azure Active Directory Users)
+* Slack IAM
+* ServiceNow IAM
+* Prisma Cloud IAM
+* Zoom IAM
+* Atlassian IAM
+* GitHub IAM
 
 ## Dependencies
 
@@ -30,11 +37,12 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* iam-disable-user
-* identityiq-disable-account
-* pingone-deactivate-user
-* pan-os-register-user-tag
 * ad-disable-account
+* pingone-deactivate-user
+* iam-disable-user
+* msgraph-user-account-disable
+* pan-os-register-user-tag
+* identityiq-disable-account
 
 ## Playbook Inputs
 
