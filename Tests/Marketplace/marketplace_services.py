@@ -3602,7 +3602,8 @@ class Pack:
         Returns:
             bool: whether the operation succeeded.
         """
-        pack_storage_root_path = os.path.join(storage_base_path, 'images')
+        pack_storage_root_path = os.path.join(storage_base_path, 'images').replace("packs/", "")
+        logging.debug(f"Uploading dynamic dashboard to folder in path: {pack_storage_root_path}")
 
         local_dynamic_dashboard_image_dir = os.path.join(PACKS_FOLDER, self.name, PackFolders.INTEGRATIONS.value)
         if not os.path.isdir(local_dynamic_dashboard_image_dir):
