@@ -11,6 +11,7 @@ Supported integrations for this playbook:
 * ExceedLMS IAM
 * Okta
 * Microsoft Graph User (Azure Active Directory Users)
+* Google Workspace Admin
 * Slack IAM
 * ServiceNow IAM
 * Prisma Cloud IAM
@@ -38,11 +39,12 @@ This playbook does not use any sub-playbooks.
 ### Commands
 
 * ad-disable-account
-* pingone-deactivate-user
+* gsuite-user-update
+* identityiq-disable-account
+* pan-os-register-user-tag
 * iam-disable-user
 * msgraph-user-account-disable
-* pan-os-register-user-tag
-* identityiq-disable-account
+* pingone-deactivate-user
 
 ## Playbook Inputs
 
