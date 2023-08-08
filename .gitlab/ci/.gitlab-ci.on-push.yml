@@ -163,6 +163,16 @@ validate-content-conf:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
+    - section_start "Find dependencies changes"
+    - |
+      echo "downloading packs_dependencies.json file from last upload"
+      TEMP_DIR=$(mktemp -d)
+      LAST_UPLOAD_DEPENDENCIES_FILE="$TEMP_DIR/last_upload_packs_dependencies.json"
+      gsutil cp "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json" $LAST_UPLOAD_DEPENDENCIES_FILE
+    - ./Tests/scripts/find_pack_dependencies_changes.py --previous "bla" --current $ARTIFACTS_FOLDER/packs_dependencies.json --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
+    - rm -rf "$TEMP_DIR"
+    - section_end "Find dependencies changes"
+
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
       if [[ $MARKETPLACE_VERSION != "xsoar" ]];
