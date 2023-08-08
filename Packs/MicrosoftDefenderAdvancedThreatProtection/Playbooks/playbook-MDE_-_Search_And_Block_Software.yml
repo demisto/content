@@ -1,54 +1,25 @@
-description: This playbook will search a  file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can than choose the files he wishes to block.
 id: MDE - Search And Block Software
-inputs:
-- description: File name to search
-  key: Filename
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
-  key: TimeFrame
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The indicator alert title in Defender.
-  key: Defender Indicator Title
-  playbookInputQuery:
-  required: false
-  value:
-    simple: XSOAR Software Block
-- description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
-  key: Indicator Expiration
-  playbookInputQuery:
-  required: false
-  value: {}
+version: -1
 name: MDE - Search And Block Software
-outputs: []
+description: This playbook will search a  file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can than choose the files he wishes to block.
 starttaskid: "0"
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: e2462455-b6f1-4456-847a-8d2cbfe68e11
+    type: start
+    task:
+      id: e2462455-b6f1-4456-847a-8d2cbfe68e11
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e2462455-b6f1-4456-847a-8d2cbfe68e11
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: e2462455-b6f1-4456-847a-8d2cbfe68e11
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -56,44 +27,44 @@ tasks:
           "y": -130
         }
       }
-  "3":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: Result
-                root: MicrosoftATP.Hunt
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "3"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f16ed52e-b396-43c3-85e0-74ca45de4ce0
+    type: condition
+    task:
+      id: f16ed52e-b396-43c3-85e0-74ca45de4ce0
+      version: -1
+      name: Has query results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "26"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: f16ed52e-b396-43c3-85e0-74ca45de4ce0
-      iscommand: false
-      name: Has query results?
-      type: condition
-      version: -1
-    taskid: f16ed52e-b396-43c3-85e0-74ca45de4ce0
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Hunt
+                accessor: Result
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -101,27 +72,27 @@ tasks:
           "y": 520
         }
       }
-  "4":
-    continueonerrortype: ""
-    id: "4"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2b9111c4-c7f3-4aff-8722-cb0e0de16aa9
+    type: title
     task:
-      brand: ""
       id: 2b9111c4-c7f3-4aff-8722-cb0e0de16aa9
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 2b9111c4-c7f3-4aff-8722-cb0e0de16aa9
-    timertriggers: []
-    type: title
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -129,41 +100,41 @@ tasks:
           "y": 2390
         }
       }
-  "6":
-    continueonerrortype: ""
-    id: "6"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "21"
     note: false
-    quietmode: 0
-    scriptarguments:
-      key:
-        simple: PaloAltoNetworksXQL
-      subplaybook:
-        simple: "yes"
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7ed6724b-75d4-45c8-8a3d-e39ffa900e22
+    type: regular
     task:
-      brand: ""
+      id: 7ed6724b-75d4-45c8-8a3d-e39ffa900e22
+      version: -1
+      name: delete context - XDR Results
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: 7ed6724b-75d4-45c8-8a3d-e39ffa900e22
-      iscommand: false
-      name: delete context - XDR Results
-      script: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      version: -1
-    taskid: 7ed6724b-75d4-45c8-8a3d-e39ffa900e22
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -171,49 +142,49 @@ tasks:
           "y": 1890
         }
       }
-  "14":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.Filename
-          operator: isNotEmpty
-          right:
-            value: {}
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.TimeFrame
-          operator: isNotEmpty
-      label: "yes"
-    continueonerrortype: ""
-    id: "14"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 204f5af9-ee11-4c34-8429-3d0cc19a3685
+    type: condition
+    task:
+      id: 204f5af9-ee11-4c34-8429-3d0cc19a3685
+      version: -1
+      name: Has software name and timeframe from input?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "15"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 204f5af9-ee11-4c34-8429-3d0cc19a3685
-      iscommand: false
-      name: Has software name and timeframe from input?
-      type: condition
-      version: -1
-    taskid: 204f5af9-ee11-4c34-8429-3d0cc19a3685
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Filename
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.TimeFrame
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -221,17 +192,29 @@ tasks:
           "y": 170
         }
       }
-  "15":
-    continueonerrortype: ""
-    id: "15"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: acdbc23e-ea80-4a6f-86a6-b210df33031d
+    type: regular
+    task:
+      id: acdbc23e-ea80-4a6f-86a6-b210df33031d
+      version: -1
+      name: Execute KQL query to search software
+      description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
+      script: '|||microsoft-atp-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       query:
         simple: |-
@@ -242,19 +225,7 @@ tasks:
         complex:
           root: inputs.TimeFrame
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
-      id: acdbc23e-ea80-4a6f-86a6-b210df33031d
-      iscommand: true
-      name: Execute KQL query to search software
-      script: '|||microsoft-atp-advanced-hunting'
-      type: regular
-      version: -1
-    taskid: acdbc23e-ea80-4a6f-86a6-b210df33031d
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -262,68 +233,30 @@ tasks:
           "y": 350
         }
       }
-  "16":
-    continueonerrortype: ""
-    form:
-      description: ""
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: Would you like to block the files found?
-        options: []
-        optionsarg:
-        - simple: Yes - All
-        - simple: Yes - Choose specific files
-        - simple: "No"
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: ""
-        type: singleSelect
-      sender: ""
-      title: Would you like to block the files found?
-      totalanswers: 0
-    id: "16"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc:
-      body:
-      cc:
-      format: ""
-      methods: []
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e1cad07d-ecc9-448d-8dfe-1b414f4d1f2b
+    type: collection
+    task:
+      id: e1cad07d-ecc9-448d-8dfe-1b414f4d1f2b
+      version: -1
+      name: Would you like to block the files found?
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: e1cad07d-ecc9-448d-8dfe-1b414f4d1f2b
-      iscommand: false
-      name: Would you like to block the files found?
-      type: collection
-      version: -1
-    taskid: e1cad07d-ecc9-448d-8dfe-1b414f4d1f2b
-    timertriggers: []
-    type: collection
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -331,39 +264,63 @@ tasks:
           "y": 850
         }
       }
-  "17":
-    conditions:
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              complex:
-                accessor: "0"
-                root: Would you like to block the files found?.Answers
-          operator: isEqualString
-          right:
-            value:
-              simple: "Yes"
-      label: "yes"
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              complex:
-                accessor: "0"
-                root: Would you like to block the files found?.Answers
-          operator: isEqualString
-          right:
-            value:
-              simple: Yes - Choose specific files
-      label: Yes - Choose specific files
-    continueonerrortype: ""
-    id: "17"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Would you like to block the files found?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Yes - All
+        - simple: Yes - Choose specific files
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Would you like to block the files found?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0d2ff43d-695e-4cac-8dad-b19811c882e6
+    type: condition
+    task:
+      id: 0d2ff43d-695e-4cac-8dad-b19811c882e6
+      version: -1
+      name: Block the files?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -371,21 +328,35 @@ tasks:
       - "18"
       "yes":
       - "19"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 0d2ff43d-695e-4cac-8dad-b19811c882e6
-      iscommand: false
-      name: Block the files?
-      type: condition
-      version: -1
-    taskid: 0d2ff43d-695e-4cac-8dad-b19811c882e6
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Would you like to block the files found?.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: Yes - Choose specific files
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Would you like to block the files found?.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Yes - Choose specific files
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -393,69 +364,30 @@ tasks:
           "y": 1020
         }
       }
-  "18":
-    continueonerrortype: ""
-    form:
-      description: ""
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: Choose specific files to block
-        options: []
-        optionsarg:
-        - complex:
-            accessor: FolderPath
-            root: MicrosoftATP.Hunt.Result
-        - {}
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: ""
-        type: multiSelect
-      sender: ""
-      title: Choose specific files to block
-      totalanswers: 0
-    id: "18"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc:
-      body:
-      cc:
-      format: ""
-      methods: []
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d901ba98-06ad-476a-8bfc-13a7984e9b35
+    type: collection
+    task:
+      id: d901ba98-06ad-476a-8bfc-13a7984e9b35
+      version: -1
+      name: Choose specific files to block
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: d901ba98-06ad-476a-8bfc-13a7984e9b35
-      iscommand: false
-      name: Choose specific files to block
-      type: collection
-      version: -1
-    taskid: d901ba98-06ad-476a-8bfc-13a7984e9b35
-    timertriggers: []
-    type: collection
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -463,38 +395,77 @@ tasks:
           "y": 1200
         }
       }
-  "19":
-    continueonerrortype: ""
-    id: "19"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose specific files to block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: MicrosoftATP.Hunt.Result
+            accessor: FolderPath
+        - {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Choose specific files to block
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e1a29a81-6e8b-4964-8378-317d6da13486
+    type: regular
+    task:
+      id: e1a29a81-6e8b-4964-8378-317d6da13486
+      version: -1
+      name: Set Indicators To Block
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "29"
-    note: false
-    quietmode: 0
     scriptarguments:
       key:
         simple: IndicatorsToBlock
       value:
         complex:
-          accessor: SHA256
           root: MicrosoftATP.Hunt.Result
+          accessor: SHA256
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: e1a29a81-6e8b-4964-8378-317d6da13486
-      iscommand: false
-      name: Set Indicators To Block
-      script: Set
-      type: regular
-      version: -1
-    taskid: e1a29a81-6e8b-4964-8378-317d6da13486
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -502,41 +473,41 @@ tasks:
           "y": 1200
         }
       }
-  "21":
-    continueonerrortype: ""
-    id: "21"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "27"
     note: false
-    quietmode: 0
-    scriptarguments:
-      key:
-        simple: PaloAltoNetworksXQL
-      subplaybook:
-        simple: "yes"
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: dbca7f71-0386-4a09-82b3-7127aa1272d3
+    type: regular
     task:
-      brand: ""
+      id: dbca7f71-0386-4a09-82b3-7127aa1272d3
+      version: -1
+      name: delete context - Indicators To block
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: dbca7f71-0386-4a09-82b3-7127aa1272d3
-      iscommand: false
-      name: delete context - Indicators To block
-      script: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      version: -1
-    taskid: dbca7f71-0386-4a09-82b3-7127aa1272d3
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: PaloAltoNetworksXQL
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -544,17 +515,29 @@ tasks:
           "y": 2055
         }
       }
-  "23":
-    continueonerrortype: ""
-    id: "23"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 0eeeff57-dc6a-48f0-828f-2742507e80f2
+    type: regular
+    task:
+      id: 0eeeff57-dc6a-48f0-828f-2742507e80f2
+      version: -1
+      name: Set Indicators To Block - Process
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "29"
-    note: false
-    quietmode: 0
     scriptarguments:
       append:
         simple: "true"
@@ -562,33 +545,21 @@ tasks:
         simple: IndicatorsToBlock
       value:
         complex:
-          accessor: SHA256
+          root: MicrosoftATP.Hunt.Result
           filters:
-          - - ignorecase: true
+          - - operator: in
               left:
-                iscontext: true
                 value:
                   simple: MicrosoftATP.Hunt.Result.FolderPath
-              operator: in
-              right:
                 iscontext: true
+              right:
                 value:
                   simple: Choose specific files to block.Answers.0
-          root: MicrosoftATP.Hunt.Result
+                iscontext: true
+              ignorecase: true
+          accessor: SHA256
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 0eeeff57-dc6a-48f0-828f-2742507e80f2
-      iscommand: false
-      name: Set Indicators To Block - Process
-      script: Set
-      type: regular
-      version: -1
-    taskid: 0eeeff57-dc6a-48f0-828f-2742507e80f2
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -596,44 +567,44 @@ tasks:
           "y": 1540
         }
       }
-  "24":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: "0"
-                root: Choose specific files to block.Answers
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: "yes"
-    continueonerrortype: ""
-    id: "24"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 04f5195a-5602-41dd-8161-23a159aabede
+    type: condition
+    task:
+      id: 04f5195a-5602-41dd-8161-23a159aabede
+      version: -1
+      name: has relevant files to block?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "29"
       "yes":
       - "23"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 04f5195a-5602-41dd-8161-23a159aabede
-      iscommand: false
-      name: has relevant files to block?
-      type: condition
-      version: -1
-    taskid: 04f5195a-5602-41dd-8161-23a159aabede
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Choose specific files to block.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -641,42 +612,38 @@ tasks:
           "y": 1360
         }
       }
-  "26":
-    continueonerrortype: ""
-    fieldMapping:
-    - incidentfield: Custom Query Results
-      output:
-        simple: ${customquerymarkdown}
-    id: "26"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4252ff7c-9f2f-4ad0-8dfa-f2a5ac8227b4
+    type: regular
+    task:
+      id: 4252ff7c-9f2f-4ad0-8dfa-f2a5ac8227b4
+      version: -1
+      name: Set query results to layout
+      description: Accepts a json object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
-    note: false
-    quietmode: 0
     scriptarguments:
       extend-context:
         simple: =customquerymarkdown
       value:
         complex:
-          accessor: Result
           root: MicrosoftATP.Hunt
+          accessor: Result
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Accepts a json object and returns a markdown.
-      id: 4252ff7c-9f2f-4ad0-8dfa-f2a5ac8227b4
-      iscommand: false
-      name: Set query results to layout
-      script: JsonToTable
-      type: regular
-      version: -1
-    taskid: 4252ff7c-9f2f-4ad0-8dfa-f2a5ac8227b4
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -684,39 +651,43 @@ tasks:
           "y": 690
         }
       }
-  "27":
-    continueonerrortype: ""
-    id: "27"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "4"
     note: false
-    quietmode: 0
-    scriptarguments:
-      key:
-        simple: customquerymarkdown
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Custom Query Results
+      output:
+        simple: ${customquerymarkdown}
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 73d00fa3-bca8-4100-874a-97f8bfebc839
+    type: regular
     task:
-      brand: ""
+      id: 73d00fa3-bca8-4100-874a-97f8bfebc839
+      version: -1
+      name: Delete context - markdown
       description: |-
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: 73d00fa3-bca8-4100-874a-97f8bfebc839
-      iscommand: false
-      name: Delete context - markdown
-      script: DeleteContext
+      scriptName: DeleteContext
       type: regular
-      version: -1
-    taskid: 73d00fa3-bca8-4100-874a-97f8bfebc839
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: customquerymarkdown
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -724,17 +695,29 @@ tasks:
           "y": 2220
         }
       }
-  "29":
-    continueonerrortype: ""
-    id: "29"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 716ee229-5da3-412b-8867-4d7dcd3b94bc
+    type: regular
+    task:
+      id: 716ee229-5da3-412b-8867-4d7dcd3b94bc
+      version: -1
+      name: Block indicators
+      description: Creates a new indicator.
+      script: '|||microsoft-atp-sc-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     scriptarguments:
       action:
         simple: Block
@@ -753,19 +736,7 @@ tasks:
         complex:
           root: IndicatorsToBlock
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a new indicator.
-      id: 716ee229-5da3-412b-8867-4d7dcd3b94bc
-      iscommand: true
-      name: Block indicators
-      script: '|||microsoft-atp-sc-indicator-create'
-      type: regular
-      version: -1
-    taskid: 716ee229-5da3-412b-8867-4d7dcd3b94bc
-    timertriggers: []
-    type: regular
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -773,60 +744,60 @@ tasks:
           "y": 1710
         }
       }
-  "30":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: brand
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.brand
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: Microsoft Defender Advanced Threat Protection
-                - - ignorecase: true
-                    left:
-                      iscontext: true
-                      value:
-                        simple: modules.state
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: active
-                root: modules
-          operator: isExists
-      label: "yes"
-    continueonerrortype: ""
-    id: "30"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 34b5f859-aa10-48cf-8f28-41ee793c6d73
+    type: condition
+    task:
+      id: 34b5f859-aa10-48cf-8f28-41ee793c6d73
+      version: -1
+      name: Is Defender For Endpoint enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "14"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 34b5f859-aa10-48cf-8f28-41ee793c6d73
-      iscommand: false
-      name: Is Defender For Endpoint enabled?
-      type: condition
-      version: -1
-    taskid: 34b5f859-aa10-48cf-8f28-41ee793c6d73
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Defender Advanced Threat Protection
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -834,7 +805,13 @@ tasks:
           "y": 0
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -854,6 +831,29 @@ view: |-
       }
     }
   }
+inputs:
+- key: Filename
+  value: {}
+  required: false
+  description: File name to search
+  playbookInputQuery:
+- key: TimeFrame
+  value: {}
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  playbookInputQuery:
+- key: Defender Indicator Title
+  value:
+    simple: XSOAR Software Block
+  required: false
+  description: The indicator alert title in Defender.
+  playbookInputQuery:
+- key: Indicator Expiration
+  value: {}
+  required: false
+  description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
+  playbookInputQuery:
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0

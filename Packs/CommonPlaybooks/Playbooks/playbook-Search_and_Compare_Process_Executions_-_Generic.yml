@@ -1,3 +1,6 @@
+id: Search and Compare Process Executions - Generic
+version: -1
+name: Search and Compare Process Executions - Generic
 description: |-
   This playbook is a generic playbook that receives process name and command-line argument and search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:
 
@@ -8,60 +11,26 @@ description: |-
   Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
   -value: *process name*
   -commands: *command-line arguments*
-id: Search and Compare Process Executions - Generic
-inputs:
-- description: "List of processes names and command line arguments to search"
-  key: Processes
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
-  key: HuntingTimeFrame
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 7 days
-- description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
-  key: StringSimilarityThreshold
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "0.5"
-name: Search and Compare Process Executions - Generic
-outputs:
-- contextPath: StringSimilarity
-  description: StringSimilarity results.
-  type: unknown
-- contextPath: Findings
-  description: Suspicious process executions found.
-  type: unknown
 starttaskid: "0"
 tasks:
   "0":
-    continueonerrortype: ""
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: e4d8d0c7-56ec-4b27-8fbb-ae3a02490091
+    type: start
+    task:
+      id: e4d8d0c7-56ec-4b27-8fbb-ae3a02490091
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
       - "16"
       - "17"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e4d8d0c7-56ec-4b27-8fbb-ae3a02490091
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: e4d8d0c7-56ec-4b27-8fbb-ae3a02490091
-    timertriggers: []
-    type: start
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -69,27 +38,27 @@ tasks:
           "y": 80
         }
       }
-  "14":
-    continueonerrortype: ""
-    id: "14"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6511abc4-4a61-4657-86b8-3809cbcc5dae
+    type: title
     task:
-      brand: ""
       id: 6511abc4-4a61-4657-86b8-3809cbcc5dae
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 6511abc4-4a61-4657-86b8-3809cbcc5dae
-    timertriggers: []
-    type: title
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -97,22 +66,34 @@ tasks:
           "y": 400
         }
       }
-  "15":
-    continueonerrortype: ""
-    id: "15"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    loop:
-      exitCondition: ""
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0c2ea311-165b-48ae-8f5f-92cb5ec5e81b
+    type: playbook
+    task:
+      id: 0c2ea311-165b-48ae-8f5f-92cb5ec5e81b
+      version: -1
+      name: MDE - Search and Compare Process Executions
+      description: |-
+        This playbook is a generic playbook that receives process name and command-line argument, and uses "Microsoft Defender For Endpoint" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        -commands: *command-line arguments*
+      playbookName: MDE - Search and Compare Process Executions
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       HuntingTimeFrame:
         complex:
@@ -124,24 +105,12 @@ tasks:
         complex:
           root: inputs.StringSimilarityThreshold
     separatecontext: true
-    skipunavailable: true
-    task:
-      brand: ""
-      description: |-
-        This playbook is a generic playbook that receives process name and command-line argument, and uses "Microsoft Defender For Endpoint" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
-
-        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
-        - value: *process name*
-        -commands: *command-line arguments*
-      id: 0c2ea311-165b-48ae-8f5f-92cb5ec5e81b
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: c3e7d503-6939-487f-8b6b-b047c352090b
-      playbookId: c3e7d503-6939-487f-8b6b-b047c352090b
-      type: playbook
-      version: -1
-    taskid: 0c2ea311-165b-48ae-8f5f-92cb5ec5e81b
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -149,23 +118,34 @@ tasks:
           "y": 220
         }
       }
-  "16":
-    continueonerrortype: ""
-    id: "16"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: true
+    quietmode: 0
     isoversize: false
-    loop:
-      exitCondition: ""
-      forEach: true
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 936cbb1b-fc14-42e0-80e4-9ca0bbec9f10
+    type: playbook
+    task:
+      id: 936cbb1b-fc14-42e0-80e4-9ca0bbec9f10
+      version: -1
+      name: Cortex XDR - Search and Compare Process Executions - XDR Alerts
+      description: |-
+        This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+        -value: *process name*
+        -commands: *command-line arguments*
+      playbookName: Cortex XDR - Search and Compare Process Executions - XDR Alerts
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       HuntingTimeFrame:
         complex:
@@ -177,24 +157,13 @@ tasks:
         complex:
           root: inputs.StringSimilarityThreshold
     separatecontext: true
-    skipunavailable: true
-    task:
-      brand: ""
-      description: |-
-        This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compare the command-line argument from the results to the command-line argument received from the playbook input.
-
-        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
-        -value: *process name*
-        -commands: *command-line arguments*
-      id: 936cbb1b-fc14-42e0-80e4-9ca0bbec9f10
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: a418058c-fc0a-471c-8edc-ac8ff52399cc
-      playbookId: a418058c-fc0a-471c-8edc-ac8ff52399cc
-      type: playbook
-      version: -1
-    taskid: 936cbb1b-fc14-42e0-80e4-9ca0bbec9f10
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
     view: |-
       {
         "position": {
@@ -202,22 +171,34 @@ tasks:
           "y": 220
         }
       }
-  "17":
-    continueonerrortype: ""
-    id: "17"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: true
+    quietmode: 0
     isoversize: false
-    loop:
-      exitCondition: ""
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 6246b45d-476d-4e3d-8c6a-6eccafe838ef
+    type: playbook
+    task:
+      id: 6246b45d-476d-4e3d-8c6a-6eccafe838ef
+      version: -1
+      name: Cortex XDR - Search and Compare Process Executions - XQL Engine
+      description: |-
+        This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR - XQL Engine" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
+
+        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        -commands: *command-line arguments*
+      playbookName: Cortex XDR - Search and Compare Process Executions - XQL Engine
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       HuntingTimeFrame:
         complex:
@@ -229,44 +210,66 @@ tasks:
         complex:
           root: inputs.StringSimilarityThreshold
     separatecontext: true
-    skipunavailable: true
-    task:
-      brand: ""
-      description: |-
-        This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR - XQL Engine" integration to search for the given process executions and compare the command-line argument from the results to the command-line argument received from the playbook input.
-
-        Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
-        - value: *process name*
-        -commands: *command-line arguments*
-      id: 6246b45d-476d-4e3d-8c6a-6eccafe838ef
+    continueonerrortype: ""
+    loop:
       iscommand: false
-      name: 8602fe71-fe87-452f-88d7-eaa3c51c2511
-      playbookId: 8602fe71-fe87-452f-88d7-eaa3c51c2511
-      type: playbook
-      version: -1
-    taskid: 6246b45d-476d-4e3d-8c6a-6eccafe838ef
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 860,
+          "x": 870,
           "y": 220
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 385,
-        "width": 1200,
+        "width": 1210,
         "x": 40,
         "y": 80
       }
     }
   }
+inputs:
+- key: Processes
+  value: {}
+  required: false
+  description: |-
+    Process name to search and command-line argument to compare. This input should receive an array that contains the following keys:
+    -value: *process name*
+    -commands: *command-line arguments*
+  playbookInputQuery:
+- key: HuntingTimeFrame
+  value:
+    simple: 7 days
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  playbookInputQuery:
+- key: StringSimilarityThreshold
+  value:
+    simple: "0.5"
+  required: false
+  description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  playbookInputQuery:
+outputs:
+- contextPath: StringSimilarity
+  description: StringSimilarity automation results
+  type: unknown
+- contextPath: Findings
+  description: Suspicious process executions found
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
