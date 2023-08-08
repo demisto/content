@@ -797,37 +797,37 @@ script:
         contextPath: AzureDevOps.PullRequestReviewer.count
         description: Count of reviewers.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.reviewerUrl
+        contextPath: AzureDevOps.PullRequestReviewer.reviewerUrl
         description: URL to retrieve information about this identity.
       - type: Number
-        contextPath: AzureDevOps.PullRequestReviewer.value.vote
+        contextPath: AzureDevOps.PullRequestReviewer.vote
         description: Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.value.hasDeclined
+        contextPath: AzureDevOps.PullRequestReviewer.hasDeclined
         description: Whether the pull request has been declined.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.value.isRequired
+        contextPath: AzureDevOps.PullRequestReviewer.isRequired
         description: Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.value.isFlagged
+        contextPath: AzureDevOps.PullRequestReviewer.isFlagged
         description: A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.displayName
+        contextPath: AzureDevOps.PullRequestReviewer.displayName
         description: This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.url
+        contextPath: AzureDevOps.PullRequestReviewer.url
         description: REST URL for this resource.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value._links.avatar.href
+        contextPath: AzureDevOps.PullRequestReviewer._links.avatar.href
         description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.id
+        contextPath: AzureDevOps.PullRequestReviewer.id
         description: Pull-request reviewers IDs.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.uniqueName
+        contextPath: AzureDevOps.PullRequestReviewer.uniqueName
         description: The reviewers user name.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.value.imageUrl
+        contextPath: AzureDevOps.PullRequestReviewer.imageUrl
         description: Link to the reviewers user image.
   - name: azure-devops-pull-request-reviewer-add
     description: Add a reviewer to a pull request.

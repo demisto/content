@@ -1896,8 +1896,8 @@ def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], org
     pull_request_id = arg_to_number(args.get('pull_request_id'))
 
     response = client.pull_requests_reviewer_list_request(org_repo_project_tuple, pull_request_id)
-    mapping = {'displayName': 'Reviewer(s)'}
-    readable_output = tableToMarkdown('Reviewers List', response["value"], headers=['displayName'],
+    mapping = {"displayName": "Reviewer(s)", "hasDeclined": "Has Declined", "isFlagged": "Is Flagged"}
+    readable_output = tableToMarkdown('Reviewers List', response["value"], headers=["displayName", "hasDeclined", "isFlagged"],
                                       headerTransform=lambda header: mapping.get(header, header))
 
     return CommandResults(
