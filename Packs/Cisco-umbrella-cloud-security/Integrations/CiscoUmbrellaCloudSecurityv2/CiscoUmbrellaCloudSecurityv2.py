@@ -472,7 +472,10 @@ def handle_pagination(
         limit -= received_items
         page += 1
 
-    return (get_single_or_full_list(obj) for obj in (outputs, raw_responses))
+    outputs_result = get_single_or_full_list(outputs)
+    raw_response_result = get_single_or_full_list(raw_responses)
+
+    return outputs_result, raw_response_result
 
 
 @logger
@@ -573,7 +576,10 @@ def find_destinations(
             demisto.debug(f'These are the last items in the API {page=}, stopping')
             break
 
-    return (get_single_or_full_list(obj) for obj in (outputs, raw_responses))
+    outputs_result = get_single_or_full_list(outputs)
+    raw_response_result = get_single_or_full_list(raw_responses)
+
+    return outputs_result, raw_response_result
 
 
 @logger
