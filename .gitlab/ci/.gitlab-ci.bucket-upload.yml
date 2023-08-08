@@ -595,6 +595,10 @@ sync-buckets-between-projects:
   stage: upload-to-marketplace
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
   when: always
+  variables:
+    MARKETPLACE_XSOAR_PROD: "marketplace-xsoar"
+    MARKETPLACE_V2_PROD: "marketplace-xsiam"
+    MARKETPLACE_XPANSE_PROD: "marketplace-xpanse"
   script:
     - |
       if [[ $TEST_UPLOAD == "true" ]]; then
@@ -616,6 +620,8 @@ sync-buckets-between-projects:
         gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-dev
         echo "Syncing gs://marketplace-xpanse-dev"
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-dev
+      
+        ./Tests/scripts/validate_synced_buckets.sh "dev"
 
         gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY"
 
@@ -625,6 +631,8 @@ sync-buckets-between-projects:
         gsutil -m rsync -r gs://marketplace-v2-dist gs://marketplace-xsiam-prod-us
         echo "Syncing gs://marketplace-xpanse-prod-us"
         gsutil -m rsync -r gs://xpanse-dist gs://marketplace-xpanse-prod-us
-
+        
+        ./Tests/scripts/validate_synced_buckets.sh "prod-us"
+      
         echo "Bucket sync completed"
       fi
