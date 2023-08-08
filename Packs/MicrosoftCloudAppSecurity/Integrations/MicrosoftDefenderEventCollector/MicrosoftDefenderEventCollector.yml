@@ -18,11 +18,8 @@ configuration:
   - Worldwide
   - US GCC
   - US GCC-High
-- additionalinfo: |-
-    Use one of the following:
-    https://portal.cloudappsecurity.com or
-    https://yourdomain.eu2.portal.cloudappsecurity.com
-  display: Endpoint URI
+- display: Server URL (e.g., https://yourdomain.eu2.portal.cloudappsecurity.com)
+  additionalinfo: In the Security Center, go to Settings > Clod Apps > About tab, where the API URL is displayed.
   name: url
   required: true
   type: 0

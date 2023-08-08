@@ -142,7 +142,6 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     'com': 'https://login.microsoftonline.com',
     'gcc': 'https://login.microsoftonline.us',
     'gcc-high': 'https://login.microsoftonline.us',
-    'dod': 'https://login.microsoftonline.us',
 }
 
 # Azure Managed Identities
