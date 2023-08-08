@@ -188,9 +188,9 @@ class Graph:
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
             self.id_to_test_playbook = {
-                test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
+                test_playbook.path: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
             self.id_to_modeling_rule = {
-                modeling_rule.object_id: IdSetItem.from_model(modeling_rule) for modeling_rule in modeling_rules
+                modeling_rule.path: IdSetItem.from_model(modeling_rule) for modeling_rule in modeling_rules
             }
             self.implemented_playbooks_to_tests = {playbook.object_id: [IdSetItem.from_model(test) for test in playbook.tested_by]
                                                    for playbook in playbooks}
@@ -199,9 +199,6 @@ class Graph:
 
             self.test_playbooks = self.id_to_test_playbook.values()
             self.modeling_rules = self.id_to_modeling_rule.values()
-
-            logger.debug(f"self.id_to_modeling_rules in Graph: {self.id_to_modeling_rule}")
-            logger.debug(f"self.modeling_rules in Graph: {self.modeling_rules}")
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:
