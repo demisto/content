@@ -12,9 +12,6 @@ Or:
 
 The you may need to upgrade **Docker**, **runc**, and the **libseccomp** rpm on your host machine.
 
-References: <a href="https://github.com/docker-library/postgres/issues/884">1</a>,  <a href="https://github.com/docker-library/openjdk/issues/465">2</a>.
-
-
 ## Script Data
 
 ---
