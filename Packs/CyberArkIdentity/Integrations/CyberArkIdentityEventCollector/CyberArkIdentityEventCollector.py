@@ -169,9 +169,10 @@ class CyberArkIdentityGetEvents(IntegrationGetEvents):
 
         result = self.client.call(self.client.request).json()['Result']
 
-        if result.get('Results'):
+        events = result.get('Results')
+        if events:
             fetched_events_ids = demisto.getLastRun().get('ids', [])
-            yield [event.get('Row') for event in result.get('Results', []) if event.get('Row', {}).get('ID') not in fetched_events_ids]
+            yield [event.get('Row') for event in events if event.get('Row', {}).get('ID') not in fetched_events_ids]
 
 
 def get_request_params(**kwargs: dict) -> dict:
