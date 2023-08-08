@@ -2,18 +2,18 @@ id: PAN-OS - Job - Add Malicious Domains To Sinkhole
 version: -1
 name: PAN-OS - Job - Add Malicious Domains To Sinkhole
 description: |-
-  This playbook should be run as a job. The playbook runs on domain indicators and performs various checks to decide if they should be sinkholed.
+  This TIM playbook should be run as a job. The playbook runs on domain indicators and performs various checks to decide if they should be sinkholed.
 
   If a domain is related to a campaign or a threat actor, or if it resolves to a malicious IP or has malware-related tags, the playbook will add a new tag to it in order to sinkhole that domain.
-  The playbook assumes that the user is exporting indicators with the sinkhole tag to an EDL (External Dynamic List) using the Export Generic Indicators Service integration in XSOAR. That EDL should be connected to PAN-OS.
 
-  The playbook then ensures a DNS sinkhole is configured in PAN-OS so that communication with those domains will get blocked, and Traffic logs for the systems creating the malicious traffic will be generated, allowing the user to then query the logs in other playbooks using the PAN-OS - Extract IPs From Traffic Logs To Sinkhole playbook.
+  The playbook assumes that the user is exporting indicators with the sinkhole tag to an EDL (External Dynamic List) using the Export Generic Indicators Service integration in XSOAR. That EDL should be connected to PAN-OS. It also assumes that a DNS sinkhole is configured in the PAN-OS firewall. However, these are not required for the sole purpose of tagging the domains.
 
   Note: this playbook has inputs for both the "From context data" tab and for the "From indicators" tab.
 tags:
 - Job
 - PAN-OS
 - Sinkhole
+- TIM
 starttaskid: "0"
 tasks:
   "0":
@@ -148,7 +148,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "51"
+      - "29"
     scriptarguments:
       field:
         simple: tags
@@ -293,91 +293,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 071e7f9f-e9a2-4299-8a69-2c67ccada549
-    type: playbook
-    task:
-      id: 071e7f9f-e9a2-4299-8a69-2c67ccada549
-      version: -1
-      name: PAN-OS - Configure DNS Sinkhole
-      description: |-
-        This playbook creates a DNS sinkhole in a PAN-OS firewall. It does the following:
-        1. Finds a security rule that allows DNS traffic from the internal network to the internet using the "Security Policy Match" feature against traffic from the internal DNS server/s to the public DNS server.
-        2. Creates or adds an existing anti-spyware security profile to the security rule/s that were found.
-        3. Sets the External Dynamic List under the DNS Policies configuration of the security profile with the "sinkhole" action.
-        4. Creates an address object for the sinkhole address so that it can be referenced later in a deny rule (the sinkhole IP constantly rotates).
-        5. Creates a new security rule to deny traffic to the sinkhole address object, in order to generate traffic logs for the compromised hosts.
-
-        It should be used with the "PAN-OS - Extract IPs From Traffic Logs To Sinkhole" playbook to retrieve the source IPs that were detected using the sinkhole method.
-
-
-        How it works:
-        A DNS sinkhole can be used to identify infected hosts on a network where there is an internal DNS Server in-route to the firewall that causes the reference of the original source IP address of the host that first originated the query to be lost (the query is received by the internal DNS server, and the internal DNS server sources a new query if the name-to-IP resolution is not locally cached).
-
-        This causes the firewall to report observations of malicious DNS queries in the Threat logs where the source IP of the malicious DNS query is the Internal DNS server, which would force the administrator to look into the DNS Server logs to try to trace down what was the infected host that originally sourced the malicious DNS query.
-
-        After a security profile with a "sinkhole" action for domains listed in our EDL is attached to a rule that allows DNS traffic, the threat logs will show that requests from our DNS server were sinkholed. However, the compromised systems will not appear in those logs.
-        In order to find the IPs of the systems that tried to resolve the malicious domain, a new rule denying all requests to our Sinkhole Address needs to be created. Since the infected hosts received a forged DNS response due to the security profile involved in our previous step, they will now try to connect to the Sinkhole Address, assuming it is their C&C server. The new rule will deny the subsequent attempts of those infected hosts when they try to access the Sinkhole Address, and log them.
-
-
-        Assumptions:
-        - The domains that should be sinkholed are already in a DNS signature source. It can be one of the following sources available in PAN-OS:
-        1. An existing External Dynamic List (EDL) of type Domain
-        2. Palo Alto Networks Content-delivered malicious domains
-        3. DNS Security Categories available with a DNS Security subscription.
-        - There is an internal DNS server that is sending the DNS requests out through the firewall to a specific public DNS server.
-      playbookName: PAN-OS - Configure DNS Sinkhole
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      AutoCreateRuleToAllowDNS:
-        simple: "False"
-      DNSSignatureSource:
-        complex:
-          root: inputs.EDLName
-      OverwriteExistingProfile:
-        simple: "False"
-      PrimaryInternalDNSServerIP:
-        complex:
-          root: inputs.PrimaryInternalDNSServerIP
-      PublicDNSServerIP:
-        complex:
-          root: inputs.PublicDNSServerIP
-      RuleNameToAllowDNS:
-        simple: Allow DNS Outside - Created By XSOAR
-      RuleNameToDenyToSinkhole:
-        simple: Deny To Sinkhole
-      SecondaryInternalDNSServerIP:
-        complex:
-          root: inputs.SecondaryInternalDNSServerIP
-      SecurityProfileName:
-        simple: Sinkhole Anti Spyware Profile
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 3700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -817,8 +732,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 3950
+          "x": 680,
+          "y": 3370
         }
       }
     note: false
@@ -1527,59 +1442,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
-    taskid: c04b5bef-1cbc-4ad5-854a-dddfda17ee7a
-    type: condition
-    task:
-      id: c04b5bef-1cbc-4ad5-854a-dddfda17ee7a
-      version: -1
-      name: Can we ensure DNS sinkhole is configured?
-      description: Checks whether the inputs needed to configure the DNS sinkhole are fulfilled.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "29"
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.EDLName
-            iscontext: true
-          right:
-            value: {}
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.PrimaryInternalDNSServerIP
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.PublicDNSServerIP
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1060,
-          "y": 3370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1601,12 +1463,11 @@ view: |-
       "46_8_#default#": 0.1,
       "49_50_yes": 0.35,
       "49_8_#default#": 0.1,
-      "4_14_#default#": 0.1,
-      "51_29_#default#": 0.49
+      "4_14_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 3980,
+        "height": 3400,
         "width": 3140,
         "x": -990,
         "y": 35
@@ -1655,35 +1516,6 @@ inputs:
   description: |-
     Whether to enrich suspicious domains. Enriching domains can be useful to gain additional information regarding reputation for domains from your feed which will help identify domains used in C2 communication, but may consume more API quota from your threat intelligence integrations.
     Can be True or False.
-  playbookInputQuery:
-- key: EDLName
-  value: {}
-  required: false
-  description: |-
-    Used when configuring the DNS sinkhole for the first time - the name of the External Dynamic List exported from XSOAR and configured in PAN-OS. The EDL should contain the domains to sinkhole. It is used by the security profile to check if traffic for any of these domains is being sent through the firewall.
-
-    Note: using External Dynamic Lists (EDLs) in PAN-OS requires a "DNS Security" subscription.
-  playbookInputQuery:
-- key: PrimaryInternalDNSServerIP
-  value: {}
-  required: false
-  description: Required in order to configure the DNS sinkhole in PAN OS. The IP of the primary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our signature source.
-  playbookInputQuery:
-- key: SecondaryInternalDNSServerIP
-  value: {}
-  required: false
-  description: |-
-    Optional. If there is a secondary DNS server configured in the network, this input will be required for the DNS sinkhole configuration in PAN-OS.
-    The IP of the secondary internal DNS server. Used to find a policy that matches the malicious DNS queries that go out from the internal DNS server to the firewall. The idea is to find a policy that allows DNS traffic in order to sinkhole that traffic when used for resolving malicious domains found in our signature source.
-  playbookInputQuery:
-- key: PublicDNSServerIP
-  value:
-    simple: 8.8.8.8
-  required: false
-  description: |-
-    Required in order to configure the DNS sinkhole in PAN OS. The IP of the public DNS server that the organization is using to resolve external domains. This is needed to find the rule that allows DNS requests so that malicious ones can be sinkholed by attaching a security profile to that rule.
-
-    If there is currently no rule to allow DNS traffic from the internal DNS server to the internet, the user will be prompted to approve the creation of a new rule that allows DNS traffic from the internal DNS server/s to the IP specified in this input's value.
   playbookInputQuery:
 outputs: []
 quiet: true
