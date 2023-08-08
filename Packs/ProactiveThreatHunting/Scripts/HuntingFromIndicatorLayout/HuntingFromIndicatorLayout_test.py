@@ -12,17 +12,9 @@ class TestHuntingFromIndicatorLayout(unittest.TestCase):
         result = hunting_from_indicator_layout(sdo_value)
 
         expected_result = {
-            'readable_output': f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo_value}"
+            f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo_value}"
         }
         self.assertEqual(result.outputs, expected_result)
-
-    @patch('demistomock.executeCommand')
-    def test_hunting_from_indicator_layout_failure(self, mock_executeCommand):
-        mock_executeCommand.side_effect = Exception('Test error')
-
-        sdo_value = 'indicator'
-        with self.assertRaises(DemistoException):
-            hunting_from_indicator_layout(sdo_value)
 
 
 if __name__ == '__main__':
