@@ -24,7 +24,7 @@ def test_main_no_indicator():
     args = {}
     demisto.args.return_value = args
 
-    with pytest.raises(DemistoException, match="The automation was not executed from indicator layout"):
+    with pytest.raises(return_error, match="The automation was not executed from indicator layout"):
         main()
 
 
