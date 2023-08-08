@@ -149,7 +149,7 @@ script:
   - name: pan-dlp-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isFetchSamples: true
   longRunning: true
   script: '-'

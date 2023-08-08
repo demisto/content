@@ -633,3 +633,21 @@ Downloads the file contents of the drive item.
 
 #### Command Example
 ```!msgraph-download-file object_type=drives object_type_id=123 item_id=123```
+
+
+### msgraph-files-auth-reset
+
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+#### Base Command
+
+`msgraph-files-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
