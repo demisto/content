@@ -996,8 +996,8 @@ def main():  # pragma: no cover
             command_callable = commands.get(command)
             if command_callable:
                 return_results(command_callable(client, args))
-
-        raise NotImplementedError(f'command {command} is not implemented.')
+            else:
+                raise NotImplementedError(f'command {command} is not implemented.')
 
     # Log exceptions
     except Exception as exc:
