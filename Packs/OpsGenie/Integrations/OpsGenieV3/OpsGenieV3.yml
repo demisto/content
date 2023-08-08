@@ -1294,7 +1294,6 @@ script:
     - name: alert_id
       required: true
       description: Alert ID
-    description: Lists alert logs.
     outputs:
     - contextPath: OpsGenie.AlertLogs.createdAt
       description: Time the alert was created.
