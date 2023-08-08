@@ -2,7 +2,7 @@
     "name": "MxToolBox",
     "description": "All of your MX record, DNS, blacklist and SMTP diagnostics in one integrated tool",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
