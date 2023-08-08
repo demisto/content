@@ -53,11 +53,11 @@ args:
   defaultValue: summary
 comment: Generate an ASM Alert Summary report.
 commonfields:
-  id: GenerateASMReport
+  id: GenerateASMReport_EXPANDR-3672
   version: -1
 dockerimage: demisto/python3:3.10.12.67728
 enabled: true
-name: GenerateASMReport
+name: GenerateASMReport_EXPANDR-3672
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

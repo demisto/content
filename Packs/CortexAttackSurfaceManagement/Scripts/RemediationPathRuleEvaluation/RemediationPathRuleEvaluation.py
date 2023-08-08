@@ -142,8 +142,8 @@ def evaluate_criteria(cond: Dict, alert_context: Dict) -> bool:
                 # build set of tag values to check against
                 tags = set()
                 for tag in alert_context_value:
-                    tags.add(tag.get("Value").lower())
-                    tags.add(tag.get("Key").lower())
+                    tags.add(tag.get("value").lower())
+                    tags.add(tag.get("key").lower())
 
                 if value in tags:
                     return True

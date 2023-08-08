@@ -4,11 +4,11 @@ args:
   name: owners
 comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
-  id: RankServiceOwners
+  id: RankServiceOwners_EXPANDR-3672
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.67728
 enabled: true
-name: RankServiceOwners
+name: RankServiceOwners_EXPANDR-3672
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
