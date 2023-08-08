@@ -153,17 +153,30 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.application.name = app_component, 
     xdm.source.host.hostname = hostname;
 
-// vpxd-main (VMware vCenter-Services) events 
+// vpxd-main (VMware vCenter-Services) & vsan-health-main (virtual storage area network health service) events 
 alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type = "vpxd-main"
+| filter event_type in( "vsan-health-main", "vpxd-main")
+| fields event_type 
 | alter 
     hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
     syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
-    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+vpxd\["), 0)),
-    pid = to_integer(arrayindex(regextract(syslog_msg, "vpxd\[(\d+)\]"), 0)),
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+v[\w-]+\["), 0)),
+    pid = to_integer(arrayindex(regextract(syslog_msg, "v[\w-]+\[(\d+)\]"), 0)),
     operation_id = arrayindex(regextract(syslog_msg, "opId=([\w-]+)"), 0),
-    sub_module = arrayindex(regextract(syslog_msg, "sub=(\S+[^\]])"), 0),
-    event_details = coalesce(arrayindex(regextract(syslog_msg, "opId=\S+\]\s+(.+)"), 0), trim(arrayindex(regextract(syslog_msg, "vpxd\[\d+\]\s+\[.+?\]\s+(.+)"), 0), "--"))
+    sub_module = arrayindex(regextract(syslog_msg, "sub=([\w-]+)"), 0),
+    event_details = coalesce(arrayindex(regextract(syslog_msg, "\w+=\S+\]\s+(.+)"), 0), trim(arrayindex(regextract(syslog_msg, "v\[\d+\]\s+\[.+?\]\s+(.+)"), 0), "--"), syslog_msg )
+| alter 
+    session_id = coalesce(arrayindex(regextract(event_details, "session[\:\s\[\<]*([a-fA-F\d-]+)"), 0), arrayindex(regextract(event_details, "--\s+([a-fA-F\d-]{8,})"), 0))
 | alter
-    session_id = coalesce(arrayindex(regextract(event_details, "session[\:\s\[\<]*([a-fA-F\d-]+)"), 0), arrayindex(regextract(event_details, "--\s+([a-fA-F\d-]+)"), 0));
+    xdm.alert.severity = msg_severity,
+    xdm.event.type = event_type,
+    xdm.event.id = operation_id,
+    xdm.event.description = event_details,
+    xdm.observer.name = hostname, 
+    xdm.source.process.pid = pid, 
+    xdm.source.process.name = event_type,
+    xdm.source.application.name = sub_module, 
+    xdm.source.host.hostname = hostname;
+
+
