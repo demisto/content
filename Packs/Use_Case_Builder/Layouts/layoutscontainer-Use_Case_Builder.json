@@ -528,7 +528,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "customincidentdatastructures",
+                                "fieldId": "incident_customincidentdatastructure",
                                 "height": 53,
                                 "id": "15fae610-c422-11ed-8008-f768c09b421a",
                                 "index": 12,
@@ -633,7 +633,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "usecasecontainmentsteps",
+                                "fieldId": "incident_usecasebuilderusecasecontainmentsteps",
                                 "height": 22,
                                 "id": "e3a10830-cb5a-11ed-b65c-030bc2f7f1a6",
                                 "index": 0,
