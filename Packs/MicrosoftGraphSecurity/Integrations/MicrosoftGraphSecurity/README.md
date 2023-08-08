@@ -18,6 +18,9 @@ Alerts v2:
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
 
+    #### Note
+    When using Alerts V2: The following properties support $filter : assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status.
+
 ## Configure Microsoft Graph Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
