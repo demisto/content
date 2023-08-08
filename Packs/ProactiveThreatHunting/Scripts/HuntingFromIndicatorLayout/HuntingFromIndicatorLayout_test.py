@@ -14,7 +14,7 @@ class TestHuntingFromIndicatorLayout(unittest.TestCase):
         expected_result = {
             f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo_value}"
         }
-        self.assertEqual(result, expected_result)
+        self.assertEqual(result.readable_output, expected_result)
 
 
 if __name__ == '__main__':
