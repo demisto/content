@@ -156,7 +156,6 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 // vpxd-main (VMware vCenter-Services) & vsan-health-main (virtual storage area network health service) events 
 alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
 | filter event_type in( "vsan-health-main", "vpxd-main")
-| fields event_type 
 | alter 
     hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
     syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
