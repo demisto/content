@@ -52,6 +52,10 @@ temp/*
 .env
 .envrc
 Packs/**/report_pytest.json
+Packs/**/Integrations/**/Pipfile
+Packs/**/Integrations/**/Pipfile.lock
+Packs/**/Scripts/**/Pipfile.lock
+Packs/**/Scripts/**/Pipfile
 
 # coverage related
 /coverage_report
@@ -89,6 +93,7 @@ test_runner.sh
 # log files
 demisto_sdk_debug.log
 demisto_sdk_debug.log.*
+*.log
 
 # Ignore Modeling Rules test conf
 Packs/**/ModelingRules/**/**/*_testdata.json

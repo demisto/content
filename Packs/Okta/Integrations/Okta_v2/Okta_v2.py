@@ -298,12 +298,13 @@ class Client(BaseClient):
         response['factorResult'] = "TIMEOUT"
         return response
 
-    def search(self, term, limit):
+    def search(self, term, limit, advanced_search):
         uri = "users"
-        query_params = {
-            'q': encode_string_results(term),
-            'limit': limit
-        }
+        query_params = assign_params(
+            limit=limit,
+            q=encode_string_results(term),
+            search=encode_string_results(advanced_search)
+        )
         return self._http_request(
             method='GET',
             url_suffix=uri,
@@ -670,7 +671,6 @@ def test_module(client, args):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    args
     uri = 'users/me'
     client._http_request(method='GET', url_suffix=uri)
     return 'ok', None, None
@@ -891,7 +891,10 @@ def search_command(client, args):
     term = args.get('term')
     limit = args.get('limit') or SEARCH_LIMIT
     verbose = args.get('verbose')
-    raw_response = client.search(term, limit)
+    advanced_search = args.get('advanced_search', '')
+    if not term and not advanced_search:
+        raise DemistoException('Please provide either the term or advanced_search argument')
+    raw_response = client.search(term, limit, advanced_search)
 
     if raw_response and len(raw_response) > 0:
         users_context = client.get_users_context(raw_response)
@@ -1008,7 +1011,7 @@ def list_users_command(client, args):
         'Account(val.ID && val.ID == obj.ID)': context,
         'Okta.User(val.tag)': {'tag': after_tag}
     }
-    return(
+    return (
         readable_output,
         outputs,
         raw_response
