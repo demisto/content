@@ -637,22 +637,26 @@ class TestFetchingStixObjects:
     @pytest.mark.parametrize(
         'objects_to_fetch_param', ([], ['example_type'], ['example_type1', 'example_type2'])
     )
-    def test_empty_objects_to_fetch_parameter(self, mocker, objects_to_fetch_param):
+    def test_objects_to_fetch_parameter(self, mocker, objects_to_fetch_param):
         """
                Scenario: Test handling for objects_to_fetch parameter.
 
                Given:
-                - A : objects_to_fetch parameter is set to a list of at least on object.
-                - B : objects_to_fetch parameter is not set and therefor default to an empty list.
+                - A : objects_to_fetch parameter is not set and therefor default to an empty list.
+                - B : objects_to_fetch parameter is set to a list of one object type.
+                - C : objects_to_fetch parameter is set to a list of two object type.
+
 
                When:
                - Fetching stix objects from a collection.
 
                Then:
-               - A : the poll_collection method sends the HTTP request with the match[type] parameter,
-                     therefor fetching only the requested object types in the collection.
-               - B : the poll_collection method sends the HTTP request without the match[type] parameter,
+               - A : the poll_collection method sends the HTTP request without the match[type] parameter,
                      therefor fetching all available object types in the collection.
+               - B : the poll_collection method sends the HTTP request with the match[type] parameter,
+                     therefor fetching only the requested object type in the collection.
+               - C : the poll_collection method sends the HTTP request with the match[type] parameter,
+                     therefor fetching only the requested object types in the collection.
         """
 
         class mock_collection_to_fetch:
