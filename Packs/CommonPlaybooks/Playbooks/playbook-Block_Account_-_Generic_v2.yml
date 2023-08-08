@@ -17,6 +17,7 @@ description: |-
   * ExceedLMS IAM
   * Okta
   * Microsoft Graph User (Azure Active Directory Users)
+  * Google Workspace Admin
   * Slack IAM
   * ServiceNow IAM
   * Prisma Cloud IAM
@@ -114,6 +115,7 @@ tasks:
       - "68"
       - "71"
       - "64"
+      - "73"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -173,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6c4b8a60-449b-4710-89e8-a68c32fdda28
+    taskid: d50b5c24-46e7-4b68-8082-632feb18733d
     type: regular
     task:
-      id: 6c4b8a60-449b-4710-89e8-a68c32fdda28
+      id: d50b5c24-46e7-4b68-8082-632feb18733d
       version: -1
       name: PAN-OS - Register Tag to User
       description: Registers users to a tag. This command is only available for PAN-OS version 9.x and above.
@@ -200,14 +202,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1900,
+          "x": 2330,
           "y": 1090
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -241,7 +243,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1900,
+          "x": 2330,
           "y": 920
         }
       }
@@ -489,7 +491,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1900,
+          "x": 2330,
           "y": 555
         }
       }
@@ -937,7 +939,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1900,
+          "x": 2330,
           "y": 715
         }
       }
@@ -2100,10 +2102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: c5626ea1-c0a0-4c27-8b42-738897e58abd
+    taskid: 909d3b40-e606-4225-8d09-a83ebdd33b79
     type: regular
     task:
-      id: c5626ea1-c0a0-4c27-8b42-738897e58abd
+      id: 909d3b40-e606-4225-8d09-a83ebdd33b79
       version: -1
       name: Microsoft Graph User - Disable Account
       description: |-
@@ -2206,11 +2208,116 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: a274143d-2455-4679-8064-41a6cc01e1be
+    type: condition
+    task:
+      id: a274143d-2455-4679-8064-41a6cc01e1be
+      version: -1
+      name: Is Google Workspace Admin Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    scriptarguments:
+      brandname:
+        simple: GSuiteAdmin
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: fa1e6574-7969-4b44-8593-b2244060cebe
+    type: title
+    task:
+      id: fa1e6574-7969-4b44-8593-b2244060cebe
+      version: -1
+      name: Google Workspace Admin
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 128ca043-fa17-4ebf-82e1-ce3b4812de86
+    type: regular
+    task:
+      id: 128ca043-fa17-4ebf-82e1-ce3b4812de86
+      version: -1
+      name: Google Workspace Admin - Disable Account
+      description: Updates a user.
+      script: '|||gsuite-user-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      suspended:
+        simple: "true"
+      user_key:
+        simple: ${Blocklist.Final}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "16_15_yes": 0.71,
+      "16_15_yes": 0.62,
       "16_2_#default#": 0.1,
       "26_2_#default#": 0.11,
       "26_33_yes": 0.14,
@@ -2228,6 +2335,7 @@ view: |-
       "32_33_yes": 0.24,
       "36_2_#default#": 0.1,
       "37_2_#default#": 0.12,
+      "37_48_yes": 0.42,
       "43_44_yes": 0.49,
       "52_39_#default#": 0.2,
       "53_2_#default#": 0.1,
@@ -2239,19 +2347,21 @@ view: |-
       "59_2_#default#": 0.1,
       "59_33_yes": 0.14,
       "63_2_#default#": 0.1,
+      "63_69_yes": 0.44,
       "65_2_#default#": 0.1,
       "65_33_yes": 0.1,
       "67_2_#default#": 0.1,
       "67_33_yes": 0.1,
       "70_2_#default#": 0.1,
       "70_33_yes": 0.1,
+      "72_74_yes": 0.44,
       "8_38_yes": 0.65,
       "8_39_#default#": 0.13
     },
     "paper": {
       "dimensions": {
         "height": 2775,
-        "width": 7650,
+        "width": 8080,
         "x": -5370,
         "y": -1450
       }
