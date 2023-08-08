@@ -1,4 +1,4 @@
-id: 528efc57-1c4f-45bf-83b7-6c8ad8006b23
+id: File Analysis - ReversingLabs A1000
 version: -1
 name: File Analysis - ReversingLabs A1000
 description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve full & classification reports. Calculate final classification.
