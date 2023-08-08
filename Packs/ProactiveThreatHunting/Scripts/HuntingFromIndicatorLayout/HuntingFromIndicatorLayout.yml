@@ -1,18 +1,23 @@
 commonfields:
-  id: HuntingFromIndicatorLayout
-  version: -1
+  id: 517d22f0-8a54-4404-8ed0-ea09e8ad5fc9
+  version: 15
+vcShouldKeepItemLegacyProdMachine: false
 name: HuntingFromIndicatorLayout
 script: ''
 type: python
 tags:
 - indicator-action-button
-comment: Create incident with incident type "Proactive Threat Hunting" from indicator layout
+comment: |-
+  This automation creates an incident from the indicator layout with the following parameters:
+  - Name: Threat Hunting Session - <Indicator Value>
+  - Type: Proactive Threat Hunting
+  - sdoname: <Indicator Value>
 enabled: true
 scripttarget: 0
 subtype: python3
+pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.10.12.67728
 runas: DBotWeakRole
-fromversion: 6.9.0
-tests:
-- No tests (auto formatted)
+engineinfo: {}
+mainengineinfo: {}
