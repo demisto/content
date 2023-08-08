@@ -442,7 +442,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -452,7 +452,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -464,7 +464,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -476,7 +476,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -488,7 +488,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -500,7 +500,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -677,7 +677,7 @@ tasks:
       val2:
         complex:
           root: alert.asmdatacollection
-          accessor: Timestamp
+          accessor: timestamp
       val3:
         simple: Manual remediation completed
       val4:
@@ -726,7 +726,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: Selected
+                accessor: selected
             iscontext: true
           right:
             value:
@@ -785,7 +785,7 @@ tasks:
       val1:
         complex:
           root: alert.asmnotification
-          accessor: Type
+          accessor: type
           transformers:
           - operator: concat
             args:
@@ -796,7 +796,7 @@ tasks:
       val2:
         complex:
           root: alert.asmnotification
-          accessor: Timestamp
+          accessor: timestamp
       val3:
         simple: Resolved by service owner
       val4:
