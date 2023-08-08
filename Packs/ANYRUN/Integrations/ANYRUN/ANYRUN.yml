@@ -373,7 +373,7 @@ script:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   subtype: python3
   runonce: false
   script: '-'
