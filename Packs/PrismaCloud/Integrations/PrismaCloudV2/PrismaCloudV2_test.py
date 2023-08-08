@@ -876,7 +876,7 @@ def test_fetch_request(mocker, prisma_cloud_v2_client, limit, request_results, e
                          limit=limit,
                          now=now,
                          time_range={'type': 'absolute', 'value': {'endTime': now, 'startTime': 1000000110000}}) == \
-           (expected_incidents, expected_fetched_ids, expected_updated_last_run_time)
+        (expected_incidents, expected_fetched_ids, expected_updated_last_run_time)
 
 
 @pytest.mark.parametrize('limit, expected_incidents, expected_updated_fetched_ids',
@@ -947,4 +947,4 @@ def test_fetch_incidents(mocker, prisma_cloud_v2_client, last_run, params, incid
 
     mocker.patch('PrismaCloudV2.fetch_request', return_value=(incidents, fetched_ids, updated_last_run_time))
     assert fetch_incidents(prisma_cloud_v2_client, last_run, params) == \
-           (incidents, expected_fetched_ids, expected_updated_last_run_time)
+        (incidents, expected_fetched_ids, expected_updated_last_run_time)
