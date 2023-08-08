@@ -256,14 +256,14 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 22,
                                 "id": "fcadbfd0-33b0-11ee-83bf-674adb4bd869",
                                 "index": 8,
                                 "name": "Execute Campaign Hunt",
-                                "scriptId": "517d22f0-8a54-4404-8ed0-ea09e8ad5fc9",
+                                "scriptId": "HuntingFromIndicatorLayout",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
