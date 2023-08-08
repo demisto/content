@@ -894,9 +894,9 @@ tasks:
     task:
       id: c21b3304-ef81-455d-8c16-082415eab547
       version: -1
-      name: Cortex ASM - Detect Service
+      name: Cortex ASM - Detect Service_EXPANDR-3672
       description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
-      playbookName: Cortex ASM - Detect Service
+      playbookName: Cortex ASM - Detect Service_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""
@@ -1015,7 +1015,7 @@ tasks:
       version: -1
       name: GenerateSummaryReport - Summary
       description: Generate an ASM Alert Summary report.
-      scriptName: GenerateASMReport
+      scriptName: GenerateASMReport_EXPANDR-3672
       type: regular
       iscommand: false
       brand: ""
@@ -1120,9 +1120,9 @@ tasks:
     task:
       id: 01adb157-4235-4b75-8ef7-32c1058f221d
       version: -1
-      name: Cortex ASM - Enrichment
+      name: Cortex ASM - Enrichment_EXPANDR-3672
       description: Used as a container folder for all enrichments of ASM alerts.
-      playbookName: Cortex ASM - Enrichment
+      playbookName: Cortex ASM - Enrichment_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""
@@ -1472,8 +1472,8 @@ tasks:
     task:
       id: 4ac318a6-6177-4d6c-86bd-16dba38603aa
       version: -1
-      name: Cortex ASM - Remediation Path Rules
-      playbookName: Cortex ASM - Remediation Path Rules
+      name: Cortex ASM - Remediation Path Rules_EXPANDR-3672
+      playbookName: Cortex ASM - Remediation Path Rules_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""
@@ -1550,7 +1550,7 @@ tasks:
       version: -1
       name: GenerateSummaryReport - Analysis
       description: Generate an ASM Alert Summary report.
-      scriptName: GenerateASMReport
+      scriptName: GenerateASMReport_EXPANDR-3672
       type: regular
       iscommand: false
       brand: ""
@@ -2240,7 +2240,7 @@ tasks:
                     right:
                       value:
                         simple: Azure-Compute-ID
-                accessor: ID
+                accessor: id
             iscontext: true
           right:
             value:
@@ -2261,7 +2261,7 @@ tasks:
                     right:
                       value:
                         simple: GCP-Project-Number
-                accessor: ID
+                accessor: id
             iscontext: true
           right:
             value:
@@ -2282,7 +2282,7 @@ tasks:
                     right:
                       value:
                         simple: AWS
-                accessor: Project
+                accessor: project
             iscontext: true
           right:
             value:
@@ -2303,7 +2303,7 @@ tasks:
                     right:
                       value:
                         simple: GCP-Folder-Number
-                accessor: ID
+                accessor: id
             iscontext: true
           right:
             value:
@@ -2324,7 +2324,7 @@ tasks:
                     right:
                       value:
                         simple: Azure
-                accessor: Organization
+                accessor: organization
             iscontext: true
           right:
             value:
@@ -2512,9 +2512,9 @@ tasks:
     task:
       id: bbf26571-8578-4967-87db-c75fb1abb3bb
       version: -1
-      name: Cortex ASM - Jira Notification
+      name: Cortex ASM - Jira Notification_EXPANDR-3672
       description: This playbook is used to direct Jira tickets to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - Jira Notification
+      playbookName: Cortex ASM - Jira Notification_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""
@@ -2630,9 +2630,9 @@ tasks:
     task:
       id: f1756d7d-9ac2-4f24-884f-58ed2bd2eed3
       version: -1
-      name: Cortex ASM - ServiceNow Notification
+      name: Cortex ASM - ServiceNow Notification_EXPANDR-3672
       description: This playbook is used to direct ServiceNow tickets to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - ServiceNow Notification
+      playbookName: Cortex ASM - ServiceNow Notification_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""
@@ -2671,9 +2671,9 @@ tasks:
     task:
       id: 236b60a4-1358-45db-8777-9ccdf186bccd
       version: -1
-      name: Cortex ASM - Email Notification
+      name: Cortex ASM - Email Notification_EXPANDR-3672
       description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - Email Notification
+      playbookName: Cortex ASM - Email Notification_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""
@@ -2961,9 +2961,9 @@ tasks:
     task:
       id: 7cc89d9f-49c2-4727-89e2-2fc83cc2ae00
       version: -1
-      name: Cortex ASM - Remediation
+      name: Cortex ASM - Remediation_EXPANDR-3672
       description: This playbook contains all the cloud provider sub-playbooks for remediation.
-      playbookName: Cortex ASM - Remediation
+      playbookName: Cortex ASM - Remediation_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""

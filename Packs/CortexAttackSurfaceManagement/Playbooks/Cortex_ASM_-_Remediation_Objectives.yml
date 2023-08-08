@@ -1,6 +1,6 @@
-id: Cortex ASM - Remediation Objectives
+id: Cortex ASM - Remediation Objectives_EXPANDR-3672
 version: -1
-name: Cortex ASM - Remediation Objectives
+name: Cortex ASM - Remediation Objectives_EXPANDR-3672
 description: Playbook that populates the remediation objectives field that is used to display the remediation actions to the end user.
 starttaskid: "0"
 tasks:
@@ -274,7 +274,7 @@ tasks:
               right:
                 value:
                   simple: GCP-VMNAME
-          accessor: ID
+          accessor: id
           transformers:
           - operator: concat
             args:
@@ -454,7 +454,7 @@ tasks:
               right:
                 value:
                   simple: S3-BucketName
-          accessor: ID
+          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-

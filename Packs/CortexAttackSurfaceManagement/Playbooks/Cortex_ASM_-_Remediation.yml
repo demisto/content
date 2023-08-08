@@ -1,6 +1,6 @@
-id: Cortex ASM - Remediation
+id: Cortex ASM - Remediation_EXPANDR-3672
 version: -1
-name: Cortex ASM - Remediation
+name: Cortex ASM - Remediation_EXPANDR-3672
 description: This playbook contains all the cloud provider sub playbooks for remediation
 starttaskid: "0"
 tasks:
@@ -192,7 +192,7 @@ tasks:
               right:
                 value:
                   simple: Azure-NSG
-          accessor: ID
+          accessor: id
       AzureVMPrivateIP:
         complex:
           root: alert.asmprivateip
@@ -269,7 +269,7 @@ tasks:
               right:
                 value:
                   simple: S3-BucketName
-          accessor: ID
+          accessor: id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -320,7 +320,7 @@ tasks:
               right:
                 value:
                   simple: AWS-EC2
-          accessor: ID
+          accessor: id
       Port:
         complex:
           root: alert
@@ -385,7 +385,7 @@ tasks:
               right:
                 value:
                   simple: GCP-VMNAME
-          accessor: ID
+          accessor: id
       GcpNetwork:
         complex:
           root: alert.asmsystemids
@@ -398,7 +398,7 @@ tasks:
               right:
                 value:
                   simple: GCP-VPC
-          accessor: ID
+          accessor: id
       GcpProject:
         complex:
           root: alert.asmcloud
@@ -417,7 +417,7 @@ tasks:
               right:
                 value:
                   simple: GCP-ZONE
-          accessor: ID
+          accessor: id
       RemotePort:
         complex:
           root: alert
