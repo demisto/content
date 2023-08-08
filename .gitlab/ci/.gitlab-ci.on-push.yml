@@ -1,0 +1,658 @@
+# This rule is to not run the build for docker update branches (for non-nightly packs)
+.filter-non-nightly-docker-updates-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\// && $CI_COMMIT_BRANCH !~ /^demisto\/.*-nightly$/'
+      when: never
+
+.push-rule:
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+trigger-private-build:
+  tags:
+    - gke
+  needs: []
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+  script:
+    - echo "====Trigger Private Build===="
+    - |
+      if [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -t $GITHUB_TOKEN --repo demisto/content-private -b $CI_COMMIT_BRANCH) ]; then
+        PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
+      else
+        PRIVATE_BRANCH_NAME='master'
+      fi
+    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --private-branch-name $PRIVATE_BRANCH_NAME
+    - sleep 60
+    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+    - job-done
+  timeout: 2 hours
+
+.create-release-notes-and-common-docs:
+  - section_start "Create Release Notes and Common Server Documentation" --collapsed
+  - echo "Creating Release Notes and Content Descriptor"
+  - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+  - cp content-descriptor.json $ARTIFACTS_FOLDER
+  - ./Documentation/commonServerDocs.sh
+  - section_end "Create Release Notes and Common Server Documentation"
+
+stop-running-pipelines:
+  tags:
+    - gke
+  stage: unittests-and-validations
+  needs: []
+  extends:
+    - .default-job-settings
+  variables:
+    master_branch_name: master
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+  script:
+    - section_start "Stop running piplines on current branch"
+    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+    - section_end "Stop running piplines on current branch"
+
+
+# runs in gitlab for the on-push flow (except for contributors)
+run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+  rules:
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
+    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+
+# runs in gitlab for the on-push flow (except for contributors)
+run-validations:
+  extends:
+    - .run-validations
+  rules:
+    - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+
+# runs in gitlab for the on-push flow, on every new commit pushed to the branch.
+validate-content-conf:
+  tags:
+    - gke
+  stage: unittests-and-validations
+  needs: []
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+  script:
+    - section_start "Validate content-test-conf Branch Merged"
+    - |
+      if [[ $CI_COMMIT_BRANCH = "master" ]]; then
+        echo "Skipping, Should not run on master branch."
+      else
+        # replace slashes ('/') in the branch name, if exist, with underscores ('_')
+        UNDERSCORE_CI_BRANCH=${CI_COMMIT_BRANCH//\//_}
+        RESP=$(curl --location --request GET "https://code.pan.run/api/v4/projects/3734/repository/branches?search=$UNDERSCORE_CI_BRANCH" --header "PRIVATE-TOKEN: $GITLAB_API_READ_TOKEN") # disable-secrets-detection
+        EXIST=$(echo $RESP | jq --arg branch $UNDERSCORE_CI_BRANCH -c '.[] | select(.name==$branch)')
+        if [ -n "$EXIST" ]; then
+            RED='\033[0;31m'
+            NC='\033[0m'
+            echo -e "${RED}ERROR: Found a branch with the same name in contest-test-conf conf.json - $UNDERSCORE_CI_BRANCH.\n Merge it in order to merge the current branch into content repo.${NC}"
+            job-done
+            exit 1
+        fi
+            echo "No branch with the name *$UNDERSCORE_CI_BRANCH* were found in contest-test-conf repo."
+      fi
+    - section_end "Validate content-tesgt-conf Branch Merged"
+    - job-done
+
+.generic-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
+    - if: "$NIGHTLY"
+  cache:
+    policy: pull-push
+  variables:
+    KUBERNETES_CPU_REQUEST: 2000m
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - !reference [.download-demisto-conf]
+    - !reference [.create-release-notes-and-common-docs]
+
+    - section_start "Create or update content graph" --collapsed
+
+    - echo "Updating the content graph"
+    - mkdir $ARTIFACTS_FOLDER/content_graph
+    - demisto-sdk update-content-graph -g --marketplace $MARKETPLACE_VERSION -o $ARTIFACTS_FOLDER/content_graph
+    - echo "Successfully updated content graph"
+
+    - section_end "Create or update content graph"
+
+    - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - export DEMISTO_SDK_MARKETPLACE=$MARKETPLACE_VERSION  # This is done because the demisto-sdk uses this environment variable.
+    - |
+      if [[ $MARKETPLACE_VERSION == "xsoar" ]];
+      then
+        echo "Starting to create artifacts with zip for XSOAR."
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "xsoar" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --bucket-upload "$BUCKET_UPLOAD"
+      else
+        echo "Starting to create artifacts without zip."
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output $ARTIFACTS_FOLDER/content_packs --dependencies-output $ARTIFACTS_FOLDER/packs_dependencies.json --packs-output $ARTIFACTS_FOLDER/packs.json --no-zip --bucket-upload "$BUCKET_UPLOAD"
+      fi
+
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
+
+    - section_start "Replace Cortex XSOAR" --collapsed
+    - |
+      if [[ $MARKETPLACE_VERSION != "xsoar" ]];
+      then
+        echo "Replace Cortex XSOAR for non-xsoar build."
+        pushd "$ARTIFACTS_FOLDER"
+        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCTNAME"'/gI' {} \;
+        pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
+        rm -rf content_packs
+        popd
+      fi
+    - section_end "Replace Cortex XSOAR"
+    - section_start "Collect Tests" --collapsed
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "$MARKETPLACE_VERSION" --service_account $GCS_MARKET_KEY --graph true --override_all_packs $OVERRIDE_ALL_PACKS -up "${PACKS_TO_UPLOAD}"
+      fi
+    - section_end "Collect Tests"
+
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
+    - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Create Instances for XSOAR"
+    - |
+      if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
+        echo "Creating Instances, only for XSOAR."
+        [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "$ARTIFACTS_FOLDER/env_results.json" --creds $CONTENET_BUILD_GCP --zone $GCP_ZONE
+      fi
+    - section_end "Create Instances for XSOAR"
+    - section_start "Upload Artifacts to GCP" --collapsed
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - job-done
+
+
+
+xsoar-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    MARKETPLACE_VERSION: "xsoar"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
+  extends:
+    - .generic-prepare-testing-bucket
+
+mpv2-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    MARKETPLACE_VERSION: "marketplacev2"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
+    PRODUCTNAME: "Cortex XSIAM"
+  extends:
+    - .generic-prepare-testing-bucket
+
+xpanse-prepare-testing-bucket:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCTNAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
+  extends:
+    - .generic-prepare-testing-bucket
+
+.test_content_on_xsoar_server_instances_base:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .push-rule
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    SERVER_TYPE: "XSOAR"
+  stage: run-instances
+  needs:
+    - job: xsoar-prepare-testing-bucket
+      optional: true
+  script:
+    - EXIT_CODE=0
+    - !reference [.download-demisto-conf]
+    - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+    # If instance was not created
+    - |
+      if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]]; then
+        echo "Instance with role $INSTANCE_ROLE was not created"
+        job-done
+        exit 0
+      fi
+    - !reference [.ssh-config-setup]
+    - section_start "Wait Until Server Ready"
+    - |
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}"
+    - section_end "Wait Until Server Ready"
+    - |
+      # workaround for the hard-coded value in the sdk
+      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
+      cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    - echo Going to sleep for 15 minutes to allow server finish indexing
+    - sleep 900
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - |
+      if [[ -f ./Tests/failed_tests.txt ]]; then
+        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [[ -f ./Tests/succeeded_tests.txt ]]; then
+        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
+      fi
+    - |
+      if [[ -f ./Tests/test_playbooks_report.json ]]; then
+        cp ./Tests/test_playbooks_report.json $ARTIFACTS_FOLDER/test_playbooks_report.json
+      fi
+
+    - |
+      if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
+        TIME_TO_LIVE=300
+      fi
+      python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - job-done
+    - exit $EXIT_CODE
+
+xsoar_server_6_8:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.8"
+
+xsoar_server_6_9:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.9"
+
+xsoar_server_6_10:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.10"
+
+xsoar_server_6_11:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.11"
+
+xsoar_server_master:
+  extends:
+    - .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+      when: always
+      variables:
+        KUBERNETES_CPU_REQUEST: 2000m
+  variables:
+    INSTANCE_ROLE: "Server Master"
+
+
+fan-in-nightly:
+  tags:
+    - gke
+  stage: fan-in
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+  script:
+    - echo "fan in"
+
+jobs-done-check-nightly:
+  extends:
+    - .jobs-done-check
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  tags:
+    - gke
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+
+jobs-done-check-on-push:
+  extends:
+    - .push-rule
+    - .jobs-done-check
+  needs:
+    - job: run-unittests-and-lint
+      optional: true
+    - job: trigger-private-build
+      optional: true
+    - job: validate-content-conf
+      optional: true
+    - job: mpv2-prepare-testing-bucket
+      optional: true
+    - job: xpanse-prepare-testing-bucket
+      optional: true
+    - job: xsoar-prepare-testing-bucket
+      optional: true
+    - job: xsiam_server_ga
+      optional: true
+    - job: xsoar_server_6_8
+      optional: true
+    - job: xsoar_server_6_9
+      optional: true
+    - job: xsoar_server_6_10
+      optional: true
+    - job: xsoar_server_6_11
+      optional: true
+    - job: xsoar_server_master
+      optional: true
+  tags:
+    - gke
+
+
+slack-notify-nightly-build:
+  extends:
+    - .trigger-slack-notification
+  rules:
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Nightly'
+    JOB_NAME: 'fan-in-nightly'
+    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
+    # when triggering pipeline with alternate env variable value passed in the API call
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'
+
+
+.test_content_on_cloud_server_instances_base:
+  tags:
+    - gke
+    - us-west1
+  extends:
+    - .default-job-settings
+    - .push-rule
+  variables:
+    EXTRACT_PRIVATE_TESTDATA: "true"
+    CLOUD_MACHINES_TYPE: "build"
+  stage: run-instances
+  script:
+    - EXIT_CODE=0
+    - !reference [.download-demisto-conf]
+    - section_start "Are there tests to run?" --collapsed
+    - |
+      if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
+        # The files are empty.
+        echo "Not running the instance flow, no tests to run were found."
+        job-done
+        exit $EXIT_CODE
+      fi
+    - section_end "Are there tests to run?"
+
+    - section_start "Lock Machine" --collapsed
+    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+    - echo "Authenticating GCP"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
+    - echo "Auth done successfully"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
+    - source CloudEnvVariables
+    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
+    - section_end "Lock Machine"
+
+    - section_start "Clean Machine" --collapsed
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
+    - section_end "Clean Machine"
+
+    - section_start "Install Packs and run Test-Module"
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
+    - |
+      if [[ $EXIT_CODE != 0 ]]
+      then
+        echo "Failed to install packs. Exiting"
+        job-done
+        exit $EXIT_CODE
+      fi
+    - section_end "Install Packs and run Test-Module"
+
+    - section_start "Run Tests"
+    - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - |
+      if [[ -f ./Tests/failed_tests.txt ]]; then
+        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [[ -f ./Tests/succeeded_tests.txt ]]; then
+        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
+      fi
+    - section_end "Run Tests"
+
+    - section_start "Test Modeling Rules"
+    - |
+      if [[ -s "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt" ]]; then
+        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
+      else
+        echo "No modeling rules were marked for testing during test collection"
+      fi
+    - section_end "Test Modeling Rules"
+
+    - section_start "Cloud Machine information"
+    - ./Tests/scripts/print_cloud_machine_details.sh
+    - section_end "Cloud Machine information"
+
+    - section_start "After script" --collapsed
+    - |
+      if ! [ -z "$CLOUD_CHOSEN_MACHINE_ID" ]
+      then
+        echo "Job finished, removing lock file"
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
+        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
+        echo "Finished removing lock file"
+      fi
+    - section_end "After script"
+    - job-done
+    - exit $EXIT_CODE
+
+#xsiam_server_dev:
+#  extends:
+#    - .test_content_on_xsiam_server_instances_base
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#    - if: '$NIGHTLY'
+#      when: always
+#  variables:
+#    INSTANCE_ROLE: "XSIAM Master"
+#    GCS_QUEUE_FILE: "queue-master"
+#    TEST_MACHINES_LIST: "test-machines-master"
+
+
+xsiam_server_ga:
+  extends:
+    - .test_content_on_cloud_server_instances_base
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM"
+    GCS_QUEUE_FILE: "queue-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+    CLOUD_SERVERS_FILE: "xsiam_servers_path"
+    CLOUD_API_KEYS: $XSIAM_API_KEYS
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    SERVER_TYPE: "XSIAM"
+    MARKETPLACE_NAME: "marketplacev2"
+    UNREMOVABLE_PACKS: "Base"
+  needs:
+    - job: mpv2-prepare-testing-bucket
+      optional: true
+
+xsoar_ng_server_ga:
+  extends:
+    - .test_content_on_cloud_server_instances_base
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM"
+    GCS_QUEUE_FILE: "queue-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
+    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
+    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+    SERVER_TYPE: "XSIAM"
+    MARKETPLACE_NAME: "xsoar"
+    UNREMOVABLE_PACKS: "Base"
+  needs:
+    - job: xsoar-prepare-testing-bucket
+      optional: true
+  allow_failure: true
+
+
+test-upload-flow:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  variables:
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+  stage: unittests-and-validations
+  script:
+    - |
+    - section_start "Checks Whether to Trigger a Test Upload"
+    - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
+    - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
+    -   echo "No upload-flow related files were modified, skipping upload test"
+    -   exit 0
+    - fi
+    - echo "Found modified files that should be tested in upload-flow"
+    - section_end "Checks Whether to Trigger a Test Upload"
+
+    - section_start "Create Testing Branch"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
+    - echo $BRANCH
+    - section_end "Create Testing Branch"
+
+    - section_start "Trigger Test Upload Flow On Testing Branch"
+    # retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
+    - for _ in {1..3}; do
+    -   export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+    -   if [ "${pipeline_id}" != "null" ]; then
+    -     break
+    -   fi
+    -   echo "Sleeping for 10 seconds before retrying"
+    -   sleep 10
+    - done
+    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - section_end "Trigger Test Upload Flow On Testing Branch"
+
+    - section_start "Wait For Upload To Finish"
+    - python3 ./Utils/test_upload_flow/wait_for_upload.py -p $pipeline_id -g $GITLAB_API_TOKEN
+    - section_end "Wait For Upload To Finish"
+
+    - section_start "Verify Created Testing Bucket"
+    - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
+    - python3 ./Utils/test_upload_flow/verify_bucket.py -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
+    - section_end "Verify Created Testing Bucket"
+
+.server_test_playbooks_report:
+  stage: test_playbooks_report
+  rules:
+    - if: '$NIGHTLY'
+  extends:
+    - .default-job-settings
+  script:
+    - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
+
+
+merge-dev-secrets:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  variables:
+    master_branch_name: master
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  stage: unittests-and-validations
+  script:
+    - |
+    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/merge-secrets.log
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
+  allow_failure: true
+
+xsoar_server_master-test_playbooks_results:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+  extends: .server_test_playbooks_report
+  needs: ["xsoar_server_master"]
+
+xsiam_server_ga-test_playbooks_results:
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+  extends: .server_test_playbooks_report
+  needs: ["xsiam_server_ga"]
+
+

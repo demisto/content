@@ -65,13 +65,24 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
   isfetch: true
   runonce: false
   script: "-"
   subtype: python3
   type: python
   commands:
+  - arguments:
+    - description: Values to add to the exclusion filter (split by ',')
+      name: values_to_add
+      required: true
+      type: List
+      isArray: true
+    - description: key too add to the exclusion filter (e.g. "CASE_SENSITIVE_TERMS", "LOCATION_CASE_INSENSITIVE_TERMS", "OWNERS", "FILE_IDS", "LOCATIONS")
+      name: key_to_add
+      required: true
+    description: Add exclusion filter to Reco Classifier
+    name: reco-add-exclusion-filter
   - arguments:
     - description: Comment to add to the incident
       name: comment
@@ -247,6 +258,20 @@ script:
     - contextPath: Reco.Assets.domain
       description: The domain of the 3rd party
       type: String
+  - arguments:
+    - description: alert id to get
+      name: alert_id
+      required: true
+    - description: status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED")
+      name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - ALERT_STATUS_NEW
+      - ALERT_STATUS_IN_PROGRESS
+      - ALERT_STATUS_CLOSED
+    description: update alert status in Reco
+    name: reco-change-alert-status
 tests:
 - No tests
 fromversion: 6.5.0

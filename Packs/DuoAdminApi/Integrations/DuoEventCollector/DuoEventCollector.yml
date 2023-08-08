@@ -59,7 +59,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: demisto/duoadmin3:1.0.0.64379
+  dockerimage: demisto/duoadmin3:1.0.0.65621
   isfetchevents: true
   subtype: python3
 marketplaces:

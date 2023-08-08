@@ -269,7 +269,7 @@ script:
     - contextPath: SingleConnect.SapmAccount.groupFullPath
       description: The full path of the SAPM group that the account is under
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.67728
   runonce: false
   script: '-'
   subtype: python3
