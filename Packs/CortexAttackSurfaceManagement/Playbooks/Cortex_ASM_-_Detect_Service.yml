@@ -1,6 +1,6 @@
-id: Cortex ASM - Detect Service
+id: Cortex ASM - Detect Service_EXPANDR-3672
 version: -1
-name: Cortex ASM - Detect Service
+name: Cortex ASM - Detect Service_EXPANDR-3672
 description: Playbook that looks to see if a service ID exists and chooses to start a Remediation Confirmation Scan.
 starttaskid: "0"
 tasks:
@@ -145,8 +145,8 @@ tasks:
     task:
       id: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
       version: -1
-      name: 'Cortex ASM - Remediation Confirmation Scan'
-      playbookName: Cortex ASM - Remediation Confirmation Scan
+      name: Cortex ASM - Remediation Confirmation Scan_EXPANDR-3672
+      playbookName: Cortex ASM - Remediation Confirmation Scan_EXPANDR-3672
       type: playbook
       iscommand: false
       brand: ""
