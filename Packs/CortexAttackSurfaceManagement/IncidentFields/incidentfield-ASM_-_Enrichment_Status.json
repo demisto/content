@@ -1,77 +1,69 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "asmdevcheckdetails",
+    "cliName": "asmenrichmentstatus",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "result",
+            "displayName": "source",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "result",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "boolean",
-            "width": 150,
-            "_comment": "Mandatory: True means the asset is likely development, everything else is False"
-        },
-        {
-            "displayName": "result_readable",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "result_readable",
+            "key": "source",
             "orgType": "",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: human readable final result of dev vs non-dev"
+            "_comment": "Mandatory: The source of enrichment. Ex: Qualys"
         },
         {
-            "displayName": "confidence",
+            "displayName": "record_exists",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "confidence",
+            "key": "record_exists",
             "orgType": "",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: How confident we are of the result.  Options include: Likely Development/Likely Production/Not Enough Information/Conflicting Information"
+            "_comment": "Mandatory: True means the enrichment of some kind has occurred for that source, the opposite is false."
         },
         {
-            "displayName": "reason",
+            "displayName": "timestamp",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "reason",
+            "key": "timestamp",
             "orgType": "",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Mandatory: Supporting indications of dev vs non-dev"
+            "_comment": "Mandatory: Timestamp for when the enrichment and checking of the status took place."
         }
     ],
     "content": true,
     "defaultRows": [
+        {
+            "columnheader1": "",
+            "columnheader2": "",
+            "columnheader3": ""
+        },
+        {},
         {}
     ],
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_asmdevcheckdetails",
+    "id": "incident_asmenrichmentstatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "ASM - Dev Check Details",
+    "name": "ASM - Enrichment Status",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -84,5 +76,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.9.0"
 }
