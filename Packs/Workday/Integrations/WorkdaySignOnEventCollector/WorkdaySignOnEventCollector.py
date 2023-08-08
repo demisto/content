@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Tuple
@@ -8,39 +7,10 @@ from typing import Tuple
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-
 VENDOR = 'workday'
 PRODUCT = 'sign_on'
 API_VERSION = 'v40.0'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-GET_WORKDAY_ACCOUNT_SIGNONS = """
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc">
-    <soapenv:Header>
-        <wsse:Security soapenv:mustUnderstand="1"
-        xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
-        xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
-            <wsse:UsernameToken wsu:Id="UsernameToken-{token}">
-                <wsse:Username>{username}</wsse:Username>
-                <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
-                #PasswordText">{password}</wsse:Password>
-            </wsse:UsernameToken>
-        </wsse:Security>
-    </soapenv:Header>
-    <soapenv:Body>
-        <bsvc:Response_Filter>
-            <bsvc:Page>{page}</bsvc:Page>
-            <bsvc:Count>{count}</bsvc:Count>
-        </bsvc:Response_Filter>
-        <bsvc:Get_Workday_Account_Signons_Request bsvc:version="v40.0">        
-            <bsvc:Request_Criteria>         
-                <bsvc:From_DateTime>{from_time}</bsvc:From_DateTime>
-		        <bsvc:To_DateTime>{to_time}</bsvc:To_DateTime>           
-            </bsvc:Request_Criteria>        
-        </bsvc:Get_Workday_Account_Signons_Request>
-    </soapenv:Body>
-</soapenv:Envelope>
-"""
 
 ''' CLIENT CLASS '''
 
@@ -51,7 +21,8 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, base_url, verify_certificate, proxy, tenant_name, token, username, password):
+    def __init__(self, base_url: str, verify_certificate: bool, proxy: bool, tenant_name: str, token: str,
+                 username: str, password: str):
         headers = {"content-type": "text/xml;charset=UTF-8"}
 
         super().__init__(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers)
@@ -60,10 +31,81 @@ class Client(BaseClient):
         self.username = username
         self.password = password
 
-    def retrieve_events(self, page, count, to_time=None, from_time=None) -> Tuple:
-        body = GET_WORKDAY_ACCOUNT_SIGNONS.format(
+    def generate_workday_account_signons_body(self, page: int, count: int, to_time: Optional[str] = None,
+                                              from_time: Optional[str] = None) -> str:
+        """
+        Generates XML body for Workday Account Signons Request.
+
+        :type page: ``int``
+        :param page: Page number.
+
+        :type count: ``int``
+        :param count: Number of results per page.
+
+        :type to_time: ``Optional[str]``
+        :param to_time: End time for fetching events.
+
+        :type from_time: ``Optional[str]``
+        :param from_time: Start time for fetching events.
+
+        :return: XML body as string.
+        :rtype: ``str``
+        """
+
+        body = """
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:bsvc="urn:com.workday/bsvc">
+            <soapenv:Header>
+                <wsse:Security soapenv:mustUnderstand="1"
+                xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"
+                xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                    <wsse:UsernameToken wsu:Id="UsernameToken-{token}">
+                        <wsse:Username>{username}</wsse:Username>
+                        <wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0
+                        #PasswordText">{password}</wsse:Password>
+                    </wsse:UsernameToken>
+                </wsse:Security>
+            </soapenv:Header>
+            <soapenv:Body>
+                <bsvc:Response_Filter>
+                    <bsvc:Page>{page}</bsvc:Page>
+                    <bsvc:Count>{count}</bsvc:Count>
+                </bsvc:Response_Filter>
+                <bsvc:Get_Workday_Account_Signons_Request bsvc:version="v40.0">        
+                    <bsvc:Request_Criteria>         
+                        <bsvc:From_DateTime>{from_time}</bsvc:From_DateTime>
+                        <bsvc:To_DateTime>{to_time}</bsvc:To_DateTime>           
+                    </bsvc:Request_Criteria>        
+                </bsvc:Get_Workday_Account_Signons_Request>
+            </soapenv:Body>
+        </soapenv:Envelope>
+        """
+
+        return body.format(
             token=self.token, username=self.username, password=self.password, api_version=API_VERSION,
             to_time=to_time, from_time=from_time, page=page, count=count)
+
+    def retrieve_events(self, page: int, count: int, to_time: Optional[str] = None,
+                        from_time: Optional[str] = None) -> Tuple:
+        """
+        Retrieves events from Workday.
+
+        :type page: ``int``
+        :param page: Page number.
+
+        :type count: ``int``
+        :param count: Number of results per page.
+
+        :type to_time: ``Optional[str]``
+        :param to_time: End time for fetching events.
+
+        :type from_time: ``Optional[str]``
+        :param from_time: Start time for fetching events.
+
+        :return: Tuple containing raw JSON response and account sign-on data.
+        :rtype: ``Tuple``
+        """
+
+        body = self.generate_workday_account_signons_body(page=page, count=count, to_time=to_time, from_time=from_time)
         raw_response = self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=120)
         raw_json_response, account_signon_data = convert_to_json(raw_response)
         response_results = raw_json_response.get('Envelope', {}).get('Body', {}).get(
@@ -72,7 +114,14 @@ class Client(BaseClient):
         total_pages = response_results.get('Total_Pages', 1)
         return account_signon_data, total_pages
 
-    def test_connectivity(self):
+    def test_connectivity(self) -> str:
+        """
+        Tests API connectivity and authentication.
+
+        :return: 'ok' if test passed, else exception.
+        :rtype: ``str``
+        """
+
         def get_from_time():
             current_time = datetime.now(tz=timezone.utc)
             five_seconds_ago = current_time - timedelta(seconds=5)
@@ -80,27 +129,56 @@ class Client(BaseClient):
             return from_time
 
         to_time = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-        body = GET_WORKDAY_ACCOUNT_SIGNONS.format(
-            token=self.token, username=self.username, password=self.password, api_version=API_VERSION,
-            to_time=to_time, from_time=get_from_time, page=1, count=1)
-        _ = self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=120)
+        body = self.generate_workday_account_signons_body(page=1, count=1, to_time=to_time, from_time=get_from_time)
+        self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=120)
         return 'ok'
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def convert_to_json(response):
-    raw_json_response = json.loads(xml2json(response))
-    response_data = raw_json_response.get('Envelope', {}).get('Body', {}).get('Get_Workday_Account_Signons_Response', {}).get(
-        'Response_Data', {})
-    account_signon_data = response_data.get('Workday_Account_Signon')
+def convert_to_json(response: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Convert an XML response to a JSON object and extract the 'Workday_Account_Signons' data.
+
+    :param response: XML response to be converted
+    :return: Tuple containing the full converted response and the extracted 'Workday_Account_Signons' data.
+    :raises ValueError: If the expected data cannot be found in the response.
+    """
+    if type(response) == dict:
+        raw_json_response = response
+    else:
+        try:
+            raw_json_response = json.loads(xml2json(response))
+        except Exception as e:
+            raise f"Error parsing XML to JSON: {e}"
+
+    # Get the 'Get_Workday_Account_Signons_Response' dictionary safely
+    response_data = raw_json_response.get('Envelope', {}).get('Body', {}).get('Get_Workday_Account_Signons_Response', {})
+
+    if not response_data:
+        response_data = raw_json_response.get(
+            'Get_Workday_Account_Signons_Response', {})
+        # demisto.debug(f"Entered UnitTesting scenario. The actual response is: {raw_json_response}")
+
+        # raise ValueError("'Get_Workday_Account_Signons_Response' not found in the response")
+
+    # Get 'Response_Data' and 'Workday_Account_Signon' safely
+    account_signon_data = response_data.get('Response_Data', {}).get('Workday_Account_Signon')
+
+    if not account_signon_data:
+        raise ValueError("'Workday_Account_Signon' not found in the 'Response_Data'")
+
     return raw_json_response, account_signon_data
 
 
-def process_events(events):
-    for event in events:
-        event['_time'] = event.get('Signon_DateTime')
+def process_events(events: List[Dict[str, Any]]) -> None:
+    """
+    Update each event in the provided list with a '_time' key set to the value of 'Signon_DateTime'.
+
+    :param events: List of event dictionaries.
+    """
+    [_event.update({'_time': _event.get('Signon_DateTime')}) for _event in events]
 
 
 def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_date: str):
@@ -118,6 +196,7 @@ def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_d
     sign_on_logs: list = []
     page = 1  # We assume that we will need to make one call at least
     res, total_pages = client.retrieve_events(from_time=from_date, to_time=to_date, page=1, count=limit_to_fetch)
+    demisto.debug(f"Request indicates a total of {total_pages} pages to paginate.")
 
     while page <= total_pages:
         page += 1
@@ -134,17 +213,18 @@ def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_d
 ''' COMMAND FUNCTIONS '''
 
 
-def get_sign_on_events_command(client: Client, from_date: str, to_date: str, limit: Optional[int]) -> Tuple[list, CommandResults]:
+def get_sign_on_events_command(client: Client, from_date: str, to_date: str, limit: Optional[int]) -> Tuple[
+    list, CommandResults]:
     """
 
     Args:
-        limit: The maximum number of loggings to return.
+        limit: The maximum number of logs to return.
         to_date: date to fetch events from.
         from_date: date to fetch events to.
         client: Client object.
 
     Returns:
-        Activity loggings from Workday.
+        Sign on logs from Workday.
     """
 
     sign_on_events = fetch_sign_on_logs(client=client, limit_to_fetch=limit, from_date=from_date, to_date=to_date)
@@ -158,15 +238,15 @@ def get_sign_on_events_command(client: Client, from_date: str, to_date: str, lim
 
 def fetch_sign_on_events_command(client: Client, max_fetch: int, first_fetch: datetime, last_run: dict):
     """
-    Fetches activity loggings from Workday.
+    Fetches sign on logs from Workday.
     Args:
         first_fetch: first fetch date.
         client: Client object.
-        max_fetch: max loggings to fetch set by customer.
+        max_fetch: max logs to fetch set by customer.
         last_run: last run object.
 
     Returns:
-        Activity loggings from Workday.
+        Sign on logs from Workday.
 
     """
     from_date = last_run.get('last_fetch_time', first_fetch.strftime(DATE_FORMAT))
@@ -175,9 +255,12 @@ def fetch_sign_on_events_command(client: Client, max_fetch: int, first_fetch: da
     sign_on_events = fetch_sign_on_logs(client=client, limit_to_fetch=max_fetch, from_date=from_date, to_date=to_date)
 
     if sign_on_events:
+        demisto.debug("Got sign_on_events. Begin processing.")
         last_event = sign_on_events[-1]
         process_events(sign_on_events)
+        demisto.debug(f"Done processing {len(sign_on_events)} sign_on_events.")
         last_run = {'last_fetch_time': to_date, 'last_event': last_event}
+        demisto.debug(f"Saving last run as {last_run}")
 
     return sign_on_events, last_run
 
@@ -225,7 +308,7 @@ def main() -> None:  # pragma: no cover
     try:
 
         client = Client(
-            base_url= base_url,
+            base_url=base_url,
             tenant_name=tenant_name,
             token=token,
             username=username,
@@ -252,10 +335,12 @@ def main() -> None:  # pragma: no cover
                 )
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
+            demisto.debug(f'Starting new fetch with last_run as {last_run}')
             sign_on_events, new_last_run = fetch_sign_on_events_command(client=client,
                                                                         max_fetch=max_fetch,
                                                                         first_fetch=first_fetch,  # type: ignore
                                                                         last_run=last_run)
+            demisto.debug("Done fetching events, sending to XSIAM.")
             send_events_to_xsiam(
                 sign_on_events,
                 vendor=VENDOR,

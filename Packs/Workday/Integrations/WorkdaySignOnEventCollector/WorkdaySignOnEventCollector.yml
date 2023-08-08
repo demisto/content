@@ -43,7 +43,7 @@ configuration:
   additionalinfo:
   section: Connect
   advanced: true
-- additionalinfo: The maximum number of sign on events to retrievee. Large amount of events can cause performance issues.
+- additionalinfo: The maximum number of sign on events to retrieve. Large amount of events can cause performance issues.
   defaultvalue: '1000'
   display: Max events per fetch
   name: max_fetch
