@@ -1242,9 +1242,9 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             Optional[CollectionResult]: pack collection result.
         """
         result = []
-        logger.debug(f'modeling rules to test: {self.id_set.modeling_rules}')
         for modeling_rule in self.id_set.modeling_rules:
             try:
+                logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
                 path = PATHS.content_path / modeling_rule.file_path_str
                 pack_id = modeling_rule.pack_id
                 result.append(self._collect_pack_for_modeling_rule(

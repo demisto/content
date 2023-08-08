@@ -200,6 +200,9 @@ class Graph:
             self.test_playbooks = self.id_to_test_playbook.values()
             self.modeling_rules = self.id_to_modeling_rule.values()
 
+            logger.debug(f"self.id_to_modeling_rules in Graph: {self.id_to_modeling_rule}")
+            logger.debug(f"self.modeling_rules in Graph: {self.modeling_rules}")
+
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:
         """ returns an iterator for all content items EXCLUDING PACKS """
