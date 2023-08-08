@@ -12,14 +12,10 @@ from datetime import datetime
 
 
 PARAMETERS_ERROR_MSG = "One or more arguments are missing." \
-      "Please pass with the command: organization name, repository id and project." \
+      "Please pass with the command: {arguments}" \
       "You can also re-configure the instance and set them as parameters."
 
 PARAMETERS_ERROR_MSG_2 = "One or more arguments are missing." \
-      "Please pass with the command: organization name and project." \
-      "You can also re-configure the instance and set them as parameters."
-
-PARAMETERS_ERROR_MSG_3 = "One or more arguments are missing." \
       "Please pass with the command: repository and project." \
       "You can also re-configure the instance and set them as parameters."
 
@@ -710,6 +706,7 @@ class Client:
                                            params=params,
                                            resp_type='response')
 
+
 def generate_pipeline_run_output(response: dict, project: str) -> dict:
     """
     Create XSOAR context output for retrieving pipeline run information.
@@ -982,10 +979,9 @@ def pull_request_create_command(client: Client, args: Dict[str, Any], repository
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project = args.get('project') or project
-    repository_id = args.get('repository_id') or repository
-    if not (repository and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_3)
+    org_repo_project_tuple = organization_repository_project_preprocess(args=args, organization=None, repository_id=repository,
+                                                                        project=project, is_organization_required=False)
+    project, repository_id = org_repo_project_tuple.project, org_repo_project_tuple.repository
 
     source_branch = args['source_branch']
     target_branch = args['target_branch']
@@ -1029,10 +1025,9 @@ def pull_request_update_command(client: Client, args: Dict[str, Any], repository
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    project = args.get('project') or project
-    repository = args.get('repository_id') or repository
-    if not (repository and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_3)
+    org_repo_project_tuple = organization_repository_project_preprocess(args=args, repository_id=repository, project=project,
+                                                                        is_organization_required=False, organization=None)
+    project, repository = org_repo_project_tuple.project, org_repo_project_tuple.repository
 
     pull_request_id = args['pull_request_id']
     title = args.get('title')
@@ -1115,7 +1110,7 @@ def pull_requests_list_command(client: Client, args: Dict[str, Any], repository:
     project = args.get('project') or project
     repository = args.get('repository') or repository
     if not (repository and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_3)
+        raise DemistoException(PARAMETERS_ERROR_MSG_2)
 
     page = arg_to_number(args.get('page') or '1')
     limit = arg_to_number(args.get('limit') or '50')
@@ -1492,7 +1487,7 @@ def branch_list_command(client: Client, args: Dict[str, Any], repository: Option
     project = args.get('project') or project
     repository = args.get('repository') or repository
     if not (repository and project):
-        raise DemistoException(PARAMETERS_ERROR_MSG_3)
+        raise DemistoException(PARAMETERS_ERROR_MSG_2)
 
     page = arg_to_number(args.get('page') or '1')
     limit = arg_to_number(args.get('limit') or '50')
@@ -1860,7 +1855,8 @@ def pagination_preprocess_and_validation(args: Dict[str, Any]) -> Tuple[int, int
 
 
 def organization_repository_project_preprocess(args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
-                                               project: Optional[str], is_repository_id_required: bool = True) -> namedtuple:
+                                               project: Optional[str], is_repository_id_required: bool = True,
+                                               is_organization_required: bool = True) -> namedtuple:
     """
     The organization, repository and project are preprocessed by this function.
     """
@@ -1869,14 +1865,20 @@ def organization_repository_project_preprocess(args: Dict[str, Any], organizatio
     organization = args.get('organization_name') or organization
     repository_id = args.get('repository_id') or repository_id
     project = args.get('project_name') or project
+    missing_arguments = []
 
     # validate those arguments exist
-    if is_repository_id_required:
-        if not (organization and repository_id and project):
-            raise DemistoException(PARAMETERS_ERROR_MSG)
-    else:
-        if not (organization and project):
-            raise DemistoException(PARAMETERS_ERROR_MSG_2)
+    if is_organization_required and not organization:
+        missing_arguments.append("organization name")
+
+    if is_repository_id_required and not repository_id:
+        missing_arguments.append("repository_id / repository")
+
+    if not project:
+        missing_arguments.append("project")
+
+    if missing_arguments:
+        raise DemistoException(PARAMETERS_ERROR_MSG.format(args=", ".join(missing_arguments)))
 
     return OrgRepoProject(organization=organization, repository=repository_id, project=project)
 
