@@ -2053,8 +2053,11 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     batch_dbot_scores = []
     results_reader = results.JSONResultsReader(io.BufferedReader(ResponseReaderWrapper(current_batch_of_results)))
     for item in results_reader:
-        if handle_message(item):
-            continue
+        if isinstance(item, results.Message):
+            if "Error in" in item.message:
+                raise ValueError(item.message)
+            demisto.debug(f"Splunk-SDK message: {item.message}")
+            parsed_batch_results.append(convert_to_str(item.message))
 
         elif isinstance(item, dict):
             if demisto.get(item, 'host'):
@@ -2639,7 +2642,7 @@ def handle_message(item: results.Message | dict) -> bool:
 
     """
     if isinstance(item, results.Message):
-        demisto.info(f"Splunk-SDK message: {item.message}")
+        demisto.debug(f"Splunk-SDK message: {item.message}")
         return True
     return False
 

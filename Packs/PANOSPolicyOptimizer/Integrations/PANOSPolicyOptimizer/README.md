@@ -1,5 +1,6 @@
 Automate your AppID Adoption by using this integration together with your Palo Alto Networks Next-Generation Firewall or Panorama.
-This integration was integrated and tested with version 8 up to version 10.1.6 and version 10.2.0 of PAN-OS Policy Optimizer.
+This integration was integrated and tested with version 8 up to 10.1.6 of PAN-OS Policy Optimizer, later versions may not work.
+
 Moved to beta due to the lack of a formal API.
 
 ## Configure PAN-OS Policy Optimizer on Cortex XSOAR (beta)
@@ -32,9 +33,7 @@ Gets the Policy Optimizer statistics.
 `pan-os-po-get-stats`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| position | Whether to get pre-rules statistics or post-rules statistics. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -89,9 +88,7 @@ Shows all security policies with no apps specified.
 `pan-os-po-no-apps`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| position | Whether to get pre-rules with no apps or post-rules with no apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -186,8 +183,6 @@ Shows all security policies with no apps specified.
 >| pano_rule | uuid | allow | a test rule for the move function | member: any | member: any |
 
 
-
-
 ### pan-os-po-unused-apps
 ***
 Gets the unused apps.
@@ -198,9 +193,7 @@ Gets the unused apps.
 `pan-os-po-unused-apps`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| position | Whether to get pre-rules unused apps or post-rules unused apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances. Possible values are: pre, post. Default is pre. | Optional | 
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -214,7 +207,7 @@ Gets the unused apps.
 
 #### Human Readable Output
 
-
+>No Rules with unused apps were found.
 
 ### pan-os-po-get-rules
 ***

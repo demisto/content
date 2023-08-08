@@ -1,6 +1,6 @@
 from CommonServerPython import *
+from typing import List, Dict, Tuple, Union
 import urllib3
-from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,7 +13,7 @@ EVENT_HEADERS = ['Subject', 'Organizer', 'Attendees', 'Start', 'End', 'ID']
 CALENDAR_HEADERS = ['Name', 'Owner Name', 'Owner Address', 'ID']
 
 
-def camel_case_to_readable(cc: str | dict, fields_to_drop: list[str] = None) -> str | dict:
+def camel_case_to_readable(cc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
     """
     'camelCase' -> 'Camel Case' (text or dictionary keys)
 
@@ -31,12 +31,12 @@ def camel_case_to_readable(cc: str | dict, fields_to_drop: list[str] = None) -> 
             return 'ID'
         return ''.join(' ' + char if char.isupper() else char.strip() for char in cc).strip().title()
 
-    elif isinstance(cc, dict):
+    elif isinstance(cc, Dict):
         return {camel_case_to_readable(field): value for field, value in cc.items() if field not in fields_to_drop}
     return cc
 
 
-def snakecase_to_camelcase(sc: str | dict, fields_to_drop: list[str] = None) -> str | dict:
+def snakecase_to_camelcase(sc: Union[str, Dict], fields_to_drop: List[str] = None) -> Union[str, Dict]:
     """
     'snake_case' -> 'snakeCase' (text or dictionary keys)
 
@@ -52,12 +52,12 @@ def snakecase_to_camelcase(sc: str | dict, fields_to_drop: list[str] = None) -> 
     if isinstance(sc, str):
         return ''.join([word.title() for word in sc.split('_')])
 
-    elif isinstance(sc, dict):
+    elif isinstance(sc, Dict):
         return {snakecase_to_camelcase(field): value for field, value in sc.items() if field not in fields_to_drop}
     return sc
 
 
-def parse_events(raw_events: dict | list[dict]) -> tuple[list[dict], list[dict]]:
+def parse_events(raw_events: Union[Dict, List[Dict]]) -> Tuple[List[Dict], List[Dict]]:
     """
     Parse Calendar Events json data coming from Microsoft Graph into Demisto readable format
     :param raw_events: raw events data
@@ -69,7 +69,7 @@ def parse_events(raw_events: dict | list[dict]) -> tuple[list[dict], list[dict]]
 
     readable_events, context_output = [], []
     for event in raw_events:
-        event_readable: dict = camel_case_to_readable(event, fields_to_drop)  # type: ignore
+        event_readable: Dict = camel_case_to_readable(event, fields_to_drop)  # type: ignore
         if '@removed' in event:
             event_readable['Status'] = 'deleted'
         event_context = {field.replace(' ', ''): value for field, value in event_readable.items()}
@@ -88,7 +88,7 @@ def parse_events(raw_events: dict | list[dict]) -> tuple[list[dict], list[dict]]
     return readable_events, context_output
 
 
-def parse_calendar(raw_calendars: dict | list[dict]) -> tuple[list[dict], list[dict]]:
+def parse_calendar(raw_calendars: Union[Dict, List[Dict]]) -> Tuple[List[Dict], List[Dict]]:
     """
     Parse Calendar json data coming from Microsoft Graph into Demisto readable format
     :param raw_calendars: raw calendars data
@@ -98,7 +98,7 @@ def parse_calendar(raw_calendars: dict | list[dict]) -> tuple[list[dict], list[d
 
     readable_calendars, context_output = [], []
     for raw_calendar in raw_calendars:
-        readable_calendar: dict = camel_case_to_readable(raw_calendar, ['@odata.context', 'color'])  # type: ignore
+        readable_calendar: Dict = camel_case_to_readable(raw_calendar, ['@odata.context', 'color'])  # type: ignore
         if '@removed' in readable_calendar:
             readable_calendar['Status'] = 'deleted'
         context_calendar = {field.replace(' ', ''): value for field, value in readable_calendar.items()}
@@ -116,9 +116,9 @@ def parse_calendar(raw_calendars: dict | list[dict]) -> tuple[list[dict], list[d
 
 
 def process_event_params(body: str = '', start: str = '', end: str = '', time_zone: str = '',
-                         attendees: str = '', location: str = '', **other_params) -> dict:
+                         attendees: str = '', location: str = '', **other_params) -> Dict:
     # some parameters don't need any processing
-    event_params: dict[str, str | dict | list[dict]] = other_params
+    event_params: Dict[str, Union[str, Dict, List[Dict]]] = other_params
 
     event_params['body'] = {"content": body}
     event_params['location'] = {"displayName": location}
@@ -140,10 +140,7 @@ class MsGraphClient:
                                          proxy=proxy, self_deployed=self_deployed,
                                          certificate_thumbprint=certificate_thumbprint, private_key=private_key,
                                          managed_identities_client_id=managed_identities_client_id,
-                                         managed_identities_resource_uri=Resources.graph,
-                                         command_prefix="msgraph-calendar",
-                                         )
-
+                                         managed_identities_resource_uri=Resources.graph)
         self.default_user = default_user
 
     def test_function(self):
@@ -155,7 +152,7 @@ class MsGraphClient:
         self.ms_client.http_request(method='GET', url_suffix='users/')
         return 'ok', NO_OUTPUTS, NO_OUTPUTS
 
-    def get_calendar(self, user: str, calendar_id: str = None) -> dict:
+    def get_calendar(self, user: str, calendar_id: str = None) -> Dict:
         """Returns a single calendar by sending a GET request.
 
         Args:
@@ -172,7 +169,7 @@ class MsGraphClient:
         return calendar_raw
 
     def list_calendars(self, user: str, order_by: str = None, next_link: str = None, top: int = DEFAULT_PAGE_SIZE,
-                       filter_by: str = None) -> dict:
+                       filter_by: str = None) -> Dict:
         """
         Lists all calendars by sending a GET request.
 
@@ -203,7 +200,7 @@ class MsGraphClient:
         return calendars
 
     def list_events(self, user: str, calendar_id: str = '', order_by: str = None, next_link: str = None,
-                    top: int = DEFAULT_PAGE_SIZE, filter_by: str = None) -> dict:
+                    top: int = DEFAULT_PAGE_SIZE, filter_by: str = None) -> Dict:
         """
         Returns all events by sending a GET request.
 
@@ -230,7 +227,7 @@ class MsGraphClient:
                 params=params)
         return events
 
-    def get_event(self, user: str, event_id: str) -> dict:
+    def get_event(self, user: str, event_id: str) -> Dict:
         """
         Create a single event in a user calendar, or the default calendar of an Office 365 group.
 
@@ -242,7 +239,7 @@ class MsGraphClient:
 
         return event
 
-    def create_event(self, user: str, calendar_id: str = '', **kwargs) -> dict:
+    def create_event(self, user: str, calendar_id: str = '', **kwargs) -> Dict:
         """
         Create a single event in a user calendar, or the default calendar of an Office 365 group.
 
@@ -275,7 +272,7 @@ class MsGraphClient:
             )
         return event
 
-    def update_event(self, user: str, event_id: str, **kwargs) -> dict:
+    def update_event(self, user: str, event_id: str, **kwargs) -> Dict:
         """
         Create a single event in a user calendar, or the default calendar of an Office 365 group.
 
@@ -318,7 +315,7 @@ class MsGraphClient:
         )
 
 
-def list_events_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def list_events_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Lists all events and return outputs in Demisto's format.
 
@@ -352,7 +349,7 @@ def list_events_command(client: MsGraphClient, args: dict) -> tuple[str, dict, d
     return human_readable, entry_context, events
 
 
-def get_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def get_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Retrieves an event by event id and return outputs in Demisto's format
 
@@ -374,7 +371,7 @@ def get_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dic
     return human_readable, entry_context, event
 
 
-def create_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def create_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Creates an event by event id and return outputs in Demisto's format
 
@@ -383,7 +380,7 @@ def create_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, 
         args: Usually demisto.args()
     """
     args = process_event_params(**args)
-    params: dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id'])  # type: ignore
+    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id'])  # type: ignore
 
     # create the event
     event = client.create_event(user=args.get('user', ''), calendar_id=args.get('calendar_id', ''), **params)
@@ -400,7 +397,7 @@ def create_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, 
     return human_readable, entry_context, event
 
 
-def update_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def update_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Get a event by event id and return outputs in Demisto's format.
 
@@ -410,7 +407,7 @@ def update_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, 
     """
     event_id = args.get('event_id', '')
     args = process_event_params(**args)
-    params: dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id', 'event_id'])  # type: ignore
+    params: Dict = snakecase_to_camelcase(args, fields_to_drop=['user', 'calendar_id', 'event_id'])  # type: ignore
 
     # update the event
     event = client.update_event(user=args.get('user', ''), event_id=args.get('event_id', ''), **params)
@@ -427,7 +424,7 @@ def update_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, 
     return human_readable, entry_context, event
 
 
-def delete_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def delete_event_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Delete an event by event id and return outputs in Demisto's format
 
@@ -451,7 +448,7 @@ def delete_event_command(client: MsGraphClient, args: dict) -> tuple[str, dict, 
     return human_readable, entry_context, NO_OUTPUTS
 
 
-def list_calendars_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def list_calendars_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Get all the user's calendars (/calendars navigation property)
 
@@ -476,7 +473,7 @@ def list_calendars_command(client: MsGraphClient, args: dict) -> tuple[str, dict
     return human_readable, entry_context, calendar
 
 
-def get_calendar_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def get_calendar_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Get the properties and relationships of a calendar object.
     The calendar can be one for a user, or the default calendar of an Office 365 group.
@@ -502,7 +499,7 @@ def get_calendar_command(client: MsGraphClient, args: dict) -> tuple[str, dict, 
     return human_readable, entry_context, calendar
 
 
-def module_test_function_command(client: MsGraphClient, args: dict) -> tuple[str, dict, dict]:
+def module_test_function_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     Performs a basic GET request to check if the API is reachable and authentication is successful.
 
@@ -542,7 +539,7 @@ def main():
         'msgraph-calendar-get-event': get_event_command,
         'msgraph-calendar-create-event': create_event_command,
         'msgraph-calendar-update-event': update_event_command,
-        'msgraph-calendar-delete-event': delete_event_command,
+        'msgraph-calendar-delete-event': delete_event_command
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -555,17 +552,16 @@ def main():
                                               managed_identities_client_id=managed_identities_client_id)
         if 'user' not in demisto.args():
             demisto.args()['user'] = client.default_user
-        if command == 'msgraph-calendar-auth-reset':
-            return_results(reset_auth())
-        else:
-            # Run the command
-            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-            # create a war room entry
-            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+        # Run the command
+        human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
+        # create a war room entry
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
         return_error(str(err))
 
+
+from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

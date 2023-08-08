@@ -40,18 +40,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Endpoint Investigation Plan
-* Containment Plan
-* Ticket Management - Generic
-* Handle False Positive Alerts
 * NGFW Internal Scan
-* Block IP - Generic v3
+* Endpoint Investigation Plan
 * Recovery Plan
+* Block IP - Generic v3
+* Containment Plan
+* Handle False Positive Alerts
+* Ticket Management - Generic
 
 ### Integrations
 
-* CortexCoreIR
 * CoreIOCs
+* CortexCoreIR
 
 ### Scripts
 
@@ -59,11 +59,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setParentIncidentFields
-* closeInvestigation
-* ip
-* abuseipdb-report-ip
 * send-mail
+* abuseipdb-report-ip
+* ip
+* closeInvestigation
+* setParentIncidentField
 
 ## Playbook Inputs
 

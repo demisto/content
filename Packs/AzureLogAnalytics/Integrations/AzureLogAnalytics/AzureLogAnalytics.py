@@ -1,8 +1,8 @@
-# IMPORTS
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from MicrosoftApiModule import *  # noqa: E402
+# IMPORTS
+
 import urllib3
 
 # Disable insecure warnings
@@ -32,6 +32,10 @@ class Client:
                  private_key, client_credentials, managed_identities_client_id=None):
 
         tenant_id = refresh_token if self_deployed else ''
+        # MicrosoftClient gets refresh_token_param as well as refresh_token which is the current refresh token from the
+        # integration context (if exists) so It will be possible to manually update the refresh token param for an
+        # existing integration instance.
+        refresh_token_param = refresh_token
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
@@ -39,6 +43,7 @@ class Client:
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,  # client_id for client credential
             refresh_token=refresh_token,
+            refresh_token_param=refresh_token_param,
             enc_key=enc_key,  # client_secret for client credential
             redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
@@ -56,8 +61,7 @@ class Client:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure,
-            command_prefix="azure-log-analytics",
+            managed_identities_resource_uri=Resources.management_azure
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
@@ -99,7 +103,7 @@ def format_query_table(table):
     columns = [column.get('name') for column in table.get('columns')]
     rows = table.get('rows')
     data = [
-        dict(zip(columns, row)) for row in rows
+        {k: v for k, v in zip(columns, row)} for row in rows
     ]
 
     return name, columns, data
@@ -153,10 +157,10 @@ def tags_arg_to_request_format(tags):
 
 
 def test_connection(client, params):
-    if not client.ms_client.managed_identities_client_id \
-        and (params.get('self_deployed', False) and not params.get('client_credentials')
-             and not (params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
+    if not client.ms_client.managed_identities_client_id:
+        if (params.get('self_deployed', False) and not params.get('client_credentials')
+           and not(params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
+            return_error('You must enter an authorization code in a self-deployed configuration.')
 
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     try:
@@ -369,7 +373,7 @@ def main():
             'azure-log-analytics-list-saved-searches': list_saved_searches_command,
             'azure-log-analytics-get-saved-search-by-id': get_saved_search_by_id_command,
             'azure-log-analytics-create-or-update-saved-search': create_or_update_saved_search_command,
-            'azure-log-analytics-delete-saved-search': delete_saved_search_command,
+            'azure-log-analytics-delete-saved-search': delete_saved_search_command
         }
 
         if demisto.command() == 'test-module':
@@ -388,14 +392,14 @@ def main():
             test_connection(client, params)
             return_outputs('```✅ Success!```')
 
-        elif demisto.command() == 'azure-log-analytics-auth-reset':
-            return_results(reset_auth())
-
         elif demisto.command() in commands:
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

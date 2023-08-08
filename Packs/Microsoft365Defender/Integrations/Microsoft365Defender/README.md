@@ -136,7 +136,8 @@ There is no context output for this command.
 
 ### microsoft-365-defender-auth-reset
 ***
-Run this command if for some reason you need to rerun the authentication process.
+Run this command if you need to rerun the authentication process. (for device-code mode)
+
 
 #### Base Command
 

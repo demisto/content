@@ -6,6 +6,7 @@ import logging.handlers
 import ssl
 import threading
 from distutils.util import strtobool
+from typing import Tuple
 
 import aiohttp
 import slack_sdk
@@ -33,7 +34,7 @@ USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
 GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
-ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
+ENTITLEMENT_REGEX = r'{}@(({})|(?:[\d_]+))_*(\|\S+)?\b'.format(GUID_REGEX, GUID_REGEX)
 COMMAND_REGEX = r"command.*?(?=;)"
 MESSAGE_FOOTER = '\n**From Slack**'
 MIRROR_TYPE = 'mirrorEntry'
@@ -41,7 +42,7 @@ INCIDENT_OPENED = 'incidentOpened'
 INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 WARNING_ENTRY_TYPE = 11
-POLL_INTERVAL_MINUTES: Dict[tuple, float] = {
+POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
     (0, 15): 1,
     (15, 60): 2,
     (60,): 5
@@ -58,7 +59,6 @@ MAX_SAMPLES = 10
 
 ''' GLOBALS '''
 
-USER_TOKEN: str
 BOT_TOKEN: str
 APP_TOKEN: str
 PROXY_URL: Optional[str]
@@ -66,7 +66,6 @@ PROXIES: dict
 DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
 CLIENT: slack_sdk.WebClient
-USER_CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
@@ -120,12 +119,8 @@ def test_module():
         return_error("Invalid Bot Token.")
     if not APP_TOKEN.startswith("xapp"):
         return_error("Invalid App Token.")
-    if USER_TOKEN and not USER_TOKEN.startswith("xoxp"):
-        return_error("Invalid User Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
-        if USER_TOKEN:
-            USER_CLIENT.auth_test()
     else:
         channel = get_conversation_by_name(DEDICATED_CHANNEL)
         if not channel:
@@ -746,7 +741,7 @@ def mirror_investigation():
             channel_topic = channel_mirror['channel_topic']
         else:
             channel_topic = ''
-        mirrored_investigations_ids = [f'incident-{m["investigation_id"]}' for m in channel_filter]
+        mirrored_investigations_ids = list(map(lambda m: f'incident-{m["investigation_id"]}', channel_filter))
         if not channel_topic or channel_topic.find('incident-') != -1:
             new_topic = ', '.join(mirrored_investigations_ids + [mirror_name])
             if channel_topic != new_topic:
@@ -975,7 +970,7 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
     return slack_users
 
 
-def extract_entitlement(entitlement: str, text: str) -> tuple[str, str, str, str]:
+def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str]:
     """
     Extracts entitlement components from an entitlement string
     Args:
@@ -1109,7 +1104,10 @@ async def handle_dm(user: dict, text: str, client: AsyncWebClient):
                                            or message.find('new') != -1):
         user_email = user.get('profile', {}).get('email', '')
         user_name = user.get('name', '')
-        demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=user.get('name'))
+        if user_email:
+            demisto_user = demisto.findUser(email=user_email)
+        else:
+            demisto_user = demisto.findUser(username=user.get('name'))
 
         if not demisto_user and not ALLOW_INCIDENTS:
             data = 'You are not allowed to create incidents.'
@@ -1261,7 +1259,10 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
             labels.append({'type': 'Source', 'value': 'Slack'})
         incident['labels'] = labels
 
-    data = demisto.createIncidents(incidents, userID=user_demisto_id) if user_demisto_id else demisto.createIncidents(incidents)
+    if user_demisto_id:
+        data = demisto.createIncidents(incidents, userID=user_demisto_id)
+    else:
+        data = demisto.createIncidents(incidents)
 
     return data
 
@@ -1279,7 +1280,10 @@ def is_bot_message(data: dict) -> bool:
         return True
     elif event.get('subtype') == 'bot_message':
         return True
-    return bool(not (event.get('user') or data.get('user', {}).get('id') or data.get('envelope_id')))
+    elif not (event.get('user') or data.get('user', {}).get('id') or data.get('envelope_id')):
+        return True
+    else:
+        return False
 
 
 async def get_user_details(user_id: str) -> AsyncSlackResponse:
@@ -1351,7 +1355,7 @@ def is_dm(channel: str) -> bool:
     :param channel: str: The channel ID to check.
     :return: bool: Boolean indicating if the channel is a DM or not.
     """
-    return bool(channel and channel[0] == 'D' and ENABLE_DM)
+    return True if channel and channel[0] == 'D' and ENABLE_DM else False
 
 
 async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
@@ -1409,7 +1413,7 @@ def fetch_context(force_refresh: bool = False) -> dict:
     """
     global CACHED_INTEGRATION_CONTEXT, CACHE_EXPIRY
     now = int(datetime.now(timezone.utc).timestamp())
-    if (now >= CACHE_EXPIRY) or force_refresh:
+    if (CACHE_EXPIRY <= now) or force_refresh:
         demisto.debug(f'Cached context has expired or forced refresh. forced refresh value is {force_refresh}. '
                       f'Fetching new context')
         CACHE_EXPIRY = next_expiry_time()
@@ -1427,7 +1431,7 @@ def handle_newly_created_channel(creator, channel):
     :param creator: User ID of the creator of the new channel.
     :return: None
     """
-    if creator == BOT_ID:
+    if BOT_ID == creator:
         if 'mirrors' in CACHED_INTEGRATION_CONTEXT:
             mirrors = json.loads(CACHED_INTEGRATION_CONTEXT['mirrors'])
             if len(mirrors) == 0:
@@ -1669,7 +1673,6 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
 def search_conversation_in_params(conversation_to_search):
     if conversation_to_search in COMMON_CHANNELS:
         return {'name': conversation_to_search, 'id': COMMON_CHANNELS[conversation_to_search]}
-    return None
 
 
 def search_conversation_in_context(conversation_to_search):
@@ -1819,9 +1822,10 @@ def slack_send():
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
-    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES) and message_type != MIRROR_TYPE:
-        demisto.info(f"Message type is not in permitted options. Received: {message_type}")
-        return
+    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
+        if message_type != MIRROR_TYPE:
+            demisto.info(f"Message type is not in permitted options. Received: {message_type}")
+            return
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
@@ -2167,8 +2171,9 @@ def slack_send_request(to: str = None, channel: str = None, group: str = None, e
 
     integration_context = get_integration_context(SYNC_CONTEXT)
     mirrors: list = []
-    if integration_context and 'mirrors' in integration_context:
-        mirrors = json.loads(integration_context['mirrors'])
+    if integration_context:
+        if 'mirrors' in integration_context:
+            mirrors = json.loads(integration_context['mirrors'])
 
     destinations = []
 
@@ -2239,7 +2244,7 @@ def set_channel_topic():
             set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
-        channel_id = channel_id if channel_id else channel.get('id')
+        channel_id = channel.get('id') if not channel_id else channel_id
 
     if not channel_id:
         return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
@@ -2275,7 +2280,7 @@ def rename_channel():
             set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
-        channel_id = channel_id if channel_id else channel.get('id')
+        channel_id = channel.get('id') if not channel_id else channel_id
 
     if not channel_id:
         return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
@@ -2312,7 +2317,7 @@ def close_channel():
         set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
-        channel_id = channel_id if channel_id else channel.get('id')
+        channel_id = channel.get('id') if not channel_id else channel_id
 
     if not channel_id:
         return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
@@ -2360,7 +2365,7 @@ def create_channel():
     if users:
         slack_users = search_slack_users(users)
         invite_users_to_conversation(conversation.get('id'),  # type: ignore
-                                     [u.get('id') for u in slack_users])
+                                     list(map(lambda u: u.get('id'), slack_users)))
     if topic:
         body = {
             'channel': conversation.get('id'),
@@ -2411,7 +2416,7 @@ def invite_to_channel():
         return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     slack_users = search_slack_users(users)
     if slack_users:
-        invite_users_to_conversation(channel_id, [u.get('id') for u in slack_users])
+        invite_users_to_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
     else:
         return_error('No users found')
 
@@ -2435,7 +2440,7 @@ def kick_from_channel():
         return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
     slack_users = search_slack_users(users)
     if slack_users:
-        kick_users_from_conversation(channel_id, [u.get('id') for u in slack_users])
+        kick_users_from_conversation(channel_id, list(map(lambda u: u.get('id'), slack_users)))
     else:
         return_error('No users were found')
 
@@ -2485,7 +2490,10 @@ def slack_edit_message():
 
     if not channel:
         mirror = find_mirror_by_investigation()
-        channel_id = mirror['channel_id'] if mirror else channel_id if channel_id else channel.get('id')
+        if mirror:
+            channel_id = mirror['channel_id']
+        else:
+            channel_id = channel.get('id') if not channel_id else channel_id
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -2551,7 +2559,10 @@ def pin_message():
 
     if not channel:
         mirror = find_mirror_by_investigation()
-        channel_id = mirror['channel_id'] if mirror else channel_id if channel_id else channel.get('id')
+        if mirror:
+            channel_id = mirror['channel_id']
+        else:
+            channel_id = channel.get('id') if not channel_id else channel_id
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id')
@@ -2591,9 +2602,7 @@ def init_globals(command_name: str = ''):
     """
     Initializes global variables according to the integration parameters
     """
-
-    global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, USER_CLIENT, \
-        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, USER_TOKEN
+    global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
@@ -2611,13 +2620,11 @@ def init_globals(command_name: str = ''):
 
     BOT_TOKEN = demisto.params().get('bot_token', {}).get('password', '')
     APP_TOKEN = demisto.params().get('app_token', {}).get('password', '')
-    USER_TOKEN = demisto.params().get('user_token', {}).get('password', '')
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel', None)
     ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
-    USER_CLIENT = slack_sdk.WebClient(token=USER_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
     INCIDENT_TYPE = demisto.params().get('incidentType')
@@ -2637,7 +2644,10 @@ def init_globals(command_name: str = ''):
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)
-    COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(',')) if common_channels else {}
+    if common_channels:
+        COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
+    else:
+        COMMON_CHANNELS = {}
     DISABLE_CACHING = demisto.params().get('disable_caching', False)
 
     # Formats the error message for the 'Channel Not Found' errors
@@ -2734,19 +2744,6 @@ def slack_get_integration_context_statistics():
     return context_statistics, integration_context
 
 
-def user_session_reset():
-    user_id = demisto.args().get('user_id')
-    body = {
-        'user_id': user_id,
-    }
-    try:
-        send_slack_request_sync(USER_CLIENT, 'admin.users.session.reset', body=body)
-        return_results(CommandResults(readable_output=f"The session was reset successfully to the user {user_id}."))
-
-    except SlackApiError as slack_error:
-        return_error(f"{slack_error}")
-
-
 def fetch_samples():
     """
     The integration fetches incidents in the long-running-execution command. Fetch incidents is called
@@ -2760,7 +2757,7 @@ def main() -> None:
     """
     Main
     """
-    global CLIENT, USER_CLIENT, EXTENSIVE_LOGGING
+    global CLIENT, EXTENSIVE_LOGGING
 
     commands = {
         'test-module': test_module,
@@ -2778,8 +2775,7 @@ def main() -> None:
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
-        'slack-pin-message': pin_message,
-        'slack-user-session-reset': user_session_reset
+        'slack-pin-message': pin_message
     }
 
     command_name: str = demisto.command()

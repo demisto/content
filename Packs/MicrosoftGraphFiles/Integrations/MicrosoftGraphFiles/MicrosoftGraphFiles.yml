@@ -8,6 +8,7 @@ configuration:
   name: host
   required: true
   type: 0
+
 - display: ID (received from the admin consent - see Detailed Instructions)
   name: auth_id
   type: 4
@@ -74,8 +75,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure Application
+- display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
   required: false
@@ -635,11 +635,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  - description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
-    name: msgraph-files-auth-reset
-    arguments: []
-  dockerimage: demisto/python_pancloud:1.0.0.66801
+  dockerimage: demisto/python_pancloud:1.0.0.60733
   script: ''
   subtype: python3
   type: python

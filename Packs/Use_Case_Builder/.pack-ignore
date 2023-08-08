@@ -133,7 +133,3 @@ ignore=IF113
 
 [file:Use_Case_Builder.yml]
 ignore=PB105
-
-[known_words]
-NGFW
-SEIM

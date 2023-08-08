@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "A case where all numeral arguments are zero is no longer acceptable in GeneratePassword script."
-}

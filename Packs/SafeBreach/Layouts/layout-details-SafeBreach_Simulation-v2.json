@@ -325,6 +325,5 @@
         "typeId": "SafeBreach Simulation",
         "version": -1
     },
-    "toVersion": "5.9.9",
-    "description": ""
+    "toVersion": "5.9.9"
 }

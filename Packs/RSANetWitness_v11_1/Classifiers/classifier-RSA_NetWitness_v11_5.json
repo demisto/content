@@ -77,9 +77,6 @@
                 "severity": {
                     "complex": null,
                     "simple": "priority"
-                },
-                "RSA Alerts": {
-                    "simple": "alerts"
                 }
             }
         },

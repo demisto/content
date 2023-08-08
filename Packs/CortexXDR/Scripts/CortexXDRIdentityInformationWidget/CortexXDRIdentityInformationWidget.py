@@ -11,12 +11,7 @@ def get_identity_info() -> List[Dict]:
     users = demisto.get(context, 'AWS.IAM.Users')
     if not users:
         raise DemistoException('AWS users are not in context')
-    if isinstance(users, dict):
-        access_keys = users.get('AccessKeys', [])
-    else:
-        access_keys = users[0].get('AccessKeys', [])
-    if not isinstance(access_keys, list):
-        access_keys = [access_keys]
+    access_keys = users[0].get('AccessKeys', [])
     if not isinstance(alerts, list):
         alerts = [alerts]
     results = []

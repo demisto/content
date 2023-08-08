@@ -95,7 +95,11 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
 
-        body = email.get('body', {}).get('content', '') if self._display_full_email_body else email.get('bodyPreview', '')
+        if self._display_full_email_body:
+            body = email.get('body', {}).get('content', '')
+
+        else:
+            body = email.get('bodyPreview', '')
 
         incident = {
             'name': parsed_email['Subject'],
@@ -162,7 +166,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
 
         fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
                                                                      exclude_ids=exclude_ids)
-        incidents = [self._parse_email_as_incident(email, True) for email in fetched_emails]
+        incidents = list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails))
         next_run_time = self._get_next_run_time(fetched_emails, last_fetch)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
@@ -175,6 +179,11 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
         demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
         return next_run, incidents
+
+
+def reset_auth() -> str:
+    set_integration_context({})
+    return 'Authorization was reset successfully. Run **!msgraph-mail-test** to verify the authentication.'
 
 
 def main():     # pragma: no cover
@@ -216,7 +225,12 @@ def main():     # pragma: no cover
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+
+    # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the integration
+    # context (if exists) so It will be possible to manually update the refresh token param for an existing integration
+    # instance.
+    refresh_token_param = refresh_token  # Refresh token from the integration parameters (i.e current instance config)
+    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
 
     client = MsGraphListenerClient(
         self_deployed=self_deployed,
@@ -240,6 +254,7 @@ def main():     # pragma: no cover
         mark_fetched_read=mark_fetched_read,
         redirect_uri=params.get('redirect_uri', ''),
         certificate_thumbprint=certificate_thumbprint,
+        refresh_token_param=refresh_token_param,
         managed_identities_client_id=managed_identities_client_id)
     try:
         args = demisto.args()
@@ -256,7 +271,7 @@ def main():     # pragma: no cover
             client.test_connection()
             return_results(CommandResults(readable_output='```✅ Success!```'))
         if command == 'msgraph-mail-auth-reset':
-            return_results(reset_auth())
+            return_results(CommandResults(readable_output=reset_auth()))
         if command == 'fetch-incidents':
             next_run, incidents = client.fetch_incidents(demisto.getLastRun())
             demisto.setLastRun(next_run)

@@ -30,7 +30,7 @@ args:
   - 'incident attachment'
 comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.10.12.63474
 tags:
 - DemistoAPI
 timeout: '0'

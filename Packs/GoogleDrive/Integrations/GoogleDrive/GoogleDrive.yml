@@ -1588,13 +1588,9 @@ script:
       description: Page token for shared drives.
     - name: query
       description: Query string for searching shared drives.
-    - auto: PREDEFINED
-      defaultValue: "false"
-      name: use_domain_admin_access
+    - name: use_domain_admin_access
       description: "Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned."
-      predefined:
-      - "true"
-      - "false"
+      defaultValue: "false"
     - name: user_id
       description: The user's primary email address.
     outputs:
@@ -1682,13 +1678,9 @@ script:
   - name: google-drive-drive-get
     description: Gets a user shared drives.
     arguments:
-    - auto: PREDEFINED
-      defaultValue: "false"
-      name: use_domain_admin_access
+    - name: use_domain_admin_access
       description: "Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned."
-      predefined:
-      - "true"
-      - "false"
+      defaultValue: "false"
     - name: user_id
       description: The user's primary email address.
     - name: drive_id
@@ -2552,13 +2544,6 @@ script:
       predefined:
       - "true"
       - "false"
-    - auto: PREDEFINED
-      defaultValue: "false"
-      name: use_domain_admin_access
-      description: "Issue the request as a domain administrator. If set to true, all shared drives of the domain in which the requester is an administrator are returned."
-      predefined:
-      - "true"
-      - "false"
     outputs:
     - contextPath: GoogleDrive.FilePermission.FilePermission.deleted
       description: Whether the account associated with this permission has been deleted. This field only pertains to user and group permissions.
@@ -2701,7 +2686,7 @@ script:
       predefined:
       - "true"
       - "false"
-  dockerimage: demisto/googleapi-python3:1.0.0.66918
+  dockerimage: demisto/googleapi-python3:1.0.0.65068
   isfetch: true
   runonce: false
   script: "-"

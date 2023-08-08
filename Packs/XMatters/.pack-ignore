@@ -1,4 +1,5 @@
-
+[file:xMatters-Test.yml]
+ignore=auto-test
 
 [file:xMatters.yml]
 ignore=IN136

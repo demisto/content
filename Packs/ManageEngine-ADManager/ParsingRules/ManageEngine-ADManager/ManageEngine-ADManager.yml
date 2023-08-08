@@ -1,5 +1,5 @@
-name: ManageEngine ADManager Parsing Rule
-id: ManageEngine_ADManager_ParsingRule
+name: ManageEngine-ADManager Parsing Rule
+id: ManageEngine-ADManager_Parsing_Rule
 fromversion: 6.10.0
 tags: []
 rules: ''

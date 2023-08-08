@@ -1198,7 +1198,7 @@ script:
       type: integer
       description: The start position of the mention.
 
-  dockerimage: demisto/pyjwt3:1.0.0.67573
+  dockerimage: demisto/pyjwt3:1.0.0.65237
   script: "-"
   subtype: python3
   type: python

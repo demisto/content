@@ -73,8 +73,7 @@ configuration:
   name: unsecure
   type: 8
   required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure Application
+- display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
   required: false
@@ -561,11 +560,7 @@ script:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddressID
       description: The address ID.
       type: String
-  - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
-    name: azure-vm-auth-reset
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.62171
   runonce: false
   script: '-'
   subtype: python3

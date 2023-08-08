@@ -19,8 +19,7 @@ def test_reset_auth_command(mocker, requests_mock):
 
     main()
 
-    assert 'Authorization was reset successfully. Please regenerate the credentials, and ' \
-           'then click **Test** to validate the credentials and connection.' \
+    assert 'Authorization was reset successfully. Run **!msgraph-apps-start**' \
            in MicrosoftGraphApplications.return_results.call_args[0][0].readable_output
 
 

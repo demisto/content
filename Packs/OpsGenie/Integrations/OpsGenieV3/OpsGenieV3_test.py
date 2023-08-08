@@ -1,4 +1,5 @@
 import pytest
+import io
 
 from requests import Response
 
@@ -8,7 +9,7 @@ from unittest import mock
 
 
 def util_load_json(path, wrap_in_response=False):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         jsonres = json.loads(f.read())
         if wrap_in_response:
             res = Response()
@@ -1023,11 +1024,3 @@ def test_invite_user(mocker):
     mocker.patch.object(mock_client, 'invite_user', return_value=util_load_json('test_data/invite_user.json'))
     res = OpsGenieV3.invite_user(mock_client, {'username': "test@example.com", 'fullName': 'Test Example', 'role': 'user'})
     assert (res.raw_response == util_load_json('test_data/invite_user.json'))
-
-
-def test_get_team_routing_rules(mocker):
-    mock_client = OpsGenieV3.Client(base_url="")
-    mocker.patch.object(mock_client, 'get_team_routing_rules',
-                        return_value=util_load_json('test_data/get_team_routing_rules.json'))
-    res = OpsGenieV3.get_team_routing_rules(mock_client, {'team_id': " a6604a9f-b152-54c-b31-1b9741c109"})
-    assert (res.raw_response == util_load_json('test_data/get_team_routing_rules.json'))

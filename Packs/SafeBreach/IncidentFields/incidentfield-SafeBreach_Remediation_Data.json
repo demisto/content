@@ -3,6 +3,7 @@
     "associatedTypes": [
         "SafeBreach Insight"
     ],
+    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "safebreachremediationdata",
     "closeForm": false,
@@ -40,6 +41,7 @@
     ],
     "description": "Vendor specific remediation data for Insight resolution",
     "editForm": true,
+    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_safebreachremediationdata",
@@ -48,14 +50,19 @@
     "name": "SafeBreach Remediation Data",
     "neverSetAsRequired": false,
     "ownerOnly": false,
+    "placeholder": "",
     "required": false,
+    "script": "",
+    "selectValues": [],
     "sla": 0,
     "system": false,
+    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
+    "validationRegex": "",
     "version": -1,
     "fromVersion": "5.5.0"
 }

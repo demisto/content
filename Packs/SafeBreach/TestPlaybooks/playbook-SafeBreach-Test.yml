@@ -1,5 +1,5 @@
 id: playbook-SafeBreach-Test
-version: -1
+version: 17
 name: playbook-SafeBreach-Test
 starttaskid: "0"
 tasks:
@@ -13,7 +13,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -301,7 +300,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -362,7 +360,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-deprecated: true
-tests:
-- No tests (deprecated)
-description: Deprecated. No available replacement.

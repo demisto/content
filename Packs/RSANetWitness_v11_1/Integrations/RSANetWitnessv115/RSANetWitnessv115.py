@@ -1,4 +1,3 @@
-from requests import HTTPError
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -12,7 +11,6 @@ ERROR_TITLES = {
 
 }
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%MZ'
-DEFAULT_MAX_INCIDENT_ALERTS = 50
 
 
 class Client(BaseClient):
@@ -182,9 +180,9 @@ class Client(BaseClient):
             return_empty_response=True,
         )
 
-    def mft_download_request_request(self, agent_id: str | None, service_id: str | None, path: str | None) -> dict:
+    def mft_download_request_request(self, agent_id: str | None, service_id: str | None) -> dict:
         service_id = service_id or self.service_id
-        params = assign_params(serviceId=service_id, path=path)
+        params = assign_params(serviceId=service_id)
         return self._http_request(
             'POST',
             f'rest/api/host/{agent_id}/download/mft',
@@ -347,15 +345,7 @@ class Client(BaseClient):
         total = 0
         total_items: list[dict] = []
         while total < fetch_limit and page_number >= 0:
-            try:
-                response = self.list_incidents_request(page_size, page_number, until, timestamp)
-            except HTTPError as e:
-                if e.response is not None and e.response.status_code == 429:
-                    raise DemistoException(
-                        'Too many requests, try later or reduce the number of Fetch Limit parameter.'
-                    ) from e
-                raise e
-
+            response = self.list_incidents_request(page_size, page_number, until, timestamp)
             items = response.get('items', [])
             new_items = remove_duplicates_for_fetch(items, last_fetched_ids)
             # items order is from old to new , add new items at the start of list to maintain order
@@ -426,6 +416,7 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
         page_number = response.get('pageNumber')
         total_pages = response.get('totalPages')
         text = f'Total Retrieved Incidents : {len(items)}\n Page number {page_number} out of {total_pages} '
+
     output = prepare_incidents_readable_items(items)
     humanReadable = tableToMarkdown(text, output, ['Id', 'Title', 'Summary', 'Priority', 'RiskScore', 'Status',
                                                    'AlertCount', 'Created', 'LastUpdated', 'Assignee', 'Sources',
@@ -729,10 +720,8 @@ def file_download_command(client: Client, args: dict[str, Any]) -> CommandResult
 def mft_download_request_command(client: Client, args: dict[str, Any]) -> CommandResults:
     agent_id = args.get('agent_id')
     service_id = args.get('service_id')
-    path = args.get('path')
 
-    client.mft_download_request_request(agent_id, service_id, path=path)
-
+    client.mft_download_request_request(agent_id, service_id)
     return CommandResults(
         readable_output=f'MFT download request for host {agent_id} sent successfully'
     )
@@ -804,55 +793,15 @@ def endpoint_isolation_remove_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
-def fetch_alerts_related_incident(client: Client, incident_id: str, max_alerts: int) -> list[dict[str, Any]]:
-    """
-    Returns the alerts that are associated with the given incident.
-    """
-    alerts: list[dict] = []
-    has_next = True
-    page_number = 0
-    while has_next and len(alerts) < max_alerts:
-        demisto.debug(f"fetching alerts, {page_number=}")
-        try:
-            response_body = client.incident_list_alerts_request(
-                page_number=str(page_number),
-                id_=incident_id,
-                page_size=None
-            )
-        except HTTPError as e:
-            if e.response is not None and e.response.status_code == 429:
-                raise DemistoException(
-                    'Too many requests, try later or reduce the number of Fetch Limit parameter.'
-                ) from e
-            raise e
-
-        except Exception:
-            demisto.error(f"Error occurred while fetching alerts related to {incident_id=}. {page_number=}")
-            raise
-
-        items = response_body.get('items', [])
-        alerts.extend(items[:max_alerts - len(alerts)])
-        page_number += 1
-        has_next = response_body.get('hasNext', False)
-
-    return alerts
-
-
-def fetch_incidents(client: Client, params: dict) -> list:
+def fetch_incidents(client: Client) -> list:
     total_items, last_fetched_ids, timestamp = client.get_incidents()
     incidents: list[dict] = []
     new_ids = []
     for item in total_items:
-        inc_id = item['id']
+        inc_id = item.get('id')
         new_ids.append(inc_id)
         item['incident_url'] = client.get_incident_url(inc_id)
-
-        # add to incident object an array of all related alerts
-        if params['import_alerts']:
-            max_alerts = min(arg_to_number(params.get('max_alerts')) or DEFAULT_MAX_INCIDENT_ALERTS, DEFAULT_MAX_INCIDENT_ALERTS)
-            item['alerts'] = fetch_alerts_related_incident(client, inc_id, max_alerts)
-
-        incident = {"name": f"RSA NetWitness 11.5 {inc_id} - {item.get('title')}",
+        incident = {"name": f"RSA NetWitness 11.5 {item.get('id')} - {item.get('title')}",
                     "occurred": item.get('created'),
                     "rawJSON": json.dumps(item)}
         # items arrived from last to first - change order
@@ -881,8 +830,8 @@ def is_new_run_time_equal_last_run_time(last_run_time: Any | None, new_run_time:
         last_run_datetime = arg_to_datetime(last_run_time)
         new_datetime = arg_to_datetime(new_run_time)
 
-    except ValueError as e:
-        raise DemistoException("Incorrect date time in fetch") from e
+    except ValueError:
+        raise DemistoException("Incorrect date time in fetch")
 
     return last_run_datetime == new_datetime
 
@@ -1208,7 +1157,7 @@ def main() -> None:
         if command == 'test-module':
             test_module(client, params)
         elif command == 'fetch-incidents':
-            incidents = fetch_incidents(client, params)
+            incidents = fetch_incidents(client)
             demisto.incidents(incidents)
         elif command in commands:
             return_results(commands[command](client, args))

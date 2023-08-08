@@ -49,8 +49,7 @@ The EWS integration can be used for the following use cases.
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**  
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**
-    *   **Use a self deployed Azure Application**: Select this checkbox if you are using a self-deployed Azure application.
-
+    *   **Use a self deployed Azure Application**
 4.  Click **Test** to validate the URLs, token, and connection.
 
 ## Authentication

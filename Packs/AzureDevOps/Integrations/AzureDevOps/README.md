@@ -133,7 +133,8 @@ There is no context output for this command.
 
 ### azure-devops-auth-reset
 ***
-Run this command if for some reason you need to rerun the authentication process.
+Run this command if you need to rerun the authentication process for some reason.
+
 
 #### Base Command
 

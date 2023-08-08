@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 import ast
-from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -42,7 +41,7 @@ SECURE_STORES_API_VERSION = "2020-01-01"
 
 # Format ports in JIT access policy rule to (portNum, protocol, allowedAddress, maxDuration)
 def format_jit_port_rule(ports):
-    port_array = []
+    port_array = list()
     for port in ports:
         # for each item in unicode, has to use str to decode to ascii
         p_num = str(port.get("number"))
@@ -59,7 +58,7 @@ def format_jit_port_rule(ports):
 
 # Format ports in JIT access request to (portNum, allowedAddress, endTime, status)
 def format_jit_port_request(ports):
-    port_array = []
+    port_array = list()
     for port in ports:
         # for each item in unicode, has to use str to decode to ascii
         p_num = str(port.get("number"))
@@ -101,9 +100,7 @@ class MsClient:
             ok_codes=ok_codes, scope="https://management.azure.com/.default",
             certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure,
-            command_prefix="azure-sc"
-        )
+            managed_identities_resource_uri=Resources.management_azure)
         self.server = server
         self.subscription_id = subscription_id
 
@@ -429,7 +426,7 @@ def get_alert_command(client: MsClient, args: dict):
     asc_location = args.get("asc_location")
     alert_id = args.get("alert_id")
     alert = client.get_alert(resource_group_name, asc_location, alert_id)
-    final_output = []
+    final_output = list()
 
     # Basic Property Table
     properties = alert.get("properties")
@@ -498,7 +495,7 @@ def get_alert_command(client: MsClient, args: dict):
                 and alert.get("properties")
                 and alert.get("properties").get("extendedProperties")
         ):
-            extended_properties = {}
+            extended_properties = dict()
             properties = alert.get("properties")
             if isinstance(properties.get("extendedProperties"), dict):
                 for key, value in alert["properties"]["extendedProperties"].items():
@@ -518,30 +515,31 @@ def get_alert_command(client: MsClient, args: dict):
 
             # Entities Table
             entities = properties.get("entities")
-            if entities and isinstance(entities, dict):
-                entities_table_output = []
-                for entity in entities:
-                    entities_table_output.append(
-                        {
-                            "Content": ast.literal_eval(str(entity)),
-                            "Type": entity["type"],
-                        }
+            if entities:
+                if isinstance(entities, dict):
+                    entities_table_output = list()
+                    for entity in entities:
+                        entities_table_output.append(
+                            {
+                                "Content": ast.literal_eval(str(entity)),
+                                "Type": entity["type"],
+                            }
+                        )
+
+                    md = tableToMarkdown(
+                        "Azure Security Center - Get Alert - Entity",
+                        entities_table_output,
+                        removeNull=True,
                     )
 
-                md = tableToMarkdown(
-                    "Azure Security Center - Get Alert - Entity",
-                    entities_table_output,
-                    removeNull=True,
-                )
-
-                entities_table_entry = {
-                    "Type": entryTypes["note"],
-                    "Contents": alert.get("properties").get("entities"),
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": md,
-                }
-                final_output.append(entities_table_entry)
+                    entities_table_entry = {
+                        "Type": entryTypes["note"],
+                        "Contents": alert.get("properties").get("entities"),
+                        "ContentsFormat": formats["json"],
+                        "ReadableContentsFormat": formats["markdown"],
+                        "HumanReadable": md,
+                    }
+                    final_output.append(entities_table_entry)
     demisto.results(final_output)
 
 
@@ -561,7 +559,7 @@ def list_alerts_command(client: MsClient, args: dict):
     alerts = client.list_alerts(
         resource_group_name, asc_location, filter_query, select_query, expand_query
     ).get("value")
-    outputs = []
+    outputs = list()
     for alert in alerts:
         properties = alert.get("properties")
         if properties:
@@ -626,7 +624,7 @@ def list_locations_command(client: MsClient):
     """Getting all locations
     """
     locations = client.list_locations().get("value")
-    outputs = []
+    outputs = list()
     if locations:
         for location in locations:
             if location.get("properties") and location.get("properties").get(
@@ -650,7 +648,6 @@ def list_locations_command(client: MsClient):
             )
             ec = {"AzureSecurityCenter.Location(val.ID && val.ID === obj.ID)": outputs}
             return md, ec, locations
-        return None
     else:
         return "No locations found", None, None
 
@@ -830,7 +827,7 @@ def list_ipp_command(client: MsClient, args: dict):
     """
     management_group = args.get("management_group")
     policies = client.list_ipp(management_group).get("value")
-    outputs = []
+    outputs = list()
     if policies:
         for policy in policies:
             if policy.get("properties") and policy.get("properties").get("labels"):
@@ -926,7 +923,7 @@ def get_ipp_command(client: MsClient, args: dict):
         }
 
         # Information Type table
-        info_type_table_output = []
+        info_type_table_output = list()
         for information_type_data in properties.get("informationTypes").values():
             keywords = ", ".join(
                 [(str(keyword.get("displayName")) + str(keyword.get("custom")) + str(keyword.get("canBeNumeric")))
@@ -955,7 +952,7 @@ def get_ipp_command(client: MsClient, args: dict):
         }
         demisto.results([basic_table_entry, info_type_table_entry])
     else:
-        demisto.results(f"No properties found in {management_group}")
+        demisto.results("No properties found in {}".format(management_group))
 
 
 """ Information Protection Policies End """
@@ -981,7 +978,10 @@ def list_jit_command(client: MsClient, args: dict):
             rules_summary_array = []
             for rule in rules_data:
                 ID = rule.get("id")
-                vm_name = ID.split("/")[-1] if isinstance(ID, str) else None
+                if isinstance(ID, str):
+                    vm_name = ID.split("/")[-1]
+                else:
+                    vm_name = None  # type: ignore
                 vm_ports = [str(port.get("number")) for port in rule.get("ports")]
                 rules_summary_array.append(
                     "({}: {})".format(vm_name, ", ".join(vm_ports))
@@ -1057,7 +1057,7 @@ def get_jit_command(client: MsClient, args: dict):
     }
 
     # Rules table
-    rules_table_output = []
+    rules_table_output = list()
     properties = policy.get("properties")
     virtual_machines = properties.get("virtualMachines")
     if isinstance(properties, dict) and virtual_machines:
@@ -1083,14 +1083,14 @@ def get_jit_command(client: MsClient, args: dict):
         }
 
         # Requests table
-        requests_table_output = []
+        requests_table_output = list()
 
         for requestData in properties.get("requests", []):
-            vms = []
+            vms = list()
             for vm in requestData.get("virtualMachines"):
                 vm_name = vm["id"].split("/")[-1]
                 vm_ports = format_jit_port_request(vm.get("ports"))
-                vms.append(f"[{vm_name}: {vm_ports}]")
+                vms.append("[{}: {}]".format(vm_name, vm_ports))
             requests_table_output.append(
                 {
                     "VirtualMachines": ", ".join(vms),
@@ -1207,7 +1207,7 @@ def delete_jit_command(client: MsClient, args: dict):
     demisto.results(
         {
             "Type": entryTypes["note"],
-            "Contents": f"Policy - {policy_name} has been deleted sucessfully.",
+            "Contents": "Policy - {} has been deleted sucessfully.".format(policy_name),
             "ContentsFormat": formats["text"],
             "EntryContext": ec,
         }
@@ -1225,9 +1225,9 @@ def list_sc_storage_command(client: MsClient):
 
     """
     accounts = client.list_sc_storage().get("value")
-    outputs = []
+    outputs = list()
     for account in accounts:
-        account_id_array = account.get("id", "").split("/")
+        account_id_array = account.get("id", str()).split("/")
         resource_group_name = account_id_array[account_id_array.index("resourceGroups") + 1]
         outputs.append(
             {
@@ -1258,7 +1258,7 @@ def list_sc_subscriptions_command(client: MsClient):
 
     """
     subscriptions = client.list_sc_subscriptions().get("value")
-    outputs = []
+    outputs = list()
     for sub in subscriptions:
         outputs.append(
             {
@@ -1393,13 +1393,14 @@ def main():
             return_outputs(*list_sc_subscriptions_command(client))
         elif demisto.command() == "azure-get-secure-score":
             return_outputs(*get_secure_scores_command(client, demisto.args()))
-        elif demisto.command() == "azure-sc-auth-reset":
-            return_results(reset_auth())
+
     except Exception as err:
         LOG(str(err))
         LOG.print_log()
         return_error(str(err))
 
+
+from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

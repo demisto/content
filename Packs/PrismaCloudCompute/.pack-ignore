@@ -50,3 +50,6 @@ codeRepo
 registryImage
 setIndicators
 
+[file:PrismaCloudComputeParseAuditAlert.yml]
+ignore=RM109
+

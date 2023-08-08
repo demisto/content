@@ -1,12 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+# type: ignore
 from CommonServerUserPython import *
 
+import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from typing import Any
-from MicrosoftApiModule import *  # noqa: E402
-import urllib3
+from typing import Dict, Optional, Any, Union
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
@@ -42,8 +42,7 @@ class Client:
             tenant_id=tenant_id,
             enc_key=client_secret,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph,
-            command_prefix="azure-risky-users",
+            managed_identities_resource_uri=Resources.graph
 
         )
         self.ms_client = MicrosoftClient(**client_args)
@@ -81,7 +80,7 @@ class Client:
                     ' IdentityRiskyUser.ReadWrite.All offline_access')
 
     @staticmethod
-    def get_token_retrieval_url_by_auth_type(authentication_type: str) -> None | str:
+    def get_token_retrieval_url_by_auth_type(authentication_type: str) -> Union[None, str]:
         """
         Gets the token retrieval url by the given authentication type.
         Args:
@@ -95,8 +94,8 @@ class Client:
         else:  # Device Code Flow
             return 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
-    def risky_users_list_request(self, risk_state: str | None, risk_level: str | None,
-                                 limit: int, skip_token: str | None = None) -> dict:
+    def risky_users_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
+                                 limit: int, skip_token: str = None) -> dict:
         """
         List risky users.
 
@@ -130,9 +129,9 @@ class Client:
         return self.ms_client.http_request(method='GET',
                                            url_suffix=f'identityProtection/riskyUsers/{id}')
 
-    def risk_detections_list_request(self, risk_state: str | None, risk_level: str | None,
-                                     detected_date_time_before: str | None, detected_date_time_after: str | None,
-                                     limit: int, order_by: str, skip_token: str | None = None) -> dict:
+    def risk_detections_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
+                                     detected_date_time_before: Optional[str], detected_date_time_after: Optional[str],
+                                     limit: int, order_by: str, skip_token: str = None) -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
 
@@ -172,7 +171,7 @@ class Client:
                                            url_suffix=f'/identityProtection/riskDetections/{id}')
 
 
-def update_query(query: str, filter_name: str, filter_value: str | None, filter_operator: str):
+def update_query(query: str, filter_name: str, filter_value: str, filter_operator: str):
     if not filter_value:
         return query
 
@@ -186,9 +185,9 @@ def update_query(query: str, filter_name: str, filter_value: str | None, filter_
         return filter_str
 
 
-def build_query_filter(risk_state: str | None, risk_level: str | None,
-                       detected_date_time_before: str | None = None,
-                       detected_date_time_after: str | None = None) -> str | None:
+def build_query_filter(risk_state: Optional[str], risk_level: Optional[str],
+                       detected_date_time_before: Optional[str] = None,
+                       detected_date_time_after: Optional[str] = None) -> Optional[str]:
     """
     Build query filter for API call, in order to get filtered results.
     API query syntax reference: https://docs.microsoft.com/en-us/graph/query-parameters.
@@ -210,8 +209,8 @@ def build_query_filter(risk_state: str | None, risk_level: str | None,
     return query
 
 
-def get_skip_token(next_link: str | None, outputs_prefix: str, outputs_key_field: str,
-                   readable_output: str) -> CommandResults | str:
+def get_skip_token(next_link: Optional[str], outputs_prefix: str, outputs_key_field: str,
+                   readable_output: str) -> Union[CommandResults, str]:
     if not next_link:
         return CommandResults(outputs_prefix=outputs_prefix,
                               outputs_key_field=outputs_key_field,
@@ -223,7 +222,7 @@ def get_skip_token(next_link: str | None, outputs_prefix: str, outputs_key_field
         return parse_qs(parsed_url.query)['$skiptoken'][0]
 
 
-def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     List all risky users.
     Args:
@@ -232,11 +231,11 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    page = arg_to_number(args.get('page')) or 1
-    limit = arg_to_number(args.get('limit')) or 50
+    limit = arg_to_number(args.get('limit', 50))
+    page = arg_to_number(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
-    skip_token: CommandResults | str | None = None
+    skip_token = None
 
     if page > 1:
         offset = limit * (page - 1)
@@ -250,13 +249,13 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
                                     outputs_key_field='id',
                                     readable_output=f'Risky Users List\nCurrent page size: {limit}\n'
                                                     f'Showing page {page} out others that may exist')
-        if isinstance(skip_token, CommandResults):
+        if type(skip_token) != str:
             return skip_token
 
     raw_response = client.risky_users_list_request(risk_state,
                                                    risk_level,
                                                    limit,
-                                                   skip_token)  # type: ignore[arg-type]
+                                                   skip_token)
 
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
@@ -281,7 +280,7 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
                           raw_response=raw_response)
 
 
-def risky_user_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def risky_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Get a risky user by ID.
 
@@ -312,7 +311,7 @@ def risky_user_get_command(client: Client, args: dict[str, Any]) -> CommandResul
                           raw_response=raw_response)
 
 
-def risk_detections_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Retrieve a list of the Risk-Detection objects and their properties.
 
@@ -323,14 +322,14 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    page = arg_to_number(args.get('page')) or 1
-    limit = arg_to_number(args.get('limit')) or 50
+    limit = arg_to_number(args.get('limit', 50))
+    page = arg_to_number(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
-    detected_date_time_before = args.get('detected_date_time_before', '')
-    detected_date_time_after = args.get('detected_date_time_after', '')
-    order_by = args.get('order_by', 'detectedDateTime desc')
-    skip_token: CommandResults | str | None = None
+    detected_date_time_before = args.get('detected_date_time_before')
+    detected_date_time_after = args.get('detected_date_time_after')
+    order_by = args.get('order_by')
+    skip_token = None
 
     if page > 1:
         offset = limit * (page - 1)
@@ -347,7 +346,7 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
                                     outputs_key_field='id',
                                     readable_output=f'Risk Detections List\nCurrent page size: '
                                     f'{limit}\nShowing page {page} out others that may exist')
-        if isinstance(skip_token, CommandResults):
+        if type(skip_token) != str:
             return skip_token
 
     raw_response = client.risk_detections_list_request(risk_state,
@@ -356,7 +355,7 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
                                                        detected_date_time_after,
                                                        limit,
                                                        order_by,
-                                                       skip_token)  # type: ignore[arg-type]
+                                                       skip_token)
 
     table_headers = ['id', 'userId', 'userDisplayName', 'userPrincipalName', 'riskDetail',
                      'riskEventType', 'riskLevel', 'riskState', 'riskDetail', 'lastUpdatedDateTime',
@@ -382,7 +381,7 @@ def risk_detections_list_command(client: Client, args: dict[str, Any]) -> Comman
                           raw_response=raw_response)
 
 
-def risk_detection_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Read the properties and relationships of a riskDetection object.
 
@@ -425,9 +424,8 @@ def test_module(client: Client):
     """
     if client.authentication_type == DEVICE_FLOW:  # Device Code flow
         raise DemistoException('When using device code flow configuration, please enable the integration and run '
-                               'the `azure-risky-users-auth-start` command. Follow the instructions that will be printed'
-                               ' as the output of the command.\n '
-                               'You can validate the connection by running `!azure-risky-users-auth-test`.\n')
+                               'the azure-risky-users-auth-start command. Follow the instructions that will be printed'
+                               ' as the output of the command.')
 
     test_connection(client)
     return "ok"
@@ -451,6 +449,12 @@ def test_connection(client: Client) -> str:
     return 'Success!'
 
 
+def reset_auth() -> str:
+    set_integration_context({})
+    return 'Authorization was reset successfully. Run **!azure-risky-users-auth-start** to start ' \
+           'the authentication process.'
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -470,7 +474,7 @@ def main():
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     try:
-        urllib3.disable_warnings()
+        requests.packages.urllib3.disable_warnings()
         client = Client(
             client_id=client_id,
             verify=verify_certificate,
@@ -504,6 +508,9 @@ def main():
 
     except Exception as e:
         return_error(str(e))
+
+
+from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

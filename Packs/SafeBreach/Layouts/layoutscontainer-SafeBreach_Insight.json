@@ -557,7 +557,5 @@
             }
         ]
     },
-    "marketplaces": [
-        "xsoar"
-    ]
+    "marketplaces": ["xsoar"]
 }

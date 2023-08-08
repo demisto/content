@@ -1,3 +1,6 @@
+[file:playbook-TestCloudflareWAFPlaybook_Test.yml.yml]
+ignore=auto-test
+
 [known_words]
 waf
 RequestHeaders

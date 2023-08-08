@@ -327,7 +327,7 @@ class TestHelpers:
 
         mock_call = Common.File.mock_calls[-1]
         assert mock_call.args[0].indicator == entity
-        assert mock_call.kwargs == {}
+        assert mock_call.kwargs == dict()
 
 
 class TestRFClient:
@@ -369,11 +369,13 @@ class TestRFClient:
         )
 
         demisto.callingContext = {
-            'context': {'ExecutionContext': 'to be removed', 'Incidents': []}
+            'context': {'ExecutionContext': 'to be removed', 'other': 'data'},
+            'other': 'data',
         }
 
         assert client._get_writeback_data() == {
-            'context': {'Incidents': []}
+            'context': {'other': 'data'},
+            'other': 'data',
         }
 
     #
@@ -407,7 +409,7 @@ class TestRFClient:
         )
 
         mock_calling_context = {
-            'context': {'ExecutionContext': 'to be removed', 'Incidents': []},
+            'context': {'ExecutionContext': 'to be removed', 'other': 'data'},
             'other': 'data',
         }
         demisto.callingContext = mock_calling_context
@@ -424,7 +426,8 @@ class TestRFClient:
             'demisto_command': mock_command_name,
             'demisto_args': mock_command_args,
             'callingContext': {
-                'context': {'Incidents': []},
+                'context': {'other': 'data'},
+                'other': 'data',
             },
         }
 
@@ -672,8 +675,8 @@ class TestRFClient:
 
         assert result.outputs_prefix == ''
         assert result.outputs_key_field == ''
-        assert result.outputs == {}
-        assert result.raw_response == {}
+        assert result.outputs == dict()
+        assert result.raw_response == dict()
         assert result.readable_output == 'No results found.'
 
     def test_fetch_incidents(self, mocker):
@@ -1053,11 +1056,11 @@ class TestActions:
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {'data': 'mock', 'result_actions': []}
+        response = {'data': 'mock', 'result_actions': list()}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 
-        response = {'data': 'mock', 'result_actions': {}}
+        response = {'data': 'mock', 'result_actions': dict()}
         result_actions = actions._process_result_actions(response=response)
         assert result_actions is None
 

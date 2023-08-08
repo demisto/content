@@ -1,3 +1,6 @@
+[file:classifier-XSOAR_Mirror_Out.json]
+ignore=MP105
+
 [file:classifier-mapper-incoming-XSOAR_Mirroring.json]
 ignore=BA101
 

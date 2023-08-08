@@ -4,6 +4,7 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 import uuid
+from typing import Dict, List
 from decimal import Decimal
 import requests
 from azure.kusto.data.response import KustoResponseDataSet, KustoResponseDataSetV1
@@ -55,8 +56,7 @@ class DataExplorerClient:
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
-            redirect_uri=redirect_uri,
-            command_prefix="azure-data-explorer",
+            redirect_uri=redirect_uri
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
@@ -100,7 +100,7 @@ class DataExplorerClient:
         return res_json
 
     def search_query_execute_request(self, database_name: str, query: str,
-                                     server_timeout: Decimal, client_activity_id: str) -> dict[str, Any]:
+                                     server_timeout: Decimal, client_activity_id: str) -> Dict[str, Any]:
         """
             Execute a KQL query against the given database inside the specified cluster.
             The query's client activity ID is a combination of the user's
@@ -127,7 +127,8 @@ class DataExplorerClient:
         return response
 
     def search_queries_list_request(self, database_name: str,
-                                    client_activity_id: str) -> dict[str, Any]:
+                                    client_activity_id: str) -> Dict[str, Any]:
+
         """
             List search queries that have reached a final state on the given database.
             When the client_activity_id argument is provided, the request will retrieve information
@@ -145,7 +146,7 @@ class DataExplorerClient:
         return self.management_query_request(database_name, mgmt_query)
 
     def running_search_queries_list_request(self, database_name: str, client_activity_id: str) -> \
-            dict[str, Any]:
+            Dict[str, Any]:
         """
             List currently running search queries on the given database.
             When client_activity_id argument is set, the request will retrieve information
@@ -164,7 +165,7 @@ class DataExplorerClient:
         return self.management_query_request(database_name, mgmt_query)
 
     def running_search_query_delete_request(self, database_name: str, client_activity_id: str,
-                                            reason: str) -> dict[str, Any]:
+                                            reason: str) -> Dict[str, Any]:
         """
         Starts a best-effort attempt to cancel a specific running search query
         on the given database.
@@ -182,7 +183,7 @@ class DataExplorerClient:
             cancel_running_query += f" with ( reason = '{reason}' )"
         return self.management_query_request(database_name, cancel_running_query)
 
-    def management_query_request(self, database_name: str, mgmt_query: str) -> dict[str, Any]:
+    def management_query_request(self, database_name: str, mgmt_query: str) -> Dict[str, Any]:
         """
             API call method for management query endpoint.
             Each requests that uses management query endpoint uses this method.
@@ -197,7 +198,7 @@ class DataExplorerClient:
         return response
 
 
-def search_query_execute_command(client: DataExplorerClient, args: dict[str, Any]) -> CommandResults:
+def search_query_execute_command(client: DataExplorerClient, args: Dict[str, Any]) -> CommandResults:
     """
     Execute search query command.
     Args:
@@ -237,7 +238,7 @@ def search_query_execute_command(client: DataExplorerClient, args: dict[str, Any
     return command_results
 
 
-def search_queries_list_command(client: DataExplorerClient, args: dict[str, Any]) -> CommandResults:
+def search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]) -> CommandResults:
     """
     List completed search queries command.
     Args:
@@ -261,7 +262,7 @@ def search_queries_list_command(client: DataExplorerClient, args: dict[str, Any]
                                                      page, page_size, limit, 'AzureDataExplorer.SearchQuery')
 
 
-def running_search_queries_list_command(client: DataExplorerClient, args: dict[str, Any]) -> CommandResults:
+def running_search_queries_list_command(client: DataExplorerClient, args: Dict[str, Any]) -> CommandResults:
     """
     List currently running search queries command.
     Args:
@@ -285,7 +286,7 @@ def running_search_queries_list_command(client: DataExplorerClient, args: dict[s
                                                      page, page_size, limit, 'AzureDataExplorer.RunningSearchQuery')
 
 
-def running_search_query_cancel_command(client: DataExplorerClient, args: dict[str, Any]) -> \
+def running_search_query_cancel_command(client: DataExplorerClient, args: Dict[str, Any]) -> \
         CommandResults:
     """
     Cancel currently running search query command.
@@ -322,7 +323,7 @@ def running_search_query_cancel_command(client: DataExplorerClient, args: dict[s
     return command_results
 
 
-def retrieve_command_results_of_list_commands(response: dict[str, Any], base_header: str,
+def retrieve_command_results_of_list_commands(response: Dict[str, Any], base_header: str,
                                               page: int, page_size: int, limit: int,
                                               outputs_prefix: str) -> CommandResults:
     """
@@ -364,7 +365,7 @@ def retrieve_command_results_of_list_commands(response: dict[str, Any], base_hea
 ''' INTEGRATION HELPER METHODS '''
 
 
-def convert_datetime_fields(raw_data: list[dict]) -> list[dict]:
+def convert_datetime_fields(raw_data: List[dict]) -> List[dict]:
     """
     Converting datetime fields of the response from the API call
     to str type (in order to make the response json-serializable).
@@ -385,7 +386,7 @@ def convert_datetime_fields(raw_data: list[dict]) -> list[dict]:
 
 
 def convert_kusto_response_to_dict(kusto_response: KustoResponseDataSet, page: int = None,
-                                   page_size: int = None, limit: int = None) -> list[dict]:
+                                   page_size: int = None, limit: int = None) -> List[dict]:
     """
     Converting KustoResponseDataSet object to dict type.
     Support two use cases of pagination: 'Manual Pagination' and 'Automatic Pagination'.
@@ -409,7 +410,7 @@ def convert_kusto_response_to_dict(kusto_response: KustoResponseDataSet, page: i
 
     else:  # used only in search query execution command
         relevant_raw_data = raw_data
-    serialized_data: list[dict] = convert_datetime_fields(relevant_raw_data)
+    serialized_data: List[dict] = convert_datetime_fields(relevant_raw_data)
     return serialized_data
 
 
@@ -439,7 +440,7 @@ def format_header_for_list_commands(base_header: str, rows_count: int,
 
 
 def retrieve_common_request_body(database_name: str, query: str,
-                                 properties: dict[str, Any] = None) -> dict[str, Any]:
+                                 properties: Dict[str, Any] = None) -> Dict[str, Any]:
     """
     Retrieve requests body. For every request, the body contains the database name and the query to the execute.
 
@@ -523,6 +524,17 @@ def complete_auth(client: DataExplorerClient) -> str:
     return '✅ Authorization completed successfully.'
 
 
+def reset_auth() -> str:
+    """
+    Start the authorization process.
+    Returns:
+          str: Message about resetting the authorization process.
+    """
+    set_integration_context({})
+    return 'Authorization was reset successfully. Run **!azure-data-explorer-auth-start** to start the authentication \
+    process.'
+
+
 def test_connection(client: DataExplorerClient) -> str:
     """
     Test the connection with Azure Data Explorer service.
@@ -566,8 +578,8 @@ def main() -> None:
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    params: dict[str, Any] = demisto.params()
-    args: dict[str, Any] = demisto.args()
+    params: Dict[str, Any] = demisto.params()
+    args: Dict[str, Any] = demisto.args()
     cluster_url = params['cluster_url']
     client_id = params['client_id']
     client_activity_prefix = params.get('client_activity_prefix')

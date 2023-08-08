@@ -14,10 +14,6 @@ Cortex ASM - Remediation Objectives
 
 ### Scripts
 
-* Set
-* GetTime
-* RemediationPathRuleEvaluation
-* GridFieldSetup
 * RemediationPathRuleEvaluation
 * Set
 * GridFieldSetup
