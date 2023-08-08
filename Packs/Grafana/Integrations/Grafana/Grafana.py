@@ -490,6 +490,7 @@ def user_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     name = args.get('name')
     login = args.get('login')
+
     theme = args.get('theme')
 
     # login\email is required
