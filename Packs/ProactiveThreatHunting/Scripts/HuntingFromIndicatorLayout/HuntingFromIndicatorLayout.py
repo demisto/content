@@ -18,7 +18,7 @@ def hunting_from_indicator_layout(sdo):
           a ValueError is raised with a message indicating that the automation was not executed from the indicator layout.
        """
     try:
-        results = demisto.executeCommand("createNewIncident", {"name": f"Threat Hunting Session - {sdo}",
+        demisto.executeCommand("createNewIncident", {"name": f"Threat Hunting Session - {sdo}",
                                                                "sdoname": f"{sdo}",
                                                                "type": "Proactive Threat Hunting"})
     except Exception as e:
