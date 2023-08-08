@@ -129,7 +129,7 @@ class Client(BaseClient):
             return from_time
 
         to_time = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-        body = self.generate_workday_account_signons_body(page=1, count=1, to_time=to_time, from_time=get_from_time)
+        body = self.generate_workday_account_signons_body(page=1, count=1, to_time=to_time, from_time=get_from_time())
         self._http_request(method="POST", url_suffix="", data=body, resp_type='text', timeout=120)
         return 'ok'
 
@@ -151,7 +151,7 @@ def convert_to_json(response: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         try:
             raw_json_response = json.loads(xml2json(response))
         except Exception as e:
-            raise f"Error parsing XML to JSON: {e}"
+            raise ValueError(f"Error parsing XML to JSON: {e}")
 
     # Get the 'Get_Workday_Account_Signons_Response' dictionary safely
     response_data = raw_json_response.get('Envelope', {}).get('Body', {}).get('Get_Workday_Account_Signons_Response', {})
@@ -159,12 +159,10 @@ def convert_to_json(response: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     if not response_data:
         response_data = raw_json_response.get(
             'Get_Workday_Account_Signons_Response', {})
-        # demisto.debug(f"Entered UnitTesting scenario. The actual response is: {raw_json_response}")
-
-        # raise ValueError("'Get_Workday_Account_Signons_Response' not found in the response")
 
     # Get 'Response_Data' and 'Workday_Account_Signon' safely
-    account_signon_data = response_data.get('Response_Data', {}).get('Workday_Account_Signon')
+    account_signon_data = response_data.get('Response_Data', {}).get('Workday_Account_Signon') if response_data.get(
+        'Response_Data') else None
 
     if not account_signon_data:
         raise ValueError("'Workday_Account_Signon' not found in the 'Response_Data'")
@@ -186,7 +184,7 @@ def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_d
     Fetches Sign On logs from workday.
     Args:
         client: Client object.
-        limit_to_fetch: limit of logging to fetch from Workday.
+        limit_to_fetch: limit of logs to fetch from Workday.
         from_date: Events from time.
         to_date: Events to time.
 
@@ -196,16 +194,19 @@ def fetch_sign_on_logs(client: Client, limit_to_fetch: int, from_date: str, to_d
     sign_on_logs: list = []
     page = 1  # We assume that we will need to make one call at least
     res, total_pages = client.retrieve_events(from_time=from_date, to_time=to_date, page=1, count=limit_to_fetch)
+    sign_on_logs.extend(res)
     demisto.debug(f"Request indicates a total of {total_pages} pages to paginate.")
+    pages_remaining = total_pages - 1
 
-    while page <= total_pages:
+    while page <= total_pages and pages_remaining != 0:
         page += 1
         res, _ = client.retrieve_events(from_time=from_date, to_time=to_date, page=page, count=limit_to_fetch)
-        demisto.debug(f'Fetched {len(res)} activity loggings.')
+        pages_remaining -= 1
+        demisto.debug(f'Fetched {len(res)} sign on logs.')
         sign_on_logs.extend(res)
         if not res:
             break
-        demisto.debug(f'{total_pages - page} pages left to fetch.')
+        demisto.debug(f'{pages_remaining} pages left to fetch.')
     demisto.debug(f'Found {len(sign_on_logs)} Sign On Logs.')
     return sign_on_logs
 
