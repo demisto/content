@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def hunting_from_indicator_layout(sdo):
+def hunting_from_indicator_layout(sdo: str):
     """
     Creating an incident from the indicator layout with the following parameters:
         Name: Threat Hunting Session - <Indicator Value>
@@ -33,7 +33,11 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     if "indicator" not in args:
         raise DemistoException("The automation was not executed from indicator layout")
-    return_results(hunting_from_indicator_layout(args.get("indicator", "").get("value")))
+    try:
+        return_results(hunting_from_indicator_layout(args.get("indicator", "").get("value")))
+
+    except Exception as e:
+        raise DemistoException(f'Failed to create hunting session: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
