@@ -119,7 +119,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.target.resource.type = if(datastore != null, "datastore"),
     xdm.target.resource.value = datastore;
 
-// vpxd-svcs-perf (VMware vCenter-Services) events 
+// vpxd-svcs-perf (VMware vCenter-Services) & xtrustmanagement-svcs events 
 alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
 | filter event_type = "vpxd-svcs-perf"
 | alter 
@@ -153,15 +153,15 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.application.name = app_component, 
     xdm.source.host.hostname = hostname;
 
-// vpxd-main (VMware vCenter-Services) & vsan-health-main (virtual storage area network health service) events 
+// vpxd-main (VMware vCenter-Services), vsan-health-main (virtual storage area network health service) & vum-vmacore (vSphere Update Manager) events 
 alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-| filter event_type in( "vsan-health-main", "vpxd-main")
+| filter event_type in( "vsan-health-main", "vpxd-main", "vum-vmacore", "StatsMonitor", "vdtc-main")
 | alter 
     hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
     syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
 | alter
-    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+v[\w-]+\["), 0)),
-    pid = to_integer(arrayindex(regextract(syslog_msg, "v[\w-]+\[(\d+)\]"), 0)),
+    msg_severity = uppercase(arrayindex(regextract(syslog_msg, "(\w+)\s+[\w-]+\[\d+"), 0)),
+    pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
     operation_id = arrayindex(regextract(syslog_msg, "opId=([\w-]+)"), 0),
     sub_module = arrayindex(regextract(syslog_msg, "sub=([\w-]+)"), 0),
     event_details = coalesce(arrayindex(regextract(syslog_msg, "\w+=\S+\]\s+(.+)"), 0), trim(arrayindex(regextract(syslog_msg, "v\[\d+\]\s+\[.+?\]\s+(.+)"), 0), "--"), syslog_msg )
@@ -173,6 +173,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.event.id = operation_id,
     xdm.event.description = event_details,
     xdm.observer.name = hostname, 
+    xdm.session_context_id = session_id, 
     xdm.source.process.pid = pid, 
     xdm.source.process.name = event_type,
     xdm.source.application.name = sub_module, 
