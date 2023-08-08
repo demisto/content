@@ -616,7 +616,7 @@ def get_azure_cloud(params, integration_name):
                                              })
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
-    return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
+    return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING[azure_cloud_arg], AZURE_WORLDWIDE_CLOUD)
 
 
 class MicrosoftClient(BaseClient):
