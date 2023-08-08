@@ -116,11 +116,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Use a self deployed Azure application
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - display: Incident type
   name: incidentType
@@ -1050,7 +1051,10 @@ script:
       - Read
       - Unread
     description: Update the status of an email to read / unread.
-  dockerimage: demisto/crypto:1.0.0.64970
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    name: msgraph-mail-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
   isfetch: true
   runonce: false
   script: '-'

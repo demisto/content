@@ -3,16 +3,12 @@
     "associatedTypes": [
         "SafeBreach Insight"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "safebreachseverity",
     "closeForm": false,
-    "columns": null,
     "content": true,
-    "defaultRows": null,
     "description": "A compound severity assigned to the Insight",
     "editForm": true,
-    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_safebreachseverity",
@@ -21,9 +17,7 @@
     "name": "SafeBreach Severity",
     "neverSetAsRequired": false,
     "ownerOnly": true,
-    "placeholder": "",
     "required": false,
-    "script": "",
     "selectValues": [
         "High",
         "Medium",
@@ -31,13 +25,11 @@
     ],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "singleSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": true,
-    "validationRegex": "",
     "version": -1,
     "fromVersion": "5.5.0"
 }

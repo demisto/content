@@ -17,6 +17,7 @@ from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -629,10 +630,7 @@ def http_request(
     Returns:
         Union[dict, list]: The response in list or dict format.
     """
-    if api == 'graph':
-        access_token = get_graph_access_token()
-    else:  # Bot Framework API
-        access_token = get_bot_access_token()
+    access_token = get_graph_access_token() if api == 'graph' else get_bot_access_token()  # Bot Framework API
 
     headers: dict = {
         'Authorization': f'Bearer {access_token}',
@@ -807,7 +805,9 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify endorsements')
         return False
 
-    public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
+
     options = {
         'verify_aud': False,
         'verify_exp': True,
@@ -2543,10 +2543,7 @@ def long_running_loop():
             port_mapping: str = PARAMS.get('longRunningPort', '')
             port: int
             if port_mapping:
-                if ':' in port_mapping:
-                    port = int(port_mapping.split(':')[1])
-                else:
-                    port = int(port_mapping)
+                port = int(port_mapping.split(':')[1]) if ':' in port_mapping else int(port_mapping)
             else:
                 raise ValueError('No port mapping was provided')
             Thread(target=channel_mirror_loop, daemon=True).start()
@@ -2579,7 +2576,7 @@ def long_running_loop():
         except SSLError as e:
             ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
             demisto.error(ssl_err_message)
-            raise ValueError(ssl_err_message)
+            raise ValueError(ssl_err_message) from e
         except Exception as e:
             error_message = str(e)
             demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')

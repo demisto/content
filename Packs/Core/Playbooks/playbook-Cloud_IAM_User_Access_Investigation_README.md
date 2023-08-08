@@ -10,11 +10,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Enrichment for Verdict
 * Cloud IAM Enrichment - Generic
+* Handle False Positive Alerts
+* Enrichment for Verdict
 * Cloud Response - Generic
 * Ticket Management - Generic
-* Handle False Positive Alerts
 
 ### Integrations
 
@@ -26,8 +26,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
+* setParentIncidentFields
 * closeInvestigation
-* setParentIncidentField
 * core-get-cloud-original-alerts
 
 ## Playbook Inputs

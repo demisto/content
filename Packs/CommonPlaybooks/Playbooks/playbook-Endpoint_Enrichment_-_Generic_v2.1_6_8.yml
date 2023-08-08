@@ -12,7 +12,7 @@ description: |-
   - Cylance Protect v2
   - CrowdStrike Falcon
   - ExtraHop Reveal(x)
-  - Cortex XDR
+  - Cortex XDR (endpoint enrichment and reputation)
   - Endpoint reputation using !endpoint command
 starttaskid: "0"
 tasks:
@@ -1011,6 +1011,7 @@ tasks:
       - "4"
       "yes":
       - "41"
+      - "42"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1130,6 +1131,44 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: cc6f374f-6be2-4f2a-8d2a-dc5ccbe6e4be
+    type: regular
+    task:
+      id: cc6f374f-6be2-4f2a-8d2a-dc5ccbe6e4be
+      version: -1
+      name: Cortex XDR get endpoint risk score
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||xdr-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      host_id:
+        complex:
+          root: inputs.EndpointID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3560,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1152,7 +1191,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1075,
-        "width": 4540,
+        "width": 4940,
         "x": -1000,
         "y": 80
       }
@@ -1573,6 +1612,36 @@ outputs:
   type: string
 - contextPath: Account.Domain
   description: The domain of the account.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost
+  description: The endpoint object.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.type
+  description: Form of identification element.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.id
+  description: Identification value of the type field.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.score
+  description: The score assigned to the host.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons
+  description: The endpoint risk objects.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
+  description: Date when the incident was created.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description
+  description: Description of the incident.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.severity
+  description: The severity of the incident
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
+  description: The incident status
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
+  description: The score.
   type: string
 tests:
 - Endpoint Enrichment - Generic v2.1.6.8 - Test
