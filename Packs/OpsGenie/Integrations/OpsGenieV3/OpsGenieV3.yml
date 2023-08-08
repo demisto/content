@@ -1294,6 +1294,22 @@ script:
       required: true
       description: Alert ID
     description: Lists alert logs.
+    outputs:
+    - contextPath: OpsGenie.Alert.Logs.createdAt
+      description: Time the alert was created.
+      type: String
+    - contextPath: OpsGenie.Alert.Logs.log
+      description: Log of the alert.
+      type: String
+    - contextPath: OpsGenie.Alert.Logs.offset
+      description: Offset of the alert log.
+      type: String
+    - contextPath: OpsGenie.Alert.Logs.owner
+      description: Owner of the alert log.
+      type: String
+    - contextPath: OpsGenie.Alert.Logs.type
+      description: Type of the alert log.
+      type: String
   - name: opsgenie-add-alert-note
     arguments:
     - name: alert_id
@@ -1308,6 +1324,34 @@ script:
     - name: source
       required: false
       description: Display name of the request source.
+    outputs:
+    - contextPath: OpsGenie.AddAlertNote.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.AddAlertNote.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.AddAlertNote.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.success
+      description: Whether the request was successful.
+      type: Boolean
   - name: opsgenie-add-alert-details
     arguments:
     - name: alert_id
@@ -1319,6 +1363,34 @@ script:
         the alert. JSON format is also supported when used within an automation. Examples;
         details="account=pa,hostname=computer01".
       type: keyValue
+    outputs:
+    - contextPath: OpsGenie.AddAlertDetails.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.AddAlertDetails.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.AddAlertDetails.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.success
+      description: Whether the request was successful.
+      type: Boolean
 
   dockerimage: demisto/python3:3.10.12.66339
   isfetch: true

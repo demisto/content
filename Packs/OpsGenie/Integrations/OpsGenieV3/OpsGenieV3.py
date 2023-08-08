@@ -172,7 +172,7 @@ class Client(BaseClient):
                                   json_data=args)
 
     def add_alert_details(self, args: dict):
-        if args.get('details') and not isinstance(args.get('details'), dict):
+        if not isinstance(args.get('details'), dict):
             args['details'] = {key_value.split('=')[0]: key_value.split('=')[1]
                                for key_value in argToList(args.get('details'))}
         return self._http_request(method='POST',
@@ -701,6 +701,8 @@ def get_alert_logs(client: Client, args: Dict[str, Any]) -> CommandResults:
     result = client.get_alert_logs(args)
     data = result.get("data")
     return CommandResults(
+        outputs_prefix="OpsGenie.Alert.Logs",
+        outputs=result.get("data"),
         readable_output=tableToMarkdown("OpsGenie Logs", data),
         raw_response=result
     )
