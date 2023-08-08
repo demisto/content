@@ -903,10 +903,12 @@ def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                    args.get('timeout_in_seconds', DEFAULT_POLL_TIMEOUT))))
     else:
         results_dict = results.json()
+        outputs_prefix = args.get("output_prefix", f'OpsGenie.{request_type.capitalize()[:-1]}')
         return CommandResults(
-            outputs_prefix=args.get("output_prefix", f'OpsGenie.{request_type.capitalize()[:-1]}'),
+            outputs_prefix=outputs_prefix,
             outputs=results_dict.get("data"),
-            readable_output=tableToMarkdown("OpsGenie", results_dict.get('data')),
+            readable_output=tableToMarkdown(f"OpsGenie - {pascalToSpace(outputs_prefix.split('.')[-1])}",
+                                            results_dict.get('data')),
             raw_response=results_dict
         )
 
