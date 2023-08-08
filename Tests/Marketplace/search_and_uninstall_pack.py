@@ -117,9 +117,11 @@ def get_updating_status(client: demisto_client,
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     # Unknown exception reason, re-raise.
                     raise Exception(f"Got status {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
+                logging.debug(f"Process failed, got error {ex}")
             except (HTTPError, HTTPWarning) as http_ex:
                 if not attempt:
                     raise Exception("Failed to perform http request to the server") from http_ex
+                logging.debug(f"Process failed, got error {http_ex}")
 
             # There are more attempts available, sleep and retry.
             logging.debug(f"Failed to get installation/update status, sleeping for {sleep_interval} seconds.")
@@ -212,9 +214,11 @@ def uninstall_pack(client: demisto_client,
                 if not attempt:  # exhausted all attempts, understand what happened and exit.
                     # Unknown exception reason, re-raise.
                     raise Exception(f"Got {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
+                logging.debug(f"Failed to uninstall pack {pack_id}, got error {ex}")
             except (HTTPError, HTTPWarning) as http_ex:
                 if not attempt:
                     raise Exception("Failed to perform http request to the server") from http_ex
+                logging.debug(f"Failed to uninstall pack {pack_id}, got error {http_ex}")
 
             # There are more attempts available, sleep and retry.
             logging.debug(f"failed to uninstall pack: {pack_id}, sleeping for {sleep_interval} seconds.")
