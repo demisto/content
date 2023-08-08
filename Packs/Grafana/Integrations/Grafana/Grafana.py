@@ -487,10 +487,8 @@ def users_organization_command(client: Client, args: Dict[str, Any]) -> CommandR
 def user_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_id = str(args.get('user_id'))
     email = args.get('email')
-
     name = args.get('name')
     login = args.get('login')
-
     theme = args.get('theme')
 
     # login\email is required
@@ -507,7 +505,6 @@ def user_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     dashboard_id = arg_to_number(args.get('dashboard_id'))
-
     panel_id = arg_to_number(args.get('panel_id'))
 
     time_start = set_time_to_epoch_millisecond(args.get('time'))
