@@ -4,112 +4,42 @@ import pytest
 import demistomock as demisto
 from ForcepointEventCollector import (
     fetch_events,
-    main,
-    Client,
-    to_str_time
+    to_str_time, Client, get_events_command
 )
 
-#
-# @pytest.fixture
-# def client(mocker):
-#     def mock_get_incident(inc_id):
-#         return {
-#             "incident_id": inc_id,
-#             "first_reported_date": f"{4 - inc_id} days ago",
-#             "reports": [
-#                 {
-#                     "name": "first_name",
-#                 }
-#             ]
-#         }
-#     mocked_client = mocker.Mock()
-#     mocked_client.get_incidents.return_value = [0, 1, 3, 4]
-#     mocked_client.get_incident.side_effect = mock_get_incident
-#     return mocked_client
-#
-#
-# def test_fetch_events_by_fetch_time(client):
-#     """
-#     Given: A mock Forcepoint DLP client.
-#     When: Running fetch-events, where `max_fetch` param is 1 and `first_fetch` param is "2 days ago".
-#     Then: Ensure only the first event that occurred up to 2 days ago is returned.
-#     """
-#     events, last_id = fetch_events(
-#         client,
-#         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
-#         max_fetch=1,
-#     )
-#     assert len(events) == 1
-#     assert events[0]["incident_id"] == 3
-#     assert last_id == 3
-#
-#
-# def test_fetch_events_by_last_id(client):
-#     """
-#     Given: A mock Forcepoint DLP client.
-#     When: Running fetch-events, where `max_fetch` param is 10 and the last fetched incident id is 1.
-#     Then: Ensure incidents 3 and 4 are returned as events.
-#     """
-#     res, last_run = fetch_events(
-#         client,
-#         first_fetch=arg_to_datetime("2 days ago", settings=DATEPARSER_SETTINGS),  # type: ignore
-#         max_fetch=10,
-#     )
-#     assert res[0]["incident_id"] == 3
-#     assert res[-1]["incident_id"] == 4
-#
-#
-# def test_get_events(client):
-#     """
-#     Given: A mock Forcepoint DLP client.
-#     When: Running get-events with a limit of 1, while there are four open incidents.
-#     Then: Ensure only one event is returned.
-#     """
-#     _, events = get_events_command(client, {"limit": 1})
-#     assert len(events) == 1
-#     assert events[0]["incident_id"] == 0
+
+def mock_client():
+    return Client(base_url='https://test.com', verify=False, proxy=False, username='user_name',
+                  password='password', utc_now=dateparser.parse('2020-01-01T00:00:00Z'))
 
 
-@pytest.mark.parametrize(
-    "params, is_valid, result_msg",
-    [
-        (
-            {"max_fetch": "1", "first_fetch": "", "url": ""},
-            True,
-            "ok"
-        ),
-        (
-            {"max_fetch": "not a number", "first_fetch": "3 days", "url": ""},
-            False,
-            "\"not a number\" is not a valid number"
-        ),
-        (
-            {"max_fetch": "1", "first_fetch": "not a date", "url": ""},
-            False,
-            "\"not a date\" is not a valid date"
-        ),
-    ]
-)
-def test_test_module(mocker, params, is_valid, result_msg):
+def test_get_events_command(requests_mock, mocker):
+    """Tests get-events command function.
+
+    Checks the output of the command function with the expected output.
     """
-    Given: different assignments for integration parameters.
-    When: Running test-module command.
-    Then: Make sure the correct message is returned.
-    """
-    mocker.patch.object(Client, "get_access_token", return_value="mock_token")
-    mocker.patch.object(Client, "get_open_incident_ids", return_value=[])
-    mocker.patch.object(Client, "get_incident")
-    mocker.patch.object(demisto, "command", return_value="test-module")
-    mocker.patch.object(demisto, "params", return_value=params)
-    demisto_result = mocker.patch.object(demisto, "results")
-    return_error = mocker.patch('ForcepointEventCollector.return_error')
-    main()
-    result = (demisto_result if is_valid else return_error).call_args[0][0]
-    assert result_msg in result
+    client = mock_client()
+    since_time = '2022-12-26T00:00:00Z'
+    mock_response = {
+        "incidents": [generate_mocked_event(1, since_time), generate_mocked_event(1, since_time)],
+        "total_count": 2,
+        "total_returned": 2
+    }
+    args = {
+        'since_time': since_time,
+        'limit': 2
+    }
+    mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    requests_mock.post('https://test.com/incidents', json=mock_response)
+    result, events = get_events_command(client, args)
+
+    assert len(events) == mock_response.get("total_count")
+    assert events == mock_response.get('incidents')
 
 
 def generate_mocked_event(event_id, event_time):
     return {
+        '_collector_source': 'API',
         "action": "AUTHORIZED",
         "analyzed_by": "Policy Engine test.corp.service.com",
         "channel": "EMAIL",
@@ -145,66 +75,66 @@ def generate_mocked_event(event_id, event_time):
     "returned_events_ids, forward_last_events_ids, forward_last_fetch, backward_done, backward_last_events_ids,"
     "backward_last_fetch, backward_to_time",
     [
-        # (
-        #     "get all events between the timespan",  # scenario
-        #     "01/01/2020 00:00:00",  # first fetch
-        #     "01/01/2020 00:01:00",  # utc now
-        #     10,  # max_fetch.
-        #     "01/01/2020 00:00:00",  # last_fetch_time
-        #     10,  # max API returned limit.
-        #     [],  # last_events_ids
-        #     {  # incidents_per_time
-        #         ("01/01/2020 00:00:00", "01/01/2020 00:01:00"): {
-        #             1: "01/01/2020 00:00:01",
-        #             2: "01/01/2020 00:00:02",
-        #             3: "01/01/2020 00:00:03",
-        #             4: "01/01/2020 00:00:04",
-        #             5: "01/01/2020 00:00:05",
-        #             6: "01/01/2020 00:00:06",
-        #             7: "01/01/2020 00:00:07",
-        #             8: "01/01/2020 00:00:08",
-        #             9: "01/01/2020 00:00:09",
-        #             10: "01/01/2020 00:00:10",
-        #         },
-        #     },
-        #     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  # returned_events_ids
-        #     [10],  # forward_last_events_ids
-        #     "01/01/2020 00:00:10",  # forward_last_fetch
-        #     False,  # backward_done
-        #     [],  # backward_last_events_ids
-        #     "01/01/2020 00:00:00",  # backward_last_fetch
-        #     "01/01/2020 00:01:00",  # backward_to_time
-        # ),
-        # (
-        #     "all events were already fetched, force move to next second",  # scenario
-        #     "01/01/2020 00:00:00",  # first fetch
-        #     "01/01/2020 00:01:00",  # utc now
-        #     10,  # max_fetch.
-        #     "01/01/2020 00:00:00",  # last_fetch_time
-        #     10,  # max API returned limit.
-        #     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  # last_events_ids
-        #     {  # incidents_per_time
-        #         ("01/01/2020 00:00:00", "01/01/2020 00:01:00"): {
-        #             1: "01/01/2020 00:00:00",
-        #             2: "01/01/2020 00:00:00",
-        #             3: "01/01/2020 00:00:00",
-        #             4: "01/01/2020 00:00:00",
-        #             5: "01/01/2020 00:00:00",
-        #             6: "01/01/2020 00:00:00",
-        #             7: "01/01/2020 00:00:00",
-        #             8: "01/01/2020 00:00:00",
-        #             9: "01/01/2020 00:00:00",
-        #             10: "01/01/2020 00:00:00",
-        #         },
-        #     },
-        #     [],  # returned_events_ids
-        #     [],  # forward_last_events_ids
-        #     "01/01/2020 00:00:01",  # forward_last_fetch
-        #     False,  # backward_done
-        #     [],  # backward_last_events_ids
-        #     "01/01/2020 00:00:00",  # backward_last_fetch
-        #     "01/01/2020 00:01:00",  # backward_to_time
-        # ),
+        (
+            "get all events between the timespan",  # scenario
+            "01/01/2020 00:00:00",  # first fetch
+            "01/01/2020 00:01:00",  # utc now
+            10,  # max_fetch.
+            "01/01/2020 00:00:00",  # last_fetch_time
+            10,  # max API returned limit.
+            [],  # last_events_ids
+            {  # incidents_per_time
+                ("01/01/2020 00:00:00", "01/01/2020 00:01:00"): {
+                    1: "01/01/2020 00:00:01",
+                    2: "01/01/2020 00:00:02",
+                    3: "01/01/2020 00:00:03",
+                    4: "01/01/2020 00:00:04",
+                    5: "01/01/2020 00:00:05",
+                    6: "01/01/2020 00:00:06",
+                    7: "01/01/2020 00:00:07",
+                    8: "01/01/2020 00:00:08",
+                    9: "01/01/2020 00:00:09",
+                    10: "01/01/2020 00:00:10",
+                },
+            },
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  # returned_events_ids
+            [10],  # forward_last_events_ids
+            "01/01/2020 00:00:10",  # forward_last_fetch
+            False,  # backward_done
+            [],  # backward_last_events_ids
+            "01/01/2020 00:00:00",  # backward_last_fetch
+            "01/01/2020 00:01:00",  # backward_to_time
+        ),
+        (
+            "all events were already fetched, force move to next second",  # scenario
+            "01/01/2020 00:00:00",  # first fetch
+            "01/01/2020 00:01:00",  # utc now
+            10,  # max_fetch.
+            "01/01/2020 00:00:00",  # last_fetch_time
+            10,  # max API returned limit.
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  # last_events_ids
+            {  # incidents_per_time
+                ("01/01/2020 00:00:00", "01/01/2020 00:01:00"): {
+                    1: "01/01/2020 00:00:00",
+                    2: "01/01/2020 00:00:00",
+                    3: "01/01/2020 00:00:00",
+                    4: "01/01/2020 00:00:00",
+                    5: "01/01/2020 00:00:00",
+                    6: "01/01/2020 00:00:00",
+                    7: "01/01/2020 00:00:00",
+                    8: "01/01/2020 00:00:00",
+                    9: "01/01/2020 00:00:00",
+                    10: "01/01/2020 00:00:00",
+                },
+            },
+            [],  # returned_events_ids
+            [],  # forward_last_events_ids
+            "01/01/2020 00:00:01",  # forward_last_fetch
+            False,  # backward_done
+            [],  # backward_last_events_ids
+            "01/01/2020 00:00:00",  # backward_last_fetch
+            "01/01/2020 00:01:00",  # backward_to_time
+        ),
         (
             "testing starting from a timestamp where we already have existing events in the last fetch (dedup)",  # scenario
             "01/01/2020 00:00:00",  # first fetch
@@ -264,7 +194,7 @@ def test_fetch_events(mocker, scenario, first_fetch, utc_now, max_fetch, last_fe
 
     fetch_events(
         client=mocked_client,
-        first_fetch=dateparser.parse(first_fetch),
+        first_fetch=first_fetch,
         max_fetch=max_fetch,
     )
 
@@ -276,11 +206,5 @@ def test_fetch_events(mocker, scenario, first_fetch, utc_now, max_fetch, last_fe
         'forward': {
             'last_events_ids': forward_last_events_ids,
             'last_fetch': forward_last_fetch
-        },
-        'backward': {
-            "done": backward_done,
-            "last_events_ids": backward_last_events_ids,
-            "last_fetch": backward_last_fetch,
-            "to_time": backward_to_time
-        },
+        }
     }, f"{scenario} - set last run doesn't match expected value"
