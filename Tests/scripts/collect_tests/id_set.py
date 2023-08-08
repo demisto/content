@@ -188,7 +188,7 @@ class Graph:
             self.id_to_integration = {integration.object_id: IdSetItem.from_model(integration) for integration in integrations}
             self.id_to_script = {script.object_id: IdSetItem.from_model(script) for script in scripts}
             self.id_to_test_playbook = {
-                test_playbook.path: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
+                test_playbook.object_id: IdSetItem.from_model(test_playbook) for test_playbook in test_playbooks}
             self.id_to_modeling_rule = {
                 modeling_rule.path: IdSetItem.from_model(modeling_rule) for modeling_rule in modeling_rules
             }
