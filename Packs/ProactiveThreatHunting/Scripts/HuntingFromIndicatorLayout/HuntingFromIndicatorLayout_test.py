@@ -4,9 +4,9 @@ from HuntingFromIndicatorLayout import hunting_from_indicator_layout
 
 
 class TestHuntingFromIndicatorLayout(unittest.TestCase):
-    @patch('demistomock.executecommand')
-    def test_hunting_from_indicator_layout_success(self, mock_executecommand):
-        mock_executecommand.return_value = [{'Type': 1, 'Contents': 'Incident created successfully'}]
+    @patch('demistomock.executeCommand')
+    def test_hunting_from_indicator_layout_success(self, mock_executeCommand):
+        mock_executeCommand.return_value = [{'Type': 1, 'Contents': 'Incident created successfully'}]
 
         sdo_value = 'indicator'
         result = hunting_from_indicator_layout(sdo_value)
@@ -16,9 +16,9 @@ class TestHuntingFromIndicatorLayout(unittest.TestCase):
         }
         self.assertEqual(result.outputs, expected_result)
 
-    @patch('demistomock.executecommand')
-    def test_hunting_from_indicator_layout_failure(self, mock_executecommand):
-        mock_executecommand.side_effect = Exception('Test error')
+    @patch('demistomock.executeCommand')
+    def test_hunting_from_indicator_layout_failure(self, mock_executeCommand):
+        mock_executeCommand.side_effect = Exception('Test error')
 
         sdo_value = 'indicator'
         with self.assertRaises(DemistoException):
