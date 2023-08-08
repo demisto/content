@@ -702,7 +702,9 @@ def fetch_incidents_command(client: Client) -> None:
         client (Client): Phisher client
     """
     first_fetch_time = client.first_fetch_time
+
     fetch_limit = arg_to_number(client.max_fetch)
+
     next_run, incidents = fetch_incidents(
         client=client,
         last_run=demisto.getLastRun(),
