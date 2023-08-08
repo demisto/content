@@ -37,7 +37,7 @@ def main() -> None:  # pragma: no cover
         return_results(hunting_from_indicator_layout(args.get("indicator", "").get("value")))
 
     except Exception as e:
-        raise DemistoException(f'Failed to create hunting session: {str(e)}')
+        return_error(f'Failed to create hunting session: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
