@@ -5,7 +5,7 @@ import pytest
 
 
 def util_load_json(path):
-    with open(path, mode="r") as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
@@ -133,27 +133,27 @@ def test_service_format(mocker):
         },
         {
             "Field": "Active Classifications",
-            "Value": "N/A"
+            "Value": "n/a"
         },
         {
             "Field": "Business Units",
-            "Value": "N/A"
+            "Value": "n/a"
         },
         {
             "Field": "Provider",
-            "Value": "N/A"
+            "Value": "n/a"
         },
         {
             "Field": "IP Addresses",
-            "Value": "N/A"
+            "Value": "n/a"
         },
         {
             "Field": "Port",
-            "Value": "N/A"
+            "Value": "n/a"
         },
         {
             "Field": "Protocol",
-            "Value": "N/A"
+            "Value": "n/a"
         },
         {
             "Field": "First Observed",
