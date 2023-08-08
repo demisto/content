@@ -3716,7 +3716,8 @@ class Pack:
                                                                {}).get(BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES, [])
 
         for image_name in pc_uploaded_dynamic_dashboard_images:
-            build_bucket_image_path = os.path.join(build_bucket_base_path, 'images', os.path.basename(image_name))
+            build_bucket_image_path = os.path.join(build_bucket_base_path, 'images',
+                                                   os.path.basename(image_name)).replace("packs/", "")
             build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
 
             if not build_bucket_image_blob.exists():
@@ -3728,7 +3729,7 @@ class Pack:
                 try:
                     copied_blob = build_bucket.copy_blob(
                         blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(storage_base_path, 'images', os.path.basename(image_name))
+                        new_name=os.path.join(storage_base_path, 'images', os.path.basename(image_name)).replace("packs/", "")
                     )
                     if not copied_blob.exists():
                         logging.error(f"Copy {self._pack_name} dynamic dashboard image: {build_bucket_image_blob.name} "
