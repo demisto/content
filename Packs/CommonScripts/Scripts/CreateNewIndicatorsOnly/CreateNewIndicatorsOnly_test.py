@@ -158,7 +158,7 @@ def test_all_indicators_exist_with_multiple_value(mocker):
 def test_some_indicators_exist_with_multiple_value(mocker):
     """
         Given:
-            Some of indicators existing in the threat intel are given to the 'indicator_values'.
+            Some indicators existing in the threat intel are given to the 'indicator_values'.
 
         When:
             Running the script
