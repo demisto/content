@@ -1,6 +1,6 @@
-id: Cortex ASM - Remediation Path Rules
+id: Cortex ASM - Remediation Path Rules_EXPANDR-3672
 version: -1
-name: Cortex ASM - Remediation Path Rules
+name: Cortex ASM - Remediation Path Rules_EXPANDR-3672
 description: This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task.
 starttaskid: "0"
 tasks:
@@ -1470,7 +1470,7 @@ tasks:
       gridfield:
         simple: asmdatacollection
       keys:
-        simple: Options,Selected,Answerer,Timestamp
+        simple: options,selected,answerer,timestamp
       val1:
         simple: What remediation action would you like to take?
       val2:

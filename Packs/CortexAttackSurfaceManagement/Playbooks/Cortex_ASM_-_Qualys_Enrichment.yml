@@ -1,6 +1,6 @@
-id: Cortex ASM - Qualys Enrichment
+id: Cortex ASM - Qualys Enrichment_EXPANDR-3672
 version: -1
-name: Cortex ASM - Qualys Enrichment
+name: Cortex ASM - Qualys Enrichment_EXPANDR-3672
 description: Given the IP address this playbook enriches information from Qualys assets.
 starttaskid: "0"
 tasks:
@@ -409,7 +409,7 @@ tasks:
       gridfield:
         simple: asmserviceowner
       keys:
-        simple: Name,Email,Source,Timestamp
+        simple: name,email,source,timestamp
       val1:
         complex:
           root: Qualys.Endpoint
@@ -496,7 +496,7 @@ tasks:
       gridfield:
         simple: asmtags
       keys:
-        simple: Key,Value,Source
+        simple: key,value,source
       val1:
         complex:
           root: Qualys.Endpoint.TAGS
@@ -604,7 +604,7 @@ tasks:
       gridfield:
         simple: asmsystemids
       keys:
-        simple: Type,ID,Link
+        simple: type,id,link
       val1:
         simple: Qualys-Host_id
       val2:

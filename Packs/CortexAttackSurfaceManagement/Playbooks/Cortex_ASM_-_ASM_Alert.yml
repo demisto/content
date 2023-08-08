@@ -1,8 +1,8 @@
-id: Cortex ASM - ASM Alert
+id: Cortex ASM - ASM Alert_EXPANDR-3672
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex ASM - ASM Alert
+name: Cortex ASM - ASM Alert_EXPANDR-3672
 description: This playbook handles ASM alerts by enriching asset information and providing a means of remediating the issue directly or through contacting service owners.
 starttaskid: "0"
 tasks:
@@ -671,7 +671,7 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         simple: Manual remediation
       val2:
@@ -781,7 +781,7 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         complex:
           root: alert.asmnotification
@@ -1167,7 +1167,7 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         simple: Manual remediation
       val2:
@@ -2823,7 +2823,7 @@ tasks:
       gridfield:
         simple: asmremediation
       keys:
-        simple: Action,ActionTimestamp,Outcome,OutcomeTimestamp
+        simple: action,actiontimestamp,outcome,outcometimestamp
       val1:
         simple: close service port from internet
       val2:

@@ -1,8 +1,8 @@
-id: Cortex ASM - Enrichment
+id: Cortex ASM - Enrichment_EXPANDR-3672
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex ASM - Enrichment
+name: Cortex ASM - Enrichment_EXPANDR-3672
 description: Used as a container folder for all enrichments of ASM alerts.
 starttaskid: "0"
 tasks:
@@ -1169,7 +1169,7 @@ tasks:
       gridfield:
         simple: asmserviceowner
       keys:
-        simple: Name,Email,Source,Timestamp
+        simple: name,email,source,timestamp
       val1:
         simple: n/a
       val2:

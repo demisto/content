@@ -1,6 +1,6 @@
-id: Cortex ASM - Jira Notification
+id: Cortex ASM - Jira Notification_EXPANDR-3672
 version: -1
-name: Cortex ASM - Jira Notification
+name: Cortex ASM - Jira Notification_EXPANDR-3672
 description: This playbook is used to create Jira tickets directed toward service owners to notify them of their internet exposures.
 starttaskid: "0"
 tasks:
@@ -104,7 +104,7 @@ tasks:
       gridfield:
         simple: asmnotification
       keys:
-        simple: Type,Value,URL,Timestamp
+        simple: type,value,url,timestamp
       val1:
         simple: Jira
       val2:

@@ -1,6 +1,6 @@
-id: Cortex ASM - Email Notification
+id: Cortex ASM - Email Notification_EXPANDR-3672
 version: -1
-name: Cortex ASM - Email Notification
+name: Cortex ASM - Email Notification_EXPANDR-3672
 description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
 starttaskid: "0"
 tasks:
@@ -208,7 +208,7 @@ tasks:
       gridfield:
         simple: asmnotification
       keys:
-        simple: Type,Value,URL,Timestamp
+        simple: type,value,url,timestamp
       val1:
         simple: Email
       val2:
