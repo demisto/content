@@ -169,7 +169,7 @@ validate-content-conf:
       TEMP_DIR=$(mktemp -d)
       LAST_UPLOAD_DEPENDENCIES_FILE="$TEMP_DIR/last_upload_packs_dependencies.json"
       gsutil cp "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json" $LAST_UPLOAD_DEPENDENCIES_FILE
-    - ./Tests/scripts/find_pack_dependencies_changes.py --previous "bla" --current $ARTIFACTS_FOLDER/packs_dependencies.json --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
+    - python Tests/scripts/find_pack_dependencies_changes.py --previous $LAST_UPLOAD_DEPENDENCIES_FILE --current $ARTIFACTS_FOLDER/packs_dependencies.json --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
     - rm -rf "$TEMP_DIR"
     - section_end "Find dependencies changes"
 
