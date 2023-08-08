@@ -5382,7 +5382,7 @@
         {
             "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.1"
+            "instance_names": "palo_alto_firewall_9.1"
         },
         {
             "integrations": "Secneurx Analysis",
