@@ -8964,3 +8964,22 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The tag with name "testtag" was deleted successfully.
+
+### pan-os-list-device-groups
+
+***
+Returns a list of all device groups from Panorama.
+#### Base Command
+
+`pan-os-list-device-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.DeviceGroupNames | string | The list of device groups. |
