@@ -1,4 +1,3 @@
-This Cortex XDR content pack contains the **Palo Alto Networks Cortex XDR - Investigation and Response** integration that enables direct execution of Cortex XDR actions within Cortex XSOAR. The **Cortex XDR Incident Handling v3** playbook enables bidirectional incident updates between Cortex XDR and Cortex XSOAR. 
 
 ## What does this pack do?
 The "Proactive Threat Hunting" pack for XSOAR enables users to initiate threat hunting sessions with the primary goal of identifying undetected threats within their environment. This pack supports two distinct hunting methods:
