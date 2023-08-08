@@ -116,7 +116,7 @@ class Client(BaseClient):
         return token_response.get('access_token'), token_response.get('access_expires_in')
 
     def get_incidents(self, from_date, to_date) -> Any:
-        return self._http_request(
+        return self.http_request(
             method="POST",
             json_data={
                 "type": "INCIDENTS",
@@ -124,16 +124,6 @@ class Client(BaseClient):
                 "to_date": to_str_time(to_date),
             },
             url_suffix="/incidents",
-        )
-
-    def get_incident_ids(self, incident_ids: list[int]) -> dict[str, Any]:
-        return self._http_request(
-            method="POST",
-            json_data={
-                "ids": incident_ids,
-                "type": "INCIDENTS",
-            },
-            url_suffix="/incidents/",
         )
 
     @staticmethod
@@ -199,7 +189,7 @@ def fetch_events_command_sub(
         if incident["id"] not in last_run_ids:
             incident["_collector_source"] = "API"
             events.append(incident)
-            new_last_run_ids[to_str_time(incident["event_time"])].add(incident["id"])
+            new_last_run_ids[incident["event_time"]].add(incident["id"])
             if len(events) == max_fetch:
                 break
 
@@ -242,41 +232,13 @@ def fetch_events(client, first_fetch, max_fetch):
     }
     events.extend(forward_events)
 
-    backward = demisto.getLastRun().get("backward") or {
-        "last_fetch": arg_to_datetime(first_fetch, settings=DATEPARSER_SETTINGS),
-        "last_events_ids": [],
-        "to_time": to_str_time(client.utc_now),
-        "done": not first_fetch,  # If first fetch is set to a value, it means we have something backward to fetch.
-    }
-
-    if not backward["done"] and max_fetch - len(events):
-        from_time = from_str_time(backward["last_fetch"])
-        to_time = from_str_time(backward["to_time"])
-        logging.debug(f"looking for backward events from:{from_time} to:{to_time}")
-        backward_events, last_events_ids, next_fetch_time = fetch_events_command_sub(client, max_fetch - len(events),
-                                                                                     to_time,
-                                                                                     from_time,
-                                                                                     backward["last_events_ids"])
-        if done := from_str_time(next_fetch_time) > from_str_time(backward["to_time"]):
-            demisto.info("Finished pulling all backward events")
-
-        backward = {
-            "last_fetch": next_fetch_time,
-            "last_events_ids": [] if done else last_events_ids,
-            "done": done,
-            "to_time": backward["to_time"],
-        }
-        events.extend(backward_events)
-
-    if events:
-        send_events_to_xsiam(events, VENDOR, PRODUCT)  # noqa
+    send_events_to_xsiam(events, VENDOR, PRODUCT)  # noqa
     demisto.setLastRun({
-        "backward": backward,
         "forward": forward,
     })
 
 
-def main():
+def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()

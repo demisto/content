@@ -6,7 +6,7 @@ commonfields:
   id: Forcepoint DLP (v2) Event Collector
   version: -1
 configuration:
-- display: Server URL (e.g., https://<server url>:<server port>/)
+- display: Server URL (e.g., https://<DLP Manager IP>:<DLP Manager port>/)
   name: url
   required: true
   type: 0
