@@ -179,4 +179,42 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     xdm.source.application.name = sub_module, 
     xdm.source.host.hostname = hostname;
 
-
+// vdnsmasq events 
+alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
+| filter event_type = "dnsmasq"
+| alter 
+    hostname = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+(\S+)"), 0),
+    syslog_msg = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+\S+\s+(.+)"), 0)
+| alter
+    pid = to_integer(arrayindex(regextract(syslog_msg, "[\w-]+\[(\d+)\]"), 0)),
+    event_details = arrayindex(regextract(syslog_msg, "dnsmasq\[\d+\]:\s+(.+)"), 0)
+| alter 
+    dns_event_fields = regextract(event_details, "(\S+)")
+| alter 
+    dns_operation = arrayindex(dns_event_fields, 0),
+    dns_record_name = arrayindex(dns_event_fields, 1),
+    dns_direction_context = arrayindex(dns_event_fields, 2),
+    dns_record_value = arrayindex(dns_event_fields, 3)
+| alter 
+    dns_query_type = arrayindex(regextract(dns_operation, "query\[([^\]]+)"), 0),
+    dns_client_ipv4 = if(dns_direction_context = "from" and dns_record_value ~= "\d+\.", dns_record_value),
+    dns_client_ipv6 = if(dns_direction_context = "from" and dns_record_value ~= "[\da-fA-F]+:", dns_record_value),
+    dns_forwarder_ipv4 = if(dns_operation = "forwarded" and dns_record_value ~= "\d+\.", dns_record_value),
+    dns_forwarder_ipv6 = if(dns_operation = "forwarded" and dns_record_value ~= "[\da-fA-F]+:", dns_record_value)
+| alter 
+    xdm.event.type = event_type,
+    xdm.event.description = event_details,
+    xdm.event.operation_sub_type = dns_operation, 
+    xdm.intermediate.ipv4 = dns_forwarder_ipv4, 
+    xdm.intermediate.ipv6 = dns_forwarder_ipv6,
+    xdm.network.application_protocol = "DNS",
+    xdm.network.dns.dns_resource_record.type = if(dns_record_value ~= "CNAME", XDM_CONST.DNS_RECORD_TYPE_CNAME), 
+    xdm.network.dns.dns_resource_record.name = dns_record_name, 
+    xdm.network.dns.dns_resource_record.value = if(dns_direction_context = "is", dns_record_value), 
+    xdm.network.dns.dns_question.type = if(dns_query_type="A",XDM_CONST.DNS_RECORD_TYPE_A, dns_query_type="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, dns_query_type="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, dns_query_type="APL",XDM_CONST.DNS_RECORD_TYPE_APL, dns_query_type="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, dns_query_type="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, dns_query_type="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, dns_query_type="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, dns_query_type="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, dns_query_type="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, dns_query_type="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, dns_query_type="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, dns_query_type="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, dns_query_type="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, dns_query_type="DS",XDM_CONST.DNS_RECORD_TYPE_DS, dns_query_type="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, dns_query_type="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, dns_query_type="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, dns_query_type="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, dns_query_type="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, dns_query_type="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, dns_query_type="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, dns_query_type="KX",XDM_CONST.DNS_RECORD_TYPE_KX, dns_query_type="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, dns_query_type="MX",XDM_CONST.DNS_RECORD_TYPE_MX, dns_query_type="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, dns_query_type="NS",XDM_CONST.DNS_RECORD_TYPE_NS, dns_query_type="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, dns_query_type="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, dns_query_type="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, dns_query_type="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, dns_query_type="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, dns_query_type="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, dns_query_type="RP",XDM_CONST.DNS_RECORD_TYPE_RP, dns_query_type="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, dns_query_type="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, dns_query_type="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, dns_query_type="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, dns_query_type="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, dns_query_type="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, dns_query_type="TA",XDM_CONST.DNS_RECORD_TYPE_TA, dns_query_type="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, dns_query_type="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, dns_query_type="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, dns_query_type="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, dns_query_type="URI",XDM_CONST.DNS_RECORD_TYPE_URI, dns_query_type="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(dns_query_type)),
+    xdm.observer.name = hostname, 
+    xdm.observer.action = dns_operation, 
+    xdm.source.process.pid = pid, 
+    xdm.source.process.name = event_type,
+    xdm.source.ipv4 = dns_client_ipv4, 
+    xdm.source.ipv6 = dns_client_ipv6;
