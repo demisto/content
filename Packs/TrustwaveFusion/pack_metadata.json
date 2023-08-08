@@ -2,7 +2,7 @@
     "name": "Trustwave Fusion",
     "description": "Trustwave Fusion is Trustwave's cloud-native platform that provides visibility and context in detection and response workflows.",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Trustwave",
     "url": "https://www.trustwave.com/en_us/company/support/",
     "email": "support@trustwave.com",
