@@ -8,12 +8,14 @@ def hunting_from_indicator_layout(sdo):
         Name: Threat Hunting Session - <Indicator Value>
         Type: Proactive Threat Hunting
         sdoname: <Indicator Value>
-
+    Args:
+        - sdo: The indicator value.
     Returns:
         - CommandResults: A CommandResults object with a readable output indicating that the incident was created.
 
     Raises:
-        - ValueError: If the indicator value is not part of Demisto args, a ValueError is raised with a message indicating that the automation was not executed from the indicator layout.
+        - ValueError: If the indicator value is not part of Demisto args,
+          a ValueError is raised with a message indicating that the automation was not executed from the indicator layout.
        """
     try:
         results = demisto.executeCommand("createNewIncident", {"name": f"Threat Hunting Session - {sdo}",
