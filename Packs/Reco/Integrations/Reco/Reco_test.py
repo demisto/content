@@ -1,7 +1,7 @@
 import json
 import uuid
 
-from typing import List, Dict, Any, Tuple
+from typing import Any
 
 import base64
 
@@ -98,7 +98,7 @@ def get_random_table_response() -> GetIncidentTableResponse:
     )
 
 
-def get_alerts_and_table_response() -> Tuple[GetIncidentTableResponse, Dict[str, Any]]:
+def get_alerts_and_table_response() -> tuple[GetIncidentTableResponse, dict[str, Any]]:
     alert = {
         "alert": {
             "id": INCIDET_ID_UUID,
@@ -156,7 +156,7 @@ def get_alerts_and_table_response() -> Tuple[GetIncidentTableResponse, Dict[str,
                             KeyValuePair(
                                 key="risk_level",
                                 value=base64.b64encode(
-                                    str("HIGH").encode(ENCODING)
+                                    "HIGH".encode(ENCODING)
                                 ).decode(ENCODING),
                             ),
                             KeyValuePair(
@@ -328,9 +328,9 @@ def get_random_risky_users_response() -> GetIncidentTableResponse:
     )
 
 
-def get_mock_assets() -> List[Dict[str, Any]]:
-    return dict(
-        assets=[
+def get_mock_assets() -> list[dict[str, Any]]:
+    return {
+        "assets": [
             {
                 "entityId": "1Fk-_IB4nAWh5TRkG7bV7LKj15ZQP0DimklY2fr5fKX1",
                 "name": "Untitled document",
@@ -341,7 +341,7 @@ def get_mock_assets() -> List[Dict[str, Any]]:
                 "owner": "test@acme.com",
             }
         ]
-    )
+    }
 
 
 def test_test_module_success(requests_mock, reco_client: RecoClient) -> None:
@@ -426,7 +426,7 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_fetch_incidents_without_assets_info(
-        requests_mock, reco_client: RecoClient
+    requests_mock, reco_client: RecoClient
 ) -> None:
     random_incidents = get_random_table_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
@@ -451,7 +451,7 @@ def test_fetch_incidents_without_assets_info(
 
 
 def test_fetch_assets_with_empty_response(
-        requests_mock, reco_client: RecoClient
+    requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.get(
@@ -559,7 +559,7 @@ def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -
 
 
 def test_update_reco_incident_timeline_error(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     incident_id = uuid.uuid1()
     requests_mock.put(
@@ -567,11 +567,10 @@ def test_update_reco_incident_timeline_error(
         json={},
         status_code=404,
     )
-    with capfd.disabled():
-        with pytest.raises(Exception):
-            reco_client.update_reco_incident_timeline(
-                incident_id=str(incident_id), comment="test"
-            )
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.update_reco_incident_timeline(
+            incident_id=str(incident_id), comment="test"
+        )
 
 
 def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> None:
@@ -586,17 +585,16 @@ def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> Non
 
 
 def test_resolve_visibility_event_error(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     entry_id = uuid.uuid1()
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=404
     )
-    with capfd.disabled():
-        with pytest.raises(Exception):
-            reco_client.resolve_visibility_event(
-                entity_id=str(entry_id), label_name="Accessible by all"
-            )
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.resolve_visibility_event(
+            entity_id=str(entry_id), label_name="Accessible by all"
+        )
 
 
 def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
@@ -612,16 +610,15 @@ def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_get_risky_users_bad_response(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
         json={},
         status_code=200,
     )
-    with capfd.disabled():
-        with pytest.raises(Exception):
-            get_risky_users_from_reco(reco_client=reco_client)
+    with capfd.disabled(), pytest.raises(Exception):
+        get_risky_users_from_reco(reco_client=reco_client)
 
 
 def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
@@ -648,16 +645,15 @@ def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -
 
 
 def test_get_assets_user_bad_response(
-        capfd, requests_mock, reco_client: RecoClient
+    capfd, requests_mock, reco_client: RecoClient
 ) -> None:
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
     )
-    with capfd.disabled():
-        with pytest.raises(Exception):
-            get_assets_user_has_access(
-                reco_client=reco_client, email_address="test", only_sensitive=False
-            )
+    with capfd.disabled(), pytest.raises(Exception):
+        get_assets_user_has_access(
+            reco_client=reco_client, email_address="test", only_sensitive=False
+        )
 
 
 def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) -> None:
@@ -706,9 +702,8 @@ def test_get_link_to_user_overview_page_error(capfd, requests_mock, reco_client:
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/risk-management/link?link_type={link_type}&param={entity_id}",
         json={}, status_code=200
     )
-    with capfd.disabled():
-        with pytest.raises(Exception):
-            get_link_to_user_overview_page(reco_client=reco_client, entity=entity_id, link_type=link_type)
+    with capfd.disabled(), pytest.raises(Exception):
+        get_link_to_user_overview_page(reco_client=reco_client, entity=entity_id, link_type=link_type)
 
 
 def test_get_exposed_publicly(requests_mock, reco_client: RecoClient) -> None:
@@ -726,22 +721,20 @@ def test_get_exposed_publicly(requests_mock, reco_client: RecoClient) -> None:
 def test_get_exposed_publicly_page_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
-    with capfd.disabled():
-        with pytest.raises(Exception):
-            get_sensitive_assets_shared_with_public_link(
-                reco_client=reco_client
-            )
+    with capfd.disabled(), pytest.raises(Exception):
+        get_sensitive_assets_shared_with_public_link(
+            reco_client=reco_client
+        )
 
 
 def test_get_3rd_parties_list_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(
         f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-data-risk-management-table", json={}, status_code=200)
-    with capfd.disabled():
-        with pytest.raises(Exception):
-            get_3rd_parties_list(
-                reco_client=reco_client,
-                last_interaction_time_in_days=30,
-            )
+    with capfd.disabled(), pytest.raises(Exception):
+        get_3rd_parties_list(
+            reco_client=reco_client,
+            last_interaction_time_in_days=30,
+        )
 
 
 def test_get_3rd_parties_list(requests_mock, reco_client: RecoClient) -> None:
@@ -772,3 +765,23 @@ def test_get_files_shared_with_3rd_parties(requests_mock, reco_client: RecoClien
 def test_date_formatting(reco_client: RecoClient) -> None:
     date = reco_client.get_date_time_before_days_formatted(30)
     assert ".999Z" in date
+
+
+def test_add_exclusion_filter(requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/algo/add_values_to_data_type_exclude_analyzer", json={}, status_code=200
+    )
+    reco_client.add_exclusion_filter("key", ["val1", "val2"])
+
+
+def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
+    alert_id = uuid.uuid1()
+    status = 'ALERT_STATUS_CLOSED'
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{str(alert_id)}/status/{status}",
+        json={},
+        status_code=200,
+    )
+    res = reco_client.change_alert_status(alert_id=str(alert_id),
+                                          status=status)
+    assert res == {}
