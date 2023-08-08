@@ -635,7 +635,7 @@ class TestFetchingStixObjects:
         assert mock_client.last_fetched_indicator__modified == expected_modified_result
 
     @pytest.mark.parametrize(
-        'objects_to_fetch_param', ([], ['dummy'])
+        'objects_to_fetch_param', ([], ['example_type'], ['example_type1', 'example_type2'])
     )
     def test_empty_objects_to_fetch_parameter(self, mocker, objects_to_fetch_param):
         """
@@ -664,7 +664,7 @@ class TestFetchingStixObjects:
         mock_client.poll_collection(page_size=1)
 
         if objects_to_fetch_param:
-            mock_as_pages.assert_called_with([], per_request=1, type=['dummy'])
+            mock_as_pages.assert_called_with([], per_request=1, type=objects_to_fetch_param)
         else:
             mock_as_pages.assert_called_with([], per_request=1)
 
