@@ -148,7 +148,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/confluent-kafka:1.0.0.65871
+  dockerimage: demisto/confluent-kafka:1.0.0.66557
 fromversion: 6.1.0
 tests:
 - KafkaV3 Test
