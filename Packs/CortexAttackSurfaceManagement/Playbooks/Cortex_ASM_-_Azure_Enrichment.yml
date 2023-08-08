@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -44,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -74,8 +76,7 @@ tasks:
       id: ae1677db-e76b-4941-8b98-3cf9f11ae04c
       version: -1
       name: Is there IAM information?
-      description: Determines if there is IAM information to set in the service owner
-        field.
+      description: Determines if there is IAM information to set in the service owner field.
       type: condition
       iscommand: false
       brand: ""
@@ -125,8 +126,7 @@ tasks:
       id: 7da0ba37-7770-45f3-86a2-1b8adf301511
       version: -1
       name: Is there Azure compute information?
-      description: Determines if there is Azure Compute information to set in the
-        system ID fields.
+      description: Determines if there is Azure Compute information to set in the system ID fields.
       type: condition
       iscommand: false
       brand: ""
@@ -169,8 +169,7 @@ tasks:
       id: 6ab8d059-5e32-41ff-8d56-eccf5685a2a4
       version: -1
       name: Is there Azure network information?
-      description: Determines if there is Azure network information to set in the
-        ASM Private IP field.
+      description: Determines if there is Azure network information to set in the ASM Private IP field.
       type: condition
       iscommand: false
       brand: ""
@@ -215,8 +214,7 @@ tasks:
       id: e2fc76a7-06ef-498c-815b-221ecb7275a4
       version: -1
       name: Set service owner grid field
-      description: Sets the potential Azure service owner to the grid field for the
-        ASM service owner object.
+      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -298,6 +296,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -328,6 +327,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -356,8 +356,7 @@ tasks:
       id: e87f35c7-4915-499c-8539-baf0cfb4bec6
       version: -1
       name: Set system IDs grid field (NSG)
-      description: Sets Azure NSG information to the grid field for the ASM system
-        IDs object.
+      description: Sets Azure NSG information to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -408,8 +407,7 @@ tasks:
       id: 068e6e38-5d79-4523-889f-ceb8317a3101
       version: -1
       name: Set system IDs grid field (Resource Group)
-      description: Sets Azure resource group information to the grid field for the
-        ASM system IDs object.
+      description: Sets Azure resource group information to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -454,8 +452,7 @@ tasks:
       id: 75624219-62de-4757-8990-17dbd85b87f7
       version: -1
       name: Set system IDs grid field (NIC)
-      description: Sets Azure NIC information to the grid field for the ASM system
-        IDs object.
+      description: Sets Azure NIC information to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -506,8 +503,7 @@ tasks:
       id: 8c3a9556-c518-4b15-8bb4-a1396414e20b
       version: -1
       name: Set system IDs grid field (ID)
-      description: Sets the Azure Compute instance ID to the grid field for the ASM
-        system IDs object.
+      description: Sets the Azure Compute instance ID to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -598,6 +594,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -628,6 +625,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -655,8 +653,7 @@ tasks:
       id: b7c3c772-5d3a-45f8-87dd-b0d4a03c8d1d
       version: -1
       name: Set cloud grid field
-      description: Sets Azure subscription, resource group, and location information
-        to the grid field for the ASM cloud object.
+      description: Sets Azure subscription, resource group, and location information to the grid field for the ASM cloud object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -718,8 +715,7 @@ tasks:
       id: 1d200507-43cc-4f05-88f0-df39bfe1549b
       version: -1
       name: Set system IDs grid field (Compute Name)
-      description: Sets the Azure Compute instance name to the grid field for the
-        ASM system IDs object.
+      description: Sets the Azure Compute instance name to the grid field for the ASM system IDs object.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -764,8 +760,7 @@ tasks:
       id: 919e2134-6f54-48c5-8023-ce126c5088a8
       version: -1
       name: Is there Azure compute information?
-      description: Determines if there is Azure Compute information to set in the
-        Cloud ASM fields.
+      description: Determines if there is Azure Compute information to set in the Cloud ASM fields.
       type: condition
       iscommand: false
       brand: ""
@@ -821,6 +816,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -929,6 +925,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -959,6 +956,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -989,6 +987,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -1097,6 +1096,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -1207,6 +1207,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -1237,6 +1238,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1306,8 +1308,7 @@ tasks:
       id: bd3321af-aef8-48b6-8f06-daf0d5770fe0
       version: -1
       name: Was enrichment performed?
-      description: Check if enrichment was performed by checking for a value of true
-        in the relevant flag variable.
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
       type: condition
       iscommand: false
       brand: ""
@@ -1414,7 +1415,7 @@ inputs:
       accessor: remoteip
   required: false
   description: IP address of the service.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
