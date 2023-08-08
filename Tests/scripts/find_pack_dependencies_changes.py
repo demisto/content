@@ -92,7 +92,7 @@ def main():
     current = load_json(args.current)
     diff = compare(previous, current)
     log_outputs(diff)
-    write_json(diff, args.output_dir)
+    write_json(diff, args.output)
 
 
 if __name__ == '__main__':
