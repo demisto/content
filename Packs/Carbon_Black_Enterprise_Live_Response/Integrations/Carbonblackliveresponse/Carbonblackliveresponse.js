@@ -1170,8 +1170,12 @@ function getFile() {
     //wait for 1 second before trying to get command information
     sleep(1000);
     let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
-
-    command = getCommandInfo(args['session'], command.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
+    try{
+        command = getCommandInfo(args['session'], command.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
+    }
+    catch(err) {
+        throw `Failed to get the file.\nError: ${err}.`;
+    }
     let commandEntry = commandEntries['get file'](command);
     let fileEntry = {}
     if (args.download == 'true') {
