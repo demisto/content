@@ -1289,6 +1289,7 @@ script:
     - contextPath: OpsGenie.TeamRoutingRule.notify.type
       description: Notify type of the routing rule.
   - name: opsgenie-get-alert-logs
+    description: Gets logs of an OpsGenie Alert.
     arguments:
     - name: alert_id
       required: true
@@ -1311,6 +1312,7 @@ script:
       description: Type of the alert log.
       type: String
   - name: opsgenie-add-alert-note
+    description: Adds note to an OpsGenie Alert
     arguments:
     - name: alert_id
       required: true
@@ -1353,6 +1355,7 @@ script:
       description: Whether the request was successful.
       type: Boolean
   - name: opsgenie-add-alert-details
+    description: Adds details to an OpsGenie Alert
     arguments:
     - name: alert_id
       required: true
