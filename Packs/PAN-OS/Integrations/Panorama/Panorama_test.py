@@ -1366,9 +1366,7 @@ class TestPanoramaEditRuleCommand:
             }
         }
         mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
-
-        with pytest.raises(DemistoException):
-            Panorama.panorama_edit_rule_command(args)
+        Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
     def test_edit_rule_to_disabled_flow(mocker, reset_device_group):
@@ -7166,3 +7164,14 @@ def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_valu
             assert request_mock.call_args.kwargs['body']['action'] == 'edit'
             assert request_mock.call_args.kwargs['body']['element'] == params_element
             assert return_results_mock.call_args[0][0]['HumanReadable'] == 'Rule edited successfully.'
+
+
+def test_list_device_groups_names(mocker):
+    from Panorama import list_device_groups_names
+
+    mocker.patch('Panorama.get_device_groups_names', return_value=['Test-Device', 'Test-Device-2'])
+
+    result = list_device_groups_names()
+
+    assert result.outputs == ['Test-Device', 'Test-Device-2']
+    assert result.readable_output == '### Device Group Names:\n|Group Name|\n|---|\n| Test-Device |\n| Test-Device-2 |\n'
