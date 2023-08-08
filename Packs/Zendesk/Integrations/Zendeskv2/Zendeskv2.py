@@ -307,6 +307,8 @@ class ZendeskClient(BaseClient):
 
     @staticmethod
     def error_handler(res: Response) -> None:
+        if res.text:
+            raise DemistoException(f'Error occurred in Zendesk API: {res.text}')
         res.raise_for_status()
 
     def _http_request(self, method: str, url_suffix: str = '', full_url: Optional[str] = None,  # type: ignore[override]
