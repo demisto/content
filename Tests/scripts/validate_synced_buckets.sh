@@ -23,7 +23,7 @@ function compare_revision() {
     if [ "$revision_origin" = "$revision_prod" ]; then
       echo "Revisions are the same: $revision_origin"
     else
-      echo "Revisions are different: $revision_origin (in $bucket_list_origin) vs $revision_prod (in $bucket_list_prod)"
+      echo "Revisions are different: $revision_origin (in $bucket_list_origin) vs $revision_prod (in $bucket_list_prod-$1)"
       exit 1
     fi
 
