@@ -568,7 +568,7 @@ sync-buckets-between-projects:
     MARKETPLACE_XPANSE_PROD: "marketplace-xpanse"
   script:
     - |
-      if [[ $TEST_UPLOAD == "true" ]]; then
+      if [[ $TEST_UPLOAD == "true" ]] and false; then
         echo "Skipping syncing buckets in test upload-flow"
         exit 0
       fi
