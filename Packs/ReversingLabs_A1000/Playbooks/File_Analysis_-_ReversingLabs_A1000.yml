@@ -1,9 +1,7 @@
 id: 528efc57-1c4f-45bf-83b7-6c8ad8006b23
-version: 17
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: File Analysis - ReversingLabs A1000
-description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve
-  full & classification reports. Calculate final classification.
+description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve full & classification reports. Calculate final classification.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "Playbook is triggered."
     nexttasks:
       '#none#':
       - "1"
@@ -45,6 +44,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Checks if the integration is enabled."
     nexttasks:
       '#default#':
       - "3"
@@ -104,6 +104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "Playbook finished."
     separatecontext: false
     view: |-
       {
@@ -130,6 +131,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Checks if there is a file to analyze."
     nexttasks:
       '#default#':
       - "3"
@@ -201,8 +203,7 @@ tasks:
       id: aa7f230e-2a31-4950-89fd-49e9d862c01c
       version: -1
       name: A1000FinalClassification
-      description: Calculates A1000 final classification based on A1000 classification
-        and A1000 full reports.
+      description: Calculates A1000 final classification based on A1000 classification and A1000 full reports.
       scriptName: A1000FinalClassification
       type: regular
       iscommand: false
@@ -277,6 +278,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Checks if the sample is already present on A1000."
     nexttasks:
       '#default#':
       - "11"
@@ -393,13 +395,13 @@ inputs:
     simple: ${File.EntryID}
   required: false
   description: The Entry ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: hash
   value:
     simple: ${File.SHA1}
   required: false
   description: SHA1 hash of the file.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.SHA256
   description: The SHA256 hash of the file.
@@ -427,7 +429,6 @@ outputs:
   description: The vendor used to calculate the score.
 - contextPath: ReversingLabs.a1000_report
   description: A1000 report
-sourceplaybookid: Detonate File - ReversingLabs A1000
 tests:
 - No tests
 fromversion: 6.0.0

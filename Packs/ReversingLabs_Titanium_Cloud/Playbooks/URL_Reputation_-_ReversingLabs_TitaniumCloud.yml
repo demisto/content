@@ -1,6 +1,5 @@
 id: b8309493-c536-4820-80b1-4cd8bcf56e8a
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: URL Reputation - ReversingLabs TitaniumCloud
 description: |-
   Get reputation data for the submitted URL.
@@ -19,6 +18,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: "Playbook triggered."
     nexttasks:
       '#none#':
       - "1"
@@ -48,6 +48,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Checks if the required integration is enabled."
     nexttasks:
       '#default#':
       - "3"
@@ -107,6 +108,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: "Playbook finished."
     separatecontext: false
     view: |-
       {
@@ -133,6 +135,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Checks if there is a URL to analyze."
     nexttasks:
       '#default#':
       - "3"
@@ -215,7 +218,7 @@ inputs:
       root: URL.Data
   required: false
   description: URL to analyze
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: URL.Data
   description: The URL
