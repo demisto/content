@@ -8717,31 +8717,23 @@ def domain_command(reliability: str) -> List[CommandResults]:
     """
 
     args = demisto.args()
-    query = args.get("domain", "paloaltonetworks.com")
+    domains = args.get("domain", [])
     is_recursive = argToBoolean(args.get("recursive", 'false'))
-    verbose = argToBoolean(args.get("verbose", "false"))
     should_error = argToBoolean(demisto.params().get('with_error', False))
 
-    demisto.info(f"whois command is called with the query '{query}'")
+    demisto.info(f"whois command is called with the query '{domains}'")
 
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
-    for query in argToList(query):
-        domain = get_domain_from_query(query)
+    for domain in argToList(domains):
 
         try:
             whois_result = get_whois(domain, is_recursive=is_recursive)
             execution_metrics.success += 1
-            md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
+            md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
             context_res = {}
             context_res.update(dbot_score)
             context_res.update({Common.Domain.CONTEXT_PATH: standard_ec})
-
-            if verbose:
-                demisto.info('Verbose response')
-                whois_result['query'] = query
-                json_res = json.dumps(whois_result, indent=4, sort_keys=True, default=str)
-                context_res.update({'Whois(val.query==obj.query)': json.loads(json_res)})
 
             result = CommandResults(
                 outputs=context_res,
@@ -8766,7 +8758,7 @@ def domain_command(reliability: str) -> List[CommandResults]:
                 outputPaths['domain']: {
                     'Name': domain,
                     'Whois': {
-                        'QueryStatus': f"Failed whois lookup: {e}"
+                        'QueryStatus': f"Failed domain lookup: {e}"
                     }
                 },
             })
