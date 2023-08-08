@@ -2277,7 +2277,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmcloud.Provider
+                        simple: alert.asmcloud.provider
                       iscontext: true
                     right:
                       value:
@@ -2319,7 +2319,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmcloud.Provider
+                        simple: alert.asmcloud.provider
                       iscontext: true
                     right:
                       value:
