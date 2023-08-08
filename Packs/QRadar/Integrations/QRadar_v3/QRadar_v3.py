@@ -3540,7 +3540,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
             print_context_data_stats(context_data, f"Get Remote Data events End for id {offense_id}")
             if status != QueryStatus.SUCCESS.value:
                 # we raise an exception because we don't want to change the offense until all events are fetched.
-                print_debug_msg(f'Events not mirrored yet for offense {offense_id}')
+                print_debug_msg(f'Events not mirrored yet for offense {offense_id}. Status: {status}')
                 raise DemistoException(f'Events not mirrored yet for offense {offense_id}')
             offense['events'] = events
 
