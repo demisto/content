@@ -15,11 +15,11 @@ PRODUCT = "dropbox"
 
 class DropboxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://api.dropbox.com/2/team_log/get_events
-    url = parse_obj_as(AnyUrl, 'https://api.dropbox.com')
-    method = Method.POST
-    headers = {'Content-Type': 'application/json'}
+    url: AnyUrl = parse_obj_as(AnyUrl, 'https://api.dropbox.com')
+    method: Method = Method.POST
+    headers: dict = {'Content-Type': 'application/json'}
     data: str
-    verify = not demisto.params().get('insecure')
+    verify: bool = not demisto.params().get('insecure')
 
 
 class DropboxEventsClient(IntegrationEventsClient):
