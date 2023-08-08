@@ -22,7 +22,7 @@ def hunting_from_indicator_layout(sdo: str):
                                                      "sdoname": f"{sdo}",
                                                      "type": "Proactive Threat Hunting"})
     except Exception as e:
-        raise DemistoException(f'Failed to create hunting session: {str(e)}')
+        raise DemistoException(f'Failed to create hunting session: {str(e)}') from e
 
     return CommandResults(
         readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo}"
@@ -38,6 +38,7 @@ def main() -> None:  # pragma: no cover
 
     except Exception as e:
         return_error(f'Failed to create hunting session: {str(e)}')
+
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
