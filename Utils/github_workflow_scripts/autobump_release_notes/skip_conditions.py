@@ -420,7 +420,7 @@ class PackSupportCondition(MetadataCondition):
         Returns: Reason why the condition failed, and pr skipped.
         """
         return SkipReason.NOT_ALLOW_SUPPORTED_TYPE_PACK.format(
-            self.ALLOWED_SUPPORT_TYPE, self.pack, support_type
+            self.ALLOWED_SUPPORT_TYPES, self.pack, support_type
         )
 
     def _check(
