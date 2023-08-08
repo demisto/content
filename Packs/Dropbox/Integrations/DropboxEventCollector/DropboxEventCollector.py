@@ -72,9 +72,8 @@ class DropboxEventsGetter(IntegrationGetEvents):
         # endregion
 
         # region Yield Response
-        while events := results.get('events'):  # Run as long there are logs
-
-            yield sorted(events, key=lambda d: d['timestamp'])
+        while results.get('events'):  # Run as long there are logs
+            yield sorted(results.get('events', []), key=lambda d: d.get('timestamp'))
 
             if results.get('has_more'):
                 self.client.set_request_filter(results.get('cursor'))
