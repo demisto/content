@@ -14,9 +14,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* 8602fe71-fe87-452f-88d7-eaa3c51c2511
-* c3e7d503-6939-487f-8b6b-b047c352090b
-* a418058c-fc0a-471c-8edc-ac8ff52399cc
+* Cortex XDR - Search and Compare Process Executions - XQL Engine
+* MDE - Search and Compare Process Executions
+* Cortex XDR - Search and Compare Process Executions - XDR Alerts
 
 ### Integrations
 
@@ -36,7 +36,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Processes | List of processes names and command line arguments to search |  | Optional |
+| Processes | Process name to search and command-line argument to compare. This input should receive an array that contains the following keys:<br/>-value: \*process name\*<br/>-commands: \*command-line arguments\* |  | Optional |
 | HuntingTimeFrame | Time in relative date or range format \(for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 \+02:00 and 2021-02-01 12:34:56 \+02:00"\). The default is the last 24 hours. | 7 days | Optional |
 | StringSimilarityThreshold | StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold. | 0.5 | Optional |
 
@@ -46,8 +46,8 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| StringSimilarity | StringSimilarity results. | unknown |
-| Findings | Suspicious process executions found. | unknown |
+| StringSimilarity | StringSimilarity automation results | unknown |
+| Findings | Suspicious process executions found | unknown |
 
 ## Playbook Image
 

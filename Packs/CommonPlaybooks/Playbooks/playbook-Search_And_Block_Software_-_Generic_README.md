@@ -10,8 +10,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* e5a31f4b-d3bb-4ba5-8fa3-a95105a3c5e4
-* d4b0f0de-7c11-4050-8e01-9067112f2772
+* Cortex XDR - Search And Block Software - XQL Engine
+* MDE - Search And Block Software
 
 ### Integrations
 

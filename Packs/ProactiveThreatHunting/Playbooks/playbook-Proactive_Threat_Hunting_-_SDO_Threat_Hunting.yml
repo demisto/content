@@ -95,6 +95,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -335,6 +336,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "1"
@@ -529,9 +531,9 @@ tasks:
     task:
       id: b51a0eec-4e8d-4d59-8af6-74f0b4e49501
       version: -1
-      name: Search LOLBAS Tools Related To Attack Patterns
-      description: This playbook searches for LOLBAS tools that are related to a given attack pattern.
-      playbookName: Search LOLBAS Tools Related To Attack Patterns
+      name: Search LOLBAS Tools By Name
+      description: This playbook searches for LOLBAS tools by their name, and returns the tool command from LOLBAS.
+      playbookName: Search LOLBAS Tools By Name
       type: playbook
       iscommand: false
       brand: ""
@@ -754,6 +756,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "29"
@@ -814,6 +817,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "35"
@@ -931,6 +935,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "29"
@@ -1143,6 +1148,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "29"
@@ -1284,6 +1290,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "29"
