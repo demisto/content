@@ -3,6 +3,7 @@ from unittest.mock import patch
 from HuntingFromIndicatorLayout import hunting_from_indicator_layout
 import demistomock as demisto
 
+
 @pytest.fixture
 def mock_executeCommand():
     with patch('demistomock.executeCommand') as mock:
