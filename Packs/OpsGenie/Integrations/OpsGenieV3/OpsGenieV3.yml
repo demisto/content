@@ -1296,19 +1296,19 @@ script:
       description: Alert ID
     description: Lists alert logs.
     outputs:
-    - contextPath: OpsGenie.Alert.Logs.createdAt
+    - contextPath: OpsGenie.AlertLogs.createdAt
       description: Time the alert was created.
       type: String
-    - contextPath: OpsGenie.Alert.Logs.log
+    - contextPath: OpsGenie.AlertLogs.log
       description: Log of the alert.
       type: String
-    - contextPath: OpsGenie.Alert.Logs.offset
+    - contextPath: OpsGenie.AlertLogs.offset
       description: Offset of the alert log.
       type: String
-    - contextPath: OpsGenie.Alert.Logs.owner
+    - contextPath: OpsGenie.AlertLogs.owner
       description: Owner of the alert log.
       type: String
-    - contextPath: OpsGenie.Alert.Logs.type
+    - contextPath: OpsGenie.AlertLogs.type
       description: Type of the alert log.
       type: String
   - name: opsgenie-add-alert-note

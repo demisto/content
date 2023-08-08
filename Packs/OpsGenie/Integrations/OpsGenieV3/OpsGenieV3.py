@@ -701,7 +701,7 @@ def get_alert_logs(client: Client, args: Dict[str, Any]) -> CommandResults:
     result = client.get_alert_logs(args)
     data = result.get("data")
     return CommandResults(
-        outputs_prefix="OpsGenie.Alert.Logs",
+        outputs_prefix="OpsGenie.AlertLogs",
         outputs=result.get("data"),
         readable_output=tableToMarkdown("OpsGenie Logs", data),
         raw_response=result
