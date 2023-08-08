@@ -1,8 +1,8 @@
 import SplunkConvertCommentsToTable
 
-EXPECTED_TABLE = ('|Comment|Comment time|Reviewer|\n'
+EXPECTED_TABLE = ('|Comment|\n'
                   '|---|---|---|\n'
-                  '| new comment | 1688548665.512371 | admin |\n')
+                  '| new comment |\n')
 
 
 def test_convert_to_table(mocker):
@@ -15,7 +15,7 @@ def test_convert_to_table(mocker):
         - Validate the table is created correctly
     """
     incident = {'CustomFields': {'splunkcomments': [
-        '{"Comment":"new comment","Comment time":"1688548665.512371","Reviewer":"admin"}']}}
+        '{"Comment":"new comment"}']}}
     mocker.patch('demistomock.incident', return_value=incident)
     result = SplunkConvertCommentsToTable.main()
 

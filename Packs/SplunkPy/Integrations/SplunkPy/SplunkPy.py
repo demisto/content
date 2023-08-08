@@ -573,17 +573,11 @@ class Notable:
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         if demisto.get(notable_data, 'comment'):
             comments = argToList(notable_data.get('comment', []))
-            reviewers = argToList(notable_data.get('reviewer', []))
-            review_times = argToList(notable_data.get('review_time', []))
-
-            demisto.debug(f"data to update comment= {comments}, review=  {reviewers}, time= {review_times}")
-            for comment, reviewer, review_time in zip(comments, reviewers, review_times):
+            demisto.debug(f"data to update comment= {comments}")
+            for comment in comments:
                 # Creating a comment
                 comment_entries.append({
-                    'Comment': comment,
-                    'Comment time': review_time,
-                    'Reviwer': reviewer
-                })
+                    'Comment': comment})
         labels.append({'type': 'SplunkComments', 'value': str(comment_entries)})
         incident['labels'] = labels
         incident['dbotMirrorId'] = notable_data.get(EVENT_ID)
@@ -1260,6 +1254,41 @@ def get_last_update_in_splunk_time(last_update):
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
+def get_comments_data(service: client.Service, notable_id: str, comment_tag_from_splunk: str, last_update_splunk_timestamp):
+    """get notable comments data and add new entries if needed
+    Args:
+        comment_tag_from_splunk (str): _description_
+    """
+    notes = []
+    search = '|`incident_review` ' \
+             '| eval last_modified_timestamp=_time ' \
+             f'| where rule_id="{notable_id}" ' \
+             f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
+             '| fields - time ' \
+
+    demisto.debug(f'Performing get-comments-data command with query: {search}')
+
+    for item in results.JSONResultsReader(service.jobs.oneshot(search, output_mode=OUTPUT_MODE_JSON)):
+        demisto.debug(f'item: {item}')
+        if handle_message(item):
+            continue
+        updated_notable = parse_notable(item, to_dict=True)
+        demisto.debug(f'updated_notable: {updated_notable}')
+        comment = updated_notable.get('comment', '')
+        if comment and COMMENT_MIRRORED_FROM_XSOAR not in comment:
+            # Creating a note
+            notes.append({
+                'Type': EntryType.NOTE,
+                'Contents': comment,
+                'ContentsFormat': EntryFormat.TEXT,
+                'Tags': [comment_tag_from_splunk],  # The list of tags to add to the entry
+                'Note': True,
+            })
+            demisto.debug(f'Update new comment-{comment}')
+    demisto.debug(f'notes={notes}')
+    return notes
+
+
 def get_remote_data_command(service: client.Service, args: dict,
                             close_incident: bool, close_end_statuses: bool, close_extra_labels: list[str], mapper,
                             comment_tag_from_splunk: str):
@@ -1298,31 +1327,6 @@ def get_remote_data_command(service: client.Service, args: dict,
         demisto.debug("owner field was found, changing according to mapping.")
         updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
             updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
-    if updated_notable.get('comment'):
-        comment_entries = []
-        comments = argToList(updated_notable.get('comment'))
-        reviewers = argToList(updated_notable.get('reviewer'))
-        review_times = argToList(updated_notable.get('review_time'))
-        for comment, reviewer, review_time in zip(comments, reviewers, review_times):
-            comment_entries.append({
-                'Comment': comment,
-                'Comment time': review_time,
-                'Reviwer': reviewer
-            })
-            if (COMMENT_MIRRORED_FROM_XSOAR not in comment and last_update_splunk_timestamp
-                    and last_update_splunk_timestamp < float(review_time)):
-                # Creating a note
-                entries.append({
-                    'Type': EntryType.NOTE,
-                    'Contents': comment,
-                    'ContentsFormat': EntryFormat.TEXT,
-                    'Tags': [comment_tag_from_splunk],  # The list of tags to add to the entry
-                    'Note': True,
-                })
-                demisto.debug(f'Update new comment-{comment}')
-        if comment_entries:
-            updated_notable['SplunkComments'] = comment_entries
-
     if close_incident and updated_notable.get('status_label'):
         status_label = updated_notable['status_label']
 
@@ -1341,7 +1345,18 @@ def get_remote_data_command(service: client.Service, args: dict,
     else:
         demisto.debug('"status_label" key could not be found on the returned data, '
                       f'skipping closure mirror for notable {notable_id}.')
-
+    if updated_notable.get('comment'):
+        comment_entries = []
+        comments = argToList(updated_notable.get('comment'))
+        for comment in comments:
+            comment_entries.append({
+                'Comment': comment,
+            })
+        new_notes = get_comments_data(service, notable_id, comment_tag_from_splunk, last_update_splunk_timestamp)
+        demisto.debug(f"new_notes: {new_notes}")
+        entries.extend(new_notes)
+        if comment_entries:
+            updated_notable['SplunkComments'] = comment_entries
     demisto.debug(f'Updated notable {notable_id}')
     return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
