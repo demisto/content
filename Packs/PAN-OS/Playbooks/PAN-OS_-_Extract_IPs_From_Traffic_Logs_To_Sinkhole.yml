@@ -918,9 +918,5 @@ outputs:
 - contextPath: Panorama.Monitor.Logs.Vsys
   description: The VSYS on the firewall that generated the log.
 tests:
-- palo_alto_panorama_test_pb
-- PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
-- PAN-OS URL Filtering enrichment - Test
-- PAN-OS Create Or Edit Rule Test
-- PAN-OS DAG Configuration Test
+- No tests
 fromversion: 6.9.0

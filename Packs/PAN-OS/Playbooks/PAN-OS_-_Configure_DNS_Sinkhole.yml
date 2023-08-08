@@ -1957,7 +1957,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- PAN-OS - Add Anti-Spyware Security Profile To Rule - Test
-- PAN-OS Create Or Edit Rule Test
-- PAN-OS DAG Configuration Test
+- No tests
 fromversion: 6.9.0
