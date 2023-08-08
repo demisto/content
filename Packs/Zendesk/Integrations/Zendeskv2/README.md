@@ -774,24 +774,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
-## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and Zendesk v2 corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
-1. Enable *Fetching incidents* in your instance configuration.
-2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-
-    | **Option** | **Description** |
-    | --- | --- |
-    | None | Turns off incident mirroring. |
-    | Incoming | Any changes in Zendesk v2 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Zendesk v2 events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Zendesk v2 events will be reflected in both directions. |
-
-3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Zendesk v2.
-
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
 
 ### zendesk-group-user-list
 
@@ -975,4 +958,28 @@ Allowed for: Admins, Agents.
 >|Id| Name |IsPublic|CreatedAt|UpdatedAt|
 >|------|---|---|---|---|
 >| 11395818128925 | Test Group | true | 2023-06-06T07:44:20Z | 2023-06-06T07:44:20Z |
+
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Zendesk v2 corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Zendesk v2 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Zendesk v2 events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Zendesk v2 events will be reflected in both directions. |
+
+3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Zendesk v2.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+
+**Important Notes:** 
+- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zendesk v2.
+- Mirroring of comments is currently not supported.
 
