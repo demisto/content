@@ -1,5 +1,5 @@
 {
-    "workday_workday_raw": {
+    "workday_activity_raw": {
       "systemAccount": {
         "type": "string",
         "is_array": false

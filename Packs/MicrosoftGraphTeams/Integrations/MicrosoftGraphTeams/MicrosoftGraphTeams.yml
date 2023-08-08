@@ -40,6 +40,7 @@ configuration:
   name: self_deployed
   type: 8
   required: false
+  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
   type: 0
@@ -296,7 +297,7 @@ script:
   - arguments: []
     description: Tests connectivity to Microsoft Graph Teams.
     name: msgraph-teams-test
-  dockerimage: demisto/crypto:1.0.0.49599
+  dockerimage: demisto/crypto:1.0.0.66562
   script: ''
   subtype: python3
   type: python

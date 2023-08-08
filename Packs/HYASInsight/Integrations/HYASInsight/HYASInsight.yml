@@ -367,7 +367,7 @@ script:
     - contextPath: HYAS.C2_Attribution.sha256
       description: The sha256 malware hash
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3
