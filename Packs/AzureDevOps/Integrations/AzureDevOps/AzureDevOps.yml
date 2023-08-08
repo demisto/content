@@ -1674,10 +1674,6 @@ script:
         description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
         required: true
         isArray: false
-      - name: branch_id
-        description: The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command.
-        required: true
-        isArray: false
       - name: commit_comment
         description: Comment or message of the commit.
         required: true
@@ -1855,10 +1851,6 @@ script:
         description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
         required: true
         isArray: false
-      - name: branch_id
-        description: The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command.
-        required: true
-        isArray: false
       - name: commit_comment
         description: Comment or message of the commit.
         required: true
@@ -2034,10 +2026,6 @@ script:
         isArray: false
       - name: branch_name
         description: The branch name. This argument can be obtained by running the 'azure-devops-branch-list' command.
-        required: true
-        isArray: false
-      - name: branch_id
-        description: The branch ID. This argument can be obtained by running the 'azure-devops-branch-list' command.
         required: true
         isArray: false
       - name: commit_comment

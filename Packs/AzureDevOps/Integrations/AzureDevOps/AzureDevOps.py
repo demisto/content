@@ -2108,6 +2108,15 @@ def work_item_update_command(client: Client, args: Dict[str, Any], organization:
     )
 
 
+def extract_branch_id_and_validate_for_files_commands(client: Client, args: Dict[str, Any], org_repo_project_tuple: namedtuple):
+    """
+    Extract the branch id by the given branch name. In case of None, raise an exception since branch does not exist.
+    """
+    if branch_id := mapping_branch_name_to_branch_id(client, args, org_repo_project_tuple):
+        return branch_id
+    raise DemistoException(f'The given branch {args["branch_name"]} does not exist.')
+
+
 def file_create_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
                         project: Optional[str]) -> CommandResults:
     """
@@ -2115,6 +2124,7 @@ def file_create_command(client: Client, args: Dict[str, Any], organization: Opti
     """
     # pre-processing inputs
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, org_repo_project_tuple)
 
     response = client.file_request(org_repo_project_tuple, change_type="add", args=args)
 
@@ -2136,6 +2146,7 @@ def file_update_command(client: Client, args: Dict[str, Any], organization: Opti
     """
     # pre-processing inputs
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, org_repo_project_tuple)
 
     response = client.file_request(org_repo_project_tuple, change_type="edit", args=args)
 
@@ -2157,6 +2168,7 @@ def file_delete_command(client: Client, args: Dict[str, Any], organization: Opti
     """
     # pre-processing inputs
     org_repo_project_tuple = organization_repository_project_preprocess(args, organization, repository_id, project)
+    args["branch_id"] = extract_branch_id_and_validate_for_files_commands(client, args, org_repo_project_tuple)
 
     response = client.file_request(org_repo_project_tuple, change_type="delete", args=args)
 
@@ -2221,7 +2233,7 @@ def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], org_r
     """
     branch_list = branch_list_command(client, args, org_repo_project_tuple.repository, org_repo_project_tuple.project)
     for branch in branch_list.outputs:
-        if branch.get("name").endswith(args["reference_branch_name"]):
+        if branch.get("name").endswith(args.get("reference_branch_name", args.get("branch_name"))):
             return branch.get("objectId")
 
 
