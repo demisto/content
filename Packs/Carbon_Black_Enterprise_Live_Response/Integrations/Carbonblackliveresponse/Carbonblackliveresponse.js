@@ -1153,9 +1153,11 @@ function getFileRequest(sessionId, path, offset, bytes)   {
     let queryParams = {
         name: 'get file',
         object: path,
-        offset: offset,
-        get_count: bytes
+        offset: offset
     };
+    if (bytes) {
+        queryParams['get_count'] = bytes;
+    }
 
     let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
     try {
