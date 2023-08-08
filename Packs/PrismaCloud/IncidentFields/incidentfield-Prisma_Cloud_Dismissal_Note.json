@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "cliName": "prismaclouddismissalnote",
     "type": "shortText",
-    "closeForm": true,
+    "closeForm": false,
     "editForm": false,
     "required": false,
     "neverSetAsRequired": false,
