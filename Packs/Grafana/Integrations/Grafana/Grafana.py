@@ -507,6 +507,7 @@ def user_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def annotation_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     dashboard_id = arg_to_number(args.get('dashboard_id'))
+
     panel_id = arg_to_number(args.get('panel_id'))
 
     time_start = set_time_to_epoch_millisecond(args.get('time'))
