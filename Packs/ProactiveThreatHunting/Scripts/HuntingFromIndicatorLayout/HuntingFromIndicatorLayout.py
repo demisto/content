@@ -19,8 +19,8 @@ def hunting_from_indicator_layout(sdo: str):
        """
     try:
         demisto.executeCommand("createNewIncident", {"name": f"Threat Hunting Session - {sdo}",
-                                                               "sdoname": f"{sdo}",
-                                                               "type": "Proactive Threat Hunting"})
+                                                     "sdoname": f"{sdo}",
+                                                     "type": "Proactive Threat Hunting"})
     except Exception as e:
         raise DemistoException(f'Failed to create hunting session: {str(e)}')
 
