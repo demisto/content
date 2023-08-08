@@ -820,6 +820,10 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      AzureIP:
+        complex:
+          root: inputs.RemoteIP
     separatecontext: true
     continueonerrortype: ""
     view: |-
