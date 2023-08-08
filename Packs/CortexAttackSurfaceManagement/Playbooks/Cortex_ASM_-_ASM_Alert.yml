@@ -839,7 +839,7 @@ tasks:
       gridfield:
         simple: asmalertsummary
       keys:
-        simple: Link,EntryID
+        simple: link,entryid
       val1:
         complex:
           root: demistoUrls
@@ -2878,12 +2878,12 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: alert.asmserviceowner.Email
+                        simple: alert.asmserviceowner.email
                       iscontext: true
                     right:
                       value:
                         simple: '@'
-                accessor: Email
+                accessor: email
             iscontext: true
           right:
             value: {}
@@ -2932,12 +2932,12 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: alert.asmserviceowner.Email
+                  simple: alert.asmserviceowner.email
                 iscontext: true
               right:
                 value:
                   simple: '@'
-          accessor: Email
+          accessor: email
     separatecontext: false
     continueonerrortype: ""
     view: |-
