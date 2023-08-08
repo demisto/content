@@ -454,8 +454,8 @@ class Client:
                                            params=params,
                                            resp_type='json')
 
-    def pull_requests_reviewer_create_request(self, org_repo_project_tuple: namedtuple, pull_request_id: int,
-                                              reviewer_user_id: str, is_required: bool):
+    def pull_requests_reviewer_add_request(self, org_repo_project_tuple: namedtuple, pull_request_id: int,
+                                           reviewer_user_id: str, is_required: bool):
         params = {"api-version": 7.0}
         data = {"id": reviewer_user_id, "isRequired": is_required, "vote": 0}
 
@@ -1909,8 +1909,8 @@ def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], org
     )
 
 
-def pull_request_reviewer_create_command(client: Client, args: Dict[str, Any], organization: Optional[str],
-                                         repository_id: Optional[str], project: Optional[str]) -> CommandResults:
+def pull_request_reviewer_add_command(client: Client, args: Dict[str, Any], organization: Optional[str],
+                                      repository_id: Optional[str], project: Optional[str]) -> CommandResults:
     """
     Add a reviewer to a pull request.
     """
@@ -1922,7 +1922,7 @@ def pull_request_reviewer_create_command(client: Client, args: Dict[str, Any], o
     reviewer_user_id = args["reviewer_user_id"]  # reviewer_user_id is required
     is_required = args.get('is_required', False)
 
-    response = client.pull_requests_reviewer_create_request(org_repo_project_tuple, pull_request_id,
+    response = client.pull_requests_reviewer_add_request(org_repo_project_tuple, pull_request_id,
                                                             reviewer_user_id, is_required)
 
     readable_output = f'{response.get("displayName")} ({response.get("id")}) was created successfully as a reviewer for' \
@@ -2584,9 +2584,9 @@ def main() -> None:
             return_results(pull_request_reviewer_list_command(client, args, params.get('organization'),
                                                               params.get('repository'), params.get('project')))
 
-        elif command == 'azure-devops-pull-request-reviewer-create':
-            return_results(pull_request_reviewer_create_command(client, args, params.get('organization'),
-                                                                params.get('repository'), params.get('project')))
+        elif command == 'azure-devops-pull-request-reviewer-add':
+            return_results(pull_request_reviewer_add_command(client, args, params.get('organization'),
+                                                             params.get('repository'), params.get('project')))
 
         elif command == 'azure-devops-pull-request-commit-list':
             return_results(pull_request_commit_list_command(client, args, params.get('organization'),

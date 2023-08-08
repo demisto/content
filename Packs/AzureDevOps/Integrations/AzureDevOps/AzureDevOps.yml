@@ -829,7 +829,7 @@ script:
       - type: String
         contextPath: AzureDevOps.PullRequestReviewer.value.imageUrl
         description: Link to the reviewers user image.
-  - name: azure-devops-pull-request-reviewer-create
+  - name: azure-devops-pull-request-reviewer-add
     description: Add a reviewer to a pull request.
     arguments:
       - name: organization_name
