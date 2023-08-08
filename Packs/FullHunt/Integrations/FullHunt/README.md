@@ -52,8 +52,6 @@ None
 ***
 Get host details
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 #### Base Command
 
 `fullhunt-get-host`
@@ -108,8 +106,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 ***
 Get details about one specified domain
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 #### Base Command
 
 `fullhunt-domain`
@@ -140,8 +136,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 ***
 Get all subdomains from a given domain
-
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 

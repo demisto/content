@@ -73,8 +73,6 @@ There is no context output for this command.
 ***
 Get URL Rating from FortiSandbox
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -247,8 +245,6 @@ There is no context output for this command.
 ### fortisandbox-upload-urls
 ***
 Upload CSV URLs
-
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

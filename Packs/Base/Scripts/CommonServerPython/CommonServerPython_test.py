@@ -8481,11 +8481,15 @@ class TestSendEventsToXSIAMTest:
         elif 'url' in arg:
             return "url"
 
+    @pytest.fixture
+    def teardown_for_send_events_to_xsiam_positive(self):
+        yield
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.orig_xsiam_file_size
 
     @pytest.mark.parametrize('events_use_case', [
         'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
     ])
-    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case, teardown_for_send_events_to_xsiam_positive):
         """
         Test for the fetch events function
         Given:
@@ -8546,10 +8550,10 @@ class TestSendEventsToXSIAMTest:
 
         events = self.test_data[events_use_case]['events']
         number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
-        chunk_size = self.test_data[events_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.test_data[events_use_case].get('XSIAM_FILE_SIZE',
+                                                                                        self.orig_xsiam_file_size)
         data_format = self.test_data[events_use_case].get('format')
-        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format,
-                             chunk_size=chunk_size)
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
         if number_of_events:
             expected_format = self.test_data[events_use_case]['expected_format']

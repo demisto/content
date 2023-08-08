@@ -1246,7 +1246,6 @@
 <hr>
 <p> </p>
 <p>Checks if the URL is in MISP events.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <p> </p>
 <h5>Base Command</h5>
 <p> </p>

@@ -30,9 +30,7 @@ basic search reports by ip
 ### domain
 
 ***
-basic search reports by domain.
-
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+basic search reports by domain
 
 #### Base Command
 

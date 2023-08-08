@@ -143,8 +143,6 @@ Returns the reputation of the domain.
 ***
 Returns the reputation of the URL.
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -336,8 +334,6 @@ Returns the reputation of the domain.
 ### url
 ***
 Returns the reputation of the URL.
-
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

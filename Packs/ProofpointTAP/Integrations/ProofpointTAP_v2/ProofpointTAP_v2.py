@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+from typing import Optional, Tuple, Union
 from datetime import datetime, timedelta
 import json
 import requests
@@ -38,7 +39,7 @@ def get_fetch_times(last_fetch):
         List[str]: list of str represents every hour since last_fetch
     """
     now = get_now()
-    times = []
+    times = list()
     time_format = DATE_FORMAT
     if isinstance(last_fetch, str):
         times.append(last_fetch)
@@ -404,7 +405,7 @@ def build_context_screenshot(forensics_data: dict) -> dict:
     )
 
 
-def get_forensic_command(client: Client, args: dict) -> tuple[str, dict, dict]:
+def get_forensic_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """
     Args:
         client:
@@ -439,7 +440,7 @@ def get_forensic_command(client: Client, args: dict) -> tuple[str, dict, dict]:
     reports = raw_response.get('reports', [])
     if len(reports) > limit:
         reports = reports[:limit]
-    reports_context = []
+    reports_context = list()
     for report in reports:
         report_context = assign_params(
             Scope=report.get('scope'),
@@ -452,7 +453,7 @@ def get_forensic_command(client: Client, args: dict) -> tuple[str, dict, dict]:
             if evidence_type:
                 # Create list in report
                 if evidence_type not in report_context:
-                    report_context[evidence_type] = []
+                    report_context[evidence_type] = list()
                 what = evidence.get('what', {})
                 basic_report = assign_params(
                     Time=evidence.get('time'),
@@ -546,8 +547,8 @@ def fetch_incidents(
     threat_status,
     limit=DEFAULT_LIMIT,
     integration_context=None,
-    raw_json_encoding: str | None = None,
-) -> tuple[dict, list, list]:
+    raw_json_encoding: Optional[str] = None,
+) -> Tuple[dict, list, list]:
     incidents = []
     end_query_time = ''
     # check if there're incidents saved in context
@@ -581,7 +582,7 @@ def fetch_incidents(
             else:
                 raw_json = json.dumps(raw_event)
             incident = {
-                "name": f"Proofpoint - Message Delivered - {event_guid}",
+                "name": "Proofpoint - Message Delivered - {}".format(event_guid),
                 "rawJSON": raw_json,
                 "occurred": raw_event["messageTime"]
             }
@@ -598,7 +599,7 @@ def fetch_incidents(
             else:
                 raw_json = json.dumps(raw_event)
             incident = {
-                "name": f"Proofpoint - Message Blocked - {event_guid}",
+                "name": "Proofpoint - Message Blocked - {}".format(event_guid),
                 "rawJSON": raw_json,
                 "occured": raw_event["messageTime"],
             }
@@ -615,7 +616,7 @@ def fetch_incidents(
             else:
                 raw_json = json.dumps(raw_event)
             incident = {
-                "name": f"Proofpoint - Click Permitted - {event_guid}",
+                "name": "Proofpoint - Click Permitted - {}".format(event_guid),
                 "rawJSON": raw_json,
                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
                     "threatTime"]
@@ -633,7 +634,7 @@ def fetch_incidents(
             else:
                 raw_json = json.dumps(raw_event)
             incident = {
-                "name": f"Proofpoint - Click Blocked - {event_guid}",
+                "name": "Proofpoint - Click Blocked - {}".format(event_guid),
                 "rawJSON": raw_json,
                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
                     "threatTime"]
@@ -925,7 +926,7 @@ def list_campaigns_command(client: Client, interval: str = None, limit: str = No
     )
 
 
-def get_campaign_command(client: Client, campaign_id: str) -> CommandResults | str:
+def get_campaign_command(client: Client, campaign_id: str) -> Union[CommandResults, str]:
     """
     Retrieves information for a given campaign.
     Args:
@@ -1220,7 +1221,7 @@ def main():
 
     raw_json_encoding = params.get('raw_json_encoding')
 
-    fetch_limit = min(params.get('limit', DEFAULT_LIMIT), DEFAULT_LIMIT)
+    fetch_limit = 50
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
 

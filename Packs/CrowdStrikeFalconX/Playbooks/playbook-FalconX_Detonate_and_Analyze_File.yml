@@ -54,7 +54,7 @@ tasks:
       - "7"
     scriptarguments:
       brandname:
-        simple: CrowdStrike Falcon X
+        simple: CrowdStrike Falcon Intelligence Sandbox
     results:
     - brandInstances
     separatecontext: false

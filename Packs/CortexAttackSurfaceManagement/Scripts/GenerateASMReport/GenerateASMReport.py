@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from base64 import b64decode
-from typing import Any
+from typing import Any, Dict, List
 
 
 ''' CONSTANTS '''
@@ -16,7 +16,7 @@ CHUNK6 = "j8pLznBeKioqJ3QFt+aaGdwNNoCNOF/82HRe4KDrfd13rHZ+E5Vcxb1SU8h/PfwsrzPwnP
 IMAGE_HEADER = "data:image/png;base64," + CHUNK1 + CHUNK2 + CHUNK3 + CHUNK4 + CHUNK5 + CHUNK6
 
 
-def build_report(template: list[dict], alert_id: str, report_type: str) -> dict:
+def build_report(template: List[Dict], alert_id: str, report_type: str) -> Dict:
     """Take a JSON template input and return a PDF Summary Report
 
     Args:
@@ -53,7 +53,7 @@ def build_report(template: list[dict], alert_id: str, report_type: str) -> dict:
     return file_entry
 
 
-def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
+def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Build a template to be used to create Summary report
 
     Args:
@@ -571,7 +571,7 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
     return template
 
 
-def optional_report_fields(placeholder: int, optional_order: list, args: dict) -> list:
+def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -> list:
     """Gets last report positional value, order of optional fields and Demisto.args()
     to determine what to append to report template.
     Args:
@@ -730,7 +730,7 @@ def RPR_criteria(criteria: Any) -> Any:
         return None
 
 
-def service_format(service_raw: dict[str, Any]) -> list:
+def service_format(service_raw: Dict[str, Any]) -> List:
     """Gets raw service information and formats key information for table.
     Args:
         service_raw (Dict): raw response from services API.  Blank indicators error.
@@ -746,35 +746,35 @@ def service_format(service_raw: dict[str, Any]) -> list:
     service_details = [
         {
             "Field": "Service Type",
-            "Value": service_raw.get("service_type", "n/a")
+            "Value": service_raw.get("service_type", "N/A")
         },
         {
             "Field": "Service Name",
-            "Value": service_raw.get("service_name", "n/a")
+            "Value": service_raw.get("service_name", "N/A")
         },
         {
             "Field": "Active Classifications",
-            "Value": service_raw.get("active_classifications", "n/a")
+            "Value": service_raw.get("active_classifications", "N/A")
         },
         {
             "Field": "Business Units",
-            "Value": service_raw.get("business_units", "n/a")
+            "Value": service_raw.get("business_units", "N/A")
         },
         {
             "Field": "Provider",
-            "Value": service_raw.get("externally_detected_providers", "n/a")
+            "Value": service_raw.get("externally_detected_providers", "N/A")
         },
         {
             "Field": "IP Addresses",
-            "Value": service_raw.get("ip_address", "n/a")
+            "Value": service_raw.get("ip_address", "N/A")
         },
         {
             "Field": "Port",
-            "Value": service_raw.get("port", "n/a")
+            "Value": service_raw.get("port", "N/A")
         },
         {
             "Field": "Protocol",
-            "Value": service_raw.get("protocol", "n/a")
+            "Value": service_raw.get("protocol", "N/A")
         },
         {
             "Field": "First Observed",
@@ -802,7 +802,7 @@ def service_format(service_raw: dict[str, Any]) -> list:
     return service_details
 
 
-def asset_format(asset_raw: dict[str, Any]) -> list:
+def asset_format(asset_raw: Dict[str, Any]) -> List:
     """Gets raw asset information and formats key information for table.
     Args:
         asset_raw (Dict): raw response from asset API.  Blank indicators error.
@@ -846,7 +846,7 @@ def asset_format(asset_raw: dict[str, Any]) -> list:
         })
 
     if len(asset_raw.get("details", {}).get("ip_ranges", {}).keys()) > 0:
-        for k in asset_raw.get("details", {}).get("ip_ranges", {}):
+        for k in asset_raw.get("details", {}).get("ip_ranges", {}).keys():
             first_ip = f'{asset_raw.get("details", {}).get("ip_ranges").get(k).get("FIRST_IP")}'
             last_ip = f'{asset_raw.get("details", {}).get("ip_ranges").get(k).get("LAST_IP")}'
             asset_details.append({

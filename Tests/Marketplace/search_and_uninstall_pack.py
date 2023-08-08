@@ -286,8 +286,7 @@ def reset_core_pack_version(client: demisto_client, unremovable_packs: list):
     _, success = search_and_install_packs_and_their_dependencies(pack_ids=unremovable_packs,
                                                                  client=client,
                                                                  hostname=host,
-                                                                 multithreading=False,
-                                                                 production_bucket=True)
+                                                                 install_packs_one_by_one=True)
     return success
 
 

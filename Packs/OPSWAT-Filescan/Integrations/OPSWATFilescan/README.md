@@ -29,8 +29,6 @@ Scan URL with OPSWAT Filescan Sandbox
 
 **Note**: OPSWAT Filescan Sandbox handles URL scanning as a file scan.
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 #### Base Command
 
 `opswat-filescan-scan-url`

@@ -75,8 +75,6 @@ Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7
 ***
 Checks file reputation of the given URL
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 #### Base Command
 
 `intezer-analyze-url`

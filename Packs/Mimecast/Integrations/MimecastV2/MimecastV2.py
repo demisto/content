@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 ''' IMPORTS '''
 
 import hmac
@@ -14,6 +13,11 @@ import requests
 
 from datetime import timedelta
 from urllib.error import HTTPError
+from typing import Dict, Tuple
+import urllib3
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -23,7 +27,7 @@ SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKe
 APP_ID = demisto.params().get('appId')
 APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
 USE_SSL = None  # assigned in determine_ssl_usage
-PROXY = bool(demisto.params().get('proxy'))
+PROXY = True if demisto.params().get('proxy') else False
 # Flags to control which type of incidents are being fetched
 FETCH_PARAMS = argToList(demisto.params().get('incidentsToFetch'))
 FETCH_ALL = 'All' in FETCH_PARAMS
@@ -37,7 +41,7 @@ PASSWORD = demisto.params().get('password') or demisto.params().get('credentials
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 
 
-LOG(f"command is {demisto.command()}")
+LOG("command is {}".format(demisto.command()))
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -139,7 +143,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             'Authorization': auth_header
         }
 
-    LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
+    LOG('running %s request with url=%s\tparams=%s\tdata=%s\tis user auth=%s' % (
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
     try:
         res = requests.request(
@@ -407,10 +411,10 @@ def determine_ssl_usage():
 
     old_insecure = demisto.params().get('insecure', None)
     if old_insecure:
-        USE_SSL = bool(old_insecure)
+        USE_SSL = True if old_insecure else False
         return
 
-    USE_SSL = not demisto.params().get('new_insecure')
+    USE_SSL = False if demisto.params().get('new_insecure') else True
 
 
 def epoch_seconds(d=None):
@@ -520,7 +524,7 @@ def parse_query_args(args):
     return query_xml
 
 
-def build_recipient_info(recipient_info: dict):
+def build_recipient_info(recipient_info: Dict):
     """
     Builds markdown table for recipient info part of the response for get-message-info command
 
@@ -536,11 +540,11 @@ def build_recipient_info(recipient_info: dict):
                'encryptionInfo': 'Recipient Encryption Info'}
     return tableToMarkdown('Recipient Info', t=message_info,
                            headerTransform=lambda header: headers.get(
-                               header) if header in headers else header.capitalize(), removeNull=True,
+                               header) if header in headers.keys() else header.capitalize(), removeNull=True,
                            headers=['fromHeader', 'subject', 'sent', 'remoteIp', 'remoteHost', 'encryptionInfo'])
 
 
-def build_delivered_message(delivered_messgae: dict, to: List):
+def build_delivered_message(delivered_messgae: Dict, to: List):
     """
     Builds markdown table for delivered message part of the response for get-message-info command
     Args:
@@ -565,7 +569,7 @@ def build_delivered_message(delivered_messgae: dict, to: List):
     return markdown_per_recipient
 
 
-def build_retention_info(retention_info: dict):
+def build_retention_info(retention_info: Dict):
     """
     Builds markdown table for retention info part of the response for get-message-info command
     """
@@ -583,7 +587,7 @@ def build_retention_info(retention_info: dict):
                            removeNull=True)
 
 
-def build_spam_info(spam_info: dict):
+def build_spam_info(spam_info: Dict):
     """
     Builds markdown table for spam info part of the response for get-message-info command
 
@@ -598,7 +602,7 @@ def build_spam_info(spam_info: dict):
                }
     return tableToMarkdown('Spam Info', t=spam_info,
                            headerTransform=lambda header: headers.get(
-                               header) if header in headers else header.capitalize(),
+                               header) if header in headers.keys() else header.capitalize(),
                            removeNull=True,
                            )
 
@@ -631,7 +635,7 @@ def build_get_message_info_outputs(outputs: dict):
 
     delivered_message = outputs.get('deliveredMessage', {})
     result_emails = []
-    for email in delivered_message:
+    for email in delivered_message.keys():
         info_for_mail = delivered_message.get(email)
         info_for_mail.update({'mail_address': email})
         result_emails.append(info_for_mail)
@@ -704,21 +708,22 @@ def test_module():
     list_managed_url()
 
 
-def query(args: dict):
+def query():
     headers = ['Subject', 'Display From', 'Display To', 'Received Date', 'Size', 'Attachment Count', 'Status', 'ID']
     contents = []
+    context = {}
     messages_context = []
-    limit = arg_to_number(args.get('limit')) or 20
-    page = arg_to_number(args.get('page'))
-    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(demisto.args().get('limit')) or 20
+    page = arg_to_number(demisto.args().get('page'))
+    page_size = arg_to_number(demisto.args().get('page_size'))
 
     query_xml = ''
 
-    if args.get('queryXml'):
-        query_xml = args.get('queryXml', '')
+    if demisto.args().get('queryXml'):
+        query_xml = demisto.args().get('queryXml')
     else:
-        query_xml = parse_query_args(args)
-    if args.get('dryRun') == 'true':
+        query_xml = parse_query_args(demisto.args())
+    if demisto.args().get('dryRun') == 'true':
         return query_xml
 
     # API request demands admin boolean, since we don't have any other support but admin we simply pass true.
@@ -755,14 +760,18 @@ def query(args: dict):
             'ID': message.get('id')
         })
 
-    return {
+    context['Mimecast.Message(val.ID && val.ID == obj.ID)'] = messages_context
+
+    results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Mimecast archived emails', contents, headers),
-        'EntryContext': {'Mimecast.Message(val.ID && val.ID == obj.ID)': messages_context}
+        'EntryContext': context
     }
+
+    return results
 
 
 def url_decode():
@@ -894,7 +903,7 @@ def get_policy_request(policy_id=None):
 
 
 def get_arguments_for_policy_command(args):
-    # type: (dict) -> tuple[dict, str]
+    # type: (dict) -> Tuple[dict, str]
     """
       Args:
           args: Demisto arguments
@@ -1138,7 +1147,7 @@ def delete_policy():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Mimecast Policy {policy_id} deleted successfully!',
+        'HumanReadable': 'Mimecast Policy {} deleted successfully!'.format(policy_id),
         'EntryContext': context
     }
 
@@ -1170,7 +1179,7 @@ def manage_sender():
     recipient = demisto.args().get('recipient')
     action = demisto.args().get('action')
     title_action = 'permitted' if action == 'permit' else 'blocked'
-    title = f'Mimecast messages from {sender} to {recipient} will now be {title_action}!'
+    title = 'Mimecast messages from {} to {} will now be {}!'.format(sender, recipient, title_action)
 
     req_obj = {
         'sender': sender,
@@ -1324,7 +1333,7 @@ def create_managed_url():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': f'Managed URL {url} created successfully!',
+        'HumanReadable': 'Managed URL {} created successfully!'.format(url),
         'EntryContext': context
     }
 
@@ -1969,7 +1978,7 @@ def get_message_metadata(message_id):
     headers_context = []
     for header in response_headers:
         values = header.get('values')
-        values = list(values)
+        values = [value for value in values]
         headers_context.append({
             'Name': header.get('name'),
             'Values': values
@@ -2087,8 +2096,8 @@ def create_find_groups_request():
     query_source = demisto.args().get('query_source', '')
     limit = demisto.args().get('limit')
 
-    meta = {}
-    data = {}
+    meta = dict()  # type: Dict[str, Dict[str, int]]
+    data = dict()  # type: Dict[str, Dict[str, str]]
 
     if limit:
         meta['pagination'] = {
@@ -2138,7 +2147,7 @@ def find_groups_api_response_to_markdown(api_response):
             md_metadata += '\n'
         md_metadata += '#### source: ' + query_source
 
-    groups_list = []
+    groups_list = list()
     for group in api_response.get('data', [])[0]['folders']:
         group_entry = {
             'Name': group['description'],
@@ -2159,7 +2168,7 @@ def find_groups_api_response_to_markdown(api_response):
 
 
 def find_groups_api_response_to_context(api_response):
-    groups_list = []
+    groups_list = list()
     for group in api_response['data'][0]['folders']:
         group_entry = {
             'Name': group['description'],
@@ -2189,8 +2198,8 @@ def create_get_group_members_request(group_id=-1, limit=100):
     group_id = demisto.args().get('group_id', group_id)
     limit = demisto.args().get('limit', limit)
 
-    meta = {}
-    data = {}
+    meta = dict()  # type: Dict[str, Dict[str, int]]
+    data = dict()  # type: Dict[str, Dict[str, str]]
 
     if limit:
         meta['pagination'] = {
@@ -2220,7 +2229,7 @@ def group_members_api_response_to_markdown(api_response):
 
     md = 'Found ' + str(num_users_found) + ' users for group ID: ' + group_id
 
-    users_list = []
+    users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
             'Name': user.get('name'),
@@ -2241,14 +2250,15 @@ def group_members_api_response_to_markdown(api_response):
 def add_users_under_group_in_context_dict(users_list, group_id):
     demisto_context = demisto.context()
 
-    if demisto_context and 'Mimecast' in demisto_context and 'Group' in demisto_context['Mimecast']:
-        groups_entry_in_context = demisto_context['Mimecast']['Group']
-        groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
-                                                                          dict) else groups_entry_in_context
-        for group in groups_entry_in_context:
-            if group['ID'] == group_id:
-                group['Users'] = users_list
-                return groups_entry_in_context
+    if demisto_context and 'Mimecast' in demisto_context:
+        if 'Group' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Group']
+            groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
+                                                                              dict) else groups_entry_in_context
+            for group in groups_entry_in_context:
+                if group['ID'] == group_id:
+                    group['Users'] = users_list
+                    return groups_entry_in_context
 
     return [
         {
@@ -2261,7 +2271,7 @@ def add_users_under_group_in_context_dict(users_list, group_id):
 def group_members_api_response_to_context(api_response, group_id=-1):
     group_id = demisto.args().get('group_id', group_id)
 
-    users_list = []
+    users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
             'Name': user.get('name'),
@@ -2358,16 +2368,17 @@ def add_remove_api_response_to_markdown(api_response, action_type):
 def change_user_status_removed_in_context(user_info, group_id):
     demisto_context = demisto.context()
 
-    if demisto_context and 'Mimecast' in demisto_context and 'Group' in demisto_context['Mimecast']:
-        groups_entry_in_context = demisto_context['Mimecast']['Group']
-        groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
-                                                                          dict) else groups_entry_in_context
-        for group in groups_entry_in_context:
-            if group['ID'] == group_id:
-                for user in group['Users']:
-                    if user['EmailAddress'] == user_info.get('EmailAddress', ''):
-                        user['IsRemoved'] = True
-                return groups_entry_in_context
+    if demisto_context and 'Mimecast' in demisto_context:
+        if 'Group' in demisto_context['Mimecast']:
+            groups_entry_in_context = demisto_context['Mimecast']['Group']
+            groups_entry_in_context = [groups_entry_in_context] if isinstance(groups_entry_in_context,
+                                                                              dict) else groups_entry_in_context
+            for group in groups_entry_in_context:
+                if group['ID'] == group_id:
+                    for user in group['Users']:
+                        if user['EmailAddress'] == user_info.get('EmailAddress', ''):
+                            user['IsRemoved'] = True
+                    return groups_entry_in_context
 
     return [
         {
@@ -2529,9 +2540,9 @@ def create_mimecast_incident_request():
         get_hash_type(hash_or_message_id)
     else:
         if not hash_or_message_id.startswith('<'):
-            hash_or_message_id = f'<{hash_or_message_id}'
+            hash_or_message_id = '<{}'.format(hash_or_message_id)
         if not hash_or_message_id.endswith('>'):
-            hash_or_message_id = f'{hash_or_message_id}>'
+            hash_or_message_id = '{}>'.format(hash_or_message_id)
 
     data = {
         'reason': reason,
@@ -2689,7 +2700,7 @@ def create_search_file_hash_request():
 
 def search_file_hash_api_response_to_markdown(api_response):
     md = 'Hashes detected:\n'
-    detected_hashes_list = []
+    detected_hashes_list = list()
     for detected_hash in api_response['data'][0]['hashStatus']:
         detected_hash_entry = {
             'Hash': detected_hash['hash'],
@@ -2709,7 +2720,7 @@ def search_file_hash_api_response_to_markdown(api_response):
 
 
 def search_file_hash_api_response_to_context(api_response):
-    detected_hashes_list = []
+    detected_hashes_list = list()
     for detected_hash in api_response['data'][0]['hashStatus']:
         detected_hash_entry = {
             'HashValue': detected_hash['hash'],
@@ -2751,7 +2762,7 @@ def search_message_command(args):
                'detectionLevel': 'Spam Detection'}
     readable_output = tableToMarkdown('Tracked Emails', t=tracked_emails,
                                       headerTransform=lambda header: headers.get(
-                                          header) if header in headers else header.capitalize(),
+                                          header) if header in headers.keys() else header.capitalize(),
                                       removeNull=True, json_transform_mapping=table_json_transformer)
 
     return CommandResults(
@@ -2837,7 +2848,7 @@ def list_held_messages_command(args):
                }
     readable_output = tableToMarkdown('Held Messages', t=response,
                                       headerTransform=lambda header: headers.get(
-                                          header) if header in headers else header.capitalize(),
+                                          header) if header in headers.keys() else header.capitalize(),
                                       removeNull=True, json_transform_mapping=table_json_transformer,
                                       headers=['id', 'dateReceived', 'from', 'fromHeader', 'hasAttachments',
                                                'policyInfo', 'reason', 'reasonCode', 'reasonId',
@@ -2926,7 +2937,7 @@ def search_processing_message_command(args):
                }
     readable_output = tableToMarkdown('Processing Messages', t=response,
                                       headerTransform=lambda header: headers.get(
-                                          header) if header in headers else header.capitalize(),
+                                          header) if header in headers.keys() else header.capitalize(),
                                       removeNull=True, json_transform_mapping=table_json_transformer)
 
     return CommandResults(
@@ -2958,11 +2969,11 @@ def list_email_queues_command(args):
 
     total_markdown = tableToMarkdown('Inbound Email Queue', t=inbound_data,
                                      headerTransform=lambda header: f'Inbound {headers.get(header)}'
-                                     if header in headers else header.capitalize(),
+                                     if header in headers.keys() else header.capitalize(),
                                      removeNull=True)
     total_markdown += tableToMarkdown('Outbound Email Queue', t=outbound_data,
                                       headerTransform=lambda header: f'Outbound {headers.get(header)}'
-                                      if header in headers else header.capitalize(),
+                                      if header in headers.keys() else header.capitalize(),
                                       removeNull=True)
     return CommandResults(
         outputs_prefix='Mimecast.EmailQueue',
@@ -2975,91 +2986,89 @@ def list_email_queues_command(args):
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
-    command = demisto.command()
-    args = demisto.args()
-
     try:
         handle_proxy()
         determine_ssl_usage()
         if ACCESS_KEY:
             auto_refresh_token()
-        if command == 'test-module':
+        args = demisto.args()
+        if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
             demisto.results('ok')
-        elif command == 'fetch-incidents':
+        elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
-        elif command == 'mimecast-query':
-            demisto.results(query(args))
-        elif command == 'mimecast-list-blocked-sender-policies':
+        elif demisto.command() == 'mimecast-query':
+            demisto.results(query())
+        elif demisto.command() == 'mimecast-list-blocked-sender-policies':
             demisto.results(get_policy())
-        elif command == 'mimecast-get-policy':
+        elif demisto.command() == 'mimecast-get-policy':
             demisto.results(get_policy())
-        elif command == 'mimecast-create-policy':
+        elif demisto.command() == 'mimecast-create-policy':
             demisto.results(create_policy())
-        elif command == 'mimecast-update-policy':
+        elif demisto.command() == 'mimecast-update-policy':
             demisto.results(update_policy())
-        elif command == 'mimecast-delete-policy':
+        elif demisto.command() == 'mimecast-delete-policy':
             demisto.results(delete_policy())
-        elif command == 'mimecast-manage-sender':
+        elif demisto.command() == 'mimecast-manage-sender':
             demisto.results(manage_sender())
-        elif command == 'mimecast-list-managed-url':
+        elif demisto.command() == 'mimecast-list-managed-url':
             demisto.results(list_managed_url())
-        elif command == 'mimecast-create-managed-url':
+        elif demisto.command() == 'mimecast-create-managed-url':
             demisto.results(create_managed_url())
-        elif command == 'mimecast-list-messages':
+        elif demisto.command() == 'mimecast-list-messages':
             demisto.results(list_messages())
-        elif command == 'mimecast-get-attachment-logs':
+        elif demisto.command() == 'mimecast-get-attachment-logs':
             demisto.results(get_attachment_logs())
-        elif command == 'mimecast-get-url-logs':
+        elif demisto.command() == 'mimecast-get-url-logs':
             demisto.results(get_url_logs())
-        elif command == 'mimecast-get-impersonation-logs':
+        elif demisto.command() == 'mimecast-get-impersonation-logs':
             demisto.results(get_impersonation_logs())
-        elif command == 'mimecast-url-decode':
+        elif demisto.command() == 'mimecast-url-decode':
             demisto.results(url_decode())
-        elif command == 'mimecast-discover':
+        elif demisto.command() == 'mimecast-discover':
             demisto.results(discover())
-        elif command == 'mimecast-login':
+        elif demisto.command() == 'mimecast-login':
             demisto.results(login())
-        elif command == 'mimecast-refresh-token':
+        elif demisto.command() == 'mimecast-refresh-token':
             demisto.results(refresh_token())
-        elif command == 'mimecast-get-message':
+        elif demisto.command() == 'mimecast-get-message':
             demisto.results(get_message())
-        elif command == 'mimecast-download-attachments':
+        elif demisto.command() == 'mimecast-download-attachments':
             demisto.results(download_attachment())
-        elif command == 'mimecast-find-groups':
+        elif demisto.command() == 'mimecast-find-groups':
             find_groups()
-        elif command == 'mimecast-get-group-members':
+        elif demisto.command() == 'mimecast-get-group-members':
             get_group_members()
-        elif command == 'mimecast-add-group-member':
+        elif demisto.command() == 'mimecast-add-group-member':
             return_results(add_remove_member_to_group('add'))
-        elif command == 'mimecast-remove-group-member':
+        elif demisto.command() == 'mimecast-remove-group-member':
             return_results(add_remove_member_to_group('remove'))
-        elif command == 'mimecast-create-group':
+        elif demisto.command() == 'mimecast-create-group':
             create_group()
-        elif command == 'mimecast-update-group':
+        elif demisto.command() == 'mimecast-update-group':
             update_group()
-        elif command == 'mimecast-create-remediation-incident':
+        elif demisto.command() == 'mimecast-create-remediation-incident':
             create_mimecast_incident()
-        elif command == 'mimecast-get-remediation-incident':
+        elif demisto.command() == 'mimecast-get-remediation-incident':
             get_mimecast_incident()
-        elif command == 'mimecast-search-file-hash':
+        elif demisto.command() == 'mimecast-search-file-hash':
             search_file_hash()
-        elif command == 'mimecast-search-message':
+        elif demisto.command() == 'mimecast-search-message':
             return_results(search_message_command(args))
-        elif command == 'mimecast-held-message-summary':
+        elif demisto.command() == 'mimecast-held-message-summary':
             return_results(held_message_summary_command())
-        elif command == 'mimecast-get-message-info':
+        elif demisto.command() == 'mimecast-get-message-info':
             return_results(get_message_info_command(args))
-        elif command == 'mimecast-list-held-message':
+        elif demisto.command() == 'mimecast-list-held-message':
             return_results(list_held_messages_command(args))
-        elif command == 'mimecast-reject-held-message':
+        elif demisto.command() == 'mimecast-reject-held-message':
             return_results(reject_held_message_command(args))
-        elif command == 'mimecast-release-held-message':
+        elif demisto.command() == 'mimecast-release-held-message':
             return_results(release_held_message_command(args))
-        elif command == 'mimecast-search-processing-message':
+        elif demisto.command() == 'mimecast-search-processing-message':
             return_results(search_processing_message_command(args))
-        elif command == 'mimecast-list-email-queues':
+        elif demisto.command() == 'mimecast-list-email-queues':
             return_results(list_email_queues_command(args))
 
     except Exception as e:

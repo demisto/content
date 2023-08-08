@@ -233,8 +233,6 @@ Return IP Details.
 ***
 Return Domain Details.
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -419,8 +417,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 ### url
 ***
 Return URL Details.
-
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

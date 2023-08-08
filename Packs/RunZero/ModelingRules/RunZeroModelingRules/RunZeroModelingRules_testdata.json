@@ -32,6 +32,5 @@
                 "xdm.target.resource.type": "target_type"
             }
         }
-    ],
-    "ignored_validations": ["schema_test_data_types"]
+    ]
 }

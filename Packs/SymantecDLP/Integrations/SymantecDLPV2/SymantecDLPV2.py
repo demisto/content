@@ -732,8 +732,9 @@ def list_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResul
         if raw_filter:
             raise DemistoException(f'Please make sure the {raw_filter=} is correct, {error=}')
         raise
+
     incidents_result = get_incidents_of_current_page(limit, page, page_size,
-                                                     incidents_list=incidents_result.get('incidents', []))
+                                                     incidents_list=incidents_result['incidents'])
     if raw_filter:
         list_incidents_hr = incidents_result
         context_incidents_list = incidents_result

@@ -24,8 +24,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Checks URLs against the CheckPhish database and returns the results.
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -95,8 +93,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 ### url
 ***
 Retrieves URL information from CheckPhish.
-
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

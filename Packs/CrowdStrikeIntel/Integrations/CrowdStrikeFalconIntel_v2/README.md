@@ -164,8 +164,6 @@ Check file reputation.
 ***
 Check the given URL reputation.
 
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -301,8 +299,6 @@ Notice: Submitting indicators using this command might make the indicator data p
 ### domain
 ***
 Check the given URL reputation.
-
-Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

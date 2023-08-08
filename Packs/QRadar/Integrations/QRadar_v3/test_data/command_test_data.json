@@ -1448,7 +1448,7 @@
    "outputs": null
   }
  },
- "reference_set_bulk_load": {
+ "reference_set_value_upsert": {
   "response": {
    "timeout_type": "FIRST_SEEN",
    "number_of_elements": 3,

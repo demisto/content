@@ -454,7 +454,6 @@
 <h3>3. url</h3>
 <hr>
 <p>Queries the SlashNext Cloud database and retrieves the reputation of a url.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p>
   <code>url</code>
@@ -726,7 +725,6 @@
 <h3>4. slashnext-host-reputation</h3>
 <hr>
 <p>Search in SlashNext Cloud database and retrieve reputation of a host.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p>
   <code>slashnext-host-reputation</code>
@@ -1946,7 +1944,6 @@ Forensics: Webpage Rendered Text for the Scanned URL = http://www.google.com/was
 <h3>7. slashnext-url-reputation</h3>
 <hr>
 <p>Queries the SlashNext Cloud database and retrieves the reputation of a url.</p>
-<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p>
   <code>slashnext-url-reputation</code>
