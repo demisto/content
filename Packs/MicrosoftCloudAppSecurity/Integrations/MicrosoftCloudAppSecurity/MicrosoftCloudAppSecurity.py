@@ -1,4 +1,3 @@
-import pytest
 from dateparser import parse
 from pytz import utc
 import urllib3
@@ -391,7 +390,6 @@ def args_to_filter_for_dismiss_and_resolve_alerts(alert_ids: Any, custom_filter:
     return request_data
 
 
-@pytest.mark.skip("Not a pytest")
 def test_module(client: Client, is_fetch: Optional[Any], custom_filter: Optional[str]):
     try:
         if client.auth_mode == "device code flow":

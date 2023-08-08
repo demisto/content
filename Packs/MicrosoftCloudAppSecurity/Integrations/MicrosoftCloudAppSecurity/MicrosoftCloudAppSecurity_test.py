@@ -8,7 +8,7 @@ import demistomock as demisto
 
 from freezegun import freeze_time
 from CommonServerPython import DemistoException, timedelta
-from MicrosoftCloudAppSecurity import Client, fetch_incidents, test_module
+from MicrosoftCloudAppSecurity import Client, fetch_incidents
 from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
 
 
@@ -923,6 +923,8 @@ class TestModuleTest:
         Then:
         - Ensure the client can list alerts.
         """
+        from MicrosoftCloudAppSecurity import test_module
+
         client = Client('app_id', True, True, 'Worldwide', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_alerts', return_value={})
@@ -944,6 +946,8 @@ class TestModuleTest:
         Then:
         - Ensure the client can list incidents.
         """
+        from MicrosoftCloudAppSecurity import test_module
+
         client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_incidents', return_value={})
@@ -965,6 +969,8 @@ class TestModuleTest:
         Then:
         - Ensure a DemistoException is raised.
         """
+        from MicrosoftCloudAppSecurity import test_module
+
         client = Client('app_id', True, True, 'com', 'https://test.com', 'device code flow', AZURE_WORLDWIDE_CLOUD)
 
         assert test_module(
@@ -983,6 +989,8 @@ class TestModuleTest:
         Then:
         - Ensure a DemistoException is raised.
         """
+        from MicrosoftCloudAppSecurity import test_module
+
         client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', return_value=None)
         mocker.patch.object(client, 'list_incidents', return_value={})
@@ -1002,6 +1010,8 @@ class TestModuleTest:
         Then:
         - Ensure a connection error message is returned.
         """
+        from MicrosoftCloudAppSecurity import test_module
+
         client = Client('app_id', True, True, 'com', 'https://invalid-url.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('No connection'))
 
@@ -1021,6 +1031,8 @@ class TestModuleTest:
         Then:
         - Ensure an authorization error message is returned.
         """
+        from MicrosoftCloudAppSecurity import test_module
+
         client = Client('app_id', True, True, 'com', 'https://test.com', 'legacy', AZURE_WORLDWIDE_CLOUD)
         mocker.patch.object(client, 'list_alerts', side_effect=DemistoException('Invalid token'))
 
