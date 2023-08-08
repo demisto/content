@@ -19,7 +19,10 @@ Alerts v2:
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
 
     #### Note
-    When using Alerts V2: The following properties support $filter : assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status.
+#### Note
+- The `message-search-alerts` command does not filter alerts of the `Office 365` provider because of API limitations.\
+For more info, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
+- When using Alerts V2: only the following properties are supported as filters on the *Fetched incidents filter* parameter and *filter* argument: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. As per [Microsoft's documentation](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 
 ## Configure Microsoft Graph Security on Cortex XSOAR
 
