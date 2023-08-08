@@ -307,7 +307,7 @@ tasks:
             value:
               complex:
                 root: alert.asmservicedetection
-                accessor: ScanResult
+                accessor: scanresult
                 transformers:
                 - operator: LastArrayElement
             iscontext: true
@@ -319,7 +319,7 @@ tasks:
             value:
               complex:
                 root: alert.asmremediation
-                accessor: Outcome
+                accessor: outcome
             iscontext: true
           right:
             value:
@@ -1225,7 +1225,7 @@ tasks:
             value:
               complex:
                 root: alert.asmremediation
-                accessor: Outcome
+                accessor: outcome
             iscontext: true
           right:
             value:
@@ -1245,7 +1245,7 @@ tasks:
             value:
               complex:
                 root: alert.asmremediation
-                accessor: Outcome
+                accessor: outcome
             iscontext: true
           right:
             value:
@@ -2219,7 +2219,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
@@ -2227,7 +2227,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
@@ -2235,7 +2235,7 @@ tasks:
                   - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
@@ -2256,7 +2256,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
@@ -2298,7 +2298,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: alert.asmsystemids.Type
+                        simple: alert.asmsystemids.type
                       iscontext: true
                     right:
                       value:
@@ -3195,8 +3195,8 @@ inputs:
           </p>
           <p>
               <b>Alert Details:</b> ${alert.details}<br>
-              <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
-              <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+              <b>Action Taken:</b> ${alert.asmremediation.[0].action}<br>
+              <b>Action Outcome:</b> ${alert.asmremediation.[0].outcome}<br>
           </p>
       </body>
       </html>

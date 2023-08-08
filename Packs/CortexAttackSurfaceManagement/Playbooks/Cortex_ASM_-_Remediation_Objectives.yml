@@ -269,7 +269,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
@@ -449,7 +449,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: alert.asmsystemids.Type
+                  simple: alert.asmsystemids.type
                 iscontext: true
               right:
                 value:
