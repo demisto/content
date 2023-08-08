@@ -3840,7 +3840,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     else:
         params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
-        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
+        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'],
+                                                             is_commit_required=False)
         if behaviour == 'add':
             values = list((set(current_objects_items)).union(set(element_value)))  # type: ignore[arg-type]
         else:  # remove
@@ -13397,7 +13398,7 @@ def pan_os_edit_tag(
         comment (str): The tag comment.
 
     Returns:
-        dict: The raw response from panorama's API. 
+        dict: The raw response from panorama's API.
     """
     params = {
         'xpath': build_tag_xpath(name=tag_name),

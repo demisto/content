@@ -63,6 +63,19 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
     "Unknown": None,
 }
 
+DETECTION_SOURCE_TO_API_VALUE = {  # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/alerts-queue
+    "Third-party sensors": "ThirdPartySensors",
+    "Antivirus": "WindowsDefenderAv",
+    "Automated investigation": "AutomatedInvestigation",
+    "Custom detection": "CustomDetection",
+    "Custom TI": "CustomerTI",
+    "EDR": "WindowsDefenderAtp",
+    "Microsoft 365 Defender": "MTP",
+    "Microsoft Defender for Office 365": "OfficeATP",
+    "Microsoft Defender Experts": "ThreatExperts",
+    "SmartScreen": "WindowsDefenderSmartScreen",
+}
+
 INTEGRATION_NAME = 'Microsoft Defender ATP'
 
 
@@ -1103,7 +1116,9 @@ class MsClient:
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
                  auth_type, endpoint_type, redirect_uri, auth_code, certificate_thumbprint: str | None = None,
-                 private_key: str | None = None, managed_identities_client_id: str | None = None):
+                 private_key: str | None = None, managed_identities_client_id: str | None = None,
+                 alert_detectionsource_to_fetch: str | None = None):
+
         self.endpoint_type = endpoint_type
         if auth_type == 'Authorization Code':
             token_retrieval_url = urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS.get(endpoint_type),
@@ -1137,6 +1152,7 @@ class MsClient:
             command_prefix="microsoft-atp"
         )
         self.ms_client = MicrosoftClient(**client_args)
+        self.alert_detectionsource_to_fetch = alert_detectionsource_to_fetch
         self.alert_severities_to_fetch = alert_severities_to_fetch
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
@@ -3635,6 +3651,12 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
 def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
     filter_query = f'alertCreationTime+gt+{last_fetch_time}'
+    if client.alert_detectionsource_to_fetch:
+        sources = argToList(client.alert_detectionsource_to_fetch)
+        source_filter_list = [f"detectionSource+eq+'{DETECTION_SOURCE_TO_API_VALUE[source]}'" for source in sources]
+        if len(source_filter_list) > 1:
+            source_filter_list = list(map(lambda x: f"({x})", source_filter_list))
+        filter_query = filter_query + " and (" + " or ".join(source_filter_list) + ")"
     if client.alert_status_to_fetch:
         statuses = argToList(client.alert_status_to_fetch)
         status_filter_list = [f"status+eq+'{status}'" for status in statuses]
@@ -5462,6 +5484,7 @@ def main():  # pragma: no cover
     self_deployed: bool = params.get('self_deployed', False)
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
+    alert_detectionsource_to_fetch = params.get("fetch_detectionsource")
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
@@ -5507,7 +5530,8 @@ def main():  # pragma: no cover
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
             auth_type=auth_type, endpoint_type=endpoint_type,
             auth_code=auth_code, redirect_uri=redirect_uri,
-            managed_identities_client_id=managed_identities_client_id
+            managed_identities_client_id=managed_identities_client_id,
+            alert_detectionsource_to_fetch=alert_detectionsource_to_fetch
         )
         if command == 'test-module':
             if auth_type == 'Authorization Code':

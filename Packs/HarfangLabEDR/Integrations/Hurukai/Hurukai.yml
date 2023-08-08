@@ -16,10 +16,15 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- name: credentials
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: API Key
   name: apikey
   type: 0
   required: false
+  hidden: true
 - display: Long running instance
   name: longRunning
   type: 8
@@ -758,7 +763,7 @@ script:
       required: true
     description: Delete an IOC from a Threat Intelligence source
     name: harfanglab-delete-ioc-from-source
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   longRunning: true
   script: ''
