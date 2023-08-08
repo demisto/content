@@ -920,7 +920,8 @@ def test_alert_to_incident_context(alert, expected_incident_context):
     Then:
         - Returns the incident that was created from the alert given
     """
-    from PrismaCloudV2 import alert_to_incident_context
+    from PrismaCloudV2 import alert_to_incident_context, add_mirroring_fields
+    add_mirroring_fields(alert)
     assert alert_to_incident_context(alert) == expected_incident_context
 
 

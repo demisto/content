@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from copy import deepcopy
-from typing import Tuple
 
 import urllib3
 
@@ -624,7 +623,7 @@ def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
     return incident_context
 
 
-def get_remote_alert_data(client: Client, remote_alert_id: str) -> Tuple[Dict, Dict]:
+def get_remote_alert_data(client: Client, remote_alert_id: str) -> tuple[Dict, Dict]:
     """
     Called every time get-remote-data command runs on an alert.
     Gets the details of the relevant alert entity from the remote system (Prisma Cloud).
@@ -712,6 +711,8 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], remote_alert_id: 
         elif mirrored_status == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:  # re-opening incident
             entry = reopen_incident_in_xsoar(remote_alert_id)
             return entry
+        return None
+    return None
 
 
 def close_alert_in_prisma_cloud(client: Client, ids: List[str], delta: Dict[str, Any]):
@@ -2009,7 +2010,7 @@ def main() -> None:
 
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
-            'get-remote-data':  get_remote_data_command,
+            'get-remote-data': get_remote_data_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,

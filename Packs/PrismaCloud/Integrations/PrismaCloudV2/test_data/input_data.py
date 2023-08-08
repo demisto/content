@@ -144,9 +144,11 @@ full_alert = {
         "scannerVersion": "CS_2.0"
     }
 }
+mirroring_fields = {"mirror_direction": None, "mirror_instance": ""}
+full_alert_with_mirroring_fields = {**full_alert, **mirroring_fields}
 full_incident = {'name': 'Policy name - P-11111',
                  'occurred': '2022-11-09T18:10:03Z',
-                 'rawJSON': json.dumps(full_alert),
+                 'rawJSON': json.dumps(full_alert_with_mirroring_fields),
                  'severity': 3}
 
 ''' HELPER FUNCTIONS TESTS ARGUMENTS '''
@@ -226,18 +228,19 @@ truncated_alert6 = {'id': 'P-666666', 'alertTime': 1000000120000, 'policy': {'na
 incident6 = {'name': 'Policy Six - P-666666',
              'occurred': '2001-09-09T01:48:40Z',
              'rawJSON': '{"id": "P-666666", "alertTime": 1000000120000, "policy": '
-                        '{"name": "Policy Six", "severity": "medium"}}',
+                        '{"name": "Policy Six", "severity": "medium"}, "mirror_direction": null, "mirror_instance": ""}',
              'severity': 2}
 truncated_alert7 = {'id': 'P-777777', 'alertTime': 1000000130000, 'policy': {'name': 'Policy Seven', 'severity': 'low'}}
 incident7 = {'name': 'Policy Seven - P-777777',
              'occurred': '2001-09-09T01:48:50Z',
              'rawJSON': '{"id": "P-777777", "alertTime": 1000000130000, "policy": '
-                        '{"name": "Policy Seven", "severity": "low"}}',
+                        '{"name": "Policy Seven", "severity": "low"}, "mirror_direction": null, "mirror_instance": ""}',
              'severity': 1}
 truncated_alert_no_policy = {'id': 'P-888888', 'alertTime': 1000000130000}
 incident_no_policy = {'name': 'No policy - P-888888',
                       'occurred': '2001-09-09T01:48:50Z',
-                      'rawJSON': '{"id": "P-888888", "alertTime": 1000000130000}',
+                      'rawJSON': '{"id": "P-888888", "alertTime": 1000000130000, '
+                                 '"mirror_direction": null, "mirror_instance": ""}',
                       'severity': 0}
 
 # test_filter_alerts
