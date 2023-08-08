@@ -450,7 +450,6 @@ def users_teams_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_id = str(args.get('user_id'))
 
     response = client.users_teams_request(user_id)
-
     output = {'id': user_id, 'teams': response}
     headers = ['id', 'orgId', 'name', 'email', 'avatarUrl', 'memberCount', 'permission']
 
