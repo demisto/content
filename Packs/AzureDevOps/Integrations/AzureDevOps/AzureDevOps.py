@@ -1904,7 +1904,7 @@ def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], org
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.PullRequestReviewer',
         outputs_key_field='displayName',
-        outputs=response,
+        outputs=response["value"],
         raw_response=response
     )
 

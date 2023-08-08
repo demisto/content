@@ -793,9 +793,6 @@ script:
         required: true
         isArray: false
     outputs:
-      - type: Number
-        contextPath: AzureDevOps.PullRequestReviewer.count
-        description: Count of reviewers.
       - type: String
         contextPath: AzureDevOps.PullRequestReviewer.reviewerUrl
         description: URL to retrieve information about this identity.
