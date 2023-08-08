@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from HuntingFromIndicatorLayout import hunting_from_indicator_layout
-from demistomock import demisto
+import demistomock as demisto
 
 @pytest.fixture
 def mock_executeCommand():
