@@ -1638,7 +1638,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_usecasecontainmentsteps",
+                        "fieldId": "incident_usecasebuilderusecasecontainmentsteps",
                         "isVisible": true
                     },
                     {
