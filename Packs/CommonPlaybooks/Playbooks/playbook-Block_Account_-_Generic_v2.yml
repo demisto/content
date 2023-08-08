@@ -28,16 +28,17 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "8"
+      '#none#':
+      - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": -1440
+          "x": -1700,
+          "y": -1450
         }
       }
     note: false
@@ -49,22 +50,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9fdd6cf9-21d1-49be-8e64-afd1cedc86da
+    taskid: 78bcaa68-2a3d-4805-8e25-1bee31249d8f
     type: title
     task:
-      id: 9fdd6cf9-21d1-49be-8e64-afd1cedc86da
+      id: 78bcaa68-2a3d-4805-8e25-1bee31249d8f
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -1070,
-          "y": 1210
+          "y": 1260
         }
       }
     note: false
@@ -85,24 +87,33 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "17"
-        - "18"
-        - "19"
-        - "20"
-        - "21"
-        - "22"
-        - "23"
-        - "25"
-        - "24"
+      '#none#':
+      - "17"
+      - "18"
+      - "19"
+      - "20"
+      - "21"
+      - "22"
+      - "23"
+      - "25"
+      - "24"
+      - "54"
+      - "56"
+      - "58"
+      - "60"
+      - "66"
+      - "68"
+      - "71"
+      - "64"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1070,
-          "y": 360
+          "x": -1960,
+          "y": 410
         }
       }
     note: false
@@ -125,24 +136,25 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "39"
+      '#default#':
+      - "39"
       "yes":
-        - "38"
+      - "38"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.Username
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": -1250
+          "x": -1700,
+          "y": -1260
         }
       }
     note: false
@@ -166,8 +178,8 @@ tasks:
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     scriptarguments:
       Users:
         complex:
@@ -181,8 +193,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 1040
+          "x": 1900,
+          "y": 1090
         }
       }
     note: false
@@ -205,24 +217,25 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "15"
+      - "15"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: inputs.Tag
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Tag
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 850
+          "x": 1900,
+          "y": 920
         }
       }
     note: false
@@ -243,16 +256,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "26"
+      '#none#':
+      - "26"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2810,
-          "y": 505
+          "x": -1960,
+          "y": 555
         }
       }
     note: false
@@ -273,16 +287,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "27"
+      '#none#':
+      - "27"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -210,
-          "y": 505
+          "x": 640,
+          "y": 555
         }
       }
     note: false
@@ -303,16 +318,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "28"
+      '#none#':
+      - "28"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1070,
-          "y": 505
+          "x": -220,
+          "y": 555
         }
       }
     note: false
@@ -333,16 +349,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "29"
+      '#none#':
+      - "29"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -640,
-          "y": 505
+          "x": 210,
+          "y": 555
         }
       }
     note: false
@@ -363,16 +380,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "30"
+      '#none#':
+      - "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1490,
-          "y": 505
+          "x": -640,
+          "y": 555
         }
       }
     note: false
@@ -393,16 +411,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "31"
+      '#none#':
+      - "31"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1920,
-          "y": 505
+          "x": -1070,
+          "y": 555
         }
       }
     note: false
@@ -423,16 +442,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "32"
+      '#none#':
+      - "32"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2340,
-          "y": 505
+          "x": -1500,
+          "y": 555
         }
       }
     note: false
@@ -453,16 +473,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "36"
+      '#none#':
+      - "36"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 505
+          "x": 1900,
+          "y": 555
         }
       }
     note: false
@@ -483,16 +504,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "37"
+      '#none#':
+      - "37"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 505
+          "x": 1060,
+          "y": 555
         }
       }
     note: false
@@ -504,10 +526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 92f808bf-47dd-4977-8c52-8a09be270c50
+    taskid: ca29fc92-0b56-4eca-8fb4-285bf732a419
     type: condition
     task:
-      id: 92f808bf-47dd-4977-8c52-8a09be270c50
+      id: ca29fc92-0b56-4eca-8fb4-285bf732a419
       version: -1
       name: Is OKTA Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -516,21 +538,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "33"
+      - "33"
     scriptarguments:
       brandname:
-        simple: "*Okta*"
+        simple: '*Okta*'
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2810,
-          "y": 665
+          "x": -1960,
+          "y": 715
         }
       }
     note: false
@@ -542,10 +565,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: dd2b4f80-9359-4c8a-81df-273f7f7455d0
+    taskid: 692fc977-5dff-49fa-8ef9-4c0c53979786
     type: condition
     task:
-      id: dd2b4f80-9359-4c8a-81df-273f7f7455d0
+      id: 692fc977-5dff-49fa-8ef9-4c0c53979786
       version: -1
       name: Is SailPointIntegration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -554,21 +577,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "35"
+      - "35"
     scriptarguments:
       brandname:
         simple: SailPointIdentityIQ
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -210,
-          "y": 665
+          "x": 640,
+          "y": 715
         }
       }
     note: false
@@ -592,21 +616,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "33"
+      - "33"
     scriptarguments:
       brandname:
         simple: AWS - IAM
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1070,
-          "y": 665
+          "x": -220,
+          "y": 715
         }
       }
     note: false
@@ -618,10 +643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: db239f1c-c3d2-4a09-86c8-918d82b472ce
+    taskid: 1dfdb5b5-b388-49f8-8778-b631675b5228
     type: condition
     task:
-      id: db239f1c-c3d2-4a09-86c8-918d82b472ce
+      id: 1dfdb5b5-b388-49f8-8778-b631675b5228
       version: -1
       name: Is PingOne Integration Enabled
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -630,21 +655,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "34"
+      - "34"
     scriptarguments:
       brandname:
         simple: PingOne
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -640,
-          "y": 665
+          "x": 210,
+          "y": 715
         }
       }
     note: false
@@ -668,21 +694,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "33"
+      - "33"
     scriptarguments:
       brandname:
         simple: ClarizenIAM
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1490,
-          "y": 665
+          "x": -640,
+          "y": 715
         }
       }
     note: false
@@ -694,10 +721,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: fb911ee9-5627-4f7b-8fe6-93e0340f148e
+    taskid: e69ec334-a883-4519-8b53-2d12a380819d
     type: condition
     task:
-      id: fb911ee9-5627-4f7b-8fe6-93e0340f148e
+      id: e69ec334-a883-4519-8b53-2d12a380819d
       version: -1
       name: Is Envoy IAM Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -706,21 +733,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "33"
+      - "33"
     scriptarguments:
       brandname:
         simple: Envoy IAM
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1920,
-          "y": 665
+          "x": -1070,
+          "y": 715
         }
       }
     note: false
@@ -732,10 +760,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 7b4873ae-abf2-4c7f-86e2-9472cd77dd45
+    taskid: d7750a59-552e-4fbe-8d72-6a0dbf2c50b2
     type: condition
     task:
-      id: 7b4873ae-abf2-4c7f-86e2-9472cd77dd45
+      id: d7750a59-552e-4fbe-8d72-6a0dbf2c50b2
       version: -1
       name: Is ExceedLMS IAM Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -744,21 +772,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "33"
+      - "33"
     scriptarguments:
       brandname:
         simple: ExceedLMS IAM
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -2340,
-          "y": 665
+          "x": -1500,
+          "y": 715
         }
       }
     note: false
@@ -777,22 +806,23 @@ tasks:
       version: -1
       name: IAM Disable User
       description: Disable an active user.
-      script: "|||iam-disable-user"
+      script: '|||iam-disable-user'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     scriptarguments:
       user-profile:
         simple: ${Blocklist.Final}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1920,
-          "y": 850
+          "x": -1280,
+          "y": 940
         }
       }
     note: false
@@ -811,22 +841,23 @@ tasks:
       version: -1
       name: PingOne - Deactivate user
       description: Deactivate a user's account.
-      script: "|||pingone-deactivate-user"
+      script: '|||pingone-deactivate-user'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     scriptarguments:
       username:
         simple: ${Blocklist.Final}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -640,
-          "y": 850
+          "x": 210,
+          "y": 920
         }
       }
     note: false
@@ -845,22 +876,23 @@ tasks:
       version: -1
       name: SailPoint-Disable account
       description: Disable account's active status by id using IdentityIQ SCIM API's.
-      script: "|||identityiq-disable-account"
+      script: '|||identityiq-disable-account'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     scriptarguments:
       id:
         simple: ${Blocklist.Final}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -210,
-          "y": 850
+          "x": 640,
+          "y": 920
         }
       }
     note: false
@@ -872,10 +904,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: e2c1217e-db0c-4f22-8d3d-f4c71d978617
+    taskid: 90a2adf8-4f57-4b53-896d-44bddd4d064c
     type: condition
     task:
-      id: e2c1217e-db0c-4f22-8d3d-f4c71d978617
+      id: 90a2adf8-4f57-4b53-896d-44bddd4d064c
       version: -1
       name: Is PAN-OS/Panorama Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -884,21 +916,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "16"
+      - "16"
     scriptarguments:
       brandname:
         simple: Panorama
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 665
+          "x": 1900,
+          "y": 715
         }
       }
     note: false
@@ -910,10 +943,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 4a5b5136-cfb5-4c5b-8d08-2749e39a02a1
+    taskid: e31ad79c-5806-41f0-839b-f896c860d3cc
     type: condition
     task:
-      id: 4a5b5136-cfb5-4c5b-8d08-2749e39a02a1
+      id: e31ad79c-5806-41f0-839b-f896c860d3cc
       version: -1
       name: Is Active Directory Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -922,21 +955,22 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "2"
+      '#default#':
+      - "2"
       "yes":
-        - "48"
+      - "48"
     scriptarguments:
       brandname:
         simple: Active Directory Query v2
     results:
-      - brandInstances
+    - brandInstances
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 665
+          "x": 1060,
+          "y": 715
         }
       }
     note: false
@@ -959,28 +993,29 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "47"
+      '#default#':
+      - "47"
       "yes":
-        - "40"
+      - "40"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: inputs.UserVerification
-                iscontext: true
-              right:
-                value:
-                  simple: "True"
-              ignorecase: true
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.UserVerification
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": -1040
+          "x": -1700,
+          "y": -1050
         }
       }
     note: false
@@ -1001,16 +1036,17 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -3090,
-          "y": 1065
+          "x": -5370,
+          "y": 1105
         }
       }
     note: false
@@ -1039,8 +1075,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "42"
+      '#none#':
+      - "42"
     scriptarguments:
       append:
         simple: "true"
@@ -1050,24 +1086,25 @@ tasks:
         complex:
           root: inputs.NamingConvention
           transformers:
-            - operator: replace
-              args:
-                limit: {}
-                replaceWith: {}
-                toReplace:
-                  value:
-                    simple: " "
-            - operator: split
-              args:
-                delimiter:
-                  value:
-                    simple: ","
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": -870
+          "x": -2230,
+          "y": -880
         }
       }
     note: false
@@ -1096,9 +1133,9 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "45"
-        - "43"
+      '#none#':
+      - "45"
+      - "43"
     scriptarguments:
       key:
         simple: Blocklist.Sensitive
@@ -1106,22 +1143,23 @@ tasks:
         complex:
           root: Blocklist.Potential
           filters:
-            - - operator: StringContainsArray
-                left:
-                  value:
-                    simple: Blocklist.Potential
-                  iscontext: true
-                right:
-                  value:
-                    simple: checks.common
-                  iscontext: true
-                ignorecase: true
+          - - operator: StringContainsArray
+              left:
+                value:
+                  simple: Blocklist.Potential
+                iscontext: true
+              right:
+                value:
+                  simple: checks.common
+                iscontext: true
+              ignorecase: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": -550
+          "x": -2230,
+          "y": -560
         }
       }
     note: false
@@ -1150,8 +1188,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "41"
+      '#none#':
+      - "41"
     scriptarguments:
       key:
         simple: Blocklist.Potential
@@ -1159,17 +1197,18 @@ tasks:
         complex:
           root: inputs.Username
           transformers:
-            - operator: split
-              args:
-                delimiter:
-                  value:
-                    simple: ","
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": -710
+          "x": -2230,
+          "y": -720
         }
       }
     note: false
@@ -1192,24 +1231,25 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "45"
+      '#default#':
+      - "45"
       "yes":
-        - "44"
+      - "44"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isExists
-              left:
-                value:
-                  simple: Blocklist.Sensitive
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Blocklist.Sensitive
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1780,
-          "y": -380
+          "x": -2670,
+          "y": -390
         }
       }
     note: false
@@ -1234,14 +1274,15 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "52"
+      '#none#':
+      - "52"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1780,
-          "y": -180
+          "x": -2670,
+          "y": -190
         }
       }
     note: false
@@ -1262,7 +1303,7 @@ tasks:
           <p>&nbsp;</p>
           <p>For more information, click the link below.</p>
       methods:
-        - email
+      - email
       format: html
       bcc:
       cc:
@@ -1275,22 +1316,22 @@ tasks:
         completeaftersla: false
     form:
       questions:
-        - id: "0"
-          label: ""
-          labelarg:
-            simple: "Sensitive Users:"
-          required: false
-          gridcolumns: []
-          defaultrows: []
-          type: multiSelect
-          options: []
-          optionsarg:
-            - simple: ${Blocklist.Sensitive}
-          fieldassociated: ""
-          placeholder: ""
-          tooltip: ""
-          readonly: false
-      title: "Which sensitive users you would like to Block?  Choose from the following lists :"
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Sensitive Users:'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${Blocklist.Sensitive}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: 'Which sensitive users you would like to Block?  Choose from the following lists :'
       description: ""
       sender: ""
       expired: false
@@ -1314,14 +1355,15 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "52"
+      '#none#':
+      - "52"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": -180
+          "x": -2230,
+          "y": -190
         }
       }
     note: false
@@ -1340,7 +1382,7 @@ tasks:
           <p>&nbsp;</p>
           <p>For more information, click the link below.</p>
       methods:
-        - email
+      - email
       format: html
       bcc:
       cc:
@@ -1353,24 +1395,24 @@ tasks:
         completeaftersla: false
     form:
       questions:
-        - id: "0"
-          label: ""
-          labelarg:
-            simple: "Users to be blocked:"
-          required: false
-          gridcolumns: []
-          defaultrows: []
-          type: multiSelect
-          options: []
-          optionsarg:
-            - complex:
-                root: Blocklist
-                accessor: Potential
-          fieldassociated: ""
-          placeholder: ""
-          tooltip: ""
-          readonly: false
-      title: "Which Users you would like to Block?  Choose from the following lists :"
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Users to be blocked:'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: Blocklist
+            accessor: Potential
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: 'Which Users you would like to Block?  Choose from the following lists :'
       description: ""
       sender: ""
       expired: false
@@ -1398,8 +1440,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "5"
+      '#none#':
+      - "5"
     scriptarguments:
       append:
         simple: "true"
@@ -1410,18 +1452,19 @@ tasks:
           root: ${Which Users you would like to Block?  Choose from the following lists :.Answers
           accessor: 0}
           transformers:
-            - operator: append
-              args:
-                item:
-                  value:
-                    simple: Which sensitive users you would like to Block?  Choose from the following lists :.Answers.0
-                  iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Which sensitive users you would like to Block?  Choose from the following lists :.Answers.0
+                iscontext: true
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": 180
+          "x": -2230,
+          "y": 170
         }
       }
     note: false
@@ -1450,8 +1493,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "5"
+      '#none#':
+      - "5"
     scriptarguments:
       append:
         simple: "true"
@@ -1460,11 +1503,12 @@ tasks:
       value:
         simple: ${inputs.Username}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 190
+          "x": -1700,
+          "y": 170
         }
       }
     note: false
@@ -1488,17 +1532,18 @@ tasks:
       iscommand: true
       brand: Active Directory Query v2
     nexttasks:
-      "#none#":
-        - "2"
+      '#none#':
+      - "2"
     scriptarguments:
       username:
         simple: ${Blocklist.Final}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 210,
-          "y": 850
+          "x": 1060,
+          "y": 920
         }
       }
     note: false
@@ -1521,31 +1566,32 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#default#":
-        - "39"
+      '#default#':
+      - "39"
       "yes":
-        - "46"
+      - "46"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Which Users you would like to Block?  Choose from the following lists :.Answers.0
-                iscontext: true
-              right:
-                value: {}
-            - operator: isNotEmpty
-              left:
-                value:
-                  simple: Which sensitive users you would like to Block?  Choose from the following lists :.Answers.0
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Which Users you would like to Block?  Choose from the following lists :.Answers.0
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Which sensitive users you would like to Block?  Choose from the following lists :.Answers.0
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -1340,
-          "y": 0
+          "x": -2230,
+          "y": -10
         }
       }
     note: false
@@ -1555,6 +1601,605 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 8791822e-5e1e-4b28-82d9-a822aa17108d
+    type: condition
+    task:
+      id: 8791822e-5e1e-4b28-82d9-a822aa17108d
+      version: -1
+      name: Is Slack IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Slack IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2410,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: e2aaa6e8-de1f-4399-8e89-2321fe4fa030
+    type: title
+    task:
+      id: e2aaa6e8-de1f-4399-8e89-2321fe4fa030
+      version: -1
+      name: Slack IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2410,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e8b7f7a8-2b9c-44ef-8eff-ceb494799432
+    type: condition
+    task:
+      id: e8b7f7a8-2b9c-44ef-8eff-ceb494799432
+      version: -1
+      name: Is ServiceNow IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: ServiceNow IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2840,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 6a694bcc-610d-46c4-8d22-dec644076b78
+    type: title
+    task:
+      id: 6a694bcc-610d-46c4-8d22-dec644076b78
+      version: -1
+      name: ServiceNow IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2840,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 6345f42c-51a8-401f-8099-ecea5a0403c4
+    type: condition
+    task:
+      id: 6345f42c-51a8-401f-8099-ecea5a0403c4
+      version: -1
+      name: Is Salesforce IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Salesforce IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3260,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: dba2b9c1-cb47-41a9-8386-1de15a47de2d
+    type: title
+    task:
+      id: dba2b9c1-cb47-41a9-8386-1de15a47de2d
+      version: -1
+      name: Salesforce IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3260,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: c6cb894b-65a5-4e85-87f4-debe4d8cdbfe
+    type: condition
+    task:
+      id: c6cb894b-65a5-4e85-87f4-debe4d8cdbfe
+      version: -1
+      name: Is PrismaCloud IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: PrismaCloud IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3690,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: de7c1b4f-0ecc-4782-8346-50b679dac66b
+    type: title
+    task:
+      id: de7c1b4f-0ecc-4782-8346-50b679dac66b
+      version: -1
+      name: PrismaCloud IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3690,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 1a19cd62-eafa-4b66-80aa-b397a439f52c
+    type: condition
+    task:
+      id: 1a19cd62-eafa-4b66-80aa-b397a439f52c
+      version: -1
+      name: Is Microsoft Graph User Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "69"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 31d15f37-d89d-4d09-8009-2a60c76d0b5e
+    type: title
+    task:
+      id: 31d15f37-d89d-4d09-8009-2a60c76d0b5e
+      version: -1
+      name: Microsoft Graph User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 31592372-486c-4648-8376-8889941df6c8
+    type: condition
+    task:
+      id: 31592372-486c-4648-8376-8889941df6c8
+      version: -1
+      name: Is Zoom IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Zoom_IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4120,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: b98574a0-93fc-423b-87e1-bf888db3881a
+    type: title
+    task:
+      id: b98574a0-93fc-423b-87e1-bf888db3881a
+      version: -1
+      name: Zoom IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4120,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: deb7235b-0e73-4aa7-8e3e-2b07ad73daf9
+    type: condition
+    task:
+      id: deb7235b-0e73-4aa7-8e3e-2b07ad73daf9
+      version: -1
+      name: Is Atlassian IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Atlassian IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4550,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 5e5c6e1e-8c3a-42b8-85bd-3646e9b01531
+    type: title
+    task:
+      id: 5e5c6e1e-8c3a-42b8-85bd-3646e9b01531
+      version: -1
+      name: Atlassian IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4550,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: c5626ea1-c0a0-4c27-8b42-738897e58abd
+    type: regular
+    task:
+      id: c5626ea1-c0a0-4c27-8b42-738897e58abd
+      version: -1
+      name: Microsoft Graph User - Disable Account
+      description: |-
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        but does not terminate an existing session. Supported only in a self deployed app flow with the
+        Permission: Directory.AccessAsUser.All(Delegated)
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      user:
+        simple: ${Blocklist.Final}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 909312b6-5f6e-451c-83dd-a00e31c49197
+    type: condition
+    task:
+      id: 909312b6-5f6e-451c-83dd-a00e31c49197
+      version: -1
+      name: Is GitHub IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: GitHub IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4970,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 4f6321ef-dfb9-41fd-8a72-61bea5cff007
+    type: title
+    task:
+      id: 4f6321ef-dfb9-41fd-8a72-61bea5cff007
+      version: -1
+      name: GitHub IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4970,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1563,61 +2208,79 @@ view: |-
       "26_2_#default#": 0.11,
       "26_33_yes": 0.14,
       "27_2_#default#": 0.1,
+      "27_35_yes": 0.31,
       "28_2_#default#": 0.15,
-      "28_33_yes": 0.19,
+      "28_33_yes": 0.1,
       "29_2_#default#": 0.11,
-      "30_2_#default#": 0.2,
-      "30_33_yes": 0.1,
-      "31_2_#default#": 0.33,
-      "31_33_yes": 0.29,
-      "32_2_#default#": 0.1,
+      "29_34_yes": 0.36,
+      "30_2_#default#": 0.26,
+      "30_33_yes": 0.11,
+      "31_2_#default#": 0.27,
+      "31_33_yes": 0.12,
+      "32_2_#default#": 0.18,
       "32_33_yes": 0.24,
       "36_2_#default#": 0.1,
       "37_2_#default#": 0.12,
       "43_44_yes": 0.49,
+      "52_39_#default#": 0.2,
+      "53_2_#default#": 0.1,
+      "53_33_yes": 0.14,
+      "55_2_#default#": 0.1,
+      "55_33_yes": 0.21,
+      "57_2_#default#": 0.1,
+      "57_33_yes": 0.18,
+      "59_2_#default#": 0.1,
+      "59_33_yes": 0.14,
+      "63_2_#default#": 0.1,
+      "65_2_#default#": 0.1,
+      "65_33_yes": 0.1,
+      "67_2_#default#": 0.1,
+      "67_33_yes": 0.1,
+      "70_2_#default#": 0.1,
+      "70_33_yes": 0.1,
       "8_38_yes": 0.65,
       "8_39_#default#": 0.13
     },
     "paper": {
       "dimensions": {
-        "height": 2715,
-        "width": 4100,
-        "x": -3090,
-        "y": -1440
+        "height": 2775,
+        "width": 7650,
+        "x": -5370,
+        "y": -1450
       }
     }
   }
 inputs:
-  - key: Username
-    value: {}
-    required: false
-    description: Array of malicious usernames to block.
-    playbookInputQuery:
-  - key: Tag
-    value:
-      simple: Bad Account
-    required: false
-    description: PAN-OS Tag name to apply to the username that you want to block.
-    playbookInputQuery:
-  - key: NamingConvention
-    value: {}
-    required: false
-    description: In case you are using naming convention in your IDP, please specify a prefix for special/service accounts (use comma separated)
-    playbookInputQuery:
-  - key: UserVerification
-    value:
-      simple: "True"
-    required: false
-    description: |-
-      Possible values:True/False. Default:True.
-      Specify if User Verification is Requrired
-    playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: Array of malicious usernames to block.
+  playbookInputQuery:
+- key: Tag
+  value:
+    simple: Bad Account
+  required: false
+  description: PAN-OS Tag name to apply to the username that you want to block.
+  playbookInputQuery:
+- key: NamingConvention
+  value: {}
+  required: false
+  description: In case you are using naming convention in your IDP, please specify a prefix for special/service accounts (use comma separated)
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values:True/False. Default:True.
+    Specify if User Verification is Requrired
+  playbookInputQuery:
 outputs:
-  - contextPath: Blocklist.Final
-    description: Blocked accounts
-    type: unknown
+- contextPath: Blocklist.Final
+  description: Blocked accounts
+  type: unknown
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 6.5.0
 marketplaces:
   - xsoar
