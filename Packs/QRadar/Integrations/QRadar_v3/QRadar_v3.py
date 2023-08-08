@@ -3522,7 +3522,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
-                int(num_events) > (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
+                int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
             print_debug_msg(f'Events were already fetched {num_events} for offense {offense_id}, '
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')
