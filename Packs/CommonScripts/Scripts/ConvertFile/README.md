@@ -1,5 +1,20 @@
 Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0
 
+## Troubleshooting
+
+### Operation not permitted
+
+If you get an error like:
+<pre>cannot access 'soffice': Operation not permitted</pre>
+
+Or:
+<pre>/usr/bin/soffice: 191: exec: /usr/bin/oosplash: not found</pre>
+
+The you may need to upgrade **Docker**, **runc**, and the **libseccomp** rpm on your host machine.
+
+References: <a href="https://github.com/docker-library/postgres/issues/884">1</a>,  <a href="https://github.com/docker-library/openjdk/issues/465">2</a>.
+
+
 ## Script Data
 
 ---
