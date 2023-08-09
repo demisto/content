@@ -37,19 +37,24 @@ jobs:
       with:
         python-version: '3.10'
         cache: 'poetry'
-    
-    - name: Update dependencies
-      run: |
-        poetry add --group dev demisto-sdk@${{inputs.release_version}}
-        poetry lock --no-update
-        source .venv/bin/activate
-        demisto-sdk pre-commit --no-validate --no-secrets --no-unit-tests
-
-    - name: Create pull request
+        
+    - name: Create brnach
       run: |
         git config --global user.email "bot@demisto.com"
         git config --global user.name "Content Bot"
         git checkout -b ${{ inputs.release_version }}
+    
+    - name: Update dependencies
+      continue-on-error: true
+      run: |
+        poetry add --group dev demisto-sdk@${{inputs.release_version}}
+        poetry lock --no-update
+        git add .
+        source .venv/bin/activate
+        demisto-sdk pre-commit --no-validate --no-secrets --no-unit-test
+
+    - name: Create pull request
+      run: |
         git commit -m "poetry files" -a
         git push origin ${{ inputs.release_version }}
         gh pr create -B master -H ${{ inputs.release_version }} --title "demisto-sdk-release ${{ inputs.release_version }}" --body "${{ inputs.release_changes }}" --reviewer ${{ inputs.reviewer }} -l "docs-approved"

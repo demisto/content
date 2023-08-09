@@ -819,6 +819,19 @@ def get_device_groups_names():
     return device_group_names
 
 
+def list_device_groups_names():
+    """
+    Get device group names in the Panorama
+    """
+    device_group_names = get_device_groups_names()
+
+    return CommandResults(
+        outputs_prefix='Panorama.DeviceGroupNames',
+        outputs=device_group_names,
+        readable_output=tableToMarkdown('Device Group Names:', device_group_names, ['Group Name']),
+    )
+
+
 def device_group_test():
     """
     Test module for the Device group specified
@@ -3840,7 +3853,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     else:
         params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
-        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
+        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'],
+                                                             is_commit_required=False)
         if behaviour == 'add':
             values = list((set(current_objects_items)).union(set(element_value)))  # type: ignore[arg-type]
         else:  # remove
@@ -13397,7 +13411,7 @@ def pan_os_edit_tag(
         comment (str): The tag comment.
 
     Returns:
-        dict: The raw response from panorama's API. 
+        dict: The raw response from panorama's API.
     """
     params = {
         'xpath': build_tag_xpath(name=tag_name),
@@ -14639,6 +14653,8 @@ def main():  # pragma: no cover
             return_results(pan_os_edit_tag_command(args))
         elif command == 'pan-os-delete-tag':
             return_results(pan_os_delete_tag_command(args))
+        elif command == 'pan-os-list-device-groups':
+            return_results(list_device_groups_names())
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
