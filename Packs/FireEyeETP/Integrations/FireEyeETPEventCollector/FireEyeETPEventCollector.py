@@ -526,7 +526,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"{events=}")
             send_events_to_xsiam(events, VENDOR, PRODUCT)
             demisto.setLastRun(next_run)
-            
+
         else:
             raise NotImplementedError
 
