@@ -78,27 +78,18 @@ var createReputationEntry = function(response) {
     ec = {};
     ec.Account =[];
     var reliability =  params.integration_reliability
-    //Only one person
-    if (response.person) {
-        data[0] = addPerson(response.person);
-        ec.Account[0] = buildECReliability(data, 0, reliability);
-        data[0]['Emails'] = '';
-        for (var j = 0; j < data[0].Email.length; j++) {
-            data[0]['Emails'] += data[0].Email[j].Address + '\n';
+    persons = if (response.person) ? [response.person] : response.possible_persons
+
+    for (var i = 0; i < persons.length; i++) {
+        data[i] = addPerson(persons[i]);
+        ec.Account[i] = buildECReliability(data, i, reliability);
+        data[i]['Emails'] = '';
+        for (var j = 0; j < data[i].Email.length; j++) {
+            data[i]['Emails'] += data[i].Email[j].Address + '\n';
         }
-        delete data[0].Email;
-    } else {
-    //More than one person
-        for (var i = 0; i < response.possible_persons.length; i++) {
-            data[i] = addPerson(response.possible_persons[i]);
-            ec.Account[i] = buildECReliability(data, i, reliability);
-            data[i]['Emails'] = '';
-            for (var j = 0; j < data[i].Email.length; j++) {
-                data[i]['Emails'] += data[i].Email[j].Address + '\n';
-            }
-            delete data[i].Email;
-        }
+        delete data[i].Email;
     }
+
     return {
         Type: entryTypes.note,
         ContentsFormat: formats.table,
