@@ -7,7 +7,7 @@ In order to use this integration, you need to enter your Forcepoint DLP credenti
 #### Registering an Application in the Forcepoint Security Manager
 
 To connect an application to Forcepoint DLP through a REST API connection, you need to create an Application administrator in the Forcepoint Security Manager.
-1. On the Global Settings > General > Administrators settings page, select Add **Local Account**.
+1. On the Global Settings > General > Administrators settings page, select **Add Local Account**.
 2. On the **Add Local Account** page, add the information for the administrator account, then select the **Application** option for the **Administrator type**.
 3. Click **OK** to save the new account.
    
