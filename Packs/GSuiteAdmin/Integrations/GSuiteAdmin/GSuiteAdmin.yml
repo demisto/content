@@ -1027,6 +1027,13 @@ script:
       Delete all access tokens issued by a user for an application.
     name: gsuite-token-revoke
   - arguments:
+    - description: Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
+      name: user_key
+      required: true
+    description: |-
+      Signs a user out of all web and device sessions and reset their sign-in cookies.
+    name: gsuite-user-signout
+  - arguments:
     - description: Immutable ID of the G Suite account.
       name: customer_id
     - description: Destination user's profile ID.
@@ -1035,13 +1042,15 @@ script:
       name: old_owner_user_id
     - description: Status of the transfer.
       name: status
-    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+    - description: |-
+        Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
-    - description: Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
+    - description: |-
+        Maximum number of results to return. Default is 100. Acceptable values are 1 to 500, inclusive.
       name: max_results
     - description: Token to specify the next page in the list.
       name: page_token
-    description: Lists the transfers for a customer by source user, destination user, or status.
+    description: "Lists the transfers for a customer by source user, destination user, or status."
     name: gsuite-datatransfer-list
     outputs:
     - contextPath: GSuite.DataTransfer.kind
@@ -1081,7 +1090,7 @@ script:
       description: Continuation token which will be used to specify next page in list API.
       type: String
   - arguments:
-    - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
+    - description: 'Email ID of the G Suite domain admin who acts on behalf of an end-user.'
       name: admin_email
     - description: Immutable ID of the G Suite account.
       name: customer_id
@@ -1402,7 +1411,7 @@ script:
     description: Deletes a user.
     name: gsuite-user-delete
   - arguments:
-    - description: The user's first name.
+    - description: 'The user''s first name.'
       name: first_name
     - description: The user's last name.
       name: last_name
@@ -2220,7 +2229,7 @@ script:
     - contextPath: GSuite.Group.nonEditableAliases
       description: List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.64742
+  dockerimage: demisto/googleapi-python3:1.0.0.66918
   runonce: false
   script: '-'
   subtype: python3

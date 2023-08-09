@@ -1704,7 +1704,7 @@ script:
     - contextPath: Cofense.AttachmentPayload.relationships.reports.links.related
       description: Link to retrieve the detailed information of the report with attachments containing the payload.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   isremotesyncin: true
   runonce: false
