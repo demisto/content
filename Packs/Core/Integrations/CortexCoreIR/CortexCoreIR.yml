@@ -1697,6 +1697,7 @@ script:
       required: true
     - description: User’s email address.
       name: email
+      required: true
     description: Reports to WildFire about incorrect hash verdict through Cortex.
     execution: true
     name: core-report-incorrect-wildfire
