@@ -1365,7 +1365,13 @@ and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
     def is_auth_code_reconfigured(self) -> bool:
-        return not get_integration_context().get('auth_code') == self.auth_code
+        auth_code = get_integration_context().get('auth_code')
+        if auth_code and self.auth_code:
+            return not get_integration_context().get('auth_code') == self.auth_code
+        elif auth_code or self.auth_code:
+            return True
+        else:
+            return False
 
 
 class NotFoundError(Exception):
