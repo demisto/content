@@ -1235,6 +1235,13 @@ script:
       name: bcc
     - description: The content (body) of the email to be sent in HTML format.
       name: htmlBody
+    - auto: PREDEFINED 
+      description: Choose true if you wish to handle html body as MimeMultipart. Default is "false".
+      name: force_handle_htmlBody
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
     - description: The address that needs to be used to reply to the message.
       name: replyTo
     - description: |-
