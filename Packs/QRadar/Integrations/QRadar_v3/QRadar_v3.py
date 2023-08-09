@@ -3702,9 +3702,11 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
+    filter_ = f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time > {last_update}) OR (status=closed AND close_time > {last_update}))'  # noqa: E501
+    print_debug_msg(f'Filter to get modified offenses is: {filter_}')
     # if this call fails, raise an error and stop command execution
     offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time >= {last_update}) OR (status=closed AND close_time > {last_update}))',  # noqa: E501
+                                    filter_=filter_,
                                     sort='+last_persisted_time',
                                     fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}
