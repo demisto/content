@@ -29,14 +29,14 @@ def load_json(filepath: str) -> dict:
 
 class GitlabClient:
     def __init__(self, gitlab_token: str) -> None:
-        self.base_url = Path(API_BASE_URL) / "projects" / PROJECT_ID
+        self.base_url = f"{API_BASE_URL}/projects/{PROJECT_ID}"
         self.project_id = '2596'
         self.token = gitlab_token
 
     def _get(self, endpoint: str, to_json: bool = False, stream: bool = False) -> Any:
-        url = self.base_url / endpoint
+        url = f"{self.base_url}/{endpoint}"
         headers = {"PRIVATE-TOKEN": self.token}
-        response = requests.get(url.as_posix(), headers=headers, stream=stream)
+        response = requests.get(url, headers=headers, stream=stream)
         if to_json:
             return response.json()
         return response
