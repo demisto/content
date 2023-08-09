@@ -5380,6 +5380,11 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.1"
+        },
+        {
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate File - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
