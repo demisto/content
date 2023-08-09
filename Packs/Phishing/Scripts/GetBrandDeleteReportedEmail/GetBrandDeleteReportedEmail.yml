@@ -1,7 +1,7 @@
 commonfields:
   id: GetBrandDeleteReportedEmail
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.68300
 enabled: true
 name: GetBrandDeleteReportedEmail
 runas: DBotWeakRole
