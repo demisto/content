@@ -1,12 +1,23 @@
-from argparse import ArgumentParser
 import json
+import zipfile
+from argparse import ArgumentParser
+from pathlib import Path
+from typing import Any
+
+import requests
+
 from Tests.scripts.utils import logging_wrapper as logging
+
+API_BASE_URL = "https://code.pan.run/api/v4"
+PROJECT_ID = '2596'
 
 
 def parse_args():
     args = ArgumentParser()
-    args.add_argument('--previous', required=True, help='Path to previous pack_dependencies.json')
-    args.add_argument('--current', required=True, help='Path to current pack_dependencies.json')
+    args.add_argument('--gitlab-token', required=True, help='A gitlab API token')
+    args.add_argument('--master-sha', required=True, help='master branch commit SHA')
+    args.add_argument('--job-name', required=True, help='The job name to take the artifact from')
+    args.add_argument('--current-file', required=True, help='Path to current pack_dependencies.json')
     args.add_argument('--output', required=True, help='Path to diff output file')
     return args.parse_args()
 
@@ -14,6 +25,58 @@ def parse_args():
 def load_json(filepath: str) -> dict:
     with open(filepath) as f:
         return json.load(f)
+
+
+class GitlabClient:
+    def __init__(self, gitlab_token: str) -> None:
+        self.base_url = Path(API_BASE_URL) / "projects" / PROJECT_ID
+        self.project_id = '2596'
+        self.token = gitlab_token
+
+    def _get(self, endpoint: str, to_json: bool = False, stream: bool = False) -> Any:
+        url = self.base_url / endpoint
+        headers = {"PRIVATE-TOKEN": self.token}
+        response = requests.get(url.as_posix(), headers=headers, stream=stream)
+        if to_json:
+            return response.json()
+        return response
+
+    def get_most_updated_pipeline_sha(self, commit_sha: str):
+        response: list = self._get(f"pipelines?sha={commit_sha}", to_json=True)
+        pipeline_id = response[0]["id"]
+        logging.info(f"{pipeline_id=}")
+        return pipeline_id
+
+    def get_job_id_by_name(self, pipeline_id: str, job_name: str):
+        response: list = self._get(f"pipelines/{pipeline_id}/jobs", to_json=True)
+        for job in response:
+            if job["name"] == job_name:
+                job_id = job["id"]
+                logging.info(f"{job_id=}")
+                return job_id
+        raise Exception(f"Job {job_name} does not exist in pipeline {pipeline_id}.")
+
+    def download_and_extract_packs_dependencies_artifact(self, job_id):
+        response: requests.Response = self._get(f"jobs/{job_id}/artifacts", stream=True)
+        with open("artifacts_bundle.zip", "wb") as zip_file:
+            for chunk in response.iter_content(chunk_size=8192):
+                zip_file.write(chunk)
+
+        with zipfile.ZipFile("artifacts_bundle.zip", "r") as zip_ref:
+            zip_ref.extractall()
+
+        artifacts_path = Path("artifacts/xsoar/packs_dependencies.json")
+        if artifacts_path.is_file():
+            logging.info(f"{artifacts_path=} exists, loading the file")
+            return load_json(artifacts_path.as_posix())
+        raise Exception(
+            "pack_dependencies.json file not found in the extracted artifacts"
+        )
+
+    def get_packs_dependencies_json(self, commit_sha: str, job_name: str):
+        pipeline_id = self.get_most_updated_pipeline_sha(commit_sha)
+        job_id = self.get_job_id_by_name(pipeline_id, job_name)
+        return self.download_and_extract_packs_dependencies_artifact(job_id)
 
 
 def compare_pack_field(pack_id: str, previous: dict, current: dict, res: dict, field: str) -> None:
@@ -88,8 +151,9 @@ def write_json(diff: dict, filepath: str) -> None:
 
 def main():
     args = parse_args()
-    previous = load_json(args.previous)
-    current = load_json(args.current)
+    gitlab_client = GitlabClient(args.gitlab_token)
+    previous = gitlab_client.get_packs_dependencies_json(args.master_sha, args.job_name)
+    current = load_json(args.current_file)
     diff = compare(previous, current)
     log_outputs(diff)
     write_json(diff, args.output)

@@ -165,12 +165,22 @@ validate-content-conf:
 
     - section_start "Find dependencies changes"
     - |
-      echo "downloading packs_dependencies.json file from last upload"
-      TEMP_DIR=$(mktemp -d)
-      LAST_UPLOAD_DEPENDENCIES_FILE="$TEMP_DIR/last_upload_packs_dependencies.json"
-      gsutil cp "gs://xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json" $LAST_UPLOAD_DEPENDENCIES_FILE
-    - python Tests/scripts/find_pack_dependencies_changes.py --previous $LAST_UPLOAD_DEPENDENCIES_FILE --current $ARTIFACTS_FOLDER/packs_dependencies.json --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
-    - rm -rf "$TEMP_DIR"
+      echo "Iterating through the commits in reverse order from the test branch"
+      for commit in $(git rev-list $CI_COMMIT_SHA^..HEAD); do
+          # Check if the commit exists in master
+          if git merge-base --is-ancestor $commit master; then
+              MASTER_SHA=$commit
+              break
+          fi
+      done
+
+      if [ -z "$MASTER_SHA" ]; then
+          echo "Original master commit not found in branch history."
+      else
+          echo "Original master commit found: $MASTER_SHA"
+      fi
+
+    - python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_READ_TOKEN --master-sha $MASTER_SHA --job-name $CI_JOB_NAME --current-file $ARTIFACTS_FOLDER/packs_dependencies.json --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
     - section_end "Find dependencies changes"
 
     - section_start "Replace Cortex XSOAR" --collapsed
