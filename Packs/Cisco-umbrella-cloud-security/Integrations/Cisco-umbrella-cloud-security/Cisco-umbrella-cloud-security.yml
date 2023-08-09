@@ -24,7 +24,7 @@ configuration:
   type: 8
   required: false
 description: Deprecated. Use Cisco Umbrella Cloud Security v2 instead.
-display: Cisco Umbrella Cloud Security
+display: Cisco Umbrella Cloud Security (Deprecated)
 name: Cisco Umbrella Cloud Security
 deprecated: true
 script:
