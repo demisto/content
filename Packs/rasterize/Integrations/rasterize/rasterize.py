@@ -178,10 +178,10 @@ def init_driver(offline_mode=False, include_url=False):
 
         if not include_url:
             chrome_options.add_argument('--headless')
-
-        driver = webdriver.Chrome(options=chrome_options, service_args=[
+        chrome_service = webdriver.ChromeService(service_args=[
             f'--log-path={DRIVER_LOG}',
         ])
+        driver = webdriver.Chrome(options=chrome_options, service=chrome_service)
         if offline_mode:
             driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
     except Exception as ex:
