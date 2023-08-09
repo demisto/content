@@ -10,7 +10,7 @@ If you get an error such as:
 Or:
 <pre>/usr/bin/soffice: 191: exec: /usr/bin/oosplash: not found</pre>
 
-The you may need to upgrade **Docker**, **runc**, and the **libseccomp** rpm on your host machine.
+You may need to upgrade **Docker**, **runc**, and the **libseccomp** rpm on your host machine.
 
 ## Script Data
 
