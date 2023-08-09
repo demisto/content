@@ -1183,25 +1183,6 @@ inputs:
   required: false
   description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational. '
   playbookInputQuery:
-- key: SendOnCallNotification
-  value:
-    simple: "No"
-  required: false
-  description: "Whether to send the on call notification email based on the Incidents Severity. \n\nSet to Yes to send notifications, and add the emails to the NotificationEmails. "
-  playbookInputQuery:
-- key: NotificationEmails
-  value: {}
-  required: false
-  description: 'The email addresses to send the message to, can be comma separated. '
-  playbookInputQuery:
-- key: MinimumSeverity
-  value:
-    simple: "3"
-  required: false
-  description: |-
-    The minimum severity level for the Incident to send notification for.  Default is 3 (High).   XSOAR Severity values:
-    Critical (4), High (3), Medium (2), Low (1), Information (0.5), Unknown (0)
-  playbookInputQuery:
 outputs: []
 quiet: true
 fromversion: 6.10.0
