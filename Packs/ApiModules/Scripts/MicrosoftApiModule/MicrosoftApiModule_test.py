@@ -731,3 +731,48 @@ def test_generate_login_url():
                    f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
                    f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp)'
     assert expected_url in result.readable_output, "Login URL is incorrect"
+
+
+def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
+    # client = self_deployed_client(grant_type=AUTHORIZATION_CODE)
+    context = {'auth_code': AUTH_CODE, 'access_token': TOKEN,
+               'valid_until': 3605, 'current_refresh_token': REFRESH_TOKEN}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=context)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+
+    tenant_id = TENANT
+    client_id = CLIENT_ID
+    client_secret = CLIENT_SECRET
+    base_url = BASE_URL
+    auth_code = 'reconfigured_auth_code'
+    redirect_uri = REDIRECT_URI
+    resource = None
+    ok_codes = OK_CODES
+    grant_type = AUTHORIZATION_CODE
+
+    client = MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                             grant_type=grant_type, auth_code=auth_code, redirect_uri=redirect_uri,
+                             resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    # Arrange
+    assert client.get_access_token()
+    assert requests_mock._adapter.last_request.json()
+
+
+    # mocker.patch.object(client, '_get_self_deployed_token', return_value=tokens)
+    # mocker.patch.object(client, '_get_self_deployed_token_auth_code')
+    # token = client.get_access_token()
+
+    # set_context_count = demisto.setIntegrationContext.call_count
+    # auth_call_oproxy = client._oproxy_authorize.call_count
+    # auth_call_self_deployed = client._get_self_deployed_token.call_count
+
+    # assert set_context_count == 0
+    # assert auth_call_oproxy == 0
+    # assert auth_call_self_deployed == 1
+    # assert token == TOKEN
