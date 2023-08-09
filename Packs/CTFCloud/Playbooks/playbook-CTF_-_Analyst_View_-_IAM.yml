@@ -72,7 +72,7 @@ tasks:
     task:
       id: 42b1a8fb-034d-4bf0-8ff1-d9c2b66b2f6c
       version: -1
-      name: 'Investigate incident indicators'
+      name: Investigate incident indicators
       type: title
       iscommand: false
       brand: ""
@@ -103,7 +103,7 @@ tasks:
     task:
       id: 50c655b4-36a6-44db-8d81-537a94730c3c
       version: -1
-      name: "Let's check the affected Asset"
+      name: Let's check the affected Asset
       type: title
       iscommand: false
       brand: ""
@@ -222,13 +222,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5032c1c3-847f-4e98-8e66-270f56e81d9b
+    taskid: f35b69e7-30fc-45bf-8c02-147df535b9e4
     type: regular
     task:
-      id: 5032c1c3-847f-4e98-8e66-270f56e81d9b
+      id: f35b69e7-30fc-45bf-8c02-147df535b9e4
       version: -1
       name: Welcome To the SKO XSOAR's CTF!
-      description: "# **Welcome all!**\n\nIn this exercise, we are going to wear the analyst hat and investigate another interesting incident :relaxed:\nSo tighten your belt and enjoy the ride.\n\n## What do you need to do:\n* Find the \"Suspicious API call\" Incident which is still in a active state. \n* To make your life easier use the following query \n`status:Active AND name:\"*Suspicious*\"`\n\n## Rules\n* Do not change anything in the incident's Playbook\n* Raise your hand in case you need help\n* To re-enter your answer, check out the following gif ob how to do so:\n![image](https://raw.githubusercontent.com/demisto/content/3cfe7f529f3a5e82ffdf021829cfd4f0c335dc7e/Packs/ctf01/doc_files/demo.gif)\n* An SLA timer will start ticking Once you have marked this task as completed. This timer will indicate who finished the challenge first!\n\n\nAnd as usual, enjoy the exercise!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/the-dark-knight-joker.gif)\n"
+      description: "# **Welcome all!**\n\nIn this exercise, we are going to wear the analyst hat and investigate another interesting incident :relaxed:\nSo tighten your belt and enjoy the ride.\n\n## What do you need to do:\n* Find the \"Suspicious API call\" Incident which is still in an active state. \n* To make your life easier use the following query \n`status:Active AND name:*Suspicious*`\n\n## Rules\n* Do not change anything in the incident's Playbook\n* Raise your hand in case you need help\n* To re-enter your answer, check out the following gif ob how to do so:\n![image](https://raw.githubusercontent.com/demisto/content/3cfe7f529f3a5e82ffdf021829cfd4f0c335dc7e/Packs/ctf01/doc_files/demo.gif)\n* An SLA timer will start ticking Once you have marked this task as completed. This timer will indicate who finished the challenge first!\n\n\nAnd as usual, enjoy the exercise!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/the-dark-knight-joker.gif)\n"
       type: regular
       iscommand: false
       brand: ""
@@ -524,12 +524,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 7b2524dc-b2a2-4cda-8950-0a1f39e635a8
+    taskid: 581b4789-29a4-4cf4-8c27-22516f935009
     type: regular
     task:
-      id: 7b2524dc-b2a2-4cda-8950-0a1f39e635a8
+      id: 581b4789-29a4-4cf4-8c27-22516f935009
       version: -1
-      name: Check the Answer for Q2
+      name: Check the Answer for Q1
+      description: What is the type of malicious indicators?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -539,7 +540,7 @@ tasks:
       - "4"
     scriptarguments:
       question_ID:
-        simple: "02"
+        simple: "01"
       secret:
         complex:
           root: Investigate the indicator.Answers
@@ -564,12 +565,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: ca3b2518-ad4f-4c15-8e0c-325addb1b2f8
+    taskid: b502022e-34c5-41a6-89ea-254c67e6ad93
     type: regular
     task:
-      id: ca3b2518-ad4f-4c15-8e0c-325addb1b2f8
+      id: b502022e-34c5-41a6-89ea-254c67e6ad93
       version: -1
-      name: Check the Answer for Q3
+      name: Check the Answer for Q2
+      description: |+
+        Which vendor classified this indicator as malicious?
+
+        Reply Options
+        - Manual Verdict
+        - VirusTotal
+        - PhishTank
+        - Cisco ThreatGrid
+        - AbuseIPDB
+
+
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -579,7 +591,7 @@ tasks:
       - "4"
     scriptarguments:
       question_ID:
-        simple: "03"
+        simple: "02"
       secret:
         complex:
           root: Investigate the indicator.Answers
@@ -604,12 +616,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: dd83c85f-5328-4dd9-8970-cdf7b16a6db0
+    taskid: 3d978cdc-7afc-4196-82a6-cd821bdb21d2
     type: regular
     task:
-      id: dd83c85f-5328-4dd9-8970-cdf7b16a6db0
+      id: 3d978cdc-7afc-4196-82a6-cd821bdb21d2
       version: -1
-      name: Check Answer for Q4
+      name: Check the answer for Q4
+      description: Who is the cloud provider?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -644,12 +657,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 6d18d4b3-962b-4200-8166-e98b26eb2c56
+    taskid: dbb3d82e-e73b-4d69-8a46-72e73a1c4f08
     type: regular
     task:
-      id: 6d18d4b3-962b-4200-8166-e98b26eb2c56
+      id: dbb3d82e-e73b-4d69-8a46-72e73a1c4f08
       version: -1
-      name: Check Answer for Q5
+      name: Check the answer for Q5
+      description: Which project ID is affected by this attack?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -684,12 +698,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5f9e0b21-a84a-4a77-85b1-d876dcbdd6b1
+    taskid: 62fbf8de-fd40-4eb1-8cba-ed5844fc58d3
     type: regular
     task:
-      id: 5f9e0b21-a84a-4a77-85b1-d876dcbdd6b1
+      id: 62fbf8de-fd40-4eb1-8cba-ed5844fc58d3
       version: -1
       name: Check the Answer for Q6
+      description: What was the Access Key ID used by the attacker?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -724,13 +739,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 517a56c4-6423-4e75-8f53-8ba27bb2861a
+    taskid: f8d614ce-d9b6-41c2-8c43-2eac6edf50f2
     type: regular
     task:
-      id: 517a56c4-6423-4e75-8f53-8ba27bb2861a
+      id: f8d614ce-d9b6-41c2-8c43-2eac6edf50f2
       version: -1
       name: |
         Check the Answer for Q7
+      description: Give an example of one suspicious activity that can indicate persistence ( mention the eventName).
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -765,10 +781,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 67f2921d-1753-4415-8ef2-b7ba5ff1ce29
+    taskid: e7a06c95-7130-4670-8b32-2212149c76af
     type: collection
     task:
-      id: 67f2921d-1753-4415-8ef2-b7ba5ff1ce29
+      id: e7a06c95-7130-4670-8b32-2212149c76af
       version: -1
       name: Check other related Incidents
       type: collection
@@ -839,7 +855,7 @@ tasks:
       - id: "2"
         label: ""
         labelarg:
-          simple: What was the action taken for the alert in the incident?
+          simple: What was the action taken by Cortex XDR for the alert in the incident?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -883,12 +899,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: d429434f-7018-4399-8c03-bceaa4f9f1ee
+    taskid: d4cb8454-2ba5-4ed1-8ff4-8758e0bd4e3f
     type: regular
     task:
-      id: d429434f-7018-4399-8c03-bceaa4f9f1ee
+      id: d4cb8454-2ba5-4ed1-8ff4-8758e0bd4e3f
       version: -1
       name: Check the Answer for Q8
+      description: Which new XDR Incident ID you have identified as related to this attack?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -902,7 +919,7 @@ tasks:
       secret:
         complex:
           root: Find the missing incident and answer the questions below.Answers
-          accessor: "1"
+          accessor: "0"
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -910,7 +927,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": -150,
           "y": 2835
         }
       }
@@ -995,12 +1012,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 07338aab-2da4-47f8-8c76-51f08a801e57
+    taskid: 5e9ed572-ea4d-4758-8da3-e9a5308cd58e
     type: regular
     task:
-      id: 07338aab-2da4-47f8-8c76-51f08a801e57
+      id: 5e9ed572-ea4d-4758-8da3-e9a5308cd58e
       version: -1
-      name: Check the Answer for Q9
+      name: Check the Answer for Q12
+      description: |-
+        Classify the incident
+
+        Options:
+        - True Positive
+        - False Positive
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1010,7 +1033,7 @@ tasks:
       - "29"
     scriptarguments:
       question_ID:
-        simple: "09"
+        simple: "12"
       secret:
         complex:
           root: Classify the incident.Answers
@@ -1068,12 +1091,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 29410893-741f-42e5-8c10-7c65e92ec0db
+    taskid: e475626a-9c5d-4063-8c9e-58cc4bf28877
     type: regular
     task:
-      id: 29410893-741f-42e5-8c10-7c65e92ec0db
+      id: e475626a-9c5d-4063-8c9e-58cc4bf28877
       version: -1
-      name: Check answer for Q11
+      name: Check the answer for Q3
+      description: Which IP is associated with the TOR Proxy application?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1083,7 +1107,7 @@ tasks:
       - "4"
     scriptarguments:
       question_ID:
-        simple: "11"
+        simple: "03"
       secret:
         complex:
           root: Investigate the indicator.Answers
@@ -1213,12 +1237,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: a1e77821-f8fe-456a-83b3-5c4997f4ceed
+    taskid: 4df33cd6-7822-4282-8765-33095180d63e
     type: regular
     task:
-      id: a1e77821-f8fe-456a-83b3-5c4997f4ceed
+      id: 4df33cd6-7822-4282-8765-33095180d63e
       version: -1
-      name: Check the Answer for Q9
+      name: Check the answer for Q13
+      description: Revoke the compromised account access keys using the mentioned remediation button - get the required flag to finish this CTF! (don't forget to check the script's results in the war room).
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1228,7 +1253,7 @@ tasks:
       - "50"
     scriptarguments:
       question_ID:
-        simple: "10"
+        simple: "13"
       secret:
         complex:
           root: To keep your company secured - Make some remediation.Answers
@@ -1253,12 +1278,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 115dbe77-2934-4555-85e9-3d6b60f546ea
+    taskid: d861f573-a533-43d6-86f7-7450de6f58c9
     type: regular
     task:
-      id: 115dbe77-2934-4555-85e9-3d6b60f546ea
+      id: d861f573-a533-43d6-86f7-7450de6f58c9
       version: -1
-      name: Check the Answer for Q15
+      name: Check the Answer for Q10
+      description: What was the action taken by Cortex XDR for the alert in the incident?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1268,7 +1294,7 @@ tasks:
       - "7"
     scriptarguments:
       question_ID:
-        simple: "15"
+        simple: "10"
       secret:
         complex:
           root: Find the missing incident and answer the questions below.Answers
@@ -1293,12 +1319,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 986bbcaa-08e4-48ae-83ad-199c5b899cc7
+    taskid: 47cb81ae-e4bb-4881-81a4-190d231fa9fc
     type: regular
     task:
-      id: 986bbcaa-08e4-48ae-83ad-199c5b899cc7
+      id: 47cb81ae-e4bb-4881-81a4-190d231fa9fc
       version: -1
-      name: Check the Answer for Q14
+      name: Check the Answer for Q9
+      description: Which domain is associated with the attacker's IP?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1308,11 +1335,11 @@ tasks:
       - "7"
     scriptarguments:
       question_ID:
-        simple: "14"
+        simple: "09"
       secret:
         complex:
           root: Find the missing incident and answer the questions below.Answers
-          accessor: "0"
+          accessor: "1"
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -1320,7 +1347,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -130,
+          "x": 265,
           "y": 2835
         }
       }
@@ -1333,10 +1360,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 14414912-de1c-4fc2-8c01-ed2be4b5c1e5
+    taskid: 17a17138-3d7b-4c9c-836d-0ab1073cf418
     type: collection
     task:
-      id: 14414912-de1c-4fc2-8c01-ed2be4b5c1e5
+      id: 17a17138-3d7b-4c9c-836d-0ab1073cf418
       version: -1
       name: Create a remediation playbook
       type: collection
@@ -1377,6 +1404,20 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
+          simple: What is the origin pack name of this specific playbook?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Check the Settings section of the mentioned playbook
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
           simple: |-
             What is the hidden flag in the fixed tasks?
             (check out their results)
@@ -1389,20 +1430,6 @@ tasks:
         fieldassociated: ""
         placeholder: ""
         tooltip: Use the `CloudTrail` Context key to retrieve the right values for the integration's commands.
-        readonly: false
-      - id: "1"
-        label: ""
-        labelarg:
-          simple: What is the origin pack name of this specific playbook?
-        required: true
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
         readonly: false
       title: Create a remediation playbook
       description: "As we are an automation platform, we need to provide automated tools to our analysts. Our SecOps team left on vacation and didn't finish one of the playbooks - we hoped you can step in and finish it for us.\n\n**Copy** the playbook \"CTF Remediation Tasks\" (and add your student ID number to the playbook name) and finish the tasks (Don't detach it - just copy it with your name):\n- we will remove the created user from the Admins group in our AWS project\n- We will delete the newly created user.\n- We will kill the EC2 instance that was created by the attacker. \n- Remember that you will need to provide proper input (using the right context path keys) for each task in order to run the playbook properly. Use the Playbook debugger feature to import the Cortex XDR IAM incident's context into your playground and run the PB from there. Here is a short git on how to do that:\n\n![image-demo](https://raw.githubusercontent.com/demisto/content/14297134d59c17eec162ed5fd7feacb782f66399/Packs/CTFCloud/doc_files/demo.gif)\n\nIf you fixed it properly - the tasks will give you the final flag to finish this CTF.\nHelp us to kick out the attacker from our organization once and for all!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hasta-la-vista-baby.gif)"
@@ -1443,12 +1470,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: dd32e85b-521d-4344-8857-fa1bf5bb5e79
+    taskid: 680a59b6-d100-4123-8f10-d8364c56cb39
     type: regular
     task:
-      id: dd32e85b-521d-4344-8857-fa1bf5bb5e79
+      id: 680a59b6-d100-4123-8f10-d8364c56cb39
       version: -1
-      name: 'Check the final answer #13'
+      name: Check the answer for Q15
+      description: |-
+        What is the hidden flag in the fixed tasks?
+        (check out their results)
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1458,11 +1488,11 @@ tasks:
       - "46"
     scriptarguments:
       question_ID:
-        simple: "13"
+        simple: "15"
       secret:
         complex:
           root: Create a remediation playbook.Answers
-          accessor: "0"
+          accessor: "1"
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -1470,7 +1500,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 715,
+          "x": 1150,
           "y": 4770
         }
       }
@@ -1483,12 +1513,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 57a88fc5-c1d1-480a-8b2d-050c6c160e86
+    taskid: c3f8ee94-6484-42f2-8f15-f1a41595e097
     type: regular
     task:
-      id: 57a88fc5-c1d1-480a-8b2d-050c6c160e86
+      id: c3f8ee94-6484-42f2-8f15-f1a41595e097
       version: -1
-      name: 'Check question #12'
+      name: Check the answer for Q14
+      description: What is the origin pack name of this specific playbook?
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1498,11 +1529,11 @@ tasks:
       - "46"
     scriptarguments:
       question_ID:
-        simple: "12"
+        simple: "14"
       secret:
         complex:
           root: Create a remediation playbook.Answers
-          accessor: "1"
+          accessor: "0"
           transformers:
           - operator: LastArrayElement
     separatecontext: false
@@ -1510,7 +1541,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1145,
+          "x": 730,
           "y": 4770
         }
       }
@@ -1635,12 +1666,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 555fa990-46e4-49f2-8ec0-59efc5ec12e6
+    taskid: 9196c092-bdcf-4577-806a-309e56d8750e
     type: regular
     task:
-      id: 555fa990-46e4-49f2-8ec0-59efc5ec12e6
+      id: 9196c092-bdcf-4577-806a-309e56d8750e
       version: -1
-      name: Check the answer for Q16
+      name: Check the answer for Q11
+      description: |+
+        Why there are no additional alerts from this machine (172.16.7.41)?
+
+        - Nothing happened on the machine
+        - XDR agent is not installed
+        - XDR agent is not communicating with the XDR server
+        - All the answers above
+
       scriptName: CTFSKO
       type: regular
       iscommand: false
@@ -1650,7 +1689,7 @@ tasks:
       - "7"
     scriptarguments:
       question_ID:
-        simple: "16"
+        simple: "11"
       secret:
         complex:
           root: Find the missing incident and answer the questions below.Answers
@@ -1823,8 +1862,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4890,
-        "width": 1655,
-        "x": -130,
+        "width": 1680,
+        "x": -150,
         "y": 305
       }
     }
