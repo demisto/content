@@ -211,8 +211,6 @@ def reset_fetch_command(client):
 
 
 def main():  # pragma: no cover
-    objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
-                     'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()
     args = demisto.args()
     url = params.get("url")
@@ -236,7 +234,7 @@ def main():  # pragma: no cover
     certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
                    or params.get('certificate', None))
     key = params.get('creds_certificate', {}).get('password') or params.get('key', None)
-    objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
+    objects_to_fetch = argToList(params.get('objects_to_fetch') or [])
     default_api_root = params.get('default_api_root')
     update_custom_fields = params.get('update_custom_fields') or False
 
