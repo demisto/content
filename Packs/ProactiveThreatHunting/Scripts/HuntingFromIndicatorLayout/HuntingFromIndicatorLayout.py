@@ -22,7 +22,7 @@ def hunting_from_indicator_layout(sdo: str):
                                                      "sdoname": f"{sdo}",
                                                      "type": "Proactive Threat Hunting"})
     except Exception as e:
-        raise DemistoException(f'Failed to create hunting session: {str(e)}')
+        raise DemistoException(f'Failed to create hunting session: {str(e)}') from e
 
     return CommandResults(
         readable_output=f"Proactive Threat Hunting Incident Created: Threat Hunting Session - {sdo}"
@@ -34,7 +34,7 @@ def main() -> None:  # pragma: no cover
     if "indicator" not in args:
         raise DemistoException("The automation was not executed from indicator layout")
     try:
-        return_results(hunting_from_indicator_layout(args.get("indicator", "").get("value")))
+        return_results(hunting_from_indicator_layout(args["indicator"].get("value")))
 
     except Exception as e:
         return_error(f'Failed to create hunting session: {str(e)}')
