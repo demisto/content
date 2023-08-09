@@ -47,6 +47,7 @@ class KeyVaultClient:
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
             command_prefix="azure-key-vault",
+            azure_cloud=self.azure_cloud,
         )
 
     def get_vault_resource(self) -> str:

@@ -80,6 +80,7 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
 MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM = "Custom"
 MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE = "com"
 
+
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
 # https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
 MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
@@ -122,6 +123,25 @@ MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
     'gcc': 'https://securitycenter.onmicrosoft.us',
     'gcc-high': 'https://securitycenter.onmicrosoft.us',
     'dod': 'https://securitycenter.onmicrosoft.us',
+}
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_API = {
+    "com": "https://api.securitycenter.microsoft.com",
+    "gcc": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+}
+
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
+    "Worldwide": "com",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+}
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.us',
+    'gcc-high': 'https://login.microsoftonline.us',
 }
 
 # Azure Managed Identities
@@ -568,12 +588,11 @@ def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None
     if is_gcc:  # Backward compatible.
         endpoint_type = "US GCC"
         log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
-    elif endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type:
+    elif (endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type) and not url:
         # When the integration was configured before our Azure Cloud support, the value will be None.
-        if not url:
-            if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
-                raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
-            raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
+        if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+            raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+        raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
     endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(endpoint_type, 'com')
     url = url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
     demisto.info(f"Using url:{url}, endpoint type:{endpoint_type}{log_message_append}")
@@ -596,7 +615,7 @@ def get_azure_cloud(params, integration_name):
                                              })
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
-    return AZURE_CLOUDS.get(azure_cloud_arg, AZURE_WORLDWIDE_CLOUD)
+    return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
 
 
 class MicrosoftClient(BaseClient):
@@ -720,7 +739,8 @@ class MicrosoftClient(BaseClient):
         self.managed_identities_client_id = managed_identities_client_id
         self.managed_identities_resource_uri = managed_identities_resource_uri
 
-    def is_command_executed_from_integration(self):
+    @staticmethod
+    def is_command_executed_from_integration():
         ctx = demisto.callingContext.get('context', {})
         executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
 
@@ -756,7 +776,7 @@ class MicrosoftClient(BaseClient):
         }
 
         if headers:
-            default_headers.update(headers)
+            default_headers |= headers
 
         if self.timeout:
             kwargs['timeout'] = self.timeout
@@ -768,8 +788,8 @@ class MicrosoftClient(BaseClient):
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
-        if should_http_retry_on_rate_limit and self.is_command_executed_from_integration():
-            self.create_api_metrics(response.status_code)
+        if should_http_retry_on_rate_limit and MicrosoftClient.is_command_executed_from_integration():
+            MicrosoftClient.create_api_metrics(response.status_code)
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
@@ -802,7 +822,7 @@ class MicrosoftClient(BaseClient):
             else:
                 demisto.info(f'Scheduling command {demisto.command()}')
                 command_args['ran_once_flag'] = True
-                return_results(self.run_retry_on_rate_limit(command_args))
+                return_results(MicrosoftClient.run_retry_on_rate_limit(command_args))
                 sys.exit(0)
 
         try:
@@ -831,8 +851,8 @@ class MicrosoftClient(BaseClient):
         integration context.
 
         Args:
-            resource (str): The resource identifier for which the generated token will have access to.
-            scope (str): A scope to get instead of the default on the API.
+            resource: The resource identifier for which the generated token will have access to.
+            scope: A scope to get instead of the default on the API.
 
         Returns:
             str: Access token that will be added to authorization header.
@@ -852,10 +872,15 @@ class MicrosoftClient(BaseClient):
 
         if self.auth_type == OPROXY_AUTH_TYPE:
             if self.multi_resource:
+                expires_in = None
                 for resource_str in self.resources:
-                    access_token, expires_in, refresh_token = self._oproxy_authorize(resource_str)
+                    access_token, current_expires_in, refresh_token = self._oproxy_authorize(resource_str)
                     self.resource_to_access_token[resource_str] = access_token
                     self.refresh_token = refresh_token
+                    expires_in = current_expires_in if expires_in is None else \
+                        min(expires_in, current_expires_in)  # type: ignore[call-overload]
+                if expires_in is None:
+                    raise DemistoException("No resource was provided to get access token from")
             else:
                 access_token, expires_in, refresh_token = self._oproxy_authorize(scope=scope)
 
@@ -988,14 +1013,13 @@ class MicrosoftClient(BaseClient):
         if self.grant_type == AUTHORIZATION_CODE:
             if not self.multi_resource:
                 return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
-            else:
-                expires_in = -1  # init variable as an int
-                for resource in self.resources:
-                    access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
-                                                                                                      resource)
-                    self.resource_to_access_token[resource] = access_token
+            expires_in = -1  # init variable as an int
+            for resource in self.resources:
+                access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                  resource)
+                self.resource_to_access_token[resource] = access_token
 
-                return '', expires_in, refresh_token
+            return '', expires_in, refresh_token
         elif self.grant_type == DEVICE_CODE:
             return self._get_token_device_code(refresh_token, scope, integration_context)
         else:
@@ -1033,7 +1057,7 @@ class MicrosoftClient(BaseClient):
 
         # Set scope.
         if self.scope or scope:
-            data['scope'] = scope if scope else self.scope
+            data['scope'] = scope or self.scope
 
         if self.resource or resource:
             data['resource'] = resource or self.resource  # type: ignore
@@ -1177,16 +1201,18 @@ class MicrosoftClient(BaseClient):
             return self.auth_code[len(refresh_prefix):]
         return ''
 
-    def run_retry_on_rate_limit(self, args_for_next_run: dict):
+    @staticmethod
+    def run_retry_on_rate_limit(args_for_next_run: dict):
         return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
                               scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
                                                                  args=args_for_next_run))
 
     def handle_error_with_metrics(self, res):
-        self.create_api_metrics(res.status_code)
+        MicrosoftClient.create_api_metrics(res.status_code)
         self.client_error_handler(res)
 
-    def create_api_metrics(self, status_code):
+    @staticmethod
+    def create_api_metrics(status_code):
         execution_metrics = ExecutionMetrics()
         ok_codes = (200, 201, 202, 204, 206)
 
@@ -1262,14 +1288,14 @@ class MicrosoftClient(BaseClient):
         """
         if not d:
             d = MicrosoftClient._get_utcnow()
-        return int((d - MicrosoftClient._get_utcfromtimestamp(0)).total_seconds())
+        return int((d - MicrosoftClient._get_utc_from_timestamp(0)).total_seconds())
 
     @staticmethod
     def _get_utcnow() -> datetime:
         return datetime.utcnow()
 
     @staticmethod
-    def _get_utcfromtimestamp(_time) -> datetime:
+    def _get_utc_from_timestamp(_time) -> datetime:
         return datetime.utcfromtimestamp(_time)
 
     @staticmethod

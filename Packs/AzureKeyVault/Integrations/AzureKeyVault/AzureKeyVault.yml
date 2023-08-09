@@ -43,7 +43,7 @@ configuration:
   required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   displaypassword: Certificate Thumbprint
-  name:  credentials_certificate_thumbprint
+  name: credentials_certificate_thumbprint
   required: false
   hiddenusername: true
   type: 9
@@ -964,7 +964,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-key-vault-auth-reset
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.67955
   runonce: false
   script: '-'
   subtype: python3

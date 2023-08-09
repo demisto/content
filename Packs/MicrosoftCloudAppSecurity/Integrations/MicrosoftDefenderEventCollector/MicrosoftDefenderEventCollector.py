@@ -1,3 +1,5 @@
+import pytest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-name-in-module
@@ -5,7 +7,8 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
 from abc import ABC
-from typing import Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 from enum import Enum
 from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field, parse_obj_as, HttpUrl  # type: ignore[E0611, E0611, E0611]
@@ -21,10 +24,10 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
-TYPES_TO_RETRIEVE = {'alerts': dict(type='alerts', filters={}),
-                     'activities_admin': dict(type='activities', filters={"activity.type": {"eq": True}}),
-                     'activities_login': dict(type='activities', filters={
-                         "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}})}
+TYPES_TO_RETRIEVE = {'alerts': {'type': 'alerts', 'filters': {}},
+                     'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
+                     'activities_login': {'type': 'activities', 'filters': {
+                         "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
@@ -44,7 +47,7 @@ class Method(str, Enum):
 
 
 def load_json(v: Any) -> dict:
-    if not isinstance(v, (dict, str)):
+    if not isinstance(v, dict | str):
         raise ValueError('headers are not dict or a valid json')
     if isinstance(v, str):
         try:
@@ -53,16 +56,15 @@ def load_json(v: Any) -> dict:
                 raise ValueError('headers are not from dict type')
         except json.decoder.JSONDecodeError as exc:
             raise ValueError('headers are not valid Json object') from exc
-    if isinstance(v, dict):
-        return v
+    return v if isinstance(v, dict) else None
 
 
 class IntegrationHTTPRequest(BaseModel):
     method: Method
     url: AnyUrl
     verify: bool = True
-    headers: dict = dict()  # type: ignore[type-arg]
-    auth: Optional[HTTPBasicAuth]
+    headers: dict = {}  # type: ignore[type-arg]
+    auth: HTTPBasicAuth | None
     data: Any = None
 
     class Config(BaseConfig):
@@ -74,16 +76,16 @@ class IntegrationHTTPRequest(BaseModel):
 
 
 class Credentials(BaseModel):
-    identifier: Optional[str]
+    identifier: str | None
     password: str
 
 
-def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
+def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
     """Automatic authorization.
     Supports {Authorization: Bearer __token__}
     or Basic Auth.
     """
-    creds = Credentials.parse_obj(auth_credendtials)
+    creds = Credentials.parse_obj(auth_credentials)
     if creds.password and creds.identifier:
         request.auth = HTTPBasicAuth(creds.identifier, creds.password)
     auth = {'Authorization': f'Bearer {creds.password}'}
@@ -96,8 +98,8 @@ def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
 class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
-    proxy: Optional[bool] = False
-    limit: Optional[int] = Field(None, ge=1)
+    proxy: bool | None = False
+    limit: int | None = Field(None, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -139,10 +141,10 @@ class IntegrationEventsClient(ABC):
             raise DemistoException(msg) from exc
 
     def _skip_cert_verification(
-            self, skip_cert_verification: Callable = skip_cert_verification
+            self, skip_cert_verification_callable: Callable = skip_cert_verification
     ):
         if not self.request.verify:
-            skip_cert_verification()
+            skip_cert_verification_callable()
 
     def _set_proxy(self):
         if self.options.proxy:
@@ -186,7 +188,7 @@ class IntegrationGetEvents(ABC):
     @abstractmethod
     def _iter_events(self):
         """Create iterators with Yield"""
-        pass
+        raise NotImplementedError
 
 
 # END COPY OF SiemApiModule
@@ -200,9 +202,15 @@ class DefenderAuthenticator(BaseModel):
     client_secret: str
     scope: str
     ms_client: Any = None
+    endpoint_type: str
 
     def set_authorization(self, request: IntegrationHTTPRequest):
         try:
+
+            endpoint_type_name = self.endpoint_type or 'Worldwide'
+            endpoint_type = MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE[endpoint_type_name]
+            azure_cloud = AZURE_CLOUDS[endpoint_type]  # The MDA endpoint type is a subset of the azure clouds.
+
             if not self.ms_client:
                 demisto.debug('try init the ms client for the first time')
                 self.ms_client = MicrosoftClient(
@@ -212,7 +220,8 @@ class DefenderAuthenticator(BaseModel):
                     enc_key=self.client_secret,
                     scope=self.scope,
                     verify=self.verify,
-                    self_deployed=True
+                    self_deployed=True,
+                    azure_cloud=azure_cloud,
                 )
 
             token = self.ms_client.get_access_token()
@@ -229,7 +238,7 @@ class DefenderAuthenticator(BaseModel):
             demisto.error(f'Fail to authenticate with Microsoft services: {str(e)}')
 
             err_msg = 'Fail to authenticate with Microsoft services, see the error details in the log'
-            raise DemistoException(err_msg)
+            raise DemistoException(err_msg) from e
 
 
 class DefenderHTTPRequest(IntegrationHTTPRequest):
@@ -237,7 +246,7 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
     method: Method = Method.GET
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(
-        lambda base_url: base_url + '/api/v1/'
+        lambda base_url: f'{base_url}/api/v1/'
     )
 
 
@@ -344,6 +353,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 ''' COMMAND FUNCTIONS '''
 
 
+@pytest.mark.skip("Not a pytest")
 def test_module(get_events: DefenderGetEvents) -> str:
     """Tests API connectivity and authentication'
 
@@ -379,7 +389,7 @@ def main(command: str, demisto_params: dict):
 
         after = demisto_params.get('after')
         if after and not isinstance(after, int):
-            timestamp = dateparser.parse(after)
+            timestamp = dateparser.parse(after)  # type: ignore
             after = int(timestamp.timestamp() * 1000)  # type: ignore
 
         options = IntegrationOptions.parse_obj(demisto_params)
@@ -398,7 +408,7 @@ def main(command: str, demisto_params: dict):
 
             if command == 'fetch-events':
                 # publishing events to XSIAM
-                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
                 demisto.setLastRun(DefenderGetEvents.get_last_run(events))
 
             elif command == 'microsoft-defender-cloud-apps-get-events':
@@ -413,7 +423,7 @@ def main(command: str, demisto_params: dict):
                 return_results(command_results)
                 if push_to_xsiam:
                     # publishing events to XSIAM
-                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                    send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
 
     # Log exceptions and return errors
     except Exception as e:
@@ -422,7 +432,7 @@ def main(command: str, demisto_params: dict):
 
 
 ''' ENTRY POINT '''
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     # Args is always stronger. Get getIntegrationContext even stronger
-    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    main(demisto.command(), demisto_params)
+    compound_demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    main(demisto.command(), compound_demisto_params)
