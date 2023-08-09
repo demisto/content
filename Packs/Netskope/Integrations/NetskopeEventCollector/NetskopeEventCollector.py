@@ -16,8 +16,6 @@ MAX_EVENTS_PAGE_SIZE = 10000
 MAX_SKIP = 50000
 
 EXECUTION_TIMEOUT_SECONDS = 190  # 3:30 minutes
-EVENT_LOGGER = {}
-
 # Netskope response constants
 WAIT_TIME = 'wait_time'  # Wait time between queries
 RATELIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
@@ -120,7 +118,7 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
 def handle_data_export_single_event_type(client: Client, event_type: str, operation: str, limit: int, start_time: datetime):
     instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
     wait_time = 0
-    events = []
+    events: list[dict] = []
     index_name = f'xsoar_collector_{instance_name}_{event_type}'
 
     while len(events) < limit:
@@ -132,7 +130,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
         # Wait time between queries
         if wait_time:
             demisto.debug(f'Going to sleep between queries, wait_time is {wait_time} seconds')
-            time.sleep(wait_time)
+            time.sleep(wait_time) # pylint: disable=E9003
         else:
             demisto.debug(f'No wait time received, going to sleep for 1 second')
             time.sleep(1)
@@ -145,7 +143,7 @@ def handle_data_export_single_event_type(client: Client, event_type: str, operat
 
         # The API responds with the time we should wait between requests, the server needs this time to prepare the next response.
         # It will be used to sleep in the beginning of the next iteration
-        wait_time = arg_to_number(response.get(WAIT_TIME, 5))
+        wait_time: int = arg_to_number(response.get(WAIT_TIME, 5))
         demisto.debug(f'Wait time is {wait_time} seconds')
 
         events.extend(results)
@@ -177,7 +175,7 @@ def get_all_events(client: Client, last_run: dict, limit: int, is_command: bool)
     all_types_events_result = []
     start_time = datetime.utcnow()
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        event_type_operation = last_run.get(event_type).get('operation')
+        event_type_operation = last_run.get(event_type, {}).get('operation')
 
         events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type,
                                                                 operation=event_type_operation, limit=limit,
@@ -186,7 +184,7 @@ def get_all_events(client: Client, last_run: dict, limit: int, is_command: bool)
         last_run[event_type] = {'operation': 'next'}
 
         if time_out:
-            demisto.warning('Timeout reached, stopped pulling events')
+            demisto.info('Timeout reached, stopped pulling events')
             break
 
     return all_types_events_result, last_run
@@ -250,7 +248,7 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f'Running with the following last_run - {last_run}')
 
         events = []
-        new_last_run = {}
+        new_last_run: list[dict] = {}
         if command_name == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, last_run, max_fetch=MAX_EVENTS_PAGE_SIZE)  # type: ignore[arg-type]
