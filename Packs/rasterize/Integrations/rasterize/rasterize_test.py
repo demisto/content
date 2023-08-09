@@ -273,7 +273,7 @@ class TestRasterizeIncludeUrl:
 
     class MockChrome:
 
-        def __init__(self, options, service_args) -> None:
+        def __init__(self, options, service) -> None:
             self.options = options.options
             self.page_source = ''
             self.session_id = 'session_id'
