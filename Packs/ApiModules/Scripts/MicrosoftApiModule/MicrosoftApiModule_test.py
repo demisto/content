@@ -759,6 +759,14 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
         APP_URL,
         json={'access_token': TOKEN, 'expires_in': '3600'})
 
-    # Arrange
+    body = {
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+        'redirect_uri': REDIRECT_URI,
+        'grant_type': AUTHORIZATION_CODE,
+        'code': 'reconfigured_auth_code',
+    }
+
     assert client.get_access_token()
-    assert requests_mock._adapter.last_request
+    req_body = requests_mock._adapter.last_request._request.body
+    assert urllib.parse.urlencode(body) == req_body
