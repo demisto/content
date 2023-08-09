@@ -764,10 +764,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a749582a-37f3-4cab-817e-bf82ee9e5ad8
+    taskid: 660f6b1c-0eaf-4108-8ab5-08e69c8d637b
     type: regular
     task:
-      id: a749582a-37f3-4cab-817e-bf82ee9e5ad8
+      id: 660f6b1c-0eaf-4108-8ab5-08e69c8d637b
       version: -1
       name: Get related indicators
       description: commands.local.cmd.find.indicators
@@ -1110,6 +1110,97 @@ inputs:
     simple: "True"
   required: false
   description: Set to true to add exclusion list tuning step to the workflow
+  playbookInputQuery:
+- key: SetIncidentSLAs
+  value:
+    simple: "True"
+  required: false
+  description: Set to "True" to set the SLA on the Incident.
+  playbookInputQuery:
+- key: SetSLAs
+  value:
+    simple: "True"
+  required: false
+  description: "Set to \"True\" to enable setting SLAs for the Incident, Time to Assignment, and Remediation SLA Timers.  \n\nComplete the other inputs to set the SLA, and Timer SLAs based on Severity."
+  playbookInputQuery:
+- key: SetTimeToAssignmentSLAs
+  value:
+    simple: "True"
+  required: false
+  description: Set to "True" to set the SLAs on the Time to Assignment Timer.
+  playbookInputQuery:
+- key: SetRemediationTimerSLA
+  value:
+    simple: "True"
+  required: false
+  description: Set to "True" to set the SLAs on the Remediation SLA Timer.
+  playbookInputQuery:
+- key: CriticalRemediationSLA
+  value:
+    simple: "180"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Critical.
+  playbookInputQuery:
+- key: HighRemediationSLA
+  value:
+    simple: "300"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is High.
+  playbookInputQuery:
+- key: MediumRemediationSLA
+  value:
+    simple: "1440"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Medium.
+  playbookInputQuery:
+- key: LowRemediationSLA
+  value:
+    simple: "7200"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Low or Informational.
+  playbookInputQuery:
+- key: CriticalTimeToAssignSLA
+  value:
+    simple: "15"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Critical. '
+  playbookInputQuery:
+- key: HighTimeToAssignSLA
+  value:
+    simple: "60"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is High. '
+  playbookInputQuery:
+- key: MediumTimeToAssignSLA
+  value:
+    simple: "180"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Medium. '
+  playbookInputQuery:
+- key: LowTimeToAssignSLA
+  value:
+    simple: "1440"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational. '
+  playbookInputQuery:
+- key: SendOnCallNotification
+  value:
+    simple: "No"
+  required: false
+  description: "Whether to send the on call notification email based on the Incidents Severity. \n\nSet to Yes to send notifications, and add the emails to the NotificationEmails. "
+  playbookInputQuery:
+- key: NotificationEmails
+  value: {}
+  required: false
+  description: 'The email addresses to send the message to, can be comma separated. '
+  playbookInputQuery:
+- key: MinimumSeverity
+  value:
+    simple: "3"
+  required: false
+  description: |-
+    The minimum severity level for the Incident to send notification for.  Default is 3 (High).   XSOAR Severity values:
+    Critical (4), High (3), Medium (2), Low (1), Information (0.5), Unknown (0)
   playbookInputQuery:
 outputs: []
 quiet: true
