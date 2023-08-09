@@ -761,18 +761,4 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
 
     # Arrange
     assert client.get_access_token()
-    assert requests_mock._adapter.last_request.json()
-
-
-    # mocker.patch.object(client, '_get_self_deployed_token', return_value=tokens)
-    # mocker.patch.object(client, '_get_self_deployed_token_auth_code')
-    # token = client.get_access_token()
-
-    # set_context_count = demisto.setIntegrationContext.call_count
-    # auth_call_oproxy = client._oproxy_authorize.call_count
-    # auth_call_self_deployed = client._get_self_deployed_token.call_count
-
-    # assert set_context_count == 0
-    # assert auth_call_oproxy == 0
-    # assert auth_call_self_deployed == 1
-    # assert token == TOKEN
+    assert requests_mock._adapter.last_request
