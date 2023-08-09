@@ -35,7 +35,7 @@ args:
   description: Field definition object
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.68300
 runonce: false
 runas: DBotWeakRole
 fromversion: 6.0.0

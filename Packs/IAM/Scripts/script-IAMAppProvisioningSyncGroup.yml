@@ -647,7 +647,7 @@ tags:
 - Utility
 timeout: 900ns
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/3.10.12.68300
 runas: DBotWeakRole
 runonce: false
 dependson:
