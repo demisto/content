@@ -617,7 +617,7 @@ class Client(BaseClient):
             params=params
         )
 
-    def indicators_upload(self, ref_name: str, indicators: Any, fields: Optional[str] = None):
+    def reference_set_bulk_load(self, ref_name: str, indicators: Any, fields: Optional[str] = None):
         headers = {
             'Content-Type': 'application/json'
         }
@@ -628,6 +628,31 @@ class Client(BaseClient):
             url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(ref_name, safe="")}',
             json_data=indicators,
             additional_headers=headers
+        )
+
+    def reference_set_entries(self, ref_name: str, indicators: Any, fields: Optional[str] = None, source: Optional[str] = None):
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        if fields:
+            headers['fields'] = fields
+        name = parse.quote(ref_name, safe='')
+        sets = self.http_request(method='GET', url_suffix=f'/reference_data/sets/{name}')
+        if not sets:
+            raise DemistoException(f'Reference set {ref_name} does not exist.')
+        set_id = sets.get('collection_id')
+        return self.http_request(
+            method='PATCH',
+            url_suffix='/reference_data_collections/set_entries',
+            json_data=[{"collection_id": set_id, "value": str(indicator), "source": source}
+                       for indicator in indicators],  # type: ignore[arg-type]
+            additional_headers=headers
+        )
+
+    def get_reference_data_bulk_task_status(self, task_id: int):
+        return self.http_request(
+            method='GET',
+            url_suffix=f'/reference_data_collections/set_bulk_update_tasks/{task_id}'
         )
 
     def geolocations_for_ip(self, filter_: Optional[str] = None, fields: Optional[str] = None):
@@ -719,6 +744,109 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def get_major_version(version: str) -> int:
+    try:
+        if '.' not in version:
+            return int(version)
+        return int(version.split('.')[0])
+    except ValueError:
+        print_debug_msg(f'Could not parse version {version} to int')
+        return 17
+
+
+def insert_values_to_reference_set_polling(client: Client,
+                                           api_version: str,
+                                           args: dict,
+                                           from_indicators: bool = False,
+                                           values: list[str] | None = None,
+                                           ) -> PollResult:
+    """This function inserts values to reference set using polling method.
+
+
+    Args:
+        client (Client): QRadar Client
+        api_version (str): The API version of QRadar.
+        args (dict): args of the command
+        from_indicators (bool, optional): Whether to insert values from XSOAR indicators. Defaults to False.
+        values (list[str] | None, optional): The values to insert. Defaults to None.
+
+    Raises:
+        DemistoException: If there are no values to insert
+
+    Returns:
+        PollResult: The result with the CommandResults
+    """
+    response = {}
+    use_old_api = get_major_version(api_version) <= 15
+    ref_name = args.get('ref_name', '')
+    if use_old_api or 'task_id' not in args:
+        if from_indicators:
+            query = args.get('query')
+            limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
+            page = arg_to_number(args.get('page', 0))
+
+            # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
+            element_type = args.get('element_type', '')
+            timeout_type = args.get('timeout_type')
+            time_to_live = args.get('time_to_live')
+            try:
+                client.reference_sets_list(ref_name=ref_name)
+            except DemistoException as e:
+                # Create reference set if does not exist
+                if e.message and f'{ref_name} does not exist' in e.message:
+                    # if this call fails, raise an error and stop command execution
+                    client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
+                else:
+                    raise e
+
+            search_indicators = IndicatorsSearcher(page=page)
+            indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
+            indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
+                               for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
+            values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
+            if not indicators_data:
+                return PollResult(CommandResults(
+                    readable_output=f'No indicators were found for reference set {ref_name}',
+                ))
+
+        if not values:
+            raise DemistoException('Value to insert must be given.')
+        source = args.get('source')
+        date_value = argToBoolean(args.get('date_value', False))
+        fields = args.get('fields')
+
+        if date_value:
+            values = [get_time_parameter(value, epoch_format=True) for value in values]
+        if use_old_api:
+            response = client.reference_set_bulk_load(ref_name, values, fields)
+        else:
+            response = client.reference_set_entries(ref_name, values, fields, source)
+            args['task_id'] = response.get('id')
+    if not use_old_api:
+        response = client.get_reference_data_bulk_task_status(args["task_id"])
+    if use_old_api or response.get("status") == "COMPLETED":
+        if not use_old_api:
+            # get the reference set data
+            response = client.reference_sets_list(ref_name=ref_name)
+        outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+
+        command_results = CommandResults(
+            readable_output=tableToMarkdown('Reference Update Create', outputs, removeNull=True),
+            outputs_prefix='QRadar.Reference',
+            outputs_key_field='Name',
+            outputs=outputs,
+            raw_response=response
+        )
+        return PollResult(command_results, continue_to_poll=False)
+    return PollResult(
+        partial_result=CommandResults(
+            readable_output=f'Reference set {ref_name} is still being updated in task {args["task_id"]}'),
+        continue_to_poll=True,
+        args_for_next_run=args,
+        response=None
+    )
 
 
 def get_remote_events(client: Client,
@@ -2030,11 +2158,11 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
+        demisto.createIncidents(incidents)
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
 
-        demisto.createIncidents(incidents)
         print_debug_msg(
             f'Successfully Created {len(incidents)} incidents. Incidents created: {[incident["name"] for incident in incidents]}')
 
@@ -2774,7 +2902,8 @@ def qradar_reference_set_delete_command(client: Client, args: dict) -> CommandRe
                         f''' Current deletion status: {response.get('status', 'Unknown')}''')
 
 
-def qradar_reference_set_value_upsert_command(client: Client, args: dict) -> CommandResults:
+@polling_function(name='qradar-reference-set-value-upsert', requires_polling_arg=False)
+def qradar_reference_set_value_upsert_command(args: dict, client: Client, params: dict) -> PollResult:
     """
     Update or insert new value to a reference set from QRadar service.
     possible arguments:
@@ -2791,37 +2920,12 @@ def qradar_reference_set_value_upsert_command(client: Client, args: dict) -> Com
         args (Dict): Demisto args.
 
     Returns:
-        CommandResults.
+        PollResult.
     """
-    ref_name: str = args.get('ref_name', '')
-    values: List[str] = argToList(args.get('value', ''))
-    if not values:
-        raise DemistoException('Value to insert must be given.')
-    source = args.get('source')
-    date_value = argToBoolean(args.get('date_value', False))
-    fields = args.get('fields')
-
-    if date_value:
-        values = [get_time_parameter(value, epoch_format=True) for value in values]
-
-    # if one of these calls fail, raise an error and stop command execution
-    if len(values) == 1:
-        response = client.reference_set_value_upsert(ref_name, values[0], source, fields)
-
-    else:
-        response = client.indicators_upload(ref_name, values, fields)
-
-    outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
-
-    return CommandResults(
-        readable_output=tableToMarkdown('Reference Update Create', outputs,
-                                        ['Name', 'ElementType', 'TimeToLive', 'TimeoutType', 'NumberOfElements',
-                                         'CreationTime'], removeNull=True),
-        outputs_prefix='QRadar.Reference',
-        outputs_key_field='Name',
-        outputs=outputs,
-        raw_response=response
-    )
+    return insert_values_to_reference_set_polling(client,
+                                                  params.get('api_version', ''),
+                                                  args,
+                                                  values=argToList(args.get('value', '')))
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
@@ -2903,7 +3007,8 @@ def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def qradar_indicators_upload_command(client: Client, args: dict) -> CommandResults:
+@polling_function(name='qradar-indicators-upload', requires_polling_arg=False)
+def qradar_indicators_upload_command(args: dict, client: Client, params: dict) -> PollResult:
     """
     Uploads list of indicators from Demisto to a reference set in QRadar service.
     possible arguments:
@@ -2919,53 +3024,9 @@ def qradar_indicators_upload_command(client: Client, args: dict) -> CommandResul
         args (Dict): Demisto args.
 
     Returns:
-        CommandResults.
+        PollResult.
     """
-    ref_name: str = args.get('ref_name', '')
-    query = args.get('query')
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
-    page = arg_to_number(args.get('page', 0))
-    fields = args.get('fields')
-
-    # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
-    element_type = args.get('element_type', '')
-    timeout_type = args.get('timeout_type')
-    time_to_live = args.get('time_to_live')
-    try:
-        client.reference_sets_list(ref_name=ref_name)
-    except DemistoException as e:
-        # Create reference set if does not exist
-        if e.message and f'{ref_name} does not exist' in e.message:
-            # if this call fails, raise an error and stop command execution
-            client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
-        else:
-            raise e
-
-    search_indicators = IndicatorsSearcher(page=page)
-    indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
-    indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
-                       for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
-    indicator_values: List[Any] = [indicator.get('Indicator Value') for indicator in indicators_data]
-
-    if not indicators_data:
-        return CommandResults(
-            readable_output=f'No indicators were found for reference set {ref_name}'
-        )
-
-    # if this call fails, raise an error and stop command execution
-    response = client.indicators_upload(ref_name, indicator_values, fields)
-    outputs = sanitize_outputs(response)
-
-    reference_set_hr = tableToMarkdown(f'Indicators Upload For Reference Set {ref_name}', outputs)
-    indicators_uploaded_hr = tableToMarkdown('Indicators Uploaded', indicators_data)
-
-    return CommandResults(
-        readable_output=f'{reference_set_hr}\n{indicators_uploaded_hr}',
-        outputs_prefix='QRadar.Reference',
-        outputs_key_field='name',
-        outputs=outputs,
-        raw_response=response
-    )
+    return insert_values_to_reference_set_polling(client, params.get('api_version', ''), args, from_indicators=True)
 
 
 def flatten_nested_geolocation_values(geolocation_dict: dict, dict_key: str, nested_value_keys: List[str]) -> dict:
@@ -4079,9 +4140,11 @@ def main() -> None:  # pragma: no cover
                     raise DemistoException(
                         f'The parameter: {adv_p_kv[0]} is not a valid advanced parameter. Please remove it')
         except DemistoException as e:
-            raise DemistoException(f'Failed to parse advanced params. Error: {e.message}')
+            raise DemistoException(
+                f'Failed to parse advanced params. Error: {e.message}'
+            ) from e
         except Exception as e:
-            raise DemistoException(f'Failed to parse advanced params. Error: {e}')
+            raise DemistoException(f'Failed to parse advanced params. Error: {e}') from e
 
     server = params.get('server')
     verify_certificate = not params.get('insecure', False)
@@ -4112,19 +4175,23 @@ def main() -> None:  # pragma: no cover
             support_multithreading()
             long_running_execution_command(client, params)
 
-        elif command == 'qradar-offenses-list' or command == 'qradar-offenses' or command == 'qradar-offense-by-id':
+        elif command in [
+            'qradar-offenses-list',
+            'qradar-offenses',
+            'qradar-offense-by-id',
+        ]:
             return_results(qradar_offenses_list_command(client, args))
 
-        elif command == 'qradar-offense-update' or command == 'qradar-update-offense':
+        elif command in ['qradar-offense-update', 'qradar-update-offense']:
             return_results(qradar_offense_update_command(client, args))
 
-        elif command == 'qradar-closing-reasons' or command == 'qradar-get-closing-reasons':
+        elif command in ['qradar-closing-reasons', 'qradar-get-closing-reasons']:
             return_results(qradar_closing_reasons_list_command(client, args))
 
-        elif command == 'qradar-offense-notes-list' or command == 'qradar-get-note':
+        elif command in ['qradar-offense-notes-list', 'qradar-get-note']:
             return_results(qradar_offense_notes_list_command(client, args))
 
-        elif command == 'qradar-offense-note-create' or command == 'qradar-create-note':
+        elif command in ['qradar-offense-note-create', 'qradar-create-note']:
             return_results(qradar_offense_notes_create_command(client, args))
 
         elif command == 'qradar-rules-list':
@@ -4133,7 +4200,11 @@ def main() -> None:  # pragma: no cover
         elif command == 'qradar-rule-groups-list':
             return_results(qradar_rule_groups_list_command(client, args))
 
-        elif command == 'qradar-assets-list' or command == 'qradar-get-assets' or command == 'qradar-get-asset-by-id':
+        elif command in [
+            'qradar-assets-list',
+            'qradar-get-assets',
+            'qradar-get-asset-by-id',
+        ]:
             return_results(qradar_assets_list_command(client, args))
 
         elif command == 'qradar-saved-searches-list':
@@ -4142,37 +4213,58 @@ def main() -> None:  # pragma: no cover
         elif command == 'qradar-searches-list':
             return_results(qradar_searches_list_command(client, args))
 
-        elif command == 'qradar-search-create' or command == 'qradar-searches':
+        elif command in ['qradar-search-create', 'qradar-searches']:
             return_results(qradar_search_create_command(client, params, args))
 
-        elif command == 'qradar-search-status-get' or command == 'qradar-get-search':
+        elif command in ['qradar-search-status-get', 'qradar-get-search']:
             return_results(qradar_search_status_get_command(client, args))
 
-        elif command == 'qradar-search-results-get' or command == 'qradar-get-search-results':
+        elif command in [
+            'qradar-search-results-get',
+            'qradar-get-search-results',
+        ]:
             return_results(qradar_search_results_get_command(client, args))
 
-        elif command == 'qradar-reference-sets-list' or command == 'qradar-get-reference-by-name':
+        elif command in [
+            'qradar-reference-sets-list',
+            'qradar-get-reference-by-name',
+        ]:
             return_results(qradar_reference_sets_list_command(client, args))
 
-        elif command == 'qradar-reference-set-create' or command == 'qradar-create-reference-set':
+        elif command in [
+            'qradar-reference-set-create',
+            'qradar-create-reference-set',
+        ]:
             return_results(qradar_reference_set_create_command(client, args))
 
-        elif command == 'qradar-reference-set-delete' or command == 'qradar-delete-reference-set':
+        elif command in [
+            'qradar-reference-set-delete',
+            'qradar-delete-reference-set',
+        ]:
             return_results(qradar_reference_set_delete_command(client, args))
 
-        elif command == 'qradar-reference-set-value-upsert' or command == 'qradar-create-reference-set-value' or \
-                command == 'qradar-update-reference-set-value':
-            return_results(qradar_reference_set_value_upsert_command(client, args))
+        elif command in [
+            'qradar-reference-set-value-upsert',
+            'qradar-create-reference-set-value',
+            'qradar-update-reference-set-value',
+        ]:
+            return_results(qradar_reference_set_value_upsert_command(args, client, params))
 
-        elif command == 'qradar-reference-set-value-delete' or command == 'qradar-delete-reference-set-value':
+        elif command in [
+            'qradar-reference-set-value-delete',
+            'qradar-delete-reference-set-value',
+        ]:
             return_results(qradar_reference_set_value_delete_command(client, args))
 
-        elif command == 'qradar-domains-list' or command == 'qradar-get-domains' or \
-                command == 'qradar-get-domain-by-id':
+        elif command in [
+            'qradar-domains-list',
+            'qradar-get-domains',
+            'qradar-get-domain-by-id',
+        ]:
             return_results(qradar_domains_list_command(client, args))
 
-        elif command == 'qradar-indicators-upload' or command == 'qradar-upload-indicators':
-            return_results(qradar_indicators_upload_command(client, args))
+        elif command in ['qradar-indicators-upload', 'qradar-upload-indicators']:
+            return_results(qradar_indicators_upload_command(args, client, params))
 
         elif command == 'qradar-geolocations-for-ip':
             return_results(qradar_geolocations_for_ip_command(client, args))
@@ -4224,7 +4316,6 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
-    # Log exceptions and return errors
     except Exception:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}')
