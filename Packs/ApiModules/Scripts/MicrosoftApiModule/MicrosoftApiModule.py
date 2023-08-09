@@ -849,6 +849,8 @@ class MicrosoftClient(BaseClient):
 
         if self.is_auth_code_reconfigured():
             demisto.debug("Authorization Code is reconfigured so generating new access_token")
+            demisto.debug("Setting the new authorization code to the integration context")
+            integration_context.update({'auth_code': self.auth_code})
         elif access_token and valid_until and self.epoch_seconds() < valid_until:
             return access_token
 
@@ -879,10 +881,6 @@ class MicrosoftClient(BaseClient):
         # Add resource access token mapping
         if self.multi_resource:
             integration_context.update(self.resource_to_access_token)
-
-        if self.is_auth_code_reconfigured():
-            demisto.debug("Setting the new authorization code to the integration context")
-            integration_context.update({'auth_code': self.auth_code})
 
         set_integration_context(integration_context)
 
