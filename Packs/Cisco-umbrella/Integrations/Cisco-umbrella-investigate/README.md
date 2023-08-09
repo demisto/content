@@ -53,6 +53,7 @@
 <h3 id="h_95271207136361539669137295">1. Get a domain category</h3>
 <hr>
 <p>Returns the category of a domain, e.g., <code>domain=amazon.com</code> returns <code>Ecommerce/Shopping</code>.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>umbrella-domain-categorization</code></p>
 <h5>Input</h5>
@@ -114,6 +115,7 @@
 <h3 id="h_12059469238361539669280611">2. Get co-occurences for a domain</h3>
 <hr>
 <p>Gets a list of related domains and returns a list of co-occurences for the specified domain. A co-occurrence is when two or more domains are being accessed by the same users within a short time frame. Co-occurrence are not necessarily negative. Legitimate sites co-occur with each other as a part of normal web activity. However, unusual or suspicious co-occurence can provide additional information regarding attacks.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>umbrella-domain-co-occurrences</code></p>
 <h5>Input</h5>
@@ -651,6 +653,7 @@
 <h3 id="h_89573474650151539674030486">8. Get a list of domains that match a regular expression (regex)</h3>
 <hr>
 <p>Returns a list of domains that match a a regular expression. You can use this for domain squatting. The pattern search functionality in Investigate uses regular expressions (regex) to search against the Investigate database. For more information on regex, see online tools, such as <a href="http://regexr.com/" rel="nofollow">http://regexr.com</a>.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>umbrella-domain-search</code></p>
 <h5>Input</h5>
@@ -713,6 +716,7 @@
 <h3 id="h_51225163252081539674588524">9. Get the reputation for a domain</h3>
 <hr>
 <p>Get Domain Reputation info using Cisco Umbrella Investigate.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p><code>domain</code></p>
 <h5>Input</h5>

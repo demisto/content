@@ -158,6 +158,8 @@ Submits file to FireEye Detection on Demand for analysis
 ***
 Submits URLs to FireEye Detection on Demand for analysis
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
