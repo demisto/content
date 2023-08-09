@@ -339,6 +339,10 @@ def search_incidents(client, args):
     data = {
         'filters': [{
             'conditions': conditions
+        }],
+        'sorts': [{
+            'field_name': 'create_date',
+            'type': 'asc'
         }]
     }
     response = client.post('/incidents/query', data)
@@ -1042,7 +1046,7 @@ def fetch_incidents(client):
     incidents = []
 
     if resilient_incidents:
-        last_incident_creation_time = resilient_incidents[0].get('create_date')  # the first incident's creation time
+        last_incident_creation_time = resilient_incidents[-1].get('create_date')  # the LAST incident's creation time
 
         for incident in resilient_incidents:
             incident_creation_time = incident.get('create_date')
