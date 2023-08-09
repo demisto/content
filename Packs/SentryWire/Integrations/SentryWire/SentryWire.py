@@ -124,7 +124,16 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def bytes_to_readable(response):
+def remove_redundant(redundant: list, response):
+    for key in redundant:
+        try:
+            response.pop(key)
+        except KeyError:
+            pass
+    return response
+
+
+def parse_search_status(response):
     # Search was cancelled
     if response["SearchResult"] == "Cancelled":
         readable_output = "Search was cancelled"
@@ -136,19 +145,28 @@ def bytes_to_readable(response):
         response["SearchStatus"] = "Completed"
     else:
         # Default
-        results = response["SearchResult"]
-        sizestr = response["SearchResult"].split(" ")[-1].split("=")[-1]
-        size, unit = re.match(r"(\d+)(\D+)", sizestr).groups()
-        if unit == "KB":
-            response["PcapSize"] = int(size) * 1024
-        elif unit == "MB":
-            response["PcapSize"] = int(size) * (1024 ** 2)
-        elif unit == "GB":
-            response["PcapSize"] = int(size) * (1024 ** 3)
-        else:
-            response["PcapSize"] = ">=1TB"
-        readable_output = f"Search completed: {results}"
-        response["SearchStatus"] = "Completed"
+        readable_output = ""
+        try:
+            response, readable_output = bytes_to_readable(response)
+        except Exception:
+            raise DemistoException(f'Could not get the size of SearchResult, got the following object: {response["SearchResult"]}')
+    return response, readable_output
+
+
+def bytes_to_readable(response):
+    results = response["SearchResult"]
+    sizestr = response["SearchResult"].split(" ")[-1].split("=")[-1]
+    size, unit = re.match(r"(\d+)(\D+)", sizestr).groups()
+    if unit == "KB":
+        response["PcapSize"] = int(size) * 1024
+    elif unit == "MB":
+        response["PcapSize"] = int(size) * (1024 ** 2)
+    elif unit == "GB":
+        response["PcapSize"] = int(size) * (1024 ** 3)
+    else:
+        response["PcapSize"] = ">=1TB"
+    readable_output = f"Search completed: {results}"
+    response["SearchStatus"] = "Completed"
     return response, readable_output
 
 
@@ -156,23 +174,23 @@ def bytes_to_readable(response):
 
 
 def create_search_command(client: Client, args: Dict[str, Any]):
-    generate_links = False
+    generate_links = argToBoolean(args.get('generate_links'))
 
     response = client.create_search(args)
 
-    SearchID = re.search("searchname=(.*?)&", response[0].get("checkstatus")).group(1)
+    search_id = re.search("searchname=(.*?)&", response[0].get("checkstatus")).group(1)
 
     outputs = {"NodeName": []}
     node_str = ""
     for i in range(len(response)):
-        NodeName = re.search(r"nodename=([\w\d]+)", response[i].get("checkstatus")).group(1)
-        outputs["NodeName"].append(NodeName)
-        node_str += f"{NodeName},"
+        node_name = re.search(r"nodename=([\w\d]+)", response[i].get("checkstatus")).group(1)
+        outputs["NodeName"].append(node_name)
+        node_str += f"{node_name},"
     node_str = node_str[:-1]
 
-    readable_output = f"SearchID : {SearchID}\nNodeName(s) : {node_str}"
+    readable_output = f"SearchID : {search_id}\nNodeName(s) : {node_str}"
 
-    outputs["SearchID"] = SearchID
+    outputs["SearchID"] = search_id
 
     if generate_links:
         readable_output += "\n"
@@ -196,11 +214,11 @@ def create_search_command(client: Client, args: Dict[str, Any]):
 
 
 def delete_search_command(client: Client, args: Dict[str, Any]):
-    SearchID = args.get("SearchID")
-    response = client.delete_search(search_id=str(SearchID))
-    response["SearchID"] = SearchID
+    search_id = args.get("search_id")
+    response = client.delete_search(search_id=str(search_id))
+    response["SearchID"] = search_id
     return CommandResults(
-        readable_output=f"{SearchID} has been deleted!",
+        readable_output=f"{search_id} has been deleted!",
         outputs_prefix='SentryWire.Investigator.Deleted',
         outputs_key_field='SearchID',
         outputs=response
@@ -208,54 +226,52 @@ def delete_search_command(client: Client, args: Dict[str, Any]):
 
 
 def download_pcap_command(client: Client, args: Dict[str, Any]):
-    SearchID = args.get('SearchID')
-    nodename = args.get('NodeName')
+    search_id = args.get('search_id')
+    node_name = args.get('node_name')
     file_entry = fileResult(
-        filename=f'{SearchID}.pcap',
-        data=client.download_pcap(search_id=str(SearchID), node_name=str(nodename)).content
+        filename=f'{search_id}.pcap',
+        data=client.download_pcap(search_id=str(search_id), node_name=str(node_name)).content
     )
     return file_entry
 
 
 def download_metadata_command(client: Client, args: Dict[str, Any]):
-    SearchID = args.get('SearchID')
-    nodename = args.get('NodeName')
+    search_id = args.get('search_id')
+    node_name = args.get('node_name')
     file_entry = fileResult(
-        filename=f'{SearchID}.zip',
-        data=client.download_metadata(search_id=str(SearchID), node_name=str(nodename)).content
+        filename=f'{search_id}.zip',
+        data=client.download_metadata(search_id=str(search_id), node_name=str(node_name)).content
     )
     return file_entry
 
 
 def get_search_status_command(client: Client, args: Dict[str, Any]):
-    SearchID = args.get('SearchID')
-    nodename = args.get('NodeName')
+    search_id = args.get('search_id')
+    node_name = args.get('node_name')
 
     # Status request
-    response = client.get_search_status(search_id=str(SearchID), node_name=str(nodename))
+    response = client.get_search_status(search_id=str(search_id), node_name=str(node_name))
 
     # Add SearchID/NodeName
-    response["SearchID"] = SearchID
+    response["SearchID"] = search_id
 
     # Remove redundant/superfluous data
-    redundant = ["SearchName",
-                 "SearchKey",
-                 "ID",
-                 "CaseName",
-                 "MasterToken",
-                 "SearchPorts",
-                 "SubmittedTime",
-                 "MaxChunk",
-                 "SearchType"]
-    for key in redundant:
-        try:
-            response.pop(key)
-        except KeyError:
-            pass
+    response = remove_redundant(
+        ["SearchName",
+         "SearchKey",
+         "ID",
+         "CaseName",
+         "MasterToken",
+         "SearchPorts",
+         "SubmittedTime",
+         "MaxChunk",
+         "SearchType"],
+        response
+    )
 
     # Parse status
     if "SearchResult" in response:
-        response, readable_output = bytes_to_readable(response)
+        response, readable_output = parse_search_status(response)
     else:
         results = response["SearchStatus"]
         readable_output = f"Search status: {results}"
@@ -270,11 +286,24 @@ def get_search_status_command(client: Client, args: Dict[str, Any]):
 def get_server_status_command(client: Client):
     response = client.get_server_status()
     status = json.loads(response.get("ServerInfo")).get("Status")
+    response["NodeName"] = json.loads(response.get("ServerInfo")).get("NodeName")
+
+    response = remove_redundant(
+        ["UserName",
+         "Role",
+         "Users",
+         "Groups",
+         "AuthMode",
+         "UserRoles"
+         ],
+        response
+    )
+
     readable_output = f"Status: {status}"
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='SentryWire.Server',
-        outputs_key_field='',
+        outputs_key_field='NodeName',
         outputs=response
     )
 
@@ -297,7 +326,7 @@ def main() -> None: # pragma: no cover
     password = params.get('credentials').get('password')
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             address=unitaddress,

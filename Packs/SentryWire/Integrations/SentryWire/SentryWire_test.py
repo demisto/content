@@ -72,7 +72,7 @@ def test_sentrywire_delete_search(requests_mock):
     requests_mock.post('https://sentrywire:41395/v3/fmlogin', json={'rest_token': 'test'})
     requests_mock.delete('https://sentrywire:41395/v3/fmsearch', json=mock_response)
     client = Client('sentrywire', '', '')
-    response = delete_search_command(client, args={'SearchID': MOCK_ID})
+    response = delete_search_command(client, args={'search_id': MOCK_ID})
     assert response.outputs_prefix == 'SentryWire.Investigator.Deleted'
     assert len(response.outputs) == 2
     assert response.outputs.get('SearchID')
@@ -119,4 +119,4 @@ def test_sentrywire_get_server_status(requests_mock):
     client = Client('sentrywire', '', '')
     response = get_server_status_command(client)
     assert response.outputs_prefix == 'SentryWire.Server'
-    assert len(response.outputs) == 10
+    assert len(response.outputs) == 5
