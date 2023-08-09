@@ -1,6 +1,6 @@
-id: Cortex ASM - AWS Enrichment_EXPANDR-3672
+id: Cortex ASM - AWS Enrichment
 version: -1
-name: Cortex ASM - AWS Enrichment_EXPANDR-3672
+name: Cortex ASM - AWS Enrichment
 description: Given the IP address this playbook enriches AWS information relevant to ASM alerts.
 starttaskid: "0"
 tasks:

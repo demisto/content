@@ -1,6 +1,6 @@
-id: Cortex ASM - Azure Enrichment_EXPANDR-3672
+id: Cortex ASM - Azure Enrichment
 version: -1
-name: Cortex ASM - Azure Enrichment_EXPANDR-3672
+name: Cortex ASM - Azure Enrichment
 description: Given the IP address, this playbook enriches Azure information relevant to ASM alerts.
 starttaskid: "0"
 tasks:

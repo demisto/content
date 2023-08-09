@@ -1,6 +1,6 @@
-id: Cortex ASM - ServiceNow CMDB Enrichment_EXPANDR-3672
+id: Cortex ASM - ServiceNow CMDB Enrichment
 version: -1
-name: Cortex ASM - ServiceNow CMDB Enrichment_EXPANDR-3672
+name: Cortex ASM - ServiceNow CMDB Enrichment
 description: Given the IP address this playbook enriches ServiceNow CMDB information relevant to ASM alerts.
 starttaskid: "0"
 tasks:

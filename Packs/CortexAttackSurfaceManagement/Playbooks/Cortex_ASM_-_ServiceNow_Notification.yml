@@ -1,6 +1,6 @@
-id: Cortex ASM - ServiceNow Notification_EXPANDR-3672
+id: Cortex ASM - ServiceNow Notification
 version: -1
-name: Cortex ASM - ServiceNow Notification_EXPANDR-3672
+name: Cortex ASM - ServiceNow Notification
 description: This playbook is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
 starttaskid: "0"
 tasks:

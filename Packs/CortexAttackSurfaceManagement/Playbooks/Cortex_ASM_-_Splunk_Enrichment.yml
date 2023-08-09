@@ -1,6 +1,6 @@
-id: Cortex ASM - Splunk Enrichment_EXPANDR-3672
+id: Cortex ASM - Splunk Enrichment
 version: -1
-name: Cortex ASM - Splunk Enrichment_EXPANDR-3672
+name: Cortex ASM - Splunk Enrichment
 description: 'Given the IP address this playbook enriches information from Splunk results relevant to ASM alerts. '
 starttaskid: "0"
 tasks:

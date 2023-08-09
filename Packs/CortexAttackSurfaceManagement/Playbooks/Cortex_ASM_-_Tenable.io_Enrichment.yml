@@ -1,6 +1,6 @@
-id: Cortex ASM - Tenable.io Enrichment_EXPANDR-3672
+id: Cortex ASM - Tenable.io Enrichment
 version: -1
-name: Cortex ASM - Tenable.io Enrichment_EXPANDR-3672
+name: Cortex ASM - Tenable.io Enrichment
 description: Given the IP address this playbook enriches Tenable.io information relevant to ASM alerts.
 starttaskid: "0"
 tasks:

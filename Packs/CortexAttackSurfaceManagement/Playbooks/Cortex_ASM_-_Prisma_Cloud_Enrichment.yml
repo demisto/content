@@ -1,6 +1,6 @@
-id: Cortex ASM - Prisma Cloud Enrichment_EXPANDR-3672
+id: Cortex ASM - Prisma Cloud Enrichment
 version: -1
-name: Cortex ASM - Prisma Cloud Enrichment_EXPANDR-3672
+name: Cortex ASM - Prisma Cloud Enrichment
 description: Given the IP address this playbook enriches information from Prisma Cloud.
 starttaskid: "0"
 tasks:

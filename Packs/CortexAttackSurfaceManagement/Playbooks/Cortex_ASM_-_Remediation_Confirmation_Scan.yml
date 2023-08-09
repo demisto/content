@@ -1,6 +1,6 @@
-id: Cortex ASM - Remediation Confirmation Scan_EXPANDR-3672
+id: Cortex ASM - Remediation Confirmation Scan
 version: -1
-name: Cortex ASM - Remediation Confirmation Scan_EXPANDR-3672
+name: Cortex ASM - Remediation Confirmation Scan
 description: |-
   Playbook for Remediation Confirmation Scan
   (RCS) creation and polling.

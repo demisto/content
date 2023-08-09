@@ -1,6 +1,6 @@
-id: Cortex ASM - Remediation Objectives_EXPANDR-3672
+id: Cortex ASM - Remediation Objectives
 version: -1
-name: Cortex ASM - Remediation Objectives_EXPANDR-3672
+name: Cortex ASM - Remediation Objectives
 description: Playbook that populates the remediation objectives field that is used to display the remediation actions to the end user.
 starttaskid: "0"
 tasks:

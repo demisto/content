@@ -1,6 +1,6 @@
-id: Cortex ASM - Rapid7 Enrichment_EXPANDR-3672
+id: Cortex ASM - Rapid7 Enrichment
 version: -1
-name: Cortex ASM - Rapid7 Enrichment_EXPANDR-3672
+name: Cortex ASM - Rapid7 Enrichment
 description: Given the IP address this playbook enriches Rapid7 InsightVM (Nexpose) information relevant to ASM alerts.
 starttaskid: "0"
 tasks:

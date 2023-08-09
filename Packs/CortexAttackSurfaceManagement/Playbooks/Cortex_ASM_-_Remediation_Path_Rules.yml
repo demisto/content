@@ -1,6 +1,6 @@
-id: Cortex ASM - Remediation Path Rules_EXPANDR-3672
+id: Cortex ASM - Remediation Path Rules
 version: -1
-name: Cortex ASM - Remediation Path Rules_EXPANDR-3672
+name: Cortex ASM - Remediation Path Rules
 description: This playbook returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task.
 starttaskid: "0"
 tasks:
@@ -132,7 +132,7 @@ tasks:
       version: -1
       name: Evaluate remediation path rules
       description: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
-      scriptName: RemediationPathRuleEvaluation_EXPANDR-3672
+      scriptName: RemediationPathRuleEvaluation
       type: regular
       iscommand: false
       brand: ""
@@ -1659,9 +1659,9 @@ tasks:
     task:
       id: 451f8d00-c956-4875-8569-df42207d1b6d
       version: -1
-      name: Cortex ASM - Remediation Objectives_EXPANDR-3672
+      name: Cortex ASM - Remediation Objectives
       description: Playbook that populates remediation objectives field used to display the remediation actions to the end user
-      playbookName: Cortex ASM - Remediation Objectives_EXPANDR-3672
+      playbookName: Cortex ASM - Remediation Objectives
       type: playbook
       iscommand: false
       brand: ""

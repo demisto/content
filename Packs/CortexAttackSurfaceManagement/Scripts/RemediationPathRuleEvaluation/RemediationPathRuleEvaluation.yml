@@ -22,11 +22,11 @@ args:
   name: remediation_path_rules
 comment: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this script takes each remediation path rule and looks at the rule criteria to see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
 commonfields:
-  id: RemediationPathRuleEvaluation_EXPANDR-3672
+  id: RemediationPathRuleEvaluation
   version: -1
 dockerimage: demisto/python3:3.10.12.67728
 enabled: true
-name: RemediationPathRuleEvaluation_EXPANDR-3672
+name: RemediationPathRuleEvaluation
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

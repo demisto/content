@@ -1,6 +1,6 @@
-id: Cortex ASM - Remediation_EXPANDR-3672
+id: Cortex ASM - Remediation
 version: -1
-name: Cortex ASM - Remediation_EXPANDR-3672
+name: Cortex ASM - Remediation
 description: This playbook contains all the cloud provider sub playbooks for remediation
 starttaskid: "0"
 tasks:

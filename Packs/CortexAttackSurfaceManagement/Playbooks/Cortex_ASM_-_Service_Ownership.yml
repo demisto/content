@@ -1,6 +1,6 @@
-id: Cortex ASM - Service Ownership_EXPANDR-3672
+id: Cortex ASM - Service Ownership
 version: -1
-name: Cortex ASM - Service Ownership_EXPANDR-3672
+name: Cortex ASM - Service Ownership
 description: Identifies and recommends the most likely owners of the service, additionally citing an explanation and ranking score for each.
 starttaskid: "0"
 tasks:
@@ -43,7 +43,7 @@ tasks:
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
-      scriptName: RankServiceOwners_EXPANDR-3672
+      scriptName: RankServiceOwners
       type: regular
       iscommand: false
       brand: ""

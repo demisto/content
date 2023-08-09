@@ -1,6 +1,6 @@
-id: Cortex ASM - GCP Enrichment_EXPANDR-3672
+id: Cortex ASM - GCP Enrichment
 version: -1
-name: Cortex ASM - GCP Enrichment_EXPANDR-3672
+name: Cortex ASM - GCP Enrichment
 description: Given the IP address this playbook enriches GCP and Firewall information.
 starttaskid: "0"
 tasks:
