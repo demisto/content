@@ -41,7 +41,7 @@ class DropboxEventsClient(IntegrationEventsClient):
         super().__init__(request, options, session)
 
     def set_request_filter(self, cursor: str):
-        if 'continue' not in self.request.url.path:
+        if 'continue' not in str(self.request.url):
             self.request.url = AnyUrl(f'{str(self.request.url).removesuffix("/")}/continue')
 
         self.request.data = json.dumps({'cursor': cursor})

@@ -40,7 +40,7 @@ class IntegrationHTTPRequest(BaseModel):
     url: AnyUrl
     verify: bool = True
     headers: dict = dict()  # type: ignore[type-arg]
-    auth: HTTPBasicAuth = None
+    auth: Optional[HTTPBasicAuth] = None
     data: Any = None
     params: dict = dict()  # type: ignore[type-arg]
 
