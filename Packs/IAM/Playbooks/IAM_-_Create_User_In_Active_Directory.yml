@@ -1,0 +1,743 @@
+id: IAM - Create User In Active Directory
+version: -1
+name: IAM - Create User In Active Directory
+description: This playbook creates and initializes new users in Active Directory.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 99c0b987-0025-4264-81fe-bff657f2f2d4
+    type: start
+    task:
+      id: 99c0b987-0025-4264-81fe-bff657f2f2d4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2fed9646-b6b1-48a5-8806-d923d97fed98
+    type: regular
+    task:
+      id: 2fed9646-b6b1-48a5-8806-d923d97fed98
+      version: -1
+      name: Create user in Active Directory (does not enable)
+      description: Creates the user in Active Directory. This command requires a secure
+        connection (SSL,TLS).
+      script: Active Directory Query v2|||iam-create-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      allow-enable:
+        simple: "false"
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 61054128-5942-4035-8d38-e45f964b2d1b
+    type: condition
+    task:
+      id: 61054128-5942-4035-8d38-e45f964b2d1b
+      version: -1
+      name: What is the user status in Active Directory?
+      description: Checks whether the user was already provisioned successfully to
+        Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      Created:
+      - "8"
+      Enabled:
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: Created
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SuccessfulVendors
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SuccessfulVendors.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SuccessfulVendors.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: create
+            iscontext: true
+    - label: Enabled
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SuccessfulVendors
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SuccessfulVendors.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: inputs.SuccessfulVendors.active
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 14dce71d-dab8-46cb-8999-57555e2184d3
+    type: condition
+    task:
+      id: 14dce71d-dab8-46cb-8999-57555e2184d3
+      version: -1
+      name: Is user initialization required?
+      description: Checks whether the user was successfully created in Active Directory
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      No, user already active:
+      - "9"
+      Yes, possible rehire:
+      - "4"
+      yes, inactive user created:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: yes, inactive user created
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: IAM.Vendor.skipped
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: create
+            iscontext: true
+    - label: No, user already active
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IAM.Vendor.active
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+    - label: Yes, possible rehire
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: update
+                    ignorecase: true
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: IAM.Vendor.active
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f475e3fd-ba51-4baa-8c7c-e91137afa84c
+    type: regular
+    task:
+      id: f475e3fd-ba51-4baa-8c7c-e91137afa84c
+      version: -1
+      name: Change User Profile AD status to Pending
+      description: Edits the User Profile indicator.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      adaccountstatus:
+        simple: Pending
+      id:
+        complex:
+          root: inputs.indicator
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.CreatedIndicator.ID
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 76526370-cf82-40f4-83a9-d8afda0a5a3e
+    type: regular
+    task:
+      id: 76526370-cf82-40f4-83a9-d8afda0a5a3e
+      version: -1
+      name: Initialize existing user in Active Directory
+      description: |-
+        Generates password,
+        Set an AD user account with this password.
+        Enable the account.
+        Send mail to the user with tha account information.
+        This script is running `send-mail` command, make sure there is a matching Integration configurated.
+      scriptName: IAMInitADUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      displayname:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IAM.Vendor.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Active Directory Query v2
+          accessor: details.displayName
+      email:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IAM.Vendor.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Active Directory Query v2
+          accessor: details.mail
+      email_subject:
+        complex:
+          root: inputs.ADUserCreationEmailSubject
+      enable_user:
+        simple: "false"
+      inc_id:
+        complex:
+          root: incident
+          accessor: id
+      manager_email:
+        complex:
+          root: incident
+          accessor: manageremailaddress
+      manager_email_body_template:
+        complex:
+          root: inputs.ManagerEmailHTMLList
+      manager_email_template_list_name:
+        complex:
+          root: inputs.ManagerEmailHTMLList
+      notification_email_addresses:
+        complex:
+          root: inputs.ADNotificationEmails
+      notification_email_body_template:
+        complex:
+          root: inputs.ServiceDeskEmailHTMLList
+      notification_email_template_list_name:
+        complex:
+          root: inputs.ServiceDeskEmailHTMLList
+      notification_emails_list:
+        complex:
+          root: inputs.ADNotificationEmails
+      pwdGenerationScript:
+        complex:
+          root: inputs.PasswordGenerationScriptName
+      sAMAccountName:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IAM.Vendor.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Active Directory Query v2
+          accessor: details.sAMAccountName
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.sAMAccountName
+                iscontext: true
+      send_email: {}
+      user_profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: details
+      output:
+        simple: The user has been created and initialized in Active Directory
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 829ae368-fbee-4c9c-886a-b95d90da3db9
+    type: condition
+    task:
+      id: 829ae368-fbee-4c9c-886a-b95d90da3db9
+      version: -1
+      name: Did user initialization succeed?
+      description: Checks whether the script that initializes the user in Active Directory
+        executed successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IAMInitADUser
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bfb1e29b-dfb5-42d3-8ef6-cc5929b27c4e
+    type: title
+    task:
+      id: bfb1e29b-dfb5-42d3-8ef6-cc5929b27c4e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a59e71de-0b90-4187-8c6c-d73272706f22
+    type: condition
+    task:
+      id: a59e71de-0b90-4187-8c6c-d73272706f22
+      version: -1
+      name: Was the user already initialized in Active Directory?
+      description: Checks whether the user has already been initialized successfully
+        in Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SuccessfulVendors
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SuccessfulVendors.action
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IAMInitADUser
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: cb16431c-fa78-4894-81e7-1c1ad77778c6
+    type: regular
+    task:
+      id: cb16431c-fa78-4894-81e7-1c1ad77778c6
+      version: -1
+      name: Change User Profile AD status to Enabled
+      description: Edits the User Profile indicator.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      adaccountstatus:
+        simple: Enabled
+      id:
+        complex:
+          root: inputs.indicator
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.CreatedIndicator.ID
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_Yes, possible rehire": 0.27,
+      "3_5_yes, inactive user created": 0.54,
+      "3_7_#default#": 0.27,
+      "3_9_No, user already active": 0.59,
+      "6_7_#default#": 0.22
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1395,
+        "width": 1650,
+        "x": -370,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ManagerEmailHTMLList
+  value: {}
+  required: false
+  description: Optional - the name of an XSOAR list that contains an HTML template
+    for emails that are sent to user managers when a new Active Directory user is
+    created. If no list is specified, an email with a  generic structure will be sent
+    (generated inside the IAMInitADUser script).
+  playbookInputQuery:
+- key: ServiceDeskEmailHTMLList
+  value: {}
+  required: false
+  description: Optional - the name of an XSOAR list that contains an HTML template
+    for emails that are sent to ServiceDesk, to prepare user laptops, when a new Active
+    Directory user is created. If no list is specified, an email with a  generic structure
+    will be sent (generated inside the IAMInitADUser script).
+  playbookInputQuery:
+- key: ADNotificationEmails
+  value: {}
+  required: true
+  description: A comma-separated list of email addresses that will be notified when
+    a user is initialized in Active Directory.
+  playbookInputQuery:
+- key: PasswordGenerationScriptName
+  value:
+    simple: IAMGeneratePassword
+  required: true
+  description: The name of the automation script that will be used to generate a random
+    password for newly created Active Directory users. The default script used for
+    this is IAMGeneratePassword, but depending on your password complexity policy,
+    you may or may not want to use it.
+  playbookInputQuery:
+- key: ServiceDeskEmail
+  value: {}
+  required: false
+  description: Email to send the domain user password (from Active directory) of new
+    users, so that their equipment can be prepared by IT when they're being hired.
+  playbookInputQuery:
+- key: CreatedIndicator
+  value:
+    complex:
+      root: CreatedIndicator
+  required: false
+  description: The created User Profile indicator, if created previously in the IAM
+    - Sync User playbook.
+  playbookInputQuery:
+- key: indicator
+  value:
+    complex:
+      root: indicator
+  required: false
+  description: The User Profile indicator, if found during a previous search.
+  playbookInputQuery:
+- key: SuccessfulVendors
+  value:
+    complex:
+      root: inputs.SuccessfulVendors
+  required: false
+  description: Vendors where provisioning was successful. This input is used to ensure
+    that on playbook reruns, provisioning will be retried only with vendors that previously
+    failed.
+  playbookInputQuery:
+- key: sAMAccountName
+  value:
+    complex:
+      root: inputs.SuccessfulVendors
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.SuccessfulVendors.brand
+            iscontext: true
+          right:
+            value:
+              simple: Active Directory Query v2
+      accessor: details
+      transformers:
+      - operator: getField
+        args:
+          field:
+            value:
+              simple: sAMAccountName
+  required: false
+  description: The sAMAccountName of the user if it was already provisioned successfully
+    in Active Directory.
+  playbookInputQuery:
+- key: SendEmail
+  value:
+    simple: "True"
+  required: false
+  description: Whether to send an email with the password of the user for newly created
+    users. Can be True or False.
+  playbookInputQuery:
+outputs:
+- contextPath: IAM
+  description: IAM object.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

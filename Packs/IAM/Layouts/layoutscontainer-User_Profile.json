@@ -1,0 +1,647 @@
+{
+    "description": "A layout for user profiles.",
+    "group": "indicator",
+    "id": "User Profile",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "tjlpilelnw",
+                "name": "Profile",
+                "sections": [
+                    {
+                        "description": "Incidents that affected the user profile.",
+                        "h": 2,
+                        "i": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-relatedIncidents",
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "User incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "description": "Changes to the user profile across time.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-indicatorTimeline",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 24,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 24,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "User Changes",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 2,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "givenname",
+                                "height": 22,
+                                "id": "0b9851f0-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 0,
+                                "listId": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "surname",
+                                "height": 22,
+                                "id": "f967f2b0-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 1,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "displayname",
+                                "height": 22,
+                                "id": "f28085c0-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "email",
+                                "height": 22,
+                                "id": "f3304dc0-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 4,
+                                "listId": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "personalemail",
+                                "height": 22,
+                                "id": "27306060-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 5,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mobilephone",
+                                "height": 22,
+                                "id": "193c4b40-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 6,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "workphone",
+                                "height": 22,
+                                "id": "4339f550-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 7,
+                                "listId": "default-main-e623b400-11e3-11eb-b630-79e983ae962b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Personal \u0026 Contact Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-725a3400-1142-11eb-a8f3-d37adb5d17c2",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "location",
+                                "height": 22,
+                                "id": "0e4f5ba0-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "locationregion",
+                                "height": 22,
+                                "id": "0efd75f0-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 1,
+                                "listId": "default-main-725a3400-1142-11eb-a8f3-d37adb5d17c2",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "countryname",
+                                "height": 22,
+                                "id": "845442f0-11f0-11eb-b630-79e983ae962b",
+                                "index": 2,
+                                "listId": "default-main-725a3400-1142-11eb-a8f3-d37adb5d17c2",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "city",
+                                "height": 22,
+                                "id": "960e5b00-6e00-11ea-8e15-17f697ed563a",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "state",
+                                "height": 22,
+                                "id": "32ab3820-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 4,
+                                "listId": "default-main-725a3400-1142-11eb-a8f3-d37adb5d17c2",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "streetaddress",
+                                "height": 22,
+                                "id": "3525fc20-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 5,
+                                "listId": "default-main-725a3400-1142-11eb-a8f3-d37adb5d17c2",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "zipcode",
+                                "height": 22,
+                                "id": "43f38150-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Job Address Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "description": "Information about the position of the user in the company.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-34626920-11f0-11eb-b630-79e983ae962b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeeid",
+                                "height": 22,
+                                "id": "f3d2cf50-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 22,
+                                "id": "38e09320-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 1,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "department",
+                                "height": 22,
+                                "id": "ee1f4e80-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 22,
+                                "id": "3c9c1480-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 3,
+                                "listId": "default-main-34626920-11f0-11eb-b630-79e983ae962b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "managername",
+                                "height": 22,
+                                "id": "bcebe1d0-8c27-11ea-b85f-0f96c00f2068",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "manageremailaddress",
+                                "height": 22,
+                                "id": "1750f600-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 5,
+                                "listId": "default-main-34626920-11f0-11eb-b630-79e983ae962b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "leadership",
+                                "height": 22,
+                                "id": "0d64fba0-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "costcenter",
+                                "height": 22,
+                                "id": "eb3fae30-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "jobcode",
+                                "height": 22,
+                                "id": "067e7d70-8dc8-11ea-ac21-fd8666ccd537",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "jobfamily",
+                                "height": 22,
+                                "id": "05771b30-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Job Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-c59435e0-11f0-11eb-b630-79e983ae962b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeetype",
+                                "height": 22,
+                                "id": "f543eb80-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "hiredate",
+                                "height": 22,
+                                "id": "fbbe3ec0-5cd5-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "terminationdate",
+                                "height": 22,
+                                "id": "37619440-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 2,
+                                "listId": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-c59435e0-11f0-11eb-b630-79e983ae962b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastdayofwork",
+                                "height": 22,
+                                "id": "be6948f0-90db-11ea-a514-87ce97505ad7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "prehireflag",
+                                "height": 22,
+                                "id": "29c8e590-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rehiredemployee",
+                                "height": 22,
+                                "id": "88780030-145a-11eb-9077-6b16fbadfa31",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "conversionhire",
+                                "height": 22,
+                                "id": "ac7f0eb0-08ba-11ec-811a-9f3ce292e1d9",
+                                "index": 6,
+                                "listId": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-c59435e0-11f0-11eb-b630-79e983ae962b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "acquisitionhire",
+                                "height": 22,
+                                "id": "7e5256d0-2f4f-11ec-ae36-392d168204fe",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "adaccountstatus",
+                                "height": 22,
+                                "id": "8ba6e740-8740-11eb-8d97-e9290c5af911",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceoftruth",
+                                "height": 22,
+                                "id": "bad28ed0-da8c-11eb-9a69-9b25cf691b2f",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "terminationtrigger",
+                                "height": 22,
+                                "id": "8b9be410-003c-11ec-89ee-5126fad71982",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Hiring Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "i": "tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-978b0c1e-6739-432d-82d1-3b6641eed99f-tjlpilelnw-default-main-797b5b10-11f1-11eb-b630-79e983ae962b",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Employment Status",
+                        "query": "IAMShowEmploymentStatus",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "uqg4m0ondl",
+                "name": "Custom Profile Info",
+                "sections": [
+                    {
+                        "description": "Additional custom fields that were added to User Profile indicators.",
+                        "displayType": "CARD",
+                        "h": 6,
+                        "i": "uqg4m0ondl-567b4be0-17c1-11eb-9b3f-87ceba367000",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Custom Information",
+                        "static": false,
+                        "type": "customDetails",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "odk0jssmgu",
+                "name": "Applications",
+                "sections": [
+                    {
+                        "description": "Applications where the user is synchronized.",
+                        "h": 6,
+                        "i": "odk0jssmgu-952fa570-c469-11eb-bc12-115d3a85b825",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "User Applications",
+                        "query": "IAMShowUserApplications",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-588ba440-145e-11eb-9141-4b1988422e61",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "displayname",
+                                "height": 22,
+                                "id": "8f7c6e30-145e-11eb-9141-4b1988422e61",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "email",
+                                "height": 22,
+                                "id": "9152b4d0-145e-11eb-9141-4b1988422e61",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "employmentstatus",
+                                "height": 22,
+                                "id": "955c5630-145e-11eb-9141-4b1988422e61",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "employeetype",
+                                "height": 22,
+                                "id": "960bd010-145e-11eb-9141-4b1988422e61",
+                                "index": 3,
+                                "listId": "indicator-quick-view-info-588ba440-145e-11eb-9141-4b1988422e61",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rehiredemployee",
+                                "height": 22,
+                                "id": "9a94b390-145e-11eb-9141-4b1988422e61",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastdayofwork",
+                                "height": 22,
+                                "id": "a1ef54b0-145e-11eb-9141-4b1988422e61",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "terminationdate",
+                                "height": 22,
+                                "id": "a5dbf830-145e-11eb-9141-4b1988422e61",
+                                "index": 6,
+                                "listId": "indicator-quick-view-info-588ba440-145e-11eb-9141-4b1988422e61",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "User Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "User Profile",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

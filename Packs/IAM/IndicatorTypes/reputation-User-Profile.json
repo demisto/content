@@ -1,0 +1,18 @@
+{
+ "id": "User Profile",
+ "version": -1,
+ "modified": "2020-09-13T14:22:14.413354605Z",
+ "shouldCommit": false,
+ "regex": "",
+ "details": "User Profile",
+ "prevDetails": "User Profile",
+ "system": false,
+ "locked": false,
+ "disabled": false,
+ "file": false,
+ "updateAfter": 0,
+ "mergeContext": false,
+ "expiration": 0,
+ "layout": "User Profile",
+ "fromVersion": "6.0.0"
+}

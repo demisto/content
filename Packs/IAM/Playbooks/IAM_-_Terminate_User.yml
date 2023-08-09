@@ -1,0 +1,1560 @@
+id: IAM - Terminate User
+version: -1
+name: IAM - Terminate User
+description: This playbook sets the user status to terminated in the organization
+  by updating the incident information and User Profile indicator with values indicating
+  termination, and disabling the account in the supported apps.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0ac115d3-4a51-4a4a-8e53-dbce498c6dca
+    type: start
+    task:
+      id: 0ac115d3-4a51-4a4a-8e53-dbce498c6dca
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4c532220-63be-4d92-8273-a2df20507116
+    type: title
+    task:
+      id: 4c532220-63be-4d92-8273-a2df20507116
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 32ac1069-dd4f-4faa-8252-ee849bffdfb6
+    type: title
+    task:
+      id: 32ac1069-dd4f-4faa-8252-ee849bffdfb6
+      version: -1
+      name: Continue Termination
+      description: |-
+        Updates the user profile in Cortex XSOAR with the new data received from Workday. This new data indicates that the employee is terminated.
+        This task tries to edit the user profile that was searched for, but if none was found - it edits the user profile that was just created by the IAM - Sync User playbook previously. Also sets the event action to Deactivate.
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "84"
+      - "81"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Event Action
+      output:
+        simple: Deactivate
+    - incidentfield: type
+      output:
+        simple: IAM - Terminate User
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: aba82f54-fd4b-4e8b-8211-fcb4a9dd0edf
+    type: regular
+    task:
+      id: aba82f54-fd4b-4e8b-8211-fcb4a9dd0edf
+      version: -1
+      name: Terminate user in all apps
+      description: |
+        Disable an active user in all the apps from the XSOAR list “app-provisioning-settings” where disable is permitted.
+      script: '|||iam-disable-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      retry-count:
+        simple: "30"
+      retry-interval:
+        simple: "60"
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+      using:
+        complex:
+          root: InstancesForProvisioning
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: 5cd2fb63-43d5-4bb3-89ff-8c54cb3095ba
+    type: regular
+    task:
+      id: 5cd2fb63-43d5-4bb3-89ff-8c54cb3095ba
+      version: -1
+      name: Terminate user in Active Directory
+      description: Disables the user in Active Directory.
+      script: Active Directory Query v2|||iam-disable-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 7848aa03-a3b1-417d-8a15-c147fedcf7ad
+    type: condition
+    task:
+      id: 7848aa03-a3b1-417d-8a15-c147fedcf7ad
+      version: -1
+      name: Determine termination trigger
+      description: Checks what is the reason for the user termination.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "101"
+      Orphan User:
+      - "95"
+      TUFE:
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: TUFE
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: terminationtrigger
+            iscontext: true
+          right:
+            value:
+              simple: TUFE
+          ignorecase: true
+    - label: Orphan User
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.terminationtrigger
+            iscontext: true
+          right:
+            value:
+              simple: Orphan
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 9589f9fd-956d-430f-8459-8998aa8d54d0
+    type: regular
+    task:
+      id: 9589f9fd-956d-430f-8459-8998aa8d54d0
+      version: -1
+      name: Get Okta user
+      description: Retrieves a single user resource.
+      script: Okta IAM|||iam-get-user
+      type: regular
+      iscommand: true
+      brand: Okta IAM
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 728f642e-0e8b-4b13-817c-2ea85bd1a842
+    type: condition
+    task:
+      id: 728f642e-0e8b-4b13-817c-2ea85bd1a842
+      version: -1
+      name: Is the user disabled in Okta?
+      description: Checks whether the user is currently disabled in Okta.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "80"
+      "yes":
+      - "101"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: IAM.Vendor.active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: d17d48ca-b395-4cc1-8819-0e71c2b48e2e
+    type: condition
+    task:
+      id: d17d48ca-b395-4cc1-8819-0e71c2b48e2e
+      version: -1
+      name: TUFE triggered but account is active in Okta. Proceed?
+      description: Should the user be terminated despite being enabled in Okta?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Deactivate:
+      - "72"
+      Don't Deactivate:
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 1235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.ITNotificationEmail
+      subject:
+        simple: 'TUFE triggered but account is active in Okta: ${incident.username}'
+      body:
+        simple: 'TUFE event was pulled from Okta for: ${incident.username}. but the
+          account is active in Okta. Please review.'
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Deactivate
+      - Don't Deactivate
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 5566481c-5e5d-45c6-878d-62f1e42a682d
+    type: regular
+    task:
+      id: 5566481c-5e5d-45c6-878d-62f1e42a682d
+      version: -1
+      name: Save instances for provisioning from list
+      description: Saves the instances names were provisioning should occur according
+        to the app-provisioning-settings list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      append: {}
+      key:
+        simple: AllInstances
+      stringify: {}
+      value:
+        complex:
+          root: lists
+          accessor: app-provisioning-settings
+          transformers:
+          - operator: ParseJSON
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: ${.=true}
+              field:
+                value:
+                  simple: disable_user_enabled
+              getField:
+                value:
+                  simple: instance_name
+              stringify:
+                value:
+                  simple: "false"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: 9983ac2c-bf9a-4952-836b-10beaf8ef050
+    type: condition
+    task:
+      id: 9983ac2c-bf9a-4952-836b-10beaf8ef050
+      version: -1
+      name: Are there instances where provisioning should occur?
+      description: Checks whether there is any instance where provisioning was not
+        yet run successfully and should run.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InstancesForProvisioning
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: a0e2d2a1-2018-41b4-8e2d-2dbbbfbf6fc7
+    type: condition
+    task:
+      id: a0e2d2a1-2018-41b4-8e2d-2dbbbfbf6fc7
+      version: -1
+      name: Was the user already provisioned in AD successfully?
+      description: Checks whether the user was already provisioned successfully to
+        Active Directory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "74"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SuccessfulVendors
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.SuccessfulVendors.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 6f988a86-bc2e-4663-8ec5-4987d8b2958e
+    type: regular
+    task:
+      id: 6f988a86-bc2e-4663-8ec5-4987d8b2958e
+      version: -1
+      name: Save data for notification emails
+      description: Saves the data needed for email notifications.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      key:
+        simple: InstancesForProvisioningFullData
+      value:
+        complex:
+          root: lists
+          accessor: app-provisioning-settings
+          transformers:
+          - operator: ParseJSON
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: All
+              field:
+                value:
+                  simple: create_user_group
+              getField: {}
+              stringify:
+                value:
+                  simple: "false"
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: ${.=true}
+              field:
+                value:
+                  simple: disable_user_enabled
+              getField: {}
+              stringify:
+                value:
+                  simple: "false"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 1326922f-8e25-4686-816d-5394d1fc0e97
+    type: title
+    task:
+      id: 1326922f-8e25-4686-816d-5394d1fc0e97
+      version: -1
+      name: Provisioning Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "85"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: ee397451-1edc-45b8-8ce4-01aa58218231
+    type: regular
+    task:
+      id: ee397451-1edc-45b8-8ce4-01aa58218231
+      version: -1
+      name: Save instance data for instances that need notification
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      key:
+        simple: InstanceDataForNotification
+      value:
+        complex:
+          root: InstancesForProvisioningFullData
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: InstancesForProvisioningFullData.instance_name
+                iscontext: true
+              right:
+                value:
+                  simple: SuccessfulInstances
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: a7fa57d7-5d44-40d7-8b57-e75d164a1bd8
+    type: regular
+    task:
+      id: a7fa57d7-5d44-40d7-8b57-e75d164a1bd8
+      version: -1
+      name: Save instances where provisioning was successful
+      description: Saves vendors where provisioning was successful in a separate context
+        key so provisioning notification will apply only in cases of successful provisioning.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SuccessfulInstances
+      value:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: IAM.Vendor.success
+                iscontext: true
+          - - operator: isFalse
+              left:
+                value:
+                  simple: IAM.Vendor.skipped
+                iscontext: true
+          accessor: instanceName
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: 3933b640-e439-47c5-8ce9-aa78ef79845a
+    type: condition
+    task:
+      id: 3933b640-e439-47c5-8ce9-aa78ef79845a
+      version: -1
+      name: Was the user successfully disabled in Active Directory?
+      description: Checks whether the user was successfully created in Active Directory
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      User Not Found:
+      - "99"
+      "yes":
+      - "91"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: IAM.Vendor.skipped
+                      iscontext: true
+            iscontext: true
+    - label: User Not Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: IAM.Vendor.skipped
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: b508b3af-ef43-434f-84c8-aee648d19cdc
+    type: regular
+    task:
+      id: b508b3af-ef43-434f-84c8-aee648d19cdc
+      version: -1
+      name: Change User Profile AD status to Disabled
+      description: Edits the User Profile indicator.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      adaccountstatus:
+        simple: Disabled
+      id:
+        complex:
+          root: inputs.indicator
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.CreatedIndicator.ID
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 551ba3ca-3085-4007-837a-02677d0e4d5a
+    type: regular
+    task:
+      id: 551ba3ca-3085-4007-837a-02677d0e4d5a
+      version: -1
+      name: Get all available IAM instances
+      description: Gets all currently enabled integration instances.
+      scriptName: GetEnabledInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: 3f75fefd-ebae-4dcb-87c7-57d9e4d4bef6
+    type: regular
+    task:
+      id: 3f75fefd-ebae-4dcb-87c7-57d9e4d4bef6
+      version: -1
+      name: Get instances that require provisioning
+      description: Gets only the available IAM instances from the instance list.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      key:
+        simple: InstancesForProvisioning
+      value:
+        complex:
+          root: AllInstances
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: AllInstances
+                iscontext: true
+              right:
+                value:
+                  simple: EnabledInstances
+                iscontext: true
+          - - operator: notIn
+              left:
+                value:
+                  simple: AllInstances
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.SuccessfulVendors.instanceName
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 284005a9-103f-4630-8e67-04d440f99c7d
+    type: condition
+    task:
+      id: 284005a9-103f-4630-8e67-04d440f99c7d
+      version: -1
+      name: Orphan user detected. Terminate account?
+      description: An orphan user was detected - this means a User Profile exists
+        with an email that does not exist in the HR system report. Should that account
+        be terminated?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "96"
+      Terminate:
+      - "101"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 7b373413-9c48-4aea-82f1-116de19879df
+    type: title
+    task:
+      id: 7b373413-9c48-4aea-82f1-116de19879df
+      version: -1
+      name: Do Not Terminate
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "97"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: e3b905bc-24b4-40c7-884e-81fbb193f7ea
+    type: regular
+    task:
+      id: e3b905bc-24b4-40c7-884e-81fbb193f7ea
+      version: -1
+      name: Set orphan user as processed
+      description: Sets the User Profile as "Is Processed" = true, so that new orphan
+        events won't be created for that user unless added again to the HR system.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      active:
+        simple: "false"
+      id:
+        complex:
+          root: inputs.indicator
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.CreatedIndicator.ID
+                iscontext: true
+      isprocessed:
+        simple: "true"
+      retry-count:
+        simple: "3"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Event Action
+      output:
+        simple: Deactivate
+    - incidentfield: type
+      output:
+        simple: IAM - Terminate User
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: dd6d2a36-d27a-4219-8f60-081adf2bcde2
+    type: regular
+    task:
+      id: dd6d2a36-d27a-4219-8f60-081adf2bcde2
+      version: -1
+      name: Set the output to indicate User Profile must stay processed
+      description: Sets the LeaveUserProfileAsProcessed output to True to make sure
+        that the user profile does not go back to being not processed. This ensures
+        that new orphan events won't be generated.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: LeaveUserProfileAsProcessed
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: 9140d765-d8bb-4873-830c-f4bd00b2e28a
+    type: regular
+    task:
+      id: 9140d765-d8bb-4873-830c-f4bd00b2e28a
+      version: -1
+      name: Error - user was not found. Find the user and disable it
+      description: Asks to manually find and disable the user before proceeding.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      message:
+        simple: The user was not found in Active Directory, so it could not be terminated.
+          Please find the user and disable it before proceeding.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: e58009f4-308f-4821-8497-a097a8b90f4e
+    type: playbook
+    task:
+      id: e58009f4-308f-4821-8497-a097a8b90f4e
+      version: -1
+      name: IAM - Send Provisioning Notification Email
+      playbookName: IAM - Send Provisioning Notification Email
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      InstanceDataForNotification:
+        complex:
+          root: InstanceDataForNotification
+      NotificationEmailHTMLList:
+        complex:
+          root: inputs.NotificationEmailHTMLList
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: 8bc13951-1a76-47ff-8e3b-ade30469618b
+    type: title
+    task:
+      id: 8bc13951-1a76-47ff-8e3b-ade30469618b
+      version: -1
+      name: Termination
+      description: Checks whether the maximum number of deactivations allowed at a
+        given time is limited.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: 715924f8-1f17-4d42-8294-add8bee57c18
+    type: condition
+    task:
+      id: 715924f8-1f17-4d42-8294-add8bee57c18
+      version: -1
+      name: Are deactivations limited?
+      description: Checks whether the maximum number of deactivations allowed at a
+        given time is limited.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "103"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MaxDeactivationLimit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MaxDeactivationList
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: inputs.MaxDeactivationList
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.MaxDeactivationLimit
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: 2cc078e1-f141-4ea2-8063-eb324d80555a
+    type: condition
+    task:
+      id: 2cc078e1-f141-4ea2-8063-eb324d80555a
+      version: -1
+      name: Max deactivation limit reached. Please Review
+      description: Please decide on the action for the deactivation event. If you
+        choose not to deactivate the account, then make sure the data that triggered
+        the termination to begin with is reverted, so that a new termination event
+        is not created.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      DON'T Deactivate Account:
+      - "96"
+      Deactivate Account:
+      - "72"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.ITNotificationEmail
+      subject:
+        simple: 'Max deactivation limit reached. Please Review Event: ${incident.id}'
+      body:
+        simple: "Max deactivation limit reached. Please review and approve. \nUsername:\
+          \ ${incident.username} <====>\nMax Limit: ${inputs.MaxDeactivationList}\
+          \ <====>\nCurrent Count: ${inputs.MaxDeactivationLimit}"
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Deactivate Account
+      - DON'T Deactivate Account
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: 094e36ee-abff-44fb-832b-2cacb4f9a245
+    type: condition
+    task:
+      id: 094e36ee-abff-44fb-832b-2cacb4f9a245
+      version: -1
+      name: Are deactivations being tracked?
+      description: Checks whether deactivations are supposed to be limited.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "86"
+      "yes":
+      - "105"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MaxDeactivationLimit
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MaxDeactivationList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "105":
+    id: "105"
+    taskid: c7a8e5fb-adfa-424d-8831-85a1d80d1e07
+    type: regular
+    task:
+      id: c7a8e5fb-adfa-424d-8831-85a1d80d1e07
+      version: -1
+      name: Increment the number of deactivations
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      listData:
+        complex:
+          root: inputs.MaxDeactivationList
+          transformers:
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "1"
+      listName:
+        complex:
+          root: inputs.MaxDeactivationListName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: 089b7895-bbcd-487d-8e02-e682f7d1bf4e
+    type: regular
+    task:
+      id: 089b7895-bbcd-487d-8e02-e682f7d1bf4e
+      version: -1
+      name: Update User Profile & incident type
+      description: |-
+        Updates the user profile in Cortex XSOAR with the new data received from Workday. This new data indicates that the employee is terminated.
+        This task tries to edit the user profile that was searched for, but if none was found - it edits the user profile that was just created by the IAM - Sync User playbook previously. Also sets the event action to Deactivate.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      active:
+        simple: "false"
+      adaccountstatus:
+        simple: ${.=""}
+      customFields:
+        complex:
+          root: incident
+          accessor: userprofile
+          transformers:
+          - operator: ParseJSON
+      id:
+        complex:
+          root: inputs.indicator
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.CreatedIndicator.ID
+                iscontext: true
+      retry-count:
+        simple: "3"
+      sourceoftruth:
+        complex:
+          root: incident
+          accessor: sourceoftruth
+      terminationtrigger:
+        complex:
+          root: incident
+          accessor: terminationtrigger
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Event Action
+      output:
+        simple: Deactivate
+    - incidentfield: type
+      output:
+        simple: IAM - Terminate User
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "102_72_#default#": 0.26,
+      "103_72_Deactivate Account": 0.23,
+      "103_96_DON'T Deactivate Account": 0.26,
+      "75_101_#default#": 0.37,
+      "77_101_yes": 0.32,
+      "77_80_#default#": 0.17,
+      "80_20_Don't Deactivate": 0.13,
+      "80_72_Deactivate": 0.22,
+      "83_20_#default#": 0.13,
+      "83_73_yes": 0.33,
+      "84_20_yes": 0.17,
+      "84_74_#default#": 0.4,
+      "90_20_#default#": 0.1,
+      "90_91_yes": 0.37,
+      "90_99_User Not Found": 0.6,
+      "95_101_Terminate": 0.32,
+      "95_96_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4295,
+        "width": 2770,
+        "x": -250,
+        "y": -10
+      }
+    }
+  }
+inputs:
+- key: indicator
+  value:
+    complex:
+      root: indicator
+  required: false
+  description: The User Profile indicator, if found during previous search.
+  playbookInputQuery:
+- key: CreatedIndicator
+  value:
+    complex:
+      root: CreatedIndicator
+  required: false
+  description: The created User Profile indicator, if created previously in the IAM
+    - Sync User playbook.
+  playbookInputQuery:
+- key: ITNotificationEmail
+  value: {}
+  required: false
+  description: Email to ask how to proceed with TUFE events.
+  playbookInputQuery:
+- key: SuccessfulVendors
+  value:
+    complex:
+      root: IAM.Vendor
+      filters:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IAM.Vendor.success
+            iscontext: true
+  required: false
+  description: Vendors where provisioning was successful. This input is used to ensure
+    that on playbook reruns, provisioning will be retried only with vendors that previously
+    failed.
+  playbookInputQuery:
+- key: MaxDeactivationLimit
+  value: {}
+  required: false
+  description: 'Optional - the amount of maximum Active Directory user deactivations
+    allowed. When this number is reached, new user deactivation events will require
+    admin approval. Use this only in conjunction with the MaxDeactivationList and
+    MaxDeactivationListName inputs. An example of a value can be: 50 '
+  playbookInputQuery:
+- key: MaxDeactivationList
+  value: {}
+  required: false
+  description: |-
+    The *CONTENTS* of the List where the amount of user deactivations that are happening is tracked. This list will periodically increment with every new deactivation incident. If you want to limit deactivations, you must fill in the MaxDeactivationLimit input too. In order to make sure you don't keep approaching the deactivation limit, you would want to reset the number in that list periodically using a Job or manually changing the number back to 0.
+    An example of this input can be: ${lists.deactivations-list-name}
+  playbookInputQuery:
+- key: MaxDeactivationListName
+  value: {}
+  required: false
+  description: |-
+    The *NAME* of the List where the amount of user deactivations that are happening is tracked.
+    An example of this input can be: deactivations-list-name.
+  playbookInputQuery:
+outputs:
+- contextPath: IAM.Vendor
+  description: Details the changes that were made in Active Directory or Okta.
+- contextPath: IAM.Vendor.active
+  description: Indicates if the user is active or not. Can be true or false.
+- contextPath: IAM.Vendor.details
+  description: Lists the user details as they appear in the vendor.
+- contextPath: IAM.Vendor.email
+  description: The user email as it appears in the vendor records.
+- contextPath: IAM.Vendor.errorCode
+  description: HTTP error response code.
+- contextPath: IAM.Vendor.errorMessage
+  description: Reason why the API failed.
+- contextPath: IAM.Vendor.id
+  description: The user ID as it appears in the vendor records.
+- contextPath: IAM.Vendor.instanceName
+  description: Name of the instance used for provisioning.
+- contextPath: IAM.Vendor.success
+  description: Indicates if the vendor was successfully updated. Can be true or false
+- contextPath: IAM.Vendor.brand
+  description: Name of the integration.
+- contextPath: IAM.Vendor.username
+  description: The username as it appears in the vendor records.
+- contextPath: IAM.Vendor.action
+  description: The action that was performed on the user record.
+  type: unknown
+- contextPath: IAM.UserProfile
+  description: The user's profile.
+  type: unknown
+- contextPath: LeaveUserProfileAsProcessed
+  description: Whether the User Profile should stay as processed or not. Can be True
+    or False.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

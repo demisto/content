@@ -1,0 +1,42 @@
+{
+    "id": "incident_terminationtrigger",
+    "version": -1,
+    "modified": "2020-09-29T12:53:08.588343979Z",
+    "name": "Termination Trigger",
+    "ownerOnly": false,
+    "description": "Source of termination",
+    "cliName": "terminationtrigger",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "",
+        "Workday",
+        "Wand",
+        "TUFE",
+        "Orphan"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "User Profile",
+        "IAM - New Hire",
+        "IAM - Terminate User",
+        "IAM - Update User",
+        "IAM - Sync User"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

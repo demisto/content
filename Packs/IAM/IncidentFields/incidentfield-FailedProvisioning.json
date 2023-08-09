@@ -1,0 +1,102 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "IAM - New Hire",
+  "IAM - Terminate User",
+  "IAM - Update User",
+  "User Profile",
+  "IAM - Sync User",
+  "IAM - Rehire User"
+ ],
+ "caseInsensitive": true,
+ "cliName": "failedprovisioning",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "Brand Name",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "brandname",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Instance Name",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "instancename",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Action",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "action",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Error Code",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "errorcode",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Error Message",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "errormessage",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 154
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  }
+ ],
+ "description": "Details about errors in app provisioning.",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_failedprovisioning",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "FailedProvisioning",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

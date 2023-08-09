@@ -1,0 +1,31 @@
+{
+    "id": "indicator_sourceoftruth",
+    "version": -1,
+    "modified": "2021-05-11T15:35:11.842591398Z",
+    "name": "Source of Truth",
+    "ownerOnly": false,
+    "description": "The HR application used to manage the employee.",
+    "cliName": "sourceoftruth",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+	"associatedToAll": false,
+	"associatedTypes": [
+	 "User Profile"
+	],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

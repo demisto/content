@@ -1,0 +1,40 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "IAM - New Hire",
+  "IAM - Terminate User",
+  "IAM - Update User",
+  "User Profile",
+  "IAM - Sync User",
+  "IAM - Rehire User"
+ ],
+ "caseInsensitive": true,
+ "cliName": "prehireflag",
+ "closeForm": false,
+ "content": true,
+ "description": "Prehire Flag",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_prehireflag",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Prehire Flag",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "",
+  "True",
+  "False"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

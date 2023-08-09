@@ -1,0 +1,521 @@
+id: IAM - Send Provisioning Notification Email
+version: -1
+name: IAM - Send Provisioning Notification Email
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4a5c9734-8837-4438-83c5-301cca89d02b
+    type: start
+    task:
+      id: 4a5c9734-8837-4438-83c5-301cca89d02b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 958e503d-571f-4377-8c22-83b0bfcd399a
+    type: condition
+    task:
+      id: 958e503d-571f-4377-8c22-83b0bfcd399a
+      version: -1
+      name: Are there emails to notify about user creation?
+      description: Checks whether there are emails that should be notified about the
+        instance provisioning.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InstanceDataForNotification
+                accessor: create_user_email_notification_ids
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a31f0675-25df-4e89-882a-2469f6a95226
+    type: condition
+    task:
+      id: a31f0675-25df-4e89-882a-2469f6a95226
+      version: -1
+      name: What should we notify about?
+      description: Determines the user action that ran which requires notification.
+        For example, if a user was rehired - then notify about a rehire.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Create:
+      - "1"
+      Disable:
+      - "8"
+      Enable:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: IAM - New Hire
+    - label: Disable
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.type
+            iscontext: true
+          right:
+            value:
+              simple: IAM - Terminate User
+    - label: Enable
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.type
+            iscontext: true
+          right:
+            value:
+              simple: IAM - Rehire User
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1318c8e7-739c-437d-8fbf-01d1a5906d4c
+    type: regular
+    task:
+      id: 1318c8e7-739c-437d-8fbf-01d1a5906d4c
+      version: -1
+      name: Send a notification email
+      description: |-
+        Sends an email welcoming the new employee and their manager. The email includes basic information about the employee's user.
+        If the employee is an acquisition hire (if the incident.acquisitionhire field equals Yes), then the manager will not be added to the email's CC address.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      htmlBody:
+        complex:
+          root: EmailHTML
+      subject:
+        simple: User was provisioned successfully
+      to:
+        complex:
+          root: inputs.InstanceDataForNotification
+          accessor: create_user_email_notification_ids
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 12d9c68d-6ad6-4890-8f2a-47ae9efd63f7
+    type: condition
+    task:
+      id: 12d9c68d-6ad6-4890-8f2a-47ae9efd63f7
+      version: -1
+      name: Is there an HTML template input?
+      description: Checks whether there is a playbook input for the HTML template
+        to use in the notification email.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.NotificationEmailHTMLList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8f01bfba-d481-41cb-87d6-ea69fee4f6bb
+    type: regular
+    task:
+      id: 8f01bfba-d481-41cb-87d6-ea69fee4f6bb
+      version: -1
+      name: Load HTML template from list
+      description: |-
+        This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
+        Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+        Available placeholders for example:
+        - ${incident.labels.Email/from}
+        - ${incident.name}
+        - ${object.value}
+        See incident Context Data menu for available placeholders
+
+        Note: Sending emails require an active  Mail Sender integration instance.
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: EmailHTML
+      listTemplate:
+        complex:
+          root: inputs.NotificationEmailHTMLList
+      object: {}
+      removeNotFound: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3b7de001-bd95-4122-8052-800cf69c3d9f
+    type: regular
+    task:
+      id: 3b7de001-bd95-4122-8052-800cf69c3d9f
+      version: -1
+      name: Create generic email template
+      description: Saves a generic template to be used for the welcome email.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: EmailHTML
+      value:
+        simple: |-
+          <HTML>
+          Provisioning with the following details occurred:<br>
+          Name: ${incident.displayname}<br>
+          Username: ${incident.username}<br>
+          Email:  ${incident.email}<br>
+          Instance name: ${inputs.InstanceDataForNotification.instance_name}<br>
+          Incident type: ${incident.type}
+          </HTML>
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: cf45c62b-ebf7-4571-83d6-4180b749fae2
+    type: title
+    task:
+      id: cf45c62b-ebf7-4571-83d6-4180b749fae2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 9ba560c4-92d3-4f8f-8e10-c1fca04fa7ac
+    type: condition
+    task:
+      id: 9ba560c4-92d3-4f8f-8e10-c1fca04fa7ac
+      version: -1
+      name: Are there emails to notify about user termination?
+      description: Checks whether there are emails that should be notified about the
+        instance provisioning.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InstanceDataForNotification
+                accessor: disable_user_email_notification_ids
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: ffd4a674-ec9e-407b-84e4-37857e36b928
+    type: condition
+    task:
+      id: ffd4a674-ec9e-407b-84e4-37857e36b928
+      version: -1
+      name: Are there emails to notify about user rehire?
+      description: Checks whether there are emails that should be notified about the
+        instance provisioning.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InstanceDataForNotification
+                accessor: enable_user_email_notification_ids
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: cec04768-8b57-48d0-8492-d253923d85da
+    type: condition
+    task:
+      id: cec04768-8b57-48d0-8492-d253923d85da
+      version: -1
+      name: Is there anything to notify about?
+      description: Checks whether provisioning occurred in any instance.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InstanceDataForNotification
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 39b815d0-fbf7-403d-8248-809110510491
+    type: title
+    task:
+      id: 39b815d0-fbf7-403d-8248-809110510491
+      version: -1
+      name: Nothing To Notify About
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_4_yes": 0.42,
+      "10_7_#default#": 0.14,
+      "11_12_#default#": 0.28,
+      "1_4_yes": 0.31,
+      "1_7_#default#": 0.13,
+      "8_4_yes": 0.15,
+      "8_7_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 2260,
+        "x": -620,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: InstanceDataForNotification
+  value: {}
+  required: false
+  description: Instance information for instances that need email notification. This
+    must contain only 1 instance (use this playbook as a loop).
+  playbookInputQuery:
+- key: NotificationEmailHTMLList
+  value: {}
+  required: false
+  description: Optional - list name for HTML template for the email.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Sends emails for successful application provisionings. Uses the app-provisioning-settings
+  list.

@@ -1,0 +1,737 @@
+id: IAM - Rehire User
+version: -1
+name: IAM - Rehire User
+description: This playbook set a user's status in the organization to rehired by updating
+  the incident information and User Profile indicator with values indicating a rehire,
+  and enabling the account in the supported apps.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4f88c5b1-83cb-464f-82ac-a032aa8fc89e
+    type: start
+    task:
+      id: 4f88c5b1-83cb-464f-82ac-a032aa8fc89e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: bbb5a4fa-db93-48e2-8355-bed3e9468bad
+    type: regular
+    task:
+      id: bbb5a4fa-db93-48e2-8355-bed3e9468bad
+      version: -1
+      name: Update User Profile & incident type
+      description: Updates the User Profile indicator information in Cortex XSOAR
+        and sets the event action to Reactivate.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "88"
+      - "107"
+    scriptarguments:
+      active:
+        simple: "true"
+      adaccountstatus:
+        simple: ${.=""}
+      customFields:
+        complex:
+          root: incident
+          accessor: userprofile
+          transformers:
+          - operator: ParseJSON
+      id:
+        complex:
+          root: inputs.indicator
+          accessor: id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.CreatedIndicator.ID
+                iscontext: true
+      retry-count:
+        simple: "3"
+      sourceoftruth:
+        complex:
+          root: incident
+          accessor: sourceoftruth
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Event Action
+      output:
+        simple: Reactivate
+    - incidentfield: type
+      output:
+        simple: IAM - Rehire User
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 4d1c53c6-7ce5-4016-82c1-ed4654be7eeb
+    type: title
+    task:
+      id: 4d1c53c6-7ce5-4016-82c1-ed4654be7eeb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1580,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: bffa0018-6ebb-447c-8262-e84d66cf6330
+    type: regular
+    task:
+      id: bffa0018-6ebb-447c-8262-e84d66cf6330
+      version: -1
+      name: Enable enable user in all apps
+      description: Enables an existing user in all the apps where "create_user_group"
+        is defined as "All" in the XSOAR list "app-provisioning-settings".
+      script: '|||iam-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      allow-enable:
+        simple: "true"
+      user-profile:
+        complex:
+          root: incident
+          accessor: userprofile
+      using:
+        complex:
+          root: InstancesForProvisioning
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: e900c0a5-4a2f-4117-87a5-230b0e8310fd
+    type: regular
+    task:
+      id: e900c0a5-4a2f-4117-87a5-230b0e8310fd
+      version: -1
+      name: Save instances for provisioning from list
+      description: Saves the instances names were provisioning should occur according
+        to the app-provisioning-settings list.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      key:
+        simple: AllInstances
+      value:
+        complex:
+          root: lists
+          accessor: app-provisioning-settings
+          transformers:
+          - operator: ParseJSON
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: All
+              field:
+                value:
+                  simple: create_user_group
+              getField: {}
+              stringify:
+                value:
+                  simple: "false"
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: ${.=true}
+              field:
+                value:
+                  simple: create_user_enabled
+              getField:
+                value:
+                  simple: instance_name
+              stringify:
+                value:
+                  simple: "false"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": -145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: c48b200b-79ee-432b-8805-8e9886e8c966
+    type: condition
+    task:
+      id: c48b200b-79ee-432b-8805-8e9886e8c966
+      version: -1
+      name: Are there instances where provisioning should occur?
+      description: Checks whether there is any instance where provisioning was not
+        yet run successfully and should run.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "81"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InstancesForProvisioning
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: 40bbd5a6-0509-4bd4-83d2-58fa98fe9045
+    type: regular
+    task:
+      id: 40bbd5a6-0509-4bd4-83d2-58fa98fe9045
+      version: -1
+      name: Save data for notification emails
+      description: Saves the data needed for email notifications.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      key:
+        simple: InstancesForProvisioningFullData
+      value:
+        complex:
+          root: lists
+          accessor: app-provisioning-settings
+          transformers:
+          - operator: ParseJSON
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: All
+              field:
+                value:
+                  simple: create_user_group
+              getField: {}
+              stringify:
+                value:
+                  simple: "false"
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: ${.=true}
+              field:
+                value:
+                  simple: create_user_enabled
+              getField: {}
+              stringify:
+                value:
+                  simple: "false"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: c1f6dd85-b6cd-4962-8127-451d6b6c6054
+    type: title
+    task:
+      id: c1f6dd85-b6cd-4962-8127-451d6b6c6054
+      version: -1
+      name: Provisioning Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: e1a99cf7-c032-417b-8d66-4f795ed1a09b
+    type: regular
+    task:
+      id: e1a99cf7-c032-417b-8d66-4f795ed1a09b
+      version: -1
+      name: Save instance data for instances that need notification
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      key:
+        simple: InstanceDataForNotification
+      value:
+        complex:
+          root: InstancesForProvisioningFullData
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: InstancesForProvisioningFullData.instance_name
+                iscontext: true
+              right:
+                value:
+                  simple: SuccessfulInstances
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 2c53658c-c63a-438f-871e-6d985b0edd92
+    type: regular
+    task:
+      id: 2c53658c-c63a-438f-871e-6d985b0edd92
+      version: -1
+      name: Save instances where provisioning was successful
+      description: Saves vendors where provisioning was successful in a separate context
+        key so provisioning notification will apply only in cases of successful provisioning.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: SuccessfulInstances
+      value:
+        complex:
+          root: IAM.Vendor
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: IAM.Vendor.success
+                iscontext: true
+          - - operator: isFalse
+              left:
+                value:
+                  simple: IAM.Vendor.skipped
+                iscontext: true
+          accessor: instanceName
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: 7ad1ce16-d8f3-4725-8eb1-12c6ec16d8bd
+    type: regular
+    task:
+      id: 7ad1ce16-d8f3-4725-8eb1-12c6ec16d8bd
+      version: -1
+      name: Get all enabled instances
+      description: Gets all currently enabled integration instances.
+      scriptName: GetEnabledInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: 78605e94-48a1-4c89-8616-a716fae9a4ca
+    type: regular
+    task:
+      id: 78605e94-48a1-4c89-8616-a716fae9a4ca
+      version: -1
+      name: Get instances that require provisioning
+      description: Gets only the available IAM instances from the instance list.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      key:
+        simple: InstancesForProvisioning
+      value:
+        complex:
+          root: AllInstances
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: AllInstances
+                iscontext: true
+              right:
+                value:
+                  simple: EnabledInstances
+                iscontext: true
+          - - operator: notIn
+              left:
+                value:
+                  simple: AllInstances
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.SuccessfulVendors.instanceName
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: bf13145b-f970-4a8e-8961-5954bc5b5ed4
+    type: playbook
+    task:
+      id: bf13145b-f970-4a8e-8961-5954bc5b5ed4
+      version: -1
+      name: IAM - Send Provisioning Notification Email
+      playbookName: IAM - Send Provisioning Notification Email
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      InstanceDataForNotification:
+        complex:
+          root: InstanceDataForNotification
+      NotificationEmailHTMLList:
+        complex:
+          root: inputs.NotificationEmailHTMLList
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "107":
+    id: "107"
+    taskid: 4f096c52-fb4a-4db3-81d6-55d222401990
+    type: playbook
+    task:
+      id: 4f096c52-fb4a-4db3-81d6-55d222401990
+      version: -1
+      name: IAM - Create User In Active Directory
+      playbookName: IAM - Create User In Active Directory
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      ADNotificationEmails: {}
+      CreatedIndicator:
+        complex:
+          root: inputs.CreatedIndicator
+      ManagerEmailHTMLList: {}
+      PasswordGenerationScriptName:
+        simple: IAMGeneratePassword
+      SendEmail:
+        simple: "True"
+      ServiceDeskEmail: {}
+      ServiceDeskEmailHTMLList: {}
+      SuccessfulVendors:
+        complex:
+          root: inputs.SuccessfulVendors
+      indicator:
+        complex:
+          root: inputs.indicator
+      sAMAccountName:
+        complex:
+          root: inputs.SuccessfulVendors
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.SuccessfulVendors.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Active Directory Query v2
+          accessor: details
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: sAMAccountName
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "90_81_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 1290,
+        "x": 670,
+        "y": -450
+      }
+    }
+  }
+inputs:
+- key: indicator
+  value:
+    complex:
+      root: indicator
+  required: false
+  description: The User Profile indicator, if found during a previous search.
+  playbookInputQuery:
+- key: CreatedIndicator
+  value:
+    complex:
+      root: CreatedIndicator
+  required: false
+  description: The created User Profile indicator, if created previously in the IAM
+    - Sync User playbook.
+  playbookInputQuery:
+- key: SuccessfulVendors
+  value:
+    complex:
+      root: IAM.Vendor
+      filters:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IAM.Vendor.success
+            iscontext: true
+  required: false
+  description: Vendors where provisioning was successful. This input is used to ensure
+    that on playbook reruns, provisioning will be retried only with vendors that previously
+    failed.
+  playbookInputQuery:
+outputs:
+- contextPath: IAM.Vendor
+  description: Details the changes that were made in Active Directory or Okta.
+- contextPath: IAM.Vendor.active
+  description: Indicates if the user is active or not. Can be true or false.
+- contextPath: IAM.Vendor.details
+  description: Lists the user details as they appear in the vendor.
+- contextPath: IAM.Vendor.email
+  description: The user email as it appears in the vendor records.
+- contextPath: IAM.Vendor.errorCode
+  description: HTTP error response code.
+- contextPath: IAM.Vendor.errorMessage
+  description: Reason why the API failed.
+- contextPath: IAM.Vendor.id
+  description: The user ID as it appears in the vendor records.
+- contextPath: IAM.Vendor.instanceName
+  description: Name of the instance used for provisioning.
+- contextPath: IAM.Vendor.success
+  description: Indicates if the vendor was successfully updated. Can be true or false
+- contextPath: IAM.Vendor.brand
+  description: Name of the integration.
+- contextPath: IAM.Vendor.username
+  description: The username as it appears in the vendor records.
+- contextPath: IAM.Vendor.action
+  description: The action that was performed on the user record.
+  type: unknown
+- contextPath: IAM.UserProfile
+  description: The user's profile.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

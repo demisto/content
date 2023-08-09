@@ -1,0 +1,31 @@
+{
+ "id": "indicator_prehireflag",
+ "version": -1,
+ "modified": "2020-10-22T19:31:52.875400695Z",
+ "name": "Prehire Flag",
+ "ownerOnly": false,
+ "description": "Whether the employee is an applicant.",
+ "cliName": "prehireflag",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": true,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "User Profile"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

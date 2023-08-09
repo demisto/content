@@ -1,0 +1,438 @@
+{
+    "close": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "description": "Layout for IAM - New Hire incidents.",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "zfkg6snvly",
+                "name": "Process Details",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "i": "zfkg6snvly-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "email",
+                                "height": 22,
+                                "id": "53b20080-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 0,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "mobilephone",
+                                "height": 22,
+                                "id": "763c9f70-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 1,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "employeeid",
+                                "height": 22,
+                                "id": "54d17a40-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 2,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeetype",
+                                "height": 22,
+                                "id": "55ecae40-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "employmentstatus",
+                                "height": 22,
+                                "id": "57bab780-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "terminationdate",
+                                "height": 22,
+                                "id": "943a3c30-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 5,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastdayofwork",
+                                "height": 22,
+                                "id": "03db1b30-8e6a-11ea-8b1e-376c9f86fcb0",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Profile Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 3,
+                        "i": "zfkg6snvly-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "zfkg6snvly-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Event Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "zfkg6snvly-caseinfoid-13d18c60-0b0a-11ea-a32f-a33615edd11a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_labels",
+                                "height": 24,
+                                "id": "13a10681-0b0a-11ea-a32f-a33615edd11a",
+                                "index": 0,
+                                "isVisible": true,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Unmapped Event Labels",
+                        "static": false,
+                        "type": "labels",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "description": "Applications that had errors during the provisioning process, with the error details. If this is empty, there were no errors.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zfkg6snvly-caseinfoid-8e2f5c90-0c8e-11eb-8656-f3c04db26205",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "failedprovisioning",
+                                "height": 106,
+                                "id": "f3c4eba0-0ca8-11eb-be57-b9d9e8d4406d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Failed Applications",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "description": "Applications where provisioning was successful.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "zfkg6snvly-caseinfoid-da4935c0-0e22-11eb-ac3c-f10c06b0785c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "successfulprovisioning",
+                                "height": 22,
+                                "id": "ea4b7050-1868-11eb-84c2-fd471c13aaa3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Successful Applications",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "i": "zfkg6snvly-caseinfoid-92c80e70-0ec6-11eb-b11e-db2226be41c9",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Taken Event Action",
+                        "query": "IAMShowEventAction",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "zfkg6snvly-caseinfoid-a9f2dce0-1125-11eb-b11e-db2226be41c9",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "f9441550-67bd-11ea-8e08-dd32c59d0386",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "19532180-1126-11eb-b11e-db2226be41c9",
+                                "index": 1,
+                                "listId": "caseinfoid-a9f2dce0-1125-11eb-b11e-db2226be41c9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "0fb435b0-1126-11eb-b11e-db2226be41c9",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotstatus",
+                                "height": 22,
+                                "id": "2ad58d80-1126-11eb-b11e-db2226be41c9",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "4acedcc0-1132-11eb-a53c-dfda725c2414",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 44,
+                                "id": "4d2e1050-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Event Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "description": "",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "zfkg6snvly-41dc1e40-6f9f-11eb-8659-bf63462942ec",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Employee Name",
+                        "query": "IAMLinkToUserProfile",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "IAM - Workday User Event",
+    "name": "IAM - Workday User Event",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_email",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_displayname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_employmentstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_rehiredemployee",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "User Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

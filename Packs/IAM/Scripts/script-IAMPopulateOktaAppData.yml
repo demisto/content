@@ -1,0 +1,43 @@
+commonfields:
+  id: IAMPopulateOktaAppData
+  version: -1
+name: IAMPopulateOktaAppData
+script: |
+  def to_cli_name(field_name):
+      return field_name.lower().replace(' ', '')
+
+  OKTA_APPS_FIELD = to_cli_name('Available Okta applications')
+  OKTA_APPS_DATA_FIELD = to_cli_name('Available Okta applications data')
+  APP_NAME_FIELD = to_cli_name('Application name in Okta')
+  APP_ID_FIELD = to_cli_name('Application ID in Okta')
+
+  incident = demisto.incidents()[0]
+  custom_fields = incident.get('CustomFields', {})
+  okta_apps_data = safe_load_json(custom_fields.get(OKTA_APPS_DATA_FIELD))
+  selected_app_label = custom_fields.get(OKTA_APPS_FIELD)
+
+  app_id = okta_apps_data.get(selected_app_label, {}).get('ID')
+  app_name = okta_apps_data.get(selected_app_label, {}).get('Name')
+
+  if app_id or app_name:
+      incident_data = {'id': incident.get('id'), 'customFields': {APP_NAME_FIELD: app_name, APP_ID_FIELD:app_id}}
+      demisto.executeCommand('setIncident', incident_data)
+type: python
+tags:
+- field-change-triggered
+comment: When "Available Okta applications" field is changed, updates the selected
+  application data in "Application label in Okta" and "Application ID in Okta" fields.
+enabled: true
+args:
+- name: incident
+  description: Incident object
+- name: field
+  description: Field definition object
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.9.8.24399
+runonce: false
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests

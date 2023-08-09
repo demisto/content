@@ -1,0 +1,278 @@
+{
+    "description": "A layout for group profiles.",
+    "fromVersion": "6.0.0",
+    "group": "indicator",
+    "id": "Group Profile",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Profile",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "default-main-relatedIncidents",
+                        "moved": false,
+                        "name": "All User Events",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-indicatorTimeline",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 24,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 24,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 13,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatorid",
+                                "height": 22,
+                                "id": "8bde4df0-6e5c-11ea-abfe-7fdee8708fdd",
+                                "index": -1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "value",
+                                "height": 44,
+                                "id": "e3317e70-0c9a-11ea-8eda-0d480bec8f52",
+                                "index": 0,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "managerid",
+                                "height": 22,
+                                "id": "d760e590-0c9a-11ea-8eda-0d480bec8f52",
+                                "index": 1,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeenumber",
+                                "height": 22,
+                                "id": "3bd94320-152c-11ea-b24e-3d4d344f9fc4",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "workcountrycode",
+                                "height": 22,
+                                "id": "3f6c7290-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "workcountrycodenumber",
+                                "height": 22,
+                                "id": "421cc580-5cd6-11ea-b6ab-0b7f1f6f6b07",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "displayname",
+                                "height": 22,
+                                "id": "035e6330-ed77-11ea-9c7b-3fa8d3340155",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "groupmappings",
+                                "height": 44,
+                                "id": "144450f0-ebde-11ea-9e13-957e54026d0d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "User Profile Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "koq8lm0ehy",
+                "name": "Analytics",
+                "sections": [
+                    {
+                        "h": 3,
+                        "hideName": false,
+                        "i": "koq8lm0ehy-b103e6f0-3c73-11ea-a604-291838d43b2a",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "User Reputation Activity By User Profile",
+                        "query": "IndicatorWidgetBar",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 3,
+                        "hideName": false,
+                        "i": "koq8lm0ehy-55f4b750-3c76-11ea-a604-291838d43b2a",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Related Events",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "h": 3,
+                        "hideName": false,
+                        "i": "koq8lm0ehy-6f4a76e0-3c76-11ea-a604-291838d43b2a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 24,
+                                "id": "b2cd3ca0-3c70-11ea-a604-291838d43b2a",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 24,
+                                "id": "b2cd63b0-3c70-11ea-a604-291838d43b2a",
+                                "index": 0,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "hideName": false,
+                        "i": "koq8lm0ehy-785f7630-439d-11ea-8d0d-df7c9562a8cd",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "User Apps",
+                        "query": "AppsForUserWidget",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "hideName": false,
+                        "i": "koq8lm0ehy-eb6988f0-439d-11ea-8d0d-df7c9562a8cd",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "User App Access",
+                        "query": null,
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "koq8lm0ehy-5f90adb0-a1d3-11ea-b5b8-f758c38f2666",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "General Purpose Dynamic Section",
+                        "query": "OktaActivityPieWidget",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Group Profile",
+    "system": false,
+    "version": -1
+}

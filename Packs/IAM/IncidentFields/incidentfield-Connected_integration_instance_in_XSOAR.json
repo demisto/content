@@ -1,0 +1,35 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "IAM - Configuration"
+ ],
+ "caseInsensitive": true,
+ "cliName": "connectedintegrationinstanceinxsoar",
+ "closeForm": false,
+ "content": true,
+ "description": "Connected integration instance in XSOAR",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_connectedintegrationinstanceinxsoar",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Connected integration instance in XSOAR",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "script": "IAMGetConnectedOktaApplication",
+ "fieldCalcScript": "IAMGetConnectedInstances",
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "selectValues": [
+ 	"Select"
+ ],
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

@@ -1,0 +1,435 @@
+{
+    "description": "A layout for app sync events.",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "App Sync",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Event Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-49454440-3318-11eb-af3e-81e16bfd35bc",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Employee Name",
+                        "query": "IAMShowUserDisplayName",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-8fcc1140-33cd-11eb-b3db-47c5032c552e",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "username",
+                                "height": 53,
+                                "id": "9b500c20-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 0,
+                                "listId": "caseinfoid-8fcc1140-33cd-11eb-b3db-47c5032c552e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Employee Email",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "h": 3,
+                        "i": "caseinfoid-e3216160-33cd-11eb-b3db-47c5032c552e",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Sync with App",
+                        "query": "IAMShowAppSyncStatus",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "description": "Details about the application to which the user was synchronized.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-f55f0710-33cd-11eb-b3db-47c5032c552e",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "applicationname",
+                                "height": 22,
+                                "id": "3c7beef0-aa1d-11ea-acb5-930276adb9f4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "applicationid",
+                                "height": 22,
+                                "id": "3a2f66e0-aa1d-11ea-acb5-930276adb9f4",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "userid",
+                                "height": 22,
+                                "id": "25bda1a0-b52a-11ea-9e29-d5b78864c0c0",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 44,
+                                "id": "6e35a8c0-28c9-11eb-b052-7d1993c5454b",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "App Sync Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "Information about errors from the app-sync process. If this section is empty, either app-sync was executed successfully, or it was not executed at all.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-6c053910-33de-11eb-b3db-47c5032c552e",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "errorcode",
+                                "height": 22,
+                                "id": "61aa7980-33ed-11eb-b3db-47c5032c552e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "errormessage",
+                                "height": 22,
+                                "id": "62d6c480-33ed-11eb-b3db-47c5032c552e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Error Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "description": "General information about the event.",
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "caseinfoid-9688d6d0-33f0-11eb-b3db-47c5032c552e",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "f9441550-67bd-11ea-8e08-dd32c59d0386",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "4ee6acd0-28c9-11eb-b052-7d1993c5454b",
+                                "index": 2,
+                                "listId": "caseinfoid-d00a2c70-28c8-11eb-b052-7d1993c5454b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotstatus",
+                                "height": 22,
+                                "id": "5bd8e250-28c9-11eb-b052-7d1993c5454b",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "3db82d30-28c9-11eb-b052-7d1993c5454b",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "69e847a0-28c9-11eb-b052-7d1993c5454b",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "9167e250-673a-11ea-970d-8d13dd1bf1d9",
+                                "index": 6,
+                                "listId": "caseinfoid-d00a2c70-28c8-11eb-b052-7d1993c5454b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Event Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 4,
+                        "i": "caseinfoid-dc176360-33f0-11eb-b3db-47c5032c552e",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "skyzzn3ghh",
+                "name": "Additional Details",
+                "sections": [
+                    {
+                        "description": "Additional fields from the incident that were not mapped to any incident fields.",
+                        "displayType": "ROW",
+                        "h": 11,
+                        "i": "skyzzn3ghh-11c0b430-2cd5-11eb-9b21-b733e535edfb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_labels",
+                                "height": 22,
+                                "id": "11bd0ab1-2cd5-11eb-9b21-b733e535edfb",
+                                "index": 0,
+                                "isVisible": true,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Unmapped fields",
+                        "static": false,
+                        "type": "labels",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": false,
+                "id": "yj2qujesk5",
+                "name": "Summary",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "yj2qujesk5-4c0cf010-22b6-11ea-9d4a-33f42c44e656",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "4cf04b30-22b6-11ea-9d4a-33f42c44e656",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "54e35bc0-22b6-11ea-9d4a-33f42c44e656",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotstatus",
+                                "height": 22,
+                                "id": "56a07510-22b6-11ea-9d4a-33f42c44e656",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "roles",
+                                "height": 22,
+                                "id": "5fd5a290-22b6-11ea-9d4a-33f42c44e656",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "7da76be0-85f4-11ea-a193-15278bbe1f49",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "7ea3cd40-85f4-11ea-a193-15278bbe1f49",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "IAM - App Sync",
+    "name": "IAM - App Sync",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
