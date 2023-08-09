@@ -1,7 +1,8 @@
 import pytest
 from unittest.mock import patch
 from HuntingFromIndicatorLayout import hunting_from_indicator_layout, main
-from CommonServerPython import DemistoException # noqa: F401
+from CommonServerPython import DemistoException  # noqa: F401
+
 
 @pytest.fixture
 def mock_executeCommand():
