@@ -8,7 +8,7 @@ description: |-
 
   The playbook assumes that the user is exporting indicators with the sinkhole tag to an EDL (External Dynamic List) using the Export Generic Indicators Service integration in Cortex XSOAR. That EDL should be connected to PAN-OS. It also assumes that a DNS sinkhole is configured in the PAN-OS firewall. However, these are not required for the sole purpose of tagging the domains.
 
-  Note: this playbook has inputs for both the "From context data" tab and for the "From indicators" tab.
+  Note: This playbook has inputs from both the "From context data" tab and the "From indicators" tab.
 tags:
 - Job
 - PAN-OS
