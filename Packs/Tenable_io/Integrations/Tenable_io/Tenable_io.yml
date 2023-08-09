@@ -1221,6 +1221,7 @@ script:
         A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.
          Example: "port.protocol eq tcp, plugin_id eq 1234567"
          Note: when used literally, commas and spaces should be escaped. (i.e. "\\," for comma and "\\s" for space)
+         Filters cannot be applied to scans older than 35 days.
          Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).
          For more information: https://developer.tenable.com/docs/scan-export-filters-tio
       isArray: true
@@ -1242,7 +1243,7 @@ script:
     polling: true
     description: |
       Export and download a scan report.
-      Scan results older than 35 days are supported in Nessus and CSV formats only.
+      Scan results older than 35 days are supported in Nessus and CSV formats only, and filters cannot be applied.
       Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses)
     name: tenable-io-export-scan
     outputs:

@@ -1205,6 +1205,23 @@ def scan_history_readable(history: list) -> str:
 
 
 def scan_history_pagination_params(args: dict) -> dict:
+    '''
+    Generate pagination parameters for scanning history based on the given arguments.
+
+    This function calculates the 'limit' and 'offset' parameters for pagination
+    based on the provided 'page' and 'pageSize' arguments. If 'page' and 'pageSize'
+    are valid integer values, the function returns a dictionary containing 'limit'
+    and 'offset' calculated accordingly. If 'page' or 'pageSize' are not valid integers,
+    the function falls back to using the 'limit' argument or defaults to 50 with an
+    'offset' of 0.
+
+    Args:
+        args (dict): The demisto.args() dictionary containing the optional arguments for pagination: 'page', 'pageSize', 'limit'.
+
+    Returns:
+        dict: A dictionary containing the calculated 'limit' and 'offset' parameters
+              for pagination.
+    '''
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('pageSize'))
     if isinstance(page, int) and isinstance(page_size, int):
