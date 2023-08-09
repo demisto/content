@@ -1,0 +1,19 @@
+commonfields:
+  id: IAMInstancesList
+  version: -1
+name: IAMInstancesList
+script: ''
+type: python
+comment: Returns a table widget type of active IAM integration instances.
+tags:
+- widget
+- IAM
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

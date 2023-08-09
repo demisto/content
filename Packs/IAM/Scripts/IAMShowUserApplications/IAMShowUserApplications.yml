@@ -1,0 +1,19 @@
+commonfields:
+  id: IAMShowUserApplications
+  version: -1
+name: IAMShowUserApplications
+comment: Displays the applications that the user is synced in.
+script: ''
+type: python
+tags:
+- IAM
+- dynamic-indicator-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

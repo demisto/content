@@ -1,0 +1,40 @@
+commonfields:
+  id: IAMUpdateApplicationsField
+  version: -1
+name: IAMUpdateApplicationsField
+comment: Returns the updated user applications information.
+script: ''
+type: python
+tags: []
+enabled: true
+args:
+- name: applications
+  description: The current value of the Applications field.
+- name: instance_name
+  description: A comma-separated list of instance names to update in the Applications field.
+  required: true
+  isArray: true
+- name: brand
+  description: A comma-separated list of brand names to update in the Applications field.
+  required: true
+  isArray: true
+- name: user_id
+  description: A comma-separated list of user IDs to update in the Applications field.
+  required: true
+  isArray: true
+- name: active
+  description: A comma-separated list of user statuses to update in the Applications field.
+  required: true
+  isArray: true
+outputs:
+- contextPath: UserApplications
+  description: The updated user's Applications field.
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

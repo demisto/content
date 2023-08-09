@@ -1,0 +1,19 @@
+commonfields:
+  id: IAMShowUserDisplayName
+  version: -1
+name: IAMShowUserDisplayName
+script: ''
+type: python
+tags:
+- IAM
+- dynamic-section
+comment: Shows the display name of the user in app-sync incident layouts.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

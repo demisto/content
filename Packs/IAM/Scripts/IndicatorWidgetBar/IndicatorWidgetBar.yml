@@ -1,0 +1,19 @@
+commonfields:
+  id: IndicatorWidgetBar
+  version: -1
+name: IndicatorWidgetBar
+comment: ""
+script: ''
+type: python
+tags:
+- dynamic-section
+- dynamic-indicator-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

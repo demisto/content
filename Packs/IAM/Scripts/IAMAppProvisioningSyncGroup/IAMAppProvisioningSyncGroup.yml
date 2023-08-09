@@ -1,0 +1,40 @@
+args:
+- default: false
+  description: Name of the app instance where the group needs to be synced
+  isArray: true
+  name: app_instance
+  required: true
+  secret: false
+- default: false
+  description: 'Dict which has id and displayName for Okta group. Eg: {"id":"00gf1h0cmqFnqf0lL1t7", "displayName": "la-cm-all"}'
+  isArray: false
+  name: group_data
+  required: true
+  secret: false
+- default: false
+  description: Okta Instance Name
+  isArray: false
+  name: okta_instance
+  required: true
+  secret: false
+comment: Triggers group sync for app instance
+commonfields:
+  id: IAMAppProvisioningSyncGroup
+  version: -1
+enabled: true
+name: IAMAppProvisioningSyncGroup
+script: ''
+subtype: python3
+system: false
+tags:
+- Utility
+timeout: 900ns
+type: python
+dockerimage: demisto/3.10.12.68300
+runas: DBotWeakRole
+runonce: false
+dependson:
+  must: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

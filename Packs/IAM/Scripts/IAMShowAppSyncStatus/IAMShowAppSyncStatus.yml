@@ -1,0 +1,19 @@
+commonfields:
+  id: IAMShowAppSyncStatus
+  version: -1
+name: IAMShowAppSyncStatus
+script: ''
+type: python
+tags:
+- IAM
+- dynamic-section
+comment: Displays the details in the layout about app sync events that were fetched via the ILM pack.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

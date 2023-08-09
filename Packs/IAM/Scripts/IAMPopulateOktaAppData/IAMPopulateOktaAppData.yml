@@ -1,0 +1,23 @@
+commonfields:
+  id: IAMPopulateOktaAppData
+  version: -1
+name: IAMPopulateOktaAppData
+script: ''
+type: python
+tags:
+- field-change-triggered
+comment: When "Available Okta applications" field is changed, updates the selected application data in "Application label in Okta" and "Application ID in Okta" fields.
+enabled: true
+args:
+- name: incident
+  description: Incident object
+- name: field
+  description: Field definition object
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.68300
+runonce: false
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests

@@ -1,0 +1,26 @@
+commonfields:
+  id: IAMUpdateOktaConfiguration
+  version: -1
+name: IAMUpdateOktaConfiguration
+script: ''
+type: python
+tags:
+- field-change-triggered
+comment: When "Add"/"Remove" button is clicked, updates accordingly the configuration with the selected XSOAR instance and Okta application.
+enabled: true
+args:
+- name: add_or_remove
+  auto: PREDEFINED
+  predefined:
+  - add
+  - remove
+  description: Indicates whether the clicked button is "Add" or "Remove".
+  defaultValue: add
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

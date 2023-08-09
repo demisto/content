@@ -1,0 +1,18 @@
+comment: Displays the employment status of User Profile indicators.
+commonfields:
+  id: IAMShowEmploymentStatus
+  version: -1
+dockerimage: demisto/python3:3.10.12.68300
+enabled: true
+name: IAMShowEmploymentStatus
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-indicator-section
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

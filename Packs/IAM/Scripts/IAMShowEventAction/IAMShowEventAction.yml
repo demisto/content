@@ -1,0 +1,18 @@
+commonfields:
+  id: IAMShowEventAction
+  version: -1
+name: IAMShowEventAction
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Displays the event action taken in IAM incidents.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

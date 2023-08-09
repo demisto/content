@@ -1,0 +1,19 @@
+commonfields:
+  id: IAMIntegrationCount
+  version: -1
+name: IAMIntegrationCount
+script: ''
+type: python
+comment: Returns the number of active IAM integrations.
+tags:
+- widget
+- IAM
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

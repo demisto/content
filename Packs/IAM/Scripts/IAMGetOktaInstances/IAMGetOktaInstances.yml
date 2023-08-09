@@ -1,0 +1,23 @@
+commonfields:
+  id: IAMGetOktaInstances
+  version: -1
+name: IAMGetOktaInstances
+script: ''
+type: python
+tags:
+- field-display
+comment: Updates "Okta IAM Instance" field with the list of Okta IAM instances.
+enabled: true
+args:
+- name: incident
+  description: Incident object
+- name: field
+  description: Field definition object
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.10.12.68300
+runonce: false
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

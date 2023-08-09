@@ -1,0 +1,18 @@
+commonfields:
+  id: IAMLinkToUserProfile
+  version: -1
+name: IAMLinkToUserProfile
+script: ''
+type: python
+comment: Shows the display name or email of the employee, and links to the employee's User Profile indicator.
+tags:
+- dynamic-section
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

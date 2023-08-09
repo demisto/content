@@ -1,0 +1,19 @@
+commonfields:
+  id: IAMFindOktaApplications
+  version: -1
+name: IAMFindOktaApplications
+script: ''
+type: python
+tags:
+- field-change-triggered
+- field-display
+comment: Given an Okta instance selected in "Okta IAM Instance" incident field and a query string from "Search for an Okta application" field, finds and updates the "Available Okta applications" incident field with a list of corresponding Okta applications.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.68300
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests
