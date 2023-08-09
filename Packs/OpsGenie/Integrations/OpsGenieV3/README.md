@@ -1897,7 +1897,7 @@ Gets logs of an OpsGenie Alert.
 ### opsgenie-add-alert-note
 
 ***
-Adds note to an OpsGenie Alert
+Adds a note to an OpsGenie Alert.
 
 #### Base Command
 
@@ -1929,7 +1929,7 @@ Adds note to an OpsGenie Alert
 ### opsgenie-add-alert-details
 
 ***
-Adds details to an OpsGenie Alert
+Adds details to an OpsGenie Alert.
 
 #### Base Command
 
@@ -1939,7 +1939,7 @@ Adds details to an OpsGenie Alert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert ID to add the detail to. | Required | 
+| alert_id | Alert ID to add the details to. | Required | 
 | details | Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01". | Required | 
 
 #### Context Output

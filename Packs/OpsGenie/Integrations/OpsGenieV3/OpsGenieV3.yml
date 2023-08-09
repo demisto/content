@@ -1309,11 +1309,11 @@ script:
       description: Type of the alert log.
       type: String
   - name: opsgenie-add-alert-note
-    description: Adds note to an OpsGenie Alert
+    description: Adds a note to an OpsGenie Alert.
     arguments:
     - name: alert_id
       required: true
-      description: Alert ID to add the note to
+      description: Alert ID to add the note to.
     - name: note
       required: true
       description: Alert note to add.
@@ -1352,11 +1352,11 @@ script:
       description: Whether the request was successful.
       type: Boolean
   - name: opsgenie-add-alert-details
-    description: Adds details to an OpsGenie Alert
+    description: Adds details to an OpsGenie Alert.
     arguments:
     - name: alert_id
       required: true
-      description: Alert ID to add the detail to
+      description: Alert ID to add the details to.
     - name: details
       required: true
       description: Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01".
