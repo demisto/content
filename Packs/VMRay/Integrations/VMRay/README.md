@@ -43,6 +43,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 - [vmray-get-iocs](#vmray-get-iocs): Get IOCs for a sample
 - [vmray-get-job-by-id](#vmray-get-job-by-id): Get information for a job
 - [vmray-get-summary](#vmray-get-summary): Download Summary JSON v2 for an analysis
+- [vmray-get-license-usage-detections](#vmray-get-license-usage-detections): Get the used quota of detections
+- [vmray-get-license-usage-reports](#vmray-get-license-usage-reports): Get the used quota of reports
 
 
 ### vmray-upload-sample
@@ -64,6 +66,7 @@ Submits a sample to VMRay for analysis.
 | shareable | Whether the file is shareable. Possible values are: true, false. | Optional | 
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
 | tags | A CSV list of tags to add to the sample. | Optional | 
+| net_scheme_name | The Network Scheme to use | Optional |
 
 
 #### Context Output

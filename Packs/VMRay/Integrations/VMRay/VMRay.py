@@ -368,7 +368,6 @@ def build_upload_params():
         params['tags'] = tags
     if net_scheme_name:
         params['user_config'] = "{\"net_scheme_name\": \"" + str(net_scheme_name) + "\"}"
-        print(params)
     return params
 
 
@@ -1367,7 +1366,7 @@ def vmray_get_license_usage_detections_command():
     entry['PeriodEndDate'] = data.get('end_date')
 
     markdown = tableToMarkdown('VMRay Detections Quota Information', entry, headers=[
-                               'DetectionsQuota', 'DetectionsRemaining', 'DetectionsUsage', 'PeriodEndDate',])
+                               'DetectionsQuota', 'DetectionsRemaining', 'DetectionsUsage', 'PeriodEndDate'])
 
     results = CommandResults(
         readable_output=markdown,
@@ -1397,7 +1396,7 @@ def vmray_get_license_usage_reports_command():
     entry['PeriodEndDate'] = data.get('end_date')
 
     markdown = tableToMarkdown('VMRay Reports Quota Information', entry, headers=[
-                               'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate',])
+                               'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate'])
 
     results = CommandResults(
         readable_output=markdown,
