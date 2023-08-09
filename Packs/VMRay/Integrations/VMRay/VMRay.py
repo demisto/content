@@ -1,3 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import random
 import time
 import urllib3
@@ -5,7 +8,7 @@ import urllib3
 from typing import Optional, Union
 
 import requests
-from CommonServerPython import *
+
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
@@ -344,6 +347,7 @@ def build_upload_params():
     shareable = demisto.args().get('shareable')
     max_jobs = demisto.args().get('max_jobs')
     tags = demisto.args().get('tags')
+    net_scheme_name = demisto.args().get('net_scheme_name')
 
     params = dict()
     if doc_pass:
@@ -362,6 +366,9 @@ def build_upload_params():
             raise ValueError('max_jobs arguments isn\'t a number')
     if tags:
         params['tags'] = tags
+    if net_scheme_name:
+        params['user_config'] = "{\"net_scheme_name\": \"" + str(net_scheme_name) + "\"}"
+        print(params)
     return params
 
 
@@ -1342,6 +1349,66 @@ def get_summary_command():
     return_results(file_entry)
 
 
+def vmray_get_license_usage_detections_command():
+    """
+
+    Returns:
+        dict: response
+    """
+    suffix = 'billing_info'
+    raw_response = http_request('GET', suffix)
+    data = raw_response.get('data')
+
+    entry = dict()
+    entry['DetectionsQuota'] = data.get('detector_quota')
+    entry['DetectionsRemaining'] = data.get('detector_remaining')
+    entry['DetectionsUsage'] = round((100 / float(data.get('detector_quota')))
+                                     * (float(data.get('detector_quota')) - float(data.get('detector_remaining'))), 2)
+    entry['PeriodEndDate'] = data.get('end_date')
+
+    markdown = tableToMarkdown('VMRay Detections Quota Information', entry, headers=[
+                               'DetectionsQuota', 'DetectionsRemaining', 'DetectionsUsage', 'PeriodEndDate',])
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='VMRay.DetectionsQuota',
+        outputs_key_field='PeriodEndDate',
+        outputs=entry
+    )
+
+    return_results(results)
+
+
+def vmray_get_license_usage_reports_command():
+    """
+
+    Returns:
+        dict: response
+    """
+    suffix = 'billing_info'
+    raw_response = http_request('GET', suffix)
+    data = raw_response.get('data')
+
+    entry = dict()
+    entry['ReportQuota'] = data.get('report_quota')
+    entry['ReportRemaining'] = data.get('report_remaining')
+    entry['ReportUsage'] = round((100 / float(data.get('report_quota')))
+                                 * (float(data.get('report_quota')) - float(data.get('report_remaining'))), 2)
+    entry['PeriodEndDate'] = data.get('end_date')
+
+    markdown = tableToMarkdown('VMRay Reports Quota Information', entry, headers=[
+                               'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate',])
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='VMRay.ReportsQuota',
+        outputs_key_field='PeriodEndDate',
+        outputs=entry
+    )
+
+    return_results(results)
+
+
 def main():
     try:
         command = demisto.command()
@@ -1376,6 +1443,10 @@ def main():
             get_iocs_command()
         elif command == 'vmray-get-summary':
             get_summary_command()
+        elif command == 'vmray-get-license-usage-detections':
+            vmray_get_license_usage_detections_command()
+        elif command == 'vmray-get-license-usage-reports':
+            vmray_get_license_usage_reports_command()
     except Exception as exc:
         return_error(f"Failed to execute `{demisto.command()}` command. Error: {str(exc)}")
 

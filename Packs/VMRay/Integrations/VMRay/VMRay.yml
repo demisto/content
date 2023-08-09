@@ -27,6 +27,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  display: ''
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -78,6 +79,25 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      description: Setting the Network Scheme
+      name: net_scheme_name
+      predefined:
+      - Isolated
+      - Random VPN
+      - Austria (VPN)
+      - Brazil (VPN)
+      - Canada (VPN)
+      - France (VPN)
+      - Germany (VPN)
+      - Japan (VPN)
+      - Luxembourg (VPN)
+      - Spain (VPN)
+      - Sweden (VPN)
+      - Switzerland (VPN)
+      - United Arab Emirates (VPN)
+      - United Kingdom (VPN)
+      - United States (VPN)
     description: Submits a sample to VMRay for analysis.
     name: vmray-upload-sample
     outputs:
@@ -1068,9 +1088,14 @@ script:
   - deprecated: true
     description: Retrieves a sample using the sample ID. (Deprecated)
     name: upload_sample
-  dockerimage: demisto/python3:3.10.12.63474
+    arguments: []
+  - arguments: []
+    name: vmray-get-license-usage-detections
+  - arguments: []
+    name: vmray-get-license-usage-reports
+  dockerimage: demisto/python3:3.10.12.68300
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
