@@ -7634,7 +7634,7 @@ script:
   - arguments:
     - description: The string by which to filter the results to only show specific hostnames or serial numbers.
       name: device_filter_string
-    description: Gets the operational information of the device groups in the topology.
+    description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
     name: pan-os-platform-get-device-groups
     outputs:
     - contextPath: PANOS.DeviceGroupOp.hostid
@@ -7903,7 +7903,7 @@ script:
       required: true
     - description: The string by which to filter the results to only install to specific devices or serial numbers.
       name: device_filter_string
-    - defaultValue: false
+    - defaultValue: 'false'
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       name: sync
     - description: The target number of the firewall. Used only on a Panorama instance.
@@ -8047,7 +8047,7 @@ script:
       required: true
     - description: The string by which to filter to only install to specific devices or serial numbers.
       name: device_filter_string
-    - defaultValue: false
+    - defaultValue: 'false'
       description: If provided, runs the download synchronously. Make sure 'execution-timeout' is increased.
       name: sync
     - description: The target number of the firewall. Used only on a Panorama instance.
@@ -9323,7 +9323,14 @@ script:
       required: true
     description: Deletes a tag from Panorama.
     name: pan-os-delete-tag
-  dockerimage: demisto/pan-os-python:1.0.0.66894
+  - arguments: []
+    name: pan-os-list-device-groups
+    description: Returns all device groups from Panorama (use only in Panorama instances).
+    outputs:
+    - contextPath: Panorama.DeviceGroupNames
+      description: The list of device groups.
+      type: string
+  dockerimage: demisto/pan-os-python:1.0.0.68093
   isfetch: true
   runonce: false
   script: ''

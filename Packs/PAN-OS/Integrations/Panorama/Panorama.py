@@ -819,6 +819,19 @@ def get_device_groups_names():
     return device_group_names
 
 
+def list_device_groups_names():
+    """
+    Get device group names in the Panorama
+    """
+    device_group_names = get_device_groups_names()
+
+    return CommandResults(
+        outputs_prefix='Panorama.DeviceGroupNames',
+        outputs=device_group_names,
+        readable_output=tableToMarkdown('Device Group Names:', device_group_names, ['Group Name']),
+    )
+
+
 def device_group_test():
     """
     Test module for the Device group specified
@@ -14640,6 +14653,8 @@ def main():  # pragma: no cover
             return_results(pan_os_edit_tag_command(args))
         elif command == 'pan-os-delete-tag':
             return_results(pan_os_delete_tag_command(args))
+        elif command == 'pan-os-list-device-groups':
+            return_results(list_device_groups_names())
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

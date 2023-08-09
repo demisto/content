@@ -1,0 +1,4 @@
+[INGEST:vendor="tanium", product="integrity_monitor", target_dataset="tanium_integrity_monitor_raw", no_hit = keep]
+// Support only date time of format: yyyy-MM-ddThh:mm:ssZ. For example: "2021-01-15T10:00:00Z".
+filter json_extract_scalar(_raw_log, "$.Event Time") ~= "\d+-\d+-\d+T\d+:\d+:\d+Z"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%SZ", json_extract_scalar(_raw_log, "$.Event Time"));
