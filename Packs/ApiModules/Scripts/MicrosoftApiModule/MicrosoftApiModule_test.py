@@ -18,6 +18,8 @@ OK_CODES = (200, 201, 202)
 CLIENT_ID = 'dummy_client'
 CLIENT_SECRET = 'dummy_secret'
 APP_URL = 'https://login.microsoftonline.com/dummy_tenant/oauth2/v2.0/token'
+AUTH_CODE = 'dummy_auth_code'
+REDIRECT_URI = 'https://localhost/myapp'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
 RESOURCES = ['https://resource1.com', 'https://resource2.com']
@@ -62,15 +64,18 @@ def oproxy_client_refresh():
                            )
 
 
-def self_deployed_client():
+def self_deployed_client(grant_type=CLIENT_CREDENTIALS):
     tenant_id = TENANT
     client_id = CLIENT_ID
     client_secret = CLIENT_SECRET
     base_url = BASE_URL
+    auth_code = AUTH_CODE if grant_type == AUTHORIZATION_CODE else None
+    redirect_uri = REDIRECT_URI if grant_type == AUTHORIZATION_CODE else None
     resource = RESOURCE
     ok_codes = OK_CODES
 
     return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                           grant_type=grant_type, auth_code=auth_code, redirect_uri=redirect_uri,
                            resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
@@ -718,7 +723,7 @@ def test_generate_login_url():
     """
     from MicrosoftApiModule import generate_login_url
 
-    client = self_deployed_client()
+    client = self_deployed_client(grant_type=AUTHORIZATION_CODE)
 
     result = generate_login_url(client)
 
