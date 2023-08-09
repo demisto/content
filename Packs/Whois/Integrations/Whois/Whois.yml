@@ -26,8 +26,8 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-  hidden: false
   required: false
+  hidden: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -582,7 +582,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.67897
+  dockerimage: demisto/ippysocks-py3:1.0.0.68441
   runonce: false
   script: '-'
   subtype: python3
