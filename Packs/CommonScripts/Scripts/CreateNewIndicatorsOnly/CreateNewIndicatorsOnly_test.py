@@ -383,7 +383,8 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
         indicator_value = "(External):Test \"test2 test (unsigned)\""
     When:
         The 'add_new_indicator' function is called with the indicator_value = "(External):Test \"test2 test (unsigned)\""
-        (when the user runs in cli: !CreateNewIndicatorsOnlyTest indicator_values=`(External):Test "test2 test (unsigned)"`)
+        (when the user runs in cli:
+        !CreateNewIndicatorsOnlyTest indicator_values=`(External):Test "test2 test (unsigned)"`)
     Then:
         1. The 'execute_command' function should be called with the correct escaped value.
         2. The 'add_new_indicator' function should return the expected result as a dictionary.
