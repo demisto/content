@@ -49,7 +49,7 @@ MIRROR_DIRECTION_MAPPING = {
 MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
-INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
+INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote', 'reason']
 INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['dismissed', 'resolved', 'snoozed']
 INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'open'
 INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = 'Closed by XSOAR'
