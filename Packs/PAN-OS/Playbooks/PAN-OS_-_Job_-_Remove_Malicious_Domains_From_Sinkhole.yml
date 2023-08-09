@@ -423,7 +423,7 @@ tasks:
       id: ed078f6d-529e-4243-8d35-a03182bdd5ad
       version: -1
       name: Any domains have NOT been tagged recently?
-      description: Checks whether any of the checked domains was not tagged within the decay period. If domains have been recently tagged (E.g., after the date derived from the decay period input), they will not be untagged.
+      description: Checks whether any of the checked domains was not tagged within the decay period. If domains have been recently tagged (e.g., after the date derived from the decay period input), they will not be untagged.
       type: condition
       iscommand: false
       brand: ""
