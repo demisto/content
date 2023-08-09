@@ -10,12 +10,10 @@ args:
   predefined:
   - "Yes"
   - "No"
-  description: Whether this script should actually assign the incident by overwriting
-    owner. Defaults to yes.
+  description: Whether this script should actually assign the incident by overwriting owner. Defaults to yes.
   defaultValue: "Yes"
 name: PenfieldAssign
 script: '-'
-system: false
 tags:
 - management
 - user
@@ -23,7 +21,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0
 dependson:
   must:

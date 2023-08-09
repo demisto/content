@@ -1,8 +1,6 @@
 [file:FeedOpenCTI_v4.yml]
 ignore=IN122,BA108,BA109
 
-[file:FeedOpenCTI.yml]
-ignore=IN145
-
 [known_words]
-OpenCTI
+opencti
+

@@ -1,0 +1,43 @@
+[MODEL: dataset ="darktrace_darktrace_raw"]
+alter
+    xdm.alert.description = json_extract_scalar(model, "$.then.description"),
+    xdm.event.description = json_extract_scalar(model, "$.then.description"),
+    xdm.alert.mitre_tactics = arraymap(json_extract_array(model, "$.then.mitre.tactics"), trim("@element", "\"")),
+    xdm.alert.mitre_techniques = arraymap(json_extract_array(model, "$.then.mitre.techniques"), trim("@element", "\"")),
+    xdm.alert.original_alert_id = to_string(pbid),
+    xdm.event.id = to_string(pbid),
+    xdm.alert.original_threat_id = to_string(json_extract_scalar(model, "$.then.uuid")),
+    xdm.alert.original_threat_name = json_extract_scalar(model, "$.then.name"),
+    xdm.event.type = json_extract_scalar(model, "$.then.name"),
+    xdm.alert.severity = to_string(score),
+    priority = json_extract_scalar(model, "$.then.priority"),
+    xdm.event.tags = arraymap(json_extract_array(model, "$.then.tags"), trim("@element", "\"")),
+    xdm.network.rule = to_string(json_extract_scalar(model, "$.then.pid")),
+    xdm.observer.action = json_extract_scalar(model, "$.then.actions.antigena.action"),
+    xdm.observer.name = json_extract_scalar(device, "$.hostname"),
+    xdm.observer.unique_identifier = to_string(json_extract_scalar(device, "$.did")),
+    xdm.source.host.device_category = json_extract_scalar(device, "$.typelabel"),
+    xdm.source.host.device_id = to_string(coalesce(json_extract_scalar(device, "$.did"), json_extract_scalar(triggeredComponents, "$.device.did"))),
+    xdm.source.host.hostname = json_extract_scalar(device, "$.hostname"),
+    historically_associated_ip_records = json_extract_array(device, "$.ips"),
+    currently_associated_ip_address = json_extract_scalar(device, "$.ip"),
+    mac_address = json_extract_scalar(device, "$.macaddress"),
+    xdm.source.host.manufacturer = json_extract_scalar(device, "$.vendor"),
+    ip_address = json_extract_scalar(device, "$.ip"),
+    xdm.source.subnet = to_string(json_extract_scalar(device, "$.sid")),
+    xdm.target.resource_before.id = to_string(json_extract_scalar(model, "$.then.phid")),
+    xdm.target.resource_before.parent_id = json_extract_scalar(model, "$.then.created.by"),
+    xdm.target.resource.id = to_string(json_extract_scalar(model, "$.then.pid")),
+    xdm.target.resource.parent_id = coalesce(json_extract_scalar(model, "$.then.edited.by"), json_extract_scalar(model, "$.then.edited.userID"))
+| alter
+    xdm.event.log_level = if(priority in("0", "1", "2", "3"), XDM_CONST.LOG_LEVEL_INFORMATIONAL, priority = "4", XDM_CONST.LOG_LEVEL_WARNING , priority = "5",XDM_CONST.LOG_LEVEL_CRITICAL),
+    historically_associated_ip_addresses = arraymap(historically_associated_ip_records , json_extract_scalar("@element", "$.ip")),
+    xdm.source.interface = mac_address,
+    xdm.source.host.mac_addresses = arraycreate(mac_address),
+    xdm.source.ipv4 = if(ip_address ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", ip_address, null),
+    xdm.source.ipv6 = if(ip_address ~= "\:[a-fA-F\d]{1,4}|[a-fA-F\d]{1,4}\:", ip_address, null)
+| alter
+    all_associated_ip_addresses = arraydistinct(arrayconcat(arraycreate(currently_associated_ip_address), historically_associated_ip_addresses))
+| alter
+    xdm.source.host.ipv4_addresses = arrayfilter(all_associated_ip_addresses, "@element" ~= "^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$"),
+    xdm.source.host.ipv6_addresses = arrayfilter(all_associated_ip_addresses, "@element" ~= "\:[a-fA-F\d]{1,4}|[a-fA-F\d]{1,4}\:");

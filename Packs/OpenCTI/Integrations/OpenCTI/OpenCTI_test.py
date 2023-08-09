@@ -33,6 +33,27 @@ def test_get_indicators(mocker):
     assert len(indicators) == 2
 
 
+@pytest.mark.parametrize(
+    'response_mock, value, expected_length, expected_value', [
+        ([{"created_at": "2022-10-24T18:16:52.678Z", "entity_type": "IPv4-Addr", "id": "id", "observable_value": "8.8.8.8",
+           "spec_version": "2.1", "standard_id": "standard_id", "updated_at": "2022-10-24T18:16:52.678Z", "value": "8.8.8.8",
+           "x_opencti_score": 50}], "8.8.8.8", 1, "8.8.8.8")])
+def test_get_indicators_value_argument(mocker, response_mock, value, expected_length, expected_value):
+    """Tests get_indicators function
+    Given
+        A value to filter by
+    When
+        - calling get_indicators
+    Then
+        - Ensure that only the result with the same given value is returned.
+    """
+    client = Client
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=response_mock)
+    indicators = get_indicators(client, ["ALL"], search=value)
+    assert len(indicators) == expected_length
+    indicators[0].get('value') == expected_value
+
+
 def test_get_indicators_command(mocker):
     """Tests get_indicators_command function
     Given
@@ -214,7 +235,7 @@ def test_organization_list_command(mocker):
     results: CommandResults = organization_list_command(client, {})
     assert "Organizations" in results.readable_output
     assert [{'id': '1', 'name': 'test organization'}] == \
-           results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)')
+        results.outputs.get('OpenCTI.Organizations.OrganizationsList(val.id === obj.id)')
 
 
 def test_organization_create_command(mocker):
@@ -314,4 +335,4 @@ def test_marking_list_command(mocker):
     results: CommandResults = marking_list_command(client, {})
     assert "Markings" in results.readable_output
     assert [{'id': '1', 'value': 'TLP:RED'}] \
-           == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')
+        == results.outputs.get('OpenCTI.MarkingDefinitions.MarkingDefinitionsList(val.id === obj.id)')

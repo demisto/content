@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuilderemailgateway",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuilderemailgateway",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Builder Email Gateway",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "template": "# Email Gateway\n## Top Use Cases:\n\n- Get message – Download the email itself, retrieve metadata, body.\n- Download attachments for a given message.\n- Manage senders – Block/ Allow specified mail senders.\n- Manage URLs – Block/ Allow the sending of specified URLs.\n- Encode/ Decode URLs in messages.\n- Release a held message (The gateway can place suspicious messages on hold, and sometimes they would need to be released to the receiver).\n\n## Email Gateway Integration Example: [MimeCast](https://xsoar.pan.dev/docs/reference/integrations/mimecast-v2)",
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

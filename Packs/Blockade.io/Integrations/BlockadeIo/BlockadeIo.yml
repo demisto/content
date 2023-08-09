@@ -27,7 +27,6 @@ script:
   type: javascript
   commands:
   - name: blockade-get-indicators
-    deprecated: false
     arguments:
     - name: dbroute
       description: Optional DB name in a multi-DB cloud node
@@ -38,10 +37,8 @@ script:
     - name: indicators
       required: true
       default: true
-      description: The list of MD5 hashes to add as indicators. Multiple hashes can
-        be added separated by ",".
+      description: The list of MD5 hashes to add as indicators. Multiple hashes can be added separated by ",".
     description: Add indicators to the database
-hidden: false
 tests:
 - No tests
 fromversion: 5.0.0

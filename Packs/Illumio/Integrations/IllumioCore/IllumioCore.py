@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Implementation file for IllumioCore Integration."""
 import json
 from typing import Dict, List, Any
@@ -11,8 +13,6 @@ from illumio.rules import EnforcementBoundary, Rule
 from illumio.util import (EnforcementMode, IllumioEncoder, Reference,
                           convert_protocol)
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 urllib3.disable_warnings()

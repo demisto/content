@@ -5,32 +5,21 @@ commonfields:
 configuration:
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: 'Active TLS fingerprinting using JARM'
 display: JARM
 name: JARM
 script:
   commands:
   - arguments:
-    - default: false
-      description: 'FQDN or IP address to fingerprint. Also supports [https://fqdn:port]
-        format'
-      isArray: false
+    - description: 'FQDN or IP address to fingerprint. Also supports [https://fqdn:port] format'
       name: host
       required: true
-      secret: false
-    - default: false
-      description: 'Port to fingerprint. If provided overrides the port specified
-        in the host parameter'
-      isArray: false
+    - description: 'Port to fingerprint. If provided overrides the port specified in the host parameter'
       name: port
-      required: false
       defaultValue: 443
-      secret: false
-    deprecated: false
     description: 'Calculate JARM fingerprint by scanning host with multiple TLS packets.'
-    execution: false
     name: jarm-fingerprint
     outputs:
     - contextPath: JARM.FQDN
@@ -60,12 +49,11 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.54695
+  dockerimage: demisto/py3-tools:1.0.0.67011
 fromversion: 5.0.0
 tests:
 - JARM-Test

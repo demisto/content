@@ -14,8 +14,8 @@ configuration:
 - displaypassword: Demisto Server API Key
   name: creds_apikey
   type: 9
-  required: false
   hiddenusername: true
+  required: false
 - display: Base marketplace url
   name: marketplace_url
   defaultvalue: https://marketplace.xsoar.paloaltonetworks.com/content/packs/
@@ -28,8 +28,8 @@ configuration:
 - display: Demisto Server API Key
   name: apikey
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -106,9 +106,7 @@ script:
       description: IDs of the incidents to delete
       isArray: true
     - name: fields
-      description: 'Comma separated list of fields to return, case sensitive. Set
-        "all" for all fields. WARNING: Setting all fields may result in big results.'
-      required: false
+      description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
     description: Delete Demisto incidents
@@ -116,41 +114,31 @@ script:
   - name: demisto-api-install-packs
     arguments:
     - name: packs_to_install
-      required: false
       description: 'The packs to install in JSON format (e.g. [{"AutoFocus": "2.0.8"}] ).'
       isArray: true
     - name: file_url
       description: 'The pack zip file url.'
-      required: false
-      isArray: false
     - name: entry_id
       description: 'The War Room entry ID of the pack zip file.'
-      required: false
-      isArray: false
     - name: skip_verify
       description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
-      required: false
-      isArray: false
       defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: skip_validation
       description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
-      required: false
-      isArray: false
       defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     description: Upload packs to Demisto server from url or the marketplace.
-  runonce: false
 tests:
 - DemistoUploadFileV2 Test
 marketplaces:
-  - xsoar
+- xsoar
 fromversion: 5.0.0
 toversion: 7.9.9
 deprecated: true

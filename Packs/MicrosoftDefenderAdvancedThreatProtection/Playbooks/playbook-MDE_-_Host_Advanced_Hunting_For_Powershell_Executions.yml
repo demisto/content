@@ -181,6 +181,7 @@ tasks:
           "y": 60
         }
       }
+    continueonerrortype: ""
   '3':
     id: '3'
     ignoreworker: false
@@ -211,6 +212,7 @@ tasks:
           "y": 375
         }
       }
+    continueonerrortype: ""
   '4':
     evidencedata:
       customfields: {}
@@ -259,6 +261,7 @@ tasks:
           "y": 510
         }
       }
+    continueonerrortype: ""
   '5':
     conditions:
     - condition:
@@ -303,6 +306,7 @@ tasks:
           "y": 670
         }
       }
+    continueonerrortype: ""
   '6':
     evidencedata:
       customfields: {}
@@ -343,6 +347,7 @@ tasks:
           "y": 860
         }
       }
+    continueonerrortype: ""
   '7':
     evidencedata:
       customfields: {}
@@ -393,6 +398,7 @@ tasks:
           "y": 860
         }
       }
+    continueonerrortype: ""
   '8':
     evidencedata:
       customfields: {}
@@ -448,6 +454,7 @@ tasks:
           "y": 860
         }
       }
+    continueonerrortype: ""
   '9':
     id: '9'
     ignoreworker: false
@@ -486,6 +493,7 @@ tasks:
           "y": 1210
         }
       }
+    continueonerrortype: ""
   '14':
     conditions:
     - condition:
@@ -531,6 +539,7 @@ tasks:
           "y": 1380
         }
       }
+    continueonerrortype: ""
   '15':
     conditions:
     - condition:
@@ -583,6 +592,7 @@ tasks:
           "y": 205
         }
       }
+    continueonerrortype: ""
   '16':
     id: '16'
     ignoreworker: false
@@ -610,6 +620,7 @@ tasks:
           "y": 1920
         }
       }
+    continueonerrortype: ""
   '17':
     id: '17'
     ignoreworker: false
@@ -647,6 +658,7 @@ tasks:
           "y": 1730
         }
       }
+    continueonerrortype: ""
   '18':
     conditions:
     - condition:
@@ -654,7 +666,7 @@ tasks:
             iscontext: true
             value:
               simple: MicrosoftATP.FileMachine.Machines.ID
-          operator: isNotEqualString
+          operator: notContainsGeneral
           right:
             iscontext: true
             value:
@@ -676,12 +688,12 @@ tasks:
     task:
       brand: ''
       description: Are there any more affected devices?
-      id: 976fe52b-0fb8-4955-8f70-4abd043c0091
+      id: 1caa22d0-4d89-458d-81c3-632a1d6b4a8c
       iscommand: false
       name: Are there any more affected devices?
       type: condition
       version: -1
-    taskid: 976fe52b-0fb8-4955-8f70-4abd043c0091
+    taskid: 1caa22d0-4d89-458d-81c3-632a1d6b4a8c
     timertriggers: []
     type: condition
     view: |-
@@ -691,6 +703,7 @@ tasks:
           "y": 1030
         }
       }
+    continueonerrortype: ""
   '19':
     id: '19'
     ignoreworker: false
@@ -727,6 +740,7 @@ tasks:
           "y": 1220
         }
       }
+    continueonerrortype: ""
   '20':
     conditions:
     - condition:
@@ -769,6 +783,7 @@ tasks:
           "y": 1020
         }
       }
+    continueonerrortype: ""
   '23':
     id: '23'
     ignoreworker: false
@@ -811,6 +826,7 @@ tasks:
           "y": 1550
         }
       }
+    continueonerrortype: ""
 version: -1
 view: |-
   {
@@ -835,4 +851,3 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-system: true

@@ -9,33 +9,27 @@ configuration:
   required: true
   type: 0
 - display: Acalvio API Key
-  hidden: false
   name: apikey
   required: true
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 description: Acalvio ShadowPlex is a comprehensive Autonomous Deception Platform that offers Advanced Threat Detection, Investigation and Response capabilities.
 display: Acalvio ShadowPlex
 name: Acalvio ShadowPlex
 script:
   commands:
   - arguments:
-    - default: false
-      description: Hostname or IP Address of Endpoint
-      isArray: false
+    - description: Hostname or IP Address of Endpoint
       name: host
       required: true
-      secret: false
-    deprecated: false
     description: Check for a Deception Host
-    execution: false
     name: acalvio-is-deception-host
     outputs:
     - contextPath: Acalvio.IsDeceptionHost.IsDeception
@@ -48,21 +42,12 @@ script:
       description: Date including Time
       type: String
   - arguments:
-    - default: false
-      description: Username of the Domain User
-      isArray: false
+    - description: Username of the Domain User
       name: username
       required: true
-      secret: false
-    - default: false
-      description: AD Domain Name to which User belongs to
-      isArray: false
+    - description: AD Domain Name to which User belongs to
       name: domain
-      required: false
-      secret: false
-    deprecated: false
     description: Check for a Deception User
-    execution: false
     name: acalvio-is-deception-user
     outputs:
     - contextPath: Acalvio.IsDeceptionUser.IsDeception
@@ -78,21 +63,13 @@ script:
       description: Date including Time
       type: String
   - arguments:
-    - default: false
-      description: Hostname or IP Address of Endpoint where file resides
-      isArray: false
+    - description: Hostname or IP Address of Endpoint where file resides
       name: endpoint
       required: true
-      secret: false
-    - default: false
-      description: Name of the file to be checked
-      isArray: false
+    - description: Name of the file to be checked
       name: filename
       required: true
-      secret: false
-    deprecated: false
     description: Check for a Deception File on the Endpoint
-    execution: false
     name: acalvio-is-deception-file
     outputs:
     - contextPath: Acalvio.IsDeceptionFile.IsDeception
@@ -108,15 +85,10 @@ script:
       description: Date including Time
       type: String
   - arguments:
-    - default: false
-      description: Hostname or IP Address of Deception Host
-      isArray: false
+    - description: Hostname or IP Address of Deception Host
       name: host
       required: true
-      secret: false
-    deprecated: false
     description: Mute a Deception Host
-    execution: false
     name: acalvio-mute-deception-host
     outputs:
     - contextPath: Acalvio.MuteDeceptionHost.Host
@@ -129,15 +101,10 @@ script:
       description: Date including Time
       type: String
   - arguments:
-    - default: false
-      description: Hostname or IP Address of Deception Host
-      isArray: false
+    - description: Hostname or IP Address of Deception Host
       name: host
       required: true
-      secret: false
-    deprecated: false
     description: Unmute a Deception Host
-    execution: false
     name: acalvio-unmute-deception-host
     outputs:
     - contextPath: Acalvio.UnmuteDeceptionHost.Host
@@ -150,15 +117,10 @@ script:
       description: Date including Time
       type: String
   - arguments:
-    - default: false
-      description: Hostname or IP Address of Endpoint
-      isArray: false
+    - description: Hostname or IP Address of Endpoint
       name: endpoint
       required: true
-      secret: false
-    deprecated: false
     description: Mute a Deception on Endpoint
-    execution: false
     name: acalvio-mute-deception-on-endpoint
     outputs:
     - contextPath: Acalvio.MuteDeceptionEndpoint.Endpoint
@@ -171,15 +133,10 @@ script:
       description: Date including Time
       type: String
   - arguments:
-    - default: false
-      description: Hostname or IP Address of Endpoint
-      isArray: false
+    - description: Hostname or IP Address of Endpoint
       name: endpoint
       required: true
-      secret: false
-    deprecated: false
     description: Unmute a Deception on Endpoint
-    execution: false
     name: acalvio-unmute-deception-on-endpoint
     outputs:
     - contextPath: Acalvio.UnmuteDeceptionEndpoint.Endpoint
@@ -191,11 +148,7 @@ script:
     - contextPath: Acalvio.UnmuteDeceptionEndpoint.DateTime
       description: Date including Time
       type: String
-  dockerimage: demisto/python3:3.10.11.54132
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

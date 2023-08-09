@@ -191,6 +191,41 @@ def parse_mail_parts(parts):
     return body, html, attachments
 
 
+def format_fields_argument(fields: list[str]) -> list[str] | None:
+    """
+    Checks if the filter fields are valid, if so returns the valid fields,
+    otherwise returns `None`, when given an empty list returns `None`.
+    """
+    all_valid_fields = (
+        "Type",
+        "Mailbox",
+        "ThreadId",
+        "Labels",
+        "Headers",
+        "Attachments",
+        "RawData",
+        "Format",
+        "Subject",
+        "From",
+        "To",
+        "Body",
+        "Cc",
+        "Bcc",
+        "Date",
+        "Html",
+        "Attachment Names",
+    )
+    lower_filter_fields = {field.lower() for field in fields}
+    if valid_fields := [field for field in all_valid_fields if field.lower() in lower_filter_fields]:
+        valid_fields.append('ID')
+        return valid_fields
+    return None
+
+
+def filter_by_fields(full_mail: dict[str, Any], filter_fields: list[str]) -> dict:
+    return {field: full_mail.get(field) for field in filter_fields}
+
+
 def parse_privileges(raw_privileges):
     privileges = []
     for p in raw_privileges:
@@ -442,11 +477,13 @@ def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     return command_results
 
 
-def emails_to_entry(title, raw_emails, format_data, mailbox):
+def emails_to_entry(title, raw_emails, format_data, mailbox, fields: list[str] | None = None):
     gmail_emails = []
     emails = []
     for email_data in raw_emails:
         context_gmail, _, context_email, occurred, occurred_is_valid = get_email_context(email_data, mailbox)
+        if fields:
+            context_gmail = filter_by_fields(context_gmail, fields)
         gmail_emails.append(context_gmail)
         emails.append(context_email)
 
@@ -797,7 +834,7 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
         args.update({'list_accounts': batch})
         command_results.append(
             CommandResults(
-                readable_output='Serching mailboxes, please wait...',
+                readable_output='Searching mailboxes, please wait...',
                 scheduled_command=ScheduledCommand(
                     command='gmail-search-all-mailboxes',
                     next_run_in_seconds=10,
@@ -1350,7 +1387,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
     _in = args.get('in', '')
 
     query = args.get('query', '')
-    fields = args.get('fields')
+    fields = format_fields_argument(argToList(args.get('fields')))
     label_ids = [lbl for lbl in args.get('labels-ids', '').split(',') if lbl != '']
     max_results = int(args.get('max-results', 100))
     page_token = args.get('page-token')
@@ -1379,7 +1416,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
             return {'Mailbox': mailbox, 'q': q}
         return None
     if mails:
-        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
+        res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox, fields)
         return res
     return None
 
@@ -1405,7 +1442,6 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'userId': user_id,
         'q': q,
         'maxResults': max_results,
-        'fields': fields,
         'labelIds': label_ids,
         'pageToken': page_token,
         'includeSpamTrash': include_spam_trash,
@@ -1871,13 +1907,14 @@ def handle_html(htmlBody):
         )
     ):
         maintype, subtype = m.group(2).split('/', 1)
+        name = f"image{i}.{subtype}"
         att = {
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': f"image{i}.{subtype}"
+            'name': name,
+            'cid': name
         }
-        att['cid'] = f'{str(att.get("name"))}@{randomword(8)}.{randomword(8)}'
         attachments.append(att)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
         lastIndex = m.end() - 1
@@ -2066,7 +2103,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         message.attach(alt)
         attach_body_to = alt
     else:
-        message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+        message = MIMEMultipart()  # type: ignore
 
     if not attach_body_to:
         attach_body_to = message  # type: ignore
@@ -2086,8 +2123,6 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
 
     # if there are any attachments to the mail or both body and htmlBody were given
     if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
-        msg = MIMEText(body, 'plain', 'utf-8')
-        attach_body_to.attach(msg)  # type: ignore
         htmlAttachments = []  # type: list
         inlineAttachments = []  # type: list
 
@@ -2101,6 +2136,8 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         else:
             # if not html body, cannot attach cids in message
             transientFileCID = None
+            msg = MIMEText(body, 'plain', 'utf-8')
+            attach_body_to.attach(msg)  # type: ignore
 
         attachments = collect_attachments(entry_ids, file_names)
         manual_attachments = collect_manual_attachments()

@@ -52,18 +52,14 @@ script:
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
-      isArray: false
       name: should_push_events
       predefined:
       - 'True'
       - 'False'
       required: true
-    deprecated: false
     description: Manual command to fetch events and display them.
-    execution: false
     name: duo-get-events
-  dockerimage: demisto/duoadmin3:1.0.0.61106
-  runonce: false
+  dockerimage: demisto/duoadmin3:1.0.0.65621
   isfetchevents: true
   subtype: python3
 marketplaces:

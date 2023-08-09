@@ -1,0 +1,9 @@
+[file:ManageEngine-ADManager.yml]
+ignore=PR101
+
+[file:ManageEngine-ADManager_1_3.yml]
+ignore=MR108
+
+[known_words]
+RFC
+

@@ -1,0 +1,9 @@
+[file:NGINXWebServerModelingRules_1_3.yml]
+ignore=MR108
+
+[file:NGINXWebServerModelingRules.yml]
+ignore=MR108
+
+[file:NGINXWebServerParsingRules.yml]
+ignore=PR101
+

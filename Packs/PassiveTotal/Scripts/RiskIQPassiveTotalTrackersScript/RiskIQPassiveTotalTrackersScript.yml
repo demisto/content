@@ -6,8 +6,7 @@ script: ''
 type: python
 tags:
 - enhancement
-comment: Enhancement script to enrich web trackers information for Domain and IP type
-  of indicators.
+comment: Enhancement script to enrich web trackers information for Domain and IP type of indicators.
 enabled: true
 args:
 - name: indicator_value
@@ -19,7 +18,6 @@ subtype: python3
 dependson:
   must:
   - '|||pt-get-trackers'
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

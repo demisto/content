@@ -1,3 +1,4 @@
+
 from requests import Response
 from MicrosoftApiModule import *
 import demistomock as demisto
@@ -7,7 +8,6 @@ import datetime
 TOKEN = 'dummy_token'
 TENANT = 'dummy_tenant'
 REFRESH_TOKEN = 'dummy_refresh'
-REFRESH_TOKEN_PARAM = 'dummy_refresh_token_param'
 AUTH_ID = 'dummy_auth_id'
 ENC_KEY = 'dummy_enc_key'
 TOKEN_URL = 'mock://dummy_url'
@@ -51,7 +51,6 @@ def oproxy_client_multi_resource():
 
 def oproxy_client_refresh():
     refresh_token = REFRESH_TOKEN  # represents the refresh token from the integration context
-    refresh_token_param = REFRESH_TOKEN_PARAM  # represents the token from the current instance config
     auth_id = f'{AUTH_ID}@{TOKEN_URL}'
     enc_key = ENC_KEY
     app_name = APP_NAME
@@ -60,7 +59,7 @@ def oproxy_client_refresh():
 
     return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                            refresh_token=refresh_token, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
-                           refresh_token_param=refresh_token_param)
+                           )
 
 
 def self_deployed_client():
@@ -101,13 +100,60 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
                            retry_on_rate_limit=retry_on_rate_limit)
 
 
-def test_error_parser(mocker):
+@pytest.mark.parametrize('error_content, status_code, expected_response', [
+    (b'{"error":{"code":"code","message":"message"}}', 401, 'code: message'),
+    (b'{"error": "invalid_grant", "error_description": "AADSTS700082: The refresh token has expired due to inactivity.'
+     b'\\u00a0The token was issued on 2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.'
+     b'\\r\\nTrace ID: test\\r\\nCorrelation ID: test\\r\\nTimestamp: 2023-07-02 06:40:26Z", '
+     b'"error_codes": [700082], "timestamp": "2023-07-02 06:40:26Z", "trace_id": "test", "correlation_id": "test",'
+     b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}', 400,
+     'invalid_grant. \nThe refresh token has expired due to inactivity.\nYou can run the ***command_prefix-auth-reset*** '
+     'command to reset the authentication process.')])
+def test_error_parser(mocker, error_content, status_code, expected_response):
+    """
+    Given:
+        - The error_content, status_code, and expected_response for testing the error_parser function.
+    When:
+        - The error_parser function is called with the given error_content and status_code.
+    Then:
+        - Assert that the response from the error_parser matches the expected_response.
+    """
     mocker.patch.object(demisto, 'error')
+    client = self_deployed_client()
+    err = Response()
+    err.status_code = status_code
+    err._content = error_content
+    response = client.error_parser(err)
+    assert response == expected_response
+
+
+def test_raise_authentication_error(mocker):
+    """
+    Given:
+        - The error_content, status_code, and expected_response for testing the _raise_authentication_error function.
+    When:
+        - The _raise_authentication_error function is called with the given error_content and status_code.
+    Then:
+        - Assert that the response from the _raise_authentication_error matches the expected_response.
+    """
+    mocker.patch.object(demisto, 'error')
+    client = oproxy_client_tenant()
     err = Response()
     err.status_code = 401
-    err._content = b'{"error":{"code":"code","message":"message"}}'
-    response = MicrosoftClient.error_parser(err)
-    assert response == 'code: message'
+    error_content_str = "Error: failed to get access token with err: " \
+                        "{\"error\":\"invalid_grant\",\"error_description\":\"AADSTS700003: Device object was not found in the " \
+                        "tenant 'test' directory.\\r\\nTrace ID: test\\r\\nCorrelation ID: test\\r\\n" \
+                        "Timestamp: 2023-07-20 12:03:53Z\",\"error_codes\":[700003],\"timestamp\":\"2023-07-20 12:03:53Z\"," \
+                        "\"trace_id\":\"test\",\"correlation_id\":\"test\"," \
+                        "\"error_uri\":\"https://login.microsoftonline.com/error?code=700003\",\"suberror\":" \
+                        "\"device_authentication_failed\",\"claims\":\"{\\\"access_token\\\":{\\\"capolids\\\":" \
+                        "{\\\"essential\\\":true,\\\"values\\\":[\\\"test\\\"]}}}\"}"
+    err._content = error_content_str.encode('utf-8')
+    err.reason = "test reason"
+    expected_msg = "Error in Microsoft authorization. Status: 401, body: invalid_grant. \nDevice object was not found in " \
+                   "the tenant 'test' directory."
+    with pytest.raises(Exception, match=expected_msg):
+        client._raise_authentication_error(err)
 
 
 def test_page_not_found_error(mocker):
@@ -127,10 +173,8 @@ def test_page_not_found_error(mocker):
     mocker.patch.object(BaseClient, '_http_request', return_value=error_404)
     mocker.patch.object(client, 'get_access_token')
 
-    try:
+    with pytest.raises(NotFoundError):
         client.http_request()
-    except Exception as e:  # Validate that a `NotFoundError` was raised
-        assert type(e).__name__ == 'NotFoundError'
 
 
 def test_epoch_seconds(mocker):
@@ -284,52 +328,6 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
     assert req_res == res
 
 
-def test_oproxy_auth_first_attempt_failed(mocker, requests_mock):
-    """
-    This test checks the 'two attempts logic' of the authentication with the oproxy server.
-    'Two attempts logic' - In general we send to the oproxy server a refresh token that was saved in the integration
-    context, If for some reason the authentication request was failed, we will perform a second auth attempt in which
-    we will send the refresh token from the integration parameters - i.e the token is currently configured in the
-    instance.
-
-    In the test, we simulate a case where the oproxy server returns an error when we send an auth request, in this case
-    the 'Two attempts logic' should occur.
-    Given:
-        - A client generated with a refresh_token and a refresh_token_param (represents the token from the integration
-          parameters - i.e current instance config).
-        - An error mock response for the request post command to the oproxy server.
-    When:
-        - running the client._oproxy_authorize() function
-
-    Then:
-        - Verify that the client._oproxy_authorize() function called twice: first attempt with the refresh_token,
-          and second attempt with the refresh_token_param.
-        - Verify that an exception with the expected error message was raised.
-    """
-
-    # Initialize Client
-    client = oproxy_client_refresh()
-
-    # Set Mockers
-    def get_encrypted(content, key):
-        return content + key
-    mocker.patch.object(demisto, 'error')
-    mocker.patch.object(client, '_add_info_headers')
-    mocker.patch.object(client, 'get_encrypted', side_effect=get_encrypted)
-    post_req_mock = requests_mock._adapter.register_uri('POST',
-                                                        TOKEN_URL,
-                                                        json={'error': 'Permission Denied'},
-                                                        status_code=400)
-
-    # Verify results
-    with pytest.raises(Exception) as err:
-        client._oproxy_authorize()
-    assert post_req_mock.call_count == 2
-    assert REFRESH_TOKEN in post_req_mock.request_history[0].text
-    assert REFRESH_TOKEN_PARAM in post_req_mock.request_history[1].text
-    assert err.value.args[0] == 'Error in authentication. Try checking the credentials you entered.'
-
-
 def test_self_deployed_request(requests_mock):
     import urllib
     # Set
@@ -394,8 +392,8 @@ def test_self_deployed_multi_resource(requests_mock, resource):
     assert client.resource_to_access_token[resource] == TOKEN
 
 
-@pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
-def test_national_endpoints(mocker, endpoint):
+@pytest.mark.parametrize('azure_cloud_name', ['com', 'gcc', 'gcc-high', 'dod', 'de', 'cn'])
+def test_national_endpoints(mocker, azure_cloud_name):
     """
     Given:
         self-deployed client
@@ -408,14 +406,14 @@ def test_national_endpoints(mocker, endpoint):
     auth_id = f'{AUTH_ID}@{TOKEN_URL}'
     enc_key = ENC_KEY
     app_name = APP_NAME
-    base_url = BASE_URL
     ok_codes = OK_CODES
+    azure_cloud = AZURE_CLOUDS[azure_cloud_name]
     client = MicrosoftClient(self_deployed=True, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
-                             tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
-                             endpoint=endpoint)
+                             tenant_id=tenant_id, verify=True, proxy=False, ok_codes=ok_codes,
+                             azure_cloud=azure_cloud)
 
-    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[endpoint]
-    assert client.scope == f'{GRAPH_ENDPOINTS[endpoint]}/.default'
+    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[client.azure_cloud.abbreviation]
+    assert client.scope == f'{GRAPH_ENDPOINTS[client.azure_cloud.abbreviation]}/.default'
 
 
 def test_retry_on_rate_limit(requests_mock, mocker):
@@ -483,11 +481,8 @@ def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
     mocker.patch.object(sys, 'exit')
     mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
 
-    try:
+    with pytest.raises(DemistoException, match=r'Rate limit reached!'):
         client.http_request(method='GET', url_suffix='test_id')
-        assert False
-    except DemistoException as err:
-        assert 'Rate limit reached!' in err.args[0]['content']
 
 
 def test_rate_limit_when_retry_is_false(requests_mock):
@@ -510,11 +505,8 @@ def test_rate_limit_when_retry_is_false(requests_mock):
         json={'content': "Rate limit reached!"}
     )
 
-    try:
+    with pytest.raises(DemistoException, match="Error in API call \[429\]"):
         client.http_request(method='GET', url_suffix='test_id')
-        assert False
-    except DemistoException as err:
-        assert 'Error in API call [429]' in err.args[0]
 
 
 @pytest.mark.parametrize('response, result', [
@@ -556,13 +548,11 @@ def test_general_error_metrics(requests_mock, mocker):
     mocker.patch.object(demisto, 'command', return_value='testing_command')
     mocker.patch.object(demisto, 'results')
 
-    try:
+    with pytest.raises(DemistoException):
         client.http_request(method='GET', url_suffix='test_id')
-        assert False
-    except DemistoException:
-        metric_results = demisto.results.call_args_list[0][0][0]
-        assert metric_results.get('Contents') == 'Metrics reported successfully.'
-        assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
@@ -619,3 +609,120 @@ def test_get_token_managed_identities__error(requests_mock, mocker):
 
     err_message = 'Error in Microsoft authorization with Azure Managed Identities'
     assert err_message in MicrosoftApiModule.return_error.call_args[0][0]
+
+
+args = {'test': 'test_arg_value'}
+params = {'test': 'test_param_value', 'test_unique': 'test_arg2_value'}
+
+
+def test_get_from_args_or_params__when_the_key_exists_in_args_and_params():
+    """
+    Given:
+        args and params with the same key in both
+    When:
+        get value from args or params is called
+    Then:
+        Verify that the result are as expected = the value from args is returned
+    """
+
+    assert get_from_args_or_params(args, params, 'test') == 'test_arg_value'
+
+
+def test_get_from_args_or_params__when_the_key_exists_only_in_params():
+    """
+    Given:
+        args and params with the requested key exist only in params
+    When:
+        get value from args or params is called
+    Then:
+        Verify that the result are as expected = the value from params
+    """
+    assert get_from_args_or_params(args, params, 'test_unique') == 'test_arg2_value'
+
+
+def test_get_from_args_or_params__when_the_key_dose_not_exists():
+    """
+    Given:
+        args and params
+    When:
+        get value from args or params is called with a key that dose not exist
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        get_from_args_or_params(args, params, 'mock')
+    assert e.value.args[0] == "No mock was provided. Please provide a mock either in the instance \
+configuration or as a command argument."
+
+
+def test_azure_tag_formatter__with_valid_input():
+    """
+    Given:
+        A valid json as a string
+    When:
+        azure_tag_formatter is called
+    Then:
+        Verify that the result are as expected
+    """
+    assert azure_tag_formatter('{"key":"value"}') == "tagName eq 'key' and tagValue eq 'value'"
+
+
+def test_azure_tag_formatter__with_invalid_input():
+    """
+    Given:
+        A invalid json as a string
+    When:
+        azure_tag_formatter is called
+    Then:
+        Verify that the correct error message is raising
+    """
+    with pytest.raises(Exception) as e:
+        azure_tag_formatter('{"key:value"}')
+    assert e.value.args[0] == 'Invalid tag format, please use the following format: \'{"key_name":"value_name"}\''
+
+
+def test_reset_auth(mocker):
+    """
+        Given:
+            -
+        When:
+            - Calling function reset_auth.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftApiModule import reset_auth
+
+    expected_output = 'Authorization was reset successfully. Please regenerate the credentials, ' \
+                      'and then click **Test** to validate the credentials and connection.'
+
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"test"})
+    mocker.patch.object(demisto, 'setIntegrationContext')
+
+    result = reset_auth()
+
+    assert result.readable_output == expected_output
+    assert demisto.getIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_args[0][0] == {}
+    assert result
+
+
+def test_generate_login_url():
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function generate_login_url
+     Then:
+        - Ensure the generated url are as expected.
+    """
+    from MicrosoftApiModule import generate_login_url
+
+    client = self_deployed_client()
+
+    result = generate_login_url(client)
+
+    expected_url = f'[login URL](https://login.microsoftonline.com/{TENANT}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
+                   f'&client_id={CLIENT_ID}&redirect_uri=https://localhost/myapp)'
+    assert expected_url in result.readable_output, "Login URL is incorrect"

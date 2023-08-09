@@ -172,7 +172,7 @@ def _extract_analysis_info(res: dict, dbot_score_type: str,
 
 def _check_returned_results(res: dict) -> List[str]:
     """
-    Checks which indicator value founded on iDefense database.
+    Checks which indicator values were found in the iDefense database.
     Args:
         res: api response
     Returns: list of indicator values that returned from api request

@@ -166,7 +166,8 @@ class Client(BaseClient):
 
     def __init__(self, base_url, verify, proxy, auth_params, as_user=None):
         try:
-            self.credentials_dict = json.loads(auth_params.get('credentials_json', '{}'))
+            self.credentials_dict = json.loads(auth_params.get('cred_json', {}).get(
+                'password') or auth_params.get('credentials_json', '{}'))
         except ValueError as e:
             raise DemistoException("Failed to parse the credentials JSON. Please verify the JSON is "
                                    "valid.", exception=e)
@@ -1980,7 +1981,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     return next_run, incidents
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:

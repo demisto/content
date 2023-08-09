@@ -3,8 +3,6 @@ comment: View notes only relating to ZTAP.
 commonfields:
   id: ZTAPViewTimeline
   version: -1
-enabled: false
-deprecated: false
 name: ZTAPViewTimeline
 script: ''
 subtype: python3

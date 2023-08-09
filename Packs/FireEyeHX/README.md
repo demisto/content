@@ -27,4 +27,5 @@ You can configure the specific vendor and product for this instance.
    - vendor as fireeye
    - product as hx_audit
    - format as Auto-Detect
+   - protocol as UDP
  

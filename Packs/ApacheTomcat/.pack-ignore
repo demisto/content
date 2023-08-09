@@ -1,0 +1,9 @@
+[file:ApacheTomcatParsingRules.yml]
+ignore=PR101
+
+[file:ApacheTomcatModelingRules_1_3.yml]
+ignore=MR108
+
+[file:ApacheTomcatModelingRules.yml]
+ignore=MR108
+

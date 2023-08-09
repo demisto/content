@@ -41,15 +41,19 @@ ignore=BA101
 ignore=IM111
 
 [known_words]
-SSH
-Misconfiguration
-RRN
-FQDN
-VPC
-CloudTrail
+ssh
+misconfiguration
+rrn
+fqdn
+vpc
+cloudtrail
 
 [file:classifier-Prisma_Cloud.json]
 ignore=BA101
 
 [file:classifier-prismaCloud_app.json]
 ignore=BA101
+
+[file:PrismaCloud.yml]
+ignore=PR101,MR108
+

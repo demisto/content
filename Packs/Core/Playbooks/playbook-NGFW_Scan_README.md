@@ -18,12 +18,12 @@ Investigate the scanner IP address using:
 The playbook's response actions are based on the initial data provided within the alert. In that phase, the playbook will execute:
 
 * Automatically block IP address
-* Report IP address to AbuseIPDB (If configured as true in the playbook inputs)
+* Report IP address (If configured as true in the playbook inputs)
 
 When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes the Containment Plan playbook, is executed.
 This phase will execute the following containment actions:
 
-* Auto endpoint isolation
+* Automatically isolate involved endpoint
 * Manual block indicators
 * Manual file quarantine
 * Manual disable user
@@ -34,93 +34,78 @@ This phase will execute the following containment actions:
 
 [Port Scan](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Port-Scan)
 
-## How to use this playbook
-
-### Create a new playbook trigger
-
-1. Click on the **Incident Response** icon on the left menu.
-2. Under **Automation** click on **Incident Configuration**.
-3. Select **Playbook Triggers** on the left panel.
-4. Click on **New Trigger**.
-5. Choose a trigger name e.g. Scanner Response.
-6. Under **Playbook To Run**, select NGFW Scan.
-7. Add trigger description - optional.
-8. Create a filter for the playbook trigger.
-    1. Click on 'select field'.
-    2. Choose 'Alert name'.
-    3. Fill the value with 'Scan' and keep the 'contains' condition.
-    4. Click **Create**
-
-* **Note** that the playbook triggers are executed according to its order. Consider changing the trigger position for the execution order as intended. If not, other trigger may override the new trigger.
-
-Click **Save**.
-
-### Playbook inputs
-
-Before executing the playbook, please review the inputs and change them default values if needed.
-
-Important playbook inputs you should pay attention to:
-
-1. *blockKnownScanner*: Whether a benign IP address that has been previously seen in more than 5 alerts should be blocked.
-
-2. *reportIPAddress*: (Relevant for an enabled AbuseIPDB integration) Whether to report the IP address to AbuseIPDB.
-
-3. *AutoContainment*: Whether to execute the following response actions automatically or manually:
-    1. Block indicators
-    2. Quarantine file
-    3. Disable user
-
-4. *HostAutoContainment*: Whether to execute Endpoint Isolation automatically or manually.
-
-### Playbook remediation plan
-
-In this playbook the remediation plan happens in two different phases:
-
-1. At an early stage of the playbook execution, if the IP address verdict is malicious, the IP is blocked using the Block IP - Generic v3 playbook.
-2. At a later stage, the playbook executes the **Endpoint Investigation Plan**, which searches for additional activity involving the scanner IP address. In this phase, based on the results of the Endpoint Investigation Plan playbook, the SOC is notified, and the Containment Plan playbook will be executed.
-
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
+* Endpoint Investigation Plan
+* Containment Plan
+* Ticket Management - Generic
 * Handle False Positive Alerts
 * NGFW Internal Scan
-* Containment Plan
-* Recovery Plan
 * Block IP - Generic v3
-* Endpoint Investigation Plan
+* Recovery Plan
 
 ### Integrations
+
 * CortexCoreIR
 * CoreIOCs
 
 ### Scripts
+
 * SearchIncidentsV2
 
 ### Commands
-* send-mail
+
+* setParentIncidentFields
+* closeInvestigation
 * ip
 * abuseipdb-report-ip
-* closeInvestigation
+* send-mail
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| scannerIP | The IP address of the scanner. | alert.localip | Optional |
+| scannerIP | The scanner IP address. | alert.localip | Optional |
 | blockKnownScanner | Whether to block the IP address based on previously seen scanning alerts. | true | Optional |
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
 | AutoRecovery | Whether to execute the Recovery playbook. | false | Optional |
-| SOCEmailAddress | The email address of the SOC. |  | Optional |
+| SOCEmailAddress | The SOC email address. |  | Optional |
 | reportIPAddress | Whether to report the IP address to AbuseIPDB. | false | Optional |
 | AutoContainment | Whether to execute automatically or manually the containment plan tasks:<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user | false | Optional |
 | HostAutoContainment | Whether to execute endpoint isolation automatically or manually. | false | Optional |
+| ShouldOpenTicket | Whether to open a ticket automatically in a ticketing system. \(True/False\). | False | Optional |
+| serviceNowShortDescription | A short description of the ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
+| serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
+| serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
+| serviceNowSeverity | The severity of the new ticket. Leave empty for ServiceNow default severity. |  | Optional |
+| serviceNowTicketType | The ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
+| serviceNowCategory | The category of the ServiceNow ticket. |  | Optional |
+| serviceNowAssignmentGroup | The group to which to assign the new ticket. |  | Optional |
+| ZendeskPriority | The urgency with which the ticket should be addressed. Allowed values are "urgent", "high", "normal", or "low". |  | Optional |
+| ZendeskRequester | The user who requested this ticket. |  | Optional |
+| ZendeskStatus | The state of the ticket. Allowed values are "new", "open", "pending", "hold", "solved", or "closed". |  | Optional |
+| ZendeskSubject | The value of the subject field for this ticket. | XSIAM Incident ID - ${parentIncidentFields.incident_id} | Optional |
+| ZendeskTags | The array of tags applied to this ticket. |  | Optional |
+| ZendeskType | The type of this ticket. Allowed values are "problem", "incident", "question", or "task". |  | Optional |
+| ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
+| ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
+| description | The ticket description. | ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url} | Optional |
+| addCommentPerEndpoint | Whether to append a new comment to the ticket for each endpoint in the incident. Possible values: True/False. | True | Optional |
+| CommentToAdd | Comment for the ticket. | ${alert.name}. Alert ID: ${alert.id} | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![NGFW Scan](https://raw.githubusercontent.com/demisto/content/b9b3e36e6893e95be5de09876efce94acec09da8/Packs/Core/doc_files/NGFW_Scan.png)
+
+![NGFW Scan](../doc_files/NGFW_Scan.png)

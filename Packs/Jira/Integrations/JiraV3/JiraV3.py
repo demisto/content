@@ -1,7 +1,7 @@
-from abc import ABCMeta
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Callable, Tuple
+from abc import ABCMeta
+from collections.abc import Callable
 from collections import defaultdict
 from bs4 import BeautifulSoup
 from datetime import timezone
@@ -149,16 +149,16 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         if not token:
-            raise DemistoException(('No access token was configured, please complete the authorization process'
-                                    ' as shown in the documentation'))
+            raise DemistoException('No access token was configured, please complete the authorization process'
+                                   ' as shown in the documentation')
         # The valid_until key stores the valid date in seconds to make it easier for comparison
         valid_until = integration_context.get('valid_until', 0)
         current_time = get_current_time_in_seconds()
         if current_time >= valid_until - 10:
             refresh_token = integration_context.get('refresh_token', '')
             if not refresh_token:
-                raise DemistoException(('No refresh token was configured, please complete the authorization process'
-                                        ' as shown in the documentation'))
+                raise DemistoException('No refresh token was configured, please complete the authorization process'
+                                       ' as shown in the documentation')
             # We try to retrieve a new access token and store it in the integration's context using the method bellow
             self.oauth2_retrieve_access_token(refresh_token=refresh_token)
             integration_context = get_integration_context()
@@ -834,12 +834,12 @@ class JiraCloudClient(JiraBaseClient):
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
             demisto.debug('Both the code, and refresh token were given to obtain a new access token, this is not normal behavior')
-            raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
-                                   ' access token, please only provide one'))
+            raise DemistoException('Both authorization code and refresh token were given to retrieve an'
+                                   ' access token, please only provide one')
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
-            demisto.debug(('Both the code, and refresh token were not given to obtain a new access token, this could'
-                           ' happen if the user deleted the integration"s context'))
+            demisto.debug('Both the code, and refresh token were not given to obtain a new access token, this could'
+                          ' happen if the user deleted the integration"s context')
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
 
         data = assign_params(
@@ -1004,12 +1004,12 @@ class JiraOnPremClient(JiraBaseClient):
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
             # refresh token saved in the integration's context.
             demisto.debug('Both the code, and refresh token were given to get a new access token, this is not normal behavior')
-            raise DemistoException(('Both authorization code and refresh token were given to retrieve an'
-                                   ' access token, please only provide one'))
+            raise DemistoException('Both authorization code and refresh token were given to retrieve an'
+                                   ' access token, please only provide one')
         if not (code or refresh_token):
             # If reached here, that means both the authorization code and refresh tokens were empty.
-            demisto.debug(('Both the code, and refresh token were not given to obtain a new access token, this could'
-                           ' happen if the user deleted the integration"s context'))
+            demisto.debug('Both the code, and refresh token were not given to obtain a new access token, this could'
+                          ' happen if the user deleted the integration"s context')
             raise DemistoException('No authorization code or refresh token were supplied in order to authenticate.')
         integration_context = get_integration_context()
         # We pop the key code_verifier, since we only want to use it when the user is authenticating using an authorization code,
@@ -1496,8 +1496,8 @@ def create_issue_fields_for_appending(client: JiraBaseClient, issue_args: Dict[s
             issue_fields[issue_field] = current_issue_fields.get(issue_field, []) + value
         else:
             raise DemistoException(
-                ('Only strings and arrays support appending when editing an issue,'
-                    f' the field that caused this error is "{issue_field}", of type {type(value)}'))
+                'Only strings and arrays support appending when editing an issue,'
+                f' the field that caused this error is "{issue_field}", of type {type(value)}')
     return {'fields': issue_fields}
 
 
@@ -2036,7 +2036,7 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 
 def create_comments_command_results(comments_response: List[Dict[str, Any]],
-                                    issue_id_or_key: str) -> Tuple[str, Dict[str, Any]]:
+                                    issue_id_or_key: str) -> tuple[str, Dict[str, Any]]:
     """Returns the human readable and context output of the get_comments_command.
 
     Args:
@@ -2210,17 +2210,15 @@ def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> Comma
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    jql_query = 'ORDER BY created ASC'
-    query_params = create_query_params(jql_query=jql_query)
-    res = client.run_query(query_params=query_params)
-    if not (issues := res.get('issues', [])):
+    res, first_issue_id = get_smallest_id_offset_for_query(client=client, query=args.get('query', ''))
+    if not first_issue_id:
         return CommandResults(readable_output='No issues found to retrieve the ID offset', raw_response=res)
-    first_issue_id = issues[0].get('id', '')
     return (
         CommandResults(
             outputs_prefix='Ticket',
             readable_output=f'ID Offset: {first_issue_id}',
             outputs={'idOffSet': first_issue_id},
+            raw_response=res
         )
     )
 
@@ -2673,8 +2671,8 @@ def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
     rank_before_issue = args.get('rank_before_issue', '')
     rank_after_issue = args.get('rank_after_issue', '')
     if (rank_after_issue or rank_before_issue) and not board_id:
-        raise DemistoException(('Please supply the board_id argument when supplying the rank_after_issue, and'
-                                ' rank_before_issue arguments'))
+        raise DemistoException('Please supply the board_id argument when supplying the rank_after_issue, and'
+                               ' rank_before_issue arguments')
     json_data = {'issues': issues}
     if board_id:
         # The endpoint that accepts the board id is only supported by Jira Cloud and not Jira Server API.
@@ -2961,11 +2959,30 @@ def test_module() -> str:
     they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
     show them the steps in order to test the instance.
     """
-    raise DemistoException(('In order to authorize the instance, first run the command `!jira-oauth-start`,'
-                            ' and complete the process in the URL that is returned. You will then be redirected'
-                            ' to the callback URL . Copy the authorization code found in the query parameter'
-                            ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
-                            ' the process.'))
+    raise DemistoException('In order to authorize the instance, first run the command `!jira-oauth-start`,'
+                           ' and complete the process in the URL that is returned. You will then be redirected'
+                           ' to the callback URL . Copy the authorization code found in the query parameter'
+                           ' `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish'
+                           ' the process.')
+
+
+def get_smallest_id_offset_for_query(client: JiraBaseClient, query: str) -> tuple[Dict[str, Any], int | None]:
+    """Returns the smallest issue ID with respect to the query argument.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        query (str): The query that will be used to retrieve the first issue ID in it.
+
+    Returns:
+        int | None: The smallest issue ID with respect to the query argument, and None if the query
+        returns an empty list.
+    """
+    jql_query = f'{query} ORDER BY created ASC' if query else 'ORDER BY created ASC'
+    query_params = create_query_params(jql_query=jql_query, max_results=1)
+    res = client.run_query(query_params=query_params)
+    if (issues := res.get('issues', [])):
+        return res, issues[0].get('id', '')
+    return res, None
 
 
 # Fetch Incidents
@@ -2977,7 +2994,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
 
     Args:
         client (JiraBaseClient): The Jira client.
-        issue_field_to_fetch_from (str): The issue field to fetch from, id or created time.
+        issue_field_to_fetch_from (str): The issue field to fetch from, id, created time, or updated time.
         fetch_query (str): The fetch query configured.
         id_offset (int): The id from which to start the fetching from if we are fetching using id.
         fetch_attachments (bool): Whether to fetch the attachments or not.
@@ -2998,11 +3015,20 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     last_run = demisto.getLastRun()
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
     # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
-    # incidents. Since when we get the list from the last run, and all the values in the list are strings, and we may need them
+    # incidents. Since when we get the list from the last run, all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
     # we convert the list to hold integer values
     last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get('issue_ids', []))
     last_fetch_id = last_run.get('id', id_offset)
+    if last_fetch_id in [0, '0'] and issue_field_to_fetch_from == 'id':
+        # If last_fetch_id is equal to zero, and the user wants to fetch using the issue ID, then we automatically
+        # acquire the smallest issue ID with respect to the query
+        _, smallest_id_offset = get_smallest_id_offset_for_query(client=client, query=fetch_query)
+        if not smallest_id_offset:
+            raise DemistoException('The fetch query configured returned no Jira issues, please update it.')
+        last_fetch_id = smallest_id_offset
+        demisto.debug(f'The smallest ID offset with respect to the fetch query is {last_fetch_id}' if last_fetch_id else
+                      'No smallest ID found since the fetch query returns 0 results')
     new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
     new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
     incidents: List[Dict[str, Any]] = []
@@ -3020,24 +3046,37 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
     new_issue_ids: List[int] = []
     demisto.debug(f'Running the query with the following parameters {query_params}')
-    if query_res := client.run_query(query_params=query_params):
-        for issue in query_res.get('issues', []):
-            issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
-            demisto.debug(f'Creating an incident for Jira issue with ID: {str(issue_id)}')
-            new_issue_ids.append(issue_id)
-            last_fetch_id = issue_id
-            new_fetch_created_time = convert_string_date_to_specific_format(
-                string_date=demisto.get(issue, 'fields.created') or '')
-            new_fetch_updated_time = convert_string_date_to_specific_format(
-                string_date=demisto.get(issue, 'fields.updated') or '')
-            parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
-            incidents.append(create_incident_from_issue(
-                client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
-                mirror_direction=mirror_direction,
-                comment_tag_from_jira=comment_tag_from_jira,
-                comment_tag_to_jira=comment_tag_to_jira,
-                attachment_tag_from_jira=attachment_tag_from_jira,
-                attachment_tag_to_jira=attachment_tag_to_jira))
+    try:
+        if query_res := client.run_query(query_params=query_params):
+            for issue in query_res.get('issues', []):
+                issue_id: int = int(issue.get('id'))  # The ID returned by the API is an integer
+                demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
+                new_issue_ids.append(issue_id)
+                last_fetch_id = issue_id
+                new_fetch_created_time = convert_string_date_to_specific_format(
+                    string_date=demisto.get(issue, 'fields.created') or '')
+                new_fetch_updated_time = convert_string_date_to_specific_format(
+                    string_date=demisto.get(issue, 'fields.updated') or '')
+                parse_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
+                incidents.append(create_incident_from_issue(
+                    client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
+                    mirror_direction=mirror_direction,
+                    comment_tag_from_jira=comment_tag_from_jira,
+                    comment_tag_to_jira=comment_tag_to_jira,
+                    attachment_tag_from_jira=attachment_tag_from_jira,
+                    attachment_tag_to_jira=attachment_tag_to_jira))
+    except Exception as e:
+        if 'Issue does not exist' in str(e) and issue_field_to_fetch_from == 'id' and str(id_offset) == str(last_fetch_id):
+            # If entered here, this means the user wants to fetch using the issue ID, and has given an incorrect issue ID
+            # to start fetching from, other than 0.
+            _, smallest_issue_id = get_smallest_id_offset_for_query(client=client, query=fetch_query)
+            raise DemistoException(
+                f'The smallest issue ID with respect to the fetch query is {smallest_issue_id}, please configure it in the'
+                ' "Issue index to start fetching incidents from" parameter.'
+                if smallest_issue_id
+                else 'The id that was configured does not exist in the Jira instance, '
+                'and the fetch query returned no results, therefore, could not start fetching.'
+            ) from e
     # If we did no progress in terms of time (the created, or updated time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
     if (
@@ -3235,7 +3274,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         issue['extractedComments'] = comments_entries
         labels.append({'type': 'comments', 'value': str(comments_entries)})
 
-    issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction, None)
+    issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction)
 
     issue['mirror_tags'] = [
         comment_tag_from_jira,
@@ -3375,8 +3414,8 @@ def get_user_timezone(client: JiraBaseClient) -> str:
     """
     user_info_res = client.get_user_info()
     if not (timezone_name := user_info_res.get('timeZone', '')):
-        raise DemistoException(('Could not get Jira\'s timezone, the following response was'
-                                f' returned:\n{user_info_res}, with timezone:\n{timezone_name}'))
+        raise DemistoException('Could not get Jira\'s timezone, the following response was'
+                               f' returned:\n{user_info_res}, with timezone:\n{timezone_name}')
     demisto.debug(f'Timezone of the Jira user: {timezone_name}')
     return timezone_name
 
@@ -3540,16 +3579,15 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
     """
     parsed_entries: List[Dict[str, Any]] = []
-    demisto.debug((f"Update incident, Incident name: Jira issue {issue.get('id')}"
-                  f"Reason: Issue modified in remote"))
+    demisto.debug(f"Update incident, Incident name: Jira issue {issue.get('id')}"
+                  f"Reason: Issue modified in remote")
     # Close incident if the Jira issue gets resolved, or its status gets updated to Done.
-    if mirror_resolved_issue:
-        if closed_issue := handle_incoming_resolved_issue(
-            updated_incident
-        ):
-            demisto.debug(
-                f'Closing incident with ID: {issue_id}, since corresponding issue was resolved')
-            parsed_entries.append(closed_issue)
+    if mirror_resolved_issue and (closed_issue := handle_incoming_resolved_issue(
+        updated_incident
+    )):
+        demisto.debug(
+            f'Closing incident with ID: {issue_id}, since corresponding issue was resolved')
+        parsed_entries.append(closed_issue)
 
     # Mirroring attachments
     if fetch_attachments:
@@ -3680,7 +3718,7 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], c
                 f'Got the following delta keys {list(delta.keys())} to update JiraV3 Incident {remote_id}'
             )
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data.get(k) for k in delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in delta}
             demisto.debug(f'Sending the following data to edit the issue with: {delta}')
             if issue_fields := create_issue_fields(
                 client=client,
@@ -3801,14 +3839,14 @@ def main():  # pragma: no cover
     comment_tag_to_jira = params.get('comment_tag_to_jira', 'comment tag')
     comment_tag_from_jira = params.get('comment_tag_from_jira', 'comment tag from Jira')
     if comment_tag_to_jira == comment_tag_from_jira:
-        raise DemistoException(('Comment Entry Tag to Jira and Comment Entry Tag '
-                               'from jira cannot have the same value.'))
+        raise DemistoException('Comment Entry Tag to Jira and Comment Entry Tag '
+                               'from jira cannot have the same value.')
 
     attachment_tag_to_jira = params.get('attachment_tag_to_jira', 'attachment tag')
     attachment_tag_from_jira = params.get('attachment_tag_from_jira', 'attachment tag from Jira')
     if attachment_tag_to_jira == attachment_tag_from_jira:
-        raise DemistoException(('Attachment Entry Tag to Jira and Attachment Entry Tag '
-                               'from jira cannot have the same value.'))
+        raise DemistoException('Attachment Entry Tag to Jira and Attachment Entry Tag '
+                               'from jira cannot have the same value.')
     # Mirroring params
     mirror_resolved_issue = argToBoolean(params.get('close_incident', False))
     command = demisto.command()

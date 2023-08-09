@@ -5,7 +5,6 @@ name: PhishTank
 display: PhishTank (Deprecated)
 category: Data Enrichment & Threat Intelligence
 description: Deprecated. Use the PhishTank v2 integration instead.
-defaultEnabled: false
 configuration:
 - display: Use system proxy settings
   name: proxy
@@ -60,7 +59,6 @@ script:
   - name: phishtank-status
     arguments: []
     description: Show PhishTank database status
-  runonce: false
 tests:
 - PhishTank Testing
 deprecated: true

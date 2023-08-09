@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from requests import Response
 import urllib3
-import demistomock as demisto
-from typing import Callable, Tuple
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from collections.abc import Callable
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
@@ -77,6 +77,10 @@ class Client(BaseClient):
 
     def create_alert(self, args: dict):
         args['responders'] = argToList(args.get('responders'))
+        if args.get('details') and not isinstance(args.get('details'), dict):
+            args['details'] = {key_value.split('=')[0]: key_value.split('=')[1]
+                               for key_value in argToList(args.get('details'))}
+
         args.update(Client.responders_to_json(args.get('responders', []), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
@@ -211,7 +215,7 @@ class Client(BaseClient):
                                   )
 
     def get_on_call(self, args: dict):
-        return self._http_request(method='GET', url_suffix=f"/v2/{SCHEDULE_SUFFIX}/" f"{args.get('schedule')}/on-calls",
+        return self._http_request(method='GET', url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{args.get('schedule')}/on-calls",
                                   params={"scheduleIdentifierType": args.get('scheduleIdentifierType')})
 
     def create_incident(self, args: dict):
@@ -244,12 +248,12 @@ class Client(BaseClient):
             priority = argToList(args.get("priority", [ALL_TYPE]))
             if ALL_TYPE not in priority:
                 query += ' AND ' if query else ''
-                priority_parsed = ' OR '.join([p for p in priority])
+                priority_parsed = ' OR '.join(list(priority))
                 query += f'priority: ({priority_parsed})'
             tags = argToList(args.get("tags", []))
             if tags:
                 query += ' AND ' if query else ''
-                tag_parsed = ' OR '.join([t for t in tags])
+                tag_parsed = ' OR '.join(list(tags))
                 query += f'tag: ({tag_parsed})'
         return query
 
@@ -313,6 +317,11 @@ class Client(BaseClient):
     def get_team(self, args: dict):
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{TEAMS_SUFFIX}/{args.get('team_id')}"
+                                  )
+
+    def get_team_routing_rules(self, args: dict):
+        return self._http_request(method='GET',
+                                  url_suffix=f"/v2/{TEAMS_SUFFIX}/{args.get('team_id')}/routing-rules"
                                   )
 
     def list_teams(self):
@@ -867,6 +876,17 @@ def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
+def get_team_routing_rules(client: Client, args: Dict[str, Any]) -> CommandResults:
+    result = client.get_team_routing_rules(args)
+    data = result.get("data")
+    return CommandResults(
+        outputs_prefix="OpsGenie.TeamRoutingRule",
+        outputs=data,
+        readable_output=tableToMarkdown("OpsGenie Team Routing Rules", data),
+        raw_response=result
+    )
+
+
 def _parse_fetch_time(fetch_time: str):
     fetch_time_date = dateparser.parse(date_string=f"{fetch_time} UTC")
     assert fetch_time_date is not None, f'could not parse {fetch_time} UTC'
@@ -900,7 +920,7 @@ def fetch_incidents_by_type(client: Client,
         time_query = f'createdAt>{timestamp_last_run} AND createdAt<={timestamp_now}'
         params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
         params['limit'] = limit
-        params['is_fetch_query'] = True if query else False
+        params['is_fetch_query'] = bool(query)
         params['status'] = status
         params["priority"] = priority
         params["tags"] = tags
@@ -928,7 +948,7 @@ def _get_utc_now():
 
 def fetch_incidents_command(client: Client,
                             params: Dict[str, Any],
-                            last_run: Optional[Dict] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+                            last_run: Optional[Dict] = None) -> tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -1031,6 +1051,7 @@ def main() -> None:
             'opsgenie-add-tag-incident': add_tag_incident,
             'opsgenie-remove-tag-incident': remove_tag_incident,
             'opsgenie-get-teams': get_teams,
+            'opsgenie-get-team-routing-rules': get_team_routing_rules,
             'opsgenie-get-request': get_request_command
         }
         command = demisto.command()

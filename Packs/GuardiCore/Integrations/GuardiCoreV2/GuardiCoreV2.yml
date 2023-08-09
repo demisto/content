@@ -3,1278 +3,1200 @@ commonfields:
   id: GuardiCore v2
   version: -1
 configuration:
-  - name: base_url
-    display: Server URL
-    required: true
-    defaultvalue: https://example.com/api/v3.0/
-    type: 0
-    additionalinfo: null
-  - display: Username
-    name: credentials
-    type: 9
-    required: true
-  - display: Fetch incidents
-    name: isFetch
-    required: false
-    type: 8
-  - name: source
-    display: Source
-    required: false
-    defaultvalue: null
-    type: 0
-    additionalinfo: GuardiCore source incident (e.g., Environment:*, App:*, Role:*).
-  - name: destination
-    display: Destination
-    required: false
-    defaultvalue: null
-    type: 0
-    additionalinfo: GuardiCore destination incident (e.g., Environment:*, App:*, Role:*).
-  - name: tag
-    display: Tag
-    required: false
-    defaultvalue: null
-    type: 0
-    additionalinfo: GuardiCore tag incident (e.g., Reputation, Internal, Blocked Traffic).
-  - name: incident_type
-    display: Incident Type
-    required: false
-    defaultvalue: All
-    type: 16
-    additionalinfo: GuardiCore incident types.
-    options:
-      - Incident
-      - Deception
-      - Network Scan
-      - Reveal
-      - Experimental
-      - All
-  - name: severity
-    display: Incident Severity
-    required: false
-    defaultvalue: null
-    type: 16
-    additionalinfo: GuardiCore incident severity
-    options:
-      - Low
-      - Medium
-      - High
-      - All
-  - name: max_fetch
-    display: Maximum incidents to fetch
-    required: false
-    defaultvalue: "50"
-    type: 0
-    additionalinfo: Limit on incidents to fetch
-  - name: first_fetch
-    display: First fetch time
-    required: false
-    defaultvalue: "7 days"
-    type: 0
-    additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>,
-      e.g., 12 hours, 7 days)
-  - name: timeout
-    display: Global timeout to all requests
-    required: false
-    defaultvalue: "10"
-    type: 0
-    additionalinfo: ""
-  - name: insecure
-    display: Trust any certificate (not secure)
-    required: false
-    type: 8
-    additionalinfo: null
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    type: 8
-    additionalinfo: null
-  - display: Incident type
-    name: incidentType
-    required: false
-    type: 13
-description: GuardiCore v2 Integration enables you to get information about incidents
-  and endpoints (assets) via the GuardiCore API.
+- name: base_url
+  display: Server URL
+  required: true
+  defaultvalue: https://example.com/api/v3.0/
+  type: 0
+  additionalinfo:
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- name: source
+  display: Source
+  defaultvalue:
+  type: 0
+  additionalinfo: GuardiCore source incident (e.g., Environment:*, App:*, Role:*).
+  required: false
+- name: destination
+  display: Destination
+  defaultvalue:
+  type: 0
+  additionalinfo: GuardiCore destination incident (e.g., Environment:*, App:*, Role:*).
+  required: false
+- name: tag
+  display: Tag
+  defaultvalue:
+  type: 0
+  additionalinfo: GuardiCore tag incident (e.g., Reputation, Internal, Blocked Traffic).
+  required: false
+- name: incident_type
+  display: Incident Type
+  defaultvalue: All
+  type: 16
+  additionalinfo: GuardiCore incident types.
+  options:
+  - Incident
+  - Deception
+  - Network Scan
+  - Reveal
+  - Experimental
+  - All
+  required: false
+- name: severity
+  display: Incident Severity
+  defaultvalue:
+  type: 16
+  additionalinfo: GuardiCore incident severity
+  options:
+  - Low
+  - Medium
+  - High
+  - All
+  required: false
+- name: max_fetch
+  display: Maximum incidents to fetch
+  defaultvalue: "50"
+  type: 0
+  additionalinfo: Limit on incidents to fetch
+  required: false
+- name: first_fetch
+  display: First fetch time
+  defaultvalue: "7 days"
+  type: 0
+  additionalinfo: Fetch incidents - First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  required: false
+- name: timeout
+  display: Global timeout to all requests
+  defaultvalue: "10"
+  type: 0
+  additionalinfo: ""
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  additionalinfo:
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  additionalinfo:
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+description: GuardiCore v2 Integration enables you to get information about incidents and endpoints (assets) via the GuardiCore API.
 display: GuardiCore v2
 fromversion: 6.0.0
 name: GuardiCore v2
 script:
   commands:
-    - arguments:
-        - default: true
-          description: IP address. (The ip_address argument takes priority over the name argument, if defined).
-          isArray: false
-          name: ip_address
-          required: false
-          secret: false
-        - default: false
-          description: Name of endpoint.
-          isArray: false
-          name: name
-          required: false
-          secret: false
-        - default: false
-          description: Asset ID. (Must start with :vm).
-          isArray: false
-          name: asset_id
-          required: false
-          secret: false
-        - defaultValue: "50"
-          description: The maximum number of results to return.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - default: false
-          description: Offset results.
-          isArray: false
-          name: offset
-          required: false
-          secret: false
-      deprecated: false
-      description: Display information about assets.
-      execution: false
-      name: guardicore-search-asset
-      outputs:
-        - contextPath: Guardicore.Endpoint._id
-          description: The endpoint's unique identifier.
-          type: String
-        - contextPath: Guardicore.Endpoint.active
-          description: Whether the endpoint is active.
-          type: String
-        - contextPath: Guardicore.Endpoint.bios_uuid
-          description: The endpoint's BIOS universal unique identifier (UUID).
-          type: String
-        - contextPath: Guardicore.Endpoint.first_seen
-          description: The first time the endpoint was seen.
-          type: Date
-        - contextPath: Guardicore.Endpoint.host_id
-          description: The host identifier of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.host_orchestration_id
-          description: The host orchestration identifier of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.is_on
-          description: Whether the Endpoint is on..
-          type: String
-        - contextPath: Guardicore.Endpoint.last_seen
-          description: The last time the endpoint was seen.
-          type: Date
-        - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.report_source
-          description: The endpoint's Inventory API report source.
-          type: String
-        - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.OsType
-          description: The endpoint's operating system (via the Inventory API).
-          type: String
-        - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.OsVersion
-          description: The endpoint's operating system version (via the Inventory API).
-          type: String
-        - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.DeviceDescr
-          description: The endpoint's device description (via the Inventory API).
-          type: String
-        - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.DeviceType
-          description: The endpoint's device type (via the Inventory API).
-          type: String
-        - contextPath: Guardicore.Endpoint.name
-          description: The endpoint's name.
-          type: String
-        - contextPath: Guardicore.Endpoint.nics.vif_id
-          description: The network interface controller virtual interface identifier of
-            the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.nics.mac_address
-          description: The network interface controller MAC address of the endpoint.
-          type: Date
-        - contextPath: Guardicore.Endpoint.nics.network_id
-          description: The network interface controller network identifier of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.nics.network_name
-          description: The network interface controller's network name of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.nics.cloud_network
-          description: The network interface controller's cloud network of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.nics.is_cloud_public
-          description: Whether the endpoint is in the public cloud (via the network
-            controller interface).
-          type: String
-        - contextPath: Guardicore.Endpoint.nics.vlan_id
-          description: The network interface controller's virtual LAN identifier of the
-            endpoint.
-          type: Number
-        - contextPath: Guardicore.Endpoint.nics.switch_id
-          description: The network interface controller's switch identifier of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.nics.ip_addresses
-          description: The endpoint's IP addresses (via the network interface controller).
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_id
-          description: The orchestration details identifier for an endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_type
-          description: The orchestration type of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_obj_id
-          description: The orchestration object identifier for an endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_details.revision_id
-          description: The orchestration revision identifier for the endpoint.
-          type: Date
-        - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_name
-          description: The orchestration name for the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_labels
-          description: The orchestration labels of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_labels_dict.Type
-          description: The orchestration labels type dictionary.
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_labels_dict.Risk
-          description: The risk labels for the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.orchestration_labels_dict.OS
-          description: The orchestration labels operating system for the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.tenant_name
-          description: The tenant name of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.replicated_labels
-          description: The replicated labels of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.asset_id
-          description: The asset identifier of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.id
-          description: The endpoint's identifier.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm_name
-          description: The endpoint's virtual machine name.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm_id
-          description: The endpoint's virtual machine identifier.
-          type: String
-        - contextPath: Guardicore.Endpoint.ip_addresses
-          description: The endpoint's IP addresses.
-          type: String
-        - contextPath: Guardicore.Endpoint.mac_addresses
-          description: The endpoint's MAC addresses.
-          type: Date
-        - contextPath: Guardicore.Endpoint.vm.name
-          description: The endpoint's virtual machine name.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm.tenant_name
-          description: The endpoint's virtual machine's tenant name.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm.vm_id
-          description: The endpoint's virtual machine's identifier.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_id
-          description: The Orchestration object identifier for the endpoint's virtual
-            machine.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_type
-          description: The orchestration type of the endpoint's virtual machine.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_obj_id
-          description: The orchestration object identifier for the endpoint's virtual
-            machine.
-          type: String
-        - contextPath: Guardicore.Endpoint.vm.orchestration_details.revision_id
-          description: The orchestration revision identifier of the endpoint's virtual
-            machine.
-          type: Date
-        - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_name
-          description: The orchestration name of the endpoint's virtual machine.
-          type: String
-        - contextPath: Guardicore.Endpoint.full_name
-          description: The endpoint's full name.
-          type: String
-        - contextPath: Guardicore.Endpoint.status
-          description: The status of the endpoint (off/on).
-          type: String
-        - contextPath: Guardicore.Endpoint.comments
-          description: The comments for the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.recent_domains
-          description: The endpoint's recent domains.
-          type: String
-        - contextPath: Guardicore.Endpoint.labels.id
-          description: The label's identifiers of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.labels.key
-          description: The label's key of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.labels.value
-          description: The label's value of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.labels.name
-          description: The label's names of the endpoint.
-          type: String
-        - contextPath: Guardicore.Endpoint.labels.color_index
-          description: The color index of the endpoint's labels.
-          type: Number
-    - arguments:
-        - default: false
-          description: ID of the incident.
-          isArray: false
-          name: id
-          required: true
-          secret: false
-      deprecated: false
-      description: Display information about an incident.
-      execution: false
-      name: guardicore-get-incident
-      outputs:
-        - contextPath: Guardicore.Incident._cls
-          description: The incident's internal class.
-          type: String
-        - contextPath: Guardicore.Incident.doc_version
-          description: The incident's document version.
-          type: Number
-        - contextPath: Guardicore.Incident.sensor_type
-          description: The sensor type (honeypot, datagraph agent, mitigation agent, visibility) of the incident.
-          type: String
-        - contextPath: Guardicore.Incident.start_time
-          description: The start time of the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.end_time
-          description: The end time of the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.last_updated_time
-          description: The last time the incident was updated.
-          type: Date
-        - contextPath: Guardicore.Incident.ended
-          description: The end date of the incident.
-          type: String
-        - contextPath: Guardicore.Incident.closed_time
-          description: The closed time of the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.severity
-          description: The incident's severity.
-          type: Number
-        - contextPath: Guardicore.Incident.affected_assets.labels
-          description: The affected assets labels for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.ip
-          description: The IP address of the affected assets.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm_id
-          description: The virtual machine ID of the affected assets.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.id
-          description: The virtual machine ID of the affected assets for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.name
-          description: The virtual machine name of the affected assets for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.tenant_name
-          description: The virtual machine's tenant name for the affected assets for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.full_name
-          description: The virtual machine's full name for the affected assets for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.is_inner
-          description: The incident's affected asset is inner flag.
-          type: String
-        - contextPath: Guardicore.Incident.enriched
-          description: Wether the incident was enriched.
-          type: String
-        - contextPath: Guardicore.Incident.reenrich_count
-          description: The number of re-enrichments made on the incident.
-          type: Number
-        - contextPath: Guardicore.Incident.tags.id
-          description: The tag's identifiers for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.visible
-          description: The tag's visibilities for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.tag_class
-          description: The tag's classes for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.display_name
-          description: The tag's display names for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.search_names
-          description: The tag's search names for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.shortened_group_display_name
-          description: The shortened group display name for the incident tags.
-          type: String
-        - contextPath: Guardicore.Incident.tags.tag_type_key
-          description: The tag's type key for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.tag_args.category
-          description: The tag's arguments category for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.source
-          description: The tag's source for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.tag_args.process_name
-          description: The tag's arguments process name for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.tag_args.process_path
-          description: The tag's arguments process path for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.tag_args.side
-          description: The incident's tags argument side.
-          type: Number
-        - contextPath: Guardicore.Incident.tags.tag_args.reason
-          description: The tag's arguments reason for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.events
-          description: The tag's events for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.tags.time
-          description: The tag's time for the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.recommendations.id
-          description: The recommendation's identifiers for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.recommendations.parts.type
-          description: The recommendation's parts type for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.recommendations.parts.value
-          description: The recommendation's parts value for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.recommendations.rule_type
-          description: The recommendation's rule type for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.recommendations.handle_template
-          description: The recommendation's handle template for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.recommendations.details.parts.value
-          description: The recommendation's details parts value for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.recommendations.details.parts.type
-          description: The recommendation's details parts type for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.recommendations.type
-          description: The recommendation's type for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.similarity_calculated
-          description: The similarity calculated for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.incident_group.gname
-          description: The incident group name for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.incident_group.gid
-          description: The incident group identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.stories.template
-          description: The incident's stories template.
-          type: String
-        - contextPath: Guardicore.Incident.stories.arguments.malicious_process.process_name
-          description: The malicious process name for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.arguments.malicious_process.reputation_info
-          description: The malicious process reputation information for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.arguments.destination_port
-          description: The destination port name for the incident (via stories).
-          type: Number
-        - contextPath: Guardicore.Incident.stories.arguments.asset_name
-          description: The asset name for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.arguments.ip_address
-          description: The IP address for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.arguments.malicious_process->process_name
-          description: The malicious process name for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.arguments.malicious_process->reputation_info
-          description: The malicious process reputation information for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.tags.display_name
-          description: The tag's display name for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.tags.tag_class
-          description: The tag's class for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.tags.events
-          description: The tag's events for the incident (via stories).
-          type: String
-        - contextPath: Guardicore.Incident.stories.time
-          description: The story time of the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.stories.parts.type
-          description: The story parts type for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.stories.parts.value
-          description: The story parts value for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.flow_ids
-          description: The flow ID for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.remote_index
-          description: The remote index for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.is_experimental
-          description: Whether the incident is experimental.
-          type: String
-        - contextPath: Guardicore.Incident.original_id
-          description: The original ID for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.experimental_id
-          description: The experimental identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.first_asset.asset_type
-          description: The first asset type for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.first_asset.asset_id
-          description: The first asset's identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.second_asset.asset_type
-          description: The second asset type for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.second_asset.asset_id
-          description: The second asset's identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.labels.id
-          description: The label's identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.labels.key
-          description: The incident's labels keys.
-          type: String
-        - contextPath: Guardicore.Incident.labels.value
-          description: The incident's labels values.
-          type: String
-        - contextPath: Guardicore.Incident.labels.name
-          description: The incident's labels names.
-          type: String
-        - contextPath: Guardicore.Incident.labels.color_index
-          description: The incident's labels color index.
-          type: Number
-        - contextPath: Guardicore.Incident.labels.asset_ids
-          description: The incident's labels asset IDs.
-          type: String
-        - contextPath: Guardicore.Incident.policy_revision
-          description: The incident's policy revision.
-          type: Number
-        - contextPath: Guardicore.Incident.id
-          description: The incident's identifier.
-          type: String
-        - contextPath: Guardicore.Incident.incident_type
-          description: The incident type.
-          type: String
-        - contextPath: Guardicore.Incident.has_export
-          description: Whether the Incident has exports.
-          type: String
-        - contextPath: Guardicore.Incident.concatenated_tags.display_name
-          description: The incident's concatenated tags display name.
-          type: String
-        - contextPath: Guardicore.Incident.concatenated_tags.tag_class
-          description: The incident's concatenated tags class.
-          type: String
-        - contextPath: Guardicore.Incident.concatenated_tags.events
-          description: The incident's concatenated tags events.
-          type: String
-        - contextPath: Guardicore.Incident.direction
-          description: The incident's direction.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.labels
-          description: The source assets labels for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.ip
-          description: The source asset's IP address.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.vm_id
-          description: The virtual machine identifier of the source asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.vm.id
-          description: The virtual machine identifier of the source asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.vm.name
-          description: The virtual machine name of the source asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.vm.tenant_name
-          description: The virtual machine tenant name of the source asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.vm.full_name
-          description: The virtual machine's full name for the source asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.is_inner
-          description: The incident's source asset is inner flag.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.labels
-          description: The destination asset labels for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.ip
-          description: The IP address of the destination asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm_id
-          description: The virtual machine identifier of the destination asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.id
-          description: The virtual machine identifier of the destination asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.name
-          description: The virtual machine name of the destination asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.tenant_name
-          description: The virtual machine tenant name of the destination asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.full_name
-          description: The virtual machine's full name for the destination asset for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.is_inner
-          description: The incident's destination asset is inner flag.
-          type: String
-        - contextPath: Guardicore.Incident.has_policy_violations
-          description: Whether the incident has policy violations.
-          type: String
-        - contextPath: Guardicore.Incident.total_events_count
-          description: The total number of events for the incident.
-          type: Number
-        - contextPath: Guardicore.Incident.limited_events_count
-          description: The number of limited events for the incident.
-          type: Number
-        - contextPath: Guardicore.Incident.events._cls
-          description: The incident's event's internal class.
-          type: String
-        - contextPath: Guardicore.Incident.events.doc_version
-          description: The incident's event's document version.
-          type: Number
-        - contextPath: Guardicore.Incident.events.uuid
-          description: The incident's event's universal unique identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.time
-          description: The incident's event's time.
-          type: Date
-        - contextPath: Guardicore.Incident.events.received_time
-          description: When the incident's events were received.
-          type: Date
-        - contextPath: Guardicore.Incident.events.processed_time
-          description: When the incident's events were processed.
-          type: Date
-        - contextPath: Guardicore.Incident.events.event_source
-          description: The events sources for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.is_experimental
-          description: Whether the incident is experimental.
-          type: String
-        - contextPath: Guardicore.Incident.events.incident_id
-          description: The incident's event's identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow_id
-          description: The flow ID for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.count
-          description: The flow count for the incident's events.
-          type: Number
-        - contextPath: Guardicore.Incident.events.flow.ip_protocols
-          description: The flow's IP protocols used for the incident events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.destination_ports
-          description: The flow destination ports for the incident's events.
-          type: Number
-        - contextPath: Guardicore.Incident.events.flow.source_username
-          description: The flow's source username for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.source_node_type
-          description: The flow source node type for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.source_process_id
-          description: The flow source process identifier of the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.source_ip
-          description: The flow source IP for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.source_process_name
-          description: The flow source process name for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.source_process
-          description: The flow source process for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.destination_node_type
-          description: The flow destination node type for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.destination_process_id
-          description: The flow destination process identifier for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.destination_ip
-          description: The flow's destination IP for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.destination_process_name
-          description: The flow's destination process name for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.flow.destination_process
-          description: The flow's destination process for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_asset.asset_type
-          description: The source asset asset type for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_asset.asset_id
-          description: The source asset identifier for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_asset.asset_value
-          description: The source asset's value for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_asset.asset_name
-          description: The source asset name for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_asset.asset_type
-          description: The destination's asset type for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_asset.asset_id
-          description: The destination asset's identifier for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_asset.asset_value
-          description: The destination asset's value for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_asset.asset_name
-          description: The destination asset's name for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.connection_type
-          description: The connection type for the incident's events.
-          type: String
-        - contextPath: Guardicore.Incident.events.side
-          description: The incident's events side.
-          type: Number
-        - contextPath: Guardicore.Incident.events.date
-          description: The date of the incident's events.
-          type: Date
-        - contextPath: Guardicore.Incident.events.result.verdict
-          description: The incident's events result verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.result.reasons
-          description: The reason for the incident's events results.
-          type: String
-        - contextPath: Guardicore.Incident.events.result.score
-          description: The incident's events result score.
-          type: Number
-        - contextPath: Guardicore.Incident.events.result.severity
-          description: The incident's events result severity.
-          type: String
-        - contextPath: Guardicore.Incident.events.result.experimental_verdict
-          description: The incident's events result experimental verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.result.experimental_reasons
-          description: The incident's events result experimental reasons.
-          type: String
-        - contextPath: Guardicore.Incident.events.result.experimental_score
-          description: The incident's events result experimental score.
-          type: Number
-        - contextPath: Guardicore.Incident.events.result.experimental_severity
-          description: The incident's events result experimental severity.
-          type: String
-        - contextPath: Guardicore.Incident.events.answer_origin
-          description: The incident event's answer origin.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_port
-          description: The destination port for the incident's events.
-          type: Number
-        - contextPath: Guardicore.Incident.events.source_process_name
-          description: The incident's events source process name.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_process_name
-          description: The incident's events destination process name.
-          type: String
-        - contextPath: Guardicore.Incident.events.process_name
-          description: The incident event's process name.
-          type: String
-        - contextPath: Guardicore.Incident.events.process_path
-          description: The incident event's process path.
-          type: String
-        - contextPath: Guardicore.Incident.events.process_hash
-          description: The incident event's process hash.
-          type: String
-        - contextPath: Guardicore.Incident.events.asset_name
-          description: The incident event's asset name.
-          type: String
-        - contextPath: Guardicore.Incident.events.ip_address
-          description: The incident event's IP address.
-          type: String
-        - contextPath: Guardicore.Incident.events.slot_start_time
-          description: The incident event's slot start time.
-          type: Date
-        - contextPath: Guardicore.Incident.events.count
-          description: The number of events for an incident.
-          type: Number
-        - contextPath: Guardicore.Incident.events.protocol
-          description: The incident's events protocol.
-          type: String
-        - contextPath: Guardicore.Incident.events.service_port
-          description: The incident event's service port.
-          type: Number
-        - contextPath: Guardicore.Incident.events.event_group
-          description: The incident event's event group.
-          type: String
-        - contextPath: Guardicore.Incident.events.type
-          description: The incident's events type.
-          type: String
-        - contextPath: Guardicore.Incident.events.type_title
-          description: The incident's event type title.
-          type: String
-        - contextPath: Guardicore.Incident.events.visibility
-          description: The incident's visibility.
-          type: String
-        - contextPath: Guardicore.Incident.events.policy_revision
-          description: The incident's policy revision.
-          type: Number
-        - contextPath: Guardicore.Incident.events.violating_policy_rule_id
-          description: The incident's violating policy rule identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.violating_policy_verdict
-          description: The incident's violation policy verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_agent_matching.verdict
-          description: The incident's event's source agent matching verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_agent_matching.rule_id
-          description: The incident's event's source agent matching rule identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_agent_matching.revision
-          description: The incident's event's source agent matching revision.
-          type: Number
-        - contextPath: Guardicore.Incident.events.destination_agent_matching.verdict
-          description: The incident's event's destination agent matching verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_agent_matching.rule_id
-          description: The incident's event's destination agent matching rule identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_agent_matching.revision
-          description: The incident's event's destination agent matching revision.
-          type: Number
-        - contextPath: Guardicore.Incident.events.management_matching.rule_action
-          description: The incident's event's management matching rule action.
-          type: Number
-        - contextPath: Guardicore.Incident.events.management_matching.rule_id
-          description: The incident's event's management matching rule identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.management_matching.revision
-          description: The incident event's management matching revision.
-          type: Number
-        - contextPath: Guardicore.Incident.events.has_mismatch_alert
-          description: The incident event has a mismatch alert.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.destination_node_id
-          description: The last connection destination node identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.slot_start_time
-          description: The last connection slot start time for the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.events.last_connection.source_node_id
-          description: The last connection source node identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.flow_id
-          description: The last connection flow identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.incidents.incident_id
-          description: The last connection incident identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.incidents.incident_type
-          description: The last connection's incident type for the incident's event.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.policy_verdict
-          description: The last connection's policy verdict for the incident's event.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.destination_process_id
-          description: The last connection destination process identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.source_process_id
-          description: The last connection's source process identifier for the incident's event.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.policy_rule
-          description: The last connection's policy rule identifier for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.has_mismatch_alert
-          description: The incident event last connection had a mismatch alert.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.original_policy_verdict
-          description: The incident event's last connection original policy verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.source_agent_matching.verdict
-          description: The incident event's last connection source agent matching verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.source_agent_matching.rule
-          description: The incident event's last connection source agent matching rule.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.destination_agent_matching.verdict
-          description: The incident event's last connection destination agent matching verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.destination_agent_matching.rule
-          description: The incident event's last connection destination agent matching rule.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.management_matching.rule_action
-          description: The incident event's last connection management matching rule action.
-          type: String
-        - contextPath: Guardicore.Incident.events.last_connection.management_matching.rule
-          description: The incident event's last connection management matching rule.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.id
-          description: The incident event's reputation tags identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.visible
-          description: The incident event's reputation tags visibility.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.tag_class
-          description: The incident event's reputation tags class.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.display_name
-          description: The incident event's reputation tags display name.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.search_names
-          description: The incident event's reputation tags search names.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.shortened_group_display_name
-          description: The incident event's reputation tags shortened group display name.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.tag_type_key
-          description: The incident event's reputation tags type key.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.process_name
-          description: The incident event's reputation tags process name.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.process_path
-          description: The incident event's reputation tags process path.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.side
-          description: The incident event's reputation tags arguments side. 
-          type: Number
-        - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.reason
-          description: The incident event's reputation tags reason.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.source
-          description: The incident event's reputation tags source.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.events
-          description: The incident event's reputation tags events.
-          type: String
-        - contextPath: Guardicore.Incident.events.reputation_tags.time
-          description: The incident event's reputation tags times.
-          type: Date
-        - contextPath: Guardicore.Incident.events.policy_verdict
-          description: The incident event's policy verdict.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_ip
-          description: The incident event's source IP.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_node_type
-          description: The incident event's source node type.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_process_id
-          description: The incident event's source process identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.source_process
-          description: The incident event's source process.
-          type: String
-        - contextPath: Guardicore.Incident.events.source.vm._id
-          description: The incident event's source virtual machine identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.source.vm.name
-          description: The incident event's source virtual machine name.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_ip
-          description: The incident event's destination IP.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_node_type
-          description: The incident event's destination node type.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_process_id
-          description: The incident event's destination process identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination_process
-          description: The incident event's destination process.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination.vm._id
-          description: The incident event's destination virtual machine identifier.
-          type: String
-        - contextPath: Guardicore.Incident.events.destination.vm.name
-          description: The incident event's destination virtual machine name.
-          type: String
-        - contextPath: Guardicore.Incident.is_bc_format_incident
-          description: Whether the incident is in backwards compatibility format. 
-          type: String
-    - arguments:
-        - default: false
-          description: From time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
-          isArray: false
-          name: from_time
-          required: true
-          secret: false
-        - default: false
-          description: To time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
-          isArray: false
-          name: to_time
-          required: true
-          secret: false
-        - defaultValue: "50"
-          description: The maximum number of incidents returned.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-        - defaultValue: "0"
-          description: Offset the incidents.
-          isArray: false
-          name: offset
-          required: false
-          secret: false
-        - default: false
-          description: Severity (Low, Medium, High). Default is All.
-          isArray: true
-          name: severity
-          required: false
-          secret: false
-        - default: false
-          description: Source (IP or Hostname).
-          isArray: true
-          name: source
-          required: false
-          secret: false
-        - default: false
-          description: Destination (IP or Hostname).
-          isArray: true
-          name: destination
-          required: false
-          secret: false
-        - default: false
-          description: Tag (e.g., Internal or Known malware).
-          isArray: true
-          name: tag
-          required: false
-          secret: false
-        - defaultValue: false
-          description: 'Type of the incident. Possible values: "Incident", "Deception", "Network Scan", "Reveal", "Experimental").'
-          predefined:
-            - 'Incident'
-            - 'Deception'
-            - 'Network Scan'
-            - 'Reveal'
-            - 'Experimental' 
-          isArray: true
-          name: incident_type
-          required: false
-          secret: false
-      deprecated: false
-      description: Display information about incidents.
-      execution: false
-      name: guardicore-get-incidents
-      outputs:
-        - contextPath: Guardicore.Incident._id
-          description: The incident's identifier.
-          type: String
-        - contextPath: Guardicore.Incident._cls
-          description: The incident's internal class.
-          type: String
-        - contextPath: Guardicore.Incident.doc_version
-          description: The incident's document version.
-          type: Number
-        - contextPath: Guardicore.Incident.sensor_type
-          description: The incident's sensor type.
-          type: String
-        - contextPath: Guardicore.Incident.start_time
-          description: The start time of the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.end_time
-          description: The end time of the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.last_updated_time
-          description: The last time the incident was updated.
-          type: Date
-        - contextPath: Guardicore.Incident.ended
-          description: The end date of the incident.
-          type: String
-        - contextPath: Guardicore.Incident.severity
-          description: The incident severity.
-          type: Number
-        - contextPath: Guardicore.Incident.affected_assets.labels
-          description: The affected assets labels for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.ip
-          description: The incident's affected assets IP address.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.is_inner
-          description: The incident's affected asset is inner flag.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm_id
-          description: The incident's affected assets virtual machine identifier.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.id
-          description: The incident's affected assets virtual machine identifier.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.name
-          description: The incident's affected assets virtual machine name.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.tenant_name
-          description: The incident's affected asset's virtual machine tenant name.
-          type: String
-        - contextPath: Guardicore.Incident.affected_assets.vm.full_name
-          description: The incident's affected asset's virtual machine name.
-          type: String
-        - contextPath: Guardicore.Incident.enriched
-          description: Wether the incident is enriched.
-          type: String
-        - contextPath: Guardicore.Incident.reenrich_count
-          description: The number of re-enrichments made on the incident.
-          type: Number
-        - contextPath: Guardicore.Incident.similarity_calculated
-          description: The similarity calculated for the incident.
-          type: String
-        - contextPath: Guardicore.Incident.incident_group.gname
-          description: The incident group name.
-          type: String
-        - contextPath: Guardicore.Incident.incident_group.gid
-          description: The incident group identifier.
-          type: String
-        - contextPath: Guardicore.Incident.flow_ids
-          description: The incident flow IDs.
-          type: String
-        - contextPath: Guardicore.Incident.remote_index
-          description: The incident's remote index.
-          type: String
-        - contextPath: Guardicore.Incident.is_experimental
-          description: Whether the incident is experimental.
-          type: String
-        - contextPath: Guardicore.Incident.original_id
-          description: The incident's original ID.
-          type: String
-        - contextPath: Guardicore.Incident.experimental_id
-          description: The incident's experimental ID.
-          type: String
-        - contextPath: Guardicore.Incident.first_asset.asset_type
-          description: The incident's first asset type.
-          type: Number
-        - contextPath: Guardicore.Incident.first_asset.asset_id
-          description: The first asset's ID.
-          type: String
-        - contextPath: Guardicore.Incident.second_asset.asset_type
-          description: The incident's second asset type.
-          type: Number
-        - contextPath: Guardicore.Incident.second_asset.asset_id
-          description: The second asset's ID.
-          type: String
-        - contextPath: Guardicore.Incident.labels.id
-          description: The incident's label's identifier.
-          type: String
-        - contextPath: Guardicore.Incident.labels.key
-          description: The incident's label's key.
-          type: String
-        - contextPath: Guardicore.Incident.labels.value
-          description: The incident's label's value.
-          type: String
-        - contextPath: Guardicore.Incident.labels.name
-          description: The incident's labels name.
-          type: String
-        - contextPath: Guardicore.Incident.labels.color_index
-          description: The incident's label's color index.
-          type: Number
-        - contextPath: Guardicore.Incident.labels.asset_ids
-          description: The incident's label's asset identifiers.
-          type: String
-        - contextPath: Guardicore.Incident.policy_revision
-          description: The incident's policy revision.
-          type: Number
-        - contextPath: Guardicore.Incident.closed_time
-          description: The closed time of the incident.
-          type: Date
-        - contextPath: Guardicore.Incident.id
-          description: The incident's identifier.
-          type: String
-        - contextPath: Guardicore.Incident.incident_type
-          description: The incident's type.
-          type: String
-        - contextPath: Guardicore.Incident.has_export
-          description: Whether the incident has been exported or not.
-          type: String
-        - contextPath: Guardicore.Incident.concatenated_tags.display_name
-          description: The incident's concatenated tags display name.
-          type: String
-        - contextPath: Guardicore.Incident.concatenated_tags.tag_class
-          description: The incident's concatenated tags class.
-          type: String
-        - contextPath: Guardicore.Incident.concatenated_tags.events
-          description: The incident's concatenated tags events.
-          type: String
-        - contextPath: Guardicore.Incident.direction
-          description: The incident's direction.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.labels
-          description: The incident's source asset labels.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.ip
-          description: The incident's source asset IP address.
-          type: String
-        - contextPath: Guardicore.Incident.source_asset.is_inner
-          description: The incident's source asset is inner flag.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.labels
-          description: The incident's destination asset labels.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.ip
-          description: The incident's destination asset IP address.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm_id
-          description: The incident's destination asset virtual machine identifier.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.id
-          description: The incident's destination asset virtual machine identifier.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.name
-          description: The incident's destination asset virtual machine name.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.tenant_name
-          description: The incident's destination asset's tenant name.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.vm.full_name
-          description: The incident's destination asset's full name.
-          type: String
-        - contextPath: Guardicore.Incident.destination_asset.is_inner
-          description: The incident's destination asset is inner flag.
-          type: String
-    - arguments:
-        - default: false
-          description: The ID of the asset. Takes priority over the ip and hostname arguments.
-          isArray: false
-          name: id
-          required: false
-          secret: false
-        - default: true
-          description: The IP address of the asset. The ip argument has priority over the
-            hostname argument.
-          isArray: false
-          name: ip
-          required: false
-          secret: false
-        - default: false
-          description: The hostname of the asset.
-          isArray: false
-          name: hostname
-          required: false
-          secret: false
-      deprecated: false
-      description: Gets information regarding endpoints.
-      execution: false
-      name: endpoint
-      outputs:
-        - contextPath: Endpoint.Hostname
-          description: The hostname of the endpoint.
-          type: String
-        - contextPath: Endpoint.ID
-          description: The endpoint's identifier.
-          type: String
-        - contextPath: Endpoint.IPAddress
-          description: The endpoint's IP address.
-          type: String
-        - contextPath: Endpoint.OS
-          description: The endpoint's operating system.
-          type: String
-        - contextPath: Endpoint.OSVersion
-          description: The endpoint's operating system's version.
-          type: String
-        - contextPath: Endpoint.Status
-          description: The status of the endpoint (online/offline).
-          type: String
-        - contextPath: Endpoint.MACAddress
-          description: The endpoint's MAC address.
-          type: String
-  dockerimage: demisto/python3:3.10.10.48392
-  feed: false
+  - arguments:
+    - default: true
+      description: IP address. (The ip_address argument takes priority over the name argument, if defined).
+      name: ip_address
+    - description: Name of endpoint.
+      name: name
+    - description: Asset ID. (Must start with :vm).
+      name: asset_id
+    - defaultValue: "50"
+      description: The maximum number of results to return.
+      name: limit
+    - description: Offset results.
+      name: offset
+    description: Display information about assets.
+    name: guardicore-search-asset
+    outputs:
+    - contextPath: Guardicore.Endpoint._id
+      description: The endpoint's unique identifier.
+      type: String
+    - contextPath: Guardicore.Endpoint.active
+      description: Whether the endpoint is active.
+      type: String
+    - contextPath: Guardicore.Endpoint.bios_uuid
+      description: The endpoint's BIOS universal unique identifier (UUID).
+      type: String
+    - contextPath: Guardicore.Endpoint.first_seen
+      description: The first time the endpoint was seen.
+      type: Date
+    - contextPath: Guardicore.Endpoint.host_id
+      description: The host identifier of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.host_orchestration_id
+      description: The host orchestration identifier of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.is_on
+      description: Whether the Endpoint is on..
+      type: String
+    - contextPath: Guardicore.Endpoint.last_seen
+      description: The last time the endpoint was seen.
+      type: Date
+    - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.report_source
+      description: The endpoint's Inventory API report source.
+      type: String
+    - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.OsType
+      description: The endpoint's operating system (via the Inventory API).
+      type: String
+    - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.OsVersion
+      description: The endpoint's operating system version (via the Inventory API).
+      type: String
+    - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.DeviceDescr
+      description: The endpoint's device description (via the Inventory API).
+      type: String
+    - contextPath: Guardicore.Endpoint.metadata.InventoryAPI.DeviceType
+      description: The endpoint's device type (via the Inventory API).
+      type: String
+    - contextPath: Guardicore.Endpoint.name
+      description: The endpoint's name.
+      type: String
+    - contextPath: Guardicore.Endpoint.nics.vif_id
+      description: The network interface controller virtual interface identifier of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.nics.mac_address
+      description: The network interface controller MAC address of the endpoint.
+      type: Date
+    - contextPath: Guardicore.Endpoint.nics.network_id
+      description: The network interface controller network identifier of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.nics.network_name
+      description: The network interface controller's network name of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.nics.cloud_network
+      description: The network interface controller's cloud network of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.nics.is_cloud_public
+      description: Whether the endpoint is in the public cloud (via the network controller interface).
+      type: String
+    - contextPath: Guardicore.Endpoint.nics.vlan_id
+      description: The network interface controller's virtual LAN identifier of the endpoint.
+      type: Number
+    - contextPath: Guardicore.Endpoint.nics.switch_id
+      description: The network interface controller's switch identifier of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.nics.ip_addresses
+      description: The endpoint's IP addresses (via the network interface controller).
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_id
+      description: The orchestration details identifier for an endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_type
+      description: The orchestration type of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_obj_id
+      description: The orchestration object identifier for an endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_details.revision_id
+      description: The orchestration revision identifier for the endpoint.
+      type: Date
+    - contextPath: Guardicore.Endpoint.orchestration_details.orchestration_name
+      description: The orchestration name for the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_labels
+      description: The orchestration labels of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_labels_dict.Type
+      description: The orchestration labels type dictionary.
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_labels_dict.Risk
+      description: The risk labels for the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.orchestration_labels_dict.OS
+      description: The orchestration labels operating system for the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.tenant_name
+      description: The tenant name of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.replicated_labels
+      description: The replicated labels of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.asset_id
+      description: The asset identifier of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.id
+      description: The endpoint's identifier.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm_name
+      description: The endpoint's virtual machine name.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm_id
+      description: The endpoint's virtual machine identifier.
+      type: String
+    - contextPath: Guardicore.Endpoint.ip_addresses
+      description: The endpoint's IP addresses.
+      type: String
+    - contextPath: Guardicore.Endpoint.mac_addresses
+      description: The endpoint's MAC addresses.
+      type: Date
+    - contextPath: Guardicore.Endpoint.vm.name
+      description: The endpoint's virtual machine name.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm.tenant_name
+      description: The endpoint's virtual machine's tenant name.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm.vm_id
+      description: The endpoint's virtual machine's identifier.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_id
+      description: The Orchestration object identifier for the endpoint's virtual machine.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_type
+      description: The orchestration type of the endpoint's virtual machine.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_obj_id
+      description: The orchestration object identifier for the endpoint's virtual machine.
+      type: String
+    - contextPath: Guardicore.Endpoint.vm.orchestration_details.revision_id
+      description: The orchestration revision identifier of the endpoint's virtual machine.
+      type: Date
+    - contextPath: Guardicore.Endpoint.vm.orchestration_details.orchestration_name
+      description: The orchestration name of the endpoint's virtual machine.
+      type: String
+    - contextPath: Guardicore.Endpoint.full_name
+      description: The endpoint's full name.
+      type: String
+    - contextPath: Guardicore.Endpoint.status
+      description: The status of the endpoint (off/on).
+      type: String
+    - contextPath: Guardicore.Endpoint.comments
+      description: The comments for the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.recent_domains
+      description: The endpoint's recent domains.
+      type: String
+    - contextPath: Guardicore.Endpoint.labels.id
+      description: The label's identifiers of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.labels.key
+      description: The label's key of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.labels.value
+      description: The label's value of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.labels.name
+      description: The label's names of the endpoint.
+      type: String
+    - contextPath: Guardicore.Endpoint.labels.color_index
+      description: The color index of the endpoint's labels.
+      type: Number
+  - arguments:
+    - description: ID of the incident.
+      name: id
+      required: true
+    description: Display information about an incident.
+    name: guardicore-get-incident
+    outputs:
+    - contextPath: Guardicore.Incident._cls
+      description: The incident's internal class.
+      type: String
+    - contextPath: Guardicore.Incident.doc_version
+      description: The incident's document version.
+      type: Number
+    - contextPath: Guardicore.Incident.sensor_type
+      description: The sensor type (honeypot, datagraph agent, mitigation agent, visibility) of the incident.
+      type: String
+    - contextPath: Guardicore.Incident.start_time
+      description: The start time of the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.end_time
+      description: The end time of the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.last_updated_time
+      description: The last time the incident was updated.
+      type: Date
+    - contextPath: Guardicore.Incident.ended
+      description: The end date of the incident.
+      type: String
+    - contextPath: Guardicore.Incident.closed_time
+      description: The closed time of the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.severity
+      description: The incident's severity.
+      type: Number
+    - contextPath: Guardicore.Incident.affected_assets.labels
+      description: The affected assets labels for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.ip
+      description: The IP address of the affected assets.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm_id
+      description: The virtual machine ID of the affected assets.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.id
+      description: The virtual machine ID of the affected assets for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.name
+      description: The virtual machine name of the affected assets for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.tenant_name
+      description: The virtual machine's tenant name for the affected assets for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.full_name
+      description: The virtual machine's full name for the affected assets for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.is_inner
+      description: The incident's affected asset is inner flag.
+      type: String
+    - contextPath: Guardicore.Incident.enriched
+      description: Wether the incident was enriched.
+      type: String
+    - contextPath: Guardicore.Incident.reenrich_count
+      description: The number of re-enrichments made on the incident.
+      type: Number
+    - contextPath: Guardicore.Incident.tags.id
+      description: The tag's identifiers for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.visible
+      description: The tag's visibilities for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.tag_class
+      description: The tag's classes for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.display_name
+      description: The tag's display names for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.search_names
+      description: The tag's search names for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.shortened_group_display_name
+      description: The shortened group display name for the incident tags.
+      type: String
+    - contextPath: Guardicore.Incident.tags.tag_type_key
+      description: The tag's type key for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.tag_args.category
+      description: The tag's arguments category for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.source
+      description: The tag's source for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.tag_args.process_name
+      description: The tag's arguments process name for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.tag_args.process_path
+      description: The tag's arguments process path for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.tag_args.side
+      description: The incident's tags argument side.
+      type: Number
+    - contextPath: Guardicore.Incident.tags.tag_args.reason
+      description: The tag's arguments reason for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.events
+      description: The tag's events for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.tags.time
+      description: The tag's time for the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.recommendations.id
+      description: The recommendation's identifiers for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.recommendations.parts.type
+      description: The recommendation's parts type for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.recommendations.parts.value
+      description: The recommendation's parts value for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.recommendations.rule_type
+      description: The recommendation's rule type for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.recommendations.handle_template
+      description: The recommendation's handle template for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.recommendations.details.parts.value
+      description: The recommendation's details parts value for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.recommendations.details.parts.type
+      description: The recommendation's details parts type for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.recommendations.type
+      description: The recommendation's type for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.similarity_calculated
+      description: The similarity calculated for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.incident_group.gname
+      description: The incident group name for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.incident_group.gid
+      description: The incident group identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.stories.template
+      description: The incident's stories template.
+      type: String
+    - contextPath: Guardicore.Incident.stories.arguments.malicious_process.process_name
+      description: The malicious process name for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.arguments.malicious_process.reputation_info
+      description: The malicious process reputation information for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.arguments.destination_port
+      description: The destination port name for the incident (via stories).
+      type: Number
+    - contextPath: Guardicore.Incident.stories.arguments.asset_name
+      description: The asset name for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.arguments.ip_address
+      description: The IP address for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.arguments.malicious_process->process_name
+      description: The malicious process name for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.arguments.malicious_process->reputation_info
+      description: The malicious process reputation information for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.tags.display_name
+      description: The tag's display name for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.tags.tag_class
+      description: The tag's class for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.tags.events
+      description: The tag's events for the incident (via stories).
+      type: String
+    - contextPath: Guardicore.Incident.stories.time
+      description: The story time of the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.stories.parts.type
+      description: The story parts type for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.stories.parts.value
+      description: The story parts value for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.flow_ids
+      description: The flow ID for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.remote_index
+      description: The remote index for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.is_experimental
+      description: Whether the incident is experimental.
+      type: String
+    - contextPath: Guardicore.Incident.original_id
+      description: The original ID for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.experimental_id
+      description: The experimental identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.first_asset.asset_type
+      description: The first asset type for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.first_asset.asset_id
+      description: The first asset's identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.second_asset.asset_type
+      description: The second asset type for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.second_asset.asset_id
+      description: The second asset's identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.labels.id
+      description: The label's identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.labels.key
+      description: The incident's labels keys.
+      type: String
+    - contextPath: Guardicore.Incident.labels.value
+      description: The incident's labels values.
+      type: String
+    - contextPath: Guardicore.Incident.labels.name
+      description: The incident's labels names.
+      type: String
+    - contextPath: Guardicore.Incident.labels.color_index
+      description: The incident's labels color index.
+      type: Number
+    - contextPath: Guardicore.Incident.labels.asset_ids
+      description: The incident's labels asset IDs.
+      type: String
+    - contextPath: Guardicore.Incident.policy_revision
+      description: The incident's policy revision.
+      type: Number
+    - contextPath: Guardicore.Incident.id
+      description: The incident's identifier.
+      type: String
+    - contextPath: Guardicore.Incident.incident_type
+      description: The incident type.
+      type: String
+    - contextPath: Guardicore.Incident.has_export
+      description: Whether the Incident has exports.
+      type: String
+    - contextPath: Guardicore.Incident.concatenated_tags.display_name
+      description: The incident's concatenated tags display name.
+      type: String
+    - contextPath: Guardicore.Incident.concatenated_tags.tag_class
+      description: The incident's concatenated tags class.
+      type: String
+    - contextPath: Guardicore.Incident.concatenated_tags.events
+      description: The incident's concatenated tags events.
+      type: String
+    - contextPath: Guardicore.Incident.direction
+      description: The incident's direction.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.labels
+      description: The source assets labels for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.ip
+      description: The source asset's IP address.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.vm_id
+      description: The virtual machine identifier of the source asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.vm.id
+      description: The virtual machine identifier of the source asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.vm.name
+      description: The virtual machine name of the source asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.vm.tenant_name
+      description: The virtual machine tenant name of the source asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.vm.full_name
+      description: The virtual machine's full name for the source asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.is_inner
+      description: The incident's source asset is inner flag.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.labels
+      description: The destination asset labels for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.ip
+      description: The IP address of the destination asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm_id
+      description: The virtual machine identifier of the destination asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.id
+      description: The virtual machine identifier of the destination asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.name
+      description: The virtual machine name of the destination asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.tenant_name
+      description: The virtual machine tenant name of the destination asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.full_name
+      description: The virtual machine's full name for the destination asset for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.is_inner
+      description: The incident's destination asset is inner flag.
+      type: String
+    - contextPath: Guardicore.Incident.has_policy_violations
+      description: Whether the incident has policy violations.
+      type: String
+    - contextPath: Guardicore.Incident.total_events_count
+      description: The total number of events for the incident.
+      type: Number
+    - contextPath: Guardicore.Incident.limited_events_count
+      description: The number of limited events for the incident.
+      type: Number
+    - contextPath: Guardicore.Incident.events._cls
+      description: The incident's event's internal class.
+      type: String
+    - contextPath: Guardicore.Incident.events.doc_version
+      description: The incident's event's document version.
+      type: Number
+    - contextPath: Guardicore.Incident.events.uuid
+      description: The incident's event's universal unique identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.time
+      description: The incident's event's time.
+      type: Date
+    - contextPath: Guardicore.Incident.events.received_time
+      description: When the incident's events were received.
+      type: Date
+    - contextPath: Guardicore.Incident.events.processed_time
+      description: When the incident's events were processed.
+      type: Date
+    - contextPath: Guardicore.Incident.events.event_source
+      description: The events sources for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.is_experimental
+      description: Whether the incident is experimental.
+      type: String
+    - contextPath: Guardicore.Incident.events.incident_id
+      description: The incident's event's identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow_id
+      description: The flow ID for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.count
+      description: The flow count for the incident's events.
+      type: Number
+    - contextPath: Guardicore.Incident.events.flow.ip_protocols
+      description: The flow's IP protocols used for the incident events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.destination_ports
+      description: The flow destination ports for the incident's events.
+      type: Number
+    - contextPath: Guardicore.Incident.events.flow.source_username
+      description: The flow's source username for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.source_node_type
+      description: The flow source node type for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.source_process_id
+      description: The flow source process identifier of the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.source_ip
+      description: The flow source IP for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.source_process_name
+      description: The flow source process name for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.source_process
+      description: The flow source process for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.destination_node_type
+      description: The flow destination node type for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.destination_process_id
+      description: The flow destination process identifier for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.destination_ip
+      description: The flow's destination IP for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.destination_process_name
+      description: The flow's destination process name for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.flow.destination_process
+      description: The flow's destination process for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_asset.asset_type
+      description: The source asset asset type for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_asset.asset_id
+      description: The source asset identifier for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_asset.asset_value
+      description: The source asset's value for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_asset.asset_name
+      description: The source asset name for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_asset.asset_type
+      description: The destination's asset type for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_asset.asset_id
+      description: The destination asset's identifier for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_asset.asset_value
+      description: The destination asset's value for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_asset.asset_name
+      description: The destination asset's name for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.connection_type
+      description: The connection type for the incident's events.
+      type: String
+    - contextPath: Guardicore.Incident.events.side
+      description: The incident's events side.
+      type: Number
+    - contextPath: Guardicore.Incident.events.date
+      description: The date of the incident's events.
+      type: Date
+    - contextPath: Guardicore.Incident.events.result.verdict
+      description: The incident's events result verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.result.reasons
+      description: The reason for the incident's events results.
+      type: String
+    - contextPath: Guardicore.Incident.events.result.score
+      description: The incident's events result score.
+      type: Number
+    - contextPath: Guardicore.Incident.events.result.severity
+      description: The incident's events result severity.
+      type: String
+    - contextPath: Guardicore.Incident.events.result.experimental_verdict
+      description: The incident's events result experimental verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.result.experimental_reasons
+      description: The incident's events result experimental reasons.
+      type: String
+    - contextPath: Guardicore.Incident.events.result.experimental_score
+      description: The incident's events result experimental score.
+      type: Number
+    - contextPath: Guardicore.Incident.events.result.experimental_severity
+      description: The incident's events result experimental severity.
+      type: String
+    - contextPath: Guardicore.Incident.events.answer_origin
+      description: The incident event's answer origin.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_port
+      description: The destination port for the incident's events.
+      type: Number
+    - contextPath: Guardicore.Incident.events.source_process_name
+      description: The incident's events source process name.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_process_name
+      description: The incident's events destination process name.
+      type: String
+    - contextPath: Guardicore.Incident.events.process_name
+      description: The incident event's process name.
+      type: String
+    - contextPath: Guardicore.Incident.events.process_path
+      description: The incident event's process path.
+      type: String
+    - contextPath: Guardicore.Incident.events.process_hash
+      description: The incident event's process hash.
+      type: String
+    - contextPath: Guardicore.Incident.events.asset_name
+      description: The incident event's asset name.
+      type: String
+    - contextPath: Guardicore.Incident.events.ip_address
+      description: The incident event's IP address.
+      type: String
+    - contextPath: Guardicore.Incident.events.slot_start_time
+      description: The incident event's slot start time.
+      type: Date
+    - contextPath: Guardicore.Incident.events.count
+      description: The number of events for an incident.
+      type: Number
+    - contextPath: Guardicore.Incident.events.protocol
+      description: The incident's events protocol.
+      type: String
+    - contextPath: Guardicore.Incident.events.service_port
+      description: The incident event's service port.
+      type: Number
+    - contextPath: Guardicore.Incident.events.event_group
+      description: The incident event's event group.
+      type: String
+    - contextPath: Guardicore.Incident.events.type
+      description: The incident's events type.
+      type: String
+    - contextPath: Guardicore.Incident.events.type_title
+      description: The incident's event type title.
+      type: String
+    - contextPath: Guardicore.Incident.events.visibility
+      description: The incident's visibility.
+      type: String
+    - contextPath: Guardicore.Incident.events.policy_revision
+      description: The incident's policy revision.
+      type: Number
+    - contextPath: Guardicore.Incident.events.violating_policy_rule_id
+      description: The incident's violating policy rule identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.violating_policy_verdict
+      description: The incident's violation policy verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_agent_matching.verdict
+      description: The incident's event's source agent matching verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_agent_matching.rule_id
+      description: The incident's event's source agent matching rule identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_agent_matching.revision
+      description: The incident's event's source agent matching revision.
+      type: Number
+    - contextPath: Guardicore.Incident.events.destination_agent_matching.verdict
+      description: The incident's event's destination agent matching verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_agent_matching.rule_id
+      description: The incident's event's destination agent matching rule identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_agent_matching.revision
+      description: The incident's event's destination agent matching revision.
+      type: Number
+    - contextPath: Guardicore.Incident.events.management_matching.rule_action
+      description: The incident's event's management matching rule action.
+      type: Number
+    - contextPath: Guardicore.Incident.events.management_matching.rule_id
+      description: The incident's event's management matching rule identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.management_matching.revision
+      description: The incident event's management matching revision.
+      type: Number
+    - contextPath: Guardicore.Incident.events.has_mismatch_alert
+      description: The incident event has a mismatch alert.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.destination_node_id
+      description: The last connection destination node identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.slot_start_time
+      description: The last connection slot start time for the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.events.last_connection.source_node_id
+      description: The last connection source node identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.flow_id
+      description: The last connection flow identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.incidents.incident_id
+      description: The last connection incident identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.incidents.incident_type
+      description: The last connection's incident type for the incident's event.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.policy_verdict
+      description: The last connection's policy verdict for the incident's event.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.destination_process_id
+      description: The last connection destination process identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.source_process_id
+      description: The last connection's source process identifier for the incident's event.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.policy_rule
+      description: The last connection's policy rule identifier for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.has_mismatch_alert
+      description: The incident event last connection had a mismatch alert.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.original_policy_verdict
+      description: The incident event's last connection original policy verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.source_agent_matching.verdict
+      description: The incident event's last connection source agent matching verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.source_agent_matching.rule
+      description: The incident event's last connection source agent matching rule.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.destination_agent_matching.verdict
+      description: The incident event's last connection destination agent matching verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.destination_agent_matching.rule
+      description: The incident event's last connection destination agent matching rule.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.management_matching.rule_action
+      description: The incident event's last connection management matching rule action.
+      type: String
+    - contextPath: Guardicore.Incident.events.last_connection.management_matching.rule
+      description: The incident event's last connection management matching rule.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.id
+      description: The incident event's reputation tags identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.visible
+      description: The incident event's reputation tags visibility.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.tag_class
+      description: The incident event's reputation tags class.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.display_name
+      description: The incident event's reputation tags display name.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.search_names
+      description: The incident event's reputation tags search names.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.shortened_group_display_name
+      description: The incident event's reputation tags shortened group display name.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.tag_type_key
+      description: The incident event's reputation tags type key.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.process_name
+      description: The incident event's reputation tags process name.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.process_path
+      description: The incident event's reputation tags process path.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.side
+      description: The incident event's reputation tags arguments side.
+      type: Number
+    - contextPath: Guardicore.Incident.events.reputation_tags.tag_args.reason
+      description: The incident event's reputation tags reason.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.source
+      description: The incident event's reputation tags source.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.events
+      description: The incident event's reputation tags events.
+      type: String
+    - contextPath: Guardicore.Incident.events.reputation_tags.time
+      description: The incident event's reputation tags times.
+      type: Date
+    - contextPath: Guardicore.Incident.events.policy_verdict
+      description: The incident event's policy verdict.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_ip
+      description: The incident event's source IP.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_node_type
+      description: The incident event's source node type.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_process_id
+      description: The incident event's source process identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.source_process
+      description: The incident event's source process.
+      type: String
+    - contextPath: Guardicore.Incident.events.source.vm._id
+      description: The incident event's source virtual machine identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.source.vm.name
+      description: The incident event's source virtual machine name.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_ip
+      description: The incident event's destination IP.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_node_type
+      description: The incident event's destination node type.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_process_id
+      description: The incident event's destination process identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination_process
+      description: The incident event's destination process.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination.vm._id
+      description: The incident event's destination virtual machine identifier.
+      type: String
+    - contextPath: Guardicore.Incident.events.destination.vm.name
+      description: The incident event's destination virtual machine name.
+      type: String
+    - contextPath: Guardicore.Incident.is_bc_format_incident
+      description: Whether the incident is in backwards compatibility format.
+      type: String
+  - arguments:
+    - description: From time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
+      name: from_time
+      required: true
+    - description: To time (ISO8601 or <number> <time unit>, e.g., 12 hours, 7 days)
+      name: to_time
+      required: true
+    - defaultValue: "50"
+      description: The maximum number of incidents returned.
+      name: limit
+    - defaultValue: "0"
+      description: Offset the incidents.
+      name: offset
+    - description: Severity (Low, Medium, High). Default is All.
+      isArray: true
+      name: severity
+    - description: Source (IP or Hostname).
+      isArray: true
+      name: source
+    - description: Destination (IP or Hostname).
+      isArray: true
+      name: destination
+    - description: Tag (e.g., Internal or Known malware).
+      isArray: true
+      name: tag
+    - defaultValue: false
+      description: 'Type of the incident. Possible values: "Incident", "Deception", "Network Scan", "Reveal", "Experimental").'
+      predefined:
+      - 'Incident'
+      - 'Deception'
+      - 'Network Scan'
+      - 'Reveal'
+      - 'Experimental'
+      isArray: true
+      name: incident_type
+    description: Display information about incidents.
+    name: guardicore-get-incidents
+    outputs:
+    - contextPath: Guardicore.Incident._id
+      description: The incident's identifier.
+      type: String
+    - contextPath: Guardicore.Incident._cls
+      description: The incident's internal class.
+      type: String
+    - contextPath: Guardicore.Incident.doc_version
+      description: The incident's document version.
+      type: Number
+    - contextPath: Guardicore.Incident.sensor_type
+      description: The incident's sensor type.
+      type: String
+    - contextPath: Guardicore.Incident.start_time
+      description: The start time of the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.end_time
+      description: The end time of the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.last_updated_time
+      description: The last time the incident was updated.
+      type: Date
+    - contextPath: Guardicore.Incident.ended
+      description: The end date of the incident.
+      type: String
+    - contextPath: Guardicore.Incident.severity
+      description: The incident severity.
+      type: Number
+    - contextPath: Guardicore.Incident.affected_assets.labels
+      description: The affected assets labels for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.ip
+      description: The incident's affected assets IP address.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.is_inner
+      description: The incident's affected asset is inner flag.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm_id
+      description: The incident's affected assets virtual machine identifier.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.id
+      description: The incident's affected assets virtual machine identifier.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.name
+      description: The incident's affected assets virtual machine name.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.tenant_name
+      description: The incident's affected asset's virtual machine tenant name.
+      type: String
+    - contextPath: Guardicore.Incident.affected_assets.vm.full_name
+      description: The incident's affected asset's virtual machine name.
+      type: String
+    - contextPath: Guardicore.Incident.enriched
+      description: Wether the incident is enriched.
+      type: String
+    - contextPath: Guardicore.Incident.reenrich_count
+      description: The number of re-enrichments made on the incident.
+      type: Number
+    - contextPath: Guardicore.Incident.similarity_calculated
+      description: The similarity calculated for the incident.
+      type: String
+    - contextPath: Guardicore.Incident.incident_group.gname
+      description: The incident group name.
+      type: String
+    - contextPath: Guardicore.Incident.incident_group.gid
+      description: The incident group identifier.
+      type: String
+    - contextPath: Guardicore.Incident.flow_ids
+      description: The incident flow IDs.
+      type: String
+    - contextPath: Guardicore.Incident.remote_index
+      description: The incident's remote index.
+      type: String
+    - contextPath: Guardicore.Incident.is_experimental
+      description: Whether the incident is experimental.
+      type: String
+    - contextPath: Guardicore.Incident.original_id
+      description: The incident's original ID.
+      type: String
+    - contextPath: Guardicore.Incident.experimental_id
+      description: The incident's experimental ID.
+      type: String
+    - contextPath: Guardicore.Incident.first_asset.asset_type
+      description: The incident's first asset type.
+      type: Number
+    - contextPath: Guardicore.Incident.first_asset.asset_id
+      description: The first asset's ID.
+      type: String
+    - contextPath: Guardicore.Incident.second_asset.asset_type
+      description: The incident's second asset type.
+      type: Number
+    - contextPath: Guardicore.Incident.second_asset.asset_id
+      description: The second asset's ID.
+      type: String
+    - contextPath: Guardicore.Incident.labels.id
+      description: The incident's label's identifier.
+      type: String
+    - contextPath: Guardicore.Incident.labels.key
+      description: The incident's label's key.
+      type: String
+    - contextPath: Guardicore.Incident.labels.value
+      description: The incident's label's value.
+      type: String
+    - contextPath: Guardicore.Incident.labels.name
+      description: The incident's labels name.
+      type: String
+    - contextPath: Guardicore.Incident.labels.color_index
+      description: The incident's label's color index.
+      type: Number
+    - contextPath: Guardicore.Incident.labels.asset_ids
+      description: The incident's label's asset identifiers.
+      type: String
+    - contextPath: Guardicore.Incident.policy_revision
+      description: The incident's policy revision.
+      type: Number
+    - contextPath: Guardicore.Incident.closed_time
+      description: The closed time of the incident.
+      type: Date
+    - contextPath: Guardicore.Incident.id
+      description: The incident's identifier.
+      type: String
+    - contextPath: Guardicore.Incident.incident_type
+      description: The incident's type.
+      type: String
+    - contextPath: Guardicore.Incident.has_export
+      description: Whether the incident has been exported or not.
+      type: String
+    - contextPath: Guardicore.Incident.concatenated_tags.display_name
+      description: The incident's concatenated tags display name.
+      type: String
+    - contextPath: Guardicore.Incident.concatenated_tags.tag_class
+      description: The incident's concatenated tags class.
+      type: String
+    - contextPath: Guardicore.Incident.concatenated_tags.events
+      description: The incident's concatenated tags events.
+      type: String
+    - contextPath: Guardicore.Incident.direction
+      description: The incident's direction.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.labels
+      description: The incident's source asset labels.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.ip
+      description: The incident's source asset IP address.
+      type: String
+    - contextPath: Guardicore.Incident.source_asset.is_inner
+      description: The incident's source asset is inner flag.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.labels
+      description: The incident's destination asset labels.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.ip
+      description: The incident's destination asset IP address.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm_id
+      description: The incident's destination asset virtual machine identifier.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.id
+      description: The incident's destination asset virtual machine identifier.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.name
+      description: The incident's destination asset virtual machine name.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.tenant_name
+      description: The incident's destination asset's tenant name.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.vm.full_name
+      description: The incident's destination asset's full name.
+      type: String
+    - contextPath: Guardicore.Incident.destination_asset.is_inner
+      description: The incident's destination asset is inner flag.
+      type: String
+  - arguments:
+    - description: The ID of the asset. Takes priority over the ip and hostname arguments.
+      name: id
+    - default: true
+      description: The IP address of the asset. The ip argument has priority over the hostname argument.
+      name: ip
+    - description: The hostname of the asset.
+      name: hostname
+    description: Gets information regarding endpoints.
+    name: endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The hostname of the endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's identifier.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operating system.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: The endpoint's operating system's version.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The status of the endpoint (online/offline).
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: "-"
   subtype: python3
   type: python
 tests:
-  - GuardiCoreV2-Test
+- GuardiCoreV2-Test

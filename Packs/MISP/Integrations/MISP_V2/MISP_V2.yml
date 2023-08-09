@@ -14,14 +14,13 @@ configuration:
   type: 4
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
-- display: Select which attribute data fields of the event to save to context.
-    Leave empty to save all attributes.
+  required: false
+- display: Select which attribute data fields of the event to save to context. Leave empty to save all attributes.
   name: context_select
   options:
   - Category
@@ -42,113 +41,55 @@ configuration:
   - Type
   - UUID
   - Value
-  required: false
   type: 16
-- additionalinfo: This field limits the number of attributes for every event that
-    will be written to the context. Raising the number of attributes above 1000 may result in high memory
-    and disk usage. Contact Cortex XSOAR support before attempting to raise
-    this field above 1000.
+  required: false
+- additionalinfo: This field limits the number of attributes for every event that will be written to the context. Raising the number of attributes above 1000 may result in high memory and disk usage. Contact Cortex XSOAR support before attempting to raise this field above 1000.
   defaultvalue: '1000'
   display: Maximum attributes in the event
-  hidden: false
   name: attributes_limit
-  required: false
   type: 0
+  required: false
 description: Deprecated. Use the MISP v3 integration instead.
 display: MISP v2 (Deprecated)
 name: MISP V2
 script:
   commands:
   - arguments:
-    - default: false
-      description: The attribute type. Use any valid MISP attribute.
-      isArray: false
+    - description: The attribute type. Use any valid MISP attribute.
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Search for the specified value in the attributes' value field.
-      isArray: false
+    - description: Search for the specified value in the attributes' value field.
       name: value
-      required: false
-      secret: false
-    - default: false
-      description: The attribute category. Use any valid MISP attribute category.
-      isArray: false
+    - description: The attribute category. Use any valid MISP attribute category.
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: Search by creator organization by supplying the organization ID.
-      isArray: false
+    - description: Search by creator organization by supplying the organization ID.
       name: org
-      required: false
-      secret: false
-    - default: false
-      description: 'A comma-separated list of tags to include in the results. To exclude a tag, prefix the
-        tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". 
-        for example, "AND:tag1,tag2;OR:tag3".'
-      isArray: false
+    - description: 'A comma-separated list of tags to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". for example, "AND:tag1,tag2;OR:tag3".'
       name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Event search start date (2015-02-15).
-      isArray: false
+    - description: Event search start date (2015-02-15).
       name: from
-      required: false
-      secret: false
-    - default: false
-      description: Event search end date (2015-02-15).
-      isArray: false
+    - description: Event search end date (2015-02-15).
       name: to
-      required: false
-      secret: false
-    - default: false
-      description: Events published within the last "x" amount of time. Valid time
-        values are days, hours, and minutes (for example "5d", "12h", "30m"). This
-        filter uses the published timestamp of the event.
-      isArray: false
+    - description: Events published within the last "x" amount of time. Valid time values are days, hours, and minutes (for example "5d", "12h", "30m"). This filter uses the published timestamp of the event.
       name: last
-      required: false
-      secret: false
-    - default: false
-      description: The events to include or exclude from the search.
+    - description: The events to include or exclude from the search.
       isArray: true
       name: eventid
-      required: false
-      secret: false
-    - default: false
-      description: Return events that include an attribute with the given UUID. Alternatively
-        the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002.
-      isArray: false
+    - description: Return events that include an attribute with the given UUID. Alternatively the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002.
       name: uuid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to return only the attributes set with the "to_ids" flag.
-      isArray: false
       name: to_ids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to return only the values that are not on the warninglists.
-      isArray: false
       name: enforceWarninglist
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Search for events in MISP.
-    execution: false
     name: misp-search
     outputs:
     - contextPath: MISP.Event.ID
@@ -339,15 +280,10 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
-        can pass CSV values to retrieve multiple responses.
+      description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You can pass CSV values to retrieve multiple responses.
       isArray: true
       name: file
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the file reputation of the given hash.
-    execution: false
     name: file
     outputs:
     - contextPath: File.MD5
@@ -382,11 +318,7 @@ script:
       description: URL to check
       isArray: true
       name: url
-      required: false
-      secret: false
-    deprecated: false
     description: Checks if the URL is in MISP events.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -415,11 +347,7 @@ script:
       description: IP address to check.
       isArray: true
       name: ip
-      required: false
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address.
-    execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -444,76 +372,42 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - default: false
-      description: Event type of the new event.
-      isArray: false
+    - description: Event type of the new event.
       name: type
-      required: false
-      secret: false
-    - default: false
-      defaultValue: External analysis
+    - defaultValue: External analysis
       description: Category of the new event.
-      isArray: false
       name: category
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to create an event with the Intrusion Detection System flag.
-      isArray: false
       name: to_ids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Where to distribute the event.
-      isArray: false
       name: distribution
-      required: false
-      secret: false
-    - default: false
-      description: Comment for the event.
-      isArray: false
+    - description: Comment for the event.
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: Value to add to the event.
-      isArray: false
+    - description: Value to add to the event.
       name: value
       required: true
-      secret: false
     - default: true
       description: Event name.
-      isArray: false
       name: info
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to publish the event.
-      isArray: false
       name: published
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: MISP threat level ID. Default is 1.
-      isArray: false
       name: threat_level_id
-      required: false
-      secret: false
     deprecated: true
     description: Create a new MISP event.
-    execution: false
     name: internal-misp-create-event
     outputs:
     - contextPath: MISP.Event.ID
@@ -628,95 +522,56 @@ script:
       description: All tag names in the event.
       type: string
   - arguments:
-    - default: false
-      defaultValue: other
+    - defaultValue: other
       description: Event type of the new event.
-      isArray: false
       name: type
-      required: false
-      secret: false
-    - default: false
-      defaultValue: External analysis
+    - defaultValue: External analysis
       description: Category of the new event.
-      isArray: false
       name: category
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to create the event with the Intrusion Detection System flag.
-      isArray: false
       name: to_ids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Where to distribute the event.
-      isArray: false
       name: distribution
-      required: false
-      secret: false
-    - default: false
-      description: Comment for the event.
-      isArray: false
+    - description: Comment for the event.
       name: comment
-      required: false
-      secret: false
-    - default: false
-      description: Value to add to the event.
-      isArray: false
+    - description: Value to add to the event.
       name: value
       required: true
-      secret: false
     - default: true
       description: Event name.
-      isArray: false
       name: info
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to publish the event.
-      isArray: false
       name: published
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: high
       description: MISP Threat level ID. Default is "high".
-      isArray: false
       name: threat_level_id
       predefined:
       - high
       - medium
       - low
       - undefined
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: initial
       description: The analysis level. Default is "initial".
-      isArray: false
       name: analysis
       predefined:
       - initial
       - ongoing
       - completed
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new MISP event.
-    execution: false
     name: misp-create-event
     outputs:
     - contextPath: MISP.Event.ID
@@ -831,148 +686,82 @@ script:
       description: All tag names in the event.
       type: string
   - arguments:
-    - default: false
-      description: MISP event ID.
-      isArray: false
+    - description: MISP event ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Attribute type, e.g., "other" or "url".
-      isArray: false
+    - description: Attribute type, e.g., "other" or "url".
       name: type
       required: true
-      secret: false
-    - default: false
-      description: Attribute category.
-      isArray: false
+    - description: Attribute category.
       name: category
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Whether to set Intrusion Detection System on.
-      isArray: false
       name: to_ids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Where to distribute the attribute.
-      isArray: false
+    - description: Where to distribute the attribute.
       name: distribution
-      required: false
-      secret: false
-    - default: false
-      description: Attribute name.
-      isArray: false
+    - description: Attribute name.
       name: comment
       required: true
-      secret: false
-    - default: false
-      description: Attribute value.
-      isArray: false
+    - description: Attribute value.
       name: value
       required: true
-      secret: false
     deprecated: true
     description: Adds an attribute to an existing MISP event.
-    execution: false
     name: internal-misp-add-attribute
   - arguments:
-    - default: false
-      description: 'A hash in MD5 format. If the "allSamples" argument is supplied,
-        this can be any one of the following: md5, sha1, and sha256.'
-      isArray: false
+    - description: 'A hash in MD5 format. If the "allSamples" argument is supplied, this can be any one of the following: md5, sha1, and sha256.'
       name: hash
       required: true
-      secret: false
-    - default: false
-      description: If set, will only fetch data from the given event ID.
-      isArray: false
+    - description: If set, will only fetch data from the given event ID.
       name: eventID
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: If set, will return all samples from events that match the hash
-        supplied in the "hash" argument.
-      isArray: false
+      description: If set, will return all samples from events that match the hash supplied in the "hash" argument.
       name: allSamples
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: true
       defaultValue: 'false'
-      description: True to return all files unzipped. False to return one zipped file.  Default is "false". 
-      isArray: false
+      description: True to return all files unzipped. False to return one zipped file.  Default is "false".
       name: unzip
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Downloads a file sample from MISP.
     execution: true
     name: misp-download-sample
   - arguments:
-    - default: false
-      description: MISP event ID.
-      isArray: false
+    - description: MISP event ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Attribute type.
-      isArray: false
+    - description: Attribute type.
       name: type
       required: true
-      secret: false
-    - default: false
-      description: Attribute category.
-      isArray: false
+    - description: Attribute category.
       name: category
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Return only events set with the "to_ids" flag. Default is "true".
-      isArray: false
       name: to_ids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Where to distribute the attribute.
-      isArray: false
+    - description: Where to distribute the attribute.
       name: distribution
-      required: false
-      secret: false
-    - default: false
-      description: Comment for the attribute.
-      isArray: false
+    - description: Comment for the attribute.
       name: comment
       required: true
-      secret: false
-    - default: false
-      description: Attribute value.
-      isArray: false
+    - description: Attribute value.
       name: value
       required: true
-      secret: false
-    deprecated: false
     description: Adds an attribute to an existing MISP event.
-    execution: false
     name: misp-add-attribute
     outputs:
     - contextPath: MISP.Event.ID
@@ -1087,90 +876,48 @@ script:
       description: All tag names in the event.
       type: string
   - arguments:
-    - default: false
-      description: Entry ID of the file to upload.
-      isArray: false
+    - description: Entry ID of the file to upload.
       name: fileEntryID
       required: true
-      secret: false
-    - default: false
-      description: The event ID of the event to add the uploaded file to.
-      isArray: false
+    - description: The event ID of the event to add the uploaded file to.
       name: event_id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The distribution setting used for the attributes and for the newly
-        created event, if relevant (0-3).
-      isArray: false
+      description: The distribution setting used for the attributes and for the newly created event, if relevant (0-3).
       name: distribution
       predefined:
       - '0'
       - '1'
       - '2'
       - '3'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Flags all attributes created during the transaction to be marked
-        as "to_ids" or not.
-      isArray: false
+      description: Flags all attributes created during the transaction to be marked as "to_ids" or not.
       name: to_ids
       predefined:
       - '0'
       - '1'
-      required: false
-      secret: false
-    - default: false
-      description: The category that will be assigned to the uploaded samples, (Payload
-        delivery, Artifacts dropped, Payload Installation, External Analysis).
-      isArray: false
+    - description: The category that will be assigned to the uploaded samples, (Payload delivery, Artifacts dropped, Payload Installation, External Analysis).
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: Used to populate the event info field if no event ID is supplied.
-        Alternatively, if not supplied, MISP will generate a message showing that
-        it is a malware sample collection generated on the given day.
-      isArray: false
+    - description: Used to populate the event info field if no event ID is supplied. Alternatively, if not supplied, MISP will generate a message showing that it is a malware sample collection generated on the given day.
       name: info
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: initial
       description: The analysis level. Default is "initial".
-      isArray: false
       name: analysis
       predefined:
       - initial
       - ongoing
       - completed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: high
       description: The threat level ID of the newly created event. Default is "high".
-      isArray: false
       name: threat_level_id
       predefined:
       - high
       - medium
       - low
       - undefined
-      required: false
-      secret: false
-    - default: false
-      description: This will populate the comment field of any attribute created using
-        this API.
-      isArray: false
+    - description: This will populate the comment field of any attribute created using this API.
       name: comment
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a file sample to MISP.
     execution: true
     name: misp-upload-sample
@@ -1179,32 +926,19 @@ script:
       description: 'Object containing {filename: event id} of the uploaded file.'
       type: Unknown
   - arguments:
-    - default: false
-      description: Event ID to delete.
-      isArray: false
+    - description: Event ID to delete.
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an event according to event ID.
-    execution: false
     name: misp-delete-event
   - arguments:
-    - default: false
-      description: UUID of the attribute/event, e.g., 59575300-4be8-4ff6-8767-0037ac110032.
-      isArray: false
+    - description: UUID of the attribute/event, e.g., 59575300-4be8-4ff6-8767-0037ac110032.
       name: uuid
       required: true
-      secret: false
-    - default: false
-      description: Tag to add to the attribute or event.
-      isArray: false
+    - description: Tag to add to the attribute or event.
       name: tag
       required: true
-      secret: false
-    deprecated: false
     description: Adds a tag to the given UUID event or attribute.
-    execution: false
     name: misp-add-tag
     outputs:
     - contextPath: MISP.Event.ID
@@ -1320,76 +1054,44 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: Type of sighting to add.
-      isArray: false
       name: type
       predefined:
       - sighting
       - false_positive
       - expiration
       required: true
-      secret: false
-    - default: false
-      description: ID of attribute to add sighting to (Must be filled if UUID is empty).
-        Can be retrieved from misp-search.
-      isArray: false
+    - description: ID of attribute to add sighting to (Must be filled if UUID is empty). Can be retrieved from misp-search.
       name: id
-      required: false
-      secret: false
-    - default: false
-      description: UUID of attribute to add sighting to (Must be filled if ID is empty).
-        Can be retrieved from misp-search.
-      isArray: false
+    - description: UUID of attribute to add sighting to (Must be filled if ID is empty). Can be retrieved from misp-search.
       name: uuid
-      required: false
-      secret: false
-    deprecated: false
     description: Add sighting to an attribute.
-    execution: false
     name: misp-add-sighting
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: URL of the feed to add.
-      isArray: false
       name: feed
       predefined:
       - CIRCL
       - Botvrij.eu
-      required: false
-      secret: false
     - default: true
       defaultValue: '0'
       description: Maximum number of files to add.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Adds an OSINT feed.
-    execution: false
     name: misp-add-events-from-feed
     outputs:
     - contextPath: MISP.Event.ID
       description: IDs of newly created events.
       type: number
   - arguments:
-    - default: false
-      description: Entry ID of the email.
-      isArray: false
+    - description: Entry ID of the email.
       name: entry_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the event to which to add object to.
-      isArray: false
+    - description: ID of the event to which to add object to.
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Adds an email object to the specified event ID.
-    execution: false
     name: misp-add-email-object
     outputs:
     - contextPath: MISP.Event.ID
@@ -1471,51 +1173,25 @@ script:
       description: Description of the object.
       type: String
   - arguments:
-    - default: false
-      description: ID of a MISP event.
-      isArray: false
+    - description: ID of a MISP event.
       name: event_id
       required: true
-      secret: false
-    - default: false
-      description: 'The domain name, for example: "google.com". '
-      isArray: false
+    - description: 'The domain name, for example: "google.com". '
       name: name
       required: true
-      secret: false
-    - default: false
-      description: A list (array) or IP addresses resolved by DNS.
+    - description: A list (array) or IP addresses resolved by DNS.
       isArray: true
       name: dns
       required: true
-      secret: false
-    - default: false
-      description: Date that the domain was created.
-      isArray: false
+    - description: Date that the domain was created.
       name: creation_date
-      required: false
-      secret: false
-    - default: false
-      description: 'Datetime that the domain was last seen, for example: `2019-02-03`.'
-      isArray: false
+    - description: 'Datetime that the domain was last seen, for example: `2019-02-03`.'
       name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: 'Datetime that the domain was first seen, for example: `2019-02-03`.'
-      isArray: false
+    - description: 'Datetime that the domain was first seen, for example: `2019-02-03`.'
       name: first_seen
-      required: false
-      secret: false
-    - default: false
-      description: A description of the domain.
-      isArray: false
+    - description: A description of the domain.
       name: text
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a domain object.
-    execution: false
     name: misp-add-domain-object
     outputs:
     - contextPath: MISP.Event.ID
@@ -1597,39 +1273,19 @@ script:
       description: Description of the object.
       type: String
   - arguments:
-    - default: false
-      description: Full URL to add to the event.
-      isArray: false
+    - description: Full URL to add to the event.
       name: url
       required: true
-      secret: false
-    - default: false
-      description: 'Date that this URL was first seen, for example: `2019-02-03`.'
-      isArray: false
+    - description: 'Date that this URL was first seen, for example: `2019-02-03`.'
       name: first_seen
-      required: false
-      secret: false
-    - default: false
-      description: Description of the URL.
-      isArray: false
+    - description: Description of the URL.
       name: text
-      required: false
-      secret: false
-    - default: false
-      description: 'Date that this URL was last seen, for example: `2019-02-03`.'
-      isArray: false
+    - description: 'Date that this URL was last seen, for example: `2019-02-03`.'
       name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: ID of the event.
-      isArray: false
+    - description: ID of the event.
       name: event_id
       required: true
-      secret: false
-    deprecated: false
     description: Adds a URL object to a MISP event.
-    execution: false
     name: misp-add-url-object
     outputs:
     - contextPath: MISP.Event.ID
@@ -1711,27 +1367,16 @@ script:
       description: Description of the object.
       type: String
   - arguments:
-    - default: false
-      description: ID of the event to add the object to.
-      isArray: false
+    - description: ID of the event to add the object to.
       name: event_id
       required: true
-      secret: false
-    - default: false
-      description: Template name (can be found at https://www.misp-project.org/objects.html).
-      isArray: false
+    - description: Template name (can be found at https://www.misp-project.org/objects.html).
       name: template
       required: true
-      secret: false
-    - default: false
-      description: Attributes.
-      isArray: false
+    - description: Attributes.
       name: attributes
       required: true
-      secret: false
-    deprecated: false
     description: Adds any other object to MISP.
-    execution: false
     name: misp-add-object
     outputs:
     - contextPath: MISP.Event.ID
@@ -1813,77 +1458,30 @@ script:
       description: Description of the object.
       type: String
   - arguments:
-    - default: false
-      description: ID of an event.
-      isArray: false
+    - description: ID of an event.
       name: event_id
       required: true
-      secret: false
-    - default: false
-      description: IP address (require one of).
-      isArray: false
+    - description: IP address (require one of).
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Destination port number.
-      isArray: false
+    - description: Destination port number.
       name: dst_port
-      required: false
-      secret: false
-    - default: false
-      description: Source port number.
-      isArray: false
+    - description: Source port number.
       name: src_port
-      required: false
-      secret: false
-    - default: false
-      description: Domain.
-      isArray: false
+    - description: Domain.
       name: domain
-      required: false
-      secret: false
-    - default: false
-      description: Hostname.
-      isArray: false
+    - description: Hostname.
       name: hostname
-      required: false
-      secret: false
-    - default: false
-      description: IP source.
-      isArray: false
+    - description: IP source.
       name: ip_src
-      required: false
-      secret: false
-    - default: false
-      description: IP destination.
-      isArray: false
+    - description: IP destination.
       name: ip_dst
-      required: false
-      secret: false
-    - default: false
-      description: Date when the tuple was first seen.
-      isArray: false
+    - description: Date when the tuple was first seen.
       name: first_seen
-      required: false
-      secret: false
-    - default: false
-      description: Date when the tuple was last seen.
-      isArray: false
+    - description: Date when the tuple was last seen.
       name: last_seen
-      required: false
-      secret: false
-    - default: false
-      description: A description of the object.
-      isArray: false
+    - description: A description of the object.
       name: comment
-      required: false
-      secret: false
-    deprecated: false
-    description: 'Adds an IP object to the MISP event. The following arguments are optional,
-      but at least one must be supplied for the command to run successfully: "ip",
-      "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
-    execution: false
+    description: 'Adds an IP object to the MISP event. The following arguments are optional, but at least one must be supplied for the command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
     name: misp-add-ip-object
     outputs:
     - contextPath: MISP.Event.ID
@@ -1965,73 +1563,36 @@ script:
       description: Description of the object.
       type: String
   - arguments:
-    - default: false
-      description: The attribute type. Use any valid MISP attribute.
-      isArray: false
+    - description: The attribute type. Use any valid MISP attribute.
       name: type
-      required: false
-      secret: false
-    - default: false
-      description: Search for the specified value in the attributes' value field.
-      isArray: false
+    - description: Search for the specified value in the attributes' value field.
       name: value
-      required: false
-      secret: false
-    - default: false
-      description: The attribute category. Use any valid MISP attribute category.
-      isArray: false
+    - description: The attribute category. Use any valid MISP attribute category.
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: Return events that include an attribute with the given UUID. Alternatively
-        the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002
-      isArray: false
+    - description: Return events that include an attribute with the given UUID. Alternatively the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002
       name: uuid
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether to return only the attributes set with the "to_ids" flag.
-      isArray: false
       name: to_ids
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to return only the attributes that are not on the warninglists.
-      isArray: false
       name: enforceWarninglist
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Search attributes of events published within the last "x" amount
-        of time. Valid time values are days, hours, and minutes (for example "5d",
-        "12h", "30m"). This filter uses the published timestamp of the event.
-      isArray: false
+    - description: Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes (for example "5d", "12h", "30m"). This filter uses the published timestamp of the event.
       name: last
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to include the decay score at the attribute level.
-      isArray: false
       name: include_decay_score
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Search for attributes in MISP.
-    execution: false
     name: misp-search-attributes
     outputs:
     - contextPath: MISP.Attribute.Distribution
@@ -2191,10 +1752,6 @@ script:
       description: Galaxy type.
       type: number
   dockerimage: demisto/pymisp:1.0.0.19190
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

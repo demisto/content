@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from datetime import date
 from http import HTTPStatus
-import demistomock as demisto  # noqa :F401
 import urllib3.util
 
 from AWSApiModule import *  # noqa :E402
-from CommonServerPython import *  # noqa :F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()

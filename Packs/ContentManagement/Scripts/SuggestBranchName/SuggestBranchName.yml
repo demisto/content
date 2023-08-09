@@ -5,7 +5,6 @@ args:
 - auto: PREDEFINED
   description: Which command to use.
   name: use_command
-  required: false
   predefined:
   - gitlab-branch-list
   - GitHub-get-branch
@@ -20,7 +19,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: SuggestBranchName
 outputs:
@@ -28,7 +27,6 @@ outputs:
   description: Available branch name based on the pack name.
   type: string
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

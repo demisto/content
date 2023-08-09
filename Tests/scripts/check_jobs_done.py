@@ -34,10 +34,10 @@ UPLOAD_JOBS = [
     'upload-id-set-bucket',
     'xpanse-prepare-testing-bucket-upload-flow',
     'xsoar-prepare-testing-bucket-upload-flow',
-    'install-packs-in-server6_6',
     'install-packs-in-server6_8',
     'install-packs-in-server6_9',
     'install-packs-in-server6_10',
+    'install-packs-in-server6_11',
     'install-packs-in-server-master',
     'install-packs-in-xsiam-ga',
     'upload-packs-to-marketplace',
@@ -53,10 +53,10 @@ PUSH_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'xsoar_server_6_6',
     'xsoar_server_6_8',
     'xsoar_server_6_9',
     'xsoar_server_6_10',
+    'xsoar_server_6_11',
     'xsoar_server_master',
 ]
 JOBS_PER_BUILD_TYPE = {

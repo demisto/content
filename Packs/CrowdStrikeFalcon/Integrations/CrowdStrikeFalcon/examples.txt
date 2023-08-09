@@ -16,3 +16,10 @@ cs-falcon-delete-ioa-exclusion id=123456
 cs-falcon-search-ioa-exclusion limit=1
 cs-falcon-list-quarantined-file limit=1
 cs-falcon-apply-quarantine-file-action filename=test.exe action=delete comment=demo-comment
+cs-falcon-ods-query-scan initiated_from=some_admin_name severity=high scan_started_on=2023-02-27T09:51:33.91608286Z
+cs-falcon-ods-query-scheduled-scan ids=123456789
+cs-falcon-ods-create-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b scan_inclusions=* cpu_priority=Highest max_duration=1 pause_duration=1
+cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b schedule_interval=daily schedule_start_timestamp=tomorrow cpu_priority=Highest scan_inclusions=*
+cs-falcon-ods-query-scan-host filter="scan_id:[\"123456789\",\"987654321\"]"
+cs-falcon-ods-query-malicious-files hash=1a1eb17d1f9e4d82a9e8ba73d1095593,2e99e4fc7a4f4b1e9254e0af210a6994 offset=10 limit=50
+cs-falcon-ods-delete-scheduled-scan ids=9acf0c069d3d4a5b82badb170966e77c

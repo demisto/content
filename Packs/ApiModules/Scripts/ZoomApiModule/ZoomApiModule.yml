@@ -11,7 +11,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 dockerimage: demisto/pyjwt3:1.0.0.49643
-runonce: false
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -20,77 +20,68 @@ configuration:
   section: Connect
 - display: Customer name
   name: customer
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Fetch only incidents matching this rule name
   name: ruleName
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch only incidents matching this policy name
   name: policyName
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Fetch only incidents with this severity
   name: policySeverity
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  required: false
   type: 0
   section: Collect
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Deprecated. Use the Prisma Cloud v2 integration instead.
 display: Prisma Cloud (RedLock) (Deprecated)
 name: RedLock
 script:
   commands:
   - arguments:
-    - default: false
-      description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
-      isArray: false
+    - description: The maximum number of records to return. '; limit search records to {}' is appended to every query where {} is the maximum number of records to return. If no value is provided, only 1 record is returned.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
-      isArray: false
+    - description: 'The RQL config query to run. Examples of RQL config queries can be found here: https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html. Note that ` limit search records to 1` is automatically appended to each query and a `;` may need to be added to the end of the rql input to make the entire query valid.  The limit parameter adjusts this to be a value other than 1.'
       name: rql
       required: true
-      secret: false
-    deprecated: false
     description: Returns the results of an RQL config query.
-    execution: false
     name: redlock-get-rql-response
     outputs:
     - contextPath: Redlock.RQL.Query
@@ -157,28 +148,14 @@ script:
       description: The response state ID.
       type: String
   - arguments:
-    - default: false
-      description: Start time for search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: Start time for search in the following string format -  MM/DD/YYYY
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for search in the following format -  MM/DD/YYYY
-      isArray: false
+    - description: End time for search in the following format -  MM/DD/YYYY
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The amount of units to go back in time
-      isArray: false
+    - description: The amount of units to go back in time
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The search unit. login and epoch are only available if timeRangeValue is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -188,12 +165,8 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy name
-      isArray: false
       name: policy-name
       predefined:
       - IAM password policy does not have a symbol
@@ -226,135 +199,67 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      required: false
-      secret: false
-    - default: false
-      description: The policy label
-      isArray: false
+    - description: The policy label
       name: policy-label
-      required: false
-      secret: false
-    - default: false
-      description: The number of alerts to return
-      isArray: false
+    - description: The number of alerts to return
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The policy compliance standard
-      isArray: false
+    - description: The policy compliance standard
       name: policy-compliance-standard
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account ID.
-      isArray: false
+    - description: The cloud account ID.
       name: cloud-account-id
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account name.
-      isArray: false
+    - description: The cloud account name.
       name: cloud-account
-      required: false
-      secret: false
-    - default: false
-      description: The cloud region name.
-      isArray: false
+    - description: The cloud region name.
       name: cloud-region
-      required: false
-      secret: false
-    - default: false
-      description: The alert rule name.
-      isArray: false
+    - description: The alert rule name.
       name: alert-rule-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource ID
-      isArray: false
+    - description: The resource ID
       name: resource-id
-      required: false
-      secret: false
-    - default: false
-      description: The resource name
-      isArray: false
+    - description: The resource name
       name: resource-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource type
-      isArray: false
+    - description: The resource type
       name: resource-type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: open
       description: The alert status
-      isArray: false
       name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      required: false
-      secret: false
-    - default: false
-      description: The alert ID
-      isArray: false
+    - description: The alert ID
       name: alert-id
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud type
-      isArray: false
       name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The risk grade
-      isArray: false
       name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy type
-      isArray: false
       name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy severity
-      isArray: false
       name: policy-severity
       predefined:
       - high
       - medium
       - low
-      required: false
-      secret: false
-    deprecated: false
     description: Search alerts on the Prisma Cloud (RedLock) platform. If no time-range arguments are given, the search will filter only alerts from the last 7 days.
-    execution: false
     name: redlock-search-alerts
     outputs:
     - contextPath: Redlock.Alert.ID
@@ -393,39 +298,22 @@ script:
   - arguments:
     - default: true
       description: The alert ID
-      isArray: false
       name: alert-id
       required: true
-      secret: false
-    - default: false
-      description: Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
-      isArray: false
+    - description: Start time for search in the following string format -  MM/DD/YYYY, Should be provided along with time-range-date-to. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
-      isArray: false
+    - description: End time for search in the following format -  MM/DD/YYYY, Should be provided along with time-range-date-from. If not both are provided, the time range will be set to the last 7 days and this argument will be ignored.
       name: time-range-date-to
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'true'
       description: Allows for retrieving entire / trimmed alert model
-      isArray: false
       name: detailed
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - description: List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").  To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.
       name: resource_keys
-      required: false
-    deprecated: false
     description: Gets the details of an alert based on alert ID
-    execution: false
     name: redlock-get-alert-details
     outputs:
     - contextPath: Redlock.Alert.ID
@@ -477,22 +365,12 @@ script:
       description: The cloud account name where the resource resides
       type: string
   - arguments:
-    - default: false
-      description: Comma-separated list of string IDs to be dismissed.
-      isArray: false
+    - description: Comma-separated list of string IDs to be dismissed.
       name: alert-id
-      required: false
-      secret: false
-    - default: false
-      description: The amount of time to snooze. Both snooze value and unit must be specified.
-      isArray: false
+    - description: The amount of time to snooze. Both snooze value and unit must be specified.
       name: snooze-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing.
-      isArray: false
       name: snooze-unit
       predefined:
       - hour
@@ -501,36 +379,17 @@ script:
       - month
       - year
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Reason for dismissal.
-      isArray: false
+    - description: Reason for dismissal.
       name: dismissal-note
       required: true
-      secret: false
-    - default: false
-      description: Start time for search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: Start time for search in the following string format -  MM/DD/YYYY
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for search in the following format -  MM/DD/YYYY
-      isArray: false
+    - description: End time for search in the following format -  MM/DD/YYYY
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The amount of units to go back in time
-      isArray: false
+    - description: The amount of units to go back in time
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The search unit
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -540,12 +399,8 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy name
-      isArray: false
       name: policy-name
       predefined:
       - IAM password policy does not have a symbol
@@ -578,120 +433,61 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      required: false
-      secret: false
-    - default: false
-      description: The policy label
-      isArray: false
+    - description: The policy label
       name: policy-label
-      required: false
-      secret: false
-    - default: false
-      description: The policy compliance standard
-      isArray: false
+    - description: The policy compliance standard
       name: policy-compliance-standard
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account
-      isArray: false
+    - description: The cloud account
       name: cloud-account
-      required: false
-      secret: false
-    - default: false
-      description: The cloud region
-      isArray: false
+    - description: The cloud region
       name: cloud-region
-      required: false
-      secret: false
-    - default: false
-      description: The alert rule name
-      isArray: false
+    - description: The alert rule name
       name: alert-rule-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource ID
-      isArray: false
+    - description: The resource ID
       name: resource-id
-      required: false
-      secret: false
-    - default: false
-      description: The resource name
-      isArray: false
+    - description: The resource name
       name: resource-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource type
-      isArray: false
+    - description: The resource type
       name: resource-type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The alert status
-      isArray: false
       name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud type
-      isArray: false
       name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The risk grade
-      isArray: false
       name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy type
-      isArray: false
       name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy severity
-      isArray: false
       name: policy-severity
       predefined:
       - high
       - medium
       - low
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated string of policy IDs.
-      isArray: false
+    - description: Comma-separated string of policy IDs.
       name: policy-id
-      required: false
-      secret: false
-    deprecated: false
     description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
     execution: true
     name: redlock-dismiss-alerts
@@ -700,34 +496,16 @@ script:
       description: The IDs of the dismissed alerts
       type: string
   - arguments:
-    - default: false
-      description: The IDs of alerts to reopen
-      isArray: false
+    - description: The IDs of alerts to reopen
       name: alert-id
-      required: false
-      secret: false
-    - default: false
-      description: Start time for search in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: Start time for search in the following string format -  MM/DD/YYYY
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for search in the following format -  MM/DD/YYYY
-      isArray: false
+    - description: End time for search in the following format -  MM/DD/YYYY
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The amount of units to go back in time
-      isArray: false
+    - description: The amount of units to go back in time
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The search unit
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -737,12 +515,8 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy name
-      isArray: false
       name: policy-name
       predefined:
       - IAM password policy does not have a symbol
@@ -775,114 +549,59 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      required: false
-      secret: false
-    - default: false
-      description: The policy label
-      isArray: false
+    - description: The policy label
       name: policy-label
-      required: false
-      secret: false
-    - default: false
-      description: The policy compliance standard
-      isArray: false
+    - description: The policy compliance standard
       name: policy-compliance-standard
-      required: false
-      secret: false
-    - default: false
-      description: The cloud account
-      isArray: false
+    - description: The cloud account
       name: cloud-account
-      required: false
-      secret: false
-    - default: false
-      description: The cloud region
-      isArray: false
+    - description: The cloud region
       name: cloud-region
-      required: false
-      secret: false
-    - default: false
-      description: The alert rule name
-      isArray: false
+    - description: The alert rule name
       name: alert-rule-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource ID
-      isArray: false
+    - description: The resource ID
       name: resource-id
-      required: false
-      secret: false
-    - default: false
-      description: The resource name
-      isArray: false
+    - description: The resource name
       name: resource-name
-      required: false
-      secret: false
-    - default: false
-      description: The resource type
-      isArray: false
+    - description: The resource type
       name: resource-type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The alert status
-      isArray: false
       name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud type
-      isArray: false
       name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The risk grade
-      isArray: false
       name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy type
-      isArray: false
       name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The policy severity
-      isArray: false
       name: policy-severity
       predefined:
       - high
       - medium
       - low
-      required: false
-      secret: false
-    deprecated: false
     description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
     execution: true
     name: redlock-reopen-alerts
@@ -890,20 +609,12 @@ script:
     - contextPath: Redlock.ReopenedAlert.ID
       description: IDs of the re-opened alerts
       type: string
-  - deprecated: false
-    description: List the acceptable filters and values for alerts
-    execution: false
+  - description: List the acceptable filters and values for alerts
     name: redlock-list-alert-filters
   - arguments:
-    - default: false
-      description: The alert ID for which to get remediation details.
-      isArray: false
+    - description: The alert ID for which to get remediation details.
       name: alert-id
-      required: false
-      secret: false
-    deprecated: false
     description: Gets remediation details for the given alert.
-    execution: false
     name: redlock-get-remediation-details
     outputs:
     - contextPath: Redlock.Alert.Remediation.Description
@@ -916,30 +627,16 @@ script:
       description: The exact CLI command string.
       type: string
   - arguments:
-    - default: false
-      description: Start time for the search, in the following string format -  MM/DD/YYYY
-      isArray: false
+    - description: Start time for the search, in the following string format -  MM/DD/YYYY
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY
-      isArray: false
+    - description: End time for the search, in the following format -  MM/DD/YYYY
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
         is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -949,24 +646,13 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Query to run in Prisma Cloud config API using RQL language.
-      isArray: false
+    - description: Query to run in Prisma Cloud config API using RQL language.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language.
-    execution: false
     name: redlock-search-config
     outputs:
     - contextPath: Redlock.Asset.accountId
@@ -1030,30 +716,16 @@ script:
       description: State ID
       type: String
   - arguments:
-    - default: false
-      description: Start time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: Start time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
         is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -1063,54 +735,29 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Query to run in Prisma Cloud search API using RQL language.
-      isArray: false
+    - description: Query to run in Prisma Cloud search API using RQL language.
       name: query
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
+    - defaultValue: '100'
       description: Maximum number of entries to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search events on the Prisma Cloud (RedLock) platform using RQL language.
-    execution: false
     name: redlock-search-event
     outputs:
     - contextPath: Redlock.Event
       description: Cloud audit events.
       type: Unknown
   - arguments:
-    - default: false
-      description: Start time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: Start time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-from
-      required: false
-      secret: false
-    - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY.
-      isArray: false
+    - description: End time for the search, in the following format -  MM/DD/YYYY.
       name: time-range-date-to
-      required: false
-      secret: false
-    - default: false
-      description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
-      isArray: false
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: |-
         The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
         is not provided.
-      isArray: false
       name: time-range-unit
       predefined:
       - hour
@@ -1120,18 +767,11 @@ script:
       - year
       - login
       - epoch
-      required: false
-      secret: false
-    - default: false
-      description: Query to run in Prisma Cloud search API using RQL language.
-      isArray: false
+    - description: Query to run in Prisma Cloud search API using RQL language.
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The cloud in which the network should be searched.
-      isArray: false
       name: cloud-type
       predefined:
       - aws
@@ -1139,11 +779,7 @@ script:
       - gcp
       - alibaba_cloud
       - oci
-      required: false
-      secret: false
-    deprecated: false
     description: Search networks on the Prisma Cloud (RedLock) platform using RQL language.
-    execution: false
     name: redlock-search-network
     outputs:
     - contextPath: Redlock.Network.Node
@@ -1154,103 +790,53 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: scanId
       description: Group by which to aggregate scan results.
-      isArray: false
       name: group_by
       predefined:
       - scanId
       - ' assetType'
       - assetName
       - resourceList
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '25'
+    - defaultValue: '25'
       description: Pagination size.
-      isArray: false
       name: page_size
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Pagination number.
-      isArray: false
       name: page_number
-      required: false
-      secret: false
-    - default: false
-      description: Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending.
-      isArray: false
+    - description: Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending.
       name: sort
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: relative
       description: Time filter type.
-      isArray: false
       name: filter_type
       predefined:
       - to_now
       - absolute
       - relative
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: Number of time units.
-      isArray: false
       name: filter_time_amount
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: day
       description: The time unit for retrieving the list of IaC scans.
-      isArray: false
       name: to_now_time_unit
       predefined:
       - epoch
       - login
       - year
-      required: false
-      secret: false
-    - default: false
-      description: 'Start time, for example: 11/01/2021 10:10:10.'
-      isArray: false
+    - description: 'Start time, for example: 11/01/2021 10:10:10.'
       name: filter_start_time
-      required: false
-      secret: false
-    - default: false
-      description: End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type.
-      isArray: false
+    - description: End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type.
       name: filter_end_time
-      required: false
-      secret: false
-    - default: false
-      description: Asset type to search with.
-      isArray: false
+    - description: Asset type to search with.
       name: filter_asset_type
-      required: false
-      secret: false
-    - default: false
-      description: Asset name to search with.
-      isArray: false
+    - description: Asset name to search with.
       name: filter_asset_name
-      required: false
-      secret: false
-    - default: false
-      description: 'User to filter with, example: ayman@example.domain'
-      isArray: false
+    - description: 'User to filter with, example: ayman@example.domain'
       name: filter_user
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'Status to filter with, example: passed'
-      isArray: false
       name: filter_status
       predefined:
       - passed
@@ -1259,13 +845,9 @@ script:
       - errored
       - failed_n_merged
       - failed_n_deployed
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: login
       description: Relative Time unit
-      isArray: false
       name: relative_time_unit
       predefined:
       - hour
@@ -1273,11 +855,8 @@ script:
       - week
       - month
       - year
-      required: false
-      secret: false
     deprecated: true
     description: Returns a list of IaC scans that meet the given conditions.
-    execution: false
     name: redlock-list-scans
     outputs:
     - contextPath: Redlock.Scans.deployed
@@ -1362,15 +941,11 @@ script:
       description: Scan relationships scan result links .
       type: String
   - arguments:
-    - default: false
-      description: The scan ID. The scan ID can be retrieved by the redlock-list-scans command.
-      isArray: false
+    - description: The scan ID. The scan ID can be retrieved by the redlock-list-scans command.
       name: scan_id
       required: true
-      secret: false
     deprecated: true
     description: Returns the status of the asynchronous IaC scan job that has the specified scan ID.
-    execution: false
     name: redlock-get-scan-status
     outputs:
     - contextPath: Redlock.Scans.id
@@ -1380,15 +955,11 @@ script:
       description: Scan status
       type: String
   - arguments:
-    - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
-      isArray: false
+    - description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
       name: scan_id
       required: true
-      secret: false
     deprecated: true
     description: Returns scan result details for the completed scan that has the specified scan ID
-    execution: false
     name: redlock-get-scan-results
     outputs:
     - contextPath: Redlock.Scans.id
@@ -1431,10 +1002,7 @@ script:
       description: Scan results ID
       type: String
   dockerimage: demisto/python3:3.10.10.49934
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

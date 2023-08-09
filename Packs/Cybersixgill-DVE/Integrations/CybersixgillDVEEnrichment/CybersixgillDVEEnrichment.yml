@@ -12,20 +12,14 @@ configuration:
   required: true
   type: 4
 - display: Trust any certificate (not secure)
-  hidden: false
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
-  hidden: false
   name: proxy
-  required: false
   type: 8
-description: By enriching CVEs with the DVE Score, Cortex XSOAR customers gain deeper
-  visibility with relevant threat intel from the deep and dark web with dynamic attributes
-  such as where they are trending, POC exploit details, and more. Loaded with extra-context,
-  this allows users to accurately understand the real impact of CVEs to effectively
-  prioritize critical vulnerabilities.
+  required: false
+description: By enriching CVEs with the DVE Score, Cortex XSOAR customers gain deeper visibility with relevant threat intel from the deep and dark web with dynamic attributes such as where they are trending, POC exploit details, and more. Loaded with extra-context, this allows users to accurately understand the real impact of CVEs to effectively prioritize critical vulnerabilities.
 display: Cybersixgill DVE Enrichment
 name: Cybersixgill_DVE_Enrichment
 script:
@@ -36,75 +30,68 @@ script:
       name: cve_id
       description: 'cves id list'
       required: true
-      secret: false
-    deprecated: false
-    execution: false
     description: Returns information for each CVE in the input list
     name: cybersixgill-cve-enrich
     outputs:
-      - contextPath: Sixgill.CVE.value
-        description: CVE ID.
-        type: String
-      - contextPath: Sixgill.CVE.Description
-        description: Description of the given DVE ID.
-        type: String
-      - contextPath: Sixgill.CVE.Created
-        description: The creation date of the CVE.
-        type: Date
-      - contextPath: Sixgill.CVE.Modified
-        description: The modified date of the CVE.
-        type: Date
-      - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_current
-        description: The current Sixgill DVE Score.
-        type: String
-      - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_highest_ever_date
-        description: The date on which Sixgill's highest DVE score ever reported.
-        type: Date
-      - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_highest_ever
-        description: Sixgill's highest DVE score ever reported.
-        type: String
-      - contextPath: Sixgill.CVE.Cybersixgill_Previously_exploited_probability
-        description: Sixgill's score of previously exploited probability.
-        type: String
-      - contextPath: Sixgill.CVE.Previous_Level
-        description: Previous level of the CVE ID.
-        type: String
-      - contextPath: Sixgill.CVE.CVSS_3_1_score
-        description: CVSS 3.1 score.
-        type: String
-      - contextPath: Sixgill.CVE.CVSS_3_1_severity
-        description: CVSS 3.1 severity.
-        type: String
-      - contextPath: Sixgill.CVE.NVD_Link
-        description: NVD link.
-        type: String
-      - contextPath: Sixgill.CVE.NVD_last_modified_date
-        description: NVD last modified date.
-        type: Date
-      - contextPath: Sixgill.CVE.NVD_publication_date
-        description: NVD publication date.
-        type: Date
-      - contextPath: Sixgill.CVE.CVSS_2_0_score
-        description: CVSS 2.0 score.
-        type: String
-      - contextPath: Sixgill.CVE.CVSS_2_0_severity
-        description: CVSS 2.0 severity.
-        type: String
-      - contextPath: Sixgill.CVE.NVD_Vector_V2_0
-        description: NVD vector v2.0.
-        type: String
-      - contextPath: Sixgill.CVE.NVD_Vector_V3_1
-        description: NVD vector v3.1.
-        type: String
-      - contextPath: Sixgill.CVE.rawJSON
-        type: String
-        description: The raw JSON of the CVE entich information.
+    - contextPath: Sixgill.CVE.value
+      description: CVE ID.
+      type: String
+    - contextPath: Sixgill.CVE.Description
+      description: Description of the given DVE ID.
+      type: String
+    - contextPath: Sixgill.CVE.Created
+      description: The creation date of the CVE.
+      type: Date
+    - contextPath: Sixgill.CVE.Modified
+      description: The modified date of the CVE.
+      type: Date
+    - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_current
+      description: The current Sixgill DVE Score.
+      type: String
+    - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_highest_ever_date
+      description: The date on which Sixgill's highest DVE score ever reported.
+      type: Date
+    - contextPath: Sixgill.CVE.Cybersixgill_DVE_score_highest_ever
+      description: Sixgill's highest DVE score ever reported.
+      type: String
+    - contextPath: Sixgill.CVE.Cybersixgill_Previously_exploited_probability
+      description: Sixgill's score of previously exploited probability.
+      type: String
+    - contextPath: Sixgill.CVE.Previous_Level
+      description: Previous level of the CVE ID.
+      type: String
+    - contextPath: Sixgill.CVE.CVSS_3_1_score
+      description: CVSS 3.1 score.
+      type: String
+    - contextPath: Sixgill.CVE.CVSS_3_1_severity
+      description: CVSS 3.1 severity.
+      type: String
+    - contextPath: Sixgill.CVE.NVD_Link
+      description: NVD link.
+      type: String
+    - contextPath: Sixgill.CVE.NVD_last_modified_date
+      description: NVD last modified date.
+      type: Date
+    - contextPath: Sixgill.CVE.NVD_publication_date
+      description: NVD publication date.
+      type: Date
+    - contextPath: Sixgill.CVE.CVSS_2_0_score
+      description: CVSS 2.0 score.
+      type: String
+    - contextPath: Sixgill.CVE.CVSS_2_0_severity
+      description: CVSS 2.0 severity.
+      type: String
+    - contextPath: Sixgill.CVE.NVD_Vector_V2_0
+      description: NVD vector v2.0.
+      type: String
+    - contextPath: Sixgill.CVE.NVD_Vector_V3_1
+      description: NVD vector v3.1.
+      type: String
+    - contextPath: Sixgill.CVE.rawJSON
+      type: String
+      description: The raw JSON of the CVE entich information.
 
   dockerimage: demisto/sixgill:1.0.0.20925
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

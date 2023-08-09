@@ -1,5 +1,9 @@
 [known_words]
-Vectra
-DestinationIPs
-DestinationPorts
-sAMAccountName
+vectra
+destinationips
+destinationports
+samaccountname
+
+[file:Vectra_AIEventCollector_1_3.yml]
+ignore=MR108
+

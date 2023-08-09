@@ -25,3 +25,6 @@
 !misp-set-event-attributes event_id=123 attribute_data='[{"type":"domain","value":"target.domain"}]'
 !misp-check-warninglist value=8.8.8.8
 !misp-add-email-object entry_id=${Email.EntryID} event_id=1655
+!misp-add-user email="example@example.com" org_id=1 role_id=1 password=defaultPassword12345++
+!misp-get-organization-info
+!misp-get-role-info

@@ -4,8 +4,7 @@ commonfields:
 name: icebrg
 display: Icebrg
 category: Network Security
-description: Reduces risk by accelerating threat detection, triage, and response to
-  rapidly-evolving breaches across global networks.
+description: Reduces risk by accelerating threat detection, triage, and response to rapidly-evolving breaches across global networks.
 configuration:
 - display: Server URL for the search API (e.g. https://192.168.0.1)
   name: url_search
@@ -49,27 +48,21 @@ script:
       default: true
       description: The query string or entity for which to search.
     - name: start_date
-      description: The beginning of the temporal extent by which to restrict filter
-        results, inclusive.
+      description: The beginning of the temporal extent by which to restrict filter results, inclusive.
     - name: end_date
-      description: The end of the temporal extent by which to restrict filter results,
-        exclusive.
+      description: The end of the temporal extent by which to restrict filter results, exclusive.
     - name: limit
-      description: A limit on the number of events returned in filter results. Default
-        is 100. Max is 10000
+      description: A limit on the number of events returned in filter results. Default is 100. Max is 10000
     - name: order_by
       description: The event property by which to order results. Default is timestamp.
     - name: order
       description: The order of results, either asc or desc. Default is desc.
     - name: customer_id
-      description: The customer ID by which to restrict filter results. Default is
-        user account.
+      description: The customer ID by which to restrict filter results. Default is user account.
     - name: history
-      description: When true, save this query in user Query History and include up
-        to the last 50 queries from users Query History. Default is false.
+      description: When true, save this query in user Query History and include up to the last 50 queries from users Query History. Default is false.
     - name: service_traffic
-      description: When true, the service will include the service_traffic aggregation.
-        Default is false.
+      description: When true, the service will include the service_traffic aggregation. Default is false.
     outputs:
     - contextPath: Icebrg.Events.QueryType
       description: Query type
@@ -123,8 +116,7 @@ script:
     - name: offset
       description: The number of records to skip past. The default is none.
     - name: sort_by
-      description: The field to sort by created, updated, or published. The default
-        is unsorted.
+      description: The field to sort by created, updated, or published. The default is unsorted.
     - name: sort_order
       description: The sort order asc or desc. The default is asc if sort_by is provided.
     - name: account_uuid
@@ -150,11 +142,9 @@ script:
     - name: status
       description: Status to filter by.
     - name: published_start
-      description: Published start date to filter by (inclusive). RFC3339 format,
-        i.e. 2017-01-24T10:13:13.418Z
+      description: Published start date to filter by (inclusive). RFC3339 format, i.e. 2017-01-24T10:13:13.418Z
     - name: published_end
-      description: Published end date to filter by (exclusive). RFC3339 format, i.e.
-        2017-01-24T10:13:13.418Z
+      description: Published end date to filter by (exclusive). RFC3339 format, i.e. 2017-01-24T10:13:13.418Z
     outputs:
     - contextPath: Icebrg.Reports.Publishes.UserUuid
       description: User UUID that published the report

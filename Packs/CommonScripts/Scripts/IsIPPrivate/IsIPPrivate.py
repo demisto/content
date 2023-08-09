@@ -1,7 +1,7 @@
-from ipaddress import IPv4Address, IPv4Network
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from ipaddress import IPv4Address, IPv4Network
+
 
 DELIMITER = ","
 

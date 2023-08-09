@@ -25,9 +25,8 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.9.45313
+dockerimage: demisto/python3:3.10.12.63474
 tests:
 - Base64Decode - Test

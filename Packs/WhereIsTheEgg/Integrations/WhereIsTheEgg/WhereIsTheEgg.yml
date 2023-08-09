@@ -21,4 +21,3 @@ script:
       default: true
       description: yep
     description: try me
-  runonce: false
