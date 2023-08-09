@@ -1,18 +1,23 @@
 Detonates a URL using the VMRay sandbox integration.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * GenericPolling
 
 ### Integrations
+
 * VMRay
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * vmray-get-analysis-by-sample
 * vmray-upload-url
 * vmray-get-sample
@@ -21,6 +26,7 @@ This playbook does not use any scripts.
 * vmray-get-submission
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -30,6 +36,7 @@ This playbook does not use any scripts.
 | timeout | How long to wait before giving up waiting for results \(minutes\). | 10 | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -97,5 +104,6 @@ This playbook does not use any scripts.
 | VMRay.ThreatIndicator.Operation | The operation that caused the indicators. | unknown |
 
 ## Playbook Image
+
 ---
 ![Detonate URL - VMRay](https://raw.githubusercontent.com/demisto/content/b775f79abb03fef141bd8581cc3ada4f0771e71a/docs/images/playbooks/VMRay-Detonate-URL.png)

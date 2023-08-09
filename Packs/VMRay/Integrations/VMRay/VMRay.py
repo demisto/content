@@ -1,8 +1,11 @@
+import io
+import os
 import random
 import time
 import urllib3
 
 from typing import Optional, Union
+from zipfile import ZipFile
 
 import requests
 from CommonServerPython import *
@@ -19,9 +22,12 @@ SERVER = (
 RETRY_ON_RATE_LIMIT = demisto.params().get("retry_on_rate_limit", True)
 SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
-HEADERS = {'Authorization': f'api_key {API_KEY}', 'User-Agent': 'Cortex XSOAR/1.1.8'}
+HEADERS = {'Authorization': f'api_key {API_KEY}', 'User-Agent': 'Cortex XSOAR/1.1.11'}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
+DEFAULT_ARCHIVE_PASSWORD = b'infected'
+INDEX_LOG_DELIMITER = '|'
+INDEX_LOG_FILENAME_POSITION = 3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -56,7 +62,7 @@ DBOTSCORE = {
 }
 
 RATE_LIMIT_REACHED = 429
-MAX_RETIES = 10
+MAX_RETRIES = 10
 
 ''' HELPER FUNCTIONS '''
 
@@ -121,7 +127,7 @@ def build_errors_string(errors):
     return err_str
 
 
-def http_request(method, url_suffix, params=None, files=None, ignore_errors=False, get_raw=False, reties=0):
+def http_request(method, url_suffix, params=None, files=None, ignore_errors=False, get_raw=False, retries=0):
     """ General HTTP request.
     Args:
         ignore_errors (bool):
@@ -130,6 +136,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         params: (dict)
         files: (dict)
         get_raw: (bool) return raw data instead of dict
+        retries: (int)
 
     Returns:
         dict: response json
@@ -184,7 +191,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL, proxies=PROXIES
     )
 
-    if RETRY_ON_RATE_LIMIT and reties < MAX_RETIES \
+    if RETRY_ON_RATE_LIMIT and retries < MAX_RETRIES \
             and (r.status_code == RATE_LIMIT_REACHED or "Retry-After" in r.headers):
         seconds_to_wait = random.uniform(1.0, 5.0)
         try:
@@ -192,10 +199,10 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         except ValueError:
             pass
 
-        demisto.debug(f"Rate limit exceeded! Waiting {seconds_to_wait} seconds and then retry #{reties}.")
+        demisto.debug(f"Rate limit exceeded! Waiting {seconds_to_wait} seconds and then retry #{retries}.")
         time.sleep(seconds_to_wait)  # pylint: disable=sleep-exists
         reset_file_buffer(files)
-        return http_request(method, url_suffix, params, files, ignore_errors, get_raw, reties + 1)
+        return http_request(method, url_suffix, params, files, ignore_errors, get_raw, retries + 1)
 
     # Handle errors
     try:
@@ -203,7 +210,7 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
             return_error(ERROR_FORMAT.format(r.status_code, 'Token may be invalid'))
         elif not get_raw and not is_json(r):
             raise ValueError
-        response = r.json() if not get_raw else r.text
+        response = r.json() if not get_raw else r.content
         if r.status_code not in {200, 201, 202, 204} and not ignore_errors:
             if get_raw and isinstance(response, str):
                 # this might be json even if get_raw is True because the API will return errors as json
@@ -1320,6 +1327,20 @@ def get_summary(analysis_id):
     return response
 
 
+def get_screenshots(analysis_id):
+    """
+
+    Args:
+        analysis_id (str):
+
+    Returns:
+        str: response
+    """
+    suffix = 'analysis/{}/archive?filenames=screenshots/*'.format(analysis_id)
+    response = http_request('GET', suffix, get_raw=True)
+    return response
+
+
 def get_summary_command():
     analysis_id = demisto.args().get('analysis_id')
     check_id(analysis_id)
@@ -1340,6 +1361,38 @@ def get_summary_command():
         file_type=EntryType.ENTRY_INFO_FILE
     )
     return_results(file_entry)
+
+
+def get_screenshots_command():
+    analysis_id = demisto.args().get('analysis_id')
+    check_id(analysis_id)
+
+    screenshots_data = get_screenshots(analysis_id)
+
+    file_results = []
+    screenshot_counter = 0
+    try:
+        with ZipFile(io.BytesIO(screenshots_data), 'r') as screenshots_zip:
+            index_log_data = screenshots_zip.read('screenshots/index.log', pwd=DEFAULT_ARCHIVE_PASSWORD)
+            for line in index_log_data.splitlines():
+                filename = line.decode('utf-8').split(INDEX_LOG_DELIMITER)[INDEX_LOG_FILENAME_POSITION].strip()
+                extension = os.path.splitext(filename)[1]
+                screenshot_data = screenshots_zip.read(f'screenshots/{filename}', pwd=DEFAULT_ARCHIVE_PASSWORD)
+                file_results.append(
+                    fileResult(
+                        filename=f'analysis_{analysis_id}_screenshot_{screenshot_counter}{extension}',
+                        data=screenshot_data,
+                        file_type=EntryType.IMAGE
+                    )
+                )
+                screenshot_counter += 1
+    except Exception as exc:  # noqa
+        demisto.error(f'Failed to read screenshots.zip, error: {exc}')
+        raise exc
+    else:
+        demisto.debug(f'Successfully read screenshots.zip, found {screenshot_counter} screenshots')
+
+    return_results(file_results)
 
 
 def main():
@@ -1376,6 +1429,8 @@ def main():
             get_iocs_command()
         elif command == 'vmray-get-summary':
             get_summary_command()
+        elif command == 'vmray-get-screenshots':
+            get_screenshots_command()
     except Exception as exc:
         return_error(f"Failed to execute `{demisto.command()}` command. Error: {str(exc)}")
 

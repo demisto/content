@@ -1,21 +1,27 @@
 Get file information using the VMRay integration.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * VMRay
 
 ### Scripts
+
 * IsIntegrationAvailable
 
 ### Commands
+
 * vmray-get-sample-by-hash
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -25,6 +31,7 @@ This playbook does not use any sub-playbooks.
 | SHA1 | File SHA1 to enrich | File.SHA1 | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -56,5 +63,6 @@ This playbook does not use any sub-playbooks.
 | VMRay.Sample.ParentSampleIDs | List of parent sample IDs. | Number |
 
 ## Playbook Image
+
 ---
 ![File Enrichment - VMRay](https://raw.githubusercontent.com/demisto/content/60e253f2612941a5868c069dac05a06d9eed8360/docs/images/playbooks/File_Enrichment_VMRay.png)

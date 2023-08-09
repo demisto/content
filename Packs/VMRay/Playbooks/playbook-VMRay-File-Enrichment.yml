@@ -329,8 +329,7 @@ tasks:
       id: 46498933-0736-4bd4-826e-44ace83c7794
       version: -1
       name: Is there an active VMRay instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -454,15 +453,13 @@ outputs:
   description: ssdeep hash of the sample.
   type: String
 - contextPath: VMRay.Sample.Verdict
-  description: Verdict for the sample (Malicious, Suspicious, Clean,
-      Not Available).
+  description: Verdict for the sample (Malicious, Suspicious, Clean, Not Available).
   type: String
 - contextPath: VMRay.Sample.VerdictReason
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample in the submission (Malicious, Suspicious,
-    Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+  description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: String
 - contextPath: VMRay.Sample.Type
   description: File type.
