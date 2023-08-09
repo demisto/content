@@ -1527,7 +1527,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
         # creating this file to indicates that this instance passed post update tests,
         # uses this file in XSOAR destroy instances
         if build and build.__class__ == XSOARBuild:
-            with open(f".{os.getenv('ARTIFACTS_FOLDER')}/is_post_update_passed_{build.ami_env.replace(' ', '')}.txt", 'a'):
+            with open(f"{os.getenv('ARTIFACTS_FOLDER')}/is_post_update_passed_{build.ami_env.replace(' ', '')}.txt", 'a'):
                 pass
 
     return testing_status

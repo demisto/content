@@ -98,7 +98,7 @@ def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip:
             if time_to_live:
                 logging.info(f'Time to live was set to {time_to_live} minutes for server {server_ip}')
                 success &= shutdown(ssh, server_ip, time_to_live)
-            elif (Path(artifacts_dir) /f'is_build_passed_{role}.txt').exists() and \
+            elif (Path(artifacts_dir) / f'is_build_passed_{role}.txt').exists() and \
                     (Path(artifacts_dir) / f'is_post_update_passed_{role}.txt').exists():
                 success &= shutdown(ssh, server_ip)
                 logging.warning(f'Tests passed on {readable_role}, shutting down instance.')
