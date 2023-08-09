@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 You need to configure Semperis DSP to forward Syslog messages.
 
 Open your Semperis DSP UI and follow these instructions:
-1. At the left panel, click on **SETTINGS** -> **SIEM Integration**
+1. At the left panel, click **SETTINGS** > **SIEM Integration**.
 2. Under the **Syslog Server** section, make sure to configure the following-
     * Make sure the syslog enablement checkbox is checked.
     * Under **Primary Syslog Server**, input the relevant syslog server IP address.
