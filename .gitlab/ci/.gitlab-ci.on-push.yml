@@ -170,11 +170,12 @@ validate-content-conf:
           MASTER_SHA=$(git rev-parse HEAD^)
       else
           echo "Getting the commit SHA of the common ancestor of current branch master branch"
-          MASTER_SHA=$(git merge-base master $CI_COMMIT_SHA)
+          MASTER_SHA=$(git merge-base HEAD origin/master)
       fi
     - |
       if [ -z "$MASTER_SHA" ]; then
           echo "Previous master commit not found in branch history - cannot find dependencies diff."
+          exit 1
       else
           echo "Previous master commit found: $MASTER_SHA"
           python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_READ_TOKEN --master-sha $MASTER_SHA --job-name $CI_JOB_NAME --current-file $ARTIFACTS_FOLDER/packs_dependencies.json --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
