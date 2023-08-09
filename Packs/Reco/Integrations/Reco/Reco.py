@@ -5,7 +5,6 @@ import json
 from datetime import datetime
 import dateutil.parser
 
-
 from typing import Any
 
 ENTRY_TYPE_USER = "ENTRY_TYPE_USER"
@@ -61,12 +60,12 @@ class RecoClient(BaseClient):
         )
 
     def get_incidents(
-            self,
-            risk_level: int | None = None,
-            source: str | None = None,
-            before: datetime | None = None,
-            after: datetime | None = None,
-            limit: int = 1000,
+        self,
+        risk_level: int | None = None,
+        source: str | None = None,
+        before: datetime | None = None,
+        after: datetime | None = None,
+        limit: int = 1000,
     ) -> list[dict[str, Any]]:
         """
         Fetch incidents from Reco API
@@ -132,12 +131,12 @@ class RecoClient(BaseClient):
         return alerts
 
     def get_alerts(
-            self,
-            risk_level: int | None = None,
-            source: str | None = None,
-            before: datetime | None = None,
-            after: datetime | None = None,
-            limit: int = 1000,
+        self,
+        risk_level: int | None = None,
+        source: str | None = None,
+        before: datetime | None = None,
+        after: datetime | None = None,
+        limit: int = 1000,
     ) -> list[dict[str, Any]]:
         """
         Fetch alerts from Reco API
@@ -499,7 +498,7 @@ class RecoClient(BaseClient):
             raise e
 
     def get_assets_user_has_access(
-            self, email_address: str, only_sensitive: bool
+        self, email_address: str, only_sensitive: bool
     ) -> list[dict[str, Any]]:
         """Get assets user has access to. Returns a list of assets."""
         params: dict[str, Any] = {
@@ -663,7 +662,7 @@ class RecoClient(BaseClient):
             raise e
 
     def set_entry_label_relations(
-            self, entry_id: str, label_name: str, label_status: str, entry_type: str
+        self, entry_id: str, label_name: str, label_status: str, entry_type: str
     ) -> Any:
         """Set entry label relations.
         :param entry_id: The entry id to set (email_address, asset_id etc.)
@@ -700,6 +699,20 @@ class RecoClient(BaseClient):
             demisto.error(f"Set entry label relations error: {str(e)}")
             raise e
         demisto.info(f"Label {label_name} set to {label_status} for event {entry_id}")
+        return response
+
+    def change_alert_status(self, alert_id: str, status: str) -> Any:
+        """Change alert status."""
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix=f"/alert-inbox/{alert_id}/status/{status}",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+            )
+        except Exception as e:
+            demisto.error(f"Change alert status error: {str(e)}")
+            raise e
+        demisto.info(f"Alert {alert_id} status changed to {status}")
         return response
 
     def validate_api_key(self) -> str:
@@ -836,7 +849,7 @@ def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> Command
 
 
 def enrich_incident(
-        reco_client: RecoClient, single_incident: dict[str, Any]
+    reco_client: RecoClient, single_incident: dict[str, Any]
 ) -> dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict:
@@ -855,7 +868,7 @@ def enrich_incident(
 
 
 def map_reco_score_to_demisto_score(
-        reco_score: int,
+    reco_score: int,
 ) -> int | float:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
@@ -877,7 +890,7 @@ def map_reco_score_to_demisto_score(
 
 
 def map_reco_alert_score_to_demisto_score(
-        reco_score: str,
+    reco_score: str,
 ) -> int | float:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
@@ -898,7 +911,7 @@ def map_reco_alert_score_to_demisto_score(
 
 
 def parse_incidents_objects(
-        reco_client: RecoClient, incidents_raw: list[dict[str, Any]]
+    reco_client: RecoClient, incidents_raw: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
     demisto.info("parse_incidents_objects enter")
     incidents = []
@@ -911,7 +924,7 @@ def parse_incidents_objects(
 
 
 def get_assets_user_has_access(
-        reco_client: RecoClient, email_address: str, only_sensitive: bool
+    reco_client: RecoClient, email_address: str, only_sensitive: bool
 ) -> CommandResults:
     """Get assets from Reco. If only_sensitive is True, only sensitive assets will be returned."""
     assets = reco_client.get_assets_user_has_access(email_address, only_sensitive)
@@ -1036,6 +1049,12 @@ def add_exclusion_filter(reco_client: RecoClient, key_to_add: str, values: list[
     return CommandResults(raw_response=response, readable_output="Exclusion filter added successfully")
 
 
+def change_alert_status(reco_client: RecoClient, alert_id: str, status: str) -> CommandResults:
+    """Change alert status."""
+    response = reco_client.change_alert_status(alert_id, status)
+    return CommandResults(raw_response=response, readable_output=f"Alert {alert_id} status changed successfully to {status}")
+
+
 def assets_to_command_result(assets: list[dict[str, Any]]) -> CommandResults:
     """Convert assets to CommandResults."""
     assets_list = []
@@ -1077,13 +1096,13 @@ def get_link_to_user_overview_page(reco_client: RecoClient, entity: str, link_ty
 
 
 def fetch_incidents(
-        reco_client: RecoClient,
-        last_run: dict[str, Any],
-        max_fetch: int,
-        risk_level: int | None = None,
-        source: str | None = None,
-        before: datetime | None = None,
-        after: datetime | None = None,
+    reco_client: RecoClient,
+    last_run: dict[str, Any],
+    max_fetch: int,
+    risk_level: int | None = None,
+    source: str | None = None,
+    before: datetime | None = None,
+    after: datetime | None = None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run = {}
@@ -1275,6 +1294,9 @@ def main() -> None:
         elif command == "reco-add-exclusion-filter":
             result = add_exclusion_filter(reco_client, demisto.args()["key_to_add"],
                                           argToList(demisto.args()["values_to_add"]))
+            return_results(result)
+        elif command == "reco-change-alert-status":
+            result = change_alert_status(reco_client, demisto.args()["alert_id"], demisto.args()["status"])
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
