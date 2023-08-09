@@ -51,14 +51,14 @@ configuration:
     type: 8
     section: Collect
     advanced: true
-    additionalinfo: Outbound traffic will be fetched in addition to inbound traffic
+    additionalinfo: Outbound traffic will be fetched in addition to inbound traffic.
   - display: Hide sensitive details from email
     name: hide_sensitive
     type: 8
     section: Collect
     advanced: true
     defaultvalue: 'true'
-    additionalinfo: Hide subject and attachments details from emails
+    additionalinfo: Hide subject and attachments details from emails.
 description: Use this integration to fetch email security incidents from FireEye ETP as XSIAM events.
 display: FireEye ETP Event Collector
 name: FireEye ETP Event Collector

@@ -2,7 +2,7 @@ Use this integration to fetch email security incidents from FireEye ETP as XSIAM
 
 ## Configure FireEye ETP Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for FireEye ETP Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -15,8 +15,8 @@ Use this integration to fetch email security incidents from FireEye ETP as XSIAM
     | Maximum number of Activity Log fetch. | The maximum number of Activity Log events to fetch from FireEye ETP. |  |
     | Trust any certificate (not secure) |  |  |
     | Use system proxy settings |  |  |
-    | Fetch outbound traffic | Outbound traffic will be fetched in addition to inbound traffic |  |
-    | Hide sensitive details from email | Hide subject and attachments details from emails |  |
+    | Fetch outbound traffic | Outbound traffic will be fetched in addition to inbound traffic. |  |
+    | Hide sensitive details from email | Hide subject and attachments details from emails. |  |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -36,7 +36,7 @@ Within the minute, the 61st request to any of these APIs would throw a rate limi
 The rate limit applies to the customer as a whole. This means that if the customer has multiple admin users who have generated API Keys, the rate limit is applicable at the customer level and not per API key. 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fireeye-etp-get-events
 ***
