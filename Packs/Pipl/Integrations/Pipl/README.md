@@ -1,4 +1,4 @@
-Pipl provides reputation for email addresses and identity solutions.
+Pipl provides a reputation for email addresses and identity solutions.
 
 ## Configure Pipl on Cortex XSOAR
 
