@@ -716,6 +716,8 @@ class MicrosoftClient(BaseClient):
             self.resources = resources if resources else []
             self.resource_to_access_token: dict[str, str] = {}
 
+        self.auth_code_reconfigured = False
+
         # for Azure Managed Identities purpose
         self.managed_identities_client_id = managed_identities_client_id
         self.managed_identities_resource_uri = managed_identities_resource_uri
@@ -847,9 +849,9 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        if self.is_auth_code_reconfigured():
-            demisto.debug("Authorization Code is reconfigured so generating new access_token")
-            demisto.debug("Setting the new authorization code to the integration context")
+        self.auth_code_reconfigured = self.is_auth_code_reconfigured()
+        if self.auth_code_reconfigured:
+            demisto.debug("Auth code reconfigured, saving new auth code to integration context")
             integration_context['auth_code'] = self.auth_code
         elif access_token and valid_until and self.epoch_seconds() < valid_until:
             return access_token
@@ -883,6 +885,7 @@ class MicrosoftClient(BaseClient):
             integration_context.update(self.resource_to_access_token)
 
         set_integration_context(integration_context)
+        demisto.debug('Set integration context successfully.')
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
@@ -1080,7 +1083,7 @@ class MicrosoftClient(BaseClient):
             data['scope'] = scope
 
         refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
-        if refresh_token and not self.is_auth_code_reconfigured():
+        if refresh_token and not self.auth_code_reconfigured:
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
         else:
@@ -1365,13 +1368,18 @@ and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
     def is_auth_code_reconfigured(self) -> bool:
+        # Case of oproxy
+        if self.auth_type == OPROXY_AUTH_TYPE:
+            return False
         auth_code = get_integration_context().get('auth_code', '')
+        # Case of the next times or after reconfigured the auth_code
         if auth_code and self.auth_code:
             is_reconfigured = auth_code != self.auth_code
             demisto.debug(f'Auth code is reconfigured: {is_reconfigured}')
             return is_reconfigured
+        # Case of the first time or after deleting the auth_code
         elif auth_code or self.auth_code:
-            demisto.debug('Auth code is only in' + ('integration_context' if auth_code else 'params'))
+            demisto.debug('Auth code is only in ' + ('integration_context' if auth_code else 'params'))
             return True
         else:
             return False
