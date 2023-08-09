@@ -1499,7 +1499,7 @@ inputs:
   value:
     simple: to_sinkhole
   required: true
-  description: The tag that should be applied to the domain so that it will be exported to the EDL using the Generic Export Indicators Service integration in XSOAR.
+  description: The tag that should be applied to the domain so that it will be exported to the EDL using the Generic Export Indicators Service integration in Cortex XSOAR.
   playbookInputQuery:
 - key: EnrichUnknownDomains
   value:
