@@ -224,7 +224,7 @@ def test_some_indicators_exist_with_multiple_value(mocker):
 def test_some_indicators_are_excluded(mocker):
     """
         Given:
-            Some of the indicators given to the 'indicator_values' are in the exclusion list.
+            Some indicators given to the 'indicator_values' are in the exclusion list.
 
         When:
             Running the script
