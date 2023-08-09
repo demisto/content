@@ -39,6 +39,14 @@ script:
   commands:
   - description: Gets the Policy Optimizer statistics.
     name: pan-os-po-get-stats
+    arguments:
+    - auto: PREDEFINED
+      description: Whether to get pre-rules statistics or post-rules statistics. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances.
+      name: position
+      defaultValue: 'pre'
+      predefined:
+      - pre
+      - post
     outputs:
     - contextPath: PanOS.PolicyOptimizer.Stats.no_app_specified
       description: Number of rules with no apps specified.
@@ -57,12 +65,28 @@ script:
       type: Number
   - description: Shows all security policies with no apps specified.
     name: pan-os-po-no-apps
+    arguments:
+    - auto: PREDEFINED
+      description: Whether to get pre-rules with no apps or post-rules with no apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances.
+      name: position
+      defaultValue: 'pre'
+      predefined:
+      - pre
+      - post
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains information about the rules that have no apps specified. For example, Source and Destination.
       type: Unknown
   - description: Gets the unused apps.
     name: pan-os-po-unused-apps
+    arguments:
+    - auto: PREDEFINED
+      description: Whether to get pre-rules unused apps or post-rules unused apps. 'pre' for pre rules, 'post' for post-rules. Only for Panorama instances.
+      name: position
+      defaultValue: 'pre'
+      predefined:
+      - pre
+      - post
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedApps
       description: Shows all security rules with unused apps.
@@ -135,7 +159,7 @@ script:
       required: true
     description: Gets a specific dynamic address group.
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

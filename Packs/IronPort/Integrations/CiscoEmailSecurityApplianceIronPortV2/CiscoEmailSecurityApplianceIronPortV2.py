@@ -1746,7 +1746,7 @@ def fetch_incidents(
     )
     end_date = format_datetime("now")
     quarantine_type = QUARANTINE_TYPE
-    offset = last_run.pop("offset", 0)
+    offset = last_run.pop("offset", 0) or 0
     order_by = "date"
     order_dir = "asc"
 
