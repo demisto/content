@@ -23,6 +23,7 @@ def parse_args():
     args.add_argument('--gitlab-token', required=True, help='A gitlab API token')
     args.add_argument('--master-sha', required=True, help='master branch commit SHA')
     args.add_argument('--job-name', required=True, help='The job name to take the artifact from')
+    args.add_argument('--marketplace', required=True, help='The marketplace name')
     args.add_argument('--current-file', required=True, help='Path to current pack_dependencies.json')
     args.add_argument('--output', required=True, help='Path to diff output file')
     return args.parse_args()
@@ -63,7 +64,7 @@ class GitlabClient:
                 return job_id
         raise Exception(f"Job {job_name} does not exist in pipeline {pipeline_id}.")
 
-    def download_and_extract_packs_dependencies_artifact(self, job_id):
+    def download_and_extract_packs_dependencies_artifact(self, job_id: str, marketplace: str):
         response: requests.Response = self._get(f"jobs/{job_id}/artifacts", stream=True)
         with open("artifacts_bundle.zip", "wb") as zip_file:
             for chunk in response.iter_content(chunk_size=8192):
@@ -72,7 +73,7 @@ class GitlabClient:
         with zipfile.ZipFile("artifacts_bundle.zip", "r") as zip_ref:
             zip_ref.extractall()
 
-        artifacts_path = Path("artifacts/xsoar/packs_dependencies.json")
+        artifacts_path = Path(f"artifacts/{marketplace}/packs_dependencies.json")
         if artifacts_path.is_file():
             logger.info(f"{artifacts_path=} exists, loading the file")
             return load_json(artifacts_path.as_posix())
@@ -80,12 +81,12 @@ class GitlabClient:
             "pack_dependencies.json file not found in the extracted artifacts"
         )
 
-    def get_packs_dependencies_json(self, commit_sha: str, job_name: str) -> dict:
+    def get_packs_dependencies_json(self, commit_sha: str, job_name: str, marketplace: str) -> dict:
         pipeline_ids = [p["id"] for p in self.get_pipelines_by_sha(commit_sha)]
         for pipeline_id in pipeline_ids:
             job_id = self.get_job_id_by_name(pipeline_id, job_name)
             try:
-                return self.download_and_extract_packs_dependencies_artifact(job_id)
+                return self.download_and_extract_packs_dependencies_artifact(job_id, marketplace)
             except Exception as e:
                 logger.info(
                     "Could not extract pack_dependencies.json from job"
@@ -169,7 +170,7 @@ def write_json(diff: dict, filepath: str) -> None:
 def main():
     args = parse_args()
     gitlab_client = GitlabClient(args.gitlab_token)
-    previous = gitlab_client.get_packs_dependencies_json(args.master_sha, args.job_name)
+    previous = gitlab_client.get_packs_dependencies_json(args.master_sha, args.job_name, args.marketplace)
     current = load_json(args.current_file)
     diff = compare(previous, current)
     log_outputs(diff)
