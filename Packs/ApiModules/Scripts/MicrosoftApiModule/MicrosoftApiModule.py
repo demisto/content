@@ -847,7 +847,9 @@ class MicrosoftClient(BaseClient):
 
         valid_until = integration_context.get(valid_until_keyword)
 
-        if access_token and valid_until and self.epoch_seconds() < valid_until and not self.is_auth_code_reconfigured():
+        if self.is_auth_code_reconfigured():
+            demisto.debug("Authorization Code is reconfigured so generating new access_token")
+        elif access_token and valid_until and self.epoch_seconds() < valid_until:
             return access_token
 
         if self.auth_type == OPROXY_AUTH_TYPE:
@@ -879,6 +881,7 @@ class MicrosoftClient(BaseClient):
             integration_context.update(self.resource_to_access_token)
 
         if self.is_auth_code_reconfigured():
+            demisto.debug("Setting the new authorization code to the integration context")
             integration_context.update({'auth_code': self.auth_code})
 
         set_integration_context(integration_context)
