@@ -9,7 +9,7 @@ BASE_URL = 'https://api.umbrella.com'
 
 INTEGRATION_COMMAND_PREFIX = 'umbrella'
 DESTINATION = 'destination'
-DESTINATION_LIST = f'{DESTINATION}-list'
+DESTINATION_LIST = 'destination-list'
 DOMAIN = 'domain'
 
 INTEGRATION_OUTPUT_PREFIX = 'Umbrella'
