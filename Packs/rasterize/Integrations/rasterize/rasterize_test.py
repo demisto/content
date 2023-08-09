@@ -315,7 +315,7 @@ class TestRasterizeIncludeUrl:
 
         driver = init_driver(include_url=include_url)
 
-        assert not ('--headless' in driver.options) == include_url
+        assert ("--headless" in driver.options) != include_url
 
     @pytest.mark.parametrize('include_url', [False, True])
     def test_sanity_rasterize_with_include_url(self, mocker, include_url):
