@@ -850,7 +850,7 @@ class MicrosoftClient(BaseClient):
         if self.is_auth_code_reconfigured():
             demisto.debug("Authorization Code is reconfigured so generating new access_token")
             demisto.debug("Setting the new authorization code to the integration context")
-            integration_context.update({'auth_code': self.auth_code})
+            integration_context['auth_code'] = self.auth_code
         elif access_token and valid_until and self.epoch_seconds() < valid_until:
             return access_token
 
@@ -1365,12 +1365,13 @@ and enter the code **{user_code}** to authenticate.
 2. Run the **{complete_command}** command in the War Room."""
 
     def is_auth_code_reconfigured(self) -> bool:
-        if not self.auth_type == SELF_DEPLOYED_AUTH_TYPE:
-            return False
-        auth_code = get_integration_context().get('auth_code')
+        auth_code = get_integration_context().get('auth_code', '')
         if auth_code and self.auth_code:
-            return not get_integration_context().get('auth_code') == self.auth_code
+            is_reconfigured = auth_code != self.auth_code
+            demisto.debug(f'Auth code is reconfigured: {is_reconfigured}')
+            return is_reconfigured
         elif auth_code or self.auth_code:
+            demisto.debug('Auth code is only in' + ('integration_context' if auth_code else 'params'))
             return True
         else:
             return False
