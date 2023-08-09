@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Graph Security Alert",
+    "id": "Graph Security Alert2",
     "mapping": {
         "Graph Security Alert": {
             "dontMapEventToLabels": true,
@@ -131,11 +131,18 @@
                 },
                 "MITRE Technique ID": {
                     "simple": "mitreTechniques"
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
                 }
             }
         }
     },
-    "name": "Graph Security Alert",
+    "name": "Graph Security Alert2",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.8.0"
