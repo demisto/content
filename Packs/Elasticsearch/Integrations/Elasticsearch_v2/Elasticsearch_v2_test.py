@@ -971,10 +971,10 @@ def test_execute_raw_query(mocker):
 
 
 @pytest.mark.parametrize('datetime_format, expected', [
-    ('YYYY-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
-    ('yyyy-MM-dd HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
-    ('yyyy-MM-DD HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
-    ('YYYY-MM-dd HH:mm:ss', 'YYYY-MM-DD HH:mm:ss'),
+    ('YYYY-MM-DD HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
+    ('yyyy-MM-dd HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
+    ('yyyy-MM-DD HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
+    ('YYYY-MM-dd HH:mm:ss', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT),
     ('yy-MM-DD HH:mm:ss', 'YY-MM-DD HH:mm:ss'),
     ('YYYY-MM-d HH:mm:ss', 'YYYY-MM-d HH:mm:ss'),
 ])
@@ -1036,9 +1036,9 @@ def test_get_datetime_field_format():
 @pytest.mark.parametrize('date_time, time_method, time_format, expected_time', [
     ('123456', 'Timestamp-Seconds', '', 123456),
     ('123456', 'Timestamp-Milliseconds', '', 123456),
-    ('123456', 'Simple-Date', 'YYYY-MM-DD HH:mm:ss', 123456),
+    ('123456', 'Simple-Date', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT, 123456),
     (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD', '2023-07-01'),
-    (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss', '2023-07-01 00:00:00'),
+    (dateparser.parse('July 1, 2023'), 'Simple-Date', Elasticsearch_v2.DEFAULT_DATETIME_FORMAT, '2023-07-01 00:00:00'),
     (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSS', '2023-07-01 00:00:00.000'),
     (dateparser.parse('July 1, 2023'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ss.SSSSSS', '2023-07-01 00:00:00.000000'),
     (dateparser.parse('July 1, 2023 02:30'), 'Simple-Date', 'YYYY-MM-DD HH:mm:ssZ', '2023-07-01 02:30:00+0000'),

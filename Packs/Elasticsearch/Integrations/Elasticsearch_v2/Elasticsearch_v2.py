@@ -491,7 +491,7 @@ def test_func(proxies):
 
                 else:
                     # if it is unknown error - get the message from the error itself
-                    return_error(f"Failed to connect. The following error occurred: {str(e)}")
+                    return_error(f"Failed to connect. The following error occurred: {e}")
 
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
@@ -755,7 +755,7 @@ def fetch_incidents(proxies):
             incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
             demisto.setLastRun({'time': str(last_fetch)})
 
-        demisto.info(f'extract {len(incidents)} incidents')
+        demisto.info(f'extracted {len(incidents)} incidents')
     demisto.incidents(incidents)
 
 
@@ -886,7 +886,7 @@ def main():
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
                          'Please try using the Open Search client in the instance configuration.'
                          '\nError message: {}'.format(demisto.command(), str(e)), error=e)
-        return_error(f"Failed executing {demisto.command()}.\nError message: {str(e)}", error=e)
+        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=e)
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
