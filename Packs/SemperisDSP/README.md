@@ -11,7 +11,7 @@ Open your Semperis DSP UI and follow these instructions:
     * Under **Primary Syslog Server**, input the relevant syslog server IP address.
     * Under **Primary Port**, input the relevant syslog server port.
     * Make sure the protocol set for the primary communication is TCP (Without TLS).
-3. Under the **Change Event Filtering** section, make sure to configure the following-
+3. Under the **Change Event Filtering** section, configure the following:
     * Make sure the **AD Changed Items** checkbox is enabled.
     * Make sure the **DNS** checkbox is enabled.
     * Make sure the **Send Operations Log to Syslog** checkbox is enabled.
