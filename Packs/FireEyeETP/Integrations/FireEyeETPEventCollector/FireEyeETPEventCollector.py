@@ -381,7 +381,7 @@ def from_fake_isozformat(datetime_str: str) -> datetime:
     In reality, ISO Z should be able to handle microseconds and contains 'Z' *OR* ±00:00,
     and even that is used wrong (aka ±0000 instead of ±00:00)
     This function takes the not ISO-like string and converts it to datetime.
-    It supports both existing and non-existing microseconds 
+    It supports both existing and non-existing microseconds.
     """
 
     if datetime_str.endswith('Z') and '+' in datetime_str:
