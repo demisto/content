@@ -4,7 +4,7 @@ Converts a file from one format to a different format by using the convert-to fu
 
 ### Operation not permitted
 
-If you get an error like:
+If you get an error such as:
 <pre>cannot access 'soffice': Operation not permitted</pre>
 
 Or:
