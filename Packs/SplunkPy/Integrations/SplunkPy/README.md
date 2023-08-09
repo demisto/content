@@ -1063,8 +1063,8 @@ Creates the KV store collection transform.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | kv_store_collection_name | The name of the KV store collection. | Required | 
-| supported_fields | A comma-delimited list of the fields supported by the collection, e.g. _key,id,name,address.<br/>. | Required | 
-| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". Default is search. | Required | 
+| supported_fields | A comma-delimited list of the fields supported by the collection, e.g., _key,id,name,address.<br/>. | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
 
 #### Context Output
 

@@ -488,7 +488,7 @@ script:
       required: true
     - default: true
       defaultValue: search
-      description: The name of the Splunk application that contains the KV store collection. The default is "search".
+      description: The name of the Splunk application that contains the KV store collection. 
       name: app_name
       required: true
     description: Creates the KV store collection transform.
