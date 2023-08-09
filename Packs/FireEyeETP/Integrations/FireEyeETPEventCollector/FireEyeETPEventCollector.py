@@ -125,7 +125,7 @@ class LastRun:
             return {'last_fetch_timestamp': self.last_run_timestamp.isoformat(),
                     'last_fetch_last_ids': list(self.last_ids)}
 
-        def set_ids(self, ids: list[str] | set[str]) -> None:
+        def set_ids(self, ids: set[str] = set()) -> None:
             self.last_ids = set(ids) if isinstance(ids, list) else ids
 
     def __init__(self, event_types: list = None,
@@ -333,7 +333,7 @@ class EventCollector:
             case 'alerts' | 'alerts_outbound':
                 events, last_run_time = self.fetch_alerts(event_type, start_time=last_fetch_time, end_time=to,
                                                           fetched_ids=last_fetched_ids, **args)
-                last_run_ids = {item.get("id") for item in filter(lambda item: datetime.fromisoformat(
+                last_run_ids: set[str] = {item.get("id", "") for item in filter(lambda item: datetime.fromisoformat(
                     demisto.get(item, "attributes.meta.last_modified_on")) == last_run_time, events)}
                 format_alerts(events, self.client.hide_sensitive)
 
@@ -341,7 +341,7 @@ class EventCollector:
 
                 events, last_run_time = self.fetch_email_trace(event_type, start_time=last_fetch_time, end_time=to,
                                                                fetched_ids=last_fetched_ids, **args)
-                last_run_ids = {item.get("id") for item in filter(
+                last_run_ids = {item.get("id", "") for item in filter(
                     lambda item: datetime.fromisoformat(
                         demisto.get(item, "attributes.lastModifiedDateTime")) == last_run_time, events)}
 
