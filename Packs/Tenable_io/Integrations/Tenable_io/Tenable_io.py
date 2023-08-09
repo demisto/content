@@ -1287,9 +1287,9 @@ def build_filters(filters: str | None) -> dict:
     result: dict = {}
     for i, (name, quality, value) in enumerate(filters):
         result |= {
-            f'filter.{i}.filter': name.replace('\\s', ' '),
-            f'filter.{i}.quality': quality.replace('\\s', ' '),
-            f'filter.{i}.value': value.replace('\\s', ' ')
+            f'filter.{i}.filter': re.sub(r'(?<!\\)\\s', ' ', name),
+            f'filter.{i}.quality': re.sub(r'(?<!\\)\\s', ' ', quality),
+            f'filter.{i}.value': re.sub(r'(?<!\\)\\s', ' ', value)
         }
 
     return result
