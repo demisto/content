@@ -1,8 +1,7 @@
 import pytest
 from unittest.mock import patch
-from HuntingFromIndicatorLayout import hunting_from_indicator_layout
-import demistomock as demisto
-
+from HuntingFromIndicatorLayout import hunting_from_indicator_layout, main
+from CommonServerPython import DemistoException # noqa: F401
 
 @pytest.fixture
 def mock_executeCommand():
@@ -20,11 +19,15 @@ def test_hunting_from_indicator_layout_success(mock_executeCommand, sdo_value, e
     assert result.readable_output == expected_result
 
 
-def test_main_no_indicator():
-    args = {}
-    demisto.args.return_value = args
+def test_hunting_from_indicator_layout_failure(mock_executeCommand):
+    mock_executeCommand.side_effect = DemistoException("The automation was not executed from indicator layout")
 
-    with pytest.raises(return_error, match="The automation was not executed from indicator layout"):
+    with pytest.raises(DemistoException):
+        hunting_from_indicator_layout("non_existent_indicator")
+
+
+def test_main_indicator_not_in_args():
+    with pytest.raises(DemistoException, match="The automation was not executed from indicator layout"):
         main()
 
 
