@@ -37,13 +37,19 @@ class GitlabClient:
         url = f"{self.base_url}/{endpoint}"
         headers = {"PRIVATE-TOKEN": self.token}
         response = requests.get(url, headers=headers, stream=stream)
+        response.raise_for_status()
         if to_json:
             return response.json()
         return response
 
-    def get_most_updated_pipeline_sha(self, commit_sha: str):
+    def get_pipelines_by_sha(self, commit_sha: str):
         response: list = self._get(f"pipelines?sha={commit_sha}", to_json=True)
-        pipeline_id = response[0]["id"]
+        if successful_pipelines := [p for p in response if p["status"] != "failed"]:
+            pipeline_id = successful_pipelines[0]["id"]
+        elif response:
+            pipeline_id = response[0]["id"]
+        else:
+            raise Exception(f"No Gitlab pipelines for SHA {commit_sha}")
         logging.info(f"{pipeline_id=}")
         return pipeline_id
 
@@ -73,10 +79,20 @@ class GitlabClient:
             "pack_dependencies.json file not found in the extracted artifacts"
         )
 
-    def get_packs_dependencies_json(self, commit_sha: str, job_name: str):
-        pipeline_id = self.get_most_updated_pipeline_sha(commit_sha)
-        job_id = self.get_job_id_by_name(pipeline_id, job_name)
-        return self.download_and_extract_packs_dependencies_artifact(job_id)
+    def get_packs_dependencies_json(self, commit_sha: str, job_name: str) -> dict:
+        pipeline_ids = [p["id"] for p in self.get_pipelines_by_sha(commit_sha)]
+        for pipeline_id in pipeline_ids:
+            job_id = self.get_job_id_by_name(pipeline_id, job_name)
+            try:
+                return self.download_and_extract_packs_dependencies_artifact(job_id)
+            except Exception as e:
+                logging.debug(
+                    "Could not extract pack_dependencies.json from job"
+                    f"{job_id} of pipeline #{pipeline_id}. Error: {e}"
+                )
+        raise Exception(
+            f"Could not extract pack_dependencies.json from any pipeline of SHA {commit_sha}"
+        )
 
 
 def compare_pack_field(pack_id: str, previous: dict, current: dict, res: dict, field: str) -> None:
