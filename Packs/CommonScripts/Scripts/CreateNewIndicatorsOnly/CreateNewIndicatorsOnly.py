@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 STATUS_NEW = 'new'
@@ -20,10 +20,11 @@ def normalize_indicator_value(indicator_value: Any) -> str:
 
 
 def add_new_indicator(indicator_value: Any,
-                      create_new_indicator_args: Dict[str, Any]) -> Dict[str, Any]:
+                      create_new_indicator_args: dict[str, Any]) -> dict[str, Any]:
     indicator_value = normalize_indicator_value(indicator_value)
+    escaped_indicator_value = indicator_value.replace('"', r'\"')
 
-    if indicators := execute_command('findIndicators', {'value': indicator_value}):
+    if indicators := execute_command('findIndicators', {'value': escaped_indicator_value}):
         indicator = indicators[0]
         indicator[KEY_CREATION_STATUS] = STATUS_EXISTING
     else:
@@ -50,8 +51,8 @@ def add_new_indicator(indicator_value: Any,
     return indicator
 
 
-def add_new_indicators(indicator_values: Optional[List[Any]],
-                       create_new_indicator_args: Dict[str, Any]) -> List[Dict[str, Any]]:
+def add_new_indicators(indicator_values: list[Any] | None,
+                       create_new_indicator_args: dict[str, Any]) -> list[dict[str, Any]]:
     return [add_new_indicator(indicator_value, create_new_indicator_args)
             for indicator_value in indicator_values or []]
 
@@ -62,9 +63,8 @@ def main():
 
         # Don't use argToList to make a list in order to accept an indicator including commas.
         # The `indicator_values` parameter doesn't support a comma separated list.
-        if indicator_values := args.get('indicator_values', []):
-            if not isinstance(indicator_values, list):
-                indicator_values = [indicator_values]
+        if (indicator_values := args.get('indicator_values', [])) and not isinstance(indicator_values, list):
+            indicator_values = [indicator_values]
 
         create_new_indicator_args = dict(args)
         create_new_indicator_args.pop('indicator_values', None)
