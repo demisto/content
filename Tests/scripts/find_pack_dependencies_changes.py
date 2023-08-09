@@ -1,12 +1,18 @@
 import json
+import logging as logger
 import zipfile
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import Any
 
 import requests
+from demisto_sdk.commands.common.logger import logging_setup
 
-from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
+
+logging_setup(3)
+install_logging("find_pack_dependencies_changes.log", logger=logger)
+
 
 API_BASE_URL = "https://code.pan.run/api/v4"
 PROJECT_ID = '2596'
@@ -53,7 +59,7 @@ class GitlabClient:
         for job in response:
             if job["name"] == job_name:
                 job_id = job["id"]
-                logging.info(f"{job_id=}")
+                logger.info(f"{job_id=}")
                 return job_id
         raise Exception(f"Job {job_name} does not exist in pipeline {pipeline_id}.")
 
@@ -68,7 +74,7 @@ class GitlabClient:
 
         artifacts_path = Path("artifacts/xsoar/packs_dependencies.json")
         if artifacts_path.is_file():
-            logging.info(f"{artifacts_path=} exists, loading the file")
+            logger.info(f"{artifacts_path=} exists, loading the file")
             return load_json(artifacts_path.as_posix())
         raise Exception(
             "pack_dependencies.json file not found in the extracted artifacts"
@@ -81,7 +87,7 @@ class GitlabClient:
             try:
                 return self.download_and_extract_packs_dependencies_artifact(job_id)
             except Exception as e:
-                logging.debug(
+                logger.info(
                     "Could not extract pack_dependencies.json from job"
                     f"{job_id} of pipeline #{pipeline_id}. Error: {e}"
                 )
@@ -149,10 +155,10 @@ def compare(previous: dict, current: dict) -> dict:
 
 def log_outputs(diff: dict) -> None:
     if not diff:
-        logging.info("No difference in dependencies.")
+        logger.info("No difference in dependencies.")
 
     s = "\n".join([f"{pack}:\n{json.dumps(data, indent=4)}" for pack, data in diff.items()])
-    logging.info(f"Found the following differences:\n{s}")
+    logger.info(f"Found the following differences:\n{s}")
 
 
 def write_json(diff: dict, filepath: str) -> None:
