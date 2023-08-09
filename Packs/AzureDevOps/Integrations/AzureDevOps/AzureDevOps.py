@@ -1904,7 +1904,7 @@ def pull_request_reviewer_list_command(client: Client, args: Dict[str, Any], org
         readable_output=readable_output,
         outputs_prefix='AzureDevOps.PullRequestReviewer',
         outputs_key_field='displayName',
-        outputs=response["value"],
+        outputs=response,
         raw_response=response
     )
 
@@ -2206,7 +2206,7 @@ def file_list_command(client: Client, args: Dict[str, Any], organization: Option
 
 
 def file_get_command(client: Client, args: Dict[str, Any], organization: Optional[str], repository_id: Optional[str],
-                     project: Optional[str]) -> dict:
+                     project: Optional[str]) -> list:
     """
     Getting the file.
     """
@@ -2217,14 +2217,19 @@ def file_get_command(client: Client, args: Dict[str, Any], organization: Optiona
     file_name = Path(args["file_name"]).name
 
     if args["format"] == 'json':
-        data = response["content"]
-        file_type = EntryType.ENTRY_INFO_FILE
+        mapping = {"path": "File Name(s)", "objectId": "Object ID", "commitId": "Commit ID"}
+        readable_output = tableToMarkdown('Files', response, headers=["path", "objectId", "commitId"],
+                                          headerTransform=lambda header: mapping.get(header, header))
+        command_results = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AzureDevOps.File',
+            outputs=response,
+            raw_response=response
+        )
+        return [command_results, fileResult(filename=file_name, data=response["content"], file_type=EntryType.ENTRY_INFO_FILE)]
 
-    else:  # args["format"] == 'zip'
-        data = response.content
-        file_type = EntryType.FILE
-
-    return fileResult(filename=file_name, data=data, file_type=file_type)
+    # in case args["format"] == 'zip'
+    return [fileResult(filename=file_name, data=response.content, file_type=EntryType.FILE)]
 
 
 def mapping_branch_name_to_branch_id(client: Client, args: Dict[str, Any], org_repo_project_tuple: namedtuple):
@@ -2382,13 +2387,17 @@ def team_member_list_command(client: Client, args: Dict[str, Any], organization:
 
     list_for_hr = []
     list_for_hr.extend(
-        {"Name": member.get("identity").get("displayName")}
+        {
+            "Name": member.get("identity").get("displayName"),
+            "User ID": member.get("identity").get("id"),
+            "Unique Name": member.get("identity").get("uniqueName"),
+        }
         for member in response.get("value")
     )
     readable_output = tableToMarkdown(
         "Team Members",
         list_for_hr,
-        headers=["Name"],
+        headers=["Name", "Unique Name", "User ID"],
     )
 
     return CommandResults(

@@ -793,38 +793,41 @@ script:
         required: true
         isArray: false
     outputs:
+      - type: Number
+        contextPath: AzureDevOps.PullRequestReviewer.count
+        description: Count of reviewers.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.reviewerUrl
+        contextPath: AzureDevOps.PullRequestReviewer.value.reviewerUrl
         description: URL to retrieve information about this identity.
       - type: Number
-        contextPath: AzureDevOps.PullRequestReviewer.vote
+        contextPath: AzureDevOps.PullRequestReviewer.value.vote
         description: Vote on a pull request, 10 - approved, 5 - approved with suggestions, 0 - no vote, -5 - waiting for author, -10 - rejected.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.hasDeclined
+        contextPath: AzureDevOps.PullRequestReviewer.value.hasDeclined
         description: Whether the pull request has been declined.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.isRequired
+        contextPath: AzureDevOps.PullRequestReviewer.value.isRequired
         description: Indicates if this is a required reviewer for this pull request. Branches can have policies that require particular reviewers are required for pull requests.
       - type: Boolean
-        contextPath: AzureDevOps.PullRequestReviewer.isFlagged
+        contextPath: AzureDevOps.PullRequestReviewer.value.isFlagged
         description: A way to mark some special Pull Requests we are dealing with to distinguish them from other Pull Requests.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.displayName
+        contextPath: AzureDevOps.PullRequestReviewer.value.displayName
         description: This is the non-unique display name of the graph subject. To change this field, you must alter its value in the source provider.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.url
+        contextPath: AzureDevOps.PullRequestReviewer.value.url
         description: REST URL for this resource.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer._links.avatar.href
+        contextPath: AzureDevOps.PullRequestReviewer.value._links.avatar.href
         description: This field contains zero or more interesting links about the graph subject. These links may be invoked to obtain additional relationships or more detailed information about this graph subject.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.id
+        contextPath: AzureDevOps.PullRequestReviewer.value.id
         description: Pull-request reviewers IDs.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.uniqueName
+        contextPath: AzureDevOps.PullRequestReviewer.value.uniqueName
         description: The reviewers user name.
       - type: String
-        contextPath: AzureDevOps.PullRequestReviewer.imageUrl
+        contextPath: AzureDevOps.PullRequestReviewer.value.imageUrl
         description: Link to the reviewers user image.
   - name: azure-devops-pull-request-reviewer-add
     description: Add a reviewer to a pull request.
@@ -2269,7 +2272,7 @@ script:
         required: false
         isArray: false
       - name: include_content
-        description: Include item content when requesting json. Default is True.
+        description: Include item content. Default is True.
         required: false
         isArray: false
         auto: PREDEFINED
@@ -2277,7 +2280,22 @@ script:
           - 'True'
           - 'False'
         defaultValue: 'True'
-
+    outputs:
+      - type: String
+        contextPath: AzureDevOps.File.objectId
+        description: The file object ID.
+      - type: String
+        contextPath: AzureDevOps.File.gitObjectType
+        description: The file git object type.
+      - type: String
+        contextPath: AzureDevOps.File.commitId
+        description: ID (SHA-1) of the file commit.
+      - type: String
+        contextPath: AzureDevOps.File.path
+        description: The file's path.
+      - type: String
+        contextPath: AzureDevOps.File.content
+        description: The file content.
   - name: azure-devops-branch-create
     description: Create a branch.
     arguments:
