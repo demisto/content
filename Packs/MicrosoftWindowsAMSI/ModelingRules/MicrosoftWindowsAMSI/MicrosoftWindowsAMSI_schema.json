@@ -51,6 +51,10 @@
         "message": {
             "type": "string",
             "is_array": false
-        }               
+        },
+        "log_level": {
+            "type": "string",
+            "is_array": false
+        }                         
     }
 }
