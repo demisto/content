@@ -15,11 +15,11 @@ PRODUCT = "dropbox"
 
 class DropboxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://api.dropbox.com/2/team_log/get_events
-    url = parse_obj_as(AnyUrl, 'https://api.dropbox.com')
-    method = Method.POST
-    headers = {'Content-Type': 'application/json'}
+    url: AnyUrl = parse_obj_as(AnyUrl, 'https://api.dropbox.com')
+    method: Method = Method.POST
+    headers: dict = {'Content-Type': 'application/json'}
     data: str
-    verify = not demisto.params().get('insecure')
+    verify: bool = not demisto.params().get('insecure')
 
 
 class DropboxEventsClient(IntegrationEventsClient):
@@ -41,21 +41,22 @@ class DropboxEventsClient(IntegrationEventsClient):
         super().__init__(request, options, session)
 
     def set_request_filter(self, cursor: str):
-        if 'continue' not in self.request.url:
-            self.request.url += '/continue'
+        if 'continue' not in str(self.request.url):
+            self.request.url = AnyUrl(f'{str(self.request.url).removesuffix("/")}/continue')
+
         self.request.data = json.dumps({'cursor': cursor})
 
     def get_access_token(self):
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=f'{self.request.url.removesuffix("/")}/oauth2/token',
+            url=f'{str(self.request.url).removesuffix("/")}/oauth2/token',
             data={'grant_type': 'refresh_token', 'refresh_token': f'{self.refresh_token}'},
             auth=HTTPBasicAuth(self.credentials.identifier, self.credentials.password),
             verify=self.request.verify,
         )
         response = self.call(request)
         self.request.headers['Authorization'] = f'Bearer {response.json()["access_token"]}'
-        self.request.url += '/2/team_log/get_events'
+        self.request.url = AnyUrl(f'{str(self.request.url).removesuffix("/")}/2/team_log/get_events')
 
 
 class DropboxEventsGetter(IntegrationGetEvents):
@@ -72,9 +73,8 @@ class DropboxEventsGetter(IntegrationGetEvents):
         # endregion
 
         # region Yield Response
-        while events := results.get('events'):  # Run as long there are logs
-
-            yield sorted(events, key=lambda d: d['timestamp'])
+        while results.get('events'):  # Run as long there are logs
+            yield sorted(results.get('events', []), key=lambda d: d.get('timestamp'))
 
             if results.get('has_more'):
                 self.client.set_request_filter(results.get('cursor'))
