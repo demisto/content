@@ -1,5 +1,5 @@
 name: Microsoft Windows AMSI Parsing Rule
-id: Microsoft_Windows_AMSI_Parsing_Rule
+id: Microsoft_Windows_AMSI_ParsingRule
 fromversion: 8.3.0
 tags: []
 rules: ''
