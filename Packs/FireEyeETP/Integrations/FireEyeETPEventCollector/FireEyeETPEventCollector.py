@@ -121,7 +121,7 @@ class LastRun:
             self.last_ids = last_ids if last_ids else set()
             self.last_run_timestamp = start_time if start_time else datetime.now()
 
-        def to_demisto_last_run(self):
+        def to_demisto_last_run(self) -> dict:
             return {'last_fetch_timestamp': self.last_run_timestamp.isoformat(),
                     'last_fetch_last_ids': list(self.last_ids)}
 
@@ -138,7 +138,7 @@ class LastRun:
             for event_type in event_types:
                 setattr(self, event_type.name, self.LastRunEvent(start_time, last_ids))
 
-    def get_last_run_event(self, event_name: str):
+    def get_last_run_event(self, event_name: str) -> LastRunEvent:
         return self.__getattribute__(event_name)
 
     def to_demisto_last_run(self) -> dict:
@@ -369,18 +369,20 @@ def get_activity_log_id(event: dict) -> str:
     return f"{demisto.get(event, 'attributes.user_action')}-{demisto.get(event, 'attributes.time')}"
 
 
-def set_events_max(event_names: list[str], new_max) -> None:
+def set_events_max(event_names: list[str], new_max: int) -> None:
     events_to_update = list(filter(lambda x: x.name in event_names, ALL_EVENTS))
     for event_type in events_to_update:
         event_type.client_max_fetch = new_max
 
 
 def from_fake_isozformat(datetime_str: str) -> datetime:
-    """This API returns invalid date string that 'supports' ISO Z, such as: 2023-08-01T14:15:26+0000Z 
-    In reality, ISO Z should be able to handle microseconds and contains 'Z' *OR* ±00:00, 
+    """
+    This API returns invalid date string that 'supports' ISO Z, such as: 2023-08-01T14:15:26+0000Z
+    In reality, ISO Z should be able to handle microseconds and contains 'Z' *OR* ±00:00,
     and even that is used wrong (aka ±0000 instead of ±00:00)
     This function takes the not ISO-like string and converts it to datetime.
-    It supports both existing and non-existing microseconds """
+    It supports both existing and non-existing microseconds 
+    """
 
     if datetime_str.endswith('Z') and '+' in datetime_str:
         datetime_str = datetime_str[:-1]
@@ -473,11 +475,11 @@ def main() -> None:  # pragma: no cover
 
         # setting the max fetch on each event type
         set_events_max(['alerts', 'alerts_outbound'],
-                       arg_to_number(args.get('limit') or params.get('alerts_max_fetch', DEFAULT_MAX_FETCH)))
+                       arg_to_number(args.get('limit') or params.get('alerts_max_fetch')) or DEFAULT_MAX_FETCH)
         set_events_max(['email_trace', 'email_trace_outbound'],
-                       arg_to_number(args.get('limit') or params.get('email_trace_max_fetch', DEFAULT_MAX_FETCH)))
+                       arg_to_number(args.get('limit') or params.get('email_trace_max_fetch')) or DEFAULT_MAX_FETCH)
         set_events_max(['activity_log'],
-                       arg_to_number(args.get('limit') or params.get('activity_log_max_fetch', DEFAULT_MAX_FETCH)))
+                       arg_to_number(args.get('limit') or params.get('activity_log_max_fetch')) or DEFAULT_MAX_FETCH)
 
         client = Client(
             base_url=base_url,
