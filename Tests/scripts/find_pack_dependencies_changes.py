@@ -43,15 +43,10 @@ class GitlabClient:
         return response
 
     def get_pipelines_by_sha(self, commit_sha: str):
-        response: list = self._get(f"pipelines?sha={commit_sha}", to_json=True)
-        if successful_pipelines := [p for p in response if p["status"] != "failed"]:
-            pipeline_id = successful_pipelines[0]["id"]
-        elif response:
-            pipeline_id = response[0]["id"]
-        else:
-            raise Exception(f"No Gitlab pipelines for SHA {commit_sha}")
-        logging.info(f"{pipeline_id=}")
-        return pipeline_id
+        pipelines: list = self._get(f"pipelines?sha={commit_sha}", to_json=True)
+        if not pipelines:
+            raise Exception(f"No pipelines for SHA {commit_sha}")
+        return pipelines
 
     def get_job_id_by_name(self, pipeline_id: str, job_name: str):
         response: list = self._get(f"pipelines/{pipeline_id}/jobs", to_json=True)
