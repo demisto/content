@@ -321,6 +321,7 @@ def test_invalid_command_raises_error(mocker, requests_mock, response, expected)
     assert results[0] == expected
 
 
-def test_failed_request():
-    with pytest.raises(Exception), capfd.disabled():
+def test_failed_request(mocker):
+    mocker.patch.object(demisto, "error")
+    with pytest.raises(Exception):
         module_test_command(CLIENT)
