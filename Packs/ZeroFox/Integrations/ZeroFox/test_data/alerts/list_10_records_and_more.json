@@ -1,6 +1,6 @@
 {
     "count": 1308,
-    "next": "https://api.zerofox.com/1.0/alerts/?limit=10&offset=10&sort_direction=asc",
+    "next": "https://api.zerofox.com/1.0/alerts/?limit=10&offset=20&sort_direction=asc",
     "previous": null,
     "page_size": 10,
     "num_pages": 131,

@@ -8,6 +8,7 @@ from typing import Any
 from collections.abc import Callable
 from requests import Response
 from copy import deepcopy
+import urllib.parse as urlparse
 
 """ GLOBALS / PARAMS  """
 FETCH_TIME_DEFAULT = "3 days"
@@ -1028,11 +1029,11 @@ def fetch_incidents(
 ) -> tuple[dict[str, str], list[dict[str, Any]]]:
     date_format = "%Y-%m-%dT%H:%M:%S.%f"
     last_fetched = last_run.get("last_fetched")
-    last_page_str: str = last_run.get("last_page", "")
+    last_offset_str: str = last_run.get("last_offset", "")
     if last_fetched is None:
         last_fetched = first_fetch_time
     last_fetched = parse_date(last_fetched, date_formats=(date_format,))
-    last_page = int(last_page_str) if last_page_str else 1
+    last_offset = int(last_offset_str) if last_offset_str else 0
     if last_fetched is None:
         raise ValueError("last_fetched param is invalid")
 
@@ -1040,14 +1041,14 @@ def fetch_incidents(
         {
             "sort_direction": "asc",
             "min_timestamp": last_fetched,
-            "page": last_page,
+            "offset": last_offset,
         }
     )
     alerts: list[dict[str, Any]] = response_content.get("alerts", [])
 
     next_run = {
         "last_fetched": last_fetched.strftime(date_format),
-        "last_page": str(last_page),
+        "last_offset": str(last_offset),
     }
     incidents: list[dict[str, Any]] = []
 
@@ -1063,9 +1064,11 @@ def fetch_incidents(
         incident = alert_to_incident(alert)
         incidents.append(incident)
 
-    more_alerts: str = response_content.get("next", "")
-    if more_alerts:
-        next_run["last_page"] = str(last_page + 1)
+    next_page: str = response_content.get("next", "")
+    if next_page:
+        parsed_next_page = urlparse.urlparse(next_page)
+        parsed_query = urlparse.parse_qs(parsed_next_page.query)
+        next_run["last_offset"] = parsed_query.get("offset", ["0"])[0]
         return next_run, incidents
 
     # max_update_time is the timestamp of the last alert in alerts
@@ -1085,7 +1088,7 @@ def fetch_incidents(
         parsed_last_alert_timestamp + timedelta(milliseconds=1)
     ).strftime(date_format)
     next_run["last_fetched"] = max_update_time
-    next_run["last_page"] = "1"
+    next_run["last_offset"] = "0"
 
     return next_run, incidents
 
