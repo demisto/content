@@ -17,12 +17,7 @@
         "3CXDesktopApp",
         "infostealer"
     ],
-    "dependencies": {
-        "MajorBreachesInvestigationandResponse": {
-            "mandatory": true,
-            "display_name": "Rapid Breach Response"
-        }
-    },
+    "dependencies": {},
     "marketplaces": [
         "xsoar",
         "marketplacev2"
