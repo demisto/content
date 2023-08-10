@@ -761,7 +761,7 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
         'client_secret': CLIENT_SECRET,
         'redirect_uri': REDIRECT_URI,
         'grant_type': AUTHORIZATION_CODE,
-        'code': 'reconfigured_auth_code',
+        'code': auth_code,
     }
 
     assert client.get_access_token()
