@@ -62,10 +62,7 @@ configuration:
   required: true
   section: Connect
   type: 4
-- additionalinfo: The time in seconds till a timeout exception is reached. You can
-    specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified, a default
-    of 10 second will be used.
+- additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   advanced: true
   defaultvalue: 60,10
   display: Timeout
@@ -73,10 +70,7 @@ configuration:
   required: false
   section: Connect
   type: 0
-- additionalinfo: 'The maximum number of retry attempts when connection or throttling
-    errors are encountered. Set to 0 to disable retries. The default value is 5 and
-    the limit is 10. Note: Increasing the number of retries will increase the execution
-    time.'
+- additionalinfo: The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.
   advanced: true
   defaultvalue: "5"
   display: Retries
@@ -137,7 +131,7 @@ script:
     - description: The name of the user to get information about.
       name: userName
       required: true
-    description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
+    description: Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
     name: aws-iam-identitycenter-get-user
     outputs:
     - contextPath: AWS.IAM.IdentityCenter.Users.UserName
