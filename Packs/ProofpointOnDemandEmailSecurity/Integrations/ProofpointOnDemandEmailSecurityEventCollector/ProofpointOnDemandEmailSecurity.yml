@@ -10,12 +10,8 @@ configuration:
   name: host
   type: 0
   required: true
-- display: Integration key
-  name: integration_key
-  type: 0
-  required: true
-- displaypassword: Secret key
-  name: secret_key
+- displaypassword: API key
+  name: api_key
   hiddenusername: true
   type: 9
   required: true
@@ -28,12 +24,6 @@ configuration:
   name: retries
   type: 0
   defaultvalue: 5
-  required: false
-- additionalinfo: A comma-delimited string that specifies the initial order and type in which to get logs from the available APIs. Possible values are AUTHENTICATION, ADMINISTRATION, and TELEPHONY.
-  display: APIs to use
-  name: logs_type_array
-  type: 0
-  defaultvalue: AUTHENTICATION,ADMINISTRATION,TELEPHONY
   required: false
 - display: Use system proxy settings
   name: proxy
@@ -54,8 +44,8 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: demisto/duoadmin3:1.0.0.68923
-  isfetchevents: true
+  dockerimage: devdemisto/python3:3.10.12.69053
+  longRunning: true
   subtype: python3
 marketplaces:
 - marketplacev2
