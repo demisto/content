@@ -95,13 +95,13 @@ def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip:
             success &= chmod_logs(ssh, server_ip)
             success &= download_logs(ssh, server_ip, artifacts_dir, role)
 
-            if time_to_live:
-                logging.info(f'Time to live was set to {time_to_live} minutes for server {server_ip}')
-                success &= shutdown(ssh, server_ip, time_to_live)
-            elif (tests_path / f'is_build_passed_{role}.txt').exists() and \
-                    (tests_path / f'is_post_update_passed_{role}.txt').exists():
+            if (Path(artifacts_dir) / f'is_build_passed_{role}.txt').exists() and \
+                    (Path(artifacts_dir) / f'is_post_update_passed_{role}.txt').exists():
                 success &= shutdown(ssh, server_ip)
                 logging.warning(f'Tests passed on {readable_role}, shutting down instance.')
+            elif time_to_live:
+                logging.info(f'Time to live was set to {time_to_live} minutes for server {server_ip}')
+                success &= shutdown(ssh, server_ip, time_to_live)
             else:
                 logging.warning(f'Tests for some integration failed on {readable_role}, keeping instance alive, '
                                 f'until server default TTL')
