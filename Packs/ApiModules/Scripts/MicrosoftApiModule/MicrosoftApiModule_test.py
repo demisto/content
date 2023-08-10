@@ -767,3 +767,5 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
     assert client.get_access_token()
     req_body = requests_mock._adapter.last_request._request.body
     assert urllib.parse.urlencode(body) == req_body
+    assert demisto.getIntegrationContext().get('auth_code') == auth_code
+
