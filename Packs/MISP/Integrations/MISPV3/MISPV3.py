@@ -11,6 +11,10 @@ from pymisp.tools import FileObject
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
+def bla_bla():
+    return True
+
+
 def handle_connection_errors(error):
     if "SSLError" in error:
         return_error('Unable to connect to MISP because of a SSLCertVerificationError, '
@@ -1672,6 +1676,7 @@ def main():
     demisto.debug(f'[MISP V3]: command is {command}')
     args = demisto.args()
 
+    bla_bla()
     try:
 
         malicious_tag_ids, suspicious_tag_ids = handle_tag_duplication_ids(malicious_tag_ids, suspicious_tag_ids)
