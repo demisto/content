@@ -1,0 +1,1 @@
+!aws-ssm-tag-add resource_id="test_id" resource_type=Document tag_key=test_key tag_value=test_value
