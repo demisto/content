@@ -69,7 +69,7 @@ def self_deployed_client(grant_type=CLIENT_CREDENTIALS):
     client_id = CLIENT_ID
     client_secret = CLIENT_SECRET
     base_url = BASE_URL
-    auth_code = AUTH_CODE if grant_type == AUTHORIZATION_CODE else None
+    auth_code = AUTH_CODE if grant_type == AUTHORIZATION_CODE else ''
     resource = RESOURCE
     ok_codes = OK_CODES
 
