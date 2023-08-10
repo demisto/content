@@ -435,10 +435,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: cbe91dea-9a73-4e81-8383-f0d306b48a2d
+    taskid: ee1b63da-40f0-4102-86a2-cf36557f9c89
     type: regular
     task:
-      id: cbe91dea-9a73-4e81-8383-f0d306b48a2d
+      id: ee1b63da-40f0-4102-86a2-cf36557f9c89
       version: -1
       name: Run get-scan-history Command
       description: Lists the individual runs of the specified scan.
@@ -452,12 +452,27 @@ tasks:
     scriptarguments:
       excludeRollover:
         simple: "true"
-      page:
-        simple: "2"
-      pageSize:
+      limit:
         simple: "1"
       scanId:
-        simple: "16"
+        complex:
+          root: TenableIO.Scan
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TenableIO.Scan.Status
+                iscontext: true
+              right:
+                value:
+                  simple: completed
+          accessor: Id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       sortFields:
         simple: end_date,status
       sortOrder:
@@ -513,10 +528,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b8129d21-b249-4745-8bac-69cc3ac08aad
+    taskid: 0883f54e-9123-4368-835d-f6223420de1e
     type: regular
     task:
-      id: b8129d21-b249-4745-8bac-69cc3ac08aad
+      id: 0883f54e-9123-4368-835d-f6223420de1e
       version: -1
       name: Run export-scan Command
       description: Export and download a scan report.
@@ -528,22 +543,33 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      assetId:
-        simple: "10"
       chapters:
         simple: vuln_hosts_summary,remediations,compliance_exec,vuln_by_host,compliance,vuln_by_plugin
-      filter:
-        simple: port.protocol eq tcp, plugin_id eq 1234567
-      filterSearchType:
-        simple: or
       format:
-        simple: HTML
+        simple: CSV
       historyId:
         simple: ${TenableIO.ScanHistory.id}
       historyUuid:
         simple: ${TenableIO.ScanHistory.scan_uuid}
       scanId:
-        simple: "16"
+        complex:
+          root: TenableIO.Scan
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TenableIO.Scan.Status
+                iscontext: true
+              right:
+                value:
+                  simple: completed
+          accessor: Id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -623,4 +649,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ""
+description: ''
