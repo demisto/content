@@ -243,7 +243,7 @@ def main():     # pragma: no cover
     )
 
     try:
-        LOG('Command being called is {command}'.format(command=command))
+        demisto.debug('Command being called is {command}'.format(command=command))
         if command == 'test-module':
             test_function(client)
         elif command == 'aws-iam-identitycenter-create-user':
