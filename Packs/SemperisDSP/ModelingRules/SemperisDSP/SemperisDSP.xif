@@ -1,4 +1,11 @@
 [MODEL: dataset=semperis_dsp_raw]
+
+// 
+// This is a beta Modeling Rule, which lets you process Semperis log fields to XDM fields. 
+// Since the Modeling Rule is considered as beta, it might not contain some of the fields that are available from the logs. 
+// We appreciate your feedback on the quality and usability of the Modeling Rule to help us identify issues, fix them, and continually improve. 
+//
+
 filter _raw_log ~= "\[OperationLog\@"
 | alter
     get_ip = arraystring(regextract(_raw_log, "\[OperationSource\]\s+(\S+):\S+"), ""),
