@@ -1,7 +1,7 @@
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
-VERSION = "v2.2.0"
+VERSION = "v2.3.0"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
@@ -9,6 +9,62 @@ VERIFY_CERT = demisto.getParam('verify')
 RELIABILITY = demisto.params().get('reliability', 'C - Fairly reliable')
 WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
 NUM_OF_RETRIES = demisto.params().get('num_of_retries')
+
+HTTP_PROXY = demisto.params().get("http_proxy", None)
+HTTP_PROXY_USERNAME = demisto.params().get("http_proxy_username", None)
+HTTP_PROXY_PASSWORD = demisto.params().get("http_proxy_password", None)
+
+HTTPS_PROXY = demisto.params().get("https_proxy", None)
+HTTPS_PROXY_USERNAME = demisto.params().get("https_proxy_username", None)
+HTTPS_PROXY_PASSWORD = demisto.params().get("https_proxy_password", None)
+
+
+def format_proxy(addr, username=None, password=None):
+    if addr.startswith("http://"):
+        protocol = addr[:7]
+        proxy_name = addr[7:]
+    elif addr.startswith("https://"):
+        protocol = addr[:8]
+        proxy_name = addr[8:]
+    else:
+        return_error("Proxy address needs to start with either 'http://' or 'https://'")
+
+    if username:
+        if password:
+            proxy = f"{protocol}{username}:{password}@{proxy_name}"
+        else:
+            proxy = f"{protocol}{username}@{proxy_name}"
+    else:
+        proxy = f"{protocol}{proxy_name}"
+
+    return proxy
+
+
+def return_proxies():
+    proxies = {}
+
+    if HTTP_PROXY:
+        http_proxy = format_proxy(
+            addr=HTTP_PROXY,
+            username=HTTP_PROXY_USERNAME,
+            password=HTTP_PROXY_PASSWORD
+        )
+
+        proxies["http"] = http_proxy
+
+    if HTTPS_PROXY:
+        https_proxy = format_proxy(
+            addr=HTTPS_PROXY,
+            username=HTTPS_PROXY_USERNAME,
+            password=HTTPS_PROXY_PASSWORD
+        )
+
+        proxies["https"] = https_proxy
+
+    if proxies:
+        return proxies
+    else:
+        return None
 
 
 def classification_to_score(classification):
@@ -816,13 +872,16 @@ def main():
     except ValueError:
         return_error("Integration parameter <Number of retries> has to be of type integer.")
 
+    proxies = return_proxies()
+
     a1000 = A1000(
         host=HOST,
         token=TOKEN,
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
         wait_time_seconds=wait_time_seconds,
-        retries=num_of_retries
+        retries=num_of_retries,
+        proxies=proxies
     )
 
     demisto.info(f'Command being called is {demisto.command()}')

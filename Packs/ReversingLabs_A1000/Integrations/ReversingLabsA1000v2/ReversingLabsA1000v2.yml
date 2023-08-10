@@ -40,6 +40,30 @@ configuration:
   name: num_of_retries
   type: 0
   required: false
+- display: HTTP proxy address with the protocol and port number.
+  name: http_proxy
+  type: 0
+  required: false
+- display: HTTP proxy username (if needed)
+  name: http_proxy_username
+  type: 0
+  required: false
+- display: HTTP proxy password (if needed)
+  name: http_proxy_password
+  type: 4
+  required: false
+- display: HTTPS proxy address with the protocol and port number.
+  name: https_proxy
+  type: 0
+  required: false
+- display: HTTPS proxy username (if needed)
+  name: https_proxy_username
+  type: 0
+  required: false
+- display: HTTPS proxy password (if needed)
+  name: https_proxy_password
+  type: 4
+  required: false
 description: ReversingLabs A1000 advanced Malware Analysis Platform.
 display: ReversingLabs A1000 v2
 name: ReversingLabs A1000 v2
