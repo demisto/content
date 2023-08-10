@@ -16,15 +16,7 @@ Open your Semperis DSP UI and follow these instructions:
     * Make sure the **DNS** checkbox is enabled.
     * Make sure the **Send Operations Log to Syslog** checkbox is enabled.
 
-
-
-* Pay attention:
-  
-  * This pack contains a beta Modeling Rule, which lets you process Semperis log fields to XDM fields. 
-    Since the Modeling Rule is considered as beta, it might not contain some of the fields that are available from the logs. 
-    We appreciate your feedback on the quality and usability of the Modeling Rule to help us identify issues, fix them, and continually improve.
-
-  * Timestamp parsing support is under the a assumption that a UTC +0000 format is being used.
+  * Pay attention: Timestamp parsing is supported for the **OriginatingTime** field in UTC **%Y-%m-%dT%H:%M:%E3SZ** (+0000) format.
 
 ## Collect Events from Vendor
 
