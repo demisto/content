@@ -294,6 +294,7 @@ def test_get_alerts_command(args, mock_url, mock_json, requests_mock):
     alerts = get_alerts_command(CLIENT, args)
     assert alerts.outputs == mock_json
 
+
 def test_get_alert_failed_commad():
     with pytest.raises(SystemExit):
         get_alerts_command(CLIENT, {})
