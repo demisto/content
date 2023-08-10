@@ -582,7 +582,6 @@ xsoar_ng_server_ga:
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
-  allow_failure: true
 
 
 test-upload-flow:
