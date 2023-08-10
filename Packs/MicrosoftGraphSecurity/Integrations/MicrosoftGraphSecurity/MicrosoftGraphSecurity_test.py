@@ -4,7 +4,7 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     get_users_command, fetch_incidents, get_alert_details_command, main, MANAGED_IDENTITIES_TOKEN_URL, \
     Resources, create_data_to_update, create_alert_comment_command, create_filter_query, to_msg_command_results, \
     list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command, \
-    capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, test_auth_code_command
+    capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -522,8 +522,11 @@ def test_list_ediscovery_search_command(mocker):
     assert results.outputs_prefix == 'MsGraph.eDiscoverySearch'
     assert results.outputs[0]['CreatedBy']['User']['DisplayName'] in results.readable_output
 
+
 @pytest.mark.parametrize('command_to_check', ['all', 'ediscovery', 'alerts'])
 def test_test_auth_code_command(mocker, command_to_check):
+    from MicrosoftGraphSecurity import test_auth_code_command
+
     mock_ediscovery = mocker.patch.object(client_mocker, "list_ediscovery_cases", return_value=load_json("./test_data/list_cases_response.json"))
     mock_alerts = mocker.patch('MicrosoftGraphSecurity.test_function')
     test_auth_code_command(client_mocker, {'permission_type' : command_to_check})
