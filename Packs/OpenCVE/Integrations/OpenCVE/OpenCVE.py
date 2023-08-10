@@ -886,7 +886,7 @@ def get_alerts_command(client: Client, args: dict) -> CommandResults | None:
     return None
 
 
-def main():
+def main():  # pragma: no cover
     params: dict[str, Any] = demisto.params()
     args: dict = demisto.args()
     url = params.get('url', 'https://www.opencve.io')
