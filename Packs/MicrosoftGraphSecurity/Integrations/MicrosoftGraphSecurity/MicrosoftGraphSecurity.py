@@ -11,6 +11,7 @@ from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
+DEFAULT_KEYS_TO_REPLACE = {'createdDateTime': 'CreatedDate'}
 urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
@@ -389,7 +390,7 @@ def get_timestamp(time_description):
     return datetime.strftime(datetime.now() - timedelta(time_delta), '%Y-%m-%d')
 
 
-def capitalize_dict_keys_first_letter(response, keys_to_replace: dict = None):
+def capitalize_dict_keys_first_letter(response, keys_to_replace: dict = DEFAULT_KEYS_TO_REPLACE):
     """
     Recursively creates a data dictionary where all key starts with capital letters.
     Args:
@@ -398,8 +399,6 @@ def capitalize_dict_keys_first_letter(response, keys_to_replace: dict = None):
     Returns:
         Dict: The updated dictionary.
     """
-    if keys_to_replace is None:
-        keys_to_replace = {'createdDateTime': 'CreatedDate'}
     if isinstance(response, str):
         return response
     parsed_dict: dict = {}
