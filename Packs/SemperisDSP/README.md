@@ -16,6 +16,8 @@ Open your Semperis DSP UI and follow these instructions:
     * Make sure the **DNS** checkbox is enabled.
     * Make sure the **Send Operations Log to Syslog** checkbox is enabled.
 
+  * Pay attention: Timestamp parsing is supported for the **OriginatingTime** OR **OperationTime** fields in UTC **%Y-%m-%dT%H:%M:%E3SZ** (+0000) format.
+
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
