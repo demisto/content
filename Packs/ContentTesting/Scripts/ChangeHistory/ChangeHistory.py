@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# Final Test: 6.10
 from typing import Any, Dict
 
 
@@ -20,7 +19,7 @@ vcuris = [
 
 def main():
     try:
-        # Get the local, uncommitted changed object
+        # Get the local, uncommitted changed objects
         changes = demisto.executeCommand("demisto-api-get", {
             'uri': "/vc/changes/uncommitted"
         })[0]['Contents']['response']
