@@ -904,7 +904,7 @@ def main():  # pragma: no cover
     # Instantiate the OpenCVE object
     ocve = OpenCVE(tlp=tlp)
 
-    LOG(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
         client: Client = Client(urljoin(url, '/api'), verify_ssl, proxy, auth=(username, password))
 
