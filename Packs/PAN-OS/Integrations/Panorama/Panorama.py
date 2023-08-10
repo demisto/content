@@ -405,6 +405,8 @@ def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
         dictionary (dict): The entry that the pan-os objects is in.
         keys_to_remove (list): keys which should be removed from the pan-os api response
     """
+    if not dictionary:
+        return
     for key in keys_to_remove:
         if key in dictionary:
             del dictionary[key]
@@ -815,6 +817,19 @@ def get_device_groups_names():
             device_group_names.append(device_group.get('@name'))
 
     return device_group_names
+
+
+def list_device_groups_names():
+    """
+    Get device group names in the Panorama
+    """
+    device_group_names = get_device_groups_names()
+
+    return CommandResults(
+        outputs_prefix='Panorama.DeviceGroupNames',
+        outputs=device_group_names,
+        readable_output=tableToMarkdown('Device Group Names:', device_group_names, ['Group Name']),
+    )
 
 
 def device_group_test():
@@ -3838,7 +3853,8 @@ def panorama_edit_rule_items(rulename: str, element_to_change: str, element_valu
     else:
         params["xpath"] = f'{params["xpath"]}/{element_to_change}'
 
-        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'])
+        current_objects_items = panorama_get_current_element(element_to_change, params['xpath'],
+                                                             is_commit_required=False)
         if behaviour == 'add':
             values = list((set(current_objects_items)).union(set(element_value)))  # type: ignore[arg-type]
         else:  # remove
@@ -7023,7 +7039,7 @@ def apply_security_profile(xpath: str, profile_name: str, profile_type: str) -> 
 
     # Keeping the existing profile types
     for p_type in profile_types:
-        if p_type in profile_types_result:
+        if profile_types_result and p_type in profile_types_result:
             p_name = profile_types_result.get(p_type, {}).get('member')
             rule_profiles += f"<{p_type}><member>{p_name}</member></{p_type}>"
 
@@ -13395,7 +13411,7 @@ def pan_os_edit_tag(
         comment (str): The tag comment.
 
     Returns:
-        dict: The raw response from panorama's API. 
+        dict: The raw response from panorama's API.
     """
     params = {
         'xpath': build_tag_xpath(name=tag_name),
@@ -14637,6 +14653,8 @@ def main():  # pragma: no cover
             return_results(pan_os_edit_tag_command(args))
         elif command == 'pan-os-delete-tag':
             return_results(pan_os_delete_tag_command(args))
+        elif command == 'pan-os-list-device-groups':
+            return_results(list_device_groups_names())
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
