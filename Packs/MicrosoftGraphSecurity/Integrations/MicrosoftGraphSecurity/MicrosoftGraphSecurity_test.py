@@ -1,13 +1,14 @@
+import itertools
+
 from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, search_alerts_command, \
     get_users_command, fetch_incidents, get_alert_details_command, main, MANAGED_IDENTITIES_TOKEN_URL, \
-    Resources, create_data_to_update, create_alert_comment_command, create_filter_query
+    Resources, create_data_to_update, create_alert_comment_command, create_filter_query, to_msg_command_results, \
+    list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command
 from CommonServerPython import DemistoException
 import pytest
 import json
-import io
 import demistomock as demisto
 import re
-
 
 API_V2 = "Alerts v2"
 API_V1 = "Legacy Alerts"
@@ -16,7 +17,7 @@ client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key=
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.load(f)
 
 
@@ -121,16 +122,19 @@ def test_fetch_incidents_command(mocker, test_case):
     mocker.patch('MicrosoftGraphSecurity.parse_date_range', return_value=("2020-04-19 08:14:21", 'never mind'))
     test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
     mocker.patch.object(client_mocker, 'search_alerts', return_value=test_data.get('mock_response'))
-    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=10, providers='', filter='', service_sources='')
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=10, providers='', filter='',
+                                service_sources='')
     assert len(incidents) == 3
     assert incidents[0].get('severity') == 2
     assert incidents[2].get('occurred') == '2020-04-20T16:54:50.2722072Z'
 
-    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=1, providers='', filter='', service_sources='')
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=1, providers='', filter='',
+                                service_sources='')
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'test alert - da637218501473413212_-1554891308'
 
-    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=0, providers='', filter='', service_sources='')
+    incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=0, providers='', filter='',
+                                service_sources='')
     assert len(incidents) == 0
 
 
@@ -173,7 +177,8 @@ def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, a
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
     ({"page_size": "1001"}, "Please note that the page size limit for Legacy Alerts is 1000", API_V1),
-    ({"page_size": "1000", "page": "3"}, 'Please note that the maximum amount of alerts you can skip in Legacy Alerts is 500',
+    ({"page_size": "1000", "page": "3"},
+     'Please note that the maximum amount of alerts you can skip in Legacy Alerts is 500',
      API_V1),
     ({"page_size": "2001"}, "Please note that the page size limit for Alerts v2 is 2000", API_V2)
 ])
@@ -234,12 +239,17 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
 
 @pytest.mark.parametrize('args, expected_results, api_version', [
-    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'assigned_to': 'someone'},
-     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'assignedTo': 'someone'},
+    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information',
+      'assigned_to': 'someone'},
+     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'},
+      'assignedTo': 'someone'},
      API_V1),
-    ({'vendor_information': 'vendor_information', 'provider_information': 'provider_information', 'comments': 'comment'},
-     {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'}, 'comments': ['comment']},
-     API_V1),
+    (
+        {'vendor_information': 'vendor_information', 'provider_information': 'provider_information',
+         'comments': 'comment'},
+        {'vendorInformation': {'provider': 'provider_information', 'vendor': 'vendor_information'},
+         'comments': ['comment']},
+        API_V1),
     ({'comments': 'comment', 'status': 'new'}, {'status': 'new'}, API_V2)
 ])
 def test_create_data_to_update(mocker, args, expected_results, api_version):
@@ -270,9 +280,11 @@ def test_create_data_to_update(mocker, args, expected_results, api_version):
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({'assigned_to': 'someone'}, 'When using Legacy Alerts, both vendor_information and provider_information must be provided.',
+    ({'assigned_to': 'someone'},
+     'When using Legacy Alerts, both vendor_information and provider_information must be provided.',
      API_V1),
-    ({'closed_date_time': 'now'}, "No data relevant for Alerts v2 to update was provided, please provide at least one of the "
+    ({'closed_date_time': 'now'},
+     "No data relevant for Alerts v2 to update was provided, please provide at least one of the "
      "following: assigned_to, determination, classification, status.", API_V2)
 ])
 def test_create_data_to_update_errors(mocker, args, expected_error, api_version):
@@ -297,8 +309,10 @@ def test_create_data_to_update_errors(mocker, args, expected_error, api_version)
 
 
 @pytest.mark.parametrize('args, expected_error, api_version', [
-    ({'alert_id': 'alert_id', "comment": "comment"}, "This command is available only for Alerts v2."
-     " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.", API_V1)
+    ({'alert_id': 'alert_id', "comment": "comment"},
+     "This command is available only for Alerts v2."
+     " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.",
+     API_V1)
 ])
 def test_create_alert_comment_command_error(mocker, args, expected_error, api_version):
     """
@@ -376,3 +390,73 @@ def test_create_filter_query(mocker, param, providers_param, service_sources_par
     mocker.patch('MicrosoftGraphSecurity.API_VER', api_version)
     filter_query = create_filter_query(param, providers_param, service_sources_param)
     assert filter_query == expected_results
+
+
+def test_to_msg_command_results():
+    """
+    Given: An example msg edsicvoery response
+    When: calling to_msg_command_results
+    Then:
+        1. Outputs are replaced properly
+        2. data.context is stripped out
+        3. none is removed
+
+    """
+    res = load_json("./test_data/list_cases_response.json")
+
+    results = to_msg_command_results(raw_object_list=res.get('value'),
+                                     raw_res=res,
+                                     outputs_prefix='MsGraph.SomePrefix',
+                                     output_key_field='SomeId',
+                                     raw_keys_to_replace={'status': 'SomeStatus', 'id': 'SomeId'})
+
+    assert all('@odata.context' not in o for o in results.outputs)
+    assert all('SomeId' in o for o in results.outputs)
+    assert all('SomeId' in o for o in results.outputs)
+    assert all(None not in o.values() for o in results.outputs)
+
+
+def test_create_ediscovery_custodian_site_source_command(mocker):
+    """
+    Given: An example msg edsicvoery list site source response
+    When: calling list_ediscovery_custodian_site_sources_command
+    Then:
+        1. The proper URL is used in the request
+        2. @odata.id is stripped out of context
+        3. The proper ids and output prefixes are used
+
+    """
+    mock = mocker.patch.object(client_mocker.ms_client, "http_request",
+                               return_value=load_json("./test_data/list_site_source_single.json"))
+
+    results = list_ediscovery_custodian_site_sources_command(client_mocker,
+                                                             {'case_id': 'case_id', 'custodian_id': 'custodian_id'})
+    assert mock.call_args.kwargs['url_suffix'] == \
+           'security/cases/ediscoveryCases/case_id/custodians/custodian_id/siteSources'
+    assert not any('@odata.id' in o for o in results.outputs)
+    assert results.outputs_prefix == 'MsGraph.CustodianSiteSource'
+    assert results.outputs_key_field == 'SiteSourceId'
+    assert all('SiteSourceId' in o for o in results.outputs)
+    assert 'Created By Name' in results.readable_output
+
+
+@pytest.mark.parametrize('command_function, description, external_id',
+                         list(itertools.product(
+                             [update_ediscovery_case_command, update_ediscovery_search_command],
+                             ['value', '', None], ['value', '', None])))
+def test_update_ediscovery_case_command(mocker, command_function, description, external_id):
+    """
+    Given:
+        update ediscovery commands
+    When:
+        an empty value is recieved as an argument
+    Then:
+        the argument shouldnt be sent to the api (dont want to override a real value with an update)
+    """
+    mock = mocker.patch.object(client_mocker.ms_client, "http_request")
+
+    some_id = 'some_id'
+    command_function(client_mocker,
+                     {'display_name': 'name', 'description': description,
+                      'external_id': external_id, 'case_id': some_id})
+    assert not set(mock.call_args.kwargs['json_data'].values()) & {None, ''}
