@@ -3,7 +3,8 @@ import itertools
 from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, search_alerts_command, \
     get_users_command, fetch_incidents, get_alert_details_command, main, MANAGED_IDENTITIES_TOKEN_URL, \
     Resources, create_data_to_update, create_alert_comment_command, create_filter_query, to_msg_command_results, \
-    list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command
+    list_ediscovery_custodian_site_sources_command, update_ediscovery_case_command, update_ediscovery_search_command, \
+    capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -19,6 +20,28 @@ client_mocker = MsGraphClient(tenant_id="tenant_id", auth_id="auth_id", enc_key=
 def load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.load(f)
+
+@pytest.mark.parametrize(
+    'api_response, keys_to_replace, expected_output', [
+        ({'keyOne' : {'keyTwo' : {'keyThree' : 'a'}, 'keyFour' : {'keyFive' : 'b'}}},
+         {},
+         {'KeyOne': {'KeyFour': {'KeyFive': 'b'}, 'KeyTwo': {'KeyThree': 'a'}}}),
+
+        ({'keyOne' : {'keyTwo': 'a'}, 'customOverride' : 'a'},
+         {'customOverride' : 'SOMETHING'},
+         {'KeyOne': {'KeyTwo': 'a'}, 'SOMETHING': 'a'})
+    ])
+def test_capitalize_dict_keys_first_letter(api_response, keys_to_replace, expected_output):
+    """
+    Given
+        a response from the api
+    When
+        calling capitalize_dict_keys_first_letter with optional keys_to_replace
+    Then
+        Results are recursively formatted, manual keys are replaces
+
+    """
+    assert capitalize_dict_keys_first_letter(api_response, keys_to_replace) == expected_output
 
 
 def test_get_users_command(mocker):
@@ -460,3 +483,39 @@ def test_update_ediscovery_case_command(mocker, command_function, description, e
                      {'display_name': 'name', 'description': description,
                       'external_id': external_id, 'case_id': some_id})
     assert not set(mock.call_args.kwargs['json_data'].values()) & {None, ''}
+
+
+def test_created_by_fields_to_hr():
+    """
+    Given
+        A context dictionary
+    When
+        Calling created_by_fields_to_hr
+    Then
+        get the created fields flattened onto main dict
+    """
+    assert created_by_fields_to_hr(
+        {'Field1' : 'val1','CreatedBy' : {'User' : {'DisplayName' : 'Bob','UserPrincipalName' : 'Frank'}}}) == \
+           {'CreatedByAppName': None,'CreatedByName': 'Bob', 'CreatedByUPN': 'Frank','Field1': 'val1'}
+
+def test_list_ediscovery_search_command(mocker):
+    """
+
+    Given:
+        A raw response with one result
+    When:
+        calling list search command
+    Then:
+    Prefixes are correct, nested value is in the readable output
+    """
+    raw_response = load_json("./test_data/list_search_single_response.json")
+    mocker.patch.object(client_mocker, "list_ediscovery_search",
+                        return_value=raw_response)
+
+    results = list_ediscovery_search_command(client_mocker,{})
+
+    assert results.raw_response == raw_response
+    assert results.outputs_key_field == 'SearchId'
+    assert results.outputs_key_field == 'SearchId'
+    assert results.outputs_prefix == 'MsGraph.eDiscoverySearch'
+    assert results.outputs[0]['CreatedBy']['User']['DisplayName'] in results.readable_output

@@ -498,7 +498,7 @@ def ediscovery_cases_command_results(raw_case_list: list, raw_res=None) -> Comma
 def custodian_to_hr(ret_context: dict):
     hr = ret_context.copy()
     hr['LastModifiedByName'] = dict_safe_get(ret_context, ['LastModifiedBy', "User", "DisplayName"])
-    hr['ClosedByName'] = dict_safe_get(ret_context, ['ClosedBy', "User", "DisplayName"])  # todo relevant?
+    hr['ClosedByName'] = dict_safe_get(ret_context, ['ClosedBy', "User", "DisplayName"])
     return hr
 
 
@@ -1069,16 +1069,12 @@ def create_ediscovery_custodian_user_source_command(client: MsGraphClient, args)
 
 
 def create_ediscovery_custodian_site_source_command(client: MsGraphClient, args):
-    """
-    """
     resp = client.create_edsicovery_custodian_site_source(args.get('case_id'), args.get('custodian_id'),
                                                           args.get('site'))
     return ediscovery_source_command_results(resp, DataSourceType['SITE'])
 
 
 def create_ediscovery_non_custodial_data_source_command(client: MsGraphClient, args):
-    """
-    """
     site = args.get('site')
     email = args.get('email')
     if not (bool(site) ^ bool(email)):
@@ -1319,7 +1315,7 @@ def main():
         'msg-reopen-ediscovery-case': reopen_ediscovery_case_command,
         'msg-delete-ediscovery-case': delete_ediscovery_case_command,
         'msg-create-ediscovery-custodian': create_ediscovery_custodian_command,
-        'msg-list-ediscovery-custodians': list_ediscovery_custodian_command,  # todo custodians? plural?
+        'msg-list-ediscovery-custodians': list_ediscovery_custodian_command,
         'msg-release-ediscovery-custodian': release_ediscovery_custodian_command,
         'msg-activate-ediscovery-custodian': activate_ediscovery_custodian_command,
         'msg-create-ediscovery-custodian-user-source': create_ediscovery_custodian_user_source_command,
