@@ -219,7 +219,7 @@ def test_get_reports_command(response, expected, args, mock_url, requests_mock):
                                           outputs_prefix='OpenCVE.paloaltonetworks'),
                            'https://www.opencve.io/api/vendors/paloaltonetworks'),
                           (util_load_json('test_data/vendors.json'),
-                           {},
+                           {'search': 'search', 'letter': 'a', 'page': 1},
                            CommandResults(outputs=util_load_json('test_data/vendors.json'),
                                           outputs_prefix='OpenCVE.Vendors'),
                            'https://www.opencve.io/api/vendors')])
@@ -293,6 +293,10 @@ def test_get_alerts_command(args, mock_url, mock_json, requests_mock):
     requests_mock.get(mock_url, json=mock_json)
     alerts = get_alerts_command(CLIENT, args)
     assert alerts.outputs == mock_json
+
+def test_get_alert_failed_commad():
+    with pytest.raises(SystemExit):
+        get_alerts_command(CLIENT, {})
 
 
 @pytest.mark.parametrize("args, mock_url, mock_json, expected",
