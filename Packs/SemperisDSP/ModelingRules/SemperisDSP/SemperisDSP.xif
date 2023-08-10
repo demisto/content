@@ -9,7 +9,7 @@ alter
     src_ip_v4 = if(get_ip !~= ":", get_ip, null),
     src_ip_v6 = if(get_ip ~= ":", get_ip, null)
 | alter
-	xdm.event.type = arraystring(regextract(_raw_log, "\d{2}:\d{2}\:\d{2}\s+\S+\s+\S+\s+\[(\S+)\@"), ""),
+	xdm.event.type = arraystring(regextract(_raw_log, "\[(\S+)\@"), ""),
     xdm.source.ipv4 = src_ip_v4,
     xdm.source.ipv6 = src_ip_v6,
     xdm.event.outcome = if(get_outcome ~= "success", XDM_CONST.OUTCOME_SUCCESS, get_outcome ~= "access denied", XDM_CONST.OUTCOME_FAILED, get_outcome ~= "error", XDM_CONST.OUTCOME_PARTIAL, to_string(get_outcome)),
