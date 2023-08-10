@@ -744,7 +744,6 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
     client_secret = CLIENT_SECRET
     base_url = BASE_URL
     auth_code = 'reconfigured_auth_code'
-    redirect_uri = REDIRECT_URI
     resource = None
     ok_codes = OK_CODES
     grant_type = AUTHORIZATION_CODE
