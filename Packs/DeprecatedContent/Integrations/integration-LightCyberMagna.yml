@@ -615,7 +615,6 @@ script:
       description: Host id as presented in LightCyber Magna
     description: Returns all installed autoruns programs in this host
   isfetch: true
-hidden: false
 tests:
 - No test
 fromversion: 5.0.0

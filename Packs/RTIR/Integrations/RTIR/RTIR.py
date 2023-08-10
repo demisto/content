@@ -5,6 +5,7 @@ import requests
 import json
 import re
 import urllib3
+import urllib
 
 urllib3.disable_warnings()
 
@@ -485,8 +486,7 @@ def edit_ticket():
             content += '\n' + key + value
 
     if arguments_given:
-        encoded = "content=" + urllib.parse.quote_plus(content.encode('utf-8'))
-        edited_ticket = edit_ticket_request(ticket_id, encoded)
+        edited_ticket = edit_ticket_request(ticket_id, f"content={urllib.parse.quote_plus(content)}")
         if "200 Ok" in edited_ticket.text:
             ticket_context = ({
                 'ID': ticket_id,
@@ -814,10 +814,9 @@ def add_comment_attachment(ticket_id, encoded, files_data):
 
 def add_comment():
     ticket_id = demisto.args().get('ticket-id')
-    text = demisto.args().get('text')
     content = 'Action: comment\n'
-    if text:
-        content += '\nText: ' + text.encode('utf-8')
+    if text := demisto.args().get('text'):
+        content += f'\nText: {text}'
     attachments = demisto.args().get('attachment', '')
     files_data = {}
     if attachments:
@@ -832,7 +831,7 @@ def add_comment():
             files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
             content += 'Attachment: {}\n'.format(file_name)
 
-    encoded = "content=" + urllib.parse.quote_plus(content)
+    encoded = f"content={urllib.parse.quote_plus(content)}"
     if attachments:
         files_data.update({'content': (None, content)})  # type: ignore
         comment = add_comment_attachment(ticket_id, encoded, files_data)
@@ -855,12 +854,10 @@ def add_reply_request(ticket_id, encoded):
 def add_reply():
     ticket_id = demisto.args().get('ticket-id')
     content = 'Action: comment\n'
-    text = demisto.args().get('text')
-    if text:
-        content += '\nText: ' + text.encode('utf-8')
-    cc = demisto.args().get('cc')
-    if cc:
-        content += '\nCc: ' + cc
+    if (text := demisto.args().get('text')):
+        content += f'\nText: {text}'
+    if (cc := demisto.args().get('cc')):
+        content += f'\nCc: {cc}'
     try:
         encoded = "content=" + urllib.parse.quote_plus(content)
         added_reply = add_reply_request(ticket_id, encoded)
@@ -918,8 +915,8 @@ def main():
     global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
     SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
         '/') else params.get('server', '')
-    USERNAME = params.get('credentials').get('identifier', '')
-    PASSWORD = params.get('credentials').get('password', '')
+    USERNAME = params.get('credentials', {}).get('identifier', '')
+    PASSWORD = params.get('credentials', {}).get('password', '')
     BASE_URL = urljoin(SERVER, '/REST/1.0/')
     USE_SSL = not params.get('unsecure', False)
     FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1

@@ -20,8 +20,7 @@ args:
   required: true
   description: Range to check against with the form of from,to (e.g. 2,8).
 scripttarget: 0
-runonce: false
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474

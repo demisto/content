@@ -1,9 +1,6 @@
 [file:Workday_IAM.yml]
 ignore=IN126,BA108,BA109
 
-[file:Workday.yml]
-ignore=IN145
-
 [file:Workday_image.png]
 ignore=IM111
 
@@ -18,4 +15,7 @@ ignore=IM111
 
 [file:WorkdayIAMEventsGenerator.yml]
 ignore=BA124
+
+[file:WorkdayEventCollector.yml]
+ignore=MR108
 

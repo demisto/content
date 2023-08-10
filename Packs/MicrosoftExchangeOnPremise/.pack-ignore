@@ -14,25 +14,10 @@ ignore=RM102,RM106
 ignore=BA101
 
 [file:classifier-EWS_v2.json]
-ignore=BA101,BA114
-
-[file:playbook-Send-Email-To-Recipients-Test.yml]
-ignore=auto-test
+ignore=BA101
 
 [file:EWSMailSender.yml]
 ignore=IN135
-
-[file:playbook-EWS-Mail-Sender-Test-2.yml]
-ignore=BA114
-
-[file:playbook-EWSv2_empty_attachment_test.yml]
-ignore=BA114
-
-[file:EWSMailSender_description.md]
-ignore=BA114
-
-[file:EWSv2_image.png]
-ignore=BA114
 
 [known_words]
 inReply

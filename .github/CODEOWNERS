@@ -37,39 +37,53 @@
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
 /Packs/PAN-OS/Integrations/ @GuyAfik
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
-/Packs/PrismaSaasSecurity/Integrations/ @yaakovpraisler
+/Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
 # Important Integrations
-/Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
-/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders @Shellyber
-/Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
-/Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
-/Packs/QRadar/Integrations/QRadar_v3/* @tkatzir
-/Packs/Slack/Integrations/Slack/* @demisto/content-leaders
-/Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
-/Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
-/Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
+/Packs/ServiceNow/Integrations/ServiceNowv2/* @Shellyber
+/Packs/QRadar/Integrations/QRadar_v3/* @ilaner
+/Packs/Slack/Integrations/* @amshamah419 @rshunim
+/Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
+/Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
+/Packs/MicrosoftExchangeOnline/Integrations @amshamah419 @thefrieddan1
 /Packs/ContentManagement/* @adi88d
+/Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
+/Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
-/Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
+/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan
+/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
+/Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
 
 # Common Packs
 /Packs/CommonTypes/ @michalgold @idovandijk
 /Packs/CommonPlaybooks/ @michalgold @idovandijk
 /Packs/CommonDashboards/ @michalgold @idovandijk
+/Packs/ContentManagement/ @mmhw
+/Packs/CommonTypes/IndicatorTypes/* @Ni-Knight
+/Packs/CommonTypes/Layouts/* @Ni-Knight
+
+# Indicators Formatters
+/Packs/CommonScripts/Scripts/ExtractDomainAndFQDNFromUrlAndEmail/* @Ni-Knight
+/Packs/CommonScripts/Scripts/FormatURL/* @Ni-Knight
+/Packs/CommonScripts/Scripts/ExtractAttackPattern/* @Ni-Knight
+/Packs/CommonScripts/Scripts/VerifyCIDR/* @Ni-Knight
+/Packs/CommonScripts/Scripts/VerifyIPv6Indicator/* @Ni-Knight
+/Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
+/Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
 
 
 # Build related
-.circleci/config.yml @esharf
-.gitlab/ci/* @esharf
-.gitlab/* @esharf
-.gitlab-ci.yml @esharf
-.gitlab/ci/on-push.yml @daryakoval
+.circleci/config.yml @yucohen
+.gitlab/ci/* @yucohen
+.gitlab/* @yucohen
+.gitlab-ci.yml @yucohen
+.gitlab/ci/.gitlab-ci.on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
-.gitlab/ci/staging.yml @ilaner
+.gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
 /Tests/Marketplace/search_and_uninstall_pack.py @daryakoval
 /Tests/scripts/install_content_and_test_integrations.sh @daryakoval
@@ -81,8 +95,9 @@ Tests/scripts/test_modeling_rules.sh @daryakoval
 Tests/scripts/lock_cloud_machines.py @daryakoval
 
 # SDK Related
-.gitlab/ci/sdk-nightly.yml @dorschw
+.gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw
 Utils/trigger_nightly_sdk_build.sh @dorschw
+.pre-commit-config_template.yaml @dorschw @ilaner
 
 # XDR Related
 /Packs/CortexXDR/Integrations/ @dansterenson

@@ -16,6 +16,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: https://cloud.vmray.com
   display: Server URL (e.g., https://cloud.vmray.com)
   name: server
@@ -23,93 +24,61 @@ configuration:
   type: 0
 - displaypassword: API Key (Recommended)
   name: credentials
-  required: false
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Retry requests when API is rate limited
   name: retry_on_rate_limit
-  required: false
   type: 8
   defaultvalue: 'true'
+  required: false
 - display: API Key (Deprecated)
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
   name: api_key
-  required: false
   type: 4
+  required: false
 description: Malware analysis sandboxing.
 display: VMRay
 name: vmray
 script:
   commands:
   - arguments:
-    - default: false
-      description: Entry ID of the file to submit.
-      isArray: false
+    - description: Entry ID of the file to submit.
       name: entry_id
       required: true
-      secret: false
-    - default: false
-      description: Password of the document.
-      isArray: false
+    - description: Password of the document.
       name: document_password
-      required: false
-      secret: false
-    - default: false
-      description: Password of an archive.
-      isArray: false
+    - description: Password of an archive.
       name: archive_password
-      required: false
-      secret: false
-    - default: false
-      description: Force type of the file.
-      isArray: false
+    - description: Force type of the file.
       name: sample_type
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the file is shareable.
-      isArray: false
       name: shareable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - default: true
       defaultValue: '1'
       description: Maximum number of jobs to create (number).
-      isArray: false
       name: max_jobs
-      required: false
-      secret: false
-    - default: false
-      description: A CSV list of tags to add to the sample.
-      isArray: false
+    - description: A CSV list of tags to add to the sample.
       name: tags
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Deprecated. Analyze even if analyses already exist. To control analysis caching, use the API Key settings instead, which are available via the Analysis Settings page, in the VMRay Web Interface.
-      isArray: false
       name: reanalyze
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Submits a sample to VMRay for analysis.
-    execution: false
     name: vmray-upload-sample
     outputs:
     - contextPath: VMRay.Job.JobID
@@ -143,38 +112,22 @@ script:
       description: URL to submission page.
       type: String
   - arguments:
-    - default: false
-      description: ' The URL to analyze. For example: https://demisto.com. '
-      isArray: false
+    - description: ' The URL to analyze. For example: https://demisto.com. '
       name: url
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the analysis is shareable.
-      isArray: false
       name: shareable
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - default: true
       defaultValue: '1'
       description: Maximum number of jobs to create (number).
-      isArray: false
       name: max_jobs
-      required: false
-      secret: false
-    - default: false
-      description: A CSV list of tags to add to the sample.
-      isArray: false
+    - description: A CSV list of tags to add to the sample.
       name: tags
-      required: false
-      secret: false
-    deprecated: false
     description: Submits a URL for analysis.
-    execution: false
     name: vmray-upload-url
     outputs:
     - contextPath: VMRay.Job.JobID
@@ -208,21 +161,12 @@ script:
       description: URL to submission page.
       type: String
   - arguments:
-    - default: false
-      description: Sample ID.
-      isArray: false
+    - description: Sample ID.
       name: sample_id
       required: true
-      secret: false
-    - default: false
-      description: Maximum number of results to return (number).
-      isArray: false
+    - description: Maximum number of results to return (number).
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves all analysis details for a specified sample.
-    execution: false
     name: vmray-get-analysis-by-sample
     outputs:
     - contextPath: VMRay.Analysis.AnalysisID
@@ -259,15 +203,10 @@ script:
       description: ssdeep hash of the sample.
       type: String
   - arguments:
-    - default: false
-      description: Sample ID.
-      isArray: false
+    - description: Sample ID.
       name: sample_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves details for all jobs  for a specified sample.
-    execution: false
     name: vmray-get-job-by-sample
     outputs:
     - contextPath: VMRay.Job.JobID
@@ -301,15 +240,10 @@ script:
       description: 'Status of the job. '
       type: String
   - arguments:
-    - default: false
-      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample' or 'vmray-upload-url' command.
-      isArray: false
+    - description: ID of the submission. Can be obtained by running the 'vmray-upload-sample' or 'vmray-upload-url' command.
       name: submission_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the results of a submission.
-    execution: false
     name: vmray-get-submission
     outputs:
     - contextPath: VMRay.Submission.IsFinished
@@ -349,15 +283,10 @@ script:
       description: ID of the sample in the submission.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the sample.
-      isArray: false
+    - description: ID of the sample.
       name: sample_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a sample using the sample ID.
-    execution: false
     name: vmray-get-sample
     outputs:
     - contextPath: VMRay.Sample.SampleID
@@ -406,15 +335,10 @@ script:
       description: List of parent sample IDs.
       type: Number
   - arguments:
-    - default: false
-      description: MD5, SHA1 or SHA256 hash of the sample.
-      isArray: false
+    - description: MD5, SHA1 or SHA256 hash of the sample.
       name: hash
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves sample information by hash.
-    execution: false
     name: vmray-get-sample-by-hash
     outputs:
     - contextPath: File.Name
@@ -493,15 +417,10 @@ script:
       description: List of parent sample IDs.
       type: Number
   - arguments:
-    - default: false
-      description: ID of the sample. Can be obtained from the 'VMRay.Sample.ID' output.
-      isArray: false
+    - description: ID of the sample. Can be obtained from the 'VMRay.Sample.ID' output.
       name: sample_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves threat indicators (VTI).
-    execution: false
     name: vmray-get-threat-indicators
     outputs:
     - contextPath: VMRay.ThreatIndicator.AnalysisID
@@ -520,72 +439,35 @@ script:
       description: Operation the indicators caused.
       type: String
   - arguments:
-    - default: false
-      description: ID of the submission to which to add tags.
-      isArray: false
+    - description: ID of the submission to which to add tags.
       name: submission_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the analysis from which to add tags.
-      isArray: false
+    - description: ID of the analysis from which to add tags.
       name: analysis_id
-      required: false
-      secret: false
-    - default: false
-      description: Tag to add.
-      isArray: false
+    - description: Tag to add.
       name: tag
-      required: false
-      secret: false
-    deprecated: false
     description: Adds a tag to an analysis and/or a submission.
-    execution: false
     name: vmray-add-tag
   - arguments:
-    - default: false
-      description: ID of the analysis from which to delete a tag.
-      isArray: false
+    - description: ID of the analysis from which to delete a tag.
       name: analysis_id
-      required: false
-      secret: false
-    - default: false
-      description: ID of the submission from which to delete a tag.
-      isArray: false
+    - description: ID of the submission from which to delete a tag.
       name: submission_id
-      required: false
-      secret: false
-    - default: false
-      description: Tag to delete.
-      isArray: false
+    - description: Tag to delete.
       name: tag
-      required: false
-      secret: false
-    deprecated: false
     description: Deletes tags from an analysis and/or a submission.
-    execution: false
     name: vmray-delete-tag
   - arguments:
-    - default: false
-      description: ID of the sample.
-      isArray: false
+    - description: ID of the sample.
       name: sample_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether all artifacts should be returned or only Indicators of Compromise.
-      isArray: false
       name: all_artifacts
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves Indicators of Compromise for a specified sample.
-    execution: false
     name: vmray-get-iocs
     outputs:
     - contextPath: DBotScore.Indicator
@@ -1114,15 +996,10 @@ script:
       description: Description of the Verdict Reason.
       type: String
   - arguments:
-    - default: false
-      description: ID of a job.
-      isArray: false
+    - description: ID of a job.
       name: job_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves a job by job ID.
-    execution: false
     name: vmray-get-job-by-id
     outputs:
     - contextPath: VMRay.Job.JobID
@@ -1156,15 +1033,10 @@ script:
       description: Status of the job.
       type: String
   - arguments:
-    - default: false
-      description: ID of the analysis from which to retrieve the Summary JSON v2 from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
-      isArray: false
+    - description: ID of the analysis from which to retrieve the Summary JSON v2 from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
       name: analysis_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves the Summary JSON v2 for a specific analysis.
-    execution: false
     name: vmray-get-summary
     outputs:
     - contextPath: InfoFile.Name
@@ -1180,36 +1052,23 @@ script:
       description: MIME type of the Summary JSON v2
       type: string
   - arguments:
-    - default: false
-      description: Sample ID.
-      isArray: false
+    - description: Sample ID.
       name: sample_id
       required: true
-      secret: false
     deprecated: true
     description: This command performs a function similiar to the 'vmray-get-job-by-sample' command.
-    execution: false
     name: get_job_sample
   - arguments:
-    - default: false
-      description: ID of the sample.
-      isArray: false
+    - description: ID of the sample.
       name: sample_id
       required: true
-      secret: false
     deprecated: true
     description: similiar to vmray-get-sample
-    execution: false
     name: get_results
   - deprecated: true
     description: Retrieves a sample using the sample ID. (Deprecated)
-    execution: false
     name: upload_sample
-  dockerimage: demisto/python3:3.10.11.56082
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.12.63474
   runonce: false
   script: '-'
   subtype: python3

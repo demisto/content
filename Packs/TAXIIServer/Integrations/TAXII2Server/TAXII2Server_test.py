@@ -1,5 +1,4 @@
 import copy
-import io
 import json
 import pytest
 from requests.auth import _basic_auth_str
@@ -9,7 +8,7 @@ import demistomock as demisto
 
 HEADERS = {
     'Authorization': _basic_auth_str("username", "password"),
-    'Accept': '*/*',
+    'Accept': 'application/taxii+json',
 }
 
 
@@ -53,7 +52,7 @@ def taxii2_server_v21(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -590,7 +589,7 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     output = convert_sco_to_indicator_sdo(ioc, xsoar_indicator)
     assert 'file:hashes.' in output.get('pattern', '')
     assert 'SHA-1' in output.get('pattern', '')
-    assert 'pattern_type' in output.keys()
+    assert 'pattern_type' in output
 
 
 xsoar_indicators = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
@@ -660,3 +659,63 @@ def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
                          "4.4.4.4",
                          "bad-domain.com"]})
         assert response.json == objects
+
+
+def test_reports_objects_with_relationships(mocker, taxii2_server_v21):
+    """
+        Given
+            Reports object with relationships
+        When
+            Calling handle_report_relationships.
+        Then
+            Validate that each report contained its relationship in the object_refs.
+
+    """
+    from TAXII2Server import handle_report_relationships
+
+    objects = [
+        {
+            "created": "2023-07-04T14:08:17.389246Z",
+            "description": "",
+            "id": "report--e536bd26-47e6-4ccb-a680-639fa11468g4",
+            "modified": "2023-07-04T14:08:19.567461Z",
+            "name": "ATOM Campaign Report 3",
+            "spec_version": "2.1",
+            "type": "report"
+        },
+        {
+            "created": "2023-07-06T10:57:15.133309Z",
+            "description": "",
+            "id": "report--bd9fce92-1afa-5f05-8989-392e4264d65a",
+            "modified": "2023-07-06T10:57:15.133770Z",
+            "name": "test_report",
+            "spec_version": "2.1",
+            "type": "report"
+        },
+        {
+            "created": "2022-08-04T18:25:46.215Z",
+            "id": "intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b",
+            "modified": "2022-08-10T18:45:13.212Z",
+            "name": "IcedID",
+            "type": "intrusion-set"
+        }
+    ]
+    relationships = [
+        {
+            "created": "2023-07-04T14:08:18.989565Z",
+            "id": "relationship--d5b0fcff-2fff-5749-8b5e-b937a9a1e0aa",
+            "modified": "2023-07-04T14:08:18.989565Z",
+            "relationship_type": "related-to",
+            "source_ref": "report--e536bd26-47e6-4ccb-a680-639fa11468g4",
+            "spec_version": "2.1",
+            "target_ref": "intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b",
+            "type": "relationship"
+        }
+    ]
+
+    handle_report_relationships(relationships, objects)
+
+    object_refs_with_data = objects[0]['object_refs']
+    assert len(object_refs_with_data) == 2
+    assert 'relationship--d5b0fcff-2fff-5749-8b5e-b937a9a1e0aa' in object_refs_with_data
+    assert 'intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b' in object_refs_with_data

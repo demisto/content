@@ -13,3 +13,9 @@ ignore=IM111
 [file:CheckPointDownloadBackup.yml]
 ignore=BA124
 
+[file:CheckpointFirewall.yml]
+ignore=MR108
+
+[file:CheckpointFirewall_1_3.yml]
+ignore=MR108
+

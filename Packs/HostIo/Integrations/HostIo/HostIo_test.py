@@ -2,6 +2,7 @@
 
 import json
 import io
+import pytest
 
 
 def util_load_json(path):
@@ -91,3 +92,51 @@ def test_search(requests_mock):
     assert response.outputs_prefix == 'HostIo.Search'
     assert response.outputs_key_field == ['Field', 'Value']
     assert response.raw_response == mock_response
+
+
+ARGS_CASES = [('test-module', 'test_module', 'ok'),
+              ('domain', 'get_domain_data', {
+                  'web': {
+                      'date': '2022-01-01',
+                      'server': 'test_server',
+                      'title': 'test_title',
+                      'country': 'test_country',
+                      'email': 'test_email',
+                      'phone': 'test_phone'
+                  },
+                  'dns': {
+                      'ns': ['test_ns']}}),
+              ('hostio-domain-search', 'get_search_data', {
+                  'domains': [
+                      {'domain': 'test_domain1'},
+                      {'domain': 'test_domain2'}
+                  ],
+                  'total': 2
+              })]
+
+
+@pytest.mark.parametrize('function, client_function_to_mock, result_client', ARGS_CASES)
+def test_main(mocker, function, client_function_to_mock, result_client):
+    """
+    Given:
+    - Valid parameters and commands.
+
+    When:
+    - Calling the main function.
+
+    Then:
+    - Ensure the function runs successfully and returns CommandResults objects for all valid commands.
+    """
+    from HostIo import main, Client
+    import demistomock as demisto
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials_token': {'password': 'test_api_key'},
+        'url': 'https://test.com',
+        'insecure': False,
+        'proxy': False,
+        'integrationReliability': 'A - High'
+    })
+    is_function_called = mocker.patch.object(demisto, 'command', return_value=function)
+    mocker.patch.object(Client, client_function_to_mock, return_value=result_client)
+    main()
+    assert is_function_called.call_count

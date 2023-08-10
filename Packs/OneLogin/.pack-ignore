@@ -1,0 +1,8 @@
+[file:OneLoginModelingRules.yml]
+ignore=MR108
+
+[file:OneLoginModelingRules_1_3.yml]
+ignore=MR108
+
+[known_words]
+ipaddr

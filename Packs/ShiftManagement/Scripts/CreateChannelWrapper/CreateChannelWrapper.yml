@@ -18,17 +18,14 @@ args:
   predefined:
   - public
   - private
-  description: The channel type. Can be "private" or "public".  Relevant only for
-    Slack.
+  description: The channel type. Can be "private" or "public".  Relevant only for Slack.
   defaultValue: private
 - name: team
-  description: The team in which to create the channel. Relevant only for Microsoft
-    Teams.
+  description: The team in which to create the channel. Relevant only for Microsoft Teams.
 - name: description
   description: The description of the channel. Relevant only for Microsoft Teams.
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0
 tests:

@@ -1329,7 +1329,6 @@ tasks:
       '#default#':
       - "43"
       "yes":
-      - "62"
       - "41"
     separatecontext: false
     conditions:
@@ -1992,52 +1991,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "62":
-    id: "62"
-    taskid: 44a22166-b68e-4924-8566-b33cfa6b2099
-    type: playbook
-    task:
-      id: 44a22166-b68e-4924-8566-b33cfa6b2099
-      version: -1
-      name: PAN-OS - Block Domain - External Dynamic List
-      playbookName: PAN-OS - Block Domain - External Dynamic List
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "40"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      Domain:
-        complex:
-          root: ExtractedIndicators
-          accessor: Domain
-      DomainListName:
-        complex:
-          root: inputs.EDLDomainBlocklist
-      pre-post-rulebase:
-        simple: pre-rulebase
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 0,
-          "y": 2980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "63":
     id: "63"
     taskid: c7cd2f06-8310-44d3-8e04-e743d87eea37
@@ -2916,12 +2871,6 @@ inputs:
   required: false
   description: Search Splunk for related REvil - Kaseya breach web access logs activity.
   playbookInputQuery:
-- key: EDLDomainBlocklist
-  value:
-    simple: Demisto Remediation - Domain EDL
-  required: false
-  description: The name of the EDL Domain Block List.
-  playbookInputQuery:
 - key: QRadarDomainFieldName
   value:
     simple: domain
@@ -2940,3 +2889,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+toversion: 6.4.9

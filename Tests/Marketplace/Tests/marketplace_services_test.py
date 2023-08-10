@@ -1975,6 +1975,44 @@ class TestImagesUpload:
                                                      GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
+    def test_upload_dynamic_dashboard_images(self, mocker, dummy_pack: Pack):
+        """
+        Given:
+            - Integration svg icon.
+        When:
+            - Uploading the svg image to the bucket.
+        Then:
+            - Ensure the pack was uploaded to the right path in the bucket.
+        """
+        mocker.patch.object(os.path, "isdir", return_value=True)
+        mocker.patch.object(glob, "glob", side_effect=[["Packs/TestPack/Integrations/IntegrationId/IntegrationId_image.svg"],
+                                                       ["Packs/TestPack/Integrations/IntegrationId/IntegrationId.yml"]])
+        mocker.patch("builtins.open", mock_open(read_data='{"commonfields": {"id": "Integration Id"}}'))
+
+        dummy_storage_bucket = mocker.MagicMock()
+        task_status = dummy_pack.upload_dynamic_dashboard_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH)
+
+        assert task_status
+        assert dummy_pack._uploaded_dynamic_dashboard_images == ['content/images/Integration Id.svg']
+
+    def test_copy_dynamic_dashboard_images(self, mocker, dummy_pack: Pack):
+        """
+        Given:
+            - Integration svg image in the build bucket.
+        When:
+            - Performing copy and upload of the dynamic dashboard images.
+        Then:
+            - Ensure that the build blob was copied successfully.
+        """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        blob_name = "content/images/Integration Id.svg"
+
+        images_data = {"TestPack": {BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES: [blob_name]}}
+        task_status = dummy_pack.copy_dynamic_dashboard_images(dummy_prod_bucket, dummy_build_bucket, images_data,
+                                                               GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+        assert task_status
+
     def test_copy_author_image(self, mocker, dummy_pack):
         """
            Given:
@@ -3402,6 +3440,29 @@ class TestCheckChangesRelevanceForMarketplace:
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
+
+
+class TestVersionsMetadataFile:
+    """ Test class to check that the versions-metadata.json file is in the correct format."""
+
+    class TestVersionsMetadataFile:
+        """ Test class to check that the versions-metadata.json file is in the correct format."""
+
+        def test_version_map(self):
+            version_map_content = GCPConfig.versions_metadata_contents.get('version_map')
+            valid_keys = {'core_packs_file', 'core_packs_file_is_locked', 'file_version', 'marketplaces'}
+            for version, core_packs_info in version_map_content.items():
+                missing_keys = set(valid_keys).difference(core_packs_info.keys()).difference({'marketplaces'})
+                unexpected_keys = set(core_packs_info.keys()).difference(valid_keys)
+                assert not missing_keys, f'The following keys are missing in version {version}: {missing_keys}.'
+                assert not unexpected_keys, f'The following invalid keys were found in version {version}: {unexpected_keys}.'
+                assert 'core_packs_file' in core_packs_info, \
+                    f'Version {version} in version_map does not include the required `core_packs_file` key.'
+                assert core_packs_info.get('core_packs_file') == f'corepacks-{version}.json', \
+                    f'corepacks file name of version {version} should be `corepacks-{version}.json` and not ' \
+                    f'`{core_packs_info.get("core_packs_file")}`.'
+                assert 'core_packs_file_is_locked' in core_packs_info, \
+                    f'Version {version} in version_map does not include the required `core_packs_file_is_locked` key.'
 
 
 @freeze_time("2023-01-01")

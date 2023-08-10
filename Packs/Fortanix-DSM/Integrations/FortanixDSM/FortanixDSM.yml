@@ -26,10 +26,10 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
@@ -44,18 +44,18 @@ configuration:
 - display: Data protection key used for encryption and decryption
   name: protection_key
   type: 0
-  required: false
   additionalinfo: Also configure the Cipher Mode
+  required: false
 - display: Encryption and decryption mode
   name: protection_mode
   type: 15
   additionalinfo: e.g. FPE, GCM, CBC, None
-  required: false
   options:
   - FPE
   - GCM
   - CBC
   - None
+  required: false
 script:
   script: ''
   type: python
@@ -199,7 +199,7 @@ script:
     - contextPath: Fortanix.Data.Plain
       description: Decryption output
     description: Reveal data using key configured in Fortanix DSM
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: true
   subtype: python3
 tests:

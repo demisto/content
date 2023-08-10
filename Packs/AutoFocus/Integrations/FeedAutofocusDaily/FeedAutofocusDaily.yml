@@ -5,25 +5,25 @@ commonfields:
 configuration:
 - display: Fetch indicators
   name: feed
-  required: false
   defaultvalue: 'true'
   type: 8
+  required: false
 - additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
-  required: false
   type: 4
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
-  required: false
+  - None
+  - Good
+  - Suspicious
+  - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -45,85 +45,69 @@ configuration:
   - AMBER
   - GREEN
   - WHITE
-  required: false
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ""
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
-  required: false
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
-  required: false
   type: 1
+  required: false
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: true
-  required: false
   type: 8
   hidden: true
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
-  required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this
-    feed. This means that if an indicator from this feed is on the exclusion list, the
-    indicator might still be added to the system.
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
-  hidden: false
   name: feedTags
-  required: false
   type: 0
+  required: false
 description: Deprecated. No available replacement.
 display: AutoFocus Daily Feed (Deprecated)
 name: AutoFocus Daily Feed
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of indicators to return. Default is 10.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The index of the first indicator to fetch.
-      isArray: false
       name: offset
-      required: false
-      secret: false
-    deprecated: false
     description: Gets indicators from AutoFocus.
-    execution: false
     name: autofocus-daily-get-indicators
   dockerimage: demisto/python3:3.10.1.25933
   feed: true
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
@@ -131,4 +115,4 @@ script:
 fromversion: 5.5.0
 deprecated: true
 tests:
-  - No tests
+- No tests

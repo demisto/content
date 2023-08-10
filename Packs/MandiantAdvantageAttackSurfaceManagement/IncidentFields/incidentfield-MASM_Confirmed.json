@@ -1,0 +1,31 @@
+{
+    "id": "incident_masmconfirmed",
+    "version": -1,
+    "modified": "2023-02-24T18:53:54.412154389Z",
+    "name": "M-ASM Confirmed",
+    "ownerOnly": false,
+    "cliName": "masmconfirmed",
+    "type": "boolean",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Mandiant Advantage ASM Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

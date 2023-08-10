@@ -1,0 +1,654 @@
+id: Prisma SASE - Create or Edit EDL object
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma SASE - Create or Edit EDL object
+description: This playbook helps to create an EDL object within the Prisma SASE Objects section.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eddffe16-88d7-4268-8f49-c5f08eec101c
+    type: start
+    task:
+      id: eddffe16-88d7-4268-8f49-c5f08eec101c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 08edc2e2-6614-4b95-8973-cb91c57c96de
+    type: regular
+    task:
+      id: 08edc2e2-6614-4b95-8973-cb91c57c96de
+      version: -1
+      name: Create the External Dynamic List Object
+      description: Create a new dynamic list.
+      script: '|||prisma-sase-external-dynamic-list-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      folder:
+        simple: ${inputs.Folder}
+      frequency:
+        simple: ${inputs.Frequency}
+      name:
+        complex:
+          root: inputs.Name
+      predefined_ip_list:
+        simple: ${inputs.IPListName}
+      predefined_url_list:
+        simple: ${inputs.URLListName}
+      source_url:
+        complex:
+          root: inputs.SourceURL
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      type:
+        complex:
+          root: inputs.EDLObjectType
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Choose your EDL type.Answers.0
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7ce6b664-e597-42aa-81af-ec1586c4f9d5
+    type: title
+    task:
+      id: 7ce6b664-e597-42aa-81af-ec1586c4f9d5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ed0cd306-58e7-472b-8608-31911ba6a33e
+    type: regular
+    task:
+      id: ed0cd306-58e7-472b-8608-31911ba6a33e
+      version: -1
+      name: Push Config
+      description: Push the candidate configuration.
+      script: '|||prisma-sase-candidate-config-push'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      folders:
+        complex:
+          root: inputs.Folder
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a5414793-2b50-491c-89ce-cb9e5313fbcc
+    type: condition
+    task:
+      id: a5414793-2b50-491c-89ce-cb9e5313fbcc
+      version: -1
+      name: Commit and push configuration to folders?
+      description: Commit and push configuration to folders?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Auto Commit:
+      - "7"
+      Manual:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: Auto Commit
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoCommit
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4fda2190-a023-4e22-8c0e-c839d57f550b
+    type: condition
+    task:
+      id: 4fda2190-a023-4e22-8c0e-c839d57f550b
+      version: -1
+      name: Choose to commit and push configuration
+      description: Choose to commit and push configuration
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Push:
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Push
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c435e9bc-a4bd-4edf-8519-def1840cf6c5
+    type: regular
+    task:
+      id: c435e9bc-a4bd-4edf-8519-def1840cf6c5
+      version: -1
+      name: List all the External Dynamic Lists
+      description: Lists all external dynamic lists.
+      script: '|||prisma-sase-external-dynamic-list-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      folder:
+        complex:
+          root: inputs.Folder
+      name:
+        complex:
+          root: inputs.Name
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2d707ee6-bea1-4522-86fc-5711f1a4661e
+    type: condition
+    task:
+      id: 2d707ee6-bea1-4522-86fc-5711f1a4661e
+      version: -1
+      name: Check if the object was already defined
+      description: Check if the object was already defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PrismaSase.ExternalDynamicList.name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 6c2d0f47-d7fb-4647-80c7-375fd30bdd40
+    type: regular
+    task:
+      id: 6c2d0f47-d7fb-4647-80c7-375fd30bdd40
+      version: -1
+      name: Update the External Dynamic List Object
+      description: Update an existing dynamic list.
+      script: '|||prisma-sase-external-dynamic-list-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      folder:
+        simple: ${inputs.Folder}
+      frequency:
+        simple: ${inputs.Frequency}
+      id:
+        complex:
+          root: PrismaSase.ExternalDynamicList
+          accessor: id
+      overwrite:
+        simple: ${inputs.Overwrite}
+      predefined_ip_list:
+        simple: ${inputs.IPListName}
+      predefined_url_list:
+        simple: ${inputs.URLListName}
+      source_url:
+        complex:
+          root: inputs.SourceURL
+      tsg_id:
+        complex:
+          root: inputs.TSGID
+      type:
+        complex:
+          root: inputs.EDLObjectType
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 903c35c8-a320-4a19-805c-6c2bd41149db
+    type: condition
+    task:
+      id: 903c35c8-a320-4a19-805c-6c2bd41149db
+      version: -1
+      name: Check if the EDL type is empty
+      description: Check if the EDL type is empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: inputs.EDLObjectType
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e5ca3354-93f8-4549-8379-1753137de5fd
+    type: collection
+    task:
+      id: e5ca3354-93f8-4549-8379-1753137de5fd
+      version: -1
+      name: Provide an EDL type
+      description: Provide an EDL type
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Choose one of the following types:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: domain
+        - simple: ip
+        - simple: url
+        - simple: predefined_ip
+        - simple: predefined_url
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Choose your EDL type
+      description: Your EDL type is missing and we want to ensure that your EDL object will be created successfully.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_7_Push": 0.69,
+      "8_7_Auto Commit": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1595,
+        "width": 850,
+        "x": -20,
+        "y": -950
+      }
+    }
+  }
+inputs:
+- key: Name
+  value: {}
+  required: false
+  description: The external dynamic list object name.
+  playbookInputQuery:
+- key: Folder
+  value:
+    simple: Shared
+  required: false
+  description: |-
+    The configuration folder group setting.
+    The default value is 'Shared'.
+  playbookInputQuery:
+- key: TSGID
+  value: {}
+  required: false
+  description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+  playbookInputQuery:
+- key: IPListName
+  value: {}
+  required: false
+  description: |-
+    The predefined IP list. If the type is predefined_ip, a value must be provided.
+    Possible values: panw-bulletproof-ip-list,panw-highrisk-ip-list,panw-known-ip-list,panw-torexit-ip-list.
+  playbookInputQuery:
+- key: URLListName
+  value: {}
+  required: false
+  description: |-
+    The predefined URL list. If the type is predefined_url, a value must be provided.
+
+    Possible value:
+    panw–auth-portal-exclude-list
+  playbookInputQuery:
+- key: SourceURL
+  value: {}
+  required: false
+  description: The source URL. If the type is ip, url or domain, a value must be provided.
+  playbookInputQuery:
+- key: Frequency
+  value: {}
+  required: false
+  description: |-
+    Frequency to check for updates on the EDL URL.
+    Possible values:
+    daily,five_minute,hourly,monthly,weekly
+  playbookInputQuery:
+- key: FrequencyTime
+  value: {}
+  required: false
+  description: The frequency hour. If the frequency argument is daily, weekly or monthly, a value must be provided. Possible values are 00-23.
+  playbookInputQuery:
+- key: EDLObjectType
+  value: {}
+  required: false
+  description: |-
+    Possible values:
+    domain,ip,url,predefined_ip,predefined_url
+  playbookInputQuery:
+- key: AutoCommit
+  value: {}
+  required: false
+  description: |-
+    Possible values:
+    True -> Will commit and push configuration.
+    False -> Manual push will be required.
+    Else --> Will ignore the push section and continue the playbook.
+  playbookInputQuery:
+- key: Overwrite
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to overwrite the original external dynamic list values.
+    Default value is 'false'.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaSase.ExternalDynamicList
+  description: The external dynamic list object.
+  type: unknown
+- contextPath: PrismaSase.ExternalDynamicList.id
+  description: The external dynamic list ID.
+- contextPath: PrismaSase.ExternalDynamicList.name
+  description: The external dynamic list name.
+- contextPath: PrismaSase.ExternalDynamicList.folder
+  description: The external dynamic list folder.
+- contextPath: PrismaSase.ExternalDynamicList.description
+  description: The external dynamic list description.
+- contextPath: PrismaSase.ExternalDynamicList.type
+  description: The external dynamic list type.
+- contextPath: PrismaSase.ExternalDynamicList.source
+  description: The external dynamic list source.
+- contextPath: PrismaSase.ExternalDynamicList.frequency
+  description: The external dynamic list frequency.
+- contextPath: PrismaSase.CandidateConfig
+  description: Configuration job object.
+  type: unknown
+- contextPath: PrismaSase.CandidateConfig.job_id
+  description: Configuration job ID.
+- contextPath: PrismaSase.CandidateConfig.result
+  description: The configuration push result, e.g., OK, FAIL.
+- contextPath: PrismaSase.CandidateConfig.details
+  description: The configuration push details.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,7 +1,8 @@
 id: playbook15
+deprecated: true
 version: -1
 name: Tanium Demo Playbook
-description: This playbook shows how to use automation scripts to interact with Tanium.
+description: Deprecated. No available replacement. This playbook shows how to use automation scripts to interact with Tanium.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:

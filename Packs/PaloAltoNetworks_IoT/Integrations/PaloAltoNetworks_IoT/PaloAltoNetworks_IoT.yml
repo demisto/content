@@ -20,81 +20,81 @@ configuration:
   section: Connect
 - display: Access Key ID
   name: credentials
-  required: false
   type: 9
   displaypassword: Secret Access Key
   section: Connect
+  required: false
 - display: Access Key ID
   name: access_key_id
-  required: false
   type: 0
   hidden: true
   section: Connect
+  required: false
 - display: Secret Access Key
   name: secret_access_key
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '7 days'
   display: First fetch time
   name: first_fetch
-  required: false
   type: 0
   additionalinfo: "The format: <number> <time unit>. e.g., 12 hours, 7 days, 2 seconds etc."
   section: Collect
+  required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '10'
   type: 0
-  required: false
   additionalinfo: Maximal number of events is 100
   section: Collect
+  required: false
 - display: Fetch IoT Alerts
   name: fetch_alerts
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: When selected, the integration fetches IoT alerts from the IoT Security Portal.
   section: Collect
   advanced: true
+  required: false
 - display: Fetch IoT Vulnerabilities
   name: fetch_vulns
   defaultvalue: "true"
   type: 8
-  required: false
   additionalinfo: When selected, the integration fetches IoT vulnerabilities from the IoT Security Portal.
   section: Collect
   advanced: true
+  required: false
 - display: The timeout for querying APIs
   name: api_timeout
-  required: false
   type: 0
   defaultvalue: "60"
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 description: This is the Palo Alto Networks IoT integration (previously Zingbox).
 display: Palo Alto Networks IoT
 name: Palo Alto Networks IoT
@@ -102,15 +102,10 @@ script:
   commands:
   - name: iot-security-get-device
     arguments:
-    - default: false
-      description: The device uid (mac address)
-      isArray: false
+    - description: The device uid (mac address)
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: IoT get device command - get a single device's details.
-    execution: false
     outputs:
     - contextPath: PaloAltoNetworksIoT.Device
       description: Device details.
@@ -337,134 +332,70 @@ script:
     description: IoT get device command - get a single device's details.
   - name: iot-security-list-devices
     arguments:
-    - default: false
-      description: The offset in the pagination.
-      isArray: false
+    - description: The offset in the pagination.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The maximum size of the list of the devices.
-      isArray: false
+    - description: The maximum size of the list of the devices.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: IoT list devices command
-    execution: false
     outputs:
     - contextPath: PaloAltoNetworksIoT.DeviceList
       description: List of devices.
       type: unknown
   - name: iot-security-list-alerts
     arguments:
-    - default: false
-      description: The start time in the format of ISO 8601 in UTC, e.g. 2018-11-06T08:56:41Z.
-      isArray: false
+    - description: The start time in the format of ISO 8601 in UTC, e.g. 2018-11-06T08:56:41Z.
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The offset in the pagination.
-      isArray: false
+    - description: The offset in the pagination.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The maximum size of the list of the alerts.
-      isArray: false
+    - description: The maximum size of the list of the alerts.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: IoT list alerts.
-    execution: false
     outputs:
     - contextPath: PaloAltoNetworksIoT.Alerts
       description: List of alerts.
       type: unknown
   - name: iot-security-list-vulns
     arguments:
-    - default: false
-      description: The start time in the format of ISO 8601 in UTC, e.g. 2018-11-06T08:56:41Z.
-      isArray: false
+    - description: The start time in the format of ISO 8601 in UTC, e.g. 2018-11-06T08:56:41Z.
       name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: The offset in the pagination.
-      isArray: false
+    - description: The offset in the pagination.
       name: offset
-      required: false
-      secret: false
-    - default: false
-      description: The maximum size of the list of the vulnerabilities.
-      isArray: false
+    - description: The maximum size of the list of the vulnerabilities.
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: IoT list Vulnerabilities.
-    execution: false
     outputs:
     - contextPath: PaloAltoNetworksIoT.Vulns
       description: List of vulnerabilities.
       type: unknown
   - name: iot-security-resolve-alert
     arguments:
-    - default: false
-      description: The alert ID
-      isArray: false
+    - description: The alert ID
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The alert resolution reason.
-      isArray: false
+    - description: The alert resolution reason.
       name: reason
-      required: false
-      secret: false
-    - default: false
-      description: The alert resolution reason type (No Action Needed, Issue Mitigated).
-      isArray: false
+    - description: The alert resolution reason type (No Action Needed, Issue Mitigated).
       name: reason_type
-      required: false
-      secret: false
       predefined:
       - 'No Action Needed'
       - 'Issue Mitigated'
-    deprecated: false
     description: Resolving an IoT alert.
-    execution: false
   - name: iot-security-resolve-vuln
     arguments:
-    - default: false
-      description: The vulnerability ID.
-      isArray: false
+    - description: The vulnerability ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The vulnerability full name.
-      isArray: false
+    - description: The vulnerability full name.
       name: full_name
       required: true
-      secret: false
-    - default: false
-      description: The vulnerability resolution reason.
-      isArray: false
+    - description: The vulnerability resolution reason.
       name: reason
-      required: false
-      secret: false
-    deprecated: false
     description: Resolving an IoT vulnerability.
-    execution: false
   isfetch: true
-  runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -6,6 +6,8 @@ def main():
 
     if type(value) is list and len(value) > 0:
         value = value[-1]
+    elif value is None:
+        value = []
 
     demisto.results(value)
 

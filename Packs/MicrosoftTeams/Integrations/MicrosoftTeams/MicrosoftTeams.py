@@ -8,7 +8,8 @@ from distutils.util import strtobool
 from tempfile import NamedTemporaryFile
 from threading import Thread
 from traceback import format_exc
-from typing import Any, Dict, List, Match, Optional, Tuple, Union, cast
+from typing import Any, cast
+from re import Match
 
 import jwt
 import requests
@@ -16,6 +17,7 @@ from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -36,8 +38,7 @@ PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).g
     or demisto.params().get('key', '')
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
-
-URL_REGEX: str = r'http[s]?://(?:[a-zA-Z]|[0-9]|[:/$_@.&+#-]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+URL_REGEX = r'https?://[^\s]*'
 ENTITLEMENT_REGEX: str = \
     r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 MENTION_REGEX = r'^@([^@;]+);| @([^@;]+);'
@@ -155,7 +156,7 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
             if error_description:
                 return error_description
         # If no error message
-        raise ValueError()
+        raise ValueError
     except ValueError:
         return resp_err.text
 
@@ -222,15 +223,15 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
     json_pattern: str = r'(?<=json=).*'
     name_pattern: str = r'(?<=name=).*'
     type_pattern: str = r'(?<=type=).*'
-    json_match: Optional[Match[str]] = re.search(json_pattern, message)
-    created_incident: Union[dict, list] = []
-    data: str = str()
+    json_match: Match[str] | None = re.search(json_pattern, message)
+    created_incident: dict | list = []
+    data = ''
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):
             data = 'No other properties other than json should be specified.'
         else:
             incidents_json: str = json_match.group()
-            incidents: Union[dict, list] = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
+            incidents: dict | list = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
 
@@ -239,14 +240,14 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
             if not created_incident:
                 data = 'Failed creating incidents.'
     else:
-        name_match: Optional[Match[str]] = re.search(name_pattern, message)
+        name_match: Match[str] | None = re.search(name_pattern, message)
         if not name_match:
             data = 'Please specify arguments in the following manner: name=<name> type=[type] or json=<json>.'
         else:
             incident_name: str = re.sub('type=.*', '', name_match.group()).strip()
-            incident_type: str = str()
+            incident_type = ''
 
-            type_match: Optional[Match[str]] = re.search(type_pattern, message)
+            type_match: Match[str] | None = re.search(type_pattern, message)
             if type_match:
                 incident_type = re.sub('name=.*', '', type_match.group()).strip()
 
@@ -264,11 +265,11 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         update_integration_context_samples(incidents)   # type: ignore[arg-type]
         if isinstance(created_incident, list):
             created_incident = created_incident[0]
-        created_incident = cast(Dict[Any, Any], created_incident)
+        created_incident = cast(dict[Any, Any], created_incident)
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
         data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}#/WarRoom/{created_incident.get('id', '')}"
+               f"View it on: {server_link}/#/WarRoom/{created_incident.get('id', '')}"
 
     return data
 
@@ -288,16 +289,16 @@ def is_investigation_mirrored(investigation_id: str, mirrored_channels: list) ->
 
 def urlify_hyperlinks(message: str, url_header: str | None = EXTERNAL_FORM_URL_DEFAULT_HEADER) -> str:
     """
-    Turns URL to markdown hyper-link
+    Converts URLs to Markdown-format hyperlinks.
     e.g. https://www.demisto.com -> [https://www.demisto.com](https://www.demisto.com)
     :param message: Message to look for URLs in
-    :return: Formatted message with hyper-links
+    :return: Formatted message with hyperlinks.
     """
     url_header = url_header or EXTERNAL_FORM_URL_DEFAULT_HEADER
     formatted_message: str = message
-    # URLify markdown hyperlinks
-    urls = re.findall(URL_REGEX, message)
-    for url in urls:
+
+    for url_match in re.finditer(URL_REGEX, message):
+        url = url_match.group()
         # is the url is a survey link coming from Data Collection task
         formatted_message = formatted_message.replace(url, f'[{url_header if EXTERNAL_FORM in url else url}]({url})')
     return formatted_message
@@ -310,7 +311,7 @@ def get_team_member(integration_context: dict, team_member_id: str) -> dict:
     :param team_member_id: Team member ID to search for
     :return: Found team member object
     """
-    team_member: dict = dict()
+    team_member = {}
     teams: list = json.loads(integration_context.get('teams', '[]'))
 
     for team in teams:
@@ -373,7 +374,7 @@ def process_tasks_list(data_by_line: list) -> dict:
     :param data_by_line: List of tasks to process
     :return: Adaptive card of assigned tasks
     """
-    body: list = list()
+    body = []
     for line in data_by_line[2:]:
         split_data: list = [stat.strip() for stat in line.split('|')]
         body.append({
@@ -406,7 +407,7 @@ def process_incidents_list(data_by_line: list) -> dict:
     :param data_by_line: List of incidents to process
     :return: Adaptive card of assigned incidents
     """
-    body: list = list()
+    body = []
     for line in data_by_line[2:]:
         split_data: list = [stat.strip() for stat in line.split('|')]
         body.append({
@@ -477,7 +478,7 @@ def process_ask_user(message: str) -> dict:
             'text': text
         }
     ]
-    actions: list = list()
+    actions = []
     for option in options:
         actions.append({
             'type': 'Action.Submit',
@@ -614,8 +615,8 @@ def get_graph_access_token() -> str:
 
 
 def http_request(
-        method: str, url: str = '', json_: dict = None, api: str = 'graph', params: Optional[Dict] = None
-) -> Union[dict, list]:
+        method: str, url: str = '', json_: dict = None, api: str = 'graph', params: dict | None = None
+) -> dict | list:
     """A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
 
@@ -629,10 +630,7 @@ def http_request(
     Returns:
         Union[dict, list]: The response in list or dict format.
     """
-    if api == 'graph':
-        access_token = get_graph_access_token()
-    else:  # Bot Framework API
-        access_token = get_bot_access_token()
+    access_token = get_graph_access_token() if api == 'graph' else get_bot_access_token()  # Bot Framework API
 
     headers: dict = {
         'Authorization': f'Bearer {access_token}',
@@ -701,7 +699,7 @@ def integration_health():
 
     adi_health_human_readable: str = tableToMarkdown('Microsoft API Health', api_health_output)
 
-    mirrored_channels_output = list()
+    mirrored_channels_output = []
     integration_context: dict = get_integration_context()
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
@@ -757,7 +755,7 @@ def validate_auth_header(headers: dict) -> bool:
 
     unverified_headers: dict = jwt.get_unverified_header(jwt_token)
     key_id: str = unverified_headers.get('kid', '')
-    key_object: dict = dict()
+    key_object = {}
 
     # Check if we got the requested key in cache
     for key in keys:
@@ -807,7 +805,9 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify endorsements')
         return False
 
-    public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
+
     options = {
         'verify_aud': False,
         'verify_exp': True,
@@ -843,7 +843,7 @@ def get_team_aad_id(team_name: str) -> str:
                 return team.get('team_aad_id', '')
     url: str = f"{GRAPH_BASE_URL}/v1.0/groups?$filter=displayName eq '{team_name}' " \
                "and resourceProvisioningOptions/Any(x:x eq 'Team')"
-    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    response: dict = cast(dict[Any, Any], http_request('GET', url))
     demisto.debug(f'Response {response}')
     teams = response.get('value', [])
     for team in teams:
@@ -852,7 +852,7 @@ def get_team_aad_id(team_name: str) -> str:
     raise ValueError('Could not find requested team.')
 
 
-def get_chat_id_and_type(chat: str) -> Tuple[str, str]:
+def get_chat_id_and_type(chat: str) -> tuple[str, str]:
     """
     :param chat: Represents the identity of the chat - chat_name, chat_id or member in case of "oneOnOne" chat_type.
     :return: chat_id, chat_type
@@ -861,14 +861,14 @@ def get_chat_id_and_type(chat: str) -> Tuple[str, str]:
     url = f"{GRAPH_BASE_URL}/v1.0/chats/"
 
     # case1 - chat = chat_id
-    if chat.endswith(GROUP_CHAT_ID_SUFFIX) or chat.endswith(ONEONONE_CHAT_ID_SUFFIX):
+    if chat.endswith((GROUP_CHAT_ID_SUFFIX, ONEONONE_CHAT_ID_SUFFIX)):
         demisto.debug(f"Received chat id as chat: {chat=}")
-        response: dict = cast(Dict[Any, Any], http_request('GET', url + chat))  # raise 404 if the chat id was not found
+        response: dict = cast(dict[Any, Any], http_request('GET', url + chat))  # raise 404 if the chat id was not found
         return response.get('id', ''), response.get('chatType', '')
 
     # case2 - chat = chat_name (topic) in case of "group" chat_type
     params = {'$filter': f"topic eq '{chat}'", '$select': 'id, chatType', '$top': MAX_ITEMS_PER_RESPONSE}
-    chats_response = cast(Dict[Any, Any], http_request('GET', url, params=params))
+    chats_response = cast(dict[Any, Any], http_request('GET', url, params=params))
     chats, _ = pages_puller(chats_response)
     if chats and chats[0]:
         demisto.debug(f"Received chat's topic as chat: {chat=}")
@@ -909,7 +909,7 @@ def get_user(user: str) -> list:
         '$filter': f"displayName eq '{user}' or mail eq '{user}' or userPrincipalName eq '{user}'",
         '$select': 'id, userType'
     }
-    users = cast(Dict[Any, Any], http_request('GET', url, params=params))
+    users = cast(dict[Any, Any], http_request('GET', url, params=params))
     return users.get('value', [])
 
 
@@ -1064,7 +1064,7 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
 
     # For membershipType: standard or private - returns 201 in successful and a channel object
     # For shared, returns 202 Accepted response code and a link to the teamsAsyncOperation.
-    channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    channel_data: dict = cast(dict[Any, Any], http_request('POST', url, json_=request_json))
     channel_id: str = channel_data.get('id', '')
     return channel_id
 
@@ -1087,7 +1087,7 @@ def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_ti
     if end_date_time:
         request_json['endDateTime'] = end_date_time
 
-    channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    channel_data: dict = cast(dict[Any, Any], http_request('POST', url, json_=request_json))
     return channel_data
 
 
@@ -1109,7 +1109,7 @@ def send_message_in_chat(content: str, message_type: str, chat_id: str, content_
         "messageType": message_type
     }
 
-    response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    response: dict = cast(dict[Any, Any], http_request('POST', url, json_=request_json))
     return response
 
 
@@ -1145,7 +1145,7 @@ def add_user_to_chat(chat_id: str, user_type: str, user_id: str, share_history: 
     http_request('POST', url, json_=request_json)
 
 
-def pages_puller(response: Dict[str, Any], limit: int = 1) -> Tuple[List, Optional[str]]:
+def pages_puller(response: dict[str, Any], limit: int = 1) -> tuple[list, str | None]:
     """
     Retrieves a limited number of pages by repeatedly making requests to the API using the nextLink URL
     until it has reached the specified limit or there are no more pages to retrieve,
@@ -1157,13 +1157,13 @@ def pages_puller(response: Dict[str, Any], limit: int = 1) -> Tuple[List, Option
     response_data = response.get('value', [])
     while (next_link := response.get('@odata.nextLink')) and len(response_data) < limit:
         demisto.debug(f"Using response {next_link=}")
-        response = cast(Dict[str, Any], http_request('GET', next_link))
+        response = cast(dict[str, Any], http_request('GET', next_link))
         response_data.extend(response.get('value', []))
     demisto.debug(f'The limited response contains: {len(response_data[:limit])}')
     return response_data[:limit], next_link
 
 
-def get_chats_list(odata_params: dict, chat_id: Optional[str] = None) -> Dict[str, Any]:
+def get_chats_list(odata_params: dict, chat_id: str | None = None) -> dict[str, Any]:
     """
     :param odata_params: The OData query parameters.
     :param chat_id: when chat argument was provided - Retrieve a single chat
@@ -1172,10 +1172,10 @@ def get_chats_list(odata_params: dict, chat_id: Optional[str] = None) -> Dict[st
     url = f"{GRAPH_BASE_URL}/v1.0/chats/"
     if chat_id:
         url += chat_id
-    return cast(Dict[str, Any], http_request('GET', url, params=odata_params))
+    return cast(dict[str, Any], http_request('GET', url, params=odata_params))
 
 
-def get_messages_list(chat_id: str, odata_params: dict) -> Dict[str, Any]:
+def get_messages_list(chat_id: str, odata_params: dict) -> dict[str, Any]:
     """
     Retrieve the list of messages in a chat.
     :param chat_id: The chat_id
@@ -1183,10 +1183,10 @@ def get_messages_list(chat_id: str, odata_params: dict) -> Dict[str, Any]:
     :return: The response body - collection of chatMessage objects.
     """
     url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/messages"
-    return cast(Dict[str, Any], http_request('GET', url, params=odata_params))
+    return cast(dict[str, Any], http_request('GET', url, params=odata_params))
 
 
-def get_chat_members(chat_id: str) -> List[Dict[str, Any]]:
+def get_chat_members(chat_id: str) -> list[dict[str, Any]]:
     """
     Retrieves chat members given a chat
     :param chat_id: ID of the chat
@@ -1194,17 +1194,17 @@ def get_chat_members(chat_id: str) -> List[Dict[str, Any]]:
     """
 
     url = f"{GRAPH_BASE_URL}/v1.0/chats/{chat_id}/members"
-    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    response: dict = cast(dict[Any, Any], http_request('GET', url))
     return response.get('value', [])
 
 
-def get_signed_in_user() -> Dict[str, str]:
+def get_signed_in_user() -> dict[str, str]:
     """
     Get the properties of the signed-in user
     :return: the properties of the signed-in user
     """
     url = f"{GRAPH_BASE_URL}/v1.0/me"
-    return cast(Dict[str, str], http_request('GET', url))
+    return cast(dict[str, str], http_request('GET', url))
 
 
 def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
@@ -1232,7 +1232,7 @@ def create_chat(chat_type: str, users: list, chat_name: str = "") -> dict:
 
     if chat_type == 'group' and chat_name:  # The chat title can be provided only if the chat is of group type.
         request_json["topic"] = chat_name
-    chat_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    chat_data: dict = cast(dict[Any, Any], http_request('POST', url, json_=request_json))
     return chat_data
 
 
@@ -1509,7 +1509,7 @@ def chat_message_list_command():
 
     if next_link and page_size:
         limit = page_size
-        messages_list_response: dict = cast(Dict[str, Any], http_request('GET', next_link))
+        messages_list_response: dict = cast(dict[str, Any], http_request('GET', next_link))
     else:
         messages_list_response = get_messages_list(chat_id=chat_id,
                                                    odata_params={'$orderBy': args.get('order_by') + " desc",
@@ -1548,7 +1548,7 @@ def chat_list_command():
     if chat:
         if filter_query:
             raise ValueError("Retrieve a single chat does not support the 'filter' ODate query parameter.")
-        chat_id = chat if chat.endswith(GROUP_CHAT_ID_SUFFIX) or chat.endswith(ONEONONE_CHAT_ID_SUFFIX) else \
+        chat_id = chat if chat.endswith((GROUP_CHAT_ID_SUFFIX, ONEONONE_CHAT_ID_SUFFIX)) else \
             get_chat_id_and_type(chat)[0]
         chats_list_response: dict = get_chats_list(odata_params={'$expand': args.get('expand')}, chat_id=chat_id)
         chats_list_response.pop('@odata.context', '')
@@ -1558,7 +1558,7 @@ def chat_list_command():
             demisto.debug(f"Get chat-list using the given arguments: {next_link=} and {page_size=}")
             limit = page_size
             # the $top in the request will be as in the previous query.
-            chats_list_response = cast(Dict[str, Any], http_request('GET', next_link))
+            chats_list_response = cast(dict[str, Any], http_request('GET', next_link))
         else:
             demisto.debug(f"Get chat-list using the given arguments: {limit=}")
             top = MAX_ITEMS_PER_RESPONSE if limit >= MAX_ITEMS_PER_RESPONSE else limit
@@ -1649,7 +1649,7 @@ def get_user_membership_id(member: str, team_id: str, channel_id: str) -> str:
     :param channel_id: The channel id
     :return: the user membership_id
     """
-    channel_members: List[Dict[str, Any]] = get_channel_members(team_id, channel_id)
+    channel_members: list[dict[str, Any]] = get_channel_members(team_id, channel_id)
     return next(
         (
             user.get('id', '') for user in channel_members if user.get('displayName') == member
@@ -1680,7 +1680,7 @@ def user_remove_from_channel_command():
     return_results(f'The user "{member}" has been removed from channel "{channel_name}" successfully.')
 
 
-def get_participant_info(participants: dict) -> Tuple[str, str]:
+def get_participant_info(participants: dict) -> tuple[str, str]:
     """
     Retrieves the participant ID and name
     :param participants: The participants in the Team meeting
@@ -1706,7 +1706,7 @@ def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = 
     :param investigation_id: Demisto investigation ID to search mirrored channel of
     :return: Requested channel ID
     """
-    investigation_id = investigation_id or str()
+    investigation_id = investigation_id or ''
     integration_context: dict = get_integration_context()
     teams: list = json.loads(integration_context.get('teams', '[]'))
     for team in teams:
@@ -1715,7 +1715,7 @@ def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = 
             if channel.get('channel_name') == channel_name or channel.get('investigation_id') == investigation_id:
                 return channel.get('channel_id')
     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_aad_id}/channels'
-    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    response: dict = cast(dict[Any, Any], http_request('GET', url))
     channel_id: str = ''
     channels: list = response.get('value', [])
     for channel in channels:
@@ -1736,7 +1736,7 @@ def get_channel_type(channel_id, team_id) -> str:
     :return: The channel's membershipType
     """
     url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}'
-    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    response: dict = cast(dict[Any, Any], http_request('GET', url))
     demisto.debug(f"The channel membershipType = {response.get('membershipType')}")
     return response.get('membershipType', 'standard')
 
@@ -1749,11 +1749,11 @@ def get_team_members(service_url: str, team_id: str) -> list:
     :return: List of team members
     """
     url = f'{service_url}/v3/conversations/{team_id}/members'
-    response: list = cast(List[Any], http_request('GET', url, api='bot'))
+    response: list = cast(list[Any], http_request('GET', url, api='bot'))
     return response
 
 
-def get_channel_members(team_id: str, channel_id: str) -> List[Dict[str, Any]]:
+def get_channel_members(team_id: str, channel_id: str) -> list[dict[str, Any]]:
     """
     Retrieves channel members given a channel
     :param team_id: ID of the channel's team
@@ -1761,7 +1761,7 @@ def get_channel_members(team_id: str, channel_id: str) -> List[Dict[str, Any]]:
     :return: List of channel members
     """
     url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/channels/{channel_id}/members'
-    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    response: dict = cast(dict[Any, Any], http_request('GET', url))
     return response.get('value', [])
 
 
@@ -1806,7 +1806,7 @@ def close_channel():
     channel_name: str = demisto.args().get('channel', '')
     investigation: dict = demisto.investigation()
     investigation_id: str = investigation.get('id', '')
-    channel_id: str = str()
+    channel_id = ''
     team_aad_id: str
     mirrored_channels: list
     if not channel_name:
@@ -1862,7 +1862,7 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     if not service_url:
         raise ValueError('Did not find service URL. Try messaging the bot on Microsoft Teams')
     url: str = f'{service_url}/v3/conversations'
-    response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=conversation, api='bot'))
+    response: dict = cast(dict[Any, Any], http_request('POST', url, json_=conversation, api='bot'))
     return response.get('id', '')
 
 
@@ -1878,7 +1878,7 @@ def send_message_request(service_url: str, channel_id: str, conversation: dict):
     http_request('POST', url, json_=conversation, api='bot')
 
 
-def process_mentioned_users_in_message(message: str) -> Tuple[list, str]:
+def process_mentioned_users_in_message(message: str) -> tuple[list, str]:
     """
     Processes the message to include all mentioned users in the right format. For example:
     Input: 'good morning @Demisto'
@@ -1957,8 +1957,8 @@ def send_message():
         raise ValueError('Provide either message or adaptive to send, not both.')
 
     integration_context: dict = get_integration_context()
-    channel_id: str = str()
-    personal_conversation_id: str = str()
+    channel_id = ''
+    personal_conversation_id = ''
     if channel_name:
         channel_id = get_channel_id_for_send_notification(channel_name, message_type)
     elif team_member:
@@ -1970,7 +1970,7 @@ def send_message():
     conversation: dict
 
     if message:
-        entitlement_match: Optional[Match[str]] = re.search(ENTITLEMENT_REGEX, message)
+        entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
         if entitlement_match:
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
@@ -2012,7 +2012,7 @@ def get_channel_id_for_send_notification(channel_name: str, message_type: str):
     """
     team_name: str = demisto.args().get('team', '') or demisto.params().get('team', '')
     team_aad_id: str = get_team_aad_id(team_name)
-    investigation_id: str = str()
+    investigation_id = ''
     if message_type == MESSAGE_TYPES['mirror_entry']:
         # Got an entry from the War Room to mirror to Teams
         # Getting investigation ID in case channel name is custom and not the default
@@ -2043,9 +2043,9 @@ def mirror_investigation():
     if not team_name:
         team_name = demisto.params().get('team', '')
     team_aad_id: str = get_team_aad_id(team_name)
-    mirrored_channels: list = list()
+    mirrored_channels = []
     teams: list = json.loads(integration_context.get('teams', '[]'))
-    team: dict = dict()
+    team = {}
     for team in teams:
         if team.get('team_aad_id', '') == team_aad_id:
             if team.get('mirrored_channels'):
@@ -2071,7 +2071,7 @@ def mirror_investigation():
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
-        warroom_link: str = f'{server_link}#/WarRoom/{investigation_id}'
+        warroom_link = f'{server_link}/#/WarRoom/{investigation_id}'
         conversation: dict = {
             'type': 'message',
             'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
@@ -2248,9 +2248,9 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     user_email: str = team_member.get('user_email', '')
     demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
 
-    formatted_message: str = str()
+    formatted_message = ''
 
-    attachment: dict = dict()
+    attachment = {}
 
     return_card: bool = False
 
@@ -2382,7 +2382,7 @@ def messages() -> Response:
     try:
         demisto.debug("Microsoft Teams Integration received a message from Teams")
         demisto.debug('Processing POST query...')
-        headers: dict = cast(Dict[Any, Any], request.headers)
+        headers: dict = cast(dict[Any, Any], request.headers)
 
         if validate_auth_header(headers) is False:
             demisto.info(f'Authorization header failed: {str(headers)}')
@@ -2521,7 +2521,7 @@ def update_integration_context_samples(incidents: list, max_samples: int = MAX_S
         max_samples (int): Max samples size.
     """
     ctx = get_integration_context()
-    updated_samples_list: List[Dict] = incidents + ctx.get('samples', [])
+    updated_samples_list: list[dict] = incidents + ctx.get('samples', [])
     ctx['samples'] = updated_samples_list[:max_samples]
     set_integration_context(ctx)
 
@@ -2534,8 +2534,8 @@ def long_running_loop():
         certificate: str = CERTIFICATE
         private_key: str = PRIVATE_KEY
 
-        certificate_path = str()
-        private_key_path = str()
+        certificate_path = ''
+        private_key_path = ''
 
         server = None
 
@@ -2543,16 +2543,13 @@ def long_running_loop():
             port_mapping: str = PARAMS.get('longRunningPort', '')
             port: int
             if port_mapping:
-                if ':' in port_mapping:
-                    port = int(port_mapping.split(':')[1])
-                else:
-                    port = int(port_mapping)
+                port = int(port_mapping.split(':')[1]) if ':' in port_mapping else int(port_mapping)
             else:
                 raise ValueError('No port mapping was provided')
             Thread(target=channel_mirror_loop, daemon=True).start()
             demisto.info('Started channel mirror loop thread')
 
-            ssl_args = dict()
+            ssl_args = {}
 
             if certificate and private_key:
                 certificate_file = NamedTemporaryFile(delete=False)
@@ -2579,7 +2576,7 @@ def long_running_loop():
         except SSLError as e:
             ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
             demisto.error(ssl_err_message)
-            raise ValueError(ssl_err_message)
+            raise ValueError(ssl_err_message) from e
         except Exception as e:
             error_message = str(e)
             demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')

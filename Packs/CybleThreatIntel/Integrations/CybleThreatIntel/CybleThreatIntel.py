@@ -90,23 +90,30 @@ class Client(object):
                 if eachtype.lower() in args.get('collection').lower():      # type: ignore
                     indicator_obj['type'] = eachtype
                     break
+            multi_data = True
+            try:
+                data = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
+                if not data:
+                    data = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
+            except Exception:
+                data = self.get_recursively(eachres['observables']['observables'][0], 'value')
 
-            data = self.get_recursively(eachres, 'value')
+            if multi_data:
+                ind_val = {}
+                for eachindicator in data:
+                    typeval = auto_detect_indicator_type(eachindicator)
+                    indicator_obj['type'] = typeval
+                    if typeval:
+                        ind_val[typeval] = eachindicator
 
-            ind_val = {}
-            for eachindicator in data:
-                typeval = auto_detect_indicator_type(eachindicator)
-                if typeval:
-                    ind_val[typeval] = eachindicator
-
-            if len(data) == 1:
-                indicator_obj['value'] = str(data[0])
-            elif indicator_obj['type'] in list(ind_val.keys()):
-                indicator_obj['value'] = str(ind_val[indicator_obj['type']])
-            elif len(ind_val) != 0:
-                indicator_obj['type'] = list(ind_val.keys())[0]
-                indicator_obj['value'] = ind_val[list(ind_val.keys())[0]]
-
+                if len(data) == 1:
+                    indicator_obj['value'] = str(data[0])
+                elif indicator_obj['type'] in list(ind_val.keys()):
+                    indicator_obj['value'] = str(ind_val[indicator_obj['type']])
+                elif len(ind_val) != 0:
+                    indicator_obj['type'] = list(ind_val.keys())[0]
+                    indicator_obj['value'] = ind_val[list(ind_val.keys())[0]]
+            #
             if eachres.get('indicators'):
                 for eachindicator in eachres.get('indicators'):
                     indicator_obj['title'] = eachindicator.get('title')

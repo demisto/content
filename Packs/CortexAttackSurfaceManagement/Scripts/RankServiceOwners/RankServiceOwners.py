@@ -5,12 +5,16 @@ from those surfaced by Cortex ASM Enrichment.
 """
 
 
-from typing import Dict, List, Any
+from typing import Any
+from collections.abc import Iterable
 import traceback
 from itertools import groupby
+import math
+
+STRING_DELIMITER = ' | '  # delimiter used for joining Source fields and any additional fields of type string
 
 
-def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def score(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Owner score is the number of observations on that owner divided by the max number of observations
     for any owner in the list
@@ -25,16 +29,18 @@ def score(owners: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return owners
 
 
-def rank(owners: List[Dict[str, Any]], k: int = 5) -> List[Dict[str, Any]]:
+def rank(owners: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
-    Return up to k owners with the highest ranking scores
+    Sort owners by ranking score and use data-driven algorithm to return the top k,
+    where k is a dynamic value based on the relative scores
+
+    See _get_k for hyperparameters that can be used to adjust the target value of k
     """
-    if k <= 0:
-        raise ValueError(f'Number of owners k={k} must be greater than zero')
-    return sorted(owners, key=lambda x: x['Ranking Score'])[:k]
+    k = _get_k(scores=(owner['Ranking Score'] for owner in owners))
+    return sorted(owners, key=lambda x: x['Ranking Score'], reverse=True)[:k]
 
 
-def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def justify(owners: list[dict[str, str]]) -> list[dict[str, str]]:
     """
     For now, `Justification` is the same as `Source`; in the future, will sophisticate
     """
@@ -43,7 +49,7 @@ def justify(owners: List[Dict[str, str]]) -> List[Dict[str, str]]:
     return owners
 
 
-def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
+def _canonicalize(owner: dict[str, Any]) -> dict[str, Any]:
     """
     Canonicalizes an owner dictionary and adds a deduplication key
     `Canonicalization` whose value is either:
@@ -51,18 +57,18 @@ def _canonicalize(owner: Dict[str, Any]) -> Dict[str, Any]:
         2. whitespace-stripped and lower-cased name
         3. empty string if neither exists
     """
-    if owner.get('Email', ''):
-        owner['Canonicalization'] = owner['Email'].strip().lower()
-        owner['Email'] = owner['Canonicalization']
-    elif owner.get('Name', ''):
-        owner['Canonicalization'] = owner['Name'].strip().lower()
-        owner['Name'] = owner['Canonicalization']
+    if owner.get('email', ''):
+        owner['Canonicalization'] = owner['email'].strip().lower()
+        owner['email'] = owner['Canonicalization']
+    elif owner.get('name', ''):
+        owner['Canonicalization'] = owner['name'].strip().lower()
+        owner['name'] = owner['Canonicalization']
     else:
         owner['Canonicalization'] = ''
     return owner
 
 
-def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def canonicalize(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     """
     Calls _canonicalize on each well-formatted owner; drops and logs malformated inputs
     """
@@ -78,7 +84,7 @@ def canonicalize(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     return canonicalized
 
 
-def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+def aggregate(owners: list[dict[str, str]]) -> list[dict[str, Any]]:
     """
     Aggregate owners by their canonicalization.
 
@@ -92,20 +98,20 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     sorted_owners = sorted(owners, key=lambda owner: owner['Canonicalization'])
     for key, group in groupby(sorted_owners, key=lambda owner: owner['Canonicalization']):
         duplicates = list(group)
-        email = duplicates[0].get('Email', '')
+        email = duplicates[0].get('email', '')
         # the if condition in the list comprehension below defends against owners whose Name value is None (not sortable)
         names = sorted(
-            [owner.get('Name', '') for owner in duplicates if owner.get('Name')],
+            [owner.get('name', '') for owner in duplicates if owner.get('name')],
             key=lambda x: len(x), reverse=True
         )
         name = names[0] if names else ''
         # aggregate Source by union
-        source = ' | '.join(sorted(
-            set(owner.get('Source', '') for owner in duplicates if owner.get('Source', ''))
+        source = STRING_DELIMITER.join(sorted(
+            {owner.get('source', '') for owner in duplicates if owner.get('source', '')}
         ))
         # take max Timestamp if there's at least one; else empty string
         timestamps = sorted(
-            [owner.get('Timestamp', '') for owner in duplicates if owner.get('Timestamp', '')], reverse=True
+            [owner.get('timestamp', '') for owner in duplicates if owner.get('timestamp', '')], reverse=True
         )
         timestamp = timestamps[0] if timestamps else ''
         owner = {
@@ -117,14 +123,17 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
         }
 
         # aggregate remaining keys according to type
-        all_keys = set(k for owner in duplicates for k in owner.keys())
-        keys_to_types = {k: type(owner[k]) for owner in duplicates for k in owner.keys()}
-        other_keys = all_keys - {'Name', 'Email', 'Source', 'Timestamp', 'Canonicalization'}
+        all_keys = {k for owner in duplicates for k in owner}
+        keys_to_types = {k: type(owner[k]) for owner in duplicates for k in owner}
+        other_keys = []
+        for key in all_keys:
+            if key.lower() not in {'name', 'email', 'source', 'timestamp', 'canonicalization'}:
+                other_keys.append(key)
         for other in other_keys:
             if keys_to_types[other] == str:
                 # union over strings
-                owner[other] = ' | ' .join(sorted(
-                    set(owner.get(other, '') for owner in duplicates if owner.get(other, ''))
+                owner[other] = STRING_DELIMITER.join(sorted(
+                    {owner.get(other, '') for owner in duplicates if owner.get(other, '')}
                 ))
             elif keys_to_types[other] in (int, float):
                 # max over numerical types
@@ -136,12 +145,69 @@ def aggregate(owners: List[Dict[str, str]]) -> List[Dict[str, Any]]:
     return deduped
 
 
+def _get_k(
+    scores: Iterable[float],
+    target_k: int = 5,
+    k_tol: int = 2,
+    a_tol: float = 1.0,
+    min_score_proportion: float = 0.75
+) -> int:
+    """
+    Return a value of k such that:
+    - target_k >= k <= target_k + k_tol
+    - the top k scores comprise minimum specified proportion of the total score mass
+
+    See unit tests in RankServiceOwners_test.py for a more detailed specification of the
+    expected behavior.
+
+    Notable hyperparameters (which are tuned to target_k=5) and where they come from:
+
+    :param target_k: the value of k we are roughly targeting (set by discussion with PM)
+    :param k_tol: our tolerance for k, or how many additional owners above `target_k` we are willing to show
+        (set by intuition/discussion with PM)
+    :param a_tol: max expected absolute different between two scores in the same "tier"
+        (set by intuition; see unit tests)
+    :param min_score_proportion: the targeted min proportion of the score mass
+        (identified using a gridsearch over values to find best outcome on unit tests)
+    """
+    if target_k < 0:
+        raise ValueError("target_k must be non-negative")
+    if k_tol < 0:
+        raise ValueError("k_tol must be non-negative")
+    if a_tol < 0:
+        raise ValueError("a_tol must be non-negative")
+    if min_score_proportion < 0 or min_score_proportion > 1:
+        raise ValueError("min_score_proportion must be a value between 0 and 1")
+
+    # get up to target_k scores that comprise the desired score proportion
+    scores_desc = sorted(scores, reverse=True)
+    min_score_proportion = sum(scores_desc) * min_score_proportion
+    k = 0
+    cumulative_score = 0.0
+    while cumulative_score < min_score_proportion and k < target_k:
+        cumulative_score += scores_desc[k]
+        k += 1
+
+    # score values are likely groupable into "tiers"; try to find a cutoff between tiers
+    # look for the end of the next element's tier (may be the current or next tier),
+    # where a tier is (arbitrarily) defined by an absolute difference of `a_tol`
+    tier_index = k
+    while tier_index < len(scores_desc) and math.isclose(scores_desc[tier_index], scores_desc[tier_index - 1], abs_tol=a_tol):
+        tier_index += 1
+
+    # add additional score(s) if within tolerance for k
+    if math.isclose(target_k, tier_index, abs_tol=k_tol):
+        k = tier_index
+
+    return k
+
+
 def main():
     try:
-        owners = demisto.args().get("owners", [])
-        top_k = justify(rank(score(aggregate(canonicalize(owners)))))
-        demisto.executeCommand("setAlert", {"asmserviceowner": top_k})
-        return_results(CommandResults(readable_output='top 5 service owners written to asmserviceowner'))
+        unranked = demisto.args().get("owners", [])
+        ranked = justify(rank(score(aggregate(canonicalize(unranked)))))
+        demisto.executeCommand("setAlert", {"asmserviceowner": ranked})
+        return_results(CommandResults(readable_output='Service owners ranked and written to asmserviceowner'))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

@@ -10,134 +10,102 @@ configuration:
   type: 4
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 3 days
   display: First Fetch Time
-  hidden: false
   name: first_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Company ID in SOCRadar to fetch incidents.
   display: Company ID
-  hidden: false
   name: socradar_company_id
   required: true
   type: 0
-- additionalinfo: Select severity level(s) of incidents to fetch. Leave blank to fetch
-    all.
+- additionalinfo: Select severity level(s) of incidents to fetch. Leave blank to fetch all.
   display: Severity Level
-  hidden: false
   name: severity
   options:
   - Info
   - Low
   - Medium
   - High
-  required: false
   type: 16
-- additionalinfo: Maximum number of incidents to fetch in each integration execution
-    interval.
+  required: false
+- additionalinfo: Maximum number of incidents to fetch in each integration execution interval.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
-  hidden: false
   name: max_fetch
-  required: false
   type: 0
+  required: false
 - additionalinfo: Fetch Incidents by resolution status (All, Resolved, Not Resolved)
   defaultvalue: All
   display: Resolution Status
-  hidden: false
   name: resolution_status
   options:
   - All
   - Resolved
   - Not Resolved
-  required: false
   type: 15
+  required: false
 - additionalinfo: Fetch Incidents by false positive status (All, FP, Not FP)
   defaultvalue: All
   display: FP Status
-  hidden: false
   name: fp_status
   options:
   - All
   - FP
   - Not FP
-  required: false
   type: 15
+  required: false
 - additionalinfo: Fetch incidents which belong to this particular main type.
   display: Incident Main Type
-  hidden: false
   name: incident_main_type
-  required: false
   type: 0
+  required: false
 - additionalinfo: Fetch incidents which belong to this particular sub type.
   display: Incident Sub Type
-  hidden: false
   name: incident_sub_type
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 defaultclassifier: SOCRadar Incident Classifier
 defaultmapperin: SOCRadar Incident Mapper
 defaultmapperout: 'null'
-description: Fetches SOCRadar incidents with desired parameters so that relevant actions
-  over the incidents can be taken by using Cortex XSOAR.
+description: Fetches SOCRadar incidents with desired parameters so that relevant actions over the incidents can be taken by using Cortex XSOAR.
 display: SOCRadar Incidents
 name: SOCRadarIncidents
 script:
   commands:
   - arguments:
-    - default: false
-      description: SOCRadar Incident ID to be marked as false positive.
-      isArray: false
+    - description: SOCRadar Incident ID to be marked as false positive.
       name: socradar_incident_id
       required: true
-      secret: false
-    - default: false
-      description: Comments about false positive action over the incident.
-      isArray: false
+    - description: Comments about false positive action over the incident.
       name: comments
-      required: false
-      secret: false
-    deprecated: false
     description: Marks incident as false positive in SOCRadar platform.
-    execution: false
     name: socradar-mark-incident-fp
   - arguments:
-    - default: false
-      description: SOCRadar Incident ID to be marked as resolved.
-      isArray: false
+    - description: SOCRadar Incident ID to be marked as resolved.
       name: socradar_incident_id
       required: true
-      secret: false
-    - default: false
-      description: Comments about resolved action over the incident.
-      isArray: false
+    - description: Comments about resolved action over the incident.
       name: comments
-      required: false
-      secret: false
-    deprecated: false
     description: Marks incident as resolved in SOCRadar platform.
-    execution: false
     name: socradar-mark-incident-resolved
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

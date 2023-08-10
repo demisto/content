@@ -2,15 +2,13 @@ comment: Close the XSOAR incident if the IoT ServiceNow ticket was closed. This 
 commonfields:
   id: iot-security-check-servicenow
   version: -1
-enabled: false
 name: iot-security-check-servicenow
 script: '-'
-system: false
 tags:
 - iot
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotRole
 fromversion: 5.0.0

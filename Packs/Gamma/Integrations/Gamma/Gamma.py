@@ -22,7 +22,9 @@ class Client(BaseClient):
     """ Implements Gamma API """
 
     def __init__(self, demisto):
-        api_key = demisto.params()['api_key']
+        api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params()['api_key']
+        if not api_key:
+            raise DemistoException('Gamma API Key must be provided.')
         headers = {'X-API-Key': api_key}
         base_url = urljoin(demisto.params()['url'], '/api/discovery/v1/')
         verify_certificate = not (demisto.params().get('insecure', False))

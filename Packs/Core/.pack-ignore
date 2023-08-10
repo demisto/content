@@ -1,25 +1,23 @@
 [file:CoreIOCs.yml]
-ignore=IN145,IN124
+ignore=IN124
 
 [file:CortexCoreIR.yml]
-ignore=IN145,IN124,IN139
+ignore=IN124,IN139
 
 [file:README.md]
 ignore=RM104
-
-[file:impossibleTravelerGetDistance.yml]
-ignore=CJ105
 
 [file:1_3_23.md]
 ignore=RN115,RN113
 
 [known_words]
-XSIAM
-CoreIRApiModule
-XDRIR
+xsiam
+coreirapimodule
+xdrir
 
 [file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
 ignore=BA101
 
 [file:playbook-XCloud_Cryptomining.yml]
 ignore=BA101
+

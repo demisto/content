@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 import shutil
 import urllib3
@@ -5,8 +7,6 @@ from typing import Callable
 
 from requests import Response
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import defusedxml.ElementTree as defused_ET
 
 GENERAL_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'

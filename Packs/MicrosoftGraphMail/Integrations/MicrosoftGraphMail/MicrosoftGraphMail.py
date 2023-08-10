@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
@@ -38,8 +38,8 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
     @staticmethod
     def get_email_content_as_text_and_html(email):
-        email_body = email.get('body') or tuple()  # email body including replyTo emails.
-        email_unique_body = email.get('uniqueBody') or tuple()  # email-body without replyTo emails.
+        email_body: tuple = email.get('body') or ()  # email body including replyTo emails.
+        email_unique_body: tuple = email.get('uniqueBody') or ()  # email-body without replyTo emails.
 
         # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
         # in those cases for both html/text formats.
@@ -178,6 +178,8 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
         if 'time' in last_run:
             last_run['time'] = last_run['time'].replace('Z', '')
+        demisto.debug("MicrosoftGraphMail - Start fetching")
+        demisto.debug(f"MicrosoftGraphMail - Last run: {json.dumps(last_run)}")
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(
             last_run=last_run,
@@ -214,7 +216,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
 
         # remove duplicate incidents which were already fetched
         incidents = filter_incidents_by_duplicates_and_limit(
-            incidents_res=list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails)),
+            incidents_res=[self._parse_email_as_incident(email, True) for email in fetched_emails],
             last_run=last_run,
             fetch_limit=self._emails_fetch_limit,
             id_field='ID'
@@ -245,7 +247,11 @@ class MsGraphMailClient(MsGraphMailBaseClient):
                 'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
             }
         )
+        demisto.debug(f'MicrosoftGraphMail - Next run after incidents fetching: {json.dumps(last_run)}')
 
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
         for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
             incident.pop('ID', None)
 
@@ -373,6 +379,8 @@ def main():
             return_results(reply_email_command(client, args))
         elif command == 'send-mail':
             return_results(send_email_command(client, args))
+        elif command == 'msgraph-mail-auth-reset':
+            return_results(reset_auth())
 
     # Log exceptions
     except Exception as e:

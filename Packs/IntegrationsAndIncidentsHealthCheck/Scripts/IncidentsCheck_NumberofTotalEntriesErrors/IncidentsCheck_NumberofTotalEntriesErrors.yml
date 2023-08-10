@@ -1,5 +1,4 @@
-comment: Health Check dynamic section, showing the total number of errors in failed
-  incidents.
+comment: Health Check dynamic section, showing the total number of errors in failed incidents.
 commonfields:
   id: IncidentsCheck-NumberofTotalEntriesErrors
   version: -1
@@ -7,7 +6,6 @@ dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: IncidentsCheck-NumberofTotalEntriesErrors
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

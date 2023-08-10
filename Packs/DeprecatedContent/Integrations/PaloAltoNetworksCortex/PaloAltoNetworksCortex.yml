@@ -19,21 +19,21 @@ configuration:
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - defaultvalue: Traps Threats
   display: Query for fetching events
   name: fetch_query
@@ -41,13 +41,13 @@ configuration:
   - Traps Threats
   - Firewall Threats
   - Cortex XDR Analytics
-  required: false
   type: 15
+  required: false
 - defaultvalue: 24 hours
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
-  required: false
   type: 0
+  required: false
 - display: Severity of events to fetch (Traps)
   name: traps_severity
   options:
@@ -58,8 +58,8 @@ configuration:
   - low
   - informational
   - configuration
-  required: false
   type: 16
+  required: false
 - display: Severity of events to fetch (Firewall)
   name: firewall_severity
   options:
@@ -70,8 +70,8 @@ configuration:
   - low
   - informational
   - unused
-  required: false
   type: 16
+  required: false
 - display: Subtype of events to fetch (Firewall)
   name: firewall_subtype
   options:
@@ -88,8 +88,8 @@ configuration:
   - data
   - wildfire
   - wildfire-virus
-  required: false
   type: 16
+  required: false
 - display: Severity of alerts to fetch (XDR Analytics)
   name: xdr_severity
   options:
@@ -98,8 +98,8 @@ configuration:
   - Medium
   - Low
   - Info
-  required: false
   type: 16
+  required: false
 - display: Category of alerts to fetch (XDR Analytics)
   name: xdr_category
   options:
@@ -137,55 +137,35 @@ configuration:
   - scrons.exe Rare Child Process
   - wmiprsve.exe Rare Child Process
   - wsmprovhost.exe Rare Child Process
-  required: false
   type: 16
+  required: false
 description: Deprecated. We recommend using the Cortex Data Lake integration instead. This framework manages all PA's cloud managed products
 display: Palo Alto Networks Cortex (Deprecated)
 name: Palo Alto Networks Cortex
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
-      isArray: false
       name: startTime
-      required: false
-      secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00"
-      isArray: false
       name: endTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: select * from panw.traffic limit 5
+    - defaultValue: select * from panw.traffic limit 5
       description: 'A free-text SQL query. For example, query="select * from panw.traffic limit 5". There are multiple tables in Loggings, for example: threat, traffic, and so on. Refer to the Cortex Logging service schema reference for the full list.'
-      isArray: false
       name: query
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       name: rangeValue
-      required: false
-      secret: false
     deprecated: true
     description: Runs a query on the Cortex logging service.
-    execution: false
     name: cortex-query-logs
     outputs:
     - contextPath: Cortex.Logging.id
@@ -240,47 +220,26 @@ script:
       description: The NAT source.
       type: Unknown
   - arguments:
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
-      isArray: false
       name: startTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '2020-01-01 00:00:00'
+    - defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00"
-      isArray: false
       name: endTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The number of logs to return. Default is 10
-      isArray: false
       name: logsAmount
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       name: rangeValue
-      required: false
-      secret: false
     deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
-    execution: false
     name: cortex-get-critical-threat-logs
     outputs:
     - contextPath: Cortex.Logging.id
@@ -365,47 +324,26 @@ script:
       description: The threat severity.
       type: Unknown
   - arguments:
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: Query start time. For example, startTime="2018-04-26 00:00:00"
-      isArray: false
       name: startTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '2020-01-01 00:00:00'
+    - defaultValue: '2020-01-01 00:00:00'
       description: Query end time. For example, endTime="2018-04-26 00:00:00"
-      isArray: false
       name: endTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: Amount of logs. Default is 10
-      isArray: false
       name: logsAmount
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       name: rangeValue
-      required: false
-      secret: false
     deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
-    execution: false
     name: cortex-get-social-applications
     outputs:
     - contextPath: Cortex.Logging.id
@@ -475,53 +413,29 @@ script:
       description: The sub-category of the application time.
       type: Unknown
   - arguments:
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
-      isArray: false
       name: startTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '2020-01-01 00:00:00'
+    - defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00"
-      isArray: false
       name: endTime
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The number of logs to return. Default is 10.
-      isArray: false
       name: logsAmount
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the last week.
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the last week.
       name: rangeValue
-      required: false
-      secret: false
-    - default: false
-      description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
-      isArray: false
+    - description: The SHA256 hash of the file for the query. For example, SHA256="503ca1a4fc0d48b18c0336f544ba0f0abf305ae3a3f49b3c2b86b8645d6572dc" would return all logs associated with this file.
       name: SHA256
       required: true
-      secret: false
     deprecated: true
     description: Runs a query on the Cortex logging service, according to preset queries.
-    execution: false
     name: cortex-search-by-file-hash
     outputs:
     - contextPath: Cortex.Logging.id
@@ -606,96 +520,44 @@ script:
       description: Threat Severity.
       type: Unknown
   - arguments:
-    - default: false
-      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: A rule name or an array of rule names to search.
-      isArray: false
+    - description: A rule name or an array of rule names to search.
       name: rule
-      required: false
-      secret: false
-    - default: false
-      description: A source zone  name or an array of source zone names to search.
-      isArray: false
+    - description: A source zone  name or an array of source zone names to search.
       name: from_zone
-      required: false
-      secret: false
-    - default: false
-      description: A destination zone name or an array of zone names to search.
-      isArray: false
+    - description: A destination zone name or an array of zone names to search.
       name: to_zone
-      required: false
-      secret: false
-    - default: false
-      description: A destination port number or an array of destination port numbers to search.
-      isArray: false
+    - description: A destination port number or an array of destination port numbers to search.
       name: port
-      required: false
-      secret: false
-    - default: false
-      description: An action name or an array of action names to search.
-      isArray: false
+    - description: An action name or an array of action names to search.
       name: action
-      required: false
-      secret: false
-    - default: false
-      description: A free-text query for which to search. This forms the WHERE part of the query, for example, !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
-      isArray: false
+    - description: A free-text query for which to search. This forms the WHERE part of the query, for example, !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: all
+    - defaultValue: all
       description: The fields that are selected in the query. Selection can be "all" (same as *) or a list of specific fields in the table. List of fields can be found after viewing all the outputed fields with all.
-      isArray: false
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
-      isArray: false
       name: startTime
-      required: false
-      secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00".
-      isArray: false
       name: endTime
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
       name: rangeValue
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The number of logs to return. Default is 5.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: Searches the Cortex panw.traffic table, which is the traffic logs table for PAN-OS and Panorama.
-    execution: false
     name: cortex-query-traffic-logs
     outputs:
     - contextPath: Cortex.Logging.Traffic.Action
@@ -819,107 +681,47 @@ script:
       description: IP address.
       type: String
   - arguments:
-    - default: false
-      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Rule name or array of rule names to search.
-      isArray: false
+    - description: Rule name or array of rule names to search.
       name: rule
-      required: false
-      secret: false
-    - default: false
-      description: Source zone or array of zones to search.
-      isArray: false
+    - description: Source zone or array of zones to search.
       name: from_zone
-      required: false
-      secret: false
-    - default: false
-      description: Destination zone or array of zones to search.
-      isArray: false
+    - description: Destination zone or array of zones to search.
       name: to_zone
-      required: false
-      secret: false
-    - default: false
-      description: Port or array of ports to search.
-      isArray: false
+    - description: Port or array of ports to search.
       name: port
-      required: false
-      secret: false
-    - default: false
-      description: Action or array of actions lo search.
-      isArray: false
+    - description: Action or array of actions lo search.
       name: action
-      required: false
-      secret: false
-    - default: false
-      description: Free input query to search. This is the WHERE part of the query. so an example will be !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst = '192.168.1.12'"
-      isArray: false
+    - description: Free input query to search. This is the WHERE part of the query. so an example will be !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst = '192.168.1.12'"
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: all
+    - defaultValue: all
       description: The fields that are selected in the query. Selection can be "all" (same as *) or listing of specific fields in the table. List of fields can be found after viewing all the outputed fields with all.
-      isArray: false
       name: fields
-      required: false
-      secret: false
-    - default: false
-      description: SHA256 hash or array of SHA256 hashes to search.
-      isArray: false
+    - description: SHA256 hash or array of SHA256 hashes to search.
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: URL or array of URLs to search.
-      isArray: false
+    - description: URL or array of URLs to search.
       name: url
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00"
-      isArray: false
       name: startTime
-      required: false
-      secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00"
-      isArray: false
       name: endTime
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       name: rangeValue
-      required: false
-      secret: false
-    - default: false
-      description: The number of logs to return. Default is 5.
-      isArray: false
+    - description: The number of logs to return. Default is 5.
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: Searches the Cortex panw.threat table, which is the threat logs table for PAN-OS/Panorama.
-    execution: false
     name: cortex-query-threat-logs
     outputs:
     - contextPath: Cortex.Logging.Threat.SessionID
@@ -1067,90 +869,42 @@ script:
       description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
   - arguments:
-    - default: false
-      description: IP or array of IPs to search for example 1.1.1.1,2.2.2.2.
-      isArray: false
+    - description: IP or array of IPs to search for example 1.1.1.1,2.2.2.2.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Host or array of hosts to search.
-      isArray: false
+    - description: Host or array of hosts to search.
       name: host
-      required: false
-      secret: false
-    - default: false
-      description: User or an array or users to search.
-      isArray: false
+    - description: User or an array or users to search.
       name: user
-      required: false
-      secret: false
-    - default: false
-      description: Category or array of categories to search.
-      isArray: false
+    - description: Category or array of categories to search.
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: Hash or array of hashes to search.
-      isArray: false
+    - description: Hash or array of hashes to search.
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: Free-text input query to search. This is the WHERE part of the query so an example will be src = '1.1.1.1' OR rule = 'test rule'.
-      isArray: false
+    - description: Free-text input query to search. This is the WHERE part of the query so an example will be src = '1.1.1.1' OR rule = 'test rule'.
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: all
+    - defaultValue: all
       description: The fields that are selected in the query. Selection can be "all" (same as *) or listing of specific fields in the table. List of fields can be found after viewing all the outputed fields with all.
-      isArray: false
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00".
-      isArray: false
       name: startTime
-      required: false
-      secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00".
-      isArray: false
       name: endTime
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       name: rangeValue
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The number of logs to return. Default is 5.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: Searches the Cortex tms.threat table, which is the threat logs table for the Traps endpoint protection and response.
-    execution: false
     name: cortex-query-traps-logs
     outputs:
     - contextPath: Cortex.Logging.Traps.Severity
@@ -1400,90 +1154,42 @@ script:
       description: The name of the company that released a binary.
       type: String
   - arguments:
-    - default: false
-      description: Agent IP or array of agent IP  to search.
-      isArray: false
+    - description: Agent IP or array of agent IP  to search.
       name: ip
-      required: false
-      secret: false
-    - default: false
-      description: Agent host name or array of agent host names to search.
-      isArray: false
+    - description: Agent host name or array of agent host names to search.
       name: host
-      required: false
-      secret: false
-    - default: false
-      description: Username or array of usernames to search.
-      isArray: false
+    - description: Username or array of usernames to search.
       name: user
-      required: false
-      secret: false
-    - default: false
-      description: Event category or array of event categories to search.
-      isArray: false
+    - description: Event category or array of event categories to search.
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: Hash or array of hashes to search.
-      isArray: false
+    - description: Hash or array of hashes to search.
       name: hash
-      required: false
-      secret: false
-    - default: false
-      description: Free-text input query to search. This forms the WHERE part of the query. For example, endPointHeader.agentIp = '1.1.1.1'.
-      isArray: false
+    - description: Free-text input query to search. This forms the WHERE part of the query. For example, endPointHeader.agentIp = '1.1.1.1'.
       name: query
-      required: false
-      secret: false
-    - default: false
-      defaultValue: all
+    - defaultValue: all
       description: The fields that are selected in the query. Selection can be "all" (same as *) or a list of specific fields in the table. You can find the list of fields after viewing all the outputed fields with "all".
-      isArray: false
       name: fields
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '1970-01-01 00:00:00'
+    - defaultValue: '1970-01-01 00:00:00'
       description: The query start time. For example, startTime="2018-04-26 00:00:00".
-      isArray: false
       name: startTime
-      required: false
-      secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
       description: The query end time. For example, endTime="2018-04-26 00:00:00".
-      isArray: false
       name: endTime
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The time range for the query, used with the rangeValue argument. For example, timeRange="weeks" timeValue="1" would run the query on the previous week.
-      isArray: false
       name: timeRange
       predefined:
       - minutes
       - days
       - weeks
-      required: false
-      secret: false
-    - default: false
-      description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
-      isArray: false
+    - description: The time value for the query, used with the timeRange argument. For example, timeRange="weeks" rangeValue="1" would run the query on the previous week.
       name: rangeValue
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
+    - defaultValue: '5'
       description: The number of logs to return. Default is 5.
-      isArray: false
       name: limit
-      required: false
-      secret: false
     deprecated: true
     description: Searches the Cortex tms.analytics table, which is the endpoint logs table for Traps Analytics.
-    execution: false
     name: cortex-query-analytics-logs
     outputs:
     - contextPath: Cortex.Logging.Analytics.AgentID
@@ -1647,8 +1353,6 @@ script:
       type: String
   dockerimage: demisto/python_pancloud:1.0.0.7740
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

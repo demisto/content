@@ -697,108 +697,6 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-  "20":
-    id: "20"
-    taskid: 3c9a7a4d-ca71-4959-8cd7-efc8fd2e9485
-    type: regular
-    task:
-      id: 3c9a7a4d-ca71-4959-8cd7-efc8fd2e9485
-      version: -1
-      name: Get Passive DNS
-      description: Returns enrichment data for Domain or IP for availabe observables.
-      script: Anomali ThreatStream v3|||threatstream-get-passive-dns
-      type: regular
-      iscommand: true
-      brand: Anomali ThreatStream v3
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      limit:
-        simple: "1"
-      type:
-        simple: domain
-      value:
-        simple: eqouifax.com
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "21":
-    id: "21"
-    taskid: 5ea89472-9ba2-4550-8bb3-e94a3251a235
-    type: condition
-    task:
-      id: 5ea89472-9ba2-4550-8bb3-e94a3251a235
-      version: -1
-      name: Validate Passive DNS Context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "27"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatStream.PassiveDNS.Domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatStream.PassiveDNS.Ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatStream.PassiveDNS.Rrtype
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatStream.PassiveDNS.Source
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatStream.PassiveDNS.FirstSeen
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatStream.PassiveDNS.LastSeen
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 30bc8e84-8d55-4963-8c36-d5f25b6a4117
@@ -1146,6 +1044,8 @@ tasks:
     scriptarguments:
       import_type:
         simple: datatext
+      source_confidence_weight:
+        simple: "50"
       import_value:
         simple: "78"
     separatecontext: false
@@ -1253,7 +1153,6 @@ tasks:
     nexttasks:
       '#none#':
       - "18"
-      - "20"
       - "22"
     scriptarguments:
       all:

@@ -1,0 +1,4 @@
+!cyble-vision-subscribed-services
+!cyble-vision-fetch-iocs ioc_type=Domain ioc=test.com from=0 limit=10 sort_by=last_seen order=desc tags=Test_keyword start_date=2023-04-25 end_date=2023-04-25
+!cyble-vision-fetch-alert-groups limit=10 start_date=2023-04-25T00:00:00+00:00 end_date=2023-04-25T23:59:59+00:00 order_by=desc from=0
+!cyble-vision-fetch-alerts limit=10 start_date=2023-04-25T00:00:00+00:00 end_date=2023-04-25T23:59:59+00:00 order_by=desc from=0

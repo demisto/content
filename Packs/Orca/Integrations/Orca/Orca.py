@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from urllib.parse import urlparse
 
 import dateutil.parser
 from requests import Response
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional, Tuple, cast
 

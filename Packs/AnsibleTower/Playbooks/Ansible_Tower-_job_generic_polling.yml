@@ -1,6 +1,6 @@
 id: Launch Job - Ansible Tower
 version: -1
-name: Launch Job - Ansible Tower
+name: Launch Job - Ansible Automation Platform
 description: Generic polling playbook to launch a specific job template. Returns the
   job status when the job finishes running.
 starttaskid: "0"
@@ -41,7 +41,7 @@ tasks:
     task:
       id: 53c43873-5710-43ad-81bf-81963629ccf6
       version: -1
-      name: is Ansible Tower enabled?
+      name: is Ansible Automation Controller enabled?
       description: ''
       type: condition
       iscommand: false
@@ -382,18 +382,6 @@ inputs:
     simple: "true"
   required: false
   description: Print output from the job that is running.
-  playbookInputQuery: null
-- key: Interval
-  value:
-    simple: "1"
-  required: false
-  description: Polling frequency - how often the polling command should run (in minutes)
-  playbookInputQuery: null
-- key: Timeout
-  value:
-    simple: "15"
-  required: false
-  description: How much time (in minutes) to wait before a timeout occurs.
   playbookInputQuery: null
 - key: return_job_events
   value:

@@ -1,9 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """Cortex XSOAR Integration for Expanse Expander and Behavior
 
 """
 
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import urllib3
@@ -80,7 +80,10 @@ TAGGABLE_ASSET_TYPE_MAP = {
     'Domain': 'domains',
     'Certificate': 'certificates',
     'CloudResource': 'cloud-resources',
-    'IpRange': 'ip-range'
+    'IpRange': 'ip-range',
+    'ResponsiveIP': 'responsive-ip',
+    'Network': 'network',
+    'Device': 'device'
 }
 
 ASSET_TAG_OPERATIONS = ['ASSIGN', 'UNASSIGN']
@@ -241,7 +244,7 @@ class Client(BaseClient):
             'cloudManagementStatus': cloud_management_status if cloud_management_status else None,
             'sort': sort
         }
-
+        demisto.debug(f"ExpanseV2 - Query sent to the server: {params}")
         return self._paginate(
             method='GET', url_suffix="/v1/issues/issues", params=params
         )
@@ -383,34 +386,57 @@ class Client(BaseClient):
 
     def manage_asset_tags(self, asset_type: str, operation_type: str, asset_id: str,
                           tag_ids: List[str]) -> Dict[str, Any]:
-        endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
+        # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
+        if asset_type == "ip-range":
+            tag_url = f'/v2/{asset_type}/tag-assignments/bulk'
+            data = {"operations": [{
+                'operationType': operation_type,
+                'tagIds': tag_ids,
+                'assetId': asset_id
+            }]}
 
-        data: Dict = {"operations": [{
-            'operationType': operation_type,
-            'tagIds': tag_ids,
-            'assetId': asset_id
+        else:
+            tag_url = '/v3/assets/assets/annotations'
+            data = {"operations": [
+                {
+                    "operationType": operation_type,
+                    "annotationType": "TAG",
+                    "annotationIds": tag_ids,
+                    "assetId": asset_id
+                }]}
 
-        }]}
         return self._http_request(
             method='POST',
-            url_suffix=f'/v2/{endpoint_base}/tag-assignments/bulk',
+            url_suffix=tag_url,
             json_data=data,
             retries=3
         )
 
     def manage_asset_pocs(self, asset_type: str, operation_type: str, asset_id: str, poc_ids: List[str]) -> Dict[str, Any]:
-        endpoint_base = asset_type if asset_type == "ip-range" else f"assets/{asset_type}"
+        # Only custom ranges need to use the v2 APIs, otherwise we should always use v3
+        if asset_type == "ip-range":
+            poc_url = f'/v2/{asset_type}/contact-assignments/bulk'
+            data = {"operations": [{
+                'operationType': operation_type,
+                'contactIds': poc_ids,
+                'assetId': asset_id
+            }]}
 
-        data: Dict = {"operations": [{
-            'operationType': operation_type,
-            'contactIds': poc_ids,
-            'assetId': asset_id
+        else:
+            poc_url = '/v3/assets/assets/annotations'
+            data = {"operations": [
+                {
+                    "operationType": operation_type,
+                    "annotationType": "CONTACT",
+                    "annotationIds": poc_ids,
+                    "assetId": asset_id
+                }]}
 
-        }]}
         return self._http_request(
             method='POST',
-            url_suffix=f'/v2/{endpoint_base}/contact-assignments/bulk',
-            json_data=data
+            url_suffix=poc_url,
+            json_data=data,
+            retries=3
         )
 
     def update_issue(self, issue_id: str, update_type: str, value: str) -> Dict[str, Any]:
@@ -585,8 +611,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName']
-                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
+                        ml_feature_list.extend({r['formattedName']
+                                                for r in re if 'formattedName' in r})  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
@@ -683,7 +709,7 @@ def range_to_cidrs(start: str, end: str) -> Iterator[str]:
         raise ValueError(f'Invalid IP address in range: {str(e)}')
 
 
-def check_int(arg: Any, arg_name: str, min_val: int = None, max_val: int = None,
+def check_int(arg: Any, arg_name: str, min_val: int | None = None, max_val: int | None = None,
               required: bool = False) -> Optional[int]:
     """Converts a string argument to a Python int
     This function is used to quickly validate an argument provided and convert
@@ -1380,7 +1406,7 @@ def fetch_incidents(client: Client, max_incidents: int,
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
     :rtype: ``Tuple[Dict[str, Union[Optional[int], Optional[str]]], List[dict]]``
     """
-
+    demisto.debug(f"ExpanseV2 - Last run: {json.dumps(last_run)}")
     last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         last_fetch = cast(int, first_fetch)
@@ -1423,7 +1449,6 @@ def fetch_incidents(client: Client, max_incidents: int,
         issue_type=issue_types, cloud_management_status=_cloud_management_status,
         created_after=created_after, sort='created'
     )
-
     broken = False
     issues: List = []
     skip = cast(str, last_issue_id)
@@ -1444,7 +1469,8 @@ def fetch_incidents(client: Client, max_incidents: int,
             issues.append(i)
         if len(issues) == max_incidents:
             break
-
+    demisto.debug(f"ExpanseV2 - Number of incidents before filtering: {len(issues)}")
+    skip_incidents = 0
     for issue in issues:
         ml_feature_list: List[str] = []
 
@@ -1454,6 +1480,9 @@ def fetch_incidents(client: Client, max_incidents: int,
 
         if last_fetch:
             if incident_created_time < last_fetch:
+                skip_incidents += 1
+                demisto.debug(f"ExpanseV2 - Skipping incident with id={issue.get('id')} and date={incident_created_time} "
+                              "because its creation time is smaller than the last fetch.")
                 continue
         incident_name = issue.get('headline') if 'headline' in issue else issue.get('id')
 
@@ -1505,6 +1534,11 @@ def fetch_incidents(client: Client, max_incidents: int,
     next_run = {
         'last_fetch': latest_created_time,
         'last_issue_id': latest_issue_id if latest_issue_id else last_issue_id}
+
+    demisto.debug(f"ExpanseV2 - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"ExpanseV2 - Number of incidents skipped: {skip_incidents}")
+    demisto.debug(f"ExpanseV2 - Next run after incidents fetching: : {json.dumps(next_run)}")
+
     return next_run, incidents
 
 
@@ -2474,11 +2508,11 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 
 def list_risk_rules_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def get_risky_flows_command(client: Client, args: Dict[str, Any]):
-    raise DeprecatedCommandException()
+    raise DeprecatedCommandException
 
 
 def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
