@@ -1863,7 +1863,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                   "C:\\Users\\administrator.ENV4\\Downloads\\8866115678\\example.exe"
                 ],
                 "actor_process_image_sha256": [
-                  "N/A"
+                  "7734984082dfe13fas24264ad1c2cdc79180db273fa196bd3d2e48915d9d1e4b"
                 ],
                 "actor_process_instance_id": [
                   "AdkwzkxP2AYAAB/YAAAAAA=="
