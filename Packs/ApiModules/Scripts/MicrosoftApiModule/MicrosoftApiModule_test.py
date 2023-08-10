@@ -733,7 +733,6 @@ def test_generate_login_url():
 
 
 def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
-    # client = self_deployed_client(grant_type=AUTHORIZATION_CODE)
     context = {'auth_code': AUTH_CODE, 'access_token': TOKEN,
                'valid_until': 3605, 'current_refresh_token': REFRESH_TOKEN}
 
