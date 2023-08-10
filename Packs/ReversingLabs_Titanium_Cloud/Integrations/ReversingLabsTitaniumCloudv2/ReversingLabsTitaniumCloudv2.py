@@ -6,13 +6,72 @@ from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, 
 from ReversingLabs.SDK.helper import NotFoundError
 
 
-VERSION = "v2.2.0"
+VERSION = "v2.3.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")
 USERNAME = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD = demisto.params().get("credentials", {}).get("password")
 RELIABILITY = demisto.params().get("reliability", "C - Fairly reliable")
+
+HTTP_PROXY = demisto.params().get("http_proxy", None)
+HTTP_PROXY_USERNAME = demisto.params().get("http_proxy_username", None)
+HTTP_PROXY_PASSWORD = demisto.params().get("http_proxy_password", None)
+
+HTTPS_PROXY = demisto.params().get("https_proxy", None)
+HTTPS_PROXY_USERNAME = demisto.params().get("https_proxy_username", None)
+HTTPS_PROXY_PASSWORD = demisto.params().get("https_proxy_password", None)
+
+
+def format_proxy(addr, username=None, password=None):
+    if addr.startswith("http://"):
+        protocol = addr[:7]
+        proxy_name = addr[7:]
+    elif addr.startswith("https://"):
+        protocol = addr[:8]
+        proxy_name = addr[8:]
+    else:
+        return_error("Proxy address needs to start with either 'http://' or 'https://'")
+
+    if username:
+        if password:
+            proxy = f"{protocol}{username}:{password}@{proxy_name}"
+        else:
+            proxy = f"{protocol}{username}@{proxy_name}"
+    else:
+        proxy = f"{protocol}{proxy_name}"
+
+    return proxy
+
+
+def return_proxies():
+    proxies = {}
+
+    if HTTP_PROXY:
+        http_proxy = format_proxy(
+            addr=HTTP_PROXY,
+            username=HTTP_PROXY_USERNAME,
+            password=HTTP_PROXY_PASSWORD
+        )
+
+        proxies["http"] = http_proxy
+
+    if HTTPS_PROXY:
+        https_proxy = format_proxy(
+            addr=HTTPS_PROXY,
+            username=HTTPS_PROXY_USERNAME,
+            password=HTTPS_PROXY_PASSWORD
+        )
+
+        proxies["https"] = https_proxy
+
+    if proxies:
+        return proxies
+    else:
+        return None
+
+
+PROXIES = return_proxies()
 
 
 def classification_to_score(classification):
@@ -29,7 +88,8 @@ def test_module_command():
     mwp = FileReputation(
         host=TICLOUD_URL,
         username=USERNAME,
-        password=PASSWORD
+        password=PASSWORD,
+        proxies=PROXIES
     )
 
     try:
@@ -46,7 +106,8 @@ def file_reputation_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     hash_value = demisto.getArg("hash")
@@ -132,7 +193,8 @@ def av_scanners_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
     hash_value = demisto.getArg("hash")
 
@@ -215,7 +277,8 @@ def file_analysis_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
     hash_value = demisto.getArg("hash")
 
@@ -302,7 +365,8 @@ def functional_similarity_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
     hash_value = demisto.getArg("hash")
     limit = demisto.getArg("result_limit")
@@ -338,7 +402,8 @@ def rha1_analytics_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
     hash_value = demisto.getArg("hash")
 
@@ -420,7 +485,8 @@ def uri_statistics_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
     uri = demisto.getArg("uri")
 
@@ -517,7 +583,8 @@ def uri_index_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     uri = demisto.getArg("uri")
@@ -554,7 +621,8 @@ def advanced_search_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     query = demisto.getArg("query")
@@ -591,7 +659,8 @@ def expression_search_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     query = demisto.getArg("query")
@@ -634,7 +703,8 @@ def file_download_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     hash_value = demisto.getArg("hash")
@@ -664,7 +734,8 @@ def file_upload_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     file_entry = demisto.getFilePath(demisto.getArg("entryId"))
@@ -685,7 +756,8 @@ def url_report_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     url = demisto.getArg("url")
@@ -779,7 +851,8 @@ def analyze_url_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     url = demisto.getArg("url")
@@ -816,7 +889,8 @@ def detonate_sample_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     sha1 = demisto.getArg("sha1")
@@ -854,7 +928,8 @@ def dynamic_analysis_results_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     sha1 = demisto.getArg("sha1")
@@ -905,7 +980,8 @@ def certificate_analytics_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     thumbprint = demisto.getArg("certificate_thumbprint")
@@ -943,7 +1019,8 @@ def yara_ruleset_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     yara_action = demisto.getArg("yara_action")
@@ -1026,7 +1103,8 @@ def yara_matches_feed_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     time_format = demisto.getArg("time_format")
@@ -1073,7 +1151,8 @@ def yara_retro_actions_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     retro_action = demisto.getArg("yara_retro_action")
@@ -1136,7 +1215,8 @@ def yara_retro_matches_feed_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     time_format = demisto.getArg("time_format")
@@ -1183,7 +1263,8 @@ def reanalyze_sample_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     sample_hash = demisto.getArg("hash")
@@ -1215,7 +1296,8 @@ def imphash_similarity_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     imphash = demisto.getArg("imphash")
@@ -1252,7 +1334,8 @@ def url_downloaded_files_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     url = demisto.getArg("url")
@@ -1304,7 +1387,8 @@ def url_latest_analyses_feed_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     results_per_page = int(demisto.getArg("results_per_page"))
@@ -1351,7 +1435,8 @@ def url_analyses_feed_from_date_command():
         host=TICLOUD_URL,
         username=USERNAME,
         password=PASSWORD,
-        user_agent=USER_AGENT
+        user_agent=USER_AGENT,
+        proxies=PROXIES
     )
 
     time_format = demisto.getArg("time_format")
