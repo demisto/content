@@ -1206,7 +1206,7 @@ def test_auth_code_command(client: MsGraphClient, args):
     for permission in map(lambda x: x.strip(), permissions.split(',')):
         try:
             demisto.debug(f'checking permission {permission}')
-            match permissions:
+            match permission:
                 case 'ediscovery':
                     list_ediscovery_case_command(client, {})
                 case 'alerts':
