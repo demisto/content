@@ -525,11 +525,25 @@ def test_list_ediscovery_search_command(mocker):
 
 @pytest.mark.parametrize('command_to_check', ['all', 'ediscovery', 'alerts'])
 def test_test_auth_code_command(mocker, command_to_check):
+    """
+    Given
+        a permission set to test
+    When
+        Calling test_auth_code_command
+
+    Then
+        The proper permissions are called
+
+    """
     from MicrosoftGraphSecurity import test_auth_code_command
 
     mock_ediscovery = mocker.patch.object(client_mocker, "list_ediscovery_cases", return_value=load_json("./test_data/list_cases_response.json"))
     mock_alerts = mocker.patch('MicrosoftGraphSecurity.test_function')
     test_auth_code_command(client_mocker, {'permission_type' : command_to_check})
 
-    assert command_to_check not in ('ediscovery', 'all') or mock_ediscovery.call_args
-    assert command_to_check not in ('alerts', 'all') or mock_alerts.call_args
+    if command_to_check == 'alerts':
+        assert not mock_ediscovery.called and mock_alerts.called
+    elif command_to_check == 'any':
+        assert mock_ediscovery.called and mock_alerts.called
+    elif command_to_check == 'ediscovery':
+        assert mock_ediscovery.called and not mock_alerts.called
