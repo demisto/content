@@ -135,16 +135,22 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      archive_password: {}
-      document_password: {}
+      archive_password:
+        simple: ${inputs.archive_password}
+      document_password:
+        simple: ${inputs.document_password}
       entry_id:
         simple: ${inputs.File.EntryID}
       file_id:
         simple: ${File.EntryID}
-      max_jobs: {}
-      sample_type: {}
-      shareable: {}
-      tags: {}
+      max_jobs:
+        simple: ${inputs.max_jobs}
+      sample_type:
+        simple: ${inputs.sample_type}
+      shareable:
+        simple: ${inputs.shareable}
+      tags:
+        simple: ${inputs.tags}
     separatecontext: false
     view: |-
       {
