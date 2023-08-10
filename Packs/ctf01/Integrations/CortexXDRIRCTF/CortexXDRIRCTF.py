@@ -1863,7 +1863,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                   "C:\\Users\\administrator.ENV4\\Downloads\\8866115678\\example.exe"
                 ],
                 "actor_process_image_sha256": [
-                  "7734984082dfee605324264ad1c2cdc79180db273fa196bd3d2e48915d9d1e4b"
+                  "N/A"
                 ],
                 "actor_process_instance_id": [
                   "AdkwzkxP2AYAAB/YAAAAAA=="
@@ -2734,7 +2734,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                   "C:\\Users\\administrator.ENV4\\Downloads\\8872230438\\wanmgr.exe"
                 ],
                 "actor_process_image_sha256": [
-                  "0000028f80066ad99544cc7a79caa649ee72eca2711b1b1128df61ffd13b0657"
+                  "000001e7a228b2a7abdf7f7e3313324332b725e86907dde32176bddbbbb27"
                 ],
                 "actor_process_instance_id": [
                   "Adkwy9zWJhIAAA1sAAAAAA=="
@@ -3031,7 +3031,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                     "C:\\Users\\administrator.ENV4\\Downloads\\8872230438\\wanmgr.exe"
                   ],
                   "actor_process_image_sha256": [
-                    "0000028f80066ad99544cc7a79caa649ee72eca2711b1b1128df61ffd13b0657"
+                    "000001e7a228b2a7abdf7f7e3313324332b725e86907dde32176bddbbbb27"
                   ],
                   "actor_process_os_pid": [
                     3436
@@ -3680,20 +3680,20 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                 ],
                 "actor_process_causality_id": None,
                 "actor_process_command_line": [
-                  "\"C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27.exe\" "
+                  "\"C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdfa4b3c8522df32b725e86907dde32176bccbbbb27.exe\" "
                 ],
                 "actor_process_execution_time": None,
                 "actor_process_image_md5": [
                   "e9aaa45159dacbc596ebefb6311eae54"
                 ],
                 "actor_process_image_name": [
-                  "000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27.exe"
+                  "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
                 ],
                 "actor_process_image_path": [
-                  "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27.exe"
+                  "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
                 ],
                 "actor_process_image_sha256": [
-                  "000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27"
+                  "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27"
                 ],
                 "actor_process_instance_id": [
                   "AdkwxLhiKM4AABJsAAAAAA=="
@@ -3978,19 +3978,19 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                     "env4.local\\Administrator"
                   ],
                   "actor_process_command_line": [
-                    "\"C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27.exe\" "
+                    "\"C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe\" "
                   ],
                   "actor_process_image_md5": [
                     "e9aaa45159dacbc596ebefb6311eae54"
                   ],
                   "actor_process_image_name": [
-                    "000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27.exe"
+                    "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
                   ],
                   "actor_process_image_path": [
-                    "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27.exe"
+                    "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
                   ],
                   "actor_process_image_sha256": [
-                    "000001e7a228b2a7abdf7f7e404bc8522df32b725e86907dde32176bccbbbb27"
+                    "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27"
                   ],
                   "actor_process_os_pid": [
                     4716
@@ -4652,7 +4652,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                   "C:\\Users\\administrator.ENV4\\Downloads\\8872230438\\wanmgr.exe"
                 ],
                 "actor_process_image_sha256": [
-                  "0000028f80066ad99544cc7a79caa649ee72eca2711b1b1128df61ffd13b0657"
+                  "000001e7a228b2a7abdf7f7e3313324332b725e86907dde32176bddbbbb27"
                 ],
                 "actor_process_instance_id": [
                   "AdkwsQxs4pMAAB9YAAAAAA=="
@@ -4949,7 +4949,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                     "C:\\Users\\administrator.ENV4\\Downloads\\8872230438\\wanmgr.exe"
                   ],
                   "actor_process_image_sha256": [
-                    "0000028f80066ad99544cc7a79caa649ee72eca2711b1b1128df61ffd13b0657"
+                    "000001e7a228b2a7abdf7f7e3313324332b725e86907dde32176bddbbbb27"
                   ],
                   "actor_process_os_pid": [
                     8024
