@@ -5,13 +5,13 @@ import re
 from CommonServerUserPython import *
 
 '''IMPORTS'''
-from typing import List
 from datetime import datetime
 import json
 import requests
 import warnings
 from dateutil.parser import parse
 import urllib3
+import arrow
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,6 +27,7 @@ else:
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
+DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
@@ -63,11 +64,42 @@ MAP_LABELS = param.get('map_labels', True)
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-def convert_date_to_timestamp(date):
+def prepare_datetime_format(datetime_format: str):
+    """Converting the format from ES to Python so that the Arrow format function will format it correctly.
+
+    Args:
+        datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'. see here for more examples:
+        https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
+
+    Returns:
+        A datetime format in python from 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
+    """
+    return datetime_format.replace('yy', 'YY').replace('dd', 'DD')
+
+
+def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
+    """Returns the datetime format of a field in an index.
+
+    Args:
+        es: An ES object.
+        index: The index from which to return the mapper.
+        field: The field from which to return the format.
+
+    Returns:
+        String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
+    """
+    mapping = es.indices.get_mapping(index=index)
+    datetime_field = demisto.get(mapping, f'{index}.mappings.properties.{field}', {})
+
+    return datetime_field.get('format', DEFAULT_DATETIME_FORMAT)
+
+
+def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORMAT):
     """converts datetime to the relevant timestamp format.
 
     Args:
         date(datetime): A datetime object setting up the last fetch time
+        datetime_format(str): The datetime format
 
     Returns:
         (num).The formatted timestamp
@@ -79,8 +111,11 @@ def convert_date_to_timestamp(date):
     if TIME_METHOD == 'Timestamp-Seconds':
         return int(date.timestamp())
 
-    else:  # this case includes "Timestamp-Milliseconds"
+    if TIME_METHOD == 'Timestamp-Milliseconds':
         return int(date.timestamp() * 1000)
+
+    # In case of 'Simple-Date'.
+    return arrow.get(date).format(prepare_datetime_format(datetime_format))
 
 
 def timestamp_to_date(timestamp_string):
@@ -111,8 +146,8 @@ def get_api_key_header_val(api_key):
     <https://www.elastic.co/guide/en/elasticsearch/reference/current/security-api-create-api-key.html>`
     :arg api_key, either a tuple or a base64 encoded string
     """
-    if isinstance(api_key, (tuple, list)):
-        s = "{0}:{1}".format(api_key[0], api_key[1]).encode('utf-8')
+    if isinstance(api_key, tuple | list):
+        s = f"{api_key[0]}:{api_key[1]}".encode()
         return "ApiKey " + base64.b64encode(s).decode('utf-8')
     return "ApiKey " + api_key
 
@@ -157,7 +192,7 @@ def get_hit_table(hit):
     }
     headers = ['_index', '_id', '_type', '_score']
     if hit.get('_source') is not None:
-        for source_field in hit.get('_source').keys():
+        for source_field in hit.get('_source'):
             table_context[str(source_field)] = hit.get('_source').get(str(source_field))
             headers.append(source_field)
 
@@ -244,7 +279,7 @@ def search_command(proxies):
     index = demisto.args().get('index')
     query = demisto.args().get('query')
     fields = demisto.args().get('fields')  # fields to display
-    explain = 'true' == demisto.args().get('explain')
+    explain = demisto.args().get('explain', 'false').lower() == 'true'
     base_page = int(demisto.args().get('page'))
     size = int(demisto.args().get('size'))
     sort_field = demisto.args().get('sort-field')
@@ -261,7 +296,9 @@ def search_command(proxies):
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
-                                         time_field=timestamp_field)
+                                         time_field=timestamp_field,
+                                         datetime_format=get_datetime_field_format(es, index, timestamp_field),
+                                         )
 
     if query_dsl:
         response = execute_raw_query(es, query_dsl, index, size, base_page)
@@ -371,7 +408,7 @@ def test_time_field_query(es):
 
     if total_results == 0:
         # failed in getting the TIME_FIELD
-        return_error("Fetch incidents test failed.\nDate field value incorrect [{}].".format(TIME_FIELD))
+        return_error(f"Fetch incidents test failed.\nDate field value incorrect [{TIME_FIELD}].")
 
     else:
         return response
@@ -454,7 +491,7 @@ def test_func(proxies):
 
                 else:
                     # if it is unknown error - get the message from the error itself
-                    return_error("Failed to connect. The following error occurred: {}".format(str(e)))
+                    return_error(f"Failed to connect. The following error occurred: {e}")
 
     except requests.exceptions.RequestException as e:
         return_error("Failed to connect. Check Server URL field and port number.\nError message: " + str(e))
@@ -636,7 +673,7 @@ def format_to_iso(date_string):
 
 
 def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME,
-                   time_range_end=None, time_field=TIME_FIELD) -> Dict:
+                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = DEFAULT_DATETIME_FORMAT) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
@@ -646,10 +683,11 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     Args:
 
         last_fetch (str): last fetch time stamp
-        fetch_time (str): first fetch time
         time_range_start (str): start of time range
         time_range_end (str): end of time range
-        time_field ():
+        time_field (str): The field on which the filter the results
+        datetime_format: (str) The datetime format
+
 
     Returns:
         dictionary (Ex. {"range":{'gt': 1000 'lt':1001}})
@@ -658,7 +696,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
 
-        start_time = convert_date_to_timestamp(start_date)
+        start_time = convert_date_to_timestamp(start_date, datetime_format)
     else:
         start_time = last_fetch
 
@@ -667,7 +705,7 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        end_time = convert_date_to_timestamp(end_date)
+        end_time = convert_date_to_timestamp(end_date, datetime_format)
         range_dict['lt'] = end_time
 
     return {'range': {time_field: range_dict}}
@@ -693,8 +731,8 @@ def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time') or FETCH_TIME
 
-    time_range_dict = get_time_range(time_range_start=last_fetch)
     es = elasticsearch_builder(proxies)
+    time_range_dict = get_time_range(time_range_start=last_fetch, datetime_format=get_datetime_field_format(es))
 
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
@@ -717,7 +755,7 @@ def fetch_incidents(proxies):
             incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
             demisto.setLastRun({'time': str(last_fetch)})
 
-        demisto.info('extract {} incidents'.format(len(incidents)))
+        demisto.info(f'extracted {len(incidents)} incidents')
     demisto.incidents(incidents)
 
 
@@ -832,7 +870,7 @@ def main():
     proxies = handle_proxy()
     proxies = proxies if proxies else None
     try:
-        LOG('command is %s' % (demisto.command(),))
+        LOG(f'command is {demisto.command()}')
         if demisto.command() == 'test-module':
             test_func(proxies)
         elif demisto.command() == 'fetch-incidents':
@@ -848,7 +886,7 @@ def main():
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
                          'Please try using the Open Search client in the instance configuration.'
                          '\nError message: {}'.format(demisto.command(), str(e)), error=e)
-        return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
+        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=e)
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
