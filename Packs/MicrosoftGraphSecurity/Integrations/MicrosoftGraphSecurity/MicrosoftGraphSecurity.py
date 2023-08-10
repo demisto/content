@@ -1134,8 +1134,6 @@ def list_ediscovery_custodian_site_sources_command(client: MsGraphClient, args):
 
 
 def list_ediscovery_non_custodial_data_source_command(client: MsGraphClient, args):
-    """
-    """
     raw_res = client.list_ediscovery_noncustodial_datasources(args.get('case_id'), args.get('data_source_id'))
     if source_list := raw_res.get('value'):
         demisto.info(f'returned {len(source_list)} results from the api')
