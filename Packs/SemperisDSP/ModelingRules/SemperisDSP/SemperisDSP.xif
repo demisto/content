@@ -10,7 +10,7 @@ filter _raw_log ~= "\[OperationLog\@"
 	xdm.event.type = arraystring(regextract(_raw_log, "\[OperationLog\@"), ""),
     xdm.source.ipv4 = src_ip_v4,
     xdm.source.ipv6 = src_ip_v6,
-    xdm.event.outcome = if(get_outcome ~= "success", XDM_CONST.OUTCOME_SUCCESS, get_outcome ~= "access denied", XDM_CONST.OUTCOME_FAILED, get_outcome ~= "error", XDM_CONST.OUTCOME_PARTIAL, to_string(get_outcome)),
+    xdm.event.outcome = if(get_outcome ~= "[s|S]uccess", XDM_CONST.OUTCOME_SUCCESS, get_outcome ~= "[a|A]ccess denied", XDM_CONST.OUTCOME_FAILED, get_outcome ~= "[E|e]rror", XDM_CONST.OUTCOME_PARTIAL, to_string(get_outcome)),
     xdm.event.outcome_reason = get_outcome,
     xdm.event.original_event_type = arraystring(regextract(_raw_log, "\[OperationType\]\s+([^\[]+)\s"), ""),
     xdm.event.operation_sub_type = arraystring(regextract(_raw_log, "\[RequestedAction\]\s+([^\[]+)\s"), ""),
