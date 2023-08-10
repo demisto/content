@@ -70,7 +70,6 @@ def self_deployed_client(grant_type=CLIENT_CREDENTIALS):
     client_secret = CLIENT_SECRET
     base_url = BASE_URL
     auth_code = AUTH_CODE if grant_type == AUTHORIZATION_CODE else None
-    redirect_uri = REDIRECT_URI if grant_type == AUTHORIZATION_CODE else None
     resource = RESOURCE
     ok_codes = OK_CODES
 
