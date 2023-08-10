@@ -4,3 +4,5 @@ ignore=RM106
 [file:Polygon_image.png]
 ignore=IM111
 
+[known_words]
+THF
