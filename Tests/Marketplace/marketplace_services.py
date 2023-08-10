@@ -1215,14 +1215,13 @@ class Pack:
                 zip_to_upload_full_path = overridden_upload_path
             else:
                 version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-                existing_files = [Path(f.name).name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
                 if override_pack:
                     logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
                                     f"files already in storage.")
 
-                elif existing_files:
-                    logging.warning(f"The following packs already exist in the storage: {', '.join(existing_files)}")
+                else:
+                    logging.warning(f"The following packs were not modified: {self._pack_name}")
                     logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                     return task_status, True, None
 
