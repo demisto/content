@@ -2,3 +2,8 @@
 
 Recommended playbook to use to upload file for analysis and get report:
 Detonate File - FortiSandbox
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***fortisandbox-url-rating***
+- ***fortisandbox-upload-urls***
+See the vendor’s documentation for more details.

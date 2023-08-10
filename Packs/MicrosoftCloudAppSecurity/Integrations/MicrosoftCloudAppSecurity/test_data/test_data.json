@@ -16,7 +16,7 @@
     ],
     "comment": "null",
     "contextId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
-    "description": "File policy 'block png files' was matched by 'image (2).png'",
+    "description": "File policy 'block png files' siteIcon was matched by 'image (2).png'",
     "file": [
       {
         "id": "d10230e2-52db-4ec8-815b-c5484524d078|501f6179-e6f9-457c-9892-1590dee07ede",
@@ -103,7 +103,7 @@
       }
     ],
     "title": "block png files",
-    "description": "File policy 'block png files' was matched by 'image (2).png'",
+    "description": "File policy 'block png files' __siteIcon__ was matched by 'image (2).png'",
     "stories": [
       0
     ],
@@ -510,7 +510,7 @@
     "severity": "INFO"
   },
   "FILES_BY_ID_DATA": {
-    "_id": "5f077ebfc3b664209dae1f6b",
+    "_id": "5f077e6fc3b664209dae1f6b",
     "_tid": 97134000,
     "appId": 15600,
     "id": "cac4b654-5fcf-44f0-818e-479cf8ae42ac|56aa5551-0c4c-42d7-93f1-57ccdca766aa",
@@ -606,7 +606,7 @@
     "name_l": "20200325_104025.jpg.txt",
     "snapshotLastModifiedDate": "2020-07-09T22:15:39.820Z",
     "ownerName": "Avishai Brandeis",
-    "originalId": "5f077ebfc3b664209dae1f6b",
+    "originalId": "5f077e6fc3b664209dae1f6b",
     "dlpScanResults": [],
     "fTags": [],
     "enriched": true,
@@ -687,7 +687,7 @@
     "fileTypeDisplay": "File"
   },
   "FILES_BY_ID_DATA_CONTEXT": {
-    "_id": "5f077ebfc3b664209dae1f6b",
+    "_id": "5f077e6fc3b664209dae1f6b",
     "_tid": 97134000,
     "appId": 15600,
     "id": "cac4b654-5fcf-44f0-818e-479cf8ae42ac|56aa5551-0c4c-42d7-93f1-57ccdca766aa",
@@ -774,7 +774,7 @@
     "name_l": "20200325_104025.jpg.txt",
     "snapshotLastModifiedDate": "2020-07-09T22:15:39.820Z",
     "ownerName": "Avishai Brandeis",
-    "originalId": "5f077ebfc3b664209dae1f6b",
+    "originalId": "5f077e6fc3b664209dae1f6b",
     "dlpScanResults": [],
     "fTags": [],
     "enriched": true,

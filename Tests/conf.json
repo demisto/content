@@ -3785,7 +3785,8 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout": 600
+            "timeout": 600,
+            "is_mockable": false
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -5377,6 +5378,11 @@
             "integrations": "Skyhigh Security",
             "playbookID": "Skyhigh Security Test Play Book",
             "fromversion": "6.5.0"
+        },
+        {
+            "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.1"
         },
         {
             "integrations": "Secneurx Analysis",
