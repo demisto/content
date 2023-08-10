@@ -20,7 +20,7 @@ Open your Semperis DSP UI and follow these instructions:
 
 * Pay attention:
   
-  * This is a beta Modeling Rule, which lets you process Semperis log fields to XDM fields. 
+  * This pack contains a beta Modeling Rule, which lets you process Semperis log fields to XDM fields. 
     Since the Modeling Rule is considered as beta, it might not contain some of the fields that are available from the logs. 
     We appreciate your feedback on the quality and usability of the Modeling Rule to help us identify issues, fix them, and continually improve.
 
