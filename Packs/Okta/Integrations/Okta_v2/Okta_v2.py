@@ -70,6 +70,7 @@ class Client(BaseClient):
         )
         if res and len(res) == 1:
             return res[0].get('id')
+        return None
 
     def get_app_id(self, app_name):
         uri = 'apps'
@@ -83,6 +84,7 @@ class Client(BaseClient):
         )
         if res and len(res) == 1:
             return res[0].get('id')
+        return None
 
     # Getting User Id with a given username
     def get_user_id(self, username):
@@ -293,7 +295,7 @@ class Client(BaseClient):
                 full_url=url,
                 url_suffix=''
             )
-            if not response.get('factorResult') == 'WAITING':
+            if response.get('factorResult') != 'WAITING':
                 return response
             counter += 1
             time.sleep(5)
@@ -921,9 +923,15 @@ def get_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
         raise Exception("You must supply either 'Username' or 'userId")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
-    raw_response = client.get_user(user_term)
+    try:
+        raw_response = client.get_user(user_term)
+    except Exception as e:
+        # According to https://developer.okta.com/docs/reference/api/users/#response-parameters-2
+        if "E0000007" in str(e):
+            return 'No user found in Okta', {}, {}
+        else:
+            raise e
     verbose = args.get('verbose')
-
     user_context = client.get_users_context(raw_response)
     user_readable = client.get_readable_users(raw_response, verbose)
     outputs = {
@@ -1396,10 +1404,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        if "E0000007" in str(e):
-            return_outputs(readable_output="User does not exist", outputs={}, raw_response="User does not exist")
-        else:
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
