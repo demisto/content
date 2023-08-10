@@ -5,19 +5,19 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
+    taskid: cce5c0b6-d002-46e7-8ec6-ec50bc150e19
     type: start
     task:
-      id: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
+      id: cce5c0b6-d002-46e7-8ec6-ec50bc150e19
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -26,7 +26,6 @@ tasks:
         }
       }
     note: false
-    continueonerrortype: ""
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -35,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
+    taskid: 663f0dbb-894b-4073-87ff-a5e77c43a162
     type: regular
     task:
-      id: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
+      id: 663f0dbb-894b-4073-87ff-a5e77c43a162
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -53,15 +52,15 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 175
+          "y": 195
         }
       }
     note: false
-    continueonerrortype: ""
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -70,23 +69,39 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
+    taskid: facabc59-d0bb-464f-8745-62ffcac89667
     type: playbook
     task:
-      id: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
+      id: facabc59-d0bb-464f-8745-62ffcac89667
       version: -1
       name: Tenable.io Scan
+      description: Run a Tenable.io scan
       playbookName: Tenable.io Scan
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     scriptarguments:
-      retry-count:
-        simple: "2"
       scan-id:
-        simple: "16"
+        complex:
+          root: TenableIO.Scan
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TenableIO.Scan.Status
+                iscontext: true
+              right:
+                value:
+                  simple: completed
+          accessor: Id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -96,11 +111,10 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 650
+          "y": 720
         }
       }
     note: false
-    continueonerrortype: ""
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -109,10 +123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6174091e-cfc1-4fc4-87ea-115a501e6c53
+    taskid: 49ba907d-1814-40b1-8d34-c27a4f488de1
     type: playbook
     task:
-      id: 6174091e-cfc1-4fc4-87ea-115a501e6c53
+      id: 49ba907d-1814-40b1-8d34-c27a4f488de1
       version: -1
       name: GenericPolling
       description: |-
@@ -133,16 +147,14 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: TenableIO.Scan.Id
-          filters:
-          - - operator: containsGeneral
-              left:
+          root: TenableIO.Scan
+          accessor: Id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
                 value:
-                  simple: TenableIO.Scan.Id
-                iscontext: true
-              right:
-                value:
-                  simple: "16"
+                  simple: "0"
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -152,7 +164,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: TenableIO.Scan(val.Status == 'pending' || val.Status == 'running' || val.Status == 'publishing').Id
+        simple: |
+          TenableIO.Scan(val.Status == 'pending' || val.Status == 'running' || val.Status == 'publishing').Id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -164,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 490
+          "y": 545
         }
       }
     note: false
@@ -176,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 906f1daf-f844-4d7c-884a-8892b71ca63e
+    taskid: 733425c5-96e1-4ddb-8cc1-f43fe6de828e
     type: regular
     task:
-      id: 906f1daf-f844-4d7c-884a-8892b71ca63e
+      id: 733425c5-96e1-4ddb-8cc1-f43fe6de828e
       version: -1
       name: 'tenable.io list scans '
       description: Retrieves scans from the Tenable platform.
@@ -196,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 340
+          "y": 370
         }
       }
     note: false
@@ -211,7 +224,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 695,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50
