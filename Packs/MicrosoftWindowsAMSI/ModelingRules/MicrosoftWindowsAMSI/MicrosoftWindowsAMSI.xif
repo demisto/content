@@ -1,0 +1,28 @@
+[MODEL: dataset = microsoft_amsi_raw]
+alter
+	get_originalsize = to_integer(json_extract_scalar(event_data ,"$.originalsize")),
+	get_contentsize = to_integer(json_extract_scalar(event_data ,"$.contentsize")),
+	get_scanResult = json_extract_scalar(event_data ,"$.scanResult")
+| alter
+	xdm.event.id = to_string(event_id),
+	xdm.observer.type = provider_name,
+	xdm.session_context_id = to_string(record_id),
+	xdm.source.host.os = os_subtype,
+	xdm.source.process.command_line = replex(process_cmd, "^\"|\"$", ""),
+	xdm.source.process.executable.md5 = process_md5,
+	xdm.source.process.executable.path = process_path,
+	xdm.source.process.executable.sha256 = process_sha256,
+	xdm.source.process.name = process_name,
+	xdm.source.process.pid = to_integer(process_pid),
+	xdm.source.process.thread_id = to_integer(process_thread_id),
+	xdm.source.user.identifier = json_extract_scalar(event_data ,"$.SubjectUserSid"),
+	xdm.event.log_level = if(log_level ~= "info", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level ~= "err", XDM_CONST.LOG_LEVEL_ERROR, log_level ~= "warn", XDM_CONST.LOG_LEVEL_WARNING, log_level="crit", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(opcode,log_level))),
+	xdm.source.application.name = json_extract_scalar(event_data ,"$.appname"),
+	xdm.event.description = message,
+	xdm.alert.description = json_extract_scalar(event_data ,"$.content"),
+	xdm.target.resource.name = json_extract_scalar(event_data ,"$.contentname"),
+	xdm.source.sent_bytes = coalesce(get_originalsize, get_contentsize),
+	xdm.target.module.sha256 = json_extract_scalar(event_data ,"$.hash"),
+	xdm.source.user.username = json_extract_scalar(event_data ,"$.SubjectUserName"),
+	xdm.event.outcome = if( get_scanResult = "0", XDM_CONST.OUTCOME_SUCCESS, get_scanResult = "1", XDM_CONST.OUTCOME_UNKNOWN, get_scanResult = "0x8000", XDM_CONST.OUTCOME_PARTIAL, get_scanResult = "0x4000", XDM_CONST.OUTCOME_FAILED, get_scanResult !~= "0x40{3}", XDM_CONST.OUTCOME_FAILED, null),
+	xdm.event.outcome_reason = if( get_scanResult = "0", "AMSI_RESULT_CLEAN", get_scanResult = "1", "AMSI_RESULT_NOT_DETECTED",  get_scanResult = "0x8000", "AMSI_RESULT_DETECTED", get_scanResult = "0x4000", "AMSI_RESULT_BLOCKED_BY_ADMIN_BEGIN", get_scanResult !~= "0x40{3}", "AMSI_RESULT_BLOCKED_BY_ADMIN_END", null);
