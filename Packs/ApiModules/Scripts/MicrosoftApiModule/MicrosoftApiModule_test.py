@@ -74,7 +74,7 @@ def self_deployed_client(grant_type=CLIENT_CREDENTIALS):
     ok_codes = OK_CODES
 
     return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
-                           grant_type=grant_type, auth_code=auth_code, redirect_uri=redirect_uri,
+                           grant_type=grant_type, auth_code=auth_code,
                            resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
