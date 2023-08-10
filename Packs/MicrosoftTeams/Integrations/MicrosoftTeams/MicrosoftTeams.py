@@ -133,7 +133,7 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
     try:
         response: dict = resp_err.json()
-        demisto.error(str(response))
+        demisto.debug(f"Error response from {api=}: {response=}")
         if api == 'graph':
 
             # AADSTS50173 points to password change https://login.microsoftonline.com/error?code=50173.
