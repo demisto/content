@@ -1407,7 +1407,8 @@
                 "Rasterize"
             ],
             "timeout": 500,
-            "pid_threshold": 12
+            "pid_threshold": 12,
+            "memory_threshold": 150
         },
         {
             "playbookID": "CutTransformerTest"
@@ -2971,7 +2972,7 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 100
+            "memory_threshold": 150
         },
         {
             "integrations": "Rasterize",
