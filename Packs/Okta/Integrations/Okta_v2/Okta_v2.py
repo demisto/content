@@ -929,8 +929,7 @@ def get_user_command(client, args):
         # According to https://developer.okta.com/docs/reference/api/users/#response-parameters-2
         if "E0000007" in str(e):
             return 'No user found in Okta', {}, {}
-        else:
-            raise e
+        raise
     verbose = args.get('verbose')
     user_context = client.get_users_context(raw_response)
     user_readable = client.get_readable_users(raw_response, verbose)
