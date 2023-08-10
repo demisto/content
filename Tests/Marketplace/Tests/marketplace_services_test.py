@@ -1975,6 +1975,44 @@ class TestImagesUpload:
                                                      GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
+    def test_upload_dynamic_dashboard_images(self, mocker, dummy_pack: Pack):
+        """
+        Given:
+            - Integration svg icon.
+        When:
+            - Uploading the svg image to the bucket.
+        Then:
+            - Ensure the pack was uploaded to the right path in the bucket.
+        """
+        mocker.patch.object(os.path, "isdir", return_value=True)
+        mocker.patch.object(glob, "glob", side_effect=[["Packs/TestPack/Integrations/IntegrationId/IntegrationId_image.svg"],
+                                                       ["Packs/TestPack/Integrations/IntegrationId/IntegrationId.yml"]])
+        mocker.patch("builtins.open", mock_open(read_data='{"commonfields": {"id": "Integration Id"}}'))
+
+        dummy_storage_bucket = mocker.MagicMock()
+        task_status = dummy_pack.upload_dynamic_dashboard_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH)
+
+        assert task_status
+        assert dummy_pack._uploaded_dynamic_dashboard_images == ['content/images/Integration Id.svg']
+
+    def test_copy_dynamic_dashboard_images(self, mocker, dummy_pack: Pack):
+        """
+        Given:
+            - Integration svg image in the build bucket.
+        When:
+            - Performing copy and upload of the dynamic dashboard images.
+        Then:
+            - Ensure that the build blob was copied successfully.
+        """
+        dummy_build_bucket = mocker.MagicMock()
+        dummy_prod_bucket = mocker.MagicMock()
+        blob_name = "content/images/Integration Id.svg"
+
+        images_data = {"TestPack": {BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES: [blob_name]}}
+        task_status = dummy_pack.copy_dynamic_dashboard_images(dummy_prod_bucket, dummy_build_bucket, images_data,
+                                                               GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+        assert task_status
+
     def test_copy_author_image(self, mocker, dummy_pack):
         """
            Given:
