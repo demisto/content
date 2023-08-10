@@ -11,16 +11,19 @@ configuration:
   name: app_id
   type: 0
   section: Connect
+  required: false
 - display: Default Subscription ID
   name: subscription_id
   type: 0
   section: Connect
   additionalinfo: This value can be overridden on a command basis.
+  required: false
 - display: Default Resource Group Name
   name: resource_group_name
   type: 0
   section: Connect
   additionalinfo: This value can be overridden on a command basis.
+  required: false
 - additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
@@ -36,17 +39,20 @@ configuration:
   name: tenant_id
   type: 0
   section: Connect
+  required: false
 - display: Client Secret (for authorization code mode)
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
   name: credentials
   type: 9
   section: Connect
+  required: false
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
@@ -54,12 +60,14 @@ configuration:
   name: auth_code
   type: 9
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -72,16 +80,19 @@ configuration:
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
 display: Azure SQL Management
 name: Azure SQL Management
@@ -91,7 +102,7 @@ script:
     name: azure-sql-auth-start
   - description: Run this command to complete the authorization process. Should be used after running the azure-sql-auth-start command.
     name: azure-sql-auth-complete
-  - description: Run this command if you need to rerun the authentication process.
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: azure-sql-auth-reset
   - description: Tests the connectivity to the Azure SQL Management.
     name: azure-sql-auth-test
@@ -640,7 +651,7 @@ script:
     - contextPath: AzureSQL.ResourceGroup.tags
       description: The tags attached to the resource group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.64970
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   subtype: python3

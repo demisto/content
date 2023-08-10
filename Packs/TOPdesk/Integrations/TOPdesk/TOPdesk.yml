@@ -14,21 +14,26 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
+  required: false
 - defaultvalue: 3 days
   display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
   display: The query to use when fetching incidents
   name: fetch_query
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Incident Mirroring Direction
   name: mirror_direction
   type: 15
@@ -41,6 +46,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  required: false
 - display: Comment Entry Tag
   name: comment_tag
   type: 0
@@ -48,6 +54,7 @@ configuration:
   defaultvalue: comments
   hidden:
   - marketplacev2
+  required: false
 - defaultvalue: work_notes
   display: Work Note Entry Tag
   name: work_notes_tag
@@ -55,6 +62,7 @@ configuration:
   additionalinfo: Choose the tag to add to an entry to mirror it as a hidden comment in TOPdesk for the persons.
   hidden:
   - marketplacev2
+  required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in TOPdesk.
   defaultvalue: ForTOPdesk
   display: File Entry Tag
@@ -62,6 +70,7 @@ configuration:
   - marketplacev2
   name: file_tag
   type: 0
+  required: false
 - additionalinfo: When selected, closing the TOPdesk ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored Cortex XSOAR Incident
@@ -69,6 +78,7 @@ configuration:
   - marketplacev2
   name: close_incident
   type: 8
+  required: false
 - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in TOPdesk.
   defaultvalue: 'false'
   display: Close Mirrored TOPdesk Ticket
@@ -76,16 +86,20 @@ configuration:
   - marketplacev2
   name: close_ticket
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 description: TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
 display: TOPdesk
 name: TOPdesk
@@ -5828,7 +5842,7 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   isfetch: true
   script: ''
   subtype: python3

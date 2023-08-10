@@ -34,7 +34,7 @@
       },
       "Resources": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "Compliance": {
         "type": "string",

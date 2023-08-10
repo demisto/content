@@ -6,9 +6,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: The Coralogix WebAPI endpoint for your account - Do not modify unless instructed to by Coralogix Customer Success
   defaultvalue: https://webapi.coralogix.com
   display: Coralogix WebAPI Endpoint URL
@@ -42,32 +44,39 @@ configuration:
   display: Basic incidents query
   name: incidents_query
   type: 0
+  required: false
 - additionalinfo: Narrows the incidents search to a specific Application Name. If not set, the incidents fetch will retrieve all alerts that were sent to the Demisto/Cortex XSOAR webhook in Coralogix
   display: Incidents Application Name
   name: incidents_application_name
   type: 0
+  required: false
 - additionalinfo: Narrow the incidents search to a specific severity level. If not set, the incidents fetch will retrieve all alerts that were sent to the Demisto/Cortex XSOAR webhook in Coralogix
   display: Incidents Severity
   name: incidents_severity
   type: 0
+  required: false
 - additionalinfo: Sets the field in Coralogix response that will be used as the incident's name in Demisto/Cortex XSOAR. If not set will use the field 'alert_name'
   display: Incidents Name Field
   name: incident_description_field
   type: 0
+  required: false
 - additionalinfo: Narrows the incidents search to a specific Subsystem Name. If not set, the incidents fetch will retrieve all alerts that were sent to the Demisto/Cortex XSOAR webhook in Coralogix
   display: Incidents Subsystem Name
   name: incidents_subsystem_name
   type: 0
+  required: false
 - additionalinfo: Normally, when the Coralogix fetches incidents it will fetch incidents detected since the last time it fetched them. This value sets the time period (in days) to look for incidents on the first fetch. The default value is 3 days. This value cannot exceed the maximum allowed query range limit for the Coralogix account used.
   defaultvalue: '3'
   display: First fetch timestamp in days
   name: incidents_first_fetch_range
   type: 0
+  required: false
 - additionalinfo: Maximum number of incidents to fetch at a single call to avoid overloading Cortex XSOAR
   defaultvalue: '50'
   display: Maximum number of incidents to fetch at a single call
   name: incidents_max_fetch
   type: 0
+  required: false
 description: Fetch incidents, search for supporting data and tag interesting datapoints in/from your Coralogix account
 display: Coralogix
 name: Coralogix

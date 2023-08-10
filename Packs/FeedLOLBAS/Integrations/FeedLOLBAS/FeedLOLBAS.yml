@@ -17,6 +17,7 @@ configuration:
   name: feed
   type: 8
   section: Collect
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   section: Collect
   display: Indicator Reputation
@@ -28,6 +29,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -54,10 +56,12 @@ configuration:
   - CLEAR
   type: 15
   section: Collect
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   defaultvalue: 'false'
   display: Bypass exclusion list
@@ -65,29 +69,34 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
   type: 8
   section: Collect
   advanced: true
+  required: false
 - name: feedExpirationPolicy
   display: ''
   type: 17
@@ -97,12 +106,14 @@ configuration:
   - indicatorType
   - suddenDeath
   section: Collect
+  required: false
 - defaultvalue: '1440'
   name: feedFetchInterval
   display: Feed Fetch Interval
   type: 19
   section: Collect
   advanced: true
+  required: false
 description: '"Living off the land binaries" is a term used to describe malware or hacking techniques that take advantage of legitimate tools and processes that are already present on a computer or network, rather than introducing new malware or malicious code. The goal is to blend in with normal activity and avoid detection. Examples of this include using built-in Windows commands to move laterally through a network, or using scripting languages that are commonly installed on a system to execute malicious code. LOLBAS project is documenting binaries, scripts, and libraries that can be used for Living Off The Land techniques.'
 display: 'LOLBAS Feed'
 name: LOLBAS Feed
@@ -158,7 +169,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
 fromversion: 6.8.0
 tests:
 - FeedLOLBas_test

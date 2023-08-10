@@ -7,14 +7,17 @@ configuration:
   display: Server URL
   name: server_url
   type: 0
+  required: false
 - display: API Key
   name: api_key
   type: 4
   hidden: true
+  required: false
 - displaypassword: API Key
   name: credentials_api_key
   hiddenusername: true
   type: 9
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -32,9 +35,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Use the Maltiverse integration to analyze suspicious hashes, URLs, domains and IP addresses.
 display: Maltiverse
 name: Maltiverse
@@ -361,7 +366,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

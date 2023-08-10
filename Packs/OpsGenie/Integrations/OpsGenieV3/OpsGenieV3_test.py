@@ -1,5 +1,4 @@
 import pytest
-import io
 
 from requests import Response
 
@@ -9,7 +8,7 @@ from unittest import mock
 
 
 def util_load_json(path, wrap_in_response=False):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         jsonres = json.loads(f.read())
         if wrap_in_response:
             res = Response()
@@ -1024,3 +1023,71 @@ def test_invite_user(mocker):
     mocker.patch.object(mock_client, 'invite_user', return_value=util_load_json('test_data/invite_user.json'))
     res = OpsGenieV3.invite_user(mock_client, {'username': "test@example.com", 'fullName': 'Test Example', 'role': 'user'})
     assert (res.raw_response == util_load_json('test_data/invite_user.json'))
+
+
+def test_get_team_routing_rules(mocker):
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_team_routing_rules',
+                        return_value=util_load_json('test_data/get_team_routing_rules.json'))
+    res = OpsGenieV3.get_team_routing_rules(mock_client, {'team_id': " a6604a9f-b152-54c-b31-1b9741c109"})
+    assert (res.raw_response == util_load_json('test_data/get_team_routing_rules.json'))
+
+
+def test_get_alert_logs(mocker):
+    """
+    Given:
+        - An app client object
+        - alert_id = 0123456
+    When:
+        - Calling function get_alert_notes
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'get_alert_logs',
+                        return_value=util_load_json('test_data/get_alert_logs.json'))
+    res = OpsGenieV3.get_alert_logs(mock_client, {"alert_id": '0123456'})
+    assert isinstance(res.raw_response, dict)
+
+
+def test_add_alert_note(mocker):
+    """
+    Given:
+        - An app client object
+        - alert_id = 1234
+        - note = "testdemisto"
+    When:
+        - Calling function add_alert_note
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'add_alert_note',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/add_alert_note.json', True))
+    res = OpsGenieV3.add_alert_note(mock_client, {"alert_id": 1234, "note": "testdemisto"})
+    assert (res.raw_response == util_load_json('test_data/add_alert_note.json'))
+
+
+def test_add_alert_details(mocker):
+    """
+    Given:
+        - An app client object
+        - Alert-id = 1234
+        - details = "test=demisto"
+    When:
+        - Calling function add_alert_details
+    Then:
+        - Ensure the return data is correct
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+    mock_client = OpsGenieV3.Client(base_url="")
+    mocker.patch.object(mock_client, 'add_alert_details',
+                        return_value=util_load_json('test_data/request.json'))
+    mocker.patch.object(mock_client, 'get_request',
+                        return_value=util_load_json('test_data/add_alert_details.json', True))
+    res = OpsGenieV3.add_alert_details(mock_client, {"alert-id": 1234, "details": {'test': 'demisto'}})
+    assert (res.raw_response == util_load_json('test_data/add_alert_details.json'))

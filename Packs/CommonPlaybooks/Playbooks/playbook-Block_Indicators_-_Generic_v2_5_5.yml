@@ -1,9 +1,11 @@
+deprecated: true
 id: Block Indicators - Generic v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block Indicators - Generic v2
 description: |+
+  Deprecated. Use the `Block Indicators - Generic V3` playbook instead.
   This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
   - Block URL - Generic

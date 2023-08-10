@@ -7,19 +7,24 @@ configuration:
   name: service_account_json
   type: 4
   hidden: true
+  required: false
 - displaypassword: Service Account Private Key file contents (JSON)
   name: credentials_service_account_json
   hiddenusername: true
   type: 9
+  required: false
 - display: Default Bucket
   name: default_bucket
   type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Google Cloud Storage is a RESTful online file storage web service for storing and accessing data on Google Cloud Platform infrastructure.
 display: Google Cloud Storage
 name: Google Cloud Storage

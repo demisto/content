@@ -24,10 +24,12 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use SSL/TLS secured connection
   name: use_ssl
   type: 8
+  required: false
 description: Writes log data to a MongoDB collection.
 display: MongoDB Log
 name: MongoDB Log
