@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 65
+          "y": 50
         }
       }
     note: false
@@ -60,7 +60,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 400
+          "y": 370
         }
       }
     note: false
@@ -97,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
@@ -135,7 +135,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1215
+          "y": 1360
         }
       }
     note: false
@@ -170,7 +170,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1710
+          "y": 1855
         }
       }
     note: false
@@ -198,7 +198,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2425
+          "y": 2570
         }
       }
     note: false
@@ -233,7 +233,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 225
+          "y": 195
         }
       }
     note: false
@@ -270,7 +270,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1885
+          "y": 2030
         }
       }
     note: false
@@ -302,7 +302,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1885
+          "y": 2030
         }
       }
     note: false
@@ -334,7 +334,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2555
         }
       }
     note: false
@@ -358,6 +358,9 @@ tasks:
       iscommand: true
       brand: Generic SQL
       description: Running a sql query
+    nexttasks:
+      '#none#':
+      - "32"
     scriptarguments:
       bind_variables_values:
         simple: '${RandomString},playbook,test'
@@ -369,7 +372,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 50
+          "y": 1040
         }
       }
     note: false
@@ -404,7 +407,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1710
+          "y": 1855
         }
       }
     note: false
@@ -428,6 +431,9 @@ tasks:
       iscommand: true
       brand: Generic SQL
       description: Running a sql query
+    nexttasks:
+      '#none#':
+      - "32"
     scriptarguments:
       bind_variables_names:
         simple: u,x,y
@@ -440,8 +446,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 50
+          "x": 480,
+          "y": 1040
         }
       }
     note: false
@@ -487,7 +493,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 575
+          "y": 545
         }
       }
     note: false
@@ -530,7 +536,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1390
+          "y": 1535
         }
       }
     note: false
@@ -573,7 +579,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2235
+          "y": 2380
         }
       }
     note: false
@@ -610,7 +616,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2060
+          "y": 2205
         }
       }
     note: false
@@ -634,14 +640,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "35"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 750
+          "y": 720
         }
       }
     note: false
@@ -672,7 +678,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1070
+          "y": 1215
         }
       }
     note: false
@@ -703,7 +709,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1565
+          "y": 1710
         }
       }
     note: false
@@ -734,7 +740,60 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1565
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a912a266-26f9-44cc-8ee1-51ec48b9cab1
+    type: condition
+    task:
+      id: a912a266-26f9-44cc-8ee1-51ec48b9cab1
+      version: -1
+      name: Choose proper query syntax based on DB type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      mssql:
+      - "3"
+      oracle:
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: mssql
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.InstanceName}
+          right:
+            value:
+              simple: Microsoft
+    - label: oracle
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.InstanceName}
+          right:
+            value:
+              simple: Oracle
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
         }
       }
     note: false
@@ -749,8 +808,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2455,
-        "width": 1670,
+        "height": 2600,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
