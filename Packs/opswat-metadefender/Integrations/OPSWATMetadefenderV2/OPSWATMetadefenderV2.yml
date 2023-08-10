@@ -1,7 +1,6 @@
 commonfields:
   id: OPSWAT-Metadefender V2
   version: -1
-  sortvalues: []
 name: OPSWAT-Metadefender V2
 display: OPSWAT-Metadefender v2
 category: Data Enrichment & Threat Intelligence
@@ -13,20 +12,13 @@ configuration:
   required: true
 - display: API Key - Needed in cloud based solutions
   name: api_key
-  defaultvalue: ""
   type: 4
-  hidden: true
   required: false
-- name: api_key_creds
-  type: 9
-  displaypassword: API Key - Needed in cloud based solutions
-  hiddenusername: true
-  required: false
-- display: Cloud based
-  name: cloud
+- name: cloud
   type: 8
-  defaultvalue: 'false'
   required: false
+  defaultvalue: 'false'
+  display: Cloud based
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -37,14 +29,13 @@ configuration:
   required: false
 - display: The high threshold
   name: highPercnt
-  defaultvalue: '66'
   type: 0
   required: false
-- defaultvalue: '34'
-  display: The low threshold
+  defaultvalue: '66'
+- display: The low threshold
   name: lowPercnt
+  defaultvalue: '34'
   type: 0
-
   required: false
 script:
   script: ''
@@ -55,7 +46,7 @@ script:
     - name: fileId
       required: true
       default: true
-      description: Entry id of a file
+      description: Entry id of a file in Demisto
     outputs:
     - contextPath: OPSWAT.FileName
       description: OPSWAT file name to scan
@@ -78,8 +69,32 @@ script:
       default: true
       description: OPSWAT scan id
     description: Get OPSWAT result
-  dockerimage: demisto/python3:3.10.12.67728
+  - arguments:
+    - default: true
+      description: Entry id of a file in Demisto
+      name: fileId
+      required: true
+    - description: The OPSWAT workflow to be used for sanitization.
+      name: workflow
+      type: unknown
+    description: Scan file in OPSWAT and try sanitization
+    name: opswat-sanitize-file
+    outputs:
+    - contextPath: OPSWAT.FileName
+      description: OPSWAT file name to scan
+      type: string
+    - contextPath: OPSWAT.ScanId
+      description: OPSWAT scan id of the scan
+  - arguments:
+    - default: true
+      description: OPSWAT scan id
+      name: id
+      required: true
+    description: Get sanitized file from OPSWAT
+    name: opswat-sanitization-result
+  dockerimage: demisto/python3:3.10.12.68714
   subtype: python3
+  runonce: false
 tests:
 - No tests - no instance
 fromversion: 5.0.0

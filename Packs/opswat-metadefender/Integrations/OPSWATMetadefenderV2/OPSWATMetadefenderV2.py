@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import shutil
 
 import urllib3
@@ -28,7 +30,7 @@ HTTP_ERROR_CODES = {
 ''' HELPER FUNCTIONS '''
 
 
-def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
+def http_req(method='GET', url_suffix='', file_name=None, parse_json=True, workflow=None):
     data = None
     url = BASE_URL + url_suffix
     headers = DEFAULT_HEADERS
@@ -37,6 +39,9 @@ def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
     if file_name:
         headers['filename'] = file_name.encode('utf-8')  # type: ignore
         with open(file_name, 'rb') as file_:
+            if workflow:
+                demisto.debug(f'Using explicit workflow: {workflow}')
+                headers['workflow'] = workflow
             res = requests.post(url, verify=USE_SSL, files={'file': file_}, headers=headers)
     elif method.upper() == 'GET':
         res = requests.get(url, verify=USE_SSL, headers=headers)
@@ -54,7 +59,7 @@ def http_req(method='GET', url_suffix='', file_name=None, parse_json=True):
     if parse_json:
         return res.json()
     else:
-        return res.content
+        return res
 
 
 def scan_file(file_entry_id):
@@ -71,6 +76,20 @@ def scan_file(file_entry_id):
     return res, file_name
 
 
+def sanitize_file(file_entry_id, workflow):
+    try:
+        file_entry = demisto.getFilePath(file_entry_id)
+    except ValueError as e:
+        return_error(f'Failed to find file entry with id:\"{file_entry_id}\". got error: {e}')
+    file_name = file_entry['name']
+    shutil.copy(file_entry['path'], file_name)
+    try:
+        res = http_req(method='POST', url_suffix='file', file_name=file_name, workflow=workflow)
+    finally:
+        shutil.rmtree(file_name, ignore_errors=True)
+    return res, file_name
+
+
 def get_hash_info(file_hash):
     res = http_req(method='GET', url_suffix=f'hash/{file_hash}')
     return res
@@ -78,6 +97,11 @@ def get_hash_info(file_hash):
 
 def get_scan_result(scan_id):
     res = http_req(method='GET', url_suffix=f'file/{scan_id}')
+    return res
+
+
+def get_sanitization_result(scan_id):
+    res = http_req(method='GET', url_suffix=f'file/converted/{scan_id}', parse_json=False)
     return res
 
 
@@ -174,6 +198,30 @@ def scan_file_command():
     demisto.results(entry)
 
 
+def sanitize_file_command():
+    file_entry_id = demisto.args()['fileId']
+    workflow = demisto.args()['workflow']
+    res, file_name = sanitize_file(file_entry_id, workflow)
+    scan_id = res['data_id']
+    md = '# OPSWAT-Metadefender\n'
+    ec = {'OPSWAT': {
+        'FileName': file_name,
+        'ScanId': scan_id
+    }}
+
+    md += f'The file has been successfully submitted to sanitization using workflow "{workflow}".\n'
+    md += f'Scan id: {scan_id}\n'
+    entry = {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': res,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': md,
+        'EntryContext': ec
+    }
+    demisto.results(entry)
+
+
 def get_scan_result_command():
     scan_id = demisto.args()['id']
     res = get_scan_result(scan_id)
@@ -242,6 +290,22 @@ def get_scan_result_command():
     demisto.results(entry)
 
 
+def get_sanitization_result_command():
+    scan_id = demisto.args()['id']
+    res = get_scan_result(scan_id)
+    # Check the scan report whether there is a sanitized file.
+    if 'process_info' in res and 'post_processing' in res['process_info'] and 'actions_ran' in res['process_info']['post_processing'] and res['process_info']['post_processing']['actions_ran'] == "Sanitized":
+        if 'converted_destination' in res['process_info']['post_processing']:
+            sanitized_file_name = res['process_info']['post_processing']['converted_destination']
+        else:
+            sanitized_file_name = 'sanitized.file'
+        res = get_sanitization_result(scan_id)
+        demisto.results(fileResult(filename=sanitized_file_name, data=res.content, file_type=EntryType.ENTRY_INFO_FILE))
+    else:
+        myErrorText = "No sanitized file."
+        demisto.results({"Type": entryTypes["warning"], "ContentsFormat": formats["text"], "Contents": myErrorText})
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -263,6 +327,10 @@ def main():  # pragma: no cover
             get_hash_info_command()
         if command == 'opswat-scan-result':
             get_scan_result_command()
+        if command == 'opswat-sanitize-file':
+            sanitize_file_command()
+        if command == 'opswat-sanitization-result':
+            get_sanitization_result_command()
     except Exception as e:
         message = f'Unexpected error: {e}'
         LOG(str(e))
