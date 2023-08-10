@@ -26,7 +26,7 @@ configuration:
   section: Connect
   display: ''
   required: false
-- additionalinfo: Mailbox to run commands on and to fetch incidents from.
+- additionalinfo: Mailbox to run commands on and to fetch incidents from. To use this functionality, your account must have impersonation rights or delegation for the account specified. For more information, see https://xsoar.pan.dev/docs/reference/integrations/ewso365#additional-information
   display: Email Address
   name: default_target_mailbox
   required: true
@@ -118,11 +118,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Use a self deployed Azure Application
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self deployed Azure Application
   name: self_deployed
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
   required: false
 - additionalinfo: Use the "ID" parameter instead.
   display: ID / Application ID (Deprecated)
@@ -955,7 +956,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.66000
+  dockerimage: demisto/py3ews:1.0.0.66850
   isfetch: true
   script: ''
   subtype: python3

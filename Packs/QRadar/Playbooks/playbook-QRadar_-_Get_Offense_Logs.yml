@@ -264,7 +264,7 @@ tasks:
         simple: "1"
       query_expression:
         simple: |-
-          select  ${inputs.Fields} from events WHERE InOffense(${inputs.ID}) ${CRESettings}
+          select  ${inputs.Fields} from events WHERE INOFFENSE(${inputs.ID}) ${CRESettings}
           LIMIT ${inputs.MaxLogsCount}
           START '${Time}'
       timeout:
@@ -859,7 +859,7 @@ inputs:
   playbookInputQuery:
 - key: ApiVersion
   value:
-    simple: "18"
+    simple: "17"
   required: false
   description: The API version for the timestamp format changes between versions 
   playbookInputQuery:

@@ -80,7 +80,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -93,7 +92,6 @@
                     {
                         "h": 2,
                         "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -108,7 +106,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -124,7 +121,6 @@
                         "h": 2,
                         "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -139,7 +135,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -154,7 +149,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -170,7 +164,6 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -185,7 +178,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -251,7 +243,6 @@
                                 "startCol": 1
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -295,7 +286,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -321,7 +311,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -340,33 +329,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "rsanetwitnessruleid",
-                                "height": 22,
-                                "id": "e9221020-6660-11ec-9cec-f124674eca80",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "rsanetwitnessalertcount",
-                                "height": 22,
-                                "id": "ea50a510-6660-11ec-9cec-f124674eca80",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "rsanetwitnesseventcount",
-                                "height": 22,
-                                "id": "eb4209f0-6660-11ec-9cec-f124674eca80",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "rsaid",
                                 "height": 22,
                                 "id": "a5662d50-67f8-11ec-9835-13bff9c08978",
@@ -375,15 +337,15 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "sourcestatus",
                                 "height": 22,
                                 "id": "270a4b70-67f4-11ec-85d1-d512017eafcc",
                                 "index": 1,
-                                "listId": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80"
                             },
                             {
                                 "endCol": 2,
@@ -413,37 +375,37 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "firstseen",
                                 "height": 22,
                                 "id": "7ed19bb0-67f4-11ec-85d1-d512017eafcc",
                                 "index": 3,
-                                "listId": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-d9b9d190-6660-11ec-9cec-f124674eca80"
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "lastmodifiedby",
                                 "height": 22,
                                 "id": "5f267600-67f4-11ec-85d1-d512017eafcc",
                                 "index": 4,
-                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289"
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "lastmodifiedon",
                                 "height": 22,
                                 "id": "57e8f9d0-67f4-11ec-85d1-d512017eafcc",
                                 "index": 4,
-                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289"
                             },
                             {
                                 "endCol": 2,
@@ -455,7 +417,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -528,7 +489,6 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -565,6 +525,32 @@
                 "id": "canvas",
                 "name": "Canvas",
                 "type": "canvas"
+            },
+            {
+                "hidden": false,
+                "id": "Alerts",
+                "name": "Alerts",
+                "sections": [
+                    {
+                        "h": 5,
+                        "hideName": true,
+                        "i": "caseinfoid-fbc44d60-1b4a-11ee-9c71-716af4f9d468",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "alerts",
+                        "query": "SetRSANetWitnessAlertsMD",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
             }
         ]
     },
@@ -1060,6 +1046,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ],
+    "description": ""
 }

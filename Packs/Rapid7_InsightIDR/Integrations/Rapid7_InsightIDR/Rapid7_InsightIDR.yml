@@ -424,7 +424,7 @@ script:
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
       type: Number
-  dockerimage: demisto/python3:3.10.12.65389
+  dockerimage: demisto/python3:3.10.12.67728
   isfetch: true
   runonce: false
   script: '-'
