@@ -11,10 +11,8 @@ To view logs only from the Windows Event log, apply the following filter to the 
 
 ## Collect Events from Vendor
 
-In order to use the collector, you can use one of the following options:
-- [Microsoft Windows Logs](#microsoft-windows-logs)
-  - [Collect Events from Vendor](#collect-events-from-vendor)
-    - [Broker VM (Windows Event Collector)](#broker-vm-windows-event-collector)
+In order to use the collector, you can use one of the following options:       
+    - [Broker VM (Windows Event Collector)](#broker-vm-windows-event-collector)   
     - [XDRC (XDR Collector)](#xdrc-xdr-collector)
    
 
@@ -39,4 +37,17 @@ As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you ca
 
    - Add description here — (Optional) Provide additional context for the purpose or business reason that explains why you are creating the profile.
 
- 4. Configure the settings for the profile selected in Step 2. To add the "Windows Security" template, select it and click **Add**.
+ 4. In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System** and **Application**:
+ ```bash
+  winlogbeat.event_logs:
+  - name: Security
+    ignore_older: 1h
+  - name: System
+    ignore_older: 1h
+  - name: Application
+    ignore_older: 1h    
+```
+
+**Note:** You can customize what will be collected by removing the "name" and "ignore_older" lines of the specific event type.
+
+5. Press **Create** to save the new template.
