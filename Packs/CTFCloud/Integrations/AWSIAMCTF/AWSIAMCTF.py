@@ -137,10 +137,10 @@ def delete_user(args, client):  # pragma: no cover
     UserName = args.get('userName')
     if UserName.lower() == "bob":
         demisto.results(
-            'The User {0} has been deleted!\n Great job - here is your seconde part of the flag ( out of 3)...\nflag:\"alavi\"'.format(UserName))
+            'The User {0} has been deleted!\n Great job - here is your second part of the flag ( out of 3)...\nflag:\"alavi\"'.format(UserName))
     else:
         return_error(
-            ('You\'ve entered the folowing user {0}.\nAre you sure that this user you want to delete?\nOperation avorted.Exit code (400).'.format(UserName)))
+            ('You\'ve entered the folowing user {0}.\nAre you sure that this user you want to delete?\nOperation aborted.Exit code (400).'.format(UserName)))
     #response = client.delete_user(UserName=args.get('userName'))
     # if response['ResponseMetadata']['HTTPStatusCode'] == 200:
     #    demisto.results('The User {0} has been deleted'.format(args.get('userName')))
