@@ -749,7 +749,7 @@ def test_get_access_token_auth_code_reconfigured(mocker, requests_mock):
     grant_type = AUTHORIZATION_CODE
 
     client = MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
-                             grant_type=grant_type, auth_code=auth_code, redirect_uri=redirect_uri,
+                             grant_type=grant_type, auth_code=auth_code,
                              resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
     requests_mock.post(
