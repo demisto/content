@@ -56,6 +56,7 @@ def compare_field(pack_id: str, previous: dict, current: dict, res: dict, field:
 
 def get_pack_diff(pack_id: str, previous: dict, current: dict) -> dict:
     dependencies_fields = ["dependencies", "allLevelDependencies"]
+
     def all_pack_dependencies(pack_data: dict) -> dict:
         return {field: pack_data[field] for field in dependencies_fields}
 
