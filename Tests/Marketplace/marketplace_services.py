@@ -1089,8 +1089,9 @@ class Pack:
         pack_was_modified = False
 
         try:
+            logging.info(f"self._pack_name = {self._pack_name}")
             pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
-
+            logging.info(f"pack_index_metadata_path = {pack_index_metadata_path}")
             if not os.path.exists(pack_index_metadata_path):
                 logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
                 task_status = True
@@ -1098,8 +1099,10 @@ class Pack:
 
             with open(pack_index_metadata_path) as metadata_file:
                 downloaded_metadata = json.load(metadata_file)
-
+            logging.info(f"downloaded_metadata = {downloaded_metadata}")
             previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
+            logging.info(f"previous_commit_hash = {previous_commit_hash}")
+            logging.info(f"current_commit_hash = {current_commit_hash}")
             # set 2 commits by hash value in order to check the modified files of the diff
             current_commit = content_repo.commit(current_commit_hash)
             previous_commit = content_repo.commit(previous_commit_hash)
@@ -1108,14 +1111,16 @@ class Pack:
                 if modified_file.a_path.startswith(PACKS_FOLDER):
                     modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
                     pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
-
+                    logging.info(f"pack_name, entity_type_dir = {pack_name}, {entity_type_dir}")
                     if pack_name and pack_name == self._pack_name:
                         if not is_ignored_pack_file(modified_file_path_parts):
                             logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
                             task_status, pack_was_modified = True, True
                             modified_rn_files_paths.append(modified_file.a_path)
-
-                            if entity_type_dir in PackFolders.pack_displayed_items():
+                            logging.info(f"modified_rn_files_paths = {modified_rn_files_paths}")
+                            tmp = PackFolders.pack_displayed_items()
+                            if entity_type_dir in tmp:
+                                logging.info(f"modified_rn_files_paths = {tmp}")
                                 if entity_type_dir in self._modified_files:
                                     self._modified_files[entity_type_dir].append(modified_file.a_path)
                                 else:
@@ -1126,6 +1131,7 @@ class Pack:
 
             task_status = True
             if pack_was_modified:
+                logging.info(f"pack_was_modified = {pack_was_modified}")
                 # Make sure the modification is not only of release notes files, if so count that as not modified
                 pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
                 # Filter modifications in release notes config JSON file - they will be handled later on.
