@@ -1,0 +1,20 @@
+{
+    "data": [
+        {
+            "createdAt": "2023-08-03T09:26:05.03Z",
+            "log": "Viewed on [web]",
+            "offset": "1621054765030_1691034765030249435",
+            "owner": "demisto@demisto.local",
+            "type": "alertRecipient"
+        },
+        {
+            "createdAt": "2023-08-03T09:24:58.894Z",
+            "log": "Alert acknowledged via web[Default API-Acknowledge Alert]",
+            "offset": "1691054698894_1691054698894140450",
+            "owner": "demisto@demisto.local",
+            "type": "alertAction"
+        }
+    ],
+    "requestId": "69f312f6-7455-4bb8-b0ea-fc733d76d243",
+    "took": 0.008
+}
