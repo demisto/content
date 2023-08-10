@@ -339,7 +339,7 @@ tasks:
       val2:
         simple: "false"
       val3:
-        simple: N/A
+        simple: n/a
       val4:
         simple: TIMESTAMP
       val5:
@@ -390,7 +390,7 @@ tasks:
       val2:
         simple: "false"
       val3:
-        simple: N/A
+        simple: n/a
       val4:
         simple: TIMESTAMP
       val5:
@@ -571,15 +571,15 @@ tasks:
       keys:
         simple: ScanNum,ScanDone,ScanResult,Timestamp,ScanState
       val1:
-        simple: N/A
+        simple: n/a
       val2:
         simple: "false"
       val3:
-        simple: N/A
+        simple: n/a
       val4:
         simple: TIMESTAMP
       val5:
-        simple: N/A
+        simple: n/a
     separatecontext: false
     continueonerrortype: ""
     view: |-

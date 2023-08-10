@@ -313,6 +313,8 @@ Search for events in MISP. This search command will return only information abou
 ***
 Checks the reputation of the given domain.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -1038,6 +1040,8 @@ Checks the file reputation of the given hash.
 
 ***
 Checks the reputation of the given URL.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command
