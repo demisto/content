@@ -1068,11 +1068,11 @@ def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
     """
     packs_in_index = set(os.listdir(index_folder_path))
     private_packs_names = {p.get('id', '') for p in private_packs}
-    current_marketplace_pack_names = set(current_marketplace_packs)
-    packs_to_be_deleted = packs_in_index - current_marketplace_pack_names - private_packs_names
+    packs_to_be_deleted = packs_in_index - set(current_marketplace_packs) - private_packs_names
+    logging.debug(f"Removing the following packs from index.zip: {packs_to_be_deleted}")
+
     deleted_packs = set()
     for pack_name in packs_to_be_deleted:
-
         try:
             index_pack_path = os.path.join(index_folder_path, pack_name)
             if os.path.exists(os.path.join(index_pack_path, 'metadata.json')):  # verify it's a pack dir
@@ -1280,12 +1280,7 @@ def main():
         return
 
     # list of all marketplace compatible content packs from the graph
-    all_content_packs = list(marketplace_compatible_packs)
-
-    # pack's list to update their index metadata and upload them.
-    # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
-    packs_to_upload_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), is_modified=True)
-                            for pack_name in pack_names_to_upload]
+    all_compatible_content_packs = list(marketplace_compatible_packs)
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
@@ -1295,8 +1290,14 @@ def main():
     )
 
     packs_deleted_from_index: set[str] = delete_from_index_packs_not_in_marketplace(index_folder_path,
-                                                                                    all_content_packs,
+                                                                                    all_compatible_content_packs,
                                                                                     private_packs)
+
+    # pack's list to update their index metadata and upload them.
+    # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
+    packs_to_upload_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), is_modified=True)
+                            for pack_name in pack_names_to_upload if pack_name not in packs_deleted_from_index]
+
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
@@ -1305,10 +1306,10 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_compatible_content_packs, marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
-    packs_with_missing_dependencies = []
+    # packs_with_missing_dependencies = []
 
     # pack relevant for the current marketplace this upload is done for
     packs_for_current_marketplace_dict: dict[str, Pack] = {}
@@ -1338,11 +1339,11 @@ def main():
     # changelog, etc.
     pack: Pack
     for pack in list(packs_for_current_marketplace_dict.values()):
-        task_status = pack.collect_content_items()
-        if not task_status:
-            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
+        # task_status = pack.collect_content_items()
+        # if not task_status:
+        #     pack.status = PackStatus.FAILED_COLLECT_ITEMS.name  # type: ignore[misc]
+        #     pack.cleanup()
+        #     continue
 
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
@@ -1350,25 +1351,25 @@ def main():
             continue
 
         # detect if the pack is modified and return modified RN files
-        task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
-                                                                    current_commit_hash, previous_commit_hash)
+        # task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
+        #                                                             current_commit_hash, previous_commit_hash)
 
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
+        # if not task_status:
+        #     pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name  # type: ignore[misc]
+        #     pack.cleanup()
+        #     continue
 
-        task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
-                                                                    packs_dependencies_mapping, build_number,
-                                                                    current_commit_hash,
-                                                                    statistics_handler,
-                                                                    packs_for_current_marketplace_dict, marketplace)
+        task_status, _ = pack.format_metadata(index_folder_path,
+                                              packs_dependencies_mapping, build_number,
+                                              current_commit_hash,
+                                              statistics_handler,
+                                              packs_for_current_marketplace_dict, marketplace)
 
-        if is_missing_dependencies:
-            # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
-            # been iterated yet, we will note that it is missing dependencies, and after updating the index.zip with
-            # all new packs - we will go over the pack again to add what was missing. See issue #37290.
-            packs_with_missing_dependencies.append(pack)
+        # if is_missing_dependencies:
+        #     # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
+        #     # been iterated yet, we will note that it is missing dependencies, and after updating the index.zip with
+        #     # all new packs - we will go over the pack again to add what was missing. See issue #37290.
+        #     packs_with_missing_dependencies.append(pack)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
@@ -1378,7 +1379,7 @@ def main():
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
             build_number,
-            modified_rn_files_paths,
+            diff_files_list,
             marketplace, id_set,
             is_override=override_all_packs
         )
@@ -1430,36 +1431,36 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and exists_in_index and pack not in packs_with_missing_dependencies:
+        if skipped_upload and exists_in_index:  # and pack not in packs_with_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
 
-    logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
+    # logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
 
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
-    for pack in packs_with_missing_dependencies:
-        task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
-                                              build_number, current_commit_hash, statistics_handler,
-                                              packs_for_current_marketplace_dict, marketplace,
-                                              format_dependencies_only=True)
+    # for pack in packs_with_missing_dependencies:
+    #     task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
+    #                                           build_number, current_commit_hash, statistics_handler,
+    #                                           packs_for_current_marketplace_dict, marketplace,
+    #                                           format_dependencies_only=True)
 
-        if not task_status:
-            pack.status = PackStatus.FAILED_METADATA_REFORMATING.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
+    #     if not task_status:
+    #         pack.status = PackStatus.FAILED_METADATA_REFORMATING.name  # type: ignore[misc]
+    #         pack.cleanup()
+    #         continue
 
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
-        if not task_status:
-            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
+    #     task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
+    #                                       pack_version=pack.latest_version, hidden_pack=pack.hidden)
+    #     if not task_status:
+    #         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
+    #         pack.cleanup()
+    #         continue
 
-        pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
+    #     pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
 
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,

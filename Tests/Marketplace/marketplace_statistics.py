@@ -94,12 +94,13 @@ class PackStatisticsHandler:
         if content_items:
             integrations = content_items.get('integration')
             if isinstance(integrations, list):
-                for integration in integrations:
-                    if 'deprecated' in integration.get('name').lower():
-                        all_deprecated = True
-                    else:
-                        all_deprecated = False
-                        break
+                all_deprecated = all('deprecated' in integration.get('name').lower() for integration in integrations)
+                # for integration in integrations:
+                #     if 'deprecated' in integration.get('name').lower():
+                #         all_deprecated = True
+                #     else:
+                #         all_deprecated = False
+                #         break
 
         if all_deprecated:
             search_rank -= 50

@@ -113,7 +113,7 @@ class Pack:
         self._modules = None
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
-        self._content_displays_map = None  # initialized in collect_content_items function
+        # self._content_displays_map = None  # initialized in collect_content_items function
         self._search_rank = None  # initialized in enhance_pack_attributes function
         self._related_integration_images = None  # initialized in enhance_pack_attributes function
         self._use_cases = None  # initialized in enhance_pack_attributes function
@@ -122,7 +122,7 @@ class Pack:
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_modified = is_modified
-        self._modified_files = {}  # initialized in detect_modified function
+        # self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
@@ -989,24 +989,25 @@ class Pack:
             previous_commit = content_repo.commit(previous_commit_hash)
 
             for modified_file in current_commit.diff(previous_commit):
-                if modified_file.a_path.startswith(PACKS_FOLDER):
-                    modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
-                    pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
+                if modified_file.a_path.startswith(PACKS_FOLDER) and \
+                        not is_ignored_pack_file(os.path.normpath(modified_file.a_path).split(os.sep)):
+                    # modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
+                    # pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
 
-                    if pack_name and pack_name == self._pack_name:
-                        if not is_ignored_pack_file(modified_file_path_parts):
-                            logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
-                            task_status, pack_was_modified = True, True
-                            modified_rn_files_paths.append(modified_file.a_path)
+                    # if pack_name and pack_name == self._pack_name:
+                    #     if not is_ignored_pack_file(modified_file_path_parts):
+                    #         logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
+                    #         task_status, pack_was_modified = True, True
+                    #         modified_rn_files_paths.append(modified_file.a_path)
 
-                            if entity_type_dir in PackFolders.pack_displayed_items():
-                                if entity_type_dir in self._modified_files:
-                                    self._modified_files[entity_type_dir].append(modified_file.a_path)
-                                else:
-                                    self._modified_files[entity_type_dir] = [modified_file.a_path]
+                    #         if entity_type_dir in PackFolders.pack_displayed_items():
+                    #             if entity_type_dir in self._modified_files:
+                    #                 self._modified_files[entity_type_dir].append(modified_file.a_path)
+                    #             else:
+                    #                 self._modified_files[entity_type_dir] = [modified_file.a_path]
 
-                        else:
-                            logging.debug(f'{modified_file.a_path} is an ignored file')
+                    #     else:
+                    #         logging.debug(f'{modified_file.a_path} is an ignored file')
 
             task_status = True
             if pack_was_modified:
@@ -1020,48 +1021,48 @@ class Pack:
         finally:
             return task_status, modified_rn_files_paths
 
-    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
-        """
-        Checks if the pack modification is relevant for the current marketplace.
+    # def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
+    #     """
+    #     Checks if the pack modification is relevant for the current marketplace.
 
-        This is done by searching the modified files in the id_set, if the files were not found in id_set,
-        then the modified entities probably not relevant for the current marketplace upload.
-        This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
+    #     This is done by searching the modified files in the id_set, if the files were not found in id_set,
+    #     then the modified entities probably not relevant for the current marketplace upload.
+    #     This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
 
-        Args:
-            id_set (dict): The current id set.
-            modified_rn_files_paths (list): list of paths of the pack's modified release notes files.
+    #     Args:
+    #         id_set (dict): The current id set.
+    #         modified_rn_files_paths (list): list of paths of the pack's modified release notes files.
 
-        Returns:
-            bool: whether the operation succeeded and changes are relevant for marketplace.
-            dict: data from id set for the modified files.
-        """
-        logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
+    #     Returns:
+    #         bool: whether the operation succeeded and changes are relevant for marketplace.
+    #         dict: data from id set for the modified files.
+    #     """
+    #     logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
 
-        task_status = False
-        modified_files_data = {}
+    #     task_status = False
+    #     modified_files_data = {}
 
-        for pack_folder, modified_file_paths in self._modified_files.items():
-            modified_entities = []
-            for path in modified_file_paths:
-                if id_set:
-                    if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
-                        logging.debug(f"The entity with the path {path} is present in the id set")
-                        modified_entities.append(id_set_entity)
-                else:
-                    if entity := get_graph_entity_by_path(Path(path), marketplace):
-                        logging.debug(f"The entity with the path {path} is present in the content graph")
-                        modified_entities.append(entity)
+    #     for pack_folder, modified_file_paths in self._modified_files.items():
+    #         modified_entities = []
+    #         for path in modified_file_paths:
+    #             if id_set:
+    #                 if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
+    #                     logging.debug(f"The entity with the path {path} is present in the id set")
+    #                     modified_entities.append(id_set_entity)
+    #             else:
+    #                 if entity := get_graph_entity_by_path(Path(path), marketplace):
+    #                     logging.debug(f"The entity with the path {path} is present in the content graph")
+    #                     modified_entities.append(entity)
 
-            if modified_entities:
-                modified_files_data[pack_folder] = modified_entities
+    #         if modified_entities:
+    #             modified_files_data[pack_folder] = modified_entities
 
-        if not self._modified_files or modified_files_data or modified_rn_files_paths:
-            # The task status will be success if there are no modified files in the pack or if the modified files were found in
-            # the id-set or if there are modified old release notes files for items that are not being modified.
-            task_status = True
+    #     if not self._modified_files or modified_files_data or modified_rn_files_paths:
+    #         # The task status will be success if there are no modified files in the pack or if the modified files were found in
+    #         # the id-set or if there are modified old release notes files for items that are not being modified.
+    #         task_status = True
 
-        return task_status, modified_files_data
+    #     return task_status, modified_files_data
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
@@ -1439,7 +1440,7 @@ class Pack:
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def get_rn_files_names(self, modified_rn_files_paths):
+    def get_rn_files_names(self, diff_list):
         """
 
         Args:
@@ -1451,13 +1452,16 @@ class Pack:
 
         """
         modified_rn_files = []
-        for file_path in modified_rn_files_paths:
+        for file_path in diff_list:
+            if not self.is_pack_release_notes_file():
+                logging.debug(f"file path '{file_path}' is not a release notes file of the pack '{self._pack_name}'")
+                continue
             modified_file_path_parts = os.path.normpath(file_path).split(os.sep)
             if self.RELEASE_NOTES in modified_file_path_parts:
                 modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
-    def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
+    def prepare_release_notes(self, index_folder_path, build_number, diff_list=None,
                               marketplace='xsoar', id_set=None, is_override=False):
         """
         Handles the creation and update of the changelog.json files.
@@ -1478,7 +1482,7 @@ class Pack:
         not_updated_build = False
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
-        modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
+        diff_list = diff_list if diff_list else []
         id_set = id_set if id_set else {}
         pack_versions_to_keep: list[str] = []
 
@@ -1500,7 +1504,7 @@ class Pack:
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
-                    rn_files_names = self.get_rn_files_names(modified_rn_files_paths)
+                    rn_files_names = self.get_rn_files_names(diff_list)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
@@ -2350,14 +2354,14 @@ class Pack:
         finally:
             self._content_items = content_items_result
 
-            def display_getter(items, display):
-                return f'{display}s' if items and len(items) > 1 else display
+            # def display_getter(items, display):
+            #     return f'{display}s' if items and len(items) > 1 else display
 
-            self._content_displays_map = {
-                name: display_getter(content_items_result.get(name), display)
-                for name, display in ITEMS_NAMES_TO_DISPLAY_MAPPING.items()
-                if content_items_result.get(name)
-            }
+            # self._content_displays_map = {
+            #     name: display_getter(content_items_result.get(name), display)
+            #     for name, display in ITEMS_NAMES_TO_DISPLAY_MAPPING.items()
+            #     if content_items_result.get(name)
+            # }
 
             return task_status
 
@@ -2392,6 +2396,7 @@ class Pack:
             self.user_metadata = metadata
             self._marketplaces = metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = metadata.get(Metadata.MODULES, [])
+            self._content_items = metadata.get(Metadata.CONTENT_ITEMS)
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -3196,6 +3201,19 @@ class Pack:
             os.path.basename(os.path.dirname(file_path)) == PackFolders.INTEGRATIONS.value,
             os.path.basename(file_path).startswith('integration'),
             os.path.basename(file_path).endswith('.yml')
+        ])
+
+    def is_pack_release_notes_file(self, file_path: str):
+        """ Indicates whether a file_path is an MD release notes file of the pack or not
+        Args:
+            file_path (str): The file path.
+        Returns:
+            bool: True if the file is a release notes file or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name, self.RELEASE_NOTES)),
+            os.path.basename(os.path.dirname(file_path)) == self.RELEASE_NOTES,
+            os.path.basename(file_path).endswith('.md')
         ])
 
     def add_bc_entries_if_needed(self, release_notes_dir: str, changelog: dict[str, Any]) -> None:
