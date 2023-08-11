@@ -1,5 +1,7 @@
 [INGEST:vendor="cisco", product="asr", target_dataset="cisco_asr_raw", no_hit=keep]
-alter
+// Support only date time of format: MMM dd hh:mm:ss.nnn or format: yyyy MMM dd hh:mm:ss.nnn TZ. For example: "2021 Jan 01 10:00:00.123 UTC".
+filter _raw_log ~= "\:[^\:]+\s\d{2}:\d{2}:\d{2}[^\:]+\:"
+| alter
     tmp_get_log_datetime = arraystring(regextract(_raw_log, "\:([^\:]+\s\d{2}:\d{2}:\d{2}[^\:]+)\:"), "")
 | alter
     tmp_get_year = if(tmp_get_log_datetime ~= "\d{4}", arraystring(regextract(tmp_get_log_datetime, "\d{4}"), ""), "1970"),

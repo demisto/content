@@ -11,11 +11,13 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Role Session Name
   name: roleSessionName
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -40,25 +42,30 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Role Session Duration
   name: sessionDuration
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Access Key
   name: credentials
   type: 9
   displaypassword: Secret Key
+  required: false
 - display: Access Key
   name: access_key
   type: 0
   section: Connect
   hidden: true
+  required: false
 - display: Secret Key
   name: secret_key
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
@@ -66,6 +73,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Retries
   name: retries
   defaultvalue: 5
@@ -73,29 +81,35 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch_timestamp
   type: 0
   section: Collect
   defaultvalue: 15 days
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - display: Security Hub Incidents Severity Level
   name: sh_severity
   type: 15
@@ -108,28 +122,33 @@ configuration:
   - Medium
   - High
   - Critical
+  required: false
 - display: Additional Incidents Filters
   name: additionalFilters
   type: 0
   section: Collect
   advanced: true
   additionalinfo: "A comma-separated list of additional incident filters in the format 'name=name1,value=value1,comparison=comparison1."
+  required: false
 - display: Change findings workflow to 'NOTIFIED'
   name: archiveFindings
   type: 8
   section: Collect
   advanced: true
   additionalinfo: "Notify the resource owner about the security issue. You can use this status when you are not the resource owner, and you need intervention from the resource owner in order to resolve a security issue."
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident Mirroring Direction
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from AWS - Security Hub to Cortex XSOAR), Outgoing (from Cortex XSOAR to AWS - Security Hub), or Incoming and Outgoing (from/to Cortex XSOAR and AWS - Security Hub).'
   name: mirror_direction
@@ -143,6 +162,7 @@ configuration:
   defaultvalue: None
   hidden:
   - marketplacev2
+  required: false
 - display: Resolve findings of closed incidents from XSOAR in AWS Security Hub
   additionalinfo: 'After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved'
   name: resolve_finding
@@ -151,6 +171,7 @@ configuration:
   defaultvalue: 'true'
   hidden:
   - marketplacev2
+  required: false
 - display: Finding Type
   name: finding_type
   additionalinfo: 'You can set the type of the findings to be fetched: "Software and Configuration Checks", "TTPs", "Effects", "Unusual Behaviors", "Sensitive Data Identifications". For example, if you set the finding type to "TTPs", the integration will only fetch findings with the finding type that match TTPs.'
@@ -163,6 +184,7 @@ configuration:
   - Effects
   - Unusual Behaviors
   - Sensitive Data Identifications
+  required: false
 - display: Workflow Status
   additionalinfo: 'You can set the workflow status of the findings to be fetched: "New", "Notified", "Resolved", "Suppressed". For example, if you set the workflow status to "Suppressed", the integration will only fetch findings with the workflow status of Suppressed.'
   name: workflow_status
@@ -174,12 +196,14 @@ configuration:
   - Notified
   - Resolved
   - Suppressed
+  required: false
 - display: Product Name
   name: product_name
   additionalinfo: 'You can enter a comma-separated list of product names. In order to get the product name, click Integrations in the AWS - Security Hub menu. Use only the product name (the value after the colon (:)) for this parameter.'
   type: 0
   section: Connect
   advanced: true
+  required: false
 description: Amazon Web Services Security Hub Service.
 display: AWS - Security Hub
 name: AWS - Security Hub
@@ -2044,7 +2068,7 @@ script:
       description: The UTC timestamp in seconds since the last update. The incident is only updated if it was modified after the last update time.
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-  dockerimage: demisto/boto3py3:1.0.0.52713
+  dockerimage: demisto/boto3py3:1.0.0.64969
   isfetch: true
   ismappable: true
   isremotesyncin: true

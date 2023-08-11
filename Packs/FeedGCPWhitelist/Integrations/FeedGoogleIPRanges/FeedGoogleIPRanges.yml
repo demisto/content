@@ -7,6 +7,7 @@ configuration:
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - defaultvalue: All GCP customer global and regional external IP ranges
   display: IP Address Ranges
   name: ip_ranges
@@ -26,6 +27,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -48,6 +50,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - display: ""
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
@@ -57,28 +60,35 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - defaultvalue: '20160'
   display: ""
   name: feedExpirationInterval
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Google IP Ranges integration to get GCP and Google global IP ranges.
 display: Google IP Ranges Feed
 name: Google IP Ranges Feed
@@ -90,7 +100,7 @@ script:
       defaultValue: "10"
     description: Gets indicators from the feed.
     name: google-ip-ranges-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.64131
+  dockerimage: demisto/py3-tools:1.0.0.67011
   feed: true
   runonce: false
   script: '-'

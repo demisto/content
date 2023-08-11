@@ -12,6 +12,8 @@ This pack includes XSIAM content.
    - Default delivery: Per event 
    - Default send as: Alert
 
+* Pay attention: Timestamp parsing is supported for the **rt** field, containing Epoch (UNIX) time.
+
 ## Collect Events from Vendor
 
 In order to use the collector, you can use one of the following options to collect events from the vendor:

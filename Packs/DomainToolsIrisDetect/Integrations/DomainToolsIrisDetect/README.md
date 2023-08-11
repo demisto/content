@@ -84,7 +84,7 @@ Reports a domain to Google's Safe Browsing API. After approval, their block list
 
 #### Command example
 
-```!domaintools-iris-detect-escalate-domains watchlist_domain_ids="ba476NwNjW"```
+```!domaintools-iris-detect-escalate-domains watchlist_domain_ids="ba476NwNJW"```
 
 #### Context Example
 
@@ -96,9 +96,9 @@ Reports a domain to Google's Safe Browsing API. After approval, their block list
                 "dt_created_by": "user@example.com",
                 "dt_created_date_result": "2023-06-18T07:09:56.638704+00:00",
                 "dt_escalation_type": "google_safe",
-                "dt_id": "LpbmA0lbOB",
+                "dt_id": "LpbmA0lboB",
                 "dt_updated_date": "2023-06-18T07:09:56.638704+00:00",
-                "dt_watchlist_domain_id": "ba476NwNjW"
+                "dt_watchlist_domain_id": "ba476NwNJW"
             }
         ]
     }
@@ -111,7 +111,7 @@ Reports a domain to Google's Safe Browsing API. After approval, their block list
 >
 >|dt_created_by|dt_created_date_result|dt_escalation_type|dt_id|dt_updated_date|dt_watchlist_domain_id|
 >|---|---|---|---|---|---|
->| <user@example.com> | 2023-06-18T07:09:56.638704+00:00 | google_safe | LpbmA0lbOB | 2023-06-18T07:09:56.638704+00:00 | ba476NwNjW |
+>| <user@example.com> | 2023-06-18T07:09:56.638704+00:00 | google_safe | LpbmA0lboB | 2023-06-18T07:09:56.638704+00:00 | ba476NwNJW |
 
 ### domaintools-iris-detect-blocklist-domains
 
@@ -141,7 +141,7 @@ Mark a given domain as blocked, which allows a script against the Iris Detect AP
 
 #### Command example
 
-```!domaintools-iris-detect-blocklist-domains watchlist_domain_ids="7WbwkN9wga"```
+```!domaintools-iris-detect-blocklist-domains watchlist_domain_ids="7WbwkN9wGa"```
 
 #### Context Example
 
@@ -153,9 +153,9 @@ Mark a given domain as blocked, which allows a script against the Iris Detect AP
                 "dt_created_by": "user@example.com",
                 "dt_created_date_result": "2023-06-18T07:09:48.626367+00:00",
                 "dt_escalation_type": "blocked",
-                "dt_id": "qabz2ekbp1",
+                "dt_id": "qabz2ekbP1",
                 "dt_updated_date": "2023-06-18T07:09:48.626367+00:00",
-                "dt_watchlist_domain_id": "7WbwkN9wga"
+                "dt_watchlist_domain_id": "7WbwkN9wGa"
             }
         ]
     }
@@ -168,7 +168,7 @@ Mark a given domain as blocked, which allows a script against the Iris Detect AP
 >
 >|dt_created_by|dt_created_date_result|dt_escalation_type|dt_id|dt_updated_date|dt_watchlist_domain_id|
 >|---|---|---|---|---|---|
->| <user@example.com> | 2023-06-18T07:09:48.626367+00:00 | blocked | qabz2ekbp1 | 2023-06-18T07:09:48.626367+00:00 | 7WbwkN9wga |
+>| <user@example.com> | 2023-06-18T07:09:48.626367+00:00 | blocked | qabz2ekbP1 | 2023-06-18T07:09:48.626367+00:00 | 7WbwkN9wGa |
 
 ### domaintools-iris-detect-watch-domains
 
@@ -199,7 +199,7 @@ Mark a given domain as watched, which will trigger more frequent scanning by Dom
 
 #### Command example
 
-```!domaintools-iris-detect-watch-domains watchlist_domain_ids="Ya2q68ldNW"```
+```!domaintools-iris-detect-watch-domains watchlist_domain_ids="Ya2q68ldnW"```
 
 #### Context Example
 
@@ -210,8 +210,8 @@ Mark a given domain as watched, which will trigger more frequent scanning by Dom
             {
                 "dt_changed_date": "2023-06-18T02:18:06.000000+00:00",
                 "dt_discovered_date": "2023-06-18T02:08:14.821000+00:00",
-                "dt_domain": "draliexpress.com",
-                "dt_domain_id": "Ya2q68ldNW",
+                "dt_domain": "suspicious-domain",
+                "dt_domain_id": "Ya2q68ldnW",
                 "dt_state": "watched"
             }
         ]
@@ -225,7 +225,7 @@ Mark a given domain as watched, which will trigger more frequent scanning by Dom
 >
 >|dt_changed_date|dt_discovered_date|dt_domain|dt_domain_id|dt_state|
 >|---|---|---|---|---|
->| 2023-06-18T02:18:06.000000+00:00 | 2023-06-18T02:08:14.821000+00:00 | draliexpress.com | Ya2q68ldNW | watched |
+>| 2023-06-18T02:18:06.000000+00:00 | 2023-06-18T02:08:14.821000+00:00 | suspicious-domain | Ya2q68ldnW | watched |
 
 ### domaintools-iris-detect-ignore-domains
 
@@ -256,7 +256,7 @@ Ignore a given domain, removing it from new and block lists, if applicable.
 
 #### Command example
 
-```!domaintools-iris-detect-ignore-domains watchlist_domain_ids="XEmKQoLBpW"```
+```!domaintools-iris-detect-ignore-domains watchlist_domain_ids="XEmKQoLBPW"```
 
 #### Context Example
 
@@ -267,8 +267,8 @@ Ignore a given domain, removing it from new and block lists, if applicable.
             {
                 "dt_changed_date": "2023-06-18T03:21:47.000000+00:00",
                 "dt_discovered_date": "2023-06-18T02:44:42.448000+00:00",
-                "dt_domain": "amazon-test.top",
-                "dt_domain_id": "XEmKQoLBpW",
+                "dt_domain": "benign-domain.com",
+                "dt_domain_id": "XEmKQoLBPW",
                 "dt_state": "ignored"
             }
         ]
@@ -282,7 +282,7 @@ Ignore a given domain, removing it from new and block lists, if applicable.
 >
 >|dt_changed_date|dt_discovered_date|dt_domain|dt_domain_id|dt_state|
 >|---|---|---|---|---|
->| 2023-06-18T03:21:47.000000+00:00 | 2023-06-18T02:44:42.448000+00:00 | amazon-test.top | XEmKQoLBpW | ignored |
+>| 2023-06-18T03:21:47.000000+00:00 | 2023-06-18T02:44:42.448000+00:00 | benign-domain.com | XEmKQoLBPW | ignored |
 
 ### domaintools-iris-detect-get-monitors-list
 
@@ -330,36 +330,36 @@ This command allows users to retrieve the list of monitored terms and respective
       {
         "created_by": "user@example.com",
         "created_date": "2022-09-20T06:01:56.760955+00:00",
-        "id": "QEMba8wmxo",
+        "id": "QEMba8wmXo",
         "match_substring_variations": false,
         "nameserver_exclusions": [],
         "state": "active",
         "status": "completed",
-        "term": "domainexpress",
+        "term": "monitored_term1",
         "text_exclusions": [],
         "updated_date": "2022-09-20T06:02:33.358799+00:00"
       },
       {
         "created_by": "user@example.com",
         "created_date": "2022-09-16T22:29:20.567614+00:00",
-        "id": "rA7bn46jQ3",
+        "id": "rA7bn46jq3",
         "match_substring_variations": false,
         "nameserver_exclusions": [],
         "state": "active",
         "status": "completed",
-        "term": "fakedomain",
+        "term": "monitored_term2",
         "text_exclusions": [],
         "updated_date": "2022-09-16T22:30:16.212269+00:00"
       },
       {
         "created_by": "user@example.com",
         "created_date": "2022-09-20T05:35:21.203482+00:00",
-        "id": "YNrbr6Gbkx",
+        "id": "YNrbr6GbKx",
         "match_substring_variations": false,
         "nameserver_exclusions": [],
         "state": "active",
         "status": "completed",
-        "term": "searchterm",
+        "term": "monitored_term3",
         "text_exclusions": [],
         "updated_date": "2022-09-20T05:35:28.630194+00:00"
       }
@@ -374,9 +374,9 @@ This command allows users to retrieve the list of monitored terms and respective
 >
 >|dt_created_by|dt_created_date|dt_match_substring_variations|dt_monitor_id|dt_nameserver_exclusions|dt_state|dt_status|dt_term|dt_text_exclusions|dt_updated_date|
 >|---|---|---|---|---|---|---|---|---|---|
->| <user@example.com> | 2022-09-20T06:01:56.760955+00:00 | false | QEMba8wmxo |  | active | completed | domainexpress |  | 2022-09-20T06:02:33.358799+00:00 |
->| <user@example.com> | 2022-09-16T22:29:20.567614+00:00 | false | rA7bn46jQ3 |  | active | completed | fakedomain |  | 2022-09-16T22:30:16.212269+00:00 |
->| <user@example.com> | 2022-09-20T05:35:21.203482+00:00 | false | YNrbr6Gbkx |  | active | completed | searchterm |  | 2022-09-20T05:35:28.630194+00:00 |
+>| <user@example.com> | 2022-09-20T06:01:56.760955+00:00 | false | QEMba8wmXo |  | active | completed | monitored_term1 |  | 2022-09-20T06:02:33.358799+00:00 |
+>| <user@example.com> | 2022-09-16T22:29:20.567614+00:00 | false | rA7bn46jq3 |  | active | completed | monitored_term2 |  | 2022-09-16T22:30:16.212269+00:00 |
+>| <user@example.com> | 2022-09-20T05:35:21.203482+00:00 | false | YNrbr6GbKx |  | active | completed | monitored_term3 |  | 2022-09-20T05:35:28.630194+00:00 |
 
 ### domaintools-iris-detect-get-new-domains
 
@@ -454,9 +454,9 @@ Manually retrieve new domains matching all of your monitored terms, or a specifi
         "discovered_date": "2023-04-11T05:16:56.483000+00:00",
         "domain": "fakedomaintask.shop",
         "escalations": [],
-        "id": "KW3ykVGZrE",
+        "id": "KW3ykVGZRE",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": false,
         "risk_score": null,
@@ -468,11 +468,11 @@ Manually retrieve new domains matching all of your monitored terms, or a specifi
       {
         "changed_date": "2023-04-11T05:15:42.000000+00:00",
         "discovered_date": "2023-04-11T05:12:22.081000+00:00",
-        "domain": "rambojombojo998fakedomain.com",
+        "domain": "fakedomain.com",
         "escalations": [],
-        "id": "gWlYVZxmja",
+        "id": "gWlYVZxmJa",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": false,
         "risk_score": 79,
@@ -498,8 +498,8 @@ Manually retrieve new domains matching all of your monitored terms, or a specifi
 >
 >|dt_changed_date|dt_create_date|dt_discovered_date|dt_domain|dt_domain_id|dt_escalations|dt_monitor_ids|dt_mx_exists|dt_proximity_score|dt_registrant_contact_email|dt_registrar|dt_risk_score|dt_risk_status|dt_state|dt_status|dt_threat_profile_evidence|dt_threat_profile_malware|dt_threat_profile_phishing|dt_threat_profile_spam|dt_tld|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2023-04-11T05:16:56.483000+00:00 |  | 2023-04-11T05:16:56.483000+00:00 | fakedomaintask.shop | KW3ykVGZrE |  | rA7bn46jQ3 | false |  |  |  |  |  | new | active |  |  |  |  | shop |
->| 2023-04-11T05:15:42.000000+00:00 |  | 2023-04-11T05:12:22.081000+00:00 | rambojombojo998fakedomain.com | gWlYVZxmja |  | rA7bn46jQ3 | false | 4 |  |  | 79 | provisional | new | active |  |  | 79 |  | com |
+>| 2023-04-11T05:16:56.483000+00:00 |  | 2023-04-11T05:16:56.483000+00:00 | fakedomaintask.shop | KW3ykVGZRE |  | rA7bn46jq3 | false |  |  |  |  |  | new | active |  |  |  |  | shop |
+>| 2023-04-11T05:15:42.000000+00:00 |  | 2023-04-11T05:12:22.081000+00:00 | fakedomain.com | gWlYVZxmJa |  | rA7bn46jq3 | false | 4 |  |  | 79 | provisional | new | active |  |  | 79 |  | com |
 
 ### domaintools-iris-detect-get-watched-domains
 
@@ -579,18 +579,18 @@ Manually retrieve changes to domains that have been marked as "watched" by users
         "assigned_date": "2023-04-11T04:46:39.000000+00:00",
         "changed_date": "2023-04-10T07:52:11.000000+00:00",
         "discovered_date": "2023-04-10T07:45:31.478000+00:00",
-        "domain": "fakedomainmetaworld.net.tr",
+        "domain": "fakedomain.net.tr",
         "escalations": [
           {
             "created": "2023-04-11T04:46:39.181378+00:00",
             "created_by": "user@example.com",
             "escalation_type": "google_safe",
-            "id": "43gB2Pwg6m"
+            "id": "43gB2PwG6m"
           }
         ],
-        "id": "8Wq8Qj9X7P",
+        "id": "8Wq8Qj9x7P",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": false,
         "risk_score": 8,
@@ -617,12 +617,12 @@ Manually retrieve changes to domains that have been marked as "watched" by users
             "created": "2023-04-10T14:33:11.342255+00:00",
             "created_by": "user@example.com",
             "escalation_type": "blocked",
-            "id": "nzgWDr3b9Y"
+            "id": "nzgWDr3B9Y"
           }
         ],
-        "id": "gaeMyYl1Va",
+        "id": "gaeMyYl1va",
         "monitor_ids": [
-          "QEMba8wmxo"
+          "QEMba8wmXo"
         ],
         "mx_exists": true,
         "risk_score": 21,
@@ -651,8 +651,8 @@ Manually retrieve changes to domains that have been marked as "watched" by users
 >
 >|dt_changed_date|dt_create_date|dt_discovered_date|dt_domain|dt_domain_id|dt_escalations|dt_monitor_ids|dt_mx_exists|dt_proximity_score|dt_registrant_contact_email|dt_registrar|dt_risk_score|dt_risk_status|dt_state|dt_status|dt_threat_profile_evidence|dt_threat_profile_malware|dt_threat_profile_phishing|dt_threat_profile_spam|dt_tld|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2023-04-10T07:52:11.000000+00:00 |  | 2023-04-10T07:45:31.478000+00:00 | fakedomainmetaworld.net.tr | 8Wq8Qj9X7P | {'escalation_type': 'google_safe', 'id': '43gB2Pwg6m', 'created': '2023-04-11T04:46:39.181378+00:00', 'created_by': '<user@example.com>'} | rA7bn46jQ3 | false | 5 |  |  | 8 | full | watched | active |  | 1 | 6 | 8 | net.tr |
->| 2023-04-10T05:58:01.000000+00:00 |  | 2023-04-10T04:52:28.545000+00:00 | fakedomain.co | gaeMyYl1Va | {'escalation_type': 'blocked', 'id': 'nzgWDr3b9Y', 'created': '2023-04-10T14:33:11.342255+00:00', 'created_by': '<user@example.com>'} | QEMba8wmxo | true | 21 |  |  | 21 | full | watched | active |  | 20 | 15 | 17 | co |
+>| 2023-04-10T07:52:11.000000+00:00 |  | 2023-04-10T07:45:31.478000+00:00 | fakedomain.net.tr | 8Wq8Qj9x7P | {'escalation_type': 'google_safe', 'id': '43gB2PwG6m', 'created': '2023-04-11T04:46:39.181378+00:00', 'created_by': '<user@example.com>'} | rA7bn46jq3 | false | 5 |  |  | 8 | full | watched | active |  | 1 | 6 | 8 | net.tr |
+>| 2023-04-10T05:58:01.000000+00:00 |  | 2023-04-10T04:52:28.545000+00:00 | fakedomain.co | gaeMyYl1va | {'escalation_type': 'blocked', 'id': 'nzgWDr3B9Y', 'created': '2023-04-10T14:33:11.342255+00:00', 'created_by': '<user@example.com>'} | QEMba8wmXo | true | 21 |  |  | 21 | full | watched | active |  | 20 | 15 | 17 | co |
 
 ### domaintools-iris-detect-get-ignored-domains
 
@@ -737,18 +737,18 @@ Manually retrieve domains that your organization has marked as ignored, matching
             "created": "2023-03-21T17:33:51.787271+00:00",
             "created_by": "user@example.com",
             "escalation_type": "blocked",
-            "id": "VrxaQQ2xnK"
+            "id": "VrxaQQ2xNK"
           },
           {
             "created": "2023-03-21T17:35:10.150279+00:00",
             "created_by": "user@example.com",
             "escalation_type": "google_safe",
-            "id": "kzbwQQ2Ey2"
+            "id": "kzbwQQ2EY2"
           }
         ],
-        "id": "VE87zKvOXa",
+        "id": "VE87zKvOxa",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": true,
         "risk_score": 100,
@@ -775,9 +775,9 @@ Manually retrieve domains that your organization has marked as ignored, matching
         "discovered_date": "2023-02-08T10:32:18.665000+00:00",
         "domain": "walletfakedomain.com",
         "escalations": [],
-        "id": "ya6dKwrRZP",
+        "id": "ya6dKwrRzP",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": true,
         "risk_score": 100,
@@ -810,8 +810,8 @@ Manually retrieve domains that your organization has marked as ignored, matching
 >
 >|dt_changed_date|dt_create_date|dt_discovered_date|dt_domain|dt_domain_id|dt_escalations|dt_monitor_ids|dt_mx_exists|dt_proximity_score|dt_registrant_contact_email|dt_registrar|dt_risk_score|dt_risk_status|dt_state|dt_status|dt_threat_profile_evidence|dt_threat_profile_malware|dt_threat_profile_phishing|dt_threat_profile_spam|dt_tld|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2023-03-30T09:07:59.000000+00:00 |  | 2023-03-21T13:57:47.094000+00:00 | fakedomainn.shop | VE87zKvOXa | {'escalation_type': 'blocked', 'id': 'VrxaQQ2xnK', 'created': '2023-03-21T17:33:51.787271+00:00', 'created_by': '<user@example.com>'}, {'escalation_type': 'google_safe', 'id': 'kzbwQQ2Ey2', 'created': '2023-03-21T17:35:10.150279+00:00', 'created_by': '<user@example.com>'} | rA7bn46jQ3 | true | 100 |  |  | 100 | full | ignored | active | registrant, domain name, name server | 98 | 99 | 82 | shop |
->| 2023-03-25T08:04:15.000000+00:00 |  | 2023-02-08T10:32:18.665000+00:00 | walletfakedomain.com | ya6dKwrRZP |  | rA7bn46jQ3 | true | 100 |  |  | 100 | full | ignored | active | domain name, registrar, name server | 19 | 95 | 43 | com |
+>| 2023-03-30T09:07:59.000000+00:00 |  | 2023-03-21T13:57:47.094000+00:00 | fakedomainn.shop | VE87zKvOxa | {'escalation_type': 'blocked', 'id': 'VrxaQQ2xNK', 'created': '2023-03-21T17:33:51.787271+00:00', 'created_by': '<user@example.com>'}, {'escalation_type': 'google_safe', 'id': 'kzbwQQ2EY2', 'created': '2023-03-21T17:35:10.150279+00:00', 'created_by': '<user@example.com>'} | rA7bn46jq3 | true | 100 |  |  | 100 | full | ignored | active | registrant, domain name, name server | 98 | 99 | 82 | shop |
+>| 2023-03-25T08:04:15.000000+00:00 |  | 2023-02-08T10:32:18.665000+00:00 | walletfakedomain.com | ya6dKwrRzP |  | rA7bn46jq3 | true | 100 |  |  | 100 | full | ignored | active | domain name, registrar, name server | 19 | 95 | 43 | com |
 
 ### domaintools-iris-detect-get-escalated-domains
 
@@ -890,18 +890,18 @@ Manually retrieve domains that your organization has escalated to Google Safe Br
         "assigned_date": "2023-04-11T04:46:39.000000+00:00",
         "changed_date": "2023-04-10T07:52:11.000000+00:00",
         "discovered_date": "2023-04-10T07:45:31.478000+00:00",
-        "domain": "fakedomainmetaworld.net.tr",
+        "domain": "fakedomain.net.tr",
         "escalations": [
           {
             "created": "2023-04-11T04:46:39.181378+00:00",
             "created_by": "user@example.com",
             "escalation_type": "google_safe",
-            "id": "43gB2Pwg6m"
+            "id": "43gB2PwG6m"
           }
         ],
-        "id": "8Wq8Qj9X7P",
+        "id": "8Wq8Qj9x7P",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": false,
         "risk_score": 8,
@@ -930,12 +930,12 @@ Manually retrieve domains that your organization has escalated to Google Safe Br
             "created": "2023-04-11T05:18:05.262047+00:00",
             "created_by": "user@example.com",
             "escalation_type": "google_safe",
-            "id": "43gB2a3g6m"
+            "id": "43gB2a3G6m"
           }
         ],
-        "id": "ZadmVQOJ0E",
+        "id": "ZadmVQOj0E",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": false,
         "risk_score": 0,
@@ -961,8 +961,8 @@ Manually retrieve domains that your organization has escalated to Google Safe Br
 >
 >|dt_changed_date|dt_create_date|dt_discovered_date|dt_domain|dt_domain_id|dt_escalations|dt_monitor_ids|dt_mx_exists|dt_proximity_score|dt_registrant_contact_email|dt_registrar|dt_risk_score|dt_risk_status|dt_state|dt_status|dt_threat_profile_evidence|dt_threat_profile_malware|dt_threat_profile_phishing|dt_threat_profile_spam|dt_tld|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2023-04-10T07:52:11.000000+00:00 |  | 2023-04-10T07:45:31.478000+00:00 | fakedomainmetaworld.net.tr | 8Wq8Qj9X7P | {'escalation_type': 'google_safe', 'id': '43gB2Pwg6m', 'created': '2023-04-11T04:46:39.181378+00:00', 'created_by': '<user@example.com>'} | rA7bn46jQ3 | false | 5 |  |  | 8 | full | watched | active |  | 1 | 6 | 8 | net.tr |
->| 2023-04-05T12:44:21.000000+00:00 |  | 2023-04-05T12:07:54.646000+00:00 | fakedomain.nexus | ZadmVQOJ0E | {'escalation_type': 'google_safe', 'id': '43gB2a3g6m', 'created': '2023-04-11T05:18:05.262047+00:00', 'created_by': '<user@example.com>'} | rA7bn46jQ3 | false | 0 |  |  | 0 | full | watched | active |  |  | 53 |  | nexus |
+>| 2023-04-10T07:52:11.000000+00:00 |  | 2023-04-10T07:45:31.478000+00:00 | fakedomain.net.tr | 8Wq8Qj9x7P | {'escalation_type': 'google_safe', 'id': '43gB2PwG6m', 'created': '2023-04-11T04:46:39.181378+00:00', 'created_by': '<user@example.com>'} | rA7bn46jq3 | false | 5 |  |  | 8 | full | watched | active |  | 1 | 6 | 8 | net.tr |
+>| 2023-04-05T12:44:21.000000+00:00 |  | 2023-04-05T12:07:54.646000+00:00 | fakedomain.nexus | ZadmVQOj0E | {'escalation_type': 'google_safe', 'id': '43gB2PwG6m', 'created': '2023-04-11T05:18:05.262047+00:00', 'created_by': '<user@example.com>'} | rA7bn46jq3 | false | 0 |  |  | 0 | full | watched | active |  |  | 53 |  | nexus |
 
 ### domaintools-iris-detect-get-blocklist-domains
 
@@ -1045,12 +1045,12 @@ Manually retrieve domains that your organization has marked as "blocklisted", ma
             "created": "2023-04-10T14:33:11.342255+00:00",
             "created_by": "user@example.com",
             "escalation_type": "blocked",
-            "id": "nzgWDr3b9Y"
+            "id": "nzgWDr3B9Y"
           }
         ],
         "id": "gaeMyYl1Va",
         "monitor_ids": [
-          "QEMba8wmxo"
+          "QEMba8wmXo"
         ],
         "mx_exists": true,
         "risk_score": 21,
@@ -1079,12 +1079,12 @@ Manually retrieve domains that your organization has marked as "blocklisted", ma
             "created": "2023-04-11T05:17:59.782456+00:00",
             "created_by": "user@example.com",
             "escalation_type": "blocked",
-            "id": "nzgWDAzb9Y"
+            "id": "nzgWDAzB9Y"
           }
         ],
         "id": "gaeMVJX8ea",
         "monitor_ids": [
-          "rA7bn46jQ3"
+          "rA7bn46jq3"
         ],
         "mx_exists": false,
         "risk_score": 0,
@@ -1110,8 +1110,8 @@ Manually retrieve domains that your organization has marked as "blocklisted", ma
 >
 >|dt_changed_date|dt_create_date|dt_discovered_date|dt_domain|dt_domain_id|dt_escalations|dt_monitor_ids|dt_mx_exists|dt_proximity_score|dt_registrant_contact_email|dt_registrar|dt_risk_score|dt_risk_status|dt_state|dt_status|dt_threat_profile_evidence|dt_threat_profile_malware|dt_threat_profile_phishing|dt_threat_profile_spam|dt_tld|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2023-04-10T05:58:01.000000+00:00 |  | 2023-04-10T04:52:28.545000+00:00 | fakedomain.co | gaeMyYl1Va | {'escalation_type': 'blocked', 'id': 'nzgWDr3b9Y', 'created': '2023-04-10T14:33:11.342255+00:00', 'created_by': '<user@example.com>'} | QEMba8wmxo | true | 21 |  |  | 21 | full | watched | active |  | 20 | 15 | 17 | co |
->| 2023-04-05T15:08:54.000000+00:00 |  | 2023-04-05T15:01:50.701000+00:00 | fakedomain.mov | gaeMVJX8ea | {'escalation_type': 'blocked', 'id': 'nzgWDAzb9Y', 'created': '2023-04-11T05:17:59.782456+00:00', 'created_by': '<user@example.com>'} | rA7bn46jQ3 | false | 0 |  |  | 0 | full | watched | active |  |  | 53 |  | mov |
+>| 2023-04-10T05:58:01.000000+00:00 |  | 2023-04-10T04:52:28.545000+00:00 | fakedomain.co | gaeMyYl1Va | {'escalation_type': 'blocked', 'id': 'nzgWDr3B9Y', 'created': '2023-04-10T14:33:11.342255+00:00', 'created_by': '<user@example.com>'} | QEMba8wmXo | true | 21 |  |  | 21 | full | watched | active |  | 20 | 15 | 17 | co |
+>| 2023-04-05T15:08:54.000000+00:00 |  | 2023-04-05T15:01:50.701000+00:00 | fakedomain.mov | gaeMVJX8ea | {'escalation_type': 'blocked', 'id': 'nzgWDr3B9Y', 'created': '2023-04-11T05:17:59.782456+00:00', 'created_by': '<user@example.com>'} | rA7bn46jq3 | false | 0 |  |  | 0 | full | watched | active |  |  | 53 |  | mov |
 
 ### domaintools-iris-detect-reset-fetch-indicators
 

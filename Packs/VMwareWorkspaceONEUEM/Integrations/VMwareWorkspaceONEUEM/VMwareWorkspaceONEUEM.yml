@@ -12,19 +12,27 @@ configuration:
 - additionalinfo: API key required for additional authorization.
   display: API Key
   name: aw_tenant_code
-  required: true
   type: 4
-- additionalinfo: Username of administrative account with read access.
-  display: Username
-  name: credentials
-  required: true
+  hidden: true
+  required: false
+- name: aw_tenant_code_creds
   type: 9
+  displaypassword: API Key
+  hiddenusername: true
+  required: false
+- display: Username
+  name: credentials
+  type: 9
+  additionalinfo: Username of administrative account with read access.
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: VMware Workspace ONE UEM integration allows users to search enrolled corporate or employee-owned devices, provides detailed information about each device such as its serial number, installed OS's, pending OS updates, network details, and much more leveraging Workspace ONE UEM's (formerly AirWatch MDM) API.
 display: VMware Workspace ONE UEM (AirWatch MDM)
 name: VMware Workspace ONE UEM (AirWatch MDM)
@@ -568,7 +576,7 @@ script:
     - contextPath: VMwareWorkspaceONEUEM.OSUpdate.OSUpdateList.Uuid
       description: The universally unique identifier of the OS update.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

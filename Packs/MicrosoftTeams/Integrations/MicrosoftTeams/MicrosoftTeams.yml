@@ -11,21 +11,25 @@ configuration:
   type: 9
   section: Connect
   displaypassword: "Bot Password"
+  required: false
 - display: Bot ID
   name: bot_id
   type: 0
   section: Connect
   hidden: true
+  required: false
 - display: Bot Password
   name: bot_password
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Authentication Type
   name: auth_type
   type: 15
@@ -34,16 +38,19 @@ configuration:
   - Client Credentials
   - Authorization Code
   section: Connect
+  required: false
 - display: Application redirect URI (for Authorization Code mode)
   name: redirect_uri
   type: 0
   section: Connect
+  required: false
 - display: ''
   name: auth_code_creds
   type: 9
   displaypassword: Authorization code
   hiddenusername: true
   section: Connect
+  required: false
 - display: Default team
   name: team
   required: true
@@ -61,18 +68,21 @@ configuration:
   section: Connect
   advanced: true
   displaypassword: Private Key (Required for HTTPS)
+  required: false
 - display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
   section: Connect
   advanced: true
   hidden: true
+  required: false
 - display: Private Key (Required for HTTPS)
   name: key
   type: 14
   section: Connect
   advanced: true
   hidden: true
+  required: false
 - display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
   type: 15
@@ -86,6 +96,7 @@ configuration:
   - Medium
   - High
   - Critical
+  required: false
 - display: Disable Automatic Notifications
   name: auto_notifications
   type: 8
@@ -93,40 +104,48 @@ configuration:
   advanced: true
   additionalinfo: Whether to disable automatic notifications to the configured notifications channel.
   defaultvalue: 'false'
+  required: false
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: The header of an external form hyperlink.
   name: external_form_url_header
   type: 0
   section: Connect
   defaultvalue: Microsoft Teams Form
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Long running instance
   name: longRunning
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Listen port, e.g. 7000 (Required for investigation mirroring and direct messages)
   name: longRunningPort
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 description: Send messages and notifications to your team members.
 display: Microsoft Teams
 name: Microsoft Teams
@@ -275,7 +294,7 @@ script:
     - description: The meeting subject.
       name: subject
       required: true
-    - description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.
+    - description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith. Note, when using Authorization Code Flow, the member must be the user who initiated the login request.
       name: member
       required: true
     description: Creates a new meeting in Microsoft Teams.
@@ -692,7 +711,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.63824
+  dockerimage: demisto/teams:1.0.0.66853
   longRunning: true
   longRunningPort: true
   script: ''

@@ -15,6 +15,7 @@ configuration:
   name: port
   defaultvalue: "8000"
   type: 0
+  required: false
 - display: Username
   name: credentials
   defaultvalue: ""
@@ -23,9 +24,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

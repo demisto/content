@@ -1,8 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import traceback
 from collections.abc import Mapping
-from typing import Any, Dict, List
+from typing import Any
+from collections.abc import Callable
 
 
 DEV_ENV_CLASSIFICATION = "DevelopmentEnvironment"
@@ -25,32 +28,18 @@ def _canonicalize_string(in_str: str) -> str:
     return in_str.lower().strip(' \t"\'')
 
 
-def is_dev_according_to_key_value_pairs(observed_key_value_pairs: List[Dict[str, Any]]) -> bool:
+def get_indicators_from_key_value_pairs(observed_key_value_pairs: list, is_indicator_match: Callable) -> list:
     """
-    Returns whether the key-value pairs in `observed_key_value_pairs` explicitly & solely contain
-    an indication of "dev"ness. Indicators of "dev"ness were learned by AI from a large
-    corpus of canonically tagged infrastructure, designed to capture many ways in which
-    "dev" infrastructure might manifest within different operating environments.
-
-    If `observed_key_value_pairs` has indicators of both prod AND dev, returns False;
-    `observed_key_value_pairs` does not describe a definitively "development" role server.
+    Returns list of matches based on criteria.
 
     Args:
-        observed_key_value_pairs (List[Dict[str, Any]]): list of key-value dictionaries;
-            each dictionary within the list must contain the keys "Key" and "Value";
-            the values are arbitrary
-            Example value for `observed_key_value_pairs`:
-                [{"Key": "env", "Source": "AWS", "Value": "dev"},
-                 {"Key": "Name", "Source": "AWS", "Value": "ssh-ec2-machine-name"}]
+        observed_key_value_pairs (List[str]): list of tags to process.
+        is_indicator_match (callable): what function to call depending on dev or prod checking.
 
     Returns:
-        bool: whether `observed_key_value_pairs` indicates that the described system is
-            used solely for development (has development indicators and lacks any
-            production indicators)
+        list: list of matches based on exact/partial dev criteria.
     """
-
-    has_dev_indicator = False
-    has_prod_indicator = False
+    indicators = []
     for kv_pair in observed_key_value_pairs:
         if not isinstance(kv_pair, Mapping):
             demisto.info(f"Ignoring item because it is not a mapping: {kv_pair}")
@@ -61,23 +50,47 @@ def is_dev_according_to_key_value_pairs(observed_key_value_pairs: List[Dict[str,
                 key = _canonicalize_string(kv_pair.get("Key", ""))
                 value = _canonicalize_string(kv_pair.get("Value", ""))
 
-                if ("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier")):
-                    if (("dev" in value and "devops" not in value)
-                            or ("uat" in value and "prod" not in value)
-                            or any([m == value for m in EXACT_DEV_MATCH])
-                            or any([m in value for m in PARTIAL_DEV_MATCH])):
-                        has_dev_indicator = True
-                    elif (any([m == value for m in EXACT_PROD_MATCH])
-                          or any([m in value for m in PARTIAL_PROD_MATCH])):
-                        has_prod_indicator = True
+                if (("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier"))) and is_indicator_match(value):
+                    indicators.append(kv_pair)
 
-    if has_dev_indicator and not has_prod_indicator:
-        return True
-    else:
+    return indicators
+
+
+def is_dev_indicator(value: str) -> bool:
+    """
+     Returns boolean based on match on exact/partial dev criteria.
+
+     Args:
+         value (str): value of the kv pair of tag.
+
+     Returns:
+         bool: whether there was a match based on exact/partial dev criteria.
+     """
+    return (("dev" in value and "devops" not in value)
+            or ("uat" in value and "prod" not in value)
+            or any(m == value for m in EXACT_DEV_MATCH)
+            or any(m in value for m in PARTIAL_DEV_MATCH))
+
+
+def is_prod_indicator(value: str) -> bool:
+    """
+    Returns boolean based on match on exact/partial prod criteria.
+
+    Args:
+        value (str): value of the kv pair of tag.
+
+    Returns:
+        bool: whether there was a match based on exact/partial prod criteria.
+    """
+    # Check if matches dev first for values like "non-production"
+    if is_dev_indicator(value):
         return False
+    else:
+        return (any(m == value for m in EXACT_PROD_MATCH)
+                or any(m in value for m in PARTIAL_PROD_MATCH))
 
 
-def is_dev_according_to_classifications(classifications: List[str]) -> bool:
+def get_indicators_from_external_classification(classifications: list[str]) -> list:
     """
     Returns whether any of the classification strings indicate that this service is
     a development environment. The Xpanse ASM classification strings are a defined
@@ -91,11 +104,79 @@ def is_dev_according_to_classifications(classifications: List[str]) -> bool:
                 ["RdpServer", "SelfSignedCertificate"]
 
     Returns:
-        bool: whether there is an indication within `classifications` that
-            the described system is used for development
+        List: whether there is an indication within `classifications` that
+            the described system is used for development.  Empty list means
+            no matches.
     """
-    is_dev = (DEV_ENV_CLASSIFICATION in classifications)
-    return is_dev
+    ext_classification_match = [DEV_ENV_CLASSIFICATION] if DEV_ENV_CLASSIFICATION in classifications else []
+    return ext_classification_match
+
+
+def determine_reason(external_indicators: list, matches: list) -> str:
+    """
+    Craft the 'reason' for the final verdict of "development" server or not.
+
+    Args:
+        external_indicators (list): to determine there is an external service classification match.
+            Empty list means no matches.
+        matches (list): list of matches of tags with DEV or PROD characteristics.
+
+    Returns:
+        str: complete `reason` string to be added to the gridfield.
+    """
+    reason_parts = []
+    if len(external_indicators) == 1:
+        reason_parts.append("external classification of " + DEV_ENV_CLASSIFICATION)
+    for match in matches:
+        reason_parts.append("tag {" + f"{match.get('Key')}: {match.get('Value')}" + "} from " + match.get('Source'))
+    reason_final = "match on "
+    for reason in reason_parts:
+        reason_final += reason + ", "
+    # Strip last ','
+    reason_final = reason_final[:-2]
+    # Replace last ','' with ' and '
+    reason_final = " and ".join(reason_final.rsplit(", ", 1))
+    return reason_final
+
+
+def final_decision(external_indicators: list, dev_matches: list, prod_matches: list) -> dict:
+    """
+    Final decision to be set in gridfield.
+
+    Args:
+        external_indicators (list): list of matches of external service classification match.
+        dev_matches (list): list of matches of tags with DEV characteristics.
+        prod_matches (list): list of matches of tags with PROD characteristics.
+
+    Returns:
+        dict: dictionary to be added to gridfield.
+    """
+    final_dict: dict[str, Any] = {}
+    if (len(external_indicators) == 1 or len(dev_matches) > 0) and len(prod_matches) == 0:
+        final_dict["result"] = True
+        final_dict["confidence"] = "Likely Development"
+        reason_final = determine_reason(external_indicators, dev_matches)
+        final_dict["reason"] = reason_final
+    elif (len(external_indicators) == 1 or len(dev_matches) > 0) and len(prod_matches) > 0:
+        final_dict["result"] = False
+        final_dict["confidence"] = "Conflicting Information"
+        reason_final = determine_reason(external_indicators, dev_matches + prod_matches)
+        final_dict["reason"] = reason_final
+    elif (len(external_indicators) == 0 and len(dev_matches) == 0) and len(prod_matches) > 0:
+        final_dict["result"] = False
+        final_dict["confidence"] = "Likely Production"
+        reason_final = determine_reason(external_indicators, prod_matches)
+        final_dict["reason"] = reason_final
+    else:
+        final_dict["result"] = False
+        final_dict["confidence"] = "Not Enough Information"
+        final_dict["reason"] = "Neither dev nor prod indicators found"
+    # Create a more human readable table for war room.
+    if final_dict.get("result", False):
+        final_dict["result_readable"] = "The service is development"
+    else:
+        final_dict["result_readable"] = "The service is not development"
+    return final_dict
 
 
 """ MAIN FUNCTION """
@@ -123,30 +204,30 @@ def main():
             (a defined vocabulary)
             Example value for `classifications`:
                 ["RdpServer", "SelfSignedCertificate"]
-
     Returns:
         No return value.
         Two side effects:
-        1. Update the "alert" context with a boolean value named `asmdevcheck`
-           that is True if there is a consistent indicator of dev-ness in the arguments,
-           and is False otherwise
+        1. Update the "alert" context with a values for `asmdevcheckdetails` gridfield.
+           The `result` key is set as True if there is a consistent indicator of dev-ness
+           in the arguments,and is False otherwise.  `confidence` and `reason` explain
+           more about why the `result` key was marked as it is
         2. Update the warroom with a statement of whether the service is dev
     """
     try:
         args = demisto.args()
 
-        internal_tags: List[Dict[str, Any]] = argToList(args.get("asm_tags", [{}]))
-        is_dev_internal = is_dev_according_to_key_value_pairs(internal_tags)
+        internal_tags: list[dict[str, Any]] = argToList(args.get("asm_tags", [{}]))
+        dev_kv_indicators = get_indicators_from_key_value_pairs(internal_tags, is_dev_indicator)
+        prod_kv_indicators = get_indicators_from_key_value_pairs(internal_tags, is_prod_indicator)
 
-        external_active_classifications: List[str] = argToList(args.get("active_classifications", []))
-        is_dev_external = is_dev_according_to_classifications(external_active_classifications)
+        external_active_classifications: list[str] = argToList(args.get("active_classifications", []))
+        external_indicators = get_indicators_from_external_classification(external_active_classifications)
 
-        dev_or_not = is_dev_internal or is_dev_external
-        demisto.executeCommand("setAlert", {"asmdevcheck": dev_or_not})
-        if dev_or_not:
-            return_results(CommandResults(readable_output='the service is development'))
-        else:
-            return_results(CommandResults(readable_output='the service is not development'))
+        decision_dict = final_decision(external_indicators, dev_kv_indicators, prod_kv_indicators)
+        demisto.executeCommand("setAlert", {"asmdevcheckdetails": [decision_dict]})
+
+        output = tableToMarkdown("Dev Check Results", decision_dict, ['result_readable', 'confidence', 'reason'])
+        return_results(CommandResults(readable_output=output))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute InferWhetherServiceIsDev. Error: {str(ex)}")

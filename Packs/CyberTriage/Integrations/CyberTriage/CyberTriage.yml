@@ -20,6 +20,7 @@ configuration:
   name: api_key
   type: 9
   hiddenusername: true
+  required: false
 - display: Username
   name: credentials
   defaultvalue: ""
@@ -29,6 +30,7 @@ configuration:
   name: use_proxy
   defaultvalue: "true"
   type: 8
+  required: false
 script:
   script: ''
   type: python

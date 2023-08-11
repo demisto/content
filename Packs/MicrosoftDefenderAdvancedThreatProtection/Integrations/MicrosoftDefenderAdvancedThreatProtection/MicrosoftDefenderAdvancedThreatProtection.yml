@@ -23,24 +23,29 @@ configuration:
   - DoD
   - Custom
   advanced: true
+  required: false
 - display: ID
   name: _auth_id
   type: 0
   section: Connect
+  required: false
 - display: Token
   name: _tenant_id
   type: 0
   section: Connect
+  required: false
 - displaypassword: Key
   name: credentials
   type: 9
   hiddenusername: true
+  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -48,6 +53,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
@@ -55,6 +61,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Type of authentication - either Authorization Code (recommended) or Client Credentials.
   display: Authentication Type
   name: auth_type
@@ -66,11 +73,13 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions section
@@ -79,12 +88,14 @@ configuration:
   type: 9
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -100,14 +111,17 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - defaultvalue: New
   display: 'Status to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
   name: fetch_status
@@ -118,6 +132,24 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
+- display: 'DetectionSource to filter out alerts for fetching as incidents.'
+  name: fetch_detectionsource
+  options:
+  - Antivirus
+  - Automated investigation
+  - Custom detection
+  - Custom TI
+  - EDR
+  - Microsoft 365 Defender
+  - Microsoft Defender for Office 365
+  - Microsoft Defender Experts
+  - SmartScreen
+  - Third-party sensors
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: Informational,Low,Medium,High
   display: 'Severity to filter out alerts for fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.'
   name: fetch_severity
@@ -129,11 +161,13 @@ configuration:
   - High
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
   type: 0
@@ -141,31 +175,38 @@ configuration:
   advanced: true
   defaultvalue:
   additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
-- display: Use a self-deployed Azure Application
+  required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Fetch alert evidence
   name: fetch_evidence
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_timestamp
   type: 0
   section: Collect
+  required: false
 - display: Using Microsoft GCC? (Deprecated)
   name: is_gcc
   type: 8
@@ -173,24 +214,28 @@ configuration:
   section: Connect
   advanced: true
   defaultvalue: 'false'
+  required: false
 - display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated) section)
   name: tenant_id
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: enc_key
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
@@ -5460,7 +5505,11 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: microsoft-atp-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.63672
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: microsoft-atp-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.67448
   isfetch: true
   runonce: false
   script: '-'

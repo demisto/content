@@ -16,12 +16,14 @@ configuration:
   displaypassword: Token
   hiddenusername: true
   section: Connect
+  required: false
 - display: Token
   name: token
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Organization name
   name: org
   required: true
@@ -32,35 +34,41 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow creating users
   name: create-user-enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow updating users
   name: update-user-enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable-user-enabled
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Automatically create user if not found in update and enable commands
   name: create-if-not-exists
   type: 8
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
@@ -231,7 +239,7 @@ script:
       type: String
   - description: Retrieves a User Profile schema which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   ismappable: true
   isremotesyncout: true
   script: '-'

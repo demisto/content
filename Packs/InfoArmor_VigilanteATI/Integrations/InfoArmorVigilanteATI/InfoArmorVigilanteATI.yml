@@ -13,25 +13,31 @@ configuration:
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: API Secret
   name: apisecret_new
   type: 9
   displaypassword: API Secret
   hiddenusername: true
+  required: false
 - display: API Key
   name: apikey
   type: 4
   hidden: true
+  required: false
 - display: API Secret
   name: apisecret
   type: 4
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: VigilanteATI redefines Advanced Threat Intelligence. InfoArmor's VigilanteATI platform and cyber threat services act as an extension of your IT security team.
 display: InfoArmor VigilanteATI
 name: InfoArmor VigilanteATI
@@ -413,7 +419,7 @@ script:
       type: string
   - description: Returns the usage data for your account.
     name: vigilante-account-usage-info
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.66339
   runonce: false
   script: '-'
   subtype: python3

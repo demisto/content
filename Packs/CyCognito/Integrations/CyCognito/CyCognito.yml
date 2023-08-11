@@ -12,6 +12,7 @@ configuration:
   display: Incident type
   name: incidentType
   type: 13
+  required: false
 - additionalinfo: The mirroring direction in which to mirror the incident. You can mirror only in (from CyCognito to XSOAR), out (from XSOAR to CyCognito), or in both directions.
   display: Incident Mirroring Direction
   defaultvalue: Incoming and Outgoing
@@ -24,9 +25,11 @@ configuration:
   - Outgoing
   - Incoming and Outgoing
   type: 15
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: |-
     The date or relative timestamp from which to begin fetching incidents.
 
@@ -37,11 +40,13 @@ configuration:
   display: First Fetch Time
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: The maximum number of incidents to fetch every time. The maximum value is '1000'.
   defaultvalue: '50'
   display: Max Fetch
   name: max_fetch
   type: 0
+  required: false
 - additionalinfo: The type of issue to fetch. By default, all types of issues will be fetched. Multiple selection is supported.
   display: Issue Type
   name: issue_type
@@ -63,11 +68,13 @@ configuration:
   - Weak Encryption
   - XSS
   type: 16
+  required: false
 - additionalinfo: Filters incidents according to the geographic locations in which the issue is found. Multiple selection is supported.
   display: Locations
   name: locations
   options: ["Afghanistan", "Aland Islands", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia, Plurinational State of", "Bonaire, Sint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo", "Congo, The Democratic Republic of the", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Curacao", "Cyprus", "Czechia", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Falkland Islands (Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern Territories", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard Island and McDonald Islands", "Holy See", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran, Islamic Republic of", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, Democratic People's Republic of", "Korea, Republic of", "Kuwait", "Kyrgyzstan", "Lao People's Democratic Republic", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Moldova, Republic of", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "North Macedonia", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Palestine, State of", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russian Federation", "Rwanda", "Saint Barthelemy", "Saint Helena, Ascension and Tristan da Cunha", "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch part)", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan, Province of China", "Tajikistan", "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom of Great Britain and Northern Ireland", "United States of America", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela, Bolivarian Republic of", "Vietnam", "Virgin Islands, British", "Virgin Islands, U.S.", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe"]
   type: 16
+  required: false
 - additionalinfo: The severity levels of the issues to fetch from CyCognito. By default, all the severity levels will be fetched, Multiple selection is supported.
   display: Severity
   name: severity_filter
@@ -77,6 +84,7 @@ configuration:
   - medium
   - critical
   type: 16
+  required: false
 - additionalinfo: The investigation status of the issues to fetch from CyCognito. By default, it fetches uninvestigated issues.
   defaultvalue: uninvestigated
   display: Investigation Status
@@ -86,22 +94,27 @@ configuration:
   - investigating
   - investigated
   type: 15
+  required: false
 - additionalinfo: "Applies a filter to the list of issues based on a JSON-specific query.\n\nFormat:\n[{\n    \"field\": \"issue-type\",\n    \"op\": \"in\",\n    \"values\": [\n       \"Unsafe Authentication\",\n       \"Vulnerable Software\"\n    ]\t\n},\n{\n    \"op\": \"not-in\",\n    \"field\": \"severity-score\",\n    \"values\": [10, 9]\n}]\n\nNote: When using several filtering options (e.g., 'Issue Type' and 'Advanced Filter'), Advanced Filter parameters will take precedence over other parameters.\nFor a complete reference to the CyCognito fields and operations, please refer to the CyCognito API V0 documentation at \nhttps://docs.cycognito.com/reference/query-issues"
   display: Advanced Filter
   name: advanced_filter
   type: 12
+  required: false
 - additionalinfo: Indicates whether to allow connections without verifying SSL certificate's validity.
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Indicates whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: '1440'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 description: The CyCognito integration fetches issues discovered by the CyCognito platform, thereby providing users with a view of their organization's internet-exposed attack surface. These issues include identification, prioritization, and recommendations for remediation of the risks faced by the organization. The integration contains commands to query assets and issues detected by the CyCognito platform, and includes a rich dashboard and layout with issue management capability.
 display: CyCognito
 name: CyCognito
@@ -814,7 +827,7 @@ script:
     - contextPath: CyCognito.Asset.discoverability
       description: Quantifies an asset's level of exposure.
       type: String
-  dockerimage: demisto/pycountry:1.0.0.63741
+  dockerimage: demisto/pycountry:1.0.0.66907
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true

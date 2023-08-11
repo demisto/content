@@ -12,28 +12,34 @@ configuration:
   type: 9
   displaypassword: API Key ID
   hiddenusername: true
+  required: false
 - display: ''
   name: apikey_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: API Key ID
   name: apikey_id
   type: 4
   hidden: true
+  required: false
 - display: API Key
   name: apikey
   type: 4
   hidden: true
+  required: false
 - display: Fetch indicators
   name: feed
   type: 8
   defaultvalue: 'true'
+  required: false
 - additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
   defaultvalue: 'true'
   display: Auto Sync
   name: autoSync
   type: 8
+  required: false
 - additionalinfo: When the `override severity` parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the severity level of the indicator will be used.
   display: Overriding severity value
   name: severity
@@ -50,6 +56,7 @@ configuration:
   type: 0
   additionalinfo: Supports CSV values.
   defaultvalue: Cortex XDR
+  required: false
 - display: Sync Query
   name: query
   required: true
@@ -59,9 +66,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
@@ -71,6 +80,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - display: 'Source Reliability'
   name: feedReliability
   options:
@@ -93,6 +103,7 @@ configuration:
   - GREEN
   - WHITE
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  required: false
 - display: ''
   name: feedExpirationPolicy
   type: 17
@@ -101,42 +112,51 @@ configuration:
   - interval
   - indicatorType
   - suddenDeath
+  required: false
 - display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 - display: Incremental Feed
   name: feedIncremental
   type: 8
   defaultvalue: 'true'
   hidden: true
+  required: false
 - defaultvalue: '1'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - additionalinfo: The XSOAR indicator field used as severity.
   display: XSOAR Severity Field
   name: xsoar_severity_field
   type: 0
   defaultvalue: 'sourceoriginalseverity'
+  required: false
 - defaultvalue: 'comments'
   additionalinfo: The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
   display: XSOAR Comment Field
   name: xsoar_comments_field
   type: 0
+  required: false
 - defaultvalue: 'false'
   additionalinfo: Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`.
   display: Comments as tags (CSV)
   name: comments_as_tags
   type: 8
+  required: false
 - additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
   display: Override severity
   name: override_severity
   type: 8
   defaultvalue: 'true'
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 display: Cortex XDR - IOC
 name: Cortex XDR - IOC
