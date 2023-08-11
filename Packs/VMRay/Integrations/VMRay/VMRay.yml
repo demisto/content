@@ -1091,8 +1091,10 @@ script:
     arguments: []
   - arguments: []
     name: vmray-get-license-usage-detections
+    description: Get the used quota of detections
   - arguments: []
     name: vmray-get-license-usage-reports
+    description: Get the used quota of reports
   dockerimage: demisto/python3:3.10.12.68300
   runonce: false
   script: ''
