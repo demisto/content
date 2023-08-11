@@ -2,23 +2,40 @@ import json
 import logging as logger
 from argparse import ArgumentParser
 from pathlib import Path
+from string import Template
 
 from demisto_sdk.commands.common.logger import logging_setup
 
+from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.gitlab_client import GitlabClient
 from Tests.scripts.utils.log_util import install_logging
 
-logging_setup(3)
+DEPENDENCIES_FIELDS = ["dependencies", "allLevelDependencies"]
+BOOL_TO_M_LEVEL: dict = {
+    True: "mandatory",
+    False: "optional",
+}
+CHANGE_TYPE_TO_TEMPLATE: dict[str, Template] = {
+    "added": Template("A new {m_level} dependency {dep_id} was added."),
+    "removed": Template("The {m_level} dependency {dep_id} is no longer a dependency"),
+    "modified": Template("The dependency {dep_id} was changed from {previous_m_level} to {m_level}"),
+}
+
+
+logging_setup(logger.DEBUG)
 install_logging("find_pack_dependencies_changes.log", logger=logger)
 
 
 def parse_args():
     args = ArgumentParser()
-    args.add_argument('--gitlab-token', required=True, help='A gitlab API token')
+    args.add_argument('--gitlab-token', required=True, help='A GitLab API token')
+    args.add_argument('--github-token', required=True, help='A GitHub API token')
     args.add_argument('--master-sha', required=True, help='master branch commit SHA')
     args.add_argument('--job-name', required=True, help='The job name to take the artifact from')
     args.add_argument('--marketplace', required=True, help='The marketplace name')
     args.add_argument('--current-file', required=True, help='Path to current pack_dependencies.json')
+    args.add_argument('--current-sha', required=True, help='Current branch commit SHA')
+    args.add_argument('--current-branch', required=True, help='Current branch name')
     args.add_argument('--output', required=True, help='Path to diff output file')
     return args.parse_args()
 
@@ -55,10 +72,8 @@ def compare_field(pack_id: str, previous: dict, current: dict, res: dict, field:
 
 
 def get_pack_diff(pack_id: str, previous: dict, current: dict) -> dict:
-    dependencies_fields = ["dependencies", "allLevelDependencies"]
-
     def all_pack_dependencies(pack_data: dict) -> dict:
-        return {field: pack_data[field] for field in dependencies_fields}
+        return {field: pack_data[field] for field in DEPENDENCIES_FIELDS}
 
     if pack_id not in previous:
         new_pack_deps = all_pack_dependencies(current[pack_id])
@@ -71,7 +86,7 @@ def get_pack_diff(pack_id: str, previous: dict, current: dict) -> dict:
         return {"removed": removed_pack_deps}
 
     res: dict = {}
-    for field in dependencies_fields:
+    for field in DEPENDENCIES_FIELDS:
         compare_field(pack_id, previous[pack_id], current[pack_id], res, field)
     return res
 
@@ -84,8 +99,60 @@ def compare(previous: dict, current: dict) -> dict:
     return diff
 
 
-def main():  # pragma: no cover
-    args = parse_args()
+def get_summary(diff: dict) -> str:
+    """ Logs and returns a string reperesentation of the pack dependencies changes.
+
+    `diff` is expected to contain key-value pairs of pack IDs and their changes.
+    The data is expected to be in the following structure:
+    {
+        "pack_id": {
+            "added": {
+                "dependencies": {  // first-level dependencies
+                    "dep_id": {
+                        "display_name": str,
+                        "mandatory": bool,
+                        ...
+                    }
+                },
+                "allLevelDependencies": {
+                    "dep_id": {
+                        "display_name": str,
+                        "mandatory": bool,
+                        ...
+                    }
+                }
+            },
+            "removed": {...},
+            "modified": {...}
+        },
+        ...
+    }
+    """
+    if not diff:
+        return "### No difference in packs dependencies."
+
+    s = "### This pull request introduces changes in packs dependencies.\n"
+
+    pack_data: dict[str, dict[str, dict]]
+    for pack_id, pack_data in diff.items():
+        for change_type, change_data in pack_data.items():
+            for dep_field in DEPENDENCIES_FIELDS:
+                if dependencies_data := change_data.get(dep_field):
+                    s += (
+                        f"- In the {'all' if dep_field.startswith('all') else 'first'}-"
+                        f"level dependencies of pack {pack_id}:\n"
+                    )
+                    for dep_id, dep_data in dependencies_data.items():
+                        s += CHANGE_TYPE_TO_TEMPLATE[change_type].safe_substitute(
+                            dep_id=dep_id,
+                            m_level=BOOL_TO_M_LEVEL[dep_data["mandatory"]],
+                            previous_m_level=BOOL_TO_M_LEVEL[not dep_data["mandatory"]],
+                        )
+    logger.info(s)
+    return s
+
+
+def get_diff(args: ArgumentParser) -> dict:  # pragma: no cover
     gitlab_client = GitlabClient(args.gitlab_token)
     previous = gitlab_client.get_packs_dependencies_json(
         args.master_sha,
@@ -93,9 +160,19 @@ def main():  # pragma: no cover
         args.marketplace,
     )
     current = json.loads(Path(args.current_file).read_text())
-    diff = compare(previous, current)
-    if not diff:
-        logger.info("No difference in packs dependencies.")
+    return compare(previous, current)
+
+
+def main():  # pragma: no cover
+    args = parse_args()
+    diff = get_diff(args)
+    summary = get_summary(diff)
+    pull_request = GithubPullRequest(
+        args.github_token,
+        sha1=args.current_sha,
+        branch=args.current_branch,
+    )
+    pull_request.edit_comment(summary, append=True)
     Path(args.output).write_text(json.dumps(diff, indent=4))
 
 

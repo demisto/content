@@ -178,7 +178,7 @@ validate-content-conf:
           exit 1
       else
           echo "Finding pack dependencies diff against $MASTER_SHA"
-          python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --master-sha $MASTER_SHA --job-name $CI_JOB_NAME --current-file $ARTIFACTS_FOLDER/packs_dependencies.json --marketplace $MARKETPLACE_VERSION --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
+          python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --github-token $GITHUB_TOKEN --master-sha $MASTER_SHA --job-name $CI_JOB_NAME --current-file $ARTIFACTS_FOLDER/packs_dependencies.json --marketplace $MARKETPLACE_VERSION --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
       fi
     - section_end "Find dependencies changes"
 
