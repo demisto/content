@@ -8,24 +8,14 @@ import pytest
 from Tests.scripts.gitlab_client import GitlabClient, GetArtifactErrors
 
 
+SHA = "mock_sha"
+JOB_NAME = "mock_job_name"
+MARKETPLACE = "xsoar"
+
+
 @pytest.fixture
 def client() -> GitlabClient:
     return GitlabClient("mock_token")
-
-
-@pytest.fixture
-def sha() -> str:
-    return "mock_sha"
-
-
-@pytest.fixture
-def job_name() -> str:
-    return "mock_job_name"
-
-
-@pytest.fixture
-def marketplace() -> str:
-    return "xsoar"
 
 
 def mock_artifacts_api_response(
@@ -46,9 +36,6 @@ def mock_artifacts_api_response(
 
 def test_get_packs_dependencies(
     client: GitlabClient,
-    sha: str,
-    job_name: str,
-    marketplace: str,
     requests_mock,
 ) -> None:
     """
@@ -64,21 +51,21 @@ def test_get_packs_dependencies(
     """
     packs_dependencies_json: dict = {}
     requests_mock.get(
-        f"{client.base_url}/pipelines?sha={sha}",
+        f"{client.base_url}/pipelines?sha={SHA}",
         json=[{"id": "mock_pipeline_id"}],
     )
     requests_mock.get(
         f"{client.base_url}/pipelines/mock_pipeline_id/jobs",
-        json=[{"id": "mock_job_id", "name": job_name}],
+        json=[{"id": "mock_job_id", "name": JOB_NAME}],
     )
     requests_mock.get(
         f"{client.base_url}/jobs/mock_job_id/artifacts",
-        content=mock_artifacts_api_response(marketplace, packs_dependencies_json),
+        content=mock_artifacts_api_response(MARKETPLACE, packs_dependencies_json),
     )
     assert client.get_packs_dependencies_json(
-        sha,
-        job_name,
-        marketplace,
+        SHA,
+        JOB_NAME,
+        MARKETPLACE,
     ) == packs_dependencies_json
 
 
@@ -101,15 +88,15 @@ def test_get_packs_dependencies(
         ),
         pytest.param(
             [{"id": "mock_pipeline_id"}],
-            [{"id": "mock_job_id", "name": "mock_job_name"}],
+            [{"id": "mock_job_id", "name": JOB_NAME}],
             {"status_code": 404},
             GetArtifactErrors.NO_ARTIFACTS,
             id="No artifacts",
         ),
         pytest.param(
             [{"id": "mock_pipeline_id"}],
-            [{"id": "mock_job_id", "name": "mock_job_name"}],
-            {"content": mock_artifacts_api_response(marketplace, data=None)},
+            [{"id": "mock_job_id", "name": JOB_NAME}],
+            {"content": mock_artifacts_api_response(MARKETPLACE, data=None)},
             GetArtifactErrors.NO_FILE_IN_ARTIFACTS,
             id="No pack_dependencies.json file in artifacts",
         ),
@@ -117,9 +104,6 @@ def test_get_packs_dependencies(
 )
 def test_get_packs_dependencies_bad(
     client: GitlabClient,
-    sha: str,
-    job_name: str,
-    marketplace: str,
     requests_mock: Any,
     pipelines_mock_response: list | None,
     jobs_mock_response: list | None,
@@ -139,7 +123,7 @@ def test_get_packs_dependencies_bad(
             - Ensure an exception is raised for all test cases.
     """
     requests_mock.get(
-        f"{client.base_url}/pipelines?sha={sha}",
+        f"{client.base_url}/pipelines?sha={SHA}",
         json=pipelines_mock_response,
     )
     requests_mock.get(
@@ -153,8 +137,8 @@ def test_get_packs_dependencies_bad(
         )
     with pytest.raises(Exception) as e:
         client.get_packs_dependencies_json(
-            sha,
-            job_name,
-            marketplace,
+            SHA,
+            JOB_NAME,
+            MARKETPLACE,
         )
     assert expected_err.value in str(e)

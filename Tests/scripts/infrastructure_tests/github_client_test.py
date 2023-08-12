@@ -5,32 +5,31 @@ import pytest
 from Tests.scripts.github_client import GithubClient, GithubPullRequest
 
 
-@pytest.fixture
-def sha() -> str:
-    return "mock_sha"
+SHA = "mock_sha"
+BRANCH = "mock_branch"
+COMMENTS_URL = "https://comments_url"  # disable-secrets-detection
 
 
 @pytest.fixture
-def branch() -> str:
-    return "mock_job_name"
-
-
-@pytest.fixture
-def pull_request(sha: str, branch: str, requests_mock: Any) -> GithubPullRequest:
+def pull_request(requests_mock: Any) -> GithubPullRequest:
     requests_mock.get(
-        f"{GithubClient.base_url}/search/issues?q={sha}+repo:demisto/content+is:pull-request+head:{branch}+is:open",
+        f"{GithubClient.base_url}/search/issues?q={SHA}+repo:demisto/content+is:pull-request+head:{BRANCH}+is:open",
         json={
             "total_count": 1,
             "items": [
-                {"node_id": "mock_node_id", "body": "b", "comments_url": "https://comments_url"},
+                {
+                    "node_id": "mock_node_id",
+                    "body": "b",
+                    "comments_url": COMMENTS_URL,
+                },
             ]
         },
     )
-    return GithubPullRequest("mock_token", sha1=sha, branch=branch)
+    return GithubPullRequest("mock_token", sha1=SHA, branch=BRANCH)
 
 
 def test_add_comment(pull_request: GithubPullRequest, requests_mock: Any) -> None:
-    req = requests_mock.post("https://comments_url")
+    req = requests_mock.post(COMMENTS_URL)
     pull_request.add_comment("c")
     assert req.called_once
 

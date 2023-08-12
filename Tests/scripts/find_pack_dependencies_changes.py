@@ -6,7 +6,7 @@ from string import Template
 
 from demisto_sdk.commands.common.logger import logging_setup
 
-from Tests.scripts.github_client import GithubPullRequest
+# from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.gitlab_client import GitlabClient
 from Tests.scripts.utils.log_util import install_logging
 
@@ -166,14 +166,15 @@ def get_diff(args: Namespace) -> dict:  # pragma: no cover
 def main():  # pragma: no cover
     args = parse_args()
     diff = get_diff(args)
-    summary = get_summary(diff)
-    pull_request = GithubPullRequest(
-        args.github_token,
-        sha1=args.current_sha,
-        branch=args.current_branch,
-        fail_on_error=True,
-    )
-    pull_request.add_comment(summary)
+    get_summary(diff)
+    # summary = get_summary(diff)
+    # pull_request = GithubPullRequest(
+    #     args.github_token,
+    #     sha1=args.current_sha,
+    #     branch=args.current_branch,
+    #     fail_on_error=True,
+    # )
+    # pull_request.add_comment(summary)
     Path(args.output).write_text(json.dumps(diff, indent=4))
 
 
