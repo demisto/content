@@ -1,6 +1,6 @@
 import json
 import logging as logger
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from string import Template
 
@@ -26,7 +26,7 @@ logging_setup(logger.DEBUG)
 install_logging("find_pack_dependencies_changes.log", logger=logger)
 
 
-def parse_args():
+def parse_args() -> Namespace:
     args = ArgumentParser()
     args.add_argument('--gitlab-token', required=True, help='A GitLab API token')
     args.add_argument('--github-token', required=True, help='A GitHub API token')

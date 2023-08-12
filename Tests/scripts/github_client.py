@@ -27,7 +27,7 @@ class GithubClient:
         url_suffix: str | None = None,
         params: dict | None = None,
         json_data: dict | None = None,
-        full_url: dict | None = None,
+        full_url: str | None = None,
     ) -> dict | None:
         if url_suffix:
             full_url = f"{self.base_url}{url_suffix}"
@@ -46,10 +46,10 @@ class GithubClient:
             response.raise_for_status()
             return response.json()
         except Exception as e:
-                self.handle_error(
-                    f"{method} request to github failed: {e}"
-                )
-                return None
+            self.handle_error(
+                f"{method} request to github failed: {e}"
+            )
+            return None
 
     def graphql(
         self,
@@ -73,7 +73,7 @@ class GithubClient:
         q = []
         if sha1:
             q.append(sha1)
-        q.extend([f"repo:{self.repository}", "is:pr"])
+        q.extend([f"repo:{self.repository}", "is:pull-request"])
         if branch:
             q.append(f"head:{branch}")
         if is_open is not None:
@@ -84,11 +84,11 @@ class GithubClient:
         )
 
     def get_pull(
-            self,
-            sha1: str | None = None,
-            branch: str | None = None,
-            is_open: bool = True,
-        ) -> dict:
+        self,
+        sha1: str | None = None,
+        branch: str | None = None,
+        is_open: bool = True,
+    ) -> dict:
         if not (sha1 or branch):
             self.handle_error("Did not provide enough details to get PR data.")
             self.data = {}
@@ -132,10 +132,10 @@ class GithubPullRequest(GithubClient):
         )
 
     def edit_comment(
-            self,
-            comment: str,
-            append: bool = True,
-        ) -> None:
+        self,
+        comment: str,
+        append: bool = True,
+    ) -> None:
         """Edits the first comment (AKA "body") of the pull request.
 
         Args:

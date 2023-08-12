@@ -45,7 +45,6 @@ def test_compare(previous: dict, current: dict, expected_diff: dict):
     assert compare(previous, current) == expected_diff
 
 
-
 def test_get_summary() -> None:
     diff = {
         "3CXDesktopApp_Supply_Chain_Attack": {
@@ -85,12 +84,13 @@ def test_get_summary() -> None:
             }
         }
     }
-    assert get_summary(diff) == """### This pull request introduces changes in packs dependencies.
-- In the first-level dependencies of pack 3CXDesktopApp_Supply_Chain_Attack:
-   - The dependency MajorBreachesInvestigationandResponse was changed from mandatory to optional.
-- In the all-level dependencies of pack 3CXDesktopApp_Supply_Chain_Attack:
-   - The mandatory dependency CommonTypes is no longer a dependency.
-   - The mandatory dependency Cryptocurrency is no longer a dependency.
-- In the first-level dependencies of pack Campaign:
-   - A new optional dependency SplunkPy was added.
-"""
+    assert get_summary(diff) == (
+        "### This pull request introduces changes in packs dependencies.\n"
+        "- In the first-level dependencies of pack 3CXDesktopApp_Supply_Chain_Attack:\n"
+        "   - The dependency MajorBreachesInvestigationandResponse was changed from mandatory to optional.\n"
+        "- In the all-level dependencies of pack 3CXDesktopApp_Supply_Chain_Attack:\n"
+        "   - The mandatory dependency CommonTypes is no longer a dependency.\n"
+        "   - The mandatory dependency Cryptocurrency is no longer a dependency.\n"
+        "- In the first-level dependencies of pack Campaign:\n"
+        "   - A new optional dependency SplunkPy was added.\n"
+    )
