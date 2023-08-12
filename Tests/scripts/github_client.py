@@ -59,9 +59,7 @@ class GithubClient:
         return self.http_request(
             "POST",
             url_suffix="/graphql",
-            json={"query": query, "variables": variables},
-            headers=self.headers,
-            verify=self.verify,
+            json_data={"query": query, "variables": variables},
         )
 
     def search_pulls(
@@ -91,15 +89,16 @@ class GithubClient:
     ) -> dict:
         if not (sha1 or branch):
             self.handle_error("Did not provide enough details to get PR data.")
-            self.data = {}
+            return {}
 
-        pulls = self.search_pulls(sha1, branch, is_open)
-        if not pulls or pulls.get('total_count', 0) != 1:
+        res: dict = self.search_pulls(sha1, branch, is_open)
+        if not res or res.get('total_count', 0) != 1:
             self.handle_error(
                 f"Could not find a pull request where {branch=}, {sha1=}, {is_open=}"
             )
             return {}
-        return pulls.get('items')[0]
+        pulls: list = res["items"]
+        return pulls[0]
 
 
 class GithubPullRequest(GithubClient):
@@ -113,7 +112,7 @@ class GithubPullRequest(GithubClient):
         repository: str = "demisto/content",
     ) -> None:
         super().__init__(github_token, verify, fail_on_error, repository)
-        self.data = self.get_pull(sha1, branch)
+        self.data: dict = self.get_pull(sha1, branch)
 
     def add_comment(self, comment: str) -> None:
         """Adds a comment to the pull request.
@@ -126,9 +125,7 @@ class GithubPullRequest(GithubClient):
         self.http_request(
             "POST",
             full_url=self.data.get("comments_url"),
-            json={"body": comment},
-            headers=self.headers,
-            verify=self.verify,
+            json_data={"body": comment},
         )
 
     def edit_comment(

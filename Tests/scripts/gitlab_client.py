@@ -9,7 +9,7 @@ import requests
 
 
 API_BASE_URL = "https://code.pan.run/api/v4"  # disable-secrets-detection
-PROJECT_ID = '2596'
+PROJECT_ID = "2596"
 
 
 class GetArtifactErrors(str, enum.Enum):
@@ -22,7 +22,6 @@ class GetArtifactErrors(str, enum.Enum):
 class GitlabClient:
     def __init__(self, gitlab_token: str) -> None:
         self.base_url = f"{API_BASE_URL}/projects/{PROJECT_ID}"
-        self.project_id = '2596'
         self.headers = {"PRIVATE-TOKEN": gitlab_token}
 
     def _get(

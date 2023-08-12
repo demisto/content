@@ -27,17 +27,17 @@ install_logging("find_pack_dependencies_changes.log", logger=logger)
 
 
 def parse_args() -> Namespace:
-    args = ArgumentParser()
-    args.add_argument('--gitlab-token', required=True, help='A GitLab API token')
-    args.add_argument('--github-token', required=True, help='A GitHub API token')
-    args.add_argument('--master-sha', required=True, help='master branch commit SHA')
-    args.add_argument('--job-name', required=True, help='The job name to take the artifact from')
-    args.add_argument('--marketplace', required=True, help='The marketplace name')
-    args.add_argument('--current-file', required=True, help='Path to current pack_dependencies.json')
-    args.add_argument('--current-sha', required=True, help='Current branch commit SHA')
-    args.add_argument('--current-branch', required=True, help='Current branch name')
-    args.add_argument('--output', required=True, help='Path to diff output file')
-    return args.parse_args()
+    options = ArgumentParser()
+    options.add_argument('--gitlab-token', required=True, help='A GitLab API token')
+    options.add_argument('--github-token', required=True, help='A GitHub API token')
+    options.add_argument('--master-sha', required=True, help='master branch commit SHA')
+    options.add_argument('--job-name', required=True, help='The job name to take the artifact from')
+    options.add_argument('--marketplace', required=True, help='The marketplace name')
+    options.add_argument('--current-file', required=True, help='Path to current pack_dependencies.json')
+    options.add_argument('--current-sha', required=True, help='Current branch commit SHA')
+    options.add_argument('--current-branch', required=True, help='Current branch name')
+    options.add_argument('--output', required=True, help='Path to diff output file')
+    return options.parse_args()
 
 
 def log_deps_change(pack_id: str, data: dict, change_type: str) -> None:
@@ -152,7 +152,7 @@ def get_summary(diff: dict) -> str:
     return s
 
 
-def get_diff(args: ArgumentParser) -> dict:  # pragma: no cover
+def get_diff(args: Namespace) -> dict:  # pragma: no cover
     gitlab_client = GitlabClient(args.gitlab_token)
     previous = gitlab_client.get_packs_dependencies_json(
         args.master_sha,
