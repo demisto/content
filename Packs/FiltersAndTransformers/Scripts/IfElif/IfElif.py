@@ -73,15 +73,15 @@ def parse_boolean_expression(expression: str) -> bool:
         raise SyntaxError(f'Cannot parse expression: {expression}')
 
 
-def get_from_context(keys: str):
-    pass
+def get_from_context(keys: str) -> str:
+    return repr(dict_safe_get(demisto.context(), keys.split('.')))
 
 
 def load_conditions(args: dict) -> list:  # TEST
     conditions = args['conditions']
-    conditions = conditions.replace('$VALUE', repr(args['value']))
-    for match in set(re.findall(r'\${[\s\S]+?}', conditions)):
-        conditions.replace(match, get_from_context(match[2:-1]) or match)
+    conditions = conditions.replace('#VALUE', repr(args['value']))
+    for match in set(re.findall(r'#{[\s\S]+?}', conditions)):
+        conditions.replace(match, get_from_context(match[2:-1]))
     return json.loads(conditions)
 
 
