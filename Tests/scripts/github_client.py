@@ -4,6 +4,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 class GithubClient:
     base_url = "https://api.github.com"
+
     def __init__(
         self,
         github_token: str,
@@ -91,7 +92,7 @@ class GithubClient:
             self.handle_error("Did not provide enough details to get PR data.")
             return {}
 
-        res: dict = self.search_pulls(sha1, branch, is_open)
+        res = self.search_pulls(sha1, branch, is_open)
         if not res or res.get('total_count', 0) != 1:
             self.handle_error(
                 f"Could not find a pull request where {branch=}, {sha1=}, {is_open=}"
@@ -122,6 +123,7 @@ class GithubPullRequest(GithubClient):
             branch (str): The branch name.
             sha1 (str): The commit SHA.
         """
+        logging.info(f"Adding a comment to pull request #{self.data.get('number')}")
         self.http_request(
             "POST",
             full_url=self.data.get("comments_url"),
@@ -140,6 +142,7 @@ class GithubPullRequest(GithubClient):
             pull_request (dict): The pull request data ().
             append (bool, default: True): Whether to append to or override the existing comment.
         """
+        logging.info(f"Editing comment of pull request #{self.data.get('number')}")
         if append:
             comment = f"{self.data.get('body')}\n{comment}"
         self.graphql(

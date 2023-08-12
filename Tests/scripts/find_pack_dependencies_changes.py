@@ -173,7 +173,7 @@ def main():  # pragma: no cover
         branch=args.current_branch,
         fail_on_error=True,
     )
-    pull_request.edit_comment(summary, append=True)
+    pull_request.add_comment(summary)
     Path(args.output).write_text(json.dumps(diff, indent=4))
 
 
