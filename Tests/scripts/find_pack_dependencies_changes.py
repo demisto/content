@@ -16,9 +16,9 @@ BOOL_TO_M_LEVEL: dict = {
     False: "optional",
 }
 CHANGE_TYPE_TO_TEMPLATE: dict[str, Template] = {
-    "added": Template("A new {m_level} dependency {dep_id} was added."),
-    "removed": Template("The {m_level} dependency {dep_id} is no longer a dependency"),
-    "modified": Template("The dependency {dep_id} was changed from {previous_m_level} to {m_level}"),
+    "added": Template("   - A new $m_level dependency $dep_id was added.\n"),
+    "removed": Template("   - The $m_level dependency $dep_id is no longer a dependency.\n"),
+    "modified": Template("   - The dependency $dep_id was changed from $previous_m_level to $m_level.\n"),
 }
 
 
