@@ -3,6 +3,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 
 class GithubClient:
+    base_url = "https://api.github.com"
     def __init__(
         self,
         github_token: str,
@@ -10,7 +11,6 @@ class GithubClient:
         fail_on_error: bool = False,
         repository: str = "demisto/content",
     ) -> None:
-        self.base_url = "https://api.github.com"
         self.headers = {"Authorization": f"Bearer {github_token}"}
         self.verify = verify
         self.fail_on_error = fail_on_error
@@ -67,7 +67,7 @@ class GithubClient:
         sha1: str | None = None,
         branch: str | None = None,
         is_open: bool | None = None,
-    ) -> dict:
+    ) -> dict | None:
         q = []
         if sha1:
             q.append(sha1)
