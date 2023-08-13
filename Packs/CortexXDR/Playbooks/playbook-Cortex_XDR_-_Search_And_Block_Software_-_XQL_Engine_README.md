@@ -6,11 +6,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Block File
+Cortex XDR - Block File
 
 ### Integrations
 
-* XQLQueryingEngine
+XQLQueryingEngine
 
 ### Scripts
 
@@ -20,7 +20,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* xdr-xql-generic-query
+xdr-xql-generic-query
 
 ## Playbook Inputs
 
@@ -28,8 +28,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Filename |  |  | Optional |
-| TimeFrame |  |  | Optional |
+| Filename | File name to search.  |  | Optional |
+| TimeFrame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").   | The default is the last 24 hours.  | Optional |
 
 ## Playbook Outputs
 

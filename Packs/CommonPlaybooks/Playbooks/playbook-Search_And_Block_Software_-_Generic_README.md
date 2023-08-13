@@ -1,5 +1,5 @@
-This playbook will search a  file or process activity of a software by a given image file name. The analyst can than choose the files he wishes to block.
-The following integrations is supported:
+This playbook will search a file or process activity of a software by a given image file name. The analyst can then choose the files to block.
+The following integrations are supported:
 
 - Cortex XDR XQL Engine 
 - Microsoft Defender For Endpoint

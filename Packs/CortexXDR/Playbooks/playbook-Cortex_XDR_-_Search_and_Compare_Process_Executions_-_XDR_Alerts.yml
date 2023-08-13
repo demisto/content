@@ -2,11 +2,11 @@ id: Cortex XDR - Search and Compare Process Executions - XDR Alerts
 version: -1
 name: Cortex XDR - Search and Compare Process Executions - XDR Alerts
 description: |-
-  This playbook is a generic playbook that receives process name and command-line argument, and uses "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compare the command-line argument from the results to the command-line argument received from the playbook input.
+  This playbook is a generic playbook that receives a process name and command-line argument. It uses the "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compares the command-line argument from the results to the command-line argument received from the playbook input.
 
-  Notice - under the input "Processes", the playbook should receive an array that contains the following keys:
-  -value: *process name*
-  -commands: *command-line arguments*
+  Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
+  - value: *process name*
+  - commands: *command-line arguments*
 starttaskid: "0"
 tasks:
   "0":
@@ -226,7 +226,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.11/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -548,14 +548,14 @@ inputs:
   value:
     simple: "0.5"
   required: false
-  description: 'StringSimilarity automation threshold: A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  description: 'StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
   playbookInputQuery:
 outputs:
 - contextPath: StringSimilarity
-  description: StringSimilarity automation results
+  description: StringSimilarity automation results.
   type: unknown
 - contextPath: Findings
-  description: Suspicious process executions found
+  description: Suspicious process executions found.
   type: unknown
 tests:
 - No tests (auto formatted)
