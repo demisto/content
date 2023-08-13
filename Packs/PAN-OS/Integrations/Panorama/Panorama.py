@@ -1822,7 +1822,7 @@ def prettify_address_group(address_group: Dict) -> Dict:
 @logger
 def panorama_get_address_group(address_group_name: str):
     params = {
-        'action': 'show',
+        'action': 'get',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "address-group/entry[@name='" + address_group_name + "']",
         'key': API_KEY
