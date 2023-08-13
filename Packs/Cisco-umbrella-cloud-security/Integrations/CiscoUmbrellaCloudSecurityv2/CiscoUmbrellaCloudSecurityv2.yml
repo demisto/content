@@ -438,7 +438,7 @@ script:
       name: domain
       required: true
     deprecated: true
-    description: Gets the domain from a destination list
+    description: Gets the domain from a destination list.
     name: umbrella-get-destination-domain
     outputs:
     - contextPath: Umbrella.Destinations.id
