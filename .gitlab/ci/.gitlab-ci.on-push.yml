@@ -178,7 +178,7 @@ validate-content-conf:
           exit 1
       else
           echo "Finding pack dependencies diff against $MASTER_SHA"
-          python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --github-token $GITHUB_TOKEN --master-sha $MASTER_SHA --job-name $CI_JOB_NAME --current-file $ARTIFACTS_FOLDER/packs_dependencies.json --marketplace $MARKETPLACE_VERSION --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --output $ARTIFACTS_FOLDER/pack_dependencies_diff.json
+          python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --master-sha $MASTER_SHA --job-name $CI_JOB_NAME --dependencies-filename packs_dependencies.json --artifacts-folder $ARTIFACTS_FOLDER
       fi
     - section_end "Find dependencies changes"
 
@@ -418,8 +418,9 @@ jobs-done-check-on-push:
 update-dependencies-changes:
   stage: post-build-scripts
   needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
+  when: always
   script:
-    - echo "test"
+    - python3 ./Tests/scripts/update_pack_dependencies_changes_in_pr.py --github-token $GITHUB_TOKEN --current-sha $CI_COMMIT_SHA --current-branch $CI_COMMIT_BRANCH --artifacts-folder $ARTIFACTS_FOLDER
 
 slack-notify-nightly-build:
   extends:

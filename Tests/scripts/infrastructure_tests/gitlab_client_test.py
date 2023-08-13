@@ -1,5 +1,6 @@
 import io
 import json
+from pathlib import Path
 from typing import Any
 import zipfile
 
@@ -10,7 +11,7 @@ from Tests.scripts.gitlab_client import GitlabClient, GetArtifactErrors
 
 SHA = "mock_sha"
 JOB_NAME = "mock_job_name"
-MARKETPLACE = "xsoar"
+PACKS_DEPENDENCIES_FILEPATH = Path("artifacts/xsoar/packs_dependencies.json")
 
 
 @pytest.fixture
@@ -19,14 +20,13 @@ def client() -> GitlabClient:
 
 
 def mock_artifacts_api_response(
-    marketplace: str,
     data: dict | None = None,
 ) -> bytes:
     mock_bytes = io.BytesIO()
     with zipfile.ZipFile(mock_bytes, 'w') as zipf:
         if data is not None:
             zipf.writestr(
-                f'artifacts/{marketplace}/packs_dependencies.json',
+                PACKS_DEPENDENCIES_FILEPATH.as_posix(),
                 json.dumps(data),
             )
 
@@ -43,7 +43,6 @@ def test_get_packs_dependencies(
             - A Gitlab Client
             - A Commit SHA
             - The job name in which a packs_dependencies.json should be stored as an artifact
-            - A marketplace version
         When:
             - Calling get_packs_dependencies_json()
         Then:
@@ -60,12 +59,12 @@ def test_get_packs_dependencies(
     )
     requests_mock.get(
         f"{client.base_url}/jobs/mock_job_id/artifacts",
-        content=mock_artifacts_api_response(MARKETPLACE, packs_dependencies_json),
+        content=mock_artifacts_api_response(packs_dependencies_json),
     )
     assert client.get_packs_dependencies_json(
         SHA,
         JOB_NAME,
-        MARKETPLACE,
+        PACKS_DEPENDENCIES_FILEPATH,
     ) == packs_dependencies_json
 
 
@@ -96,7 +95,7 @@ def test_get_packs_dependencies(
         pytest.param(
             [{"id": "mock_pipeline_id"}],
             [{"id": "mock_job_id", "name": JOB_NAME}],
-            {"content": mock_artifacts_api_response(MARKETPLACE, data=None)},
+            {"content": mock_artifacts_api_response(data=None)},
             GetArtifactErrors.NO_FILE_IN_ARTIFACTS,
             id="No pack_dependencies.json file in artifacts",
         ),
@@ -139,6 +138,6 @@ def test_get_packs_dependencies_bad(
         client.get_packs_dependencies_json(
             SHA,
             JOB_NAME,
-            MARKETPLACE,
+            PACKS_DEPENDENCIES_FILEPATH,
         )
     assert expected_err.value in str(e)

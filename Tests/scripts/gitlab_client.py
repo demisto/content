@@ -106,9 +106,8 @@ class GitlabClient:
         self,
         commit_sha: str,
         job_name: str,
-        marketplace: str,
+        packs_dependencies_filepath: Path,
     ) -> dict:
-        file_path = Path(f"artifacts/{marketplace}/packs_dependencies.json")
         return json.loads(
-            self.get_artifact_file(commit_sha, job_name, file_path)
+            self.get_artifact_file(commit_sha, job_name, packs_dependencies_filepath)
         )
