@@ -1338,9 +1338,8 @@ def main():
             pack.cleanup()
             continue
 
-        # upload author integration images and readme images
-        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs):
+        # upload author integration images and readme images, unless we are using the -p flag
+        if not pack.is_modified and not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1411,13 +1410,6 @@ def main():
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
             pack.cleanup()
             continue
-
-        if marketplace == XSIAM_MP:
-            task_status = pack.upload_dynamic_dashboard_images(storage_bucket, storage_base_path)
-            if not task_status:
-                pack._status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
-                pack.cleanup()
-                continue
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
