@@ -371,7 +371,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 480,
           "y": 1040
         }
       }
@@ -446,7 +446,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 910,
           "y": 1040
         }
       }
@@ -505,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 8b8a9296-fbe6-4775-8346-2c456717cba9
+    taskid: 61e0caa4-a709-4046-8833-f697f9002a4c
     type: condition
     task:
-      id: 8b8a9296-fbe6-4775-8346-2c456717cba9
+      id: 61e0caa4-a709-4046-8833-f697f9002a4c
       version: -1
       name: Was New Entry Created?
       description: Prints text to war room (Markdown supported)
@@ -528,6 +528,15 @@ tasks:
           left:
             value:
               simple: ${GenericSQL.GenericSQL.Result.ID}
+            iscontext: true
+          right:
+            value:
+              simple: ${RandomString}
+        - operator: containsGeneral
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.Result.id}
+            iscontext: true
           right:
             value:
               simple: ${RandomString}
