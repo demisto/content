@@ -1208,8 +1208,7 @@
         },
         {
             "integrations": "Tenable.io",
-            "playbookID": "Tenable.io test",
-            "is_mockable": false
+            "playbookID": "Tenable.io test"
         },
         {
             "playbookID": "URLDecode-Test"
@@ -1223,7 +1222,6 @@
         {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
-            "is_mockable": false,
             "timeout": 3600
         },
         {
