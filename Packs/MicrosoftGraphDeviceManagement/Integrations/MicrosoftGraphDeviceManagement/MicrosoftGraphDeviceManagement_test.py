@@ -45,6 +45,7 @@ def test_find_managed_devices_command(mocker):
     find_managed_devices_command(client, args=args)
     context_output = outputs.call_args.args[0]
     assert context_output is not None
+    assert client.base_url == 'https://graph.microsoft.com/v1.0'
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
