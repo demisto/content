@@ -273,7 +273,7 @@ script:
       required: false
       isArray: true
     - name: destinations_comment
-      description: 'A comment about all the inserted destinations. Default value: "Added from XSOAR"'
+      description: A comment about all the inserted destinations. 
       required: false
       isArray: false
       defaultValue: Added from XSOAR
