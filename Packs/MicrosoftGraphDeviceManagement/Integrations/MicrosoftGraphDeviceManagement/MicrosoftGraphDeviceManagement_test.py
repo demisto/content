@@ -32,9 +32,9 @@ def test_find_managed_devices_command(mocker):
         data: dict = json.load(json_file)
         raw_device = [data.get('value')]
 
-    client = MsGraphClient(False, 'tenant_id', 'auth_and_token_url', 'enc_key', 'app_name', 'base_url',
-                           True, False, (200,), 'certificate_thumbprint',
-                           'private_key')
+    client = MsGraphClient(self_deployed=False, tenant_id='123', auth_and_token_url='abc', enc_key='abc', app_name='abc',
+                           azure_cloud=None, use_ssl=True, proxy=False, ok_codes=(200),
+                           certificate_thumbprint='abc', private_key='abc', managed_identities_client_id=None)
     mocker.patch.object(
         client,
         'find_managed_devices',
