@@ -14,7 +14,7 @@ stages:
   - run-instances
   - test_playbooks_report
   - upload-to-marketplace
-  - are-jobs-really-done
+  - post-build-scripts
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 

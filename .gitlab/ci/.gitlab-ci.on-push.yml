@@ -415,6 +415,11 @@ jobs-done-check-on-push:
   tags:
     - gke
 
+update-dependencies-changes:
+  stage: post-build-scripts
+  needs: ['mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket']
+  script:
+    - echo "test"
 
 slack-notify-nightly-build:
   extends:
