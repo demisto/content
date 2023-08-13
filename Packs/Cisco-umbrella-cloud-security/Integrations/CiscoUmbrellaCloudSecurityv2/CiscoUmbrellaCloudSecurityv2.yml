@@ -457,7 +457,7 @@ script:
     - description: Destination list ID to get domains from. Use the umbrella-get-destination-lists command to get the list ID.
       name: destId
       required: true
-    - description: Domains to search for in a destination list
+    - description: Domains to search for in a destination list.
       isArray: true
       name: domains
       required: true
