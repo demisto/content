@@ -385,7 +385,7 @@ script:
     - description: Destination list ID.
       name: destId
       required: true
-    - description: 'List of domains to add to destination list (Format: domain1.com,domain2.com)'
+    - description: 'List of domains to add to the destination list. (Format: domain1.com,domain2.com).'
       isArray: true
       name: domains
       required: true
