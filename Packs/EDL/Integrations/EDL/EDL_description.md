@@ -53,7 +53,7 @@ When using more than one server in HA mode, the EDL should be configured to list
 In "route" listen mode, a request received by any of the app servers will be redirected to the one currently running the NGINX container.
 This does not happen in "port" listen mode, that's why "route" mode should be used.
 
-If the app-server running the container fails, the container should restart on a different app-server.
+If the app server running the container fails, the container should restart on a different app server.
 Failover time should be about 1 minute plus the container startup time.
 
 ### Modify Request Parameters Through the URL
