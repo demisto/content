@@ -377,7 +377,7 @@ script:
     name: umbrella-get-destination-lists
     outputs:
     - contextPath: Umbrella.DestinationLists
-      description: List of destination lists in organization
+      description: List of destination lists in an organization.
       type: Unknown
   - arguments:
     - description: Optional organization ID. If not provided, will use the one provided in the integration configuration
