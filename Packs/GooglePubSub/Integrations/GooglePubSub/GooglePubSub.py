@@ -580,23 +580,25 @@ def message_to_incident(message):
     return incident
 
 
-def get_messages_ids_and_max_publish_time(msgs):
+def get_messages_ids_and_max_publish_time(msgs: List[Dict[str, str]]):
     """
     Get message IDs and max publish time from given pulled messages
     """
-    msg_ids = set()
-    max_publish_time = None
-    for msg in msgs:
-        msg_ids.add(msg.get("messageId"))
-        publish_time = msg.get("publishTime")
-        if publish_time:
-            publish_time = dateparser.parse(msg.get("publishTime"))
-        if not max_publish_time:
-            max_publish_time = publish_time
-        else:
-            max_publish_time = max(max_publish_time, publish_time)
-    if max_publish_time:
-        max_publish_time = convert_datetime_to_iso_str(max_publish_time)
+
+    if not msgs:
+        return set(), None
+
+    msg_ids = {msg.get("messageId") for msg in msgs}
+    publish_times = [
+        publish_time
+        for publish_time in (
+            dateparser.parse(msg.get("publishTime", "")) for msg in msgs
+        )
+        if publish_time
+    ]
+    max_publish_time = (
+        convert_datetime_to_iso_str(max(publish_times)) if publish_times else None
+    )
     return msg_ids, max_publish_time
 
 
@@ -1337,6 +1339,7 @@ def fetch_incidents(
         last_run_time,
         max_publish_time,
         msg_ids,
+        last_run_fetched_ids,
         msgs,
         ack_incidents,
     )
@@ -1354,7 +1357,7 @@ def setup_subscription_last_run(
     :param ack_incidents: ACK flag - if true, will not use seek except for first time fetch
     :return:
     """
-    last_run_fetched_ids = set()
+    last_run_fetched_ids = []
     # Handle first time fetch
     if not last_run or LAST_RUN_TIME_KEY not in last_run:
         last_run_time, _ = parse_date_range(first_fetch_time, ISO_DATE_FORMAT)
@@ -1362,9 +1365,7 @@ def setup_subscription_last_run(
         client.subscription_seek_message(sub_name, last_run_time)
     else:
         last_run_time = last_run.get(LAST_RUN_TIME_KEY)
-        last_run_fetched_val = last_run.get(LAST_RUN_FETCHED_KEY)
-        if last_run_fetched_val:
-            last_run_fetched_ids = set(last_run_fetched_val)
+        last_run_fetched_ids = last_run.get(LAST_RUN_FETCHED_KEY, [])
         if not ack_incidents:
             # Seek previous message state
             client.subscription_seek_message(sub_name, last_run_time)
@@ -1465,6 +1466,7 @@ def handle_fetch_results(
     last_run_time,
     max_publish_time,
     pulled_msg_ids,
+    previous_pulled_msg_ids,
     pulled_msgs,
     ack_incidents,
 ):
@@ -1477,6 +1479,7 @@ def handle_fetch_results(
     :param last_run_time: last run time
     :param max_publish_time: max publish time of pulled messages
     :param pulled_msg_ids: pulled message ids
+    :param previous_pulled_msg_ids: pulled message ids from the previous run
     :param pulled_msgs: pulled messages
     :param ack_incidents: ack incidents flag
     :return: incidents and last run
@@ -1493,7 +1496,8 @@ def handle_fetch_results(
         # Recreate last run to return with new values
         last_run = {
             LAST_RUN_TIME_KEY: max_publish_time,
-            LAST_RUN_FETCHED_KEY: list(pulled_msg_ids),
+            LAST_RUN_FETCHED_KEY: list(pulled_msg_ids)
+            + previous_pulled_msg_ids[: client.default_max_msgs * 5],
         }
     # We didn't manage to pull any unique messages, so we're trying to increment micro seconds - not relevant for ack
     elif not ack_incidents:
