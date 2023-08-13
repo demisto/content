@@ -476,11 +476,14 @@ def get_incidents_ids_related_to_indicators(indicators, query):
     return incident_ids, False
 
 
-def get_incidents_filtered_from_query(incident_ids, query):
+def get_ids_condition_clause(incident_ids):
     if incident_ids:
-        ids_condition = "incident.id:(" + " ".join(incident_ids) + ")"
-    else:
-        ids_condition = ""
+        return "incident.id:(" + " ".join(incident_ids) + ")"
+    return ""
+
+
+def get_incidents_filtered_from_query(incident_ids, query):
+    ids_condition = get_ids_condition_clause
     query += " AND %s" % ids_condition
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
