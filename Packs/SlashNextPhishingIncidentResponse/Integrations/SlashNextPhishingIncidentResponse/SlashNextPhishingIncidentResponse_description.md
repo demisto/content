@@ -10,6 +10,7 @@ The SlashNext Phishing Incident Response integration app uses an API key to auth
 
 Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
 - ***url***
+- ***domain***
 - ***slashnext-url-reputation***
 - ***slashnext-host-reputation***
 See the vendor’s documentation for more details.

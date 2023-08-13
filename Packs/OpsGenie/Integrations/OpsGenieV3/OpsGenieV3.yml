@@ -1286,7 +1286,110 @@ script:
       description: Notify name of the routing rule.
     - contextPath: OpsGenie.TeamRoutingRule.notify.type
       description: Notify type of the routing rule.
-  dockerimage: demisto/python3:3.10.12.66339
+  - name: opsgenie-get-alert-logs
+    description: Gets logs of an OpsGenie Alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    outputs:
+    - contextPath: OpsGenie.AlertLogs.createdAt
+      description: Time the alert was created.
+      type: String
+    - contextPath: OpsGenie.AlertLogs.log
+      description: Log of the alert.
+      type: String
+    - contextPath: OpsGenie.AlertLogs.offset
+      description: Offset of the alert log.
+      type: String
+    - contextPath: OpsGenie.AlertLogs.owner
+      description: Owner of the alert log.
+      type: String
+    - contextPath: OpsGenie.AlertLogs.type
+      description: Type of the alert log.
+      type: String
+  - name: opsgenie-add-alert-note
+    description: Adds a note to an OpsGenie Alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID to add the note to.
+    - name: note
+      required: true
+      description: Alert note to add.
+    - name: user
+      required: false
+      description: Display name of the request owner.
+    - name: source
+      required: false
+      description: Display name of the request source.
+    outputs:
+    - contextPath: OpsGenie.AddAlertNote.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.AddAlertNote.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.AddAlertNote.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertNote.success
+      description: Whether the request was successful.
+      type: Boolean
+  - name: opsgenie-add-alert-details
+    description: Adds details to an OpsGenie Alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID to add the details to.
+    - name: details
+      required: true
+      description: Comma-separated key=value pairs to use as custom properties of the alert. JSON format is also supported when used within an automation. Examples; details="account=pa,hostname=computer01".
+      type: keyValue
+    outputs:
+    - contextPath: OpsGenie.AddAlertDetails.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.AddAlertDetails.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.AddAlertDetails.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.AddAlertDetails.success
+      description: Whether the request was successful.
+      type: Boolean
+  dockerimage: demisto/python3:3.10.12.68300
   isfetch: true
   script: '-'
   type: python
