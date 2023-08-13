@@ -263,7 +263,7 @@ def uninstall_pack(client: demisto_client,
                 raise Exception(
                     "Failed to wait for the server to exit installation/updating status"
                 ) from ex
-        still_installed = check_if_pack_still_installed(client=client,
+        still_installed, _ = check_if_pack_still_installed(client=client,
                                                         pack_id=pack_id)
         if not still_installed:
             return True, None
