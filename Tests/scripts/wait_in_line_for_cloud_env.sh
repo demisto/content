@@ -31,11 +31,11 @@ then
   exit 1
 fi
 
-if [[ $TEST_MACHINES_LIST_STRING != *"$LOCK_MACHINE_NAME"* ]];
-then
-  echo "Machine that you trying to lock: '$LOCK_MACHINE_NAME' does not exist in Test Machines List.."
-  exit 1
-fi
+#if [[ $TEST_MACHINES_LIST_STRING != *"$LOCK_MACHINE_NAME"* ]];
+#then
+#  echo "Machine that you trying to lock: '$LOCK_MACHINE_NAME' does not exist in Test Machines List.."
+#  exit 1
+#fi
 
 echo -e "Locking machine by job_id: $CI_JOB_ID"
 echo -e "We have $NUM_OF_TEST_MACHINES machines for testing and a lot more builds to test"

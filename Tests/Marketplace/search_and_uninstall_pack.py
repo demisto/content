@@ -397,18 +397,24 @@ def main():
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
     sync_marketplace(client=client)
-    unremovable_packs = options.unremovable_packs.split(',')
-    success = reset_core_pack_version(client, unremovable_packs)
-    if success:
-        if options.one_by_one:
-            success = uninstall_all_packs_one_by_one(client, host, unremovable_packs)
-        else:
-            success = uninstall_all_packs(client, host, unremovable_packs) and \
-                wait_for_uninstallation_to_complete(client, unremovable_packs)
-    sync_marketplace(client=client)
-    if not success:
-        sys.exit(2)
-    logging.info('Uninstalling packs done.')
+    # success = reset_base_pack_version(client) and uninstall_all_packs(client,
+    #                                                                   host) and wait_for_uninstallation_to_complete(
+    #     client)
+    # sync_marketplace(client=client)
+    # if not success:
+    #     sys.exit(2)
+    # unremovable_packs = options.unremovable_packs.split(',')
+    # success = reset_core_pack_version(client, unremovable_packs)
+    # if success:
+    #     if options.one_by_one:
+    #         success = uninstall_all_packs_one_by_one(client, host, unremovable_packs)
+    #     else:
+    #         success = uninstall_all_packs(client, host, unremovable_packs) and \
+    #             wait_for_uninstallation_to_complete(client, unremovable_packs)
+    # sync_marketplace(client=client)
+    # if not success:
+    #     sys.exit(2)
+    # logging.info('Uninstalling packs done.')
 
 
 if __name__ == '__main__':

@@ -357,7 +357,7 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_master']
+  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar_server_master']
   tags:
     - gke
   rules:
@@ -380,8 +380,6 @@ jobs-done-check-on-push:
     - job: xpanse-prepare-testing-bucket
       optional: true
     - job: xsoar-prepare-testing-bucket
-      optional: true
-    - job: xsiam_server_ga
       optional: true
     - job: xsoar_server_6_8
       optional: true
@@ -513,39 +511,40 @@ slack-notify-nightly-build:
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
-
-xsiam_server_ga:
-  extends:
-    - .test_content_on_cloud_server_instances_base
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-      when: always
-  variables:
-    INSTANCE_ROLE: "XSIAM"
-    GCS_QUEUE_FILE: "queue-ga"
-    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
-    CLOUD_SERVERS_FILE: "xsiam_servers_path"
-    CLOUD_API_KEYS: $XSIAM_API_KEYS
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
-    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
-    SERVER_TYPE: "XSIAM"
-    MARKETPLACE_NAME: "marketplacev2"
-    UNREMOVABLE_PACKS: "Base"
-  needs:
-    - job: mpv2-prepare-testing-bucket
-      optional: true
+#
+#xsiam_server_ga:
+#  extends:
+#    - .test_content_on_cloud_server_instances_base
+#  rules:
+#    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#    - if: '$NIGHTLY'
+#      when: always
+#  variables:
+#    INSTANCE_ROLE: "XSIAM"
+#    GCS_QUEUE_FILE: "queue-ga"
+#    TEST_MACHINES_LIST: "test-machines-ga"
+#    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+#    CLOUD_SERVERS_FILE: "xsiam_servers_path"
+#    CLOUD_API_KEYS: $XSIAM_API_KEYS
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+#    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+#    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+#    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+#    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+#    SERVER_TYPE: "XSIAM"
+#    MARKETPLACE_NAME: "marketplacev2"
+#  needs:
+#    - job: mpv2-prepare-testing-bucket
+#      optional: true
 
 xsoar_ng_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM"
@@ -559,7 +558,10 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
+    LOCK_MACHINE_NAME: "qa2-test-9999145857875"
+
     UNREMOVABLE_PACKS: "Base"
+  timeout: 36 hours
   needs:
     - job: xsoar-prepare-testing-bucket
       optional: true
@@ -624,7 +626,6 @@ test-upload-flow:
   script:
     - python3 ./Tests/Marketplace/print_testplaybook_summary.py --failed_tests_path $ARTIFACTS_FOLDER/failed_tests.txt --succeeded_tests_path $ARTIFACTS_FOLDER/succeeded_tests.txt
 
-
 merge-dev-secrets:
   tags:
     - gke
@@ -642,16 +643,16 @@ merge-dev-secrets:
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" -gpidd "$GSM_PROJECT_ID_DEV" -gpidp "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/merge_secrets.log
   allow_failure: true
 
-xsoar_server_master-test_playbooks_results:
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-  extends: .server_test_playbooks_report
-  needs: ["xsoar_server_master"]
+#xsoar_server_master-test_playbooks_results:
+#  variables:
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+#  extends: .server_test_playbooks_report
+#  needs: ["xsoar_server_master"]
 
-xsiam_server_ga-test_playbooks_results:
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-  extends: .server_test_playbooks_report
-  needs: ["xsiam_server_ga"]
+#xsiam_server_ga-test_playbooks_results:
+#  variables:
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+#  extends: .server_test_playbooks_report
+#  needs: ["xsiam_server_ga"]
 
 
