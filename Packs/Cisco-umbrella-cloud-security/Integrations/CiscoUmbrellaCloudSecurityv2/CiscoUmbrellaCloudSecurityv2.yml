@@ -462,7 +462,7 @@ script:
       name: domains
       required: true
     deprecated: true
-    description: Search for multiple domains in a destination list
+    description: Search for multiple domains in a destination list.
     name: umbrella-search-destination-domains
     outputs:
     - contextPath: Umbrella.Destinations.id
