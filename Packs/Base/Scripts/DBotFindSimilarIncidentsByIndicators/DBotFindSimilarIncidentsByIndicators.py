@@ -427,7 +427,7 @@ def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_
     col_incident = [x.title() for x in col_incident]
     incident_df = incident_df.rename(str.title, axis='columns')
     incident_json = incident_df.to_dict(orient='records')
-    return CommandResults(readable_output=tableToMarkdown("Actual Incident", incident_json,
+    return_outputs(readable_output=tableToMarkdown("Actual Incident", incident_json,
                                                    col_incident))
 
 
