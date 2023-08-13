@@ -469,7 +469,7 @@ script:
       description: ID of domain within the destination list.
       type: number
     - contextPath: Umbrella.Destinations.destination
-      description: Domain within destination list
+      description: Domain within the destination list.
       type: string
     - contextPath: Umbrella.Destinations.type
       description: Type of destination within the destination list.
