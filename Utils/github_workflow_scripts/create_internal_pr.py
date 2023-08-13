@@ -7,8 +7,13 @@ from blessings import Terminal
 from github import Github
 from handle_external_pr import EXTERNAL_LABEL
 
-from utils import get_env_var, timestamped_print
-
+from utils import (
+    get_env_var,
+    timestamped_print,
+    load_json,
+    get_doc_reviewer,
+    CONTENT_ROLES_PATH
+)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 INTERNAL_LABEL = "Internal PR"
@@ -70,8 +75,27 @@ def main():
     pr.create_review_request(reviewers=new_pr_reviewers)
     print(f'{t.cyan}Requested review from {new_pr_reviewers}{t.normal}')
 
-    # assign same users as in the merged PR
+    # Set PR assignees
     assignees = [assignee.login for assignee in merged_pr.assignees]
+
+    # Un-assign the tech writer (cause the docs reviewed has already been done on the external PR)
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    if content_roles:
+
+        try:
+            doc_reviewer = get_doc_reviewer(content_roles)
+
+            if doc_reviewer in assignees:
+                print(f"Unassigning tech writer '{doc_reviewer}' from internal PR...")
+                assignees.remove(doc_reviewer)
+                print(f"Tech writer '{doc_reviewer}' unassigned")
+
+        except ValueError as ve:
+            print(f"{str(ve)}. Skipped tech writer unassignment.")
+
+    else:
+        print(f"Unable to parse JSON from '{CONTENT_ROLES_PATH}'. Skipping tech writer unassignment.")
+
     pr.add_to_assignees(*assignees)
     print(f'{t.cyan}Assigned users {assignees}{t.normal}')
 
