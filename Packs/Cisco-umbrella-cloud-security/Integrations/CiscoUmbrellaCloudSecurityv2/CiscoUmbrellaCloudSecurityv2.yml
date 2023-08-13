@@ -442,7 +442,7 @@ script:
     name: umbrella-get-destination-domain
     outputs:
     - contextPath: Umbrella.Destinations.id
-      description: ID of domain within destination list
+      description: ID of the domain within the destination list.
     - contextPath: Umbrella.Destinations.destination
       description: Domain within destination list
     - contextPath: Umbrella.Destinations.type
