@@ -140,6 +140,7 @@ Retrieves the breach details. While very similar to list-breaches, this command 
 ***
 Get all the data from a monitored domain and the breaches occurred that relates with it. Can be scoped by domain, type and severity
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
