@@ -1,4 +1,13 @@
-This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail.
+This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail to locate the following activities performed by the user:
+- Failed login attempt
+- Suspicious activities 
+- API Access denied
+- Administrative user activities
+- Security rules and policies changes
+- Access keys and access token activities
+- Script-based user agent usage
+- User role changes activities
+- MFA device changes activities
 
 
 ## Dependencies
@@ -15,9 +24,9 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* Set
 * GetTime
 * LoadJSON
+* Set
 
 ### Commands
 
@@ -29,7 +38,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Username | The username to investigate. |  | Optional |
+| Username | The username to investigate. <br/>Please enter the user's email. |  | Optional |
 | AwsTimeSearchFrom | The Search Time for the \`GetTime\` task used by the AWS Cloud Trail search query. <br/>This value represents the number of days to include in the search.<br/>Default value: 1.  \(1 Day\) | 1 | Optional |
 
 ## Playbook Outputs

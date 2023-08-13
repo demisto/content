@@ -1,5 +1,9 @@
-This playbook performs an investigation on a specific user in GCP environments, using queries and logs from G Suite Auditor, and GCP Logging.
-
+This playbook performs an investigation on a specific user in GCP environments, using queries and logs from G Suite Auditor, and GCP Logging to locate the following activities performed by the user:
+- Failed login attempt
+- Suspicious API usage by the user
+- Anomalous network traffic by the user
+- Unusual and suspicious login attempt
+- User's password leaked
 
 ## Dependencies
 
@@ -15,13 +19,13 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GetTime
 * Set
+* GetTime
 
 ### Commands
 
-* gsuite-activity-search
 * gcp-logging-log-entries-list
+* gsuite-activity-search
 
 ## Playbook Inputs
 

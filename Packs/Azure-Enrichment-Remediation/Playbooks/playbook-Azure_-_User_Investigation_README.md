@@ -1,14 +1,14 @@
 This playbook performs an investigation on a specific user in Azure environments, using queries and logs from Azure Log Analytics to locate the following activities performed by the user:
--Script-based user agent usage
--Administrative user activities
--Security rules and policies changes
--Failed login attempt
--MFA failed login attempt
--Login attempt from an uncommon country.
--Anomalies activities
--Risky users
--Uncommon high volume of actions
--Action uncommonly performed by the user
+- Script-based user agent usage
+- Administrative user activities
+- Security rules and policies changes
+- Failed login attempt
+- MFA failed login attempt
+- Login attempt from an uncommon country.
+- Anomalies activities
+- Risky users
+- Uncommon high volume of actions
+- Action uncommonly performed by the user
 
 
 ## Dependencies
