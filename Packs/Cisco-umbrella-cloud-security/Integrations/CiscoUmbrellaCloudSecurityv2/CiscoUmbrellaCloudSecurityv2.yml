@@ -31,7 +31,7 @@ script:
       required: true
       isArray: false
     - name: destination_ids
-      description: Comma separated list of destination IDs to be retrieved from a list of destinations.
+      description: Comma-separated list of destination IDs to be retrieved from a list of destinations.
       required: false
       isArray: true
     - name: destinations
